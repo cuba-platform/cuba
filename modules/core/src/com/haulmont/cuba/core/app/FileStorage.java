@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.TimeProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -42,7 +43,7 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
     public String getStoragePath() {
         String storagePath = ConfigProvider.getConfig(FileStorageConfig.class).getFileStorageDir();
         if (StringUtils.isBlank(storagePath)) {
-            String dataDir = ConfigProvider.getConfig(ServerConfig.class).getServerDataDir();
+            String dataDir = ConfigProvider.getConfig(GlobalConfig.class).getDataDir();
             storagePath = dataDir + "/filestorage/";
         }
         return storagePath;
@@ -160,7 +161,7 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
     private File getStorageDir(Date createDate) {
         String storageDir = ConfigProvider.getConfig(FileStorageConfig.class).getFileStorageDir();
         if (StringUtils.isBlank(storageDir)) {
-            String dataDir = ConfigProvider.getConfig(ServerConfig.class).getServerDataDir();
+            String dataDir = ConfigProvider.getConfig(GlobalConfig.class).getDataDir();
             storageDir = dataDir + "/filestorage/";
         }
 

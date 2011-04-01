@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 
@@ -42,13 +44,13 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
         if (locale == null)
             throw new IllegalArgumentException("Locale is null");
 
-        update(getLoginService().loginActiveDirectory(login, locale));
+        String password = ConfigProvider.getConfig(GlobalConfig.class).getTrustedClientPassword();
+        update(getLoginService().loginTrusted(login, password, locale));
     }
 
     @Override
     public String logout() {
         super.logout();
-        return ActiveDirectoryHelper.useActiveDirectory()
-                ? "login" : "";
+        return ActiveDirectoryHelper.useActiveDirectory()? "login" : "";
     }
 }

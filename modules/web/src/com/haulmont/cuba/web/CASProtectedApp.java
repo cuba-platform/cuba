@@ -39,9 +39,6 @@ public class CASProtectedApp extends App implements ConnectionListener {
     @Override
     public void init() {
         log.debug("Initializing application");
-
-        AppConfig.getInstance().addGroovyImport(PersistenceHelper.class);
-
         ApplicationContext appContext = getContext();
         appContext.addTransactionListener(this);
         checkDeployedViews();

@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.app.UIComponentsConfig;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
 import com.haulmont.cuba.web.toolkit.ui.charts.ChartDataProvider;
@@ -396,8 +396,7 @@ public class CubaCommunicationManager extends CommunicationManager {
 
     @Override
     protected FileUpload createFileUpload() {
-        UIComponentsConfig config = ConfigProvider.getConfig(UIComponentsConfig.class);
-        final Integer maxUploadSizeMb = config.getMaxUploadSizeMb();
+        final Integer maxUploadSizeMb = ConfigProvider.getConfig(WebConfig.class).getMaxUploadSizeMb();
 
         FileUpload fileUpload = super.createFileUpload();
         fileUpload.setSizeMax(maxUploadSizeMb * 1048576);

@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.config.*;
 import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
+import com.haulmont.cuba.core.config.defaults.DefaultInteger;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.web.sys.AvailableLocalesFactory;
 
@@ -27,6 +28,9 @@ import java.util.Map;
 @Prefix("cuba.web.")
 public interface WebConfig extends Config
 {
+    @Property("cuba.connectionUrl")
+    String getConnectionUrl();
+
     /** Default user login to place into login dialog */
     String getLoginDialogDefaultUser();
 
@@ -39,6 +43,10 @@ public interface WebConfig extends Config
 
     /** ActiveDirectory domains configuration info */
     String getActiveDirectoryDomains();
+
+    /** Make CubaHttpFilter to bypass these URLs (comma-separated list)*/
+    @Default("/ws/")
+    String getCubaHttpFilterBypassUrls();
 
     /**
      * Default main window mode.
@@ -94,4 +102,30 @@ public interface WebConfig extends Config
     /** If true, then check filter conditions(empty or not) before apply filter */
     @DefaultBoolean(true)
     boolean getGenericFilterChecking();
+
+    @DefaultBoolean(false)
+    boolean getFoldersPaneVisibleByDefault();
+
+    @DefaultInt(200)
+    int getFoldersPaneDefaultWidth();
+
+    @DefaultInteger(20)
+    Integer getMaxUploadSizeMb();
+
+    String getResourcesRoot();
+
+    /**
+     * Allows generating of unique suffixes for Ids in testing mode
+     */
+    @Property("cuba.web.allowIdSuffix")
+    @DefaultBoolean(false)
+    boolean getAllowIdSuffix();
+
+    /**
+     * Used to support automatic testing. Contains a name of request parameter
+     * that marks a request from an automatic testing tool, for example jMeter.
+     */
+    @Property("cuba.web.testModeParamName")
+    @Default("jmeter")
+    String getTestModeParamName();
 }

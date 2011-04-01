@@ -39,33 +39,7 @@ public class EntityFactory {
     }
 
     private EntityFactory() {
-        load(MetadataProvider.getMetadataXmlPath());
-    }
-
-    private void load(String metadataXmlPath) {
-        if (!metadataXmlPath.startsWith("/"))
-            metadataXmlPath = "/" + metadataXmlPath;
-
-        InputStream stream = EntityFactory.class.getResourceAsStream(metadataXmlPath);
-
-        Document document = Dom4j.readDocument(stream);
-        Element root = document.getRootElement();
-
-        for (Element element : Dom4j.elements(root, "include")) {
-            String fileName = element.attributeValue("file");
-            if (!StringUtils.isBlank(fileName)) {
-                load(fileName);
-            }
-        }
-
-        Element element = root.element("entityFactory");
-        if (element != null) {
-            for (Element replaceElem : Dom4j.elements(element)) {
-                String className = replaceElem.attributeValue("class");
-                String withClassName = replaceElem.attributeValue("with");
-                map.put(ReflectionHelper.getClass(className), ReflectionHelper.getClass(withClassName));
-            }
-        }
+        map = MetadataProvider.getReplacedEntities();
     }
 
     private <T> T __create(Class<T> entityClass) {

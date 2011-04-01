@@ -18,7 +18,6 @@ import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
@@ -74,7 +73,6 @@ public class FoldersPane extends VerticalLayout {
     protected Object searchFoldersRoot;
     private Timer timer;
 
-    protected static final int DEFAULT_PANE_WIDTH = 200;
     protected static final int DEFAULT_VERT_SPLIT_POS = 400;
     protected int horizontalSplitPos;
     protected int verticalSplitPos;
@@ -97,21 +95,20 @@ public class FoldersPane extends VerticalLayout {
             horSplit = (WebSplitPanel) parent;
         }
 
-        boolean nowVisible;
+        boolean visible;
         UserSettingHelper.FoldersState state = UserSettingHelper.loadFoldersState();
         if (state == null) {
-            String visible = AppContext.getProperty("cuba.foldersPane.new.visible");
-            nowVisible = visible != null ? Boolean.parseBoolean(visible) : false;
-            String paneWidthStr = AppContext.getProperty("cuba.foldersPane.width");
-            horizontalSplitPos = paneWidthStr == null ? DEFAULT_PANE_WIDTH : Integer.parseInt(paneWidthStr);
+            WebConfig config = ConfigProvider.getConfig(WebConfig.class);
+            visible = config.getFoldersPaneVisibleByDefault();
+            horizontalSplitPos = config.getFoldersPaneDefaultWidth();
             verticalSplitPos = DEFAULT_VERT_SPLIT_POS;
         } else {
-            nowVisible = state.visible;
+            visible = state.visible;
             horizontalSplitPos = state.horizontalSplit;
             verticalSplitPos = state.verticalSplit;
         }
 
-        showFolders(nowVisible);
+        showFolders(visible);
 
         MenuBar.MenuItem firstItem = getFirstMenuItem(menuBar);
 
@@ -121,7 +118,6 @@ public class FoldersPane extends VerticalLayout {
                 firstItem);
 
         menuBar.setStyleName("folders-pane");
-
     }
 
     protected MenuBar.Command createMenuBarCommand() {

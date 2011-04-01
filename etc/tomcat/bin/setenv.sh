@@ -1,5 +1,7 @@
 CATALINA_OPTS="-Xmx512m -XX:MaxPermSize=128m -Dfile.encoding=UTF-8"
 
+CATALINA_OPTS="$CATALINA_OPTS -Dlog4j.configuration=file:/${catalina.home}/conf/log4j.xml -Dlog4j.configuratorClass=com.haulmont.cuba.core.sys.logging.CubaLog4jConfigurator"
+
 CATALINA_OPTS="$CATALINA_OPTS -Dcom.sun.management.jmxremote"
 
 #CATALINA_OPTS="$CATALINA_OPTS \

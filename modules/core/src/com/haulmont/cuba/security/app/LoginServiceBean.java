@@ -12,7 +12,6 @@ package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.security.global.LoginServiceRemote;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,8 +23,8 @@ import java.util.Locale;
 /**
  * Service providing methods for user login/logout to the middleware
  */
-@ManagedBean(LoginServiceRemote.NAME)
-public class LoginServiceBean implements LoginService, LoginServiceRemote
+@ManagedBean(LoginService.NAME)
+public class LoginServiceBean implements LoginService
 {
     private Log log = LogFactory.getLog(LoginServiceBean.class);
 
@@ -50,9 +49,9 @@ public class LoginServiceBean implements LoginService, LoginServiceRemote
         }
     }
 
-    public UserSession loginActiveDirectory(String login, Locale locale) throws LoginException {
+    public UserSession loginTrusted(String login, String password, Locale locale) throws LoginException {
         try {
-            return loginWorker.loginActiveDirectory(login, locale);
+            return loginWorker.loginTrusted(login, password, locale);
         } catch (Exception e) {
             log.error("Login error", e);
             if (e instanceof LoginException)

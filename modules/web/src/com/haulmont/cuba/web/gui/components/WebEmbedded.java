@@ -2,7 +2,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.app.UIComponentsConfig;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Embedded;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
@@ -54,8 +54,7 @@ public class WebEmbedded
         } else {
             File file = new File(src);
             if (!file.isAbsolute()) {
-                UIComponentsConfig config = ConfigProvider.getConfig(UIComponentsConfig.class);
-                String root = config.getResourcesRoot();
+                String root = ConfigProvider.getConfig(WebConfig.class).getResourcesRoot();
                 if (root != null) {
                     if (!root.endsWith(File.separator)) {
                         root += File.separator;

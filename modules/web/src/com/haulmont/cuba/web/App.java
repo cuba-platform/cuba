@@ -13,7 +13,6 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.GlobalUtils;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.UserSession;
@@ -134,7 +133,7 @@ public abstract class App extends Application
         this.response = response;
         cookies.updateCookies(request);
         if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
-            String paramName = ConfigProvider.getConfig(GlobalConfig.class).getTestModeParamName();
+            String paramName = ConfigProvider.getConfig(WebConfig.class).getTestModeParamName();
             testModeRequest = (paramName == null || request.getParameter(paramName) != null); 
         }
     }
@@ -172,6 +171,11 @@ public abstract class App extends Application
         return app;
     }
 
+    public static String generateWebWindowName() {
+        Double d = Math.random() * 10000;
+        return "win" + d.intValue();
+    }
+
     /**
      * Can be overridden in descendant to add application-specific exception handlers
      */
@@ -200,7 +204,7 @@ public abstract class App extends Application
     }
 
     /**
-     * DEPRECATED: use cuba.ViewsConfig.xml application property in web.xml
+     * DEPRECATED: use cuba.viewsConfig application property
      */
     @Deprecated
     protected void deployViews() {
@@ -260,7 +264,7 @@ public abstract class App extends Application
     protected String createWindowName(boolean main) {
         String name = main ? AppContext.getProperty("cuba.web.mainWindowName") : AppContext.getProperty("cuba.web.loginWindowName");
         if (StringUtils.isBlank(name))
-            name = GlobalUtils.generateWebWindowName();
+            name = generateWebWindowName();
         return name;
     }
 

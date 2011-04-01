@@ -16,15 +16,14 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.chile.core.model.utils.MethodsCache;
-import com.haulmont.cuba.core.app.ResourceRepositoryService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -95,7 +94,6 @@ public class PermissionConfig {
         }
     }
 
-    private ResourceRepositoryService repository;
     private ClientType clientType;
     private String messagePack;
     private Locale locale;
@@ -105,7 +103,6 @@ public class PermissionConfig {
     private Tree<Target> specific;
 
     public PermissionConfig() {
-        this.repository = ServiceLocator.lookup(ResourceRepositoryService.JNDI_NAME);
         this.clientType = AppConfig.getInstance().getClientType();
         this.messagePack = AppConfig.getInstance().getMessagesPack();
     }
@@ -181,7 +178,9 @@ public class PermissionConfig {
         specific = new Tree<Target>(root);
 
         final String configPath = AppContext.getProperty(AppConfig.PERMISSION_CONFIG_XML_PROP);
-        String xml = repository.getResAsString(configPath);
+        String xml = ScriptingProvider.getResourceAsString(configPath);
+        if (xml == null)
+            throw new RuntimeException("Config file not found: " + configPath);
         compileSpecific(xml, root);
     }
 
@@ -192,7 +191,10 @@ public class PermissionConfig {
         for (Element element : Dom4j.elements(rootElem, "include")) {
             String fileName = element.attributeValue("file");
             if (!StringUtils.isBlank(fileName)) {
-                String incXml = repository.getResAsString(fileName);
+                String incXml = ScriptingProvider.getResourceAsString(fileName);
+                if (incXml == null)
+                    throw new RuntimeException("Config file not found: " + fileName);
+
                 compileSpecific(incXml, root);
             }
         }

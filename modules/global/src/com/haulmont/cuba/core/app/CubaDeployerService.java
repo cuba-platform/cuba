@@ -6,12 +6,21 @@
  * Author: Konstantin Krivopustov
  * Created: 25.08.2009 12:49:45
  *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.global.MetadataBuildInfo;
+import com.haulmont.cuba.core.global.View;
+
+import java.util.List;
+import java.util.Map;
+
 /**
  * Service interface to the CubaDeployer MBean
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 public interface CubaDeployerService {
 
@@ -23,4 +32,10 @@ public interface CubaDeployerService {
     String getReleaseNumber();
 
     String getReleaseTimestamp();
+
+    MetadataBuildInfo getMetadataBuildInfo();
+
+    List<View> getViews();
+
+    Map<String, String> getReplacedEntities();
 }

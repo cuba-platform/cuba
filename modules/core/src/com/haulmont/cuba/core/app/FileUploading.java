@@ -13,6 +13,7 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.TimeProvider;
 
 import javax.annotation.ManagedBean;
@@ -41,7 +42,7 @@ public class FileUploading extends ManagementBean implements FileUploadingApi, F
     public UUID saveFile(byte[] data) throws FileStorageException {
         checkNotNull(data, "No file content");
 
-        String tempDir = ConfigProvider.getConfig(ServerConfig.class).getServerTempDir();
+        String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
         UUID uuid = UUID.randomUUID();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
@@ -76,7 +77,7 @@ public class FileUploading extends ManagementBean implements FileUploadingApi, F
             throws FileStorageException {
         if (stream == null)
             throw new NullPointerException("Null input stream for save file");
-        String tempDir = ConfigProvider.getConfig(ServerConfig.class).getServerTempDir();
+        String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
         UUID uuid = UUID.randomUUID();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
@@ -113,7 +114,7 @@ public class FileUploading extends ManagementBean implements FileUploadingApi, F
 
     public UUID createEmptyFile() throws FileStorageException {
         UUID uuid = UUID.randomUUID();
-        String tempDir = ConfigProvider.getConfig(ServerConfig.class).getServerTempDir();
+        String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
         try {
@@ -134,7 +135,7 @@ public class FileUploading extends ManagementBean implements FileUploadingApi, F
 
     public UUID getNewDescriptor() throws FileStorageException {
         UUID uuid = UUID.randomUUID();
-        String tempDir = ConfigProvider.getConfig(ServerConfig.class).getServerTempDir();
+        String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
         try {

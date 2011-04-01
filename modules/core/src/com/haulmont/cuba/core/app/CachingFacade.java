@@ -48,8 +48,8 @@ public class CachingFacade implements CachingFacadeMBean {
     public void clearStorageTempDirectory() {
         try {
             FileUploadingApi uploadingApi = Locator.lookup(FileUploadingApi.NAME);
-            ServerConfig config = ConfigProvider.getConfig(ServerConfig.class);
-            File dir = new File(config.getServerTempDir());
+            GlobalConfig config = ConfigProvider.getConfig(GlobalConfig.class);
+            File dir = new File(config.getTempDir());
             File[] files = dir.listFiles();
             Date currentDate = TimeProvider.currentTimestamp();
             for (File file : files) {

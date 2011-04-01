@@ -10,14 +10,14 @@
  */
 package com.haulmont.cuba.web.controllers;
 
-import com.haulmont.cuba.core.app.FileStorageService;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.sys.WebSecurityUtils;
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
@@ -36,6 +36,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Iterator;
@@ -43,6 +44,8 @@ import java.util.UUID;
 
 @Controller
 public class FileDownloadController {
+
+    private static final String CORE_FILE_DOWNLOAD_CONTEXT = "/remoting/download";
 
     private static Log log = LogFactory.getLog(FileDownloadController.class);
 
@@ -86,15 +89,14 @@ public class FileDownloadController {
             response.setHeader("Content-Disposition", (attach ? "attachment" : "inline")
                     + "; filename=" + fileName);
 
-            FileStorageService fss = ServiceLocator.lookup(FileStorageService.NAME);
             InputStream is = null;
             ServletOutputStream os = null;
             try {
-                is = fss.openFileInputStream(fd);
+                is = openInputStream(userSession, fileId);
                 os = response.getOutputStream();
                 IOUtils.copy(is, os);
                 os.flush();
-            } catch (FileStorageException e) {
+            } catch (Exception e) {
                 log.error("Unable to download file", e);
                 error(response);
             } finally {
@@ -107,6 +109,12 @@ public class FileDownloadController {
         }
 
         return null;
+    }
+
+    private InputStream openInputStream(UserSession userSession, UUID fileId) throws IOException {
+        String connectionUrl = ConfigProvider.getConfig(WebConfig.class).getConnectionUrl();
+        URL url = new URL(connectionUrl + CORE_FILE_DOWNLOAD_CONTEXT + "?s=" + userSession.getId() + "&f=" + fileId.toString());
+        return url.openStream();
     }
 
 

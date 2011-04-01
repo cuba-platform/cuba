@@ -22,8 +22,9 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -38,17 +39,9 @@ import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.MenuBar;
 import com.haulmont.cuba.web.toolkit.ui.RichNotification;
 import com.vaadin.data.Property;
-import com.vaadin.event.*;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.*;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Embedded;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.SplitPanel;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -58,7 +51,6 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
-import java.util.List;
 
 /**
  * Main application window.
@@ -523,7 +515,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                     private static final long serialVersionUID = -2017737447316558248L;
 
                     public void buttonClick(Button.ClickEvent event) {
-                        String name = GlobalUtils.generateWebWindowName();
+                        String name = App.generateWebWindowName();
                         open(new ExternalResource(App.getInstance().getURL() + name), "_new");
                     }
                 }

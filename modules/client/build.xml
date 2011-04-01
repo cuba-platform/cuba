@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<project xmlns:ext="http://haulmont.com/schema/ant"
+	name="cuba-client" default="build-module" basedir=".">
+
+	<property name="project.dir" location="../.."/>
+	<property name="root.dir" location="${project.dir}/.."/>
+	
+	<property name="module.name" value="client"/>
+	<property name="module.jar" value="cuba-client.jar"/>
+
+    <property file="${root.dir}/build-script/build.properties"/>
+    <import file="${root.dir}/build-script/build-inc-mod.xml"/>
+
+    <fileset id="bali-jars" dir="${root.dir}/bali/build">
+        <include name="*.jar"/>
+    </fileset>
+
+    <fileset id="chile-jars" dir="${root.dir}/chile/build">
+        <include name="*.jar"/>
+    </fileset>
+
+    <path id="compile-cp">
+        <fileset refid="common-lib-fs"/>
+        <fileset refid="bali-jars"/>
+        <fileset refid="chile-jars"/>
+        <pathelement location="${prod.out.dir}/global"/>
+    </path>
+
+    <path id="test-compile-cp">
+        <fileset refid="common-lib-fs"/>
+        <fileset refid="test-lib-fs"/>
+        <fileset refid="bali-jars"/>
+        <fileset refid="chile-jars"/>
+        <pathelement location="${prod.out.dir}/global"/>
+        <pathelement location="${prod.out.dir}/${module.name}"/>
+    </path>
+
+</project>

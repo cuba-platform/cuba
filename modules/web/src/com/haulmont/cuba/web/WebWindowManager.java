@@ -966,7 +966,7 @@ public class WebWindowManager extends WindowManager {
             com.haulmont.cuba.gui.ComponentsHelper.walkComponents(window, new ComponentVisitor() {
                 public void visit(com.haulmont.cuba.gui.components.Component component, String name) {
                     final String id = window.getId() + "." + name;
-                    if (ConfigProvider.getConfig(GlobalConfig.class).getAllowIdSuffix()) {
+                    if (ConfigProvider.getConfig(WebConfig.class).getAllowIdSuffix()) {
                         component.setDebugId(generateDebugId(id));
                     } else {
                         if (component.getId() != null) {
@@ -1019,7 +1019,7 @@ public class WebWindowManager extends WindowManager {
 
     public void setDebugId(Component component, String id) {
         if (app.isTestModeRequest()) {
-            if (ConfigProvider.getConfig(GlobalConfig.class).getAllowIdSuffix()) {
+            if (ConfigProvider.getConfig(WebConfig.class).getAllowIdSuffix()) {
                 component.setDebugId(generateDebugId(id));
             } else {
                 component.setDebugId(id);

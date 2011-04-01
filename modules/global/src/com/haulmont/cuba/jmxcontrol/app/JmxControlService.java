@@ -21,9 +21,9 @@ public interface JmxControlService {
 
     public List<ManagedBeanInfo> getManagedBeans();
 
-    public void loadAttributes(ManagedBeanInfo info);
+    public ManagedBeanInfo loadAttributes(ManagedBeanInfo info);
 
-    public void loadAttributeValue(ManagedBeanAttribute attr);
+    public ManagedBeanAttribute loadAttributeValue(ManagedBeanAttribute attr);
 
     public void saveAttributeValue(ManagedBeanAttribute attr);
 

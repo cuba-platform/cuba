@@ -17,8 +17,11 @@ import groovy.lang.GroovyClassLoader;
 import groovy.util.GroovyScriptEngine;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
+import org.apache.commons.io.IOUtils;
 
+import javax.annotation.Nullable;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -31,14 +34,6 @@ public abstract class ScriptingProvider {
 
     private static ScriptingProvider getInstance() {
         return AppContext.getApplicationContext().getBean("cuba_ScriptingProvider", ScriptingProvider.class);
-    }
-
-    public static void addGroovyClassPath(String path) {
-        getInstance().doAddGroovyClassPath(path);
-    }
-
-    public static void addGroovyEvaluatorImport(Layer layer, String className) {
-        getInstance().doAddGroovyEvaluatorImport(layer, className);
     }
 
     public static <T> T evaluateGroovy(Layer layer, String text, Binding binding) {
@@ -63,8 +58,14 @@ public abstract class ScriptingProvider {
         return getInstance().doLoadClass(name);
     }
 
+    @Nullable
     public static InputStream getResourceAsStream(String name) {
         return getInstance().doGetResourceAsStream(name);
+    }
+
+    @Nullable
+    public static String getResourceAsString(String name) {
+        return getInstance().doGetResourceAsString(name);
     }
 
     public static ClassLoader getGroovyClassLoader() {
@@ -98,9 +99,29 @@ public abstract class ScriptingProvider {
         }
     }
 
+    @Nullable
     public InputStream doGetResourceAsStream(String name) {
         String s = name.startsWith("/") ? name.substring(1) : name;
         return doGetGroovyClassLoader().getResourceAsStream(s);
+    }
+
+    @Nullable
+    public String doGetResourceAsString(String name) {
+        InputStream stream = doGetResourceAsStream(name);
+        if (stream == null)
+            return null;
+
+        try {
+            return IOUtils.toString(stream, "UTF-8");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                //
+            }
+        }
     }
 
     protected static Binding createBinding(Map<String, Object> map) {
@@ -111,10 +132,6 @@ public abstract class ScriptingProvider {
 
         return binding;
     }
-
-    public abstract void doAddGroovyClassPath(String path);
-
-    public abstract void doAddGroovyEvaluatorImport(Layer layer, String str);
 
     public abstract <T> T doEvaluateGroovy(Layer layer, String text, Binding binding);
 

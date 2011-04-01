@@ -14,13 +14,15 @@ import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.Map;
+
 /**
  * Entry point to the metadata functionality.<br>
  * Use static methods.
  */
 public abstract class MetadataProvider
 {
-    public static final String METADATA_XML = "cuba.MetadataXml";
+    public static final String METADATA_XML = "cuba.metadataConfig";
     protected static final String DEFAULT_METADATA_XML = "cuba-metadata.xml";
 
     private static MetadataProvider getInstance() {
@@ -41,6 +43,10 @@ public abstract class MetadataProvider
         return getInstance().__getViewRepository();
     }
 
+    public static Map<Class, Class> getReplacedEntities() {
+        return getInstance().__getReplacedEntities();
+    }
+
     /**
      * Get the location of non-persistent metadata descriptor
      */
@@ -53,4 +59,5 @@ public abstract class MetadataProvider
 
     protected abstract Session __getSession();
     protected abstract ViewRepository __getViewRepository();
+    protected abstract Map<Class,Class> __getReplacedEntities();
 }

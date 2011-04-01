@@ -46,7 +46,7 @@
         <java classpathref="enhance-cp"
               classname="org.apache.openjpa.enhance.PCEnhancer" failonerror="true">
             <arg value="-properties"/>
-            <arg value="${project.dir}/modules/core/src/cuba-persistence.xml"/>
+            <arg value="${project.dir}/modules/core/src-conf/cuba/cuba-persistence.xml"/>
             <!--<jvmarg line="-Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y"/>-->
         </java>
         <!-- TODO: move all transient entities to global and uncomment -->

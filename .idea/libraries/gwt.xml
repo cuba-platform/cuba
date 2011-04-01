@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="gwt">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../lib/gwt" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-dev.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/gwt/gwt-user.jar!/" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/../lib/gwt" recursive="false" />
+  </library>
+</component>

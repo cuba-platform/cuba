@@ -5,7 +5,6 @@
     lookupComponent="permissions"
 >
     <metadataContext>
-        <deployViews name="/com/haulmont/cuba/web/app.views.xml"/>
         <deployViews name="/com/haulmont/cuba/web/app/ui/security/role/role.views.xml"/>
     </metadataContext>
 

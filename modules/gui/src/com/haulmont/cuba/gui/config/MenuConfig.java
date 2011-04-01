@@ -21,6 +21,8 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -63,20 +65,31 @@ public class MenuConfig implements Serializable
         return Collections.unmodifiableList(rootItems);
     }
 
-    public void loadConfig(String xml) {
+    public void loadConfig(Element rootElem) {
         rootItems.clear();
+        loadMenuItems(rootElem, null);
+    }
 
-        SAXReader reader = new SAXReader();
+    public void loadConfig(InputStream stream) {
         Document doc;
         try {
+            SAXReader reader = new SAXReader();
+            doc = reader.read(stream);
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        }
+        loadConfig(doc.getRootElement());
+    }
+
+    public void loadConfig(String xml) {
+        Document doc;
+        try {
+            SAXReader reader = new SAXReader();
             doc = reader.read(new StringReader(xml));
         } catch (DocumentException e) {
             throw new RuntimeException(e);
         }
-
-        Element rootElem = doc.getRootElement();
-
-        loadMenuItems(rootElem, null);
+        loadConfig(doc.getRootElement());
     }
 
     private void loadMenuItems(Element parentElement, MenuItem parentItem) {

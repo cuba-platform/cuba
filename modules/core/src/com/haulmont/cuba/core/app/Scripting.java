@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -25,7 +26,7 @@ public class Scripting implements ScriptingMBean {
     private static Log log = LogFactory.getLog(Scripting.class);
 
     public String getRootPath() {
-        return ConfigProvider.getConfig(ServerConfig.class).getServerConfDir();
+        return ConfigProvider.getConfig(GlobalConfig.class).getConfDir();
     }
 
     public String runGroovyScript(String scriptName) {

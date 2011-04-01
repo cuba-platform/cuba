@@ -10,12 +10,12 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
-import com.haulmont.chile.core.annotations.NamePattern;
-import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -30,9 +30,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -41,16 +41,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ViewRepository
 {
-    public interface Listener {
-        void viewStored(View view);
-    }
-
     private List<String> readFileNames = new LinkedList<String>();
 
     private Map<MetaClass, Map<String, View>> storage =
             new ConcurrentHashMap<MetaClass, Map<String, View>>();
-
-    private List<Listener> listeners = new ArrayList<Listener>();
 
     private static Log log = LogFactory.getLog(ViewRepository.class);
 
@@ -95,14 +89,17 @@ public class ViewRepository
         } else
             throw new UnsupportedOperationException("Unsupported default view: " + name);
 
-        storeView(metaClass, view, true);
+        storeView(metaClass, view);
         return view;
     }
 
     public void deployViews(String resourceUrl) {
         if (!readFileNames.contains(resourceUrl)) {
             log.debug("Deploying views config: " + resourceUrl);
-            deployViews(ScriptingProvider.getResourceAsStream(resourceUrl));
+            InputStream stream = ScriptingProvider.getResourceAsStream(resourceUrl);
+            if (stream == null)
+                throw new IllegalArgumentException("View configuration resource not found: " + resourceUrl);
+            deployViews(stream);
             readFileNames.add(resourceUrl);
         }
     }
@@ -181,7 +178,7 @@ public class ViewRepository
             view = new View(metaClass.getJavaClass(), viewName);
         }
         loadView(rootElem, viewElem, view);
-        storeView(metaClass, view, true);
+        storeView(metaClass, view);
 
         return view;
     }
@@ -260,7 +257,7 @@ public class ViewRepository
         }
     }
 
-    public void storeView(MetaClass metaClass, View view, boolean distribute) {
+    public void storeView(MetaClass metaClass, View view) {
         Map<String, View> views = storage.get(metaClass);
         if (views == null) {
             views = new ConcurrentHashMap<String, View>();
@@ -268,12 +265,6 @@ public class ViewRepository
 
         views.put(view.getName(), view);
         storage.put(metaClass, views);
-
-        if (distribute) {
-            for (Listener listener : listeners) {
-                listener.viewStored(view);
-            }
-        }
     }
 
     public List<View> getAll() {
@@ -282,9 +273,5 @@ public class ViewRepository
             list.addAll(viewMap.values());
         }
         return list;
-    }
-
-    public void addListener(Listener listener) {
-        listeners.add(listener);
     }
 }

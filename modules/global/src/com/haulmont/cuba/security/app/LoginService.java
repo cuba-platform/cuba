@@ -10,23 +10,44 @@
  */
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.security.global.LoginServiceRemote;
 import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.Locale;
 
 /**
- * Local interface to LoginServiceBean
+ * Interface to LoginServiceBean
  */
-public interface LoginService extends LoginServiceRemote
+public interface LoginService
 {
+    String NAME = "cuba_LoginService";
+
     /**
-     * Login using password stored in ActiveDirectory. For local clients (e.g. web) only.
+     * Login using user name and password
      * @param login login name
+     * @param password encrypted password
      * @param locale client locale
      * @return created user session
      * @throws LoginException in case of unsuccessful login
      */
-    UserSession loginActiveDirectory(String login, Locale locale) throws LoginException;
+    UserSession login(String login, String password, Locale locale) throws LoginException;
+
+    /**
+     * Login using user name and trusted password
+     *
+     *
+     * @param login login name
+     * @param password
+     * @param locale client locale
+     * @return created user session
+     * @throws LoginException in case of unsuccessful login
+     */
+    UserSession loginTrusted(String login, String password, Locale locale) throws LoginException;
+
+    void logout();
+
+    UserSession substituteUser(User substitutedUser);
+
+    void ping();
 }

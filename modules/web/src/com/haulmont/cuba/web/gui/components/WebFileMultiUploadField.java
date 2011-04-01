@@ -16,7 +16,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.ValueProvider;
 import com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload;
-import com.haulmont.cuba.web.app.UIComponentsConfig;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
 import com.vaadin.ui.ClientWidget;
 
@@ -49,10 +49,8 @@ public class WebFileMultiUploadField extends
         String caption = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "Upload");
         MultiUpload uploader = new MultiUpload(caption);
 
-        UIComponentsConfig config = ConfigProvider.getConfig(UIComponentsConfig.class);
-
         componentParams.getParameters().put("caption", "");
-        componentParams.getParameters().put("fileSizeLimit", config.getMaxUploadSizeMb().toString() + " MB");
+        componentParams.getParameters().put("fileSizeLimit", ConfigProvider.getConfig(WebConfig.class).getMaxUploadSizeMb().toString() + " MB");
 
         uploader.setValueProvider(componentParams);
         uploader.setWidth("90px");

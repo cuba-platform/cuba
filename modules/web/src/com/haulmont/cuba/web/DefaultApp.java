@@ -49,7 +49,7 @@ public class DefaultApp extends App implements ConnectionListener {
     public void init() {
         log.debug("Initializing application");
 
-        AppConfig.getInstance().addGroovyImport(PersistenceHelper.class);
+        //todo AppConfig.getInstance().addGroovyImport(PersistenceHelper.class);
 
         ApplicationContext appContext = getContext();
         appContext.addTransactionListener(this);

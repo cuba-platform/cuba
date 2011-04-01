@@ -262,9 +262,11 @@ public class JavaClassLoader extends URLClassLoader {
             if (!"".equalsIgnoreCase(directory)) {
                 sb.append(directory).append(PATH_SEPARATOR);
                 File _dir = new File(directory);
-                for (File file : _dir.listFiles()) {
-                    if (file.getName().endsWith(".jar")) {
-                        sb.append(file.getAbsolutePath()).append(PATH_SEPARATOR);
+                if (_dir.exists()) {
+                    for (File file : _dir.listFiles()) {
+                        if (file.getName().endsWith(".jar")) {
+                            sb.append(file.getAbsolutePath()).append(PATH_SEPARATOR);
+                        }
                     }
                 }
             }

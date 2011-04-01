@@ -6,10 +6,6 @@
         caption="msg://reportEditor"
         >
 
-    <metadataContext>
-        <deployViews name="/com/haulmont/cuba/web/app/ui/report/report.views.xml"/>
-    </metadataContext>
-
     <dsContext>
         <datasource
                 id="reportDs"

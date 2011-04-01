@@ -28,6 +28,7 @@
         <fileset refid="jdbc-lib-fs"/>
         <fileset refid="bali-jars"/>
         <fileset refid="chile-jars"/>
+        <pathelement location="${prod.out.dir}/shared-lib"/>
         <pathelement location="${prod.out.dir}/global"/>
         <pathelement location="${prod.out.dir}/deploymarker"/>
     </path>
@@ -38,6 +39,7 @@
         <fileset refid="test-lib-fs"/>
         <fileset refid="bali-jars"/>
         <fileset refid="chile-jars"/>
+        <pathelement location="${prod.out.dir}/shared-lib"/>
         <pathelement location="${prod.out.dir}/global"/>
         <pathelement location="${prod.out.dir}/${module.name}"/>
     </path>
@@ -53,11 +55,11 @@
             <include name="**/*"/>
         </jar>
 
-        <mkdir dir="${build.dir}/conf"/>
-        <copy todir="${build.dir}/conf">
+        <mkdir dir="${build.dir}/core-conf"/>
+        <copy todir="${build.dir}/core-conf">
             <fileset dir="src-conf" includes="**/*"/>
         </copy>
-        <copy todir="${build.dir}/conf">
+        <copy todir="${build.dir}/core-conf">
             <fileset dir="fonts" includes="**/*"/>
         </copy>
     </target>

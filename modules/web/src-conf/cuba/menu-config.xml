@@ -1,0 +1,21 @@
+<menu-config xmlns="http://www.haulmont.com/schema/cuba/gui/menu-config.xsd">
+    <menu id="administration">
+        <item id="sec$User.browse"/>
+        <item id="sec$Group.browse"/>
+        <item id="sec$Role.browse"/>
+        <item id="sec$UserSessionEntity.browse"/>
+        <item id="core$FileDescriptor.browse"/>
+        <item id="core$LockInfo.browse"/>
+        <item id="jmxcontrol$DisplayMbeans"/>
+        <item id="core$Entity.restore"/>
+    </menu>
+    <menu id="reports">
+        <item id="report$Report.browse"/>
+        <item id="report$Report.run"/>
+    </menu>
+    <menu id="help">
+        <item id="settings"/>
+        <item id="feedback"/>
+        <item id="logWindow"/>
+    </menu>
+</menu-config>

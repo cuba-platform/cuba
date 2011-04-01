@@ -10,8 +10,7 @@
  */
 package com.haulmont.cuba.gui.config;
 
-import com.haulmont.cuba.core.app.ResourceRepositoryService;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,6 +19,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.List;
@@ -38,21 +38,11 @@ public class WindowConfig
 
     private static Log log = LogFactory.getLog(WindowConfig.class);
 
-    public void loadConfig(String xml) {
-        SAXReader reader = new SAXReader();
-        Document doc;
-        try {
-            doc = reader.read(new StringReader(xml));
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        }
-
-        Element rootElem = doc.getRootElement();
+    public void loadConfig(Element rootElem) {
         for (Element element : (List<Element>) rootElem.elements("include")) {
             String fileName = element.attributeValue("file");
             if (!StringUtils.isBlank(fileName)) {
-                ResourceRepositoryService repository = ServiceLocator.lookup(ResourceRepositoryService.NAME);
-                String incXml = repository.getResAsString(fileName);
+                String incXml = ScriptingProvider.getResourceAsString(fileName);
                 loadConfig(incXml);
             }
         }
@@ -65,6 +55,28 @@ public class WindowConfig
             WindowInfo windowInfo = new WindowInfo(id, element);
             screens.put(id, windowInfo);
         }
+    }
+
+    public void loadConfig(InputStream stream) {
+        Document doc;
+        try {
+            SAXReader reader = new SAXReader();
+            doc = reader.read(stream);
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        }
+        loadConfig(doc.getRootElement());
+    }
+
+    public void loadConfig(String xml) {
+        Document doc;
+        try {
+            SAXReader reader = new SAXReader();
+            doc = reader.read(new StringReader(xml));
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        }
+        loadConfig(doc.getRootElement());
     }
 
     /**

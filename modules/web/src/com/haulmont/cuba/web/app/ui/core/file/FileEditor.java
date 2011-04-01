@@ -78,7 +78,7 @@ public class FileEditor extends AbstractEditor {
 
                     FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
                     File file = uploadService.getFile(uploadField.getFileId());
-                    sizeLab.setValue(file.length());
+                    sizeLab.setValue(String.valueOf(file.length()));
 
                     createDateLab.setValue(TimeProvider.currentTimestamp());
                     okBtn.setEnabled(true);

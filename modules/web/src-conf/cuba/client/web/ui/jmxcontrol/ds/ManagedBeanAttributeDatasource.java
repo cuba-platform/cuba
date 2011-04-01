@@ -54,7 +54,7 @@ public class ManagedBeanAttributeDatasource extends CollectionDatasourceImpl<Man
         if (mbean != null) {
             JmxControlService jcs = ServiceLocator.lookup(JmxControlService.NAME);
             try {
-                jcs.loadAttributes(mbean);
+                mbean = jcs.loadAttributes(mbean);
             }
             catch (JmxControlException e) {
                 log.error(e);

@@ -11,121 +11,36 @@
 package com.haulmont.cuba.core.sys.logging;
 
 import com.haulmont.cuba.core.sys.AppContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.lang.BooleanUtils;
-
-import java.util.UUID;
-
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
+import org.apache.commons.logging.Log;
 import org.springframework.context.ApplicationContext;
 
-public class CubaLogWrapper implements Log {
+import java.util.UUID;
 
-    private final Log delegate;
-
-    private ThreadLocal<Boolean> inLogging = new ThreadLocal<Boolean>();
+public class CubaLogWrapper extends AbstractLogWrapper {
 
     public CubaLogWrapper(Log delegate) {
-        this.delegate = delegate;
+        super(delegate);
     }
 
-    private String getCurrentUser() {
-        String prop = AppContext.getProperty("cuba.logUserName");
-        if (Boolean.valueOf(prop)) {
-            if (BooleanUtils.isTrue(inLogging.get()))
-                return "";
-
-            inLogging.set(true);
-            try {
-                UUID sessionId = ServerSecurityUtils.getSessionId();
-                if (sessionId != null) {
-                    ApplicationContext context = AppContext.getApplicationContext();
-                    if (context != null) {
-                        UserSessionManager usm = context.getBean(UserSessionManager.NAME, UserSessionManager.class);
-                        UserSession session = usm.findSession(sessionId);
-                        if (session != null) {
-                            return "[" + session.getUser().getLogin() + "] ";
-                        }
+    @Override
+    protected String getUserInfo() {
+        String logUserName = AppContext.getProperty("cuba.logUserName");
+        if (logUserName == null || logUserName.equals("") || Boolean.valueOf(logUserName)) {
+            UUID sessionId = ServerSecurityUtils.getSessionId();
+            if (sessionId != null) {
+                ApplicationContext context = AppContext.getApplicationContext();
+                if (context != null) {
+                    UserSessionManager usm = context.getBean(UserSessionManager.NAME, UserSessionManager.class);
+                    UserSession session = usm.findSession(sessionId);
+                    if (session != null) {
+                        return session.getUser().getLogin();
                     }
                 }
-            } finally {
-                inLogging.set(null);
             }
         }
-        return "";
-    }
-
-    public boolean isDebugEnabled() {
-        return delegate.isDebugEnabled();
-    }
-
-    public boolean isErrorEnabled() {
-        return delegate.isErrorEnabled();
-    }
-
-    public boolean isFatalEnabled() {
-        return delegate.isFatalEnabled();
-    }
-
-    public boolean isInfoEnabled() {
-        return delegate.isInfoEnabled();
-    }
-
-    public boolean isTraceEnabled() {
-        return delegate.isTraceEnabled();
-    }
-
-    public boolean isWarnEnabled() {
-        return delegate.isWarnEnabled();
-    }
-
-    public void trace(Object o) {
-        delegate.trace(getCurrentUser() + o);
-    }
-
-    public void trace(Object o, Throwable throwable) {
-        delegate.trace(getCurrentUser() + o, throwable);
-    }
-
-    public void debug(Object o) {
-        delegate.debug(getCurrentUser() + o);
-    }
-
-    public void debug(Object o, Throwable throwable) {
-        delegate.debug(getCurrentUser() + o, throwable);
-    }
-
-    public void info(Object o) {
-        delegate.info(getCurrentUser() + o);
-    }
-
-    public void info(Object o, Throwable throwable) {
-        delegate.info(getCurrentUser() + o, throwable);
-    }
-
-    public void warn(Object o) {
-        delegate.warn(getCurrentUser() + o);
-    }
-
-    public void warn(Object o, Throwable throwable) {
-        delegate.warn(getCurrentUser() + o, throwable);
-    }
-
-    public void error(Object o) {
-        delegate.error(getCurrentUser() + o);
-    }
-
-    public void error(Object o, Throwable throwable) {
-        delegate.error(getCurrentUser() + o, throwable);
-    }
-
-    public void fatal(Object o) {
-        delegate.fatal(getCurrentUser() + o);
-    }
-
-    public void fatal(Object o, Throwable throwable) {
-        delegate.fatal(getCurrentUser() + o, throwable);
+        return null;
     }
 }

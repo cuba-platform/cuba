@@ -13,12 +13,12 @@ package com.haulmont.cuba.gui;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.core.app.ResourceRepositoryService;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.config.MenuConfig;
-import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.PermissionConfig;
+import com.haulmont.cuba.gui.config.WindowConfig;
 
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,20 +30,20 @@ public class AppConfig
     public static final String IMPL_PROP = "cuba.AppConfig.impl";
     public static final String DEFAULT_IMPL = "com.haulmont.cuba.gui.AppConfig";
 
-    public static final String WINDOW_CONFIG_IMPL_PROP = "cuba.WindowConfig.impl";
-    public static final String WINDOW_CONFIG_XML_PROP = "cuba.WindowConfig.xml";
+    public static final String WINDOW_CONFIG_IMPL_PROP = "cuba.windowConfig.impl";
+    public static final String WINDOW_CONFIG_XML_PROP = "cuba.windowConfig";
     public static final String WINDOW_CONFIG_DEFAULT_IMPL = "com.haulmont.cuba.gui.config.WindowConfig";
 
-    public static final String MENU_CONFIG_IMPL_PROP = "cuba.MenuConfig.impl";
-    public static final String MENU_CONFIG_XML_PROP = "cuba.MenuConfig.xml";
+    public static final String MENU_CONFIG_IMPL_PROP = "cuba.menuConfig.impl";
+    public static final String MENU_CONFIG_XML_PROP = "cuba.menuConfig";
     public static final String MENU_CONFIG_DEFAULT_IMPL = "com.haulmont.cuba.gui.config.MenuConfig";
 
-    public static final String PERMISSION_CONFIG_IMPL_PROP = "cuba.PermissionConfig.impl";
-    public static final String PERMISSION_CONFIG_XML_PROP = "cuba.PermissionConfig.xml";
+    public static final String PERMISSION_CONFIG_IMPL_PROP = "cuba.permissionConfig.impl";
+    public static final String PERMISSION_CONFIG_XML_PROP = "cuba.permissionConfig";
     public static final String PERMISSION_CONFIG_DEFAULT_IMPL = "com.haulmont.cuba.gui.config.PermissionConfig";
 
-    public static final String CLIENT_TYPE_PROP = "cuba.AppConfig.clientType";
-    public static final String MESSAGES_PACK_PROP = "cuba.AppConfig.messagesPack";
+    public static final String CLIENT_TYPE_PROP = "cuba.appConfig.clientType";
+    public static final String MESSAGES_PACK_PROP = "cuba.appConfig.messagesPack";
     public static final String THEME_NAME_PROP = "cuba.AppConfig.themeName";
 
     protected static AppConfig instance;
@@ -103,13 +103,13 @@ public class AppConfig
      * by specific client implementation.
      */
     public MenuConfig getMenuConfig() {
-        // TODO KK: menu config instance must depend on user's locale, so we have to pass locale here
         if (menuConfig == null) {
-            ResourceRepositoryService repository = ServiceLocator.lookup(ResourceRepositoryService.NAME);
-
             menuConfig = createInstance(MENU_CONFIG_IMPL_PROP, MENU_CONFIG_DEFAULT_IMPL);
             final String path = AppContext.getProperty(MENU_CONFIG_XML_PROP);
-            menuConfig.loadConfig(repository.getResAsString(path));
+
+            String xml = ScriptingProvider.getResourceAsString(path);
+            if (xml != null)
+                menuConfig.loadConfig(xml);
         }
         return menuConfig;
     }
@@ -121,11 +121,12 @@ public class AppConfig
      */
     public WindowConfig getWindowConfig() {
         if (windowConfig == null) {
-            ResourceRepositoryService repository = ServiceLocator.lookup(ResourceRepositoryService.NAME);
-
             windowConfig = createInstance(WINDOW_CONFIG_IMPL_PROP, WINDOW_CONFIG_DEFAULT_IMPL);
             final String path = AppContext.getProperty(WINDOW_CONFIG_XML_PROP);
-            windowConfig.loadConfig(repository.getResAsString(path));
+
+            String xml = ScriptingProvider.getResourceAsString(path);
+            if (xml != null)
+                windowConfig.loadConfig(xml);
         }
         return windowConfig;
     }
@@ -151,13 +152,4 @@ public class AppConfig
         }
         return messagesPackage;
      }
-
-
-    public void addGroovyImport(Class aClass) {
-        ScriptingProvider.addGroovyEvaluatorImport(ScriptingProvider.Layer.GUI, aClass.getName());
-    }
-
-    public void addGroovyImport(String className) {
-        ScriptingProvider.addGroovyEvaluatorImport(ScriptingProvider.Layer.GUI, className);
-    }
 }

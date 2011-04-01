@@ -44,20 +44,6 @@ public interface GlobalConfig extends Config {
     String getLogDir();
 
     /**
-     * Support e-mail. All feedback mails will be sent on this address.
-     */
-    @Property("cuba.supportEmail")
-    @DefaultString("cubasupport@haulmont.com")
-    String getSupportEmail();
-
-    /**
-     * System ID. Use for identification. (Support emails)
-     */
-    @Property("cuba.systemId")
-    @DefaultString("CUBA")
-    String getSystemID();
-
-    /**
      * Temporary files directory. Place app-specific temp files under this directory.
      * Does not end with "/"
      */
@@ -72,25 +58,25 @@ public interface GlobalConfig extends Config {
     String getDataDir();
 
     /**
+     * Support e-mail. All feedback mails will be sent on this address.
+     */
+    @Property("cuba.supportEmail")
+    @DefaultString("cubasupport@haulmont.com")
+    String getSupportEmail();
+
+    /**
+     * System ID. Use for identification. (Support emails)
+     */
+    @Property("cuba.systemId")
+    @DefaultString("CUBA")
+    String getSystemID();
+
+    /**
      * Used to support automatic testing
      */
     @Property("cuba.testMode")
     @DefaultBoolean(false)
     boolean getTestMode();
-
-    /**
-     * Used to support automatic testing. Contains a name of request parameter
-     * that marks a request from an automatic testing tool, for example jMeter. 
-     */
-    @Property("cuba.testModeParamName")
-    String getTestModeParamName();
-
-    /**
-     * Allows generating of unique suffixes for Ids in testing mode
-     */
-    @Property("cuba.allowIdSuffix")
-    @DefaultBoolean(false)
-    boolean getAllowIdSuffix();
 
     /**
      * Enable class and resource loading by Groovy
@@ -107,6 +93,12 @@ public interface GlobalConfig extends Config {
     @DefaultInt(1800)
     int getUserSessionExpirationTimeoutSec();
 
+    /**
+     * Password to use LoginService.loginTrusted() method
+     */
+    @Property("cuba.trustedClientPassword")
+    @DefaultString("")
+    String getTrustedClientPassword();
 
     @Property("cuba.collectionDatasourceDbSortEnabled")
     @DefaultBoolean(true)

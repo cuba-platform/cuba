@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 
 import javax.management.*;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Proxy;
 import java.util.*;
 
 @Service(JmxControlService.NAME)
@@ -70,7 +72,7 @@ public class JmxControlServiceBean implements JmxControlService {
         return type;
     }
 
-    public void loadAttributes(ManagedBeanInfo mbinfo) {
+    public ManagedBeanInfo loadAttributes(ManagedBeanInfo mbinfo) {
         try {
             MBeanServerConnection connection = getConnection();
             ObjectName name = new ObjectName(mbinfo.getObjectName());
@@ -93,7 +95,7 @@ public class JmxControlServiceBean implements JmxControlService {
                 if (mba.getReadable())
                     try {
                         Object value = connection.getAttribute(name, mba.getName());
-                        mba.setValue(value);
+                        setSerializableValue(mba, value);
                     }
                     catch (Exception e) {
                         log.error(e);
@@ -105,25 +107,21 @@ public class JmxControlServiceBean implements JmxControlService {
             }
             Collections.sort(attrs, new AttributeComparator());
             mbinfo.setAttributes(attrs);
+            return mbinfo;
         }
-        catch (IOException e) {
-            throw new JmxControlException(e);
-        }
-        catch (IntrospectionException e) {
-            throw new JmxControlException(e);
-        }
-        catch (ReflectionException e) {
-            throw new JmxControlException(e);
-        }
-        catch (InstanceNotFoundException e) {
-            throw new JmxControlException(e);
-        }
-        catch (MalformedObjectNameException e) {
+        catch (Exception e) {
             throw new JmxControlException(e);
         }
     }
 
-    public void loadAttributeValue(ManagedBeanAttribute attr) {
+    private void setSerializableValue(ManagedBeanAttribute mba, Object value) {
+        if (value instanceof Serializable && !(value instanceof Proxy))
+            mba.setValue(value);
+        else if (value != null)
+            mba.setValue(value.toString());
+    }
+
+    public ManagedBeanAttribute loadAttributeValue(ManagedBeanAttribute attr) {
         try {
             MBeanServerConnection connection = getConnection();
 
@@ -138,7 +136,8 @@ public class JmxControlServiceBean implements JmxControlService {
                     log.error(e);
                     value = e.getMessage();
                 }
-            attr.setValue(value);
+            setSerializableValue(attr, value);
+            return attr;
         }
         catch (MalformedObjectNameException e) {
             throw new JmxControlException(e);
@@ -154,25 +153,7 @@ public class JmxControlServiceBean implements JmxControlService {
             Attribute a = new Attribute(attr.getName(), attr.getValue());
             connection.setAttribute(name, a);
         }
-        catch (IOException e) {
-            throw new JmxControlException(e);
-        }
-        catch (ReflectionException e) {
-            throw new JmxControlException(e);
-        }
-        catch (InstanceNotFoundException e) {
-            throw new JmxControlException(e);
-        }
-        catch (MalformedObjectNameException e) {
-            throw new JmxControlException(e);
-        }
-        catch (AttributeNotFoundException e) {
-            throw new JmxControlException(e);
-        }
-        catch (MBeanException e) {
-            throw new JmxControlException(e);
-        }
-        catch (InvalidAttributeValueException e) {
+        catch (Exception e) {
             throw new JmxControlException(e);
         }
     }

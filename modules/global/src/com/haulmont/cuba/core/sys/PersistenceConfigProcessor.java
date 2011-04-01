@@ -24,8 +24,13 @@ import java.util.*;
 
 public class PersistenceConfigProcessor {
 
+    private String baseDir = "";
     private List<String> sourceFileNames;
     private String outFileName;
+
+    public void setBaseDir(String baseDir) {
+        this.baseDir = baseDir;
+    }
 
     public void setSourceFiles(List<String> files) {
         sourceFileNames = files;
@@ -108,6 +113,9 @@ public class PersistenceConfigProcessor {
             puElem.addElement("class").setText(className);
         }
 
+        File outFile = new File(outFileName);
+        outFile.getParentFile().mkdirs();
+
         OutputStream os = null;
         try {
             os = new FileOutputStream(outFileName);
@@ -159,21 +167,14 @@ public class PersistenceConfigProcessor {
     }
 
     private Document getDocument(String fileName) {
-        Document doc;
-        InputStream is = null;
-        try {
-            if (!fileName.startsWith("/"))
-                fileName = "/" + fileName;
-            is = getClass().getResourceAsStream(fileName);
-            doc = Dom4j.readDocument(is);
-        } finally {
-            if (is != null)
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    //
-                }
-        }
+        if (!fileName.startsWith("/"))
+            fileName = "/" + fileName;
+
+        File file = new File(baseDir, fileName);
+        if (!file.exists())
+            throw new IllegalArgumentException("File not found: " + file.getAbsolutePath());
+
+        Document doc = Dom4j.readDocument(file);
         return doc;
     }
 }

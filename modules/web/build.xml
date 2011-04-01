@@ -26,6 +26,7 @@
         <fileset refid="bali-jars"/>
         <fileset refid="chile-jars"/>
         <pathelement location="${prod.out.dir}/global"/>
+        <pathelement location="${prod.out.dir}/client"/>
         <pathelement location="${prod.out.dir}/gui"/>
         <pathelement location="${prod.out.dir}/web-war"/>
     </path>
@@ -37,6 +38,7 @@
         <fileset refid="bali-jars"/>
         <fileset refid="chile-jars"/>
         <pathelement location="${prod.out.dir}/global"/>
+        <pathelement location="${prod.out.dir}/client"/>
         <pathelement location="${prod.out.dir}/gui"/>
         <pathelement location="${prod.out.dir}/${module.name}"/>
         <pathelement location="${test.out.dir}/core"/>
@@ -59,8 +61,8 @@
             </manifest>
             <include name="**/*"/>
         </jar>
-        <mkdir dir="${build.dir}/conf"/>
-        <copy todir="${build.dir}/conf">
+        <mkdir dir="${build.dir}/web-conf"/>
+        <copy todir="${build.dir}/web-conf">
             <fileset dir="src-conf" includes="**/*"/>
         </copy>
     </target>

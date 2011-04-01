@@ -67,7 +67,6 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
     private ClusterManagerAPI clusterManager;
 
     public UserSessions() {
-        AppContext.setProperty("cuba.logUserName", "true");
     }
 
     @Inject

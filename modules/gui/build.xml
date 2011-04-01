@@ -25,6 +25,7 @@
         <fileset refid="bali-jars"/>
         <fileset refid="chile-jars"/>
         <pathelement location="${prod.out.dir}/global"/>
+        <pathelement location="${prod.out.dir}/client"/>
     </path>
 
     <path id="test-compile-cp">
@@ -34,6 +35,7 @@
         <fileset refid="bali-jars"/>
         <fileset refid="chile-jars"/>
         <pathelement location="${prod.out.dir}/global"/>
+        <pathelement location="${prod.out.dir}/client"/>
         <pathelement location="${test.out.dir}/core"/>
         <pathelement location="${prod.out.dir}/${module.name}"/>
     </path>

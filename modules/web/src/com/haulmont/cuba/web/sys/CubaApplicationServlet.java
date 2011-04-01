@@ -10,10 +10,9 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.cuba.core.app.CubaReleaseService;
+import com.haulmont.cuba.core.app.CubaDeployerService;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.GlobalUtils;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.Browser;
@@ -28,7 +27,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.util.*;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 public class CubaApplicationServlet extends ApplicationServlet {
@@ -87,7 +89,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
             for (int i = 0; i < parts.length; i++) {
                 sb.append(parts[i]);
                 if (parts[i].equals(contextName)) {
-                    sb.append("/").append(GlobalUtils.generateWebWindowName());
+                    sb.append("/").append(App.generateWebWindowName());
                     break;
                 }
                 if (i < parts.length - 1)
@@ -413,7 +415,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
 
     private static String releaseTimestamp() {
         if (releaseTimestamp == null) {
-            CubaReleaseService service = ServiceLocator.lookup(CubaReleaseService.NAME);
+            CubaDeployerService service = ServiceLocator.lookup(CubaDeployerService.NAME);
             String timestamp = service.getReleaseTimestamp();
             timestamp = timestamp.replaceAll("[^0-9]", "");
             releaseTimestamp = timestamp;

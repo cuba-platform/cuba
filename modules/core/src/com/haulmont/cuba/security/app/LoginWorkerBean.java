@@ -11,12 +11,15 @@
 package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -103,7 +106,13 @@ public class LoginWorkerBean implements LoginWorker
         }
     }
 
-    public UserSession loginActiveDirectory(String login, Locale locale) throws LoginException {
+    public UserSession loginTrusted(String login, String password, Locale locale) throws LoginException {
+        String trustedClientPassword = ConfigProvider.getConfig(GlobalConfig.class).getTrustedClientPassword();
+        if (StringUtils.isBlank(trustedClientPassword) || !trustedClientPassword.equals(password))
+            throw new LoginException(
+                    String.format(MessageProvider.getMessage(getClass(), "LoginException.InvalidLoginOrPassword", locale), login)
+            );
+
         Transaction tx = Locator.createTransaction();
         try {
             User user = loadUser(login, null, locale);

@@ -26,39 +26,11 @@ import com.haulmont.cuba.core.config.defaults.DefaultString;
 public interface ServerConfig extends Config {
 
     /**
-     * Config directory. Root of all not deployable application configuration and logic.
-     * Does not end with "/"
-     */
-    @Property("cuba.confDir")
-    String getServerConfDir();
-
-    /**
      * DB scripts directory.
      * Does not end with "/"
      */
     @Property("cuba.dbDir")
-    String getServerDbDir();
-
-    /**
-     * Logs directory. Place app-specific log files here.
-     * Does not end with "/"
-     */
-    @Property("cuba.logDir")
-    String getServerLogDir();
-
-    /**
-     * Temporary files directory. Place app-specific temp files under this directory.
-     * Does not end with "/"
-     */
-    @Property("cuba.tempDir")
-    String getServerTempDir();
-
-    /**
-     * Data directory. Place persistent app-specific data files under this directory.
-     * Does not end with "/"
-     */
-    @Property("cuba.dataDir")
-    String getServerDataDir();
+    String getDbDir();
 
     /**
      * User session expiration timeout in seconds.

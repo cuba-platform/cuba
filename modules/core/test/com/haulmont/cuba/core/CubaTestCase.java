@@ -11,27 +11,30 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.AppContextLoader;
 import com.haulmont.cuba.core.sys.PersistenceConfigProcessor;
 import com.haulmont.cuba.testsupport.TestContext;
 import com.haulmont.cuba.testsupport.TestDataSource;
 import com.haulmont.cuba.testsupport.TestTransactionManager;
 import com.haulmont.cuba.testsupport.TestUserTransaction;
 import junit.framework.TestCase;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
+import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import javax.naming.NamingException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class CubaTestCase extends TestCase
 {
@@ -45,8 +48,8 @@ public abstract class CubaTestCase extends TestCase
             System.setProperty("cuba.unitTestMode", "true");
 
             initDataSources();
-            initPersistenceConfig();
             initAppProperties();
+            initPersistenceConfig();
             initAppContext();
             initTxManager();
 
@@ -61,42 +64,41 @@ public abstract class CubaTestCase extends TestCase
     }
 
     protected void initPersistenceConfig() {
-        PersistenceConfigProcessor processor = new PersistenceConfigProcessor();
-        processor.setSourceFiles(getPersistenceSourceFiles());
+        String configProperty = AppContext.getProperty(AppContextLoader.PERSISTENCE_CONFIG);
+        StrTokenizer tokenizer = new StrTokenizer(configProperty);
 
-        File currentDir = new File(System.getProperty("user.dir"));
-        processor.setOutputFile(currentDir + "/out/test/core/persistence.xml");
+        PersistenceConfigProcessor processor = new PersistenceConfigProcessor();
+
+        processor.setBaseDir(AppContext.getProperty("cuba.confDir"));
+        processor.setSourceFiles(tokenizer.getTokenList());
+
+        String dataDir = AppContext.getProperty("cuba.dataDir");
+        processor.setOutputFile(dataDir + "/persistence.xml");
 
         processor.create();
     }
 
-    protected List<String> getPersistenceSourceFiles() {
-        List<String> list = new ArrayList<String>();
-        list.add("cuba-persistence.xml");
-        return list;
-    }
-
     protected void initAppProperties() {
-        File currentDir = new File(System.getProperty("user.dir"));
-        File rootDir = currentDir.getParentFile();
-        File serverDir = new File(rootDir, "tomcat");
+        final Properties properties = new Properties();
 
-        System.setProperty("catalina.home", serverDir.getAbsolutePath());
-
-        final Properties properties;
-        InputStream stream = getTestAppProperties();
-        try {
-            properties = new Properties();
-            properties.load(stream);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
+        List<String> fileNames = getTestAppProperties();
+        for (String fileName : fileNames) {
+            File file = new File(System.getProperty("user.dir") + fileName);
+            InputStream stream = null;
             try {
-                stream.close();
+                stream = new FileInputStream(file);
+                properties.load(stream);
             } catch (IOException e) {
-                //
+                throw new RuntimeException(e);
+            } finally {
+                try {
+                    if (stream != null) stream.close();
+                } catch (IOException e) {
+                    //
+                }
             }
         }
+
         StrSubstitutor substitutor = new StrSubstitutor(new StrLookup() {
             @Override
             public String lookup(String key) {
@@ -108,24 +110,43 @@ public abstract class CubaTestCase extends TestCase
             String value = substitutor.replace(properties.getProperty((String) key));
             AppContext.setProperty((String) key, value);
         }
+
+        File dir;
+        dir = new File(AppContext.getProperty("cuba.logDir"));
+        dir.mkdirs();
+        dir = new File(AppContext.getProperty("cuba.tempDir"));
+        dir.mkdirs();
+        dir = new File(AppContext.getProperty("cuba.dataDir"));
+        dir.mkdirs();
     }
 
-    protected InputStream getTestAppProperties() {
-        return CubaTestCase.class.getResourceAsStream("/test-app.properties");
+    protected List<String> getTestAppProperties() {
+        String[] files = {
+                "/modules/core/src-conf/app.properties",
+                "/modules/core/test/test-app.properties",
+        };
+        return Arrays.asList(files);
     }
 
     protected void initAppContext() {
-        List<String> contextFiles = getTestAppContextFiles();
-        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext(
-                contextFiles.toArray(new String[contextFiles.size()]));
+        String configProperty = AppContext.getProperty(AppContextLoader.SPRING_CONTEXT_CONFIG);
+
+        String baseDir = AppContext.getProperty("cuba.confDir");
+
+        StrTokenizer tokenizer = new StrTokenizer(configProperty);
+        String[] tokenArray = tokenizer.getTokenArray();
+        List<String> locations = new ArrayList<String>(tokenArray.length + 1);
+        for (int i = 0; i < tokenArray.length; i++) {
+            locations.add(baseDir + "/" + tokenArray[i]);
+        }
+        locations.add(getTestSpringConfig());
+
+        ApplicationContext appContext = new FileSystemXmlApplicationContext(locations.toArray(new String[locations.size()]));
         AppContext.setApplicationContext(appContext);
     }
 
-    protected List<String> getTestAppContextFiles() {
-        List<String> files = new ArrayList<String>();
-        files.add("cuba-spring.xml");
-        files.add("test-spring.xml");
-        return files;
+    protected String getTestSpringConfig() {
+        return "/modules/core/test/test-spring.xml";
     }
 
     protected void initTxManager() throws NamingException {

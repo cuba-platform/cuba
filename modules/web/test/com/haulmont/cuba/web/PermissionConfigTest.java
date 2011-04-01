@@ -25,8 +25,8 @@ public class PermissionConfigTest extends TestCase
     @Override
     protected void setUp() throws Exception {
         AppContext.setProperty(AppConfig.PERMISSION_CONFIG_XML_PROP, "cuba/permission-config.xml");
-        AppContext.setProperty(AppConfig.MENU_CONFIG_XML_PROP, "cuba/client/web/menu-config.xml");
-        AppContext.setProperty(AppConfig.WINDOW_CONFIG_XML_PROP, "cuba/client/web/screen-config.xml");
+        AppContext.setProperty(AppConfig.MENU_CONFIG_XML_PROP, "cuba/menu-config.xml");
+        AppContext.setProperty(AppConfig.WINDOW_CONFIG_XML_PROP, "cuba/screen-config.xml");
         AppContext.setProperty(AppConfig.WINDOW_CONFIG_IMPL_PROP, "com.haulmont.cuba.web.WindowConfig");
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
         AppContext.setProperty(AppConfig.MESSAGES_PACK_PROP, "com.haulmont.cuba.web");

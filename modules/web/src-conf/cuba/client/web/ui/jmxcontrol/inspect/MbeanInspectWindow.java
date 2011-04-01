@@ -105,7 +105,7 @@ public class MbeanInspectWindow extends AbstractEditor {
         Table attrTable = (Table) getComponent("attributes");
 
         JmxControlService service = ServiceLocator.lookup(JmxControlService.NAME);
-        service.loadAttributeValue(attribute);
+        attribute = service.loadAttributeValue(attribute);
         attrTable.getDatasource().updateItem(attribute);
     }
 

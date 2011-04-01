@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/modules/admin-console-war/admin-console-war.iml" filepath="$PROJECT_DIR$/modules/admin-console-war/admin-console-war.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/client/client.iml" filepath="$PROJECT_DIR$/modules/client/client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/core/core.iml" filepath="$PROJECT_DIR$/modules/core/core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/core-war/core-war.iml" filepath="$PROJECT_DIR$/modules/core-war/core-war.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/global/global.iml" filepath="$PROJECT_DIR$/modules/global/global.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/gui/gui.iml" filepath="$PROJECT_DIR$/modules/gui/gui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/root.iml" filepath="$PROJECT_DIR$/root.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/shared-lib/shared-lib.iml" filepath="$PROJECT_DIR$/modules/shared-lib/shared-lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/web/web.iml" filepath="$PROJECT_DIR$/modules/web/web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/web-war/web-war.iml" filepath="$PROJECT_DIR$/modules/web-war/web-war.iml" />
+    </modules>
+  </component>
+</project>
+

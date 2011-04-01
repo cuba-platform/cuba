@@ -1,0 +1,25 @@
+<component name="libraryTable">
+  <library name="server">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../lib/server" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../lib/server/src/cas-client-core-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/server/src/spring-tx-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/server/src/spring-orm-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/server/src/xpp3_min-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/server/src/ooo-bootstrapconnector-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/server/src/jgroups-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/server/src/spring-jdbc-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/server/src/spring-context-support-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/server/src/commons-compress-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/server/src/commons-beanutils-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/server/src/commons-fileupload-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/server/src/commons-digester-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/server/vaadin.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/server/src/spring-webmvc-sources.jar!/" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/../lib/server" recursive="false" />
+  </library>
+</component>

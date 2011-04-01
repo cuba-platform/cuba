@@ -14,14 +14,18 @@
     <property name="chile.build.dir" location="${root.dir}/chile/build"/>
     <property name="build.dir" location="build"/>
     <property name="target.dir" location="target"/>
-    <property name="deploy.dir" location="${root.dir}/tomcat/webapps"/>
+    <property name="deploy.dir" location="${root.dir}/tomcat"/>
 
     <property name="app.name" value="cuba"/>
+    <property name="coreapp.name" value="cuba-core"/>
 
 	<target name="delegate">
 		<property name="target" value="noop" />
+		<ant dir="modules/shared-lib" target="${target}" inheritAll="false"/>
         <ant dir="modules/global" target="${target}" inheritAll="false"/>
-		<ant dir="modules/core" target="${target}" inheritAll="false"/>
+        <ant dir="modules/core" target="${target}" inheritAll="false"/>
+		<ant dir="modules/core-war" target="${target}" inheritAll="false"/>
+        <ant dir="modules/client" target="${target}" inheritAll="false"/>
         <ant dir="modules/gui" target="${target}" inheritAll="false"/>
         <ant dir="modules/web-war" target="${target}" inheritAll="false"/>
         <ant dir="modules/web" target="${target}" inheritAll="false"/>
@@ -37,9 +41,6 @@
 	<target name="install-lib">
 		<!-- tomcat -->
 		<ext:install-tomcat version="${tomcat.version}" toDir="${tomcat.dir}"/>
-        <copy todir="${tomcat.dir}">
-            <fileset dir="etc/tomcat" includes="**/*"/>
-        </copy>
         <!-- common libs -->
         <ext:install-lib groupId="antlr" artifactId="antlr" version="${antlr.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="org.antlr" artifactId="antlr-runtime" version="${antlr-runtime.version}" toDir="${lib.common.dir}"/>
@@ -61,6 +62,7 @@
         <ext:install-lib groupId="org.springframework" artifactId="spring-aop" version="${springframework.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="org.springframework" artifactId="spring-asm" version="${springframework.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="org.springframework" artifactId="spring-expression" version="${springframework.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="org.springframework" artifactId="spring-web" version="${springframework.version}" toDir="${lib.common.dir}"/>
 
         <ext:install-lib groupId="xerces" artifactId="xercesImpl" version="${xercesImpl.version}" toDir="${lib.common.dir}"/>
         <!--<ext:install-lib name="jaxen" version="${jaxen.version}" toDir="${lib.common.dir}"/>-->
@@ -88,7 +90,6 @@
         <ext:install-lib groupId="jfree" artifactId="jcommon" version="${jcommon.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib groupId="jfree" artifactId="jfreechart" version="${jfreechart.version}" toDir="${lib.server.dir}"/>
 
-        <ext:install-lib groupId="org.springframework" artifactId="spring-web" version="${springframework.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib groupId="org.springframework" artifactId="spring-webmvc" version="${springframework.version}" toDir="${lib.server.dir}"/>
 
         <ext:install-lib groupId="org.mybatis" artifactId="mybatis" version="${mybatis.version}" toDir="${lib.server.dir}"/>
@@ -148,69 +149,105 @@
 	</target>
 
     <target name="target" depends="build">
-        <property name="webapp.dir" value="${target.dir}/${app.name}"/>
+
+        <!-- core-war -->
+
+        <property name="coreapp.dir" value="${target.dir}/webapps/${coreapp.name}"/>
+
+        <mkdir dir="${coreapp.dir}"/>
+        <copy todir="${coreapp.dir}">
+            <fileset dir="${build.dir}/core-war" includes="**/*"/>
+        </copy>
+
+        <copy todir="${coreapp.dir}/WEB-INF/lib">
+            <fileset dir="${bali.build.dir}" includes="*.jar"/>
+            <fileset dir="${chile.build.dir}" includes="*.jar"/>
+            <fileset dir="${build.dir}">
+                <include name="cuba-global.jar"/>
+                <include name="cuba-core.jar"/>
+            </fileset>
+        </copy>
+
+        <!-- core-conf -->
+
+        <mkdir dir="${target.dir}/conf/${coreapp.name}"/>
+        <copy todir="${target.dir}/conf/${coreapp.name}">
+            <fileset dir="${build.dir}/core-conf" includes="**/*"/>
+        </copy>
+
+        <!-- web-war -->
+
+        <property name="webapp.dir" value="${target.dir}/webapps/${app.name}"/>
 
         <mkdir dir="${webapp.dir}"/>
         <copy todir="${webapp.dir}">
             <fileset dir="${build.dir}/web-war" includes="**/*"/>
         </copy>
 
-        <mkdir dir="${webapp.dir}/WEB-INF/conf"/>
-        <copy todir="${webapp.dir}/WEB-INF/conf">
-            <fileset dir="${build.dir}/conf" includes="**/*"/>
-        </copy>
-
-        <property name="webapp.dir" value="${target.dir}/${app.name}/WEB-INF/lib"/>
         <copy todir="${webapp.dir}/WEB-INF/lib">
             <fileset dir="${bali.build.dir}" includes="*.jar"/>
             <fileset dir="${chile.build.dir}" includes="*.jar"/>
             <fileset dir="${build.dir}">
-                <include name="*.jar"/>
-                <exclude name="cuba-test.jar"/>
-                <exclude name="web-toolkit.jar"/>
+                <include name="cuba-global.jar"/>
+                <include name="cuba-client.jar"/>
+                <include name="cuba-gui.jar"/>
+                <include name="cuba-web.jar"/>
             </fileset>
+        </copy>
+
+        <!-- web-conf -->
+
+        <mkdir dir="${target.dir}/conf/${app.name}"/>
+        <copy todir="${target.dir}/conf/${app.name}">
+            <fileset dir="${build.dir}/web-conf" includes="**/*"/>
+        </copy>
+
+        <!-- shared-lib -->
+
+        <mkdir dir="${target.dir}/shared/lib"/>
+        <copy todir="${target.dir}/shared/lib">
+            <fileset dir="${build.dir}" includes="cuba-shared-lib.jar"/>
+        </copy>
+
+        <!-- fonts -->
+
+        <mkdir dir="${target.dir}/shared/fonts"/>
+        <copy todir="${target.dir}/shared/fonts">
+            <fileset dir="${build.dir}/core-conf/cuba/fonts" includes="**/*"/>
+        </copy>
+
+    </target>
+
+    <target name="deploy" depends="target">
+        <copy todir="${tomcat.dir}">
+            <fileset dir="etc/tomcat" includes="**/*"/>
+        </copy>
+
+        <copy todir="${deploy.dir}">
+            <fileset dir="${target.dir}">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+
+        <mkdir dir="${deploy.dir}/shared/lib"/>
+        <copy todir="${deploy.dir}/shared/lib">
             <fileset dir="${lib.common.dir}">
                 <include name="*.jar"/>
+                <!--<exclude name="log4j.jar"/>-->
             </fileset>
             <fileset dir="${lib.server.dir}">
                 <include name="*.jar"/>
                 <exclude name="servlet-api.jar"/>
             </fileset>
         </copy>
-    </target>
 
-    <target name="deploy" depends="target">
-        <copy todir="${deploy.dir}">
-            <fileset dir="${target.dir}">
-                <include name="**/*"/>
-            </fileset>
-        </copy>
-        <copy todir="${root.dir}/tomcat/lib">
+        <copy todir="${deploy.dir}/lib">
             <fileset dir="${lib.jdbc.dir}">
-                <include name="hsqldb-${hsqldb.version}.jar"/>
+                <include name="hsqldb.jar"/>
             </fileset>
         </copy>
     </target>
 	
-    <target name="deploy-conf">
-        <mkdir dir="${build.dir}/conf"/>
-        <copy todir="${build.dir}/conf">
-            <fileset dir="modules/web/src-conf" includes="**/*"/>
-        </copy>
-
-        <copy todir="${target.dir}/${app.name}/WEB-INF/conf">
-            <fileset dir="${build.dir}/conf" includes="**/*"/>
-        </copy>
-
-        <copy todir="${deploy.dir}/${app.name}/WEB-INF/conf">
-            <fileset dir="${target.dir}/${app.name}/WEB-INF/conf" includes="**/*"/>
-        </copy>
-        <condition property="do.clear.caches">
-            <istrue value="${enable.clear.caches}"/>
-        </condition>
-        <antcall target="clear-caches"/>
-    </target>
-
     <target name="clear-caches" if="do.clear.caches">
         <jmx:open host="localhost" port="7777" username="" password=""/>
         <jmx:invoke name="app.cuba:service=CachingFacade" operation="clearMessagesCache"/>
