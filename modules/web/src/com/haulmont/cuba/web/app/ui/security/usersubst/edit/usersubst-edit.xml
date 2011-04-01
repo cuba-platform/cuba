@@ -46,7 +46,7 @@
                     <row>
                         <label value="msg://substUser"/>
                         <lookupField id="substUser" datasource="subst" property="substitutedUser"
-                                     required="true" optionsDatasource="users" requiredMessage="msg://substUserMsg"/>
+                                     required="true" optionsDatasource="users" requiredMessage="msg://substUserMsg" width="${167}"/>
                     </row>
                     <row>
                         <label value="msg://endDate"/>
