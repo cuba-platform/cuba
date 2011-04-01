@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
@@ -192,13 +193,23 @@ public class ReportHelper {
         };
     }
 
-    private static void openRunReportScreen(final Window window, final String paramAlias, final Object paramValue, String javaClassName, ReportType reportType) {
+    private static void openRunReportScreen(final Window window, final String paramAlias, final Object paramValue,
+                                            String javaClassName, ReportType reportType) {
         openRunReportScreen(window, paramAlias, paramValue, javaClassName, reportType, null);
     }
 
-    private static void openRunReportScreen(final Window window, final String paramAlias, final Object paramValue, String javaClassName, ReportType reportType, final String name) {
+    private static void openRunReportScreen(final Window window, final String paramAlias, final Object paramValue,
+                                            String javaClassName, ReportType reportType, final String name) {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("javaClassName", javaClassName);
+
+        String metaClass;
+        try {
+            metaClass = MetadataProvider.getSession().getClass(Class.forName(javaClassName)).getName();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        params.put("entityMetaClass", metaClass);
         params.put("reportType", reportType.getId());
         params.put("screen", window.getId());
 

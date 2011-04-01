@@ -18,7 +18,7 @@
                 <filter>
                     <and>
                         <!--todo: move it to datasource-->
-                        <c join=",report$ReportInputParameter p">p.report.id = r.id and p.className like :param$javaClassName</c>
+                        <c join=",report$ReportInputParameter p">p.report.id = r.id and p.entityMetaClass like :param$entityMetaClass</c>
                         <c>r.reportType = :param$reportType</c>
                     </and>
                 </filter>
