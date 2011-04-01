@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
     <persistence-unit name="cuba" transaction-type="RESOURCE_LOCAL">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
@@ -14,6 +15,8 @@
         <class>com.haulmont.cuba.core.entity.AppFolder</class>
         <class>com.haulmont.cuba.core.entity.FtsQueue</class>
         <class>com.haulmont.cuba.core.entity.EntityStatistics</class>
+
+        <class>com.haulmont.cuba.core.entity.EmbeddableEntity</class>
 
         <class>com.haulmont.cuba.security.entity.User</class>
         <class>com.haulmont.cuba.security.entity.Role</class>

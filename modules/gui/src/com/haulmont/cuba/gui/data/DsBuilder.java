@@ -60,6 +60,8 @@ public class DsBuilder {
 
     private boolean softDeletion = true;
 
+    private boolean isEmbedded = true;
+
     private Datasource master;
 
     private String property;
@@ -159,6 +161,15 @@ public class DsBuilder {
         return this;
     }
 
+    public boolean isEmbedded() {
+        return isEmbedded;
+    }
+
+    public DsBuilder setEmbedded(boolean embedded) {
+        isEmbedded = embedded;
+        return this;
+    }
+
     public String getProperty() {
         return property;
     }
@@ -235,7 +246,10 @@ public class DsBuilder {
             }
         } else {
             if (dsClass == null) {
-                datasource = new PropertyDatasourceImpl(id, master, property);
+                if (isEmbedded)
+                    datasource = new EmbeddedDatasourceImpl(id, master, property);
+                else
+                    datasource = new PropertyDatasourceImpl(id, master, property);
             } else {
                 try {
                     Constructor constructor = dsClass.getConstructor(

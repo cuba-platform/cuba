@@ -21,8 +21,11 @@ import com.haulmont.cuba.gui.filter.QueryFilter;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import javax.persistence.Embedded;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Map;
 
 public class DsContextLoader {
 
@@ -268,10 +271,14 @@ public class DsContextLoader {
                     String.format("Can't find property '%s' in datasource '%s'", property, ds.getId()));
         }
 
+        Annotation embeddedAnnotation = metaProperty.getAnnotatedElement().getAnnotation(Embedded.class);
+        boolean isEmbedded = embeddedAnnotation != null;
+
         Datasource datasource = builder.reset()
                 .setId(id)
                 .setMaster(ds)
                 .setProperty(property)
+                .setEmbedded(isEmbedded)
                 .buildDatasource();
 
         loadDatasources(element, datasource);
