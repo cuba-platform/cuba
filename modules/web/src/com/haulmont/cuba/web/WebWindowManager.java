@@ -750,7 +750,7 @@ public class WebWindowManager extends WindowManager {
             }
         }
         ScreenHistoryEntity screenHistoryEntity = EntityFactory.create(ScreenHistoryEntity.class);
-        screenHistoryEntity.setCaption(caption);
+        screenHistoryEntity.setCaption(StringUtils.abbreviate(caption, 255));
         screenHistoryEntity.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
         screenHistoryEntity.setUrl(makeLink(window));
 
