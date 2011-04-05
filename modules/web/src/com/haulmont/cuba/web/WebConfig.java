@@ -31,6 +31,10 @@ public interface WebConfig extends Config
     @Property("cuba.connectionUrl")
     String getConnectionUrl();
 
+    @Property("cuba.useLocalServiceInvocation")
+    @DefaultBoolean(true)
+    boolean getUseLocalServiceInvocation();
+
     /** Default user login to place into login dialog */
     String getLoginDialogDefaultUser();
 

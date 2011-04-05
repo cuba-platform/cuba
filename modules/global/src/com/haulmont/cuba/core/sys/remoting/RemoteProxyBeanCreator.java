@@ -29,9 +29,9 @@ public class RemoteProxyBeanCreator implements BeanFactoryPostProcessor, Applica
 
     private Log log = LogFactory.getLog(RemoteProxyBeanCreator.class);
 
-    private Map<String, String> services;
+    protected Map<String, String> services;
 
-    private String baseUrl;
+    protected String baseUrl;
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     }

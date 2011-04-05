@@ -6,8 +6,6 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
-import com.haulmont.cuba.core.sys.AppContext;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 
 /**

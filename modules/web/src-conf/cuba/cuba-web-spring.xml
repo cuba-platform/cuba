@@ -30,7 +30,7 @@
 
     <!-- Remote stubs -->
 
-    <bean id="cuba_proxyCreator" class="com.haulmont.cuba.core.sys.remoting.RemoteProxyBeanCreator">
+    <bean id="cuba_proxyCreator" class="com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator">
         <property name="baseUrl" value="${cuba.connectionUrl}/remoting"/>
         <property name="remoteServices">
             <map>
