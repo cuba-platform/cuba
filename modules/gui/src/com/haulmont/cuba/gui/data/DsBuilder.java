@@ -1,17 +1,14 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 01.10.2010 17:49:04
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.data;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
+import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
@@ -59,8 +56,6 @@ public class DsBuilder {
     private String id;
 
     private boolean softDeletion = true;
-
-    private boolean isEmbedded = true;
 
     private Datasource master;
 
@@ -161,15 +156,6 @@ public class DsBuilder {
         return this;
     }
 
-    public boolean isEmbedded() {
-        return isEmbedded;
-    }
-
-    public DsBuilder setEmbedded(boolean embedded) {
-        isEmbedded = embedded;
-        return this;
-    }
-
     public String getProperty() {
         return property;
     }
@@ -246,6 +232,12 @@ public class DsBuilder {
             }
         } else {
             if (dsClass == null) {
+                boolean isEmbedded = false;
+                if (master != null) {
+                    MetaClass metaClass = master.getMetaClass();
+                    MetaProperty metaProperty = metaClass.getProperty(property);
+                    isEmbedded = MetadataHelper.isEmbedded(metaProperty);
+                }
                 if (isEmbedded)
                     datasource = new EmbeddedDatasourceImpl(id, master, property);
                 else

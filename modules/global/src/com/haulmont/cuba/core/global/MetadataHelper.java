@@ -17,10 +17,7 @@ import com.haulmont.cuba.core.entity.StandardEntity;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import javax.persistence.CascadeType;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -74,6 +71,10 @@ public abstract class MetadataHelper {
 
     public static boolean isPersistent(MetaProperty metaProperty) {
         return !metaProperty.getAnnotatedElement().isAnnotationPresent(com.haulmont.chile.core.annotations.MetaProperty.class);
+    }
+
+    public static boolean isEmbedded(MetaProperty metaProperty){
+        return metaProperty.getAnnotatedElement().getAnnotation(Embedded.class) != null;
     }
 
     public static Collection<MetaPropertyPath> getPropertyPaths(MetaClass metaClass) {

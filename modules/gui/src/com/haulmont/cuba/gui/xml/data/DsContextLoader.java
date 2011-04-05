@@ -1,17 +1,14 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 25.12.2008 11:14:58
- * $Id$
  */
 package com.haulmont.cuba.gui.xml.data;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.data.*;
@@ -271,14 +268,10 @@ public class DsContextLoader {
                     String.format("Can't find property '%s' in datasource '%s'", property, ds.getId()));
         }
 
-        Annotation embeddedAnnotation = metaProperty.getAnnotatedElement().getAnnotation(Embedded.class);
-        boolean isEmbedded = embeddedAnnotation != null;
-
         Datasource datasource = builder.reset()
                 .setId(id)
                 .setMaster(ds)
                 .setProperty(property)
-                .setEmbedded(isEmbedded)
                 .buildDatasource();
 
         loadDatasources(element, datasource);
