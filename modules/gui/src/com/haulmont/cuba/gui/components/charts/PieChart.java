@@ -12,4 +12,6 @@ package com.haulmont.cuba.gui.components.charts;
 
 /** Pie chart component */
 public interface PieChart extends Chart, Chart.ViewIn3D {
+
+    String NAME = "jfree@pieChart";
 }

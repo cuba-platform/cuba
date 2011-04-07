@@ -10,6 +10,9 @@
 package com.haulmont.cuba.gui.components;
 
 public interface TextArea extends Field {
+
+    String NAME = "textArea";
+
     int getRows();
     void setRows(int rows);
 

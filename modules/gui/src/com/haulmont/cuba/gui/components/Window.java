@@ -21,6 +21,8 @@ import java.util.Collection;
  */
 public interface Window extends Serializable, IFrame, Component.HasCaption, Component.ActionsHolder {
 
+    String NAME = "window";
+
     /** Standard actionId passed to {@link CloseListener}s after succesful commit */
     String COMMIT_ACTION_ID = "commit";
 
@@ -73,6 +75,8 @@ public interface Window extends Serializable, IFrame, Component.HasCaption, Comp
      */
     interface Editor extends Window {
 
+        String NAME = "window.editor";
+
         String WINDOW_COMMIT = "windowCommit";
         String WINDOW_COMMIT_AND_CLOSE = "windowCommitAndClose";
         String WINDOW_CLOSE = "windowClose";
@@ -116,6 +120,8 @@ public interface Window extends Serializable, IFrame, Component.HasCaption, Comp
      * Window intended for looking up entities
      */
     interface Lookup extends Window {
+
+        String NAME = "window.lookup";
 
         /** Component showing a list of entities to look up from it */
         Component getLookupComponent();

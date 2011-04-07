@@ -18,6 +18,8 @@ import java.io.Serializable;
 public interface FieldGroup extends Component, Component.BelongToFrame,
         Component.HasCaption, Component.Editable, Component.Expandable, Component.HasSettings {
 
+    String NAME = "fieldGroup";
+
     java.util.List<Field> getFields();
     Field getField(String id);
 

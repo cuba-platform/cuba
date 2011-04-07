@@ -20,6 +20,8 @@ public interface Tabsheet
     extends
         Component, Component.BelongToFrame, Component.Expandable
 {
+    String NAME = "tabsheet";
+
     Tab addTab(String name, Component component);
     Tab addLazyTab(String name, Element descriptor, ComponentLoader loader);
     void removeTab(String name);

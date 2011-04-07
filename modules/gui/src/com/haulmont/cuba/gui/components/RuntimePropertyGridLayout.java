@@ -16,6 +16,8 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 
 public interface RuntimePropertyGridLayout extends GridLayout, Component.HasCaption{
 
+    String NAME = "runtimePropertyGrid";
+
     Datasource getMainDs();
     void setMainDs(Datasource ds);
 

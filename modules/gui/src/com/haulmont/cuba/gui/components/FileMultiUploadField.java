@@ -16,6 +16,8 @@ import java.util.UUID;
 public interface FileMultiUploadField extends Component, Component.HasCaption, Component.Expandable,
         Component.BelongToFrame {
 
+    String NAME = "multiupload";
+
     int QUEUE_LIMIT_EXCEEDED = -100;
     int FILE_EXCEEDS_SIZE_LIMIT = -110;
     int ZERO_BYTE_FILE = -120;

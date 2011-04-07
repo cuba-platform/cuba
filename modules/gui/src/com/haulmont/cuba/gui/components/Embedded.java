@@ -14,6 +14,8 @@ import java.net.URL;
 public interface Embedded
         extends Component, Component.Expandable, Component.BelongToFrame
 {
+    String NAME = "embedded";
+
     void setMIMEType(String mt);
 
     void setSource(URL src);

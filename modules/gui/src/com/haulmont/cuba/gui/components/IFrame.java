@@ -26,6 +26,8 @@ import java.util.Map;
  */
 public interface IFrame extends Layout, Component.BelongToFrame, Component.HasLayout, Layout.Spacing, Layout.Margin {
 
+    String NAME = "iframe";
+
     WindowContext getContext();
 
     void setContext(WindowContext ctx);

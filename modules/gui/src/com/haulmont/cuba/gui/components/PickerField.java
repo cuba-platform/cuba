@@ -13,6 +13,9 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.WindowManager;
 
 public interface PickerField extends Field {
+
+    String NAME = "pickerField";
+
     CaptionMode getCaptionMode();
     void setCaptionMode(CaptionMode captionMode);
 

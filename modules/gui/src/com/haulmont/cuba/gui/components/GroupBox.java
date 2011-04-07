@@ -16,6 +16,8 @@ import java.io.Serializable;
 public interface GroupBox extends Layout, Component.HasCaption, Component.Expandable, Component.HasLayout,
         Component.BelongToFrame, Component.ActionsHolder {
 
+    String NAME = "groupBox";
+
     boolean isCollapsable();
     void setCollapsable(boolean collapsable);
 

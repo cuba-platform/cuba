@@ -10,6 +10,9 @@
 package com.haulmont.cuba.gui.components;
 
 public interface DateField extends Field {
+
+    String NAME = "dateField";
+
     public enum Resolution {
         MSEC,
         SEC,

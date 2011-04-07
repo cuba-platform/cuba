@@ -10,6 +10,8 @@ import com.haulmont.cuba.gui.autocomplete.Suggester;
  */
 public interface AutoCompleteTextField extends TextField {
 
+    String NAME = "autoCompleteTextField";
+
     void setSuggester(Suggester suggester);
 
     AutoCompleteSupport getAutoCompleteSupport();

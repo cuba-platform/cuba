@@ -14,4 +14,5 @@ public interface Button
         Component, Component.HasCaption, Component.BelongToFrame, Component.Expandable,
         Component.ActionOwner, Component.HasIcon
 {
+    String NAME = "button";
 }

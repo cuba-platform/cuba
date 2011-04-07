@@ -14,6 +14,8 @@ import java.util.Collection;
 
 public interface AccessControl extends QuasiComponent {
 
+    String NAME = "accessControl";
+
     void setRealComponents(Collection<Component> realComponents);
 
 }

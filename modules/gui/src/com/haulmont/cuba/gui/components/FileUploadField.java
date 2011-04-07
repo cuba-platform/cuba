@@ -15,6 +15,8 @@ public interface FileUploadField
         extends Component, Component.HasCaption, Component.Expandable,
                 Component.BelongToFrame
 {
+    String NAME = "upload";
+
     interface Listener {
         class Event {
             String filename;

@@ -11,6 +11,9 @@
 package com.haulmont.cuba.gui.components;
 
 public interface HtmlBoxLayout extends Layout, Component.Expandable, Component.BelongToFrame {
+
+    String NAME = "htmlbox";
+
     String getTemplateName();
     void setTemplateName(String templateName);
 }

@@ -12,4 +12,6 @@ package com.haulmont.cuba.gui.components.charts;
 
 /** Bar chart component */
 public interface BarChart extends Chart, Chart.ViewIn3D, Chart.HasOrientation {
+
+    String NAME = "jfree@barChart";
 }

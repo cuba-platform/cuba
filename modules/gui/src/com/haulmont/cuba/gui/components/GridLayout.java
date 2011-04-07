@@ -12,6 +12,8 @@ package com.haulmont.cuba.gui.components;
 public interface GridLayout 
         extends Component.Container, Layout.Spacing, Layout.Margin, Component.Expandable, Component.BelongToFrame
 {
+    String NAME = "grid";
+
     float getColumnExpandRatio(int col);
     void setColumnExpandRatio(int col, float ratio);
 

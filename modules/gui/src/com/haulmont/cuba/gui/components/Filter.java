@@ -17,6 +17,8 @@ public interface Filter
         extends Component.Container, Component.BelongToFrame,
         Component.HasXmlDescriptor, Component.HasSettings {
 
+    String NAME = "filter";
+
     CollectionDatasource getDatasource();
     void setDatasource(CollectionDatasource datasource);
 

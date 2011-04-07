@@ -14,6 +14,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 public interface RowsCount extends Component.BelongToFrame, Component.HasXmlDescriptor {
 
+    String NAME = "rowsCount";
+
     CollectionDatasource getDatasource();
     void setDatasource(CollectionDatasource datasource);
 }

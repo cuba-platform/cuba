@@ -11,7 +11,9 @@
 package com.haulmont.cuba.gui.components;
 
 public interface TimeField extends Field {
-    
+
+    String NAME = "timeField";
+
     boolean getShowSeconds();
     void setShowSeconds(boolean showSeconds);
 }

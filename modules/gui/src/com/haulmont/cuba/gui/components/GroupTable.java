@@ -14,6 +14,8 @@ import com.haulmont.cuba.gui.data.GroupInfo;
 
 public interface GroupTable extends Table {
 
+    String NAME = "groupTable";
+
     void groupBy(Object[] properties);
 
     void expandAll();

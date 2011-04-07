@@ -11,6 +11,8 @@ package com.haulmont.cuba.gui.components;
 
 public interface SplitPanel extends Component.Container, Component.Expandable, Component.BelongToFrame {
 
+    String NAME = "split";
+
     public static int ORIENTATION_VERTICAL = 0;
     public static int ORIENTATION_HORIZONTAL = 1;
 

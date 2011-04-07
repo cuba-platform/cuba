@@ -14,6 +14,8 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 public interface WidgetsTree extends Tree {
 
+    String NAME = "widgetsTree";
+
     void setWidgetBuilder(WidgetBuilder widgetBuilder);
 
     interface WidgetBuilder {

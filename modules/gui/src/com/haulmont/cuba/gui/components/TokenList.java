@@ -17,6 +17,8 @@ import java.util.Map;
 public interface TokenList extends Component, Component.BelongToFrame,
         Component.Expandable, Component.HasCaption, Component.Editable {
 
+    String NAME = "tokenList";
+
     String getCaptionProperty();
     void setCaptionProperty(String captionProperty);
 

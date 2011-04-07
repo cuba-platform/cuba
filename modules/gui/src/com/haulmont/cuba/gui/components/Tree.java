@@ -14,6 +14,8 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
 public interface Tree extends List
 {
+    String NAME = "tree";
+
     void expandTree();
     void expand(Object itemId);
 

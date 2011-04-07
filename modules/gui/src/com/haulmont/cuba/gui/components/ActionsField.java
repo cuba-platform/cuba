@@ -11,6 +11,9 @@
 package com.haulmont.cuba.gui.components;
 
 public interface ActionsField extends LookupField, Component.ActionsHolder{
+
+    String NAME = "actionsField";
+
     static String DROPDOWN = "dropdown";
     static String LOOKUP = "lookup";
     static String OPEN = "open";
