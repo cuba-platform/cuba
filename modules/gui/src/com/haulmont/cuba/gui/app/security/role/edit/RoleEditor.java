@@ -8,9 +8,11 @@ package com.haulmont.cuba.gui.app.security.role.edit;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -29,10 +31,6 @@ public class RoleEditor extends AbstractEditor {
     private PopupButton entityPermissionsGrant;
     private PopupButton propertyPermissionsGrant;
     private PopupButton specificPermissionsGrant;
-
-    public interface Companion {
-        void initTable(Table table);
-    }
 
     public RoleEditor(IFrame frame) {
         super(frame);
@@ -139,10 +137,52 @@ public class RoleEditor extends AbstractEditor {
 
     protected void initTableColumns(String tableId) {
         final Table table = getComponent(tableId);
-        Companion companion = getCompanion();
-        if (companion != null) {
-            companion.initTable(table);
-        }
+
+        table.addGeneratedColumn(
+                "target",
+                new Table.ColumnGenerator() {
+                    public Component generateCell(Table table, Object itemId) {
+                        Permission permission = (Permission) table.getDatasource().getItem(itemId);
+                        if (permission.getTarget() == null)
+                            return null;
+                        Label label = AppConfig.getFactory().createComponent(Label.NAME);
+                        if (permission.getType().equals(PermissionType.SCREEN)) {
+                            String id = permission.getTarget();
+                            String caption = MenuConfig.getMenuItemCaption(id.substring(id.indexOf(":") + 1));
+                            label.setValue(id + " (" + caption + ")");
+                        } else {
+                            label.setValue(permission.getTarget());
+                        }
+                        return label;
+                    }
+                }
+        );
+
+        table.addGeneratedColumn(
+                "value",
+                new Table.ColumnGenerator() {
+                    public Component generateCell(Table table, Object itemId) {
+                        Permission permission = (Permission) table.getDatasource().getItem(itemId);
+                        if (permission.getValue() == null)
+                            return null;
+                        Label label = AppConfig.getFactory().createComponent(Label.NAME);
+                        if (permission.getType().equals(PermissionType.ENTITY_ATTR)) {
+                            if (permission.getValue() == 0)
+                                label.setValue(frame.getMessage("PropertyPermissionValue.DENY"));
+                            else if (permission.getValue() == 1)
+                                label.setValue(frame.getMessage("PropertyPermissionValue.VIEW"));
+                            else
+                                label.setValue(frame.getMessage("PropertyPermissionValue.MODIFY"));
+                        } else {
+                            if (permission.getValue() == 0)
+                                label.setValue(frame.getMessage("PermissionValue.DENY"));
+                            else
+                                label.setValue(frame.getMessage("PermissionValue.ALLOW"));
+                        }
+                        return label;
+                    }
+                }
+        );
     }
 
     protected Set<PermissionConfig.Target> substract(

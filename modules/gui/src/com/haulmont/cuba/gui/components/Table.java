@@ -199,6 +199,7 @@ public interface Table
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     enum RowHeaderMode {
         NONE,
         ICON
@@ -206,12 +207,16 @@ public interface Table
 
     void setRowHeaderMode(RowHeaderMode mode);
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     interface StyleProvider {
         String getStyleName(Entity item, Object property);
         String getItemIcon(Entity item);
     }
 
     void setStyleProvider(StyleProvider styleProvider);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     enum PagingMode {
         PAGE,
@@ -232,4 +237,12 @@ public interface Table
     }
 
     void setPagingProvider(PagingProvider pagingProvider);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public interface ColumnGenerator {
+        Component generateCell(Table table, Object itemId);
+    }
+
+    void addGeneratedColumn(String columnId, ColumnGenerator generator);
 }

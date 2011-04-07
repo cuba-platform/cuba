@@ -761,6 +761,29 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         });
     }
 
+    public void addGeneratedColumn(String columnId, final ColumnGenerator generator) {
+        if (columnId == null)
+            throw new IllegalArgumentException("columnId is null");
+        if (generator == null)
+            throw new IllegalArgumentException("generator is null");
+
+        MetaPropertyPath targetCol = getDatasource().getMetaClass().getPropertyPath(columnId);
+        component.addGeneratedColumn(
+                targetCol,
+                new com.vaadin.ui.Table.ColumnGenerator() {
+                    public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
+                        com.haulmont.cuba.gui.components.Component component = generator.generateCell(WebAbstractTable.this, itemId);
+                        if (component == null)
+                            return null;
+                        else {
+                            Component vComponent = WebComponentsHelper.unwrap(component);
+                            return vComponent;
+                        }
+                    }
+                }
+        );
+    }
+
     protected Map<Object, Object> __aggregate(AggregationContainer container, AggregationContainer.Context context) {
         final List<AggregationInfo> aggregationInfos =
                 new LinkedList<AggregationInfo>();
