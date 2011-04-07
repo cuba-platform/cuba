@@ -33,7 +33,6 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebAbstractTable;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.components.WebVBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.data.Validator;
 import com.vaadin.terminal.Sizeable;

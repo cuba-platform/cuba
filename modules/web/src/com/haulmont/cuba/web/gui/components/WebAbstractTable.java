@@ -201,6 +201,14 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
+    public boolean isAllowMultiStringCells() {
+        return component.isAllowMultiStringCells();
+    }
+
+    public void setAllowMultiStringCells(boolean value) {
+        component.setAllowMultiStringCells(value);
+    }
+
     public boolean isAggregatable() {
         return component.isAggregatable();
     }

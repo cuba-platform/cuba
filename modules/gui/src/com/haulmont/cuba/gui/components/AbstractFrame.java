@@ -25,6 +25,7 @@ import java.util.Map;
 public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
     protected IFrame frame;
     private String styleName;
+    private Object _companion;
 
     public AbstractFrame(IFrame frame) {
         this.frame = frame;
@@ -171,6 +172,14 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
 
     public DialogParams getDialogParams() {
         return frame.getDialogParams();
+    }
+
+    public <T> T getCompanion() {
+        return (T) _companion;
+    }
+
+    public void setCompanion(Object companion) {
+        this._companion = companion;
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {

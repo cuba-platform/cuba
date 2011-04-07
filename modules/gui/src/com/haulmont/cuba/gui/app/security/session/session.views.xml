@@ -1,0 +1,16 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<views xmlns="http://www.haulmont.com/schema/cuba/view.xsd">
+
+    <view entity="sec$UserSessionEntity" name="session.browse">
+        <property name="id"/>
+        <property name="login"/>
+        <property name="userName"/>
+        <property name="since"/>
+        <property name="lastUsedTs"/>
+      </view>
+</views>

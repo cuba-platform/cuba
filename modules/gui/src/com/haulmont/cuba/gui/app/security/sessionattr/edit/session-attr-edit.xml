@@ -1,0 +1,31 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.app.security.sessionattr.edit.SessionAttributeEditor"
+        datasource="attribute"
+        messagesPack="com.haulmont.cuba.gui.app.security.sessionattr"
+        caption="msg://editor.caption"
+        >
+
+    <dsContext>
+        <datasource id="attribute" class="com.haulmont.cuba.security.entity.SessionAttribute" view="edit"/>
+    </dsContext>
+
+    <layout expand="windowActions">
+        <vbox margin="true" stylename="edit-area">
+            <fieldGroup id="fields" width="100%" datasource="attribute" collapsable="false">
+                <column width="250px">
+                    <field id="name" required="true" requiredMessage="msg://nameMsg"/>
+                    <field id="datatype" custom="true" requiredMessage="msg://datatypeMsg"/>
+                    <field id="stringValue"/>
+                </column>
+            </fieldGroup>
+        </vbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+
+</window>

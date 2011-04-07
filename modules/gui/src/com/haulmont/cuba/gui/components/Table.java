@@ -22,6 +22,8 @@ public interface Table
         com.haulmont.cuba.gui.components.List, Component.Editable, Component.HasSettings, Component.Expandable,
         Component.HasButtonsPanel, Component.HasPresentations
 {
+    String NAME = "table";
+
     List<Column> getColumns();
     Column getColumn(String id);
     void addColumn(Column column);
@@ -52,6 +54,9 @@ public interface Table
 
     RowsCount getRowsCount();
     void setRowsCount(RowsCount rowsCount);
+
+    boolean isAllowMultiStringCells();
+    void setAllowMultiStringCells(boolean value);
 
     public class Column implements HasXmlDescriptor, HasCaption, HasFomatter, Serializable {
 

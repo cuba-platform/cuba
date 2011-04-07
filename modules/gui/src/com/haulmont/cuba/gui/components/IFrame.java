@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.WindowContext;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**

@@ -67,7 +67,7 @@ public class LoginWindow extends Window implements Action.Handler {
     public LoginWindow(App app, Connection connection) {
         super();
         loc = app.getLocale();
-        locales = ConfigProvider.getConfig(WebConfig.class).getAvailableLocales();
+        locales = ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales();
 
         setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.caption", loc));
         this.connection = connection;

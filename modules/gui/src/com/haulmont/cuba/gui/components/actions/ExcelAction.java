@@ -32,6 +32,10 @@ public class ExcelAction extends AbstractAction {
     protected final ExportDisplay display;
     private boolean parameterized;
 
+    public ExcelAction(Table table) {
+        this(table, AppConfig.createExportDisplay(), false, ACTION_ID);
+    }
+
     public ExcelAction(Table table, ExportDisplay display) {
         this(table, display, false, ACTION_ID);
     }

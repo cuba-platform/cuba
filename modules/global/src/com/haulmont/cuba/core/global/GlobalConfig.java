@@ -10,9 +10,15 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
+import com.haulmont.cuba.core.config.type.Factory;
+import com.haulmont.cuba.core.sys.AvailableLocalesFactory;
+
+import java.util.Locale;
+import java.util.Map;
 
 @Source(type = SourceType.APP)
 public interface GlobalConfig extends Config {
@@ -103,4 +109,10 @@ public interface GlobalConfig extends Config {
     @Property("cuba.collectionDatasourceDbSortEnabled")
     @DefaultBoolean(true)
     boolean getCollectionDatasourceDbSortEnabled();
+
+    /** Used to show alternative locales on user login */
+    @Factory(factory = AvailableLocalesFactory.class)
+    @Default("English|en;Russian|ru")
+    Map<String, Locale> getAvailableLocales();
 }
+

@@ -24,13 +24,14 @@ import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.components.AbstractCompanion;
+import com.haulmont.cuba.gui.components.AbstractFrame;
+import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
-import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
@@ -39,9 +40,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Element;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.*;
+import java.util.List;
 
 public class WebWindowManager extends WindowManager {
 
@@ -728,6 +732,29 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
+    @Override
+    protected void initCompanion(Element companionsElem, AbstractWindow window) {
+        Element element = companionsElem.element(AppConfig.getInstance().getClientType().toString().toLowerCase());
+        if (element != null) {
+            String className = element.attributeValue("class");
+            if (!StringUtils.isBlank(className)) {
+                Class aClass = ScriptingProvider.loadClass(className);
+                Object companion;
+                try {
+                    if (AbstractCompanion.class.isAssignableFrom(aClass)) {
+                        Constructor constructor = aClass.getConstructor(new Class[]{AbstractFrame.class});
+                        companion = constructor.newInstance(window);
+                    } else {
+                        companion = aClass.newInstance();
+                        window.setCompanion(companion);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
     private void showStartupScreen(AppWindow appWindow) {
         if (getTabs().size() == 0) {
             appWindow.getMainLayout().removeAllComponents();
@@ -735,10 +762,6 @@ public class WebWindowManager extends WindowManager {
             appWindow.initStartupLayout();
             fireShowStartupLayoutListeners();
         }
-    }
-
-    protected ComponentsFactory createComponentFactory() {
-        return new WebComponentsFactory();
     }
 
     protected void saveScreenHistory(Window window, String caption){

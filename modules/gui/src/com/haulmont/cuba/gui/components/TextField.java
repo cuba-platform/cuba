@@ -12,6 +12,9 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.datatypes.Datatype;
 
 public interface TextField extends Field, Component.HasFomatter {
+
+    String NAME = "textField";
+
     int getRows();
     void setRows(int rows);
 

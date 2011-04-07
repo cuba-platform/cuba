@@ -19,14 +19,11 @@ import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.client.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
@@ -102,14 +99,15 @@ public class WebFilter
 
     private Component applyTo;
 
-    private WebConfig config = ConfigProvider.getConfig(WebConfig.class);
-
     private static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
     private static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
 
     private String mainMessagesPack = AppConfig.getInstance().getMessagesPack();
 
     private FilterEntity noFilter;
+
+    private GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
+    private WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
 
     public WebFilter() {
         persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
@@ -614,7 +612,7 @@ public class WebFilter
         editLayout.setSpacing(true);
 
         List<String> names = new ArrayList<String>();
-        Map<String, Locale> locales = config.getAvailableLocales();
+        Map<String, Locale> locales = globalConfig.getAvailableLocales();
         for (Object id : select.getItemIds()) {
             if (id != filterEntity) {
                 FilterEntity fe = (FilterEntity) id;
@@ -641,7 +639,7 @@ public class WebFilter
         this.datasource = datasource;
         this.dsQueryFilter = datasource.getQueryFilter();
 
-        if (config.getGenericFilterManualApplyRequired()) {
+        if (webConfig.getGenericFilterManualApplyRequired()) {
             // set initial denying condition to get empty datasource before explicit filter applying
             QueryFilter queryFilter = new QueryFilter(new DenyingClause(), datasource.getMetaClass().getName());
             if (dsQueryFilter != null) {

@@ -13,6 +13,7 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.client.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
@@ -29,7 +30,6 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.PermissionType;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -166,7 +166,7 @@ public abstract class WindowManager implements Serializable {
     }
 
     protected Window loadLayout(String descriptorPath, Element rootElement, ComponentLoader.Context context, LayoutLoaderConfig layoutConfig) {
-        final LayoutLoader layoutLoader = new LayoutLoader(context, createComponentFactory(), layoutConfig);
+        final LayoutLoader layoutLoader = new LayoutLoader(context, AppConfig.getFactory(), layoutConfig);
         layoutLoader.setLocale(getLocale());
         if (!StringUtils.isEmpty(descriptorPath)) {
             String path = descriptorPath.replaceAll("/", ".");
@@ -491,7 +491,7 @@ public abstract class WindowManager implements Serializable {
         ComponentLoaderContext context = new ComponentLoaderContext(window.getDsContext(), params);
 
         final LayoutLoader loader =
-                new LayoutLoader(context, createComponentFactory(), LayoutLoaderConfig.getFrameLoaders());
+                new LayoutLoader(context, AppConfig.getFactory(), LayoutLoaderConfig.getFrameLoaders());
         loader.setLocale(getLocale());
         loader.setMessagesPack(window.getMessagesPack());
 
@@ -586,8 +586,6 @@ public abstract class WindowManager implements Serializable {
         return UserSessionClient.getUserSession().getLocale();
     }
 
-    protected abstract ComponentsFactory createComponentFactory();
-
     protected Window wrapByCustomClass(Window window, Element element, Map<String, Object> params) {
         Window res = window;
         final String screenClass = element.attributeValue("class");
@@ -597,6 +595,13 @@ public abstract class WindowManager implements Serializable {
             if (aClass == null)
                 aClass = ReflectionHelper.getClass(screenClass);
             res = ((WrappedWindow) window).wrapBy(aClass);
+
+            if (res instanceof AbstractWindow) {
+                Element companionsElem = element.element("companions");
+                if (companionsElem != null) {
+                    initCompanion(companionsElem, (AbstractWindow) res);
+                }
+            }
 
             try {
                 ReflectionHelper.invokeMethod(res, "init", params);
@@ -608,6 +613,8 @@ public abstract class WindowManager implements Serializable {
             return res;
         }
     }
+
+    protected abstract void initCompanion(Element companionsElem, AbstractWindow res);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

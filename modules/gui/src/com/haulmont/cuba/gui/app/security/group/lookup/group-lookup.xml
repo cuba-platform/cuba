@@ -1,0 +1,30 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+    messagesPack="com.haulmont.cuba.gui.app.security.group"
+    class="com.haulmont.cuba.gui.app.security.group.lookup.GroupLookup"
+    lookupComponent="groups"
+    caption="msg://browser.caption"
+>
+    <dsContext>
+        <hierarchicalDatasource
+            id="groups"
+            class="com.haulmont.cuba.security.entity.Group"
+            view="group.browse"
+            hierarchyProperty="parent"
+        >
+            <query><![CDATA[select g from sec$Group g]]></query>
+        </hierarchicalDatasource>
+    </dsContext>
+
+    <layout expandLayout="true">
+        <tree id="groups">
+            <treechildren datasource="groups" captionProperty="name" hierarchyProperty="parent"/>
+        </tree>
+    </layout>
+</window>

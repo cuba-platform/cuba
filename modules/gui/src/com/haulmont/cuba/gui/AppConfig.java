@@ -17,17 +17,18 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.export.ExportDisplay;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
-import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * GenericUI singleton class holding common information about application configuration
  */
-public class AppConfig
+public abstract class AppConfig
 {
-    public static final String IMPL_PROP = "cuba.AppConfig.impl";
+    public static final String IMPL_PROP = "cuba.appConfig.impl";
     public static final String DEFAULT_IMPL = "com.haulmont.cuba.gui.AppConfig";
 
     public static final String WINDOW_CONFIG_IMPL_PROP = "cuba.windowConfig.impl";
@@ -53,9 +54,6 @@ public class AppConfig
     protected ClientType clientType;
     protected String messagesPackage;
     protected Map<Locale, PermissionConfig> permissionsConfigMap = new ConcurrentHashMap<Locale, PermissionConfig>();
-
-    protected Set<String> groovyImports = new HashSet<String>();
-    protected Set<String> unmodifiableGroovyImports = Collections.unmodifiableSet(groovyImports);
 
     public static AppConfig getInstance() {
         if (instance == null) {
@@ -151,5 +149,23 @@ public class AppConfig
             messagesPackage = AppContext.getProperty(MESSAGES_PACK_PROP);
         }
         return messagesPackage;
-     }
+    }
+
+    /**
+     * Client-specific ExportDisplay
+     */
+    public static ExportDisplay createExportDisplay() {
+        return getInstance().__createExportDisplay();
+    }
+
+    /**
+     * Client-specific components factory
+     */
+    public static ComponentsFactory getFactory() {
+        return getInstance().__getFactory();
+    }
+
+    protected abstract ExportDisplay __createExportDisplay();
+
+    protected abstract ComponentsFactory __getFactory();
 }

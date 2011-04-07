@@ -9,21 +9,20 @@
  */
 package com.haulmont.cuba.web.xml.layout;
 
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.charts.Chart;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Timer;
-import com.haulmont.cuba.web.gui.components.WebFileMultiUploadField;
-import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.WebTimer;
+import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreeBarChart;
 import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreeLineChart;
 import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreePieChart;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Map;
 
 public class WebComponentsFactory implements ComponentsFactory, Serializable {
 
@@ -49,16 +48,16 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put("label", WebLabel.class);
         classes.put("checkBox", WebCheckBox.class);
         classes.put("groupBox", WebGroupBox.class);
-        classes.put("textField", WebTextField.class);
+        classes.put(TextField.NAME, WebTextField.class);
         classes.put("autoCompleteTextField", WebAutoCompleteTextField.class);
         classes.put("textArea", WebTextArea.class);
         classes.put("iframe", WebFrame.class);
-        classes.put("table", WebTable.class);
+        classes.put(Table.NAME, WebTable.class);
         classes.put("treeTable", WebTreeTable.class);
         classes.put("groupTable", WebGroupTable.class);
         classes.put("dateField", WebDateField.class);
         classes.put("timeField", WebTimeField.class);
-        classes.put("lookupField", WebLookupField.class);
+        classes.put(LookupField.NAME, WebLookupField.class);
         classes.put("pickerField", WebPickerField.class);
         classes.put("optionsGroup", WebOptionsGroup.class);
         classes.put("upload", WebFileUploadField.class);
@@ -71,7 +70,7 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put("accessControl", WebAccessControl.class);
         classes.put("buttonsPanel", WebButtonsPanel.class);
         classes.put("actionsField", WebActionsField.class);
-        classes.put("popupButton", WebPopupButton.class);
+        classes.put(PopupButton.NAME, WebPopupButton.class);
 
         classes.put("fieldGroup", WebFieldGroup.class);
         classes.put("tokenList", WebTokenList.class);
@@ -89,24 +88,36 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put(element, componentClass);
     }
 
-    public <T extends Component> T createComponent(String name) throws InstantiationException, IllegalAccessException {
+    public <T extends Component> T createComponent(String name) {
         final Class<Component> componentClass = (Class<Component>) classes.get(name);
         if (componentClass == null) {
             throw new IllegalStateException(String.format("Can't find component class for '%s'", name));
         }
-        return (T) componentClass.newInstance();
+        try {
+            return (T) componentClass.newInstance();
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public <T extends Timer> T createTimer() throws InstantiationException {
+    public <T extends Timer> T createTimer() {
         return (T) new WebTimer();
     }
 
-    public <T extends Chart> T createChart(String vendor, String name) throws InstantiationException, IllegalAccessException {
+    public <T extends Chart> T createChart(String vendor, String name) {
         final Class<Chart> chartClass = (Class<Chart>) classes.get(vendor + "@" + name);
         if (chartClass == null) {
             throw new IllegalStateException(String.format("Can't find chart class for '%s', vendor is %s",
                     name, vendor));
         }
-        return (T) chartClass.newInstance();
+        try {
+            return (T) chartClass.newInstance();
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

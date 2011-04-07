@@ -1,0 +1,42 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+    datasource="user"
+    caption="msg://caption"
+    class="com.haulmont.cuba.gui.app.security.user.changepassw.UserChangePassw"
+    messagesPack="com.haulmont.cuba.gui.app.security.user.changepassw"
+>
+    <dsContext>
+        <datasource id="user"
+                    class="com.haulmont.cuba.security.entity.User"
+                    view="user.changepassw">
+        </datasource>
+    </dsContext>
+
+    <layout>
+        <vbox>
+            <grid margin="true" spacing="true" width="100%" stylename="edit-area">
+                <columns>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <label id="passwLab" value="msg://password"/>
+                        <textField id="passw" secret="true"/>
+                    </row>
+                    <row>
+                        <label id="confirmPasswLab" value="msg://confirmPassword"/>
+                        <textField id="confirmPassw" secret="true"/>
+                    </row>
+                </rows>
+            </grid>
+            <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        </vbox>
+    </layout>
+</window>

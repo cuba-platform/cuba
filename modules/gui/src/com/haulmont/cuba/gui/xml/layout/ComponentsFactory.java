@@ -14,7 +14,10 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
 
 public interface ComponentsFactory {
-    <T extends Component> T createComponent(String name) throws InstantiationException, IllegalAccessException;
-    <T extends Timer> T createTimer() throws InstantiationException;
-    <T extends Chart> T createChart(String vendor, String name) throws InstantiationException, IllegalAccessException;
+
+    <T extends Component> T createComponent(String name);
+
+    <T extends Timer> T createTimer();
+
+    <T extends Chart> T createChart(String vendor, String name);
 }

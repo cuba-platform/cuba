@@ -15,6 +15,8 @@ import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.web.WebAppConfig;
+import com.haulmont.cuba.web.WebWindowConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
@@ -63,7 +65,8 @@ public class WebAppContextLoader implements ServletContextListener {
 
     private void initAppProperties(ServletContext sc) {
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
-        AppContext.setProperty(AppConfig.WINDOW_CONFIG_IMPL_PROP, "com.haulmont.cuba.web.WebWindowConfig");
+        AppContext.setProperty(AppConfig.IMPL_PROP, WebAppConfig.class.getName());
+        AppContext.setProperty(AppConfig.WINDOW_CONFIG_IMPL_PROP, WebWindowConfig.class.getName());
 
         // get properties from web.xml
         String appProperties = sc.getInitParameter(APP_PROPS_PARAM);

@@ -10,6 +10,9 @@
 package com.haulmont.cuba.gui.components;
 
 public interface LookupField extends OptionsField {
+
+    String NAME = "lookupField";
+
     Object getNullOption();
     void setNullOption(Object nullOption);
 

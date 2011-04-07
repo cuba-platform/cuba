@@ -1,0 +1,36 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<views>
+    <view entity="sec$Role" name="role.lookup">
+         <property name="name"/>
+     </view>
+
+     <view entity="sec$Role" name="role.browse">
+         <property name="name"/>
+     </view>
+
+     <view entity="sec$Role" name="role.edit">
+         <property name="name"/>
+         <property name="superRole"/>
+         <!--<property name="permissions">-->
+             <!--<property name="type"/>-->
+             <!--<property name="target"/>-->
+             <!--<property name="value"/>-->
+         <!--</property>-->
+     </view>
+
+    <view entity="sec$Permission" name="role.edit">
+        <property name="type"/>
+        <property name="target"/>
+        <property name="value"/>
+    </view>
+
+     <view entity="sec$Target" name="role.edit">
+         <property name="id"/>
+         <property name="caption"/>
+     </view>
+</views>

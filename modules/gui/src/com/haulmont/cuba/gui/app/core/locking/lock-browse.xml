@@ -1,0 +1,45 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.locking.LockBrowser"
+        messagesPack="com.haulmont.cuba.gui.app.core.locking"
+        caption="msg://caption"
+        >
+
+    <dsContext>
+        <collectionDatasource id="locksDs" class="com.haulmont.cuba.core.global.LockInfo" view="_local">
+            <datasourceClass>com.haulmont.cuba.gui.data.impl.CustomCollectionDatasource</datasourceClass>
+            <query>
+                <![CDATA[
+                def service = com.haulmont.cuba.gui.ServiceLocator.lookup(com.haulmont.cuba.core.app.LockService.NAME)
+                return service.getCurrentLocks()
+                ]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <vbox id="table-panel" expand="locks" spacing="true">
+            <table id="locks" editable="false">
+                <buttonsPanel>
+                    <button action="locks.refresh"/>
+                    <button action="locks.unlock"/>
+                </buttonsPanel>
+                <columns>
+                    <column id="entityName" caption="msg://entityName">
+                        <formatter class="com.haulmont.cuba.gui.app.core.locking.LockNameFormatter"/>
+                    </column>
+                    <column id="entityId" caption="msg://entityId"/>
+                    <column id="user.login" caption="msg://user"/>
+                    <column id="since" caption="msg://since"/>
+                </columns>
+                <rows datasource="locksDs"/>
+            </table>
+        </vbox>
+    </layout>
+</window>

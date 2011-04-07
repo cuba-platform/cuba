@@ -1,0 +1,68 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+    caption="msg://entity-permissions"
+    class="com.haulmont.cuba.gui.app.security.role.edit.PermissionsLookup"
+    lookupComponent="permissions">
+
+    <companions>
+        <web class="com.haulmont.cuba.web.app.ui.security.user.PermissionsLookupCompanion"/>
+    </companions>
+
+    <metadataContext>
+        <deployViews name="/com/haulmont/cuba/gui/app/security/role/role.views.xml"/>
+    </metadataContext>
+
+    <dsContext>
+        <hierarchicalDatasource
+            id="entities"
+            class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
+            view="role.edit"
+        >
+            <datasourceClass>com.haulmont.cuba.gui.security.EntityPermissionTargetsDatasource</datasourceClass>
+        </hierarchicalDatasource>
+
+        <collectionDatasource
+            id="permissions"
+            class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
+            view="role.edit"
+        >
+            <datasourceClass>com.haulmont.cuba.gui.data.impl.CustomCollectionDatasource</datasourceClass>
+            <query>
+                <![CDATA[
+                import com.haulmont.cuba.gui.AppConfig
+                import com.haulmont.cuba.gui.UserSessionClient
+
+                config = AppConfig.getInstance().getPermissionConfig(UserSessionClient.getUserSession().getLocale())
+                return config.getEntityOperations(:ds$entities);
+                ]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <vbox expand="split" spacing="true">
+            <label id="permissionsType" stylename="h2"/>
+            <split id="split" orientation="horizontal" pos="30">
+                <vbox>
+                    <tree id="permissions-tree">
+                        <treechildren datasource="entities" captionProperty="caption"/>
+                    </tree>
+                </vbox>
+                <vbox>
+                    <optionsGroup
+                        id="permissions"
+                        optionsDatasource="permissions"
+                        multiselect="true"
+                        captionProperty="caption"
+                    />
+                </vbox>
+            </split>
+        </vbox>
+    </layout>
+</window>

@@ -124,14 +124,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
     protected void loadRowsCount(T table, Element element) {
         Element rowsCountEl = element.element("rowsCount");
         if (rowsCountEl != null) {
-            try {
-                RowsCount rowsCount = factory.createComponent("rowsCount");
-                table.setRowsCount(rowsCount);
-            } catch (InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
+            RowsCount rowsCount = factory.createComponent("rowsCount");
+            table.setRowsCount(rowsCount);
         }
     }
 
