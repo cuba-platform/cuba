@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.sys;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.*;
 
@@ -89,6 +90,9 @@ public class AppContext {
         started = false;
         for (Listener listener : listeners) {
             listener.applicationStopped();
+        }
+        if (context != null && context instanceof ConfigurableApplicationContext) {
+            ((ConfigurableApplicationContext) context).close();
         }
     }
 }

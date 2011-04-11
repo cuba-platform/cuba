@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+        >
+
+    <bean class="com.haulmont.cuba.core.sys.CubaPropertyPlaceholderConfigurer"/>
+
+    <!-- Global Providers -->
+
+    <bean id="cuba_ConfigProvider" class="com.haulmont.cuba.client.sys.ConfigProviderClientImpl"/>
+
+    <bean id="cuba_UserSessionClient" class="com.haulmont.cuba.desktop.sys.DesktopUserSessionClient"/>
+
+    <bean id="cuba_MessageProvider" class="com.haulmont.cuba.client.sys.MessageProviderClientImpl"/>
+
+    <bean id="cuba_TimeProvider" class="com.haulmont.cuba.client.sys.TimeProviderClientImpl"/>
+
+    <bean id="cuba_UuidProvider" class="com.haulmont.cuba.client.sys.UuidProviderClientImpl"/>
+
+    <bean id="cuba_MetadataProvider" class="com.haulmont.cuba.client.sys.MetadataProviderClientImpl">
+        <property name="deployerService" ref="cuba_DeployerService"/>
+    </bean>
+
+    <bean id="cuba_ScriptingProvider" class="com.haulmont.cuba.client.sys.ScriptingProviderClientImpl">
+        <constructor-arg index="0" ref="cuba_ConfigProvider"/>
+    </bean>
+
+    <!-- Remote stubs -->
+
+    <bean id="cuba_proxyCreator" class="com.haulmont.cuba.core.sys.remoting.RemoteProxyBeanCreator">
+        <property name="baseUrl" value="${cuba.connectionUrl}/remoting"/>
+        <property name="remoteServices">
+            <map>
+                <entry key="cuba_LoginService" value="com.haulmont.cuba.security.app.LoginService"/>
+                <entry key="cuba_DeployerService" value="com.haulmont.cuba.core.app.CubaDeployerService"/>
+                <entry key="cuba_UserSettingService" value="com.haulmont.cuba.security.app.UserSettingService"/>
+                <entry key="cuba_DataService" value="com.haulmont.cuba.core.app.DataService"/>
+                <entry key="cuba_PersistenceManagerService" value="com.haulmont.cuba.core.app.PersistenceManagerService"/>
+                <entry key="cuba_LockService" value="com.haulmont.cuba.core.app.LockService"/>
+                <entry key="cuba_JmxControlService" value="com.haulmont.cuba.jmxcontrol.app.JmxControlService"/>
+                <entry key="cuba_UserSessionService" value="com.haulmont.cuba.security.app.UserSessionService"/>
+                <entry key="cuba_FileUploadService" value="com.haulmont.cuba.core.app.FileUploadService"/>
+                <entry key="cuba_FoldersService" value="com.haulmont.cuba.core.app.FoldersService"/>
+                <entry key="cuba_EmailService" value="com.haulmont.cuba.core.app.EmailService"/>
+                <entry key="cuba_FileStorageService" value="com.haulmont.cuba.core.app.FileStorageService"/>
+                <entry key="cuba_UniqueNumbersService" value="com.haulmont.cuba.core.app.UniqueNumbersService"/>
+                <entry key="cuba_ReportService" value="com.haulmont.cuba.core.app.ReportService"/>
+                <entry key="report_ReportService" value="com.haulmont.cuba.report.app.ReportService"/>
+            </map>
+        </property>
+    </bean>
+
+</beans>

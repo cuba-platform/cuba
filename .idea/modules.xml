@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/modules/client/client.iml" filepath="$PROJECT_DIR$/modules/client/client.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/core/core.iml" filepath="$PROJECT_DIR$/modules/core/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/core-war/core-war.iml" filepath="$PROJECT_DIR$/modules/core-war/core-war.iml" />
+      <module fileurl="file://$PROJECT_DIR$/modules/desktop/desktop.iml" filepath="$PROJECT_DIR$/modules/desktop/desktop.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/global/global.iml" filepath="$PROJECT_DIR$/modules/global/global.iml" />
       <module fileurl="file://$PROJECT_DIR$/modules/gui/gui.iml" filepath="$PROJECT_DIR$/modules/gui/gui.iml" />
       <module fileurl="file://$PROJECT_DIR$/root.iml" filepath="$PROJECT_DIR$/root.iml" />
