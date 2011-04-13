@@ -38,4 +38,7 @@ public interface PickerField extends Field {
     void setClearButtonCaption(String caption);
 
     void setClearButtonIcon(String iconName);
+
+    ValueProvider getValueProvider();
+    void setValueProvider(ValueProvider valueProvider);
 }
