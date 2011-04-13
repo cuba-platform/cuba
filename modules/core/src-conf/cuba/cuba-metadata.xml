@@ -1,5 +1,5 @@
 <metadata>
-    <metadata-model name="cuba">
+    <metadata-model>
         <class>com.haulmont.cuba.gui.config.PermissionConfig$Target</class>
         <class>com.haulmont.cuba.security.entity.UserSessionEntity</class>
         <class>com.haulmont.cuba.core.global.LockInfo</class>

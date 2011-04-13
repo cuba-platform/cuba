@@ -138,12 +138,7 @@ public class MetadataProviderClientImpl extends MetadataProvider {
 
     private void loadMetadata(MetadataLoader loader, Collection<String> packages) {
         for (String p : packages) {
-            String modelName = p;
-            int i = p.lastIndexOf(".");
-            if (i > 0) {
-                modelName = p.substring(0, i);
-            }
-            loader.loadPackage(modelName, p);
+            loader.loadPackage(p, p);
         }
     }
 }

@@ -18,10 +18,7 @@ import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.chile.core.model.utils.MethodsCache;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Updatable;
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.UserSession;
@@ -166,7 +163,8 @@ public class PermissionConfig {
             for (MetaClass metaClass: classList) {
                 String name = metaClass.getName();
                 if (name.contains("$")) {
-                    Node<Target> node = new Node<Target>(new Target("entity:" + name, name, name));
+                    String caption = name + " (" + MessageUtils.getEntityCaption(metaClass) + ")";
+                    Node<Target> node = new Node<Target>(new Target("entity:" + name, caption, name));
                     modelNode.addChild(node);
                 }
             }
@@ -286,7 +284,8 @@ public class PermissionConfig {
 
         List<Target> result = new ArrayList<Target>();
         for (MetaProperty metaProperty : propertyList) {
-            result.add(new Target(id + ":" + metaProperty.getName(), metaProperty.getName(), value + ":" + metaProperty.getName()));
+            String caption = metaProperty.getName() + " (" + MessageUtils.getPropertyCaption(metaProperty) + ")";
+            result.add(new Target(id + ":" + metaProperty.getName(), caption, value + ":" + metaProperty.getName()));
         }
 
         return result;

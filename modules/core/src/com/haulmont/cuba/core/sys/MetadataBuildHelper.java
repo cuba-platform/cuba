@@ -41,10 +41,10 @@ public class MetadataBuildHelper {
     private static Collection<String> getPackages(List<String> classNames) {
         List<String> packages = new ArrayList<String>();
         for (String className : classNames) {
-            int i = className.lastIndexOf(".");
-            if (i <= 0)
+            String[] parts = className.split("\\.");
+            if (parts.length < 4)
                 throw new IllegalStateException("Invalid persistent class definition: " + className);
-            String packageName = className.substring(0, i);
+            String packageName = parts[0] + "." + parts[1] + "." + parts[2];
             if (!packages.contains(packageName))
                 packages.add(packageName);
         }
@@ -68,10 +68,10 @@ public class MetadataBuildHelper {
                 //noinspection unchecked
                 for (Element classElem : ((List<Element>) unitElem.elements("class"))) {
                     String className = classElem.getText().trim();
-                    int i = className.lastIndexOf(".");
-                    if (i <= 0)
+                    String[] parts = className.split("\\.");
+                    if (parts.length < 4)
                         throw new IllegalStateException("Invalid persistent class definition: " + className);
-                    String packageName = className.substring(0, i);
+                    String packageName = parts[0] + "." + parts[1] + "." + parts[2];
                     if (!packages.contains(packageName))
                         packages.add(packageName);
                 }
