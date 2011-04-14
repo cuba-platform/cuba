@@ -55,8 +55,4 @@ public class HintResponse {
     public String getLastWord() {
         return lastWord;
     }
-
-    public String getOptionDescription(String option) {
-        return null;
-    }
 }

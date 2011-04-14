@@ -13,6 +13,14 @@ public class EntityPath {
     public String[] traversedFields;
     public String lastEntityFieldPattern;
 
+    public Pointer walk(DomainModel model, QueryVariableContext queryVC) {
+        Pointer pointer = EntityPointer.create(queryVC, topEntityVariableName);
+        for (String traversedField : traversedFields) {
+            pointer = pointer.next(model, traversedField);
+        }
+        return pointer;
+    }
+
     public static EntityPath parseEntityPath(String lastWord) {
         String[] parts = lastWord.split("\\.");
         EntityPath result = new EntityPath();
@@ -31,13 +39,5 @@ public class EntityPath {
             System.arraycopy(parts, 1, result.traversedFields, 0, parts.length - consumedPartsCount);
         }
         return result;
-    }
-
-    public Pointer walk(DomainModel model, QueryVariableContext queryVC) {
-        Pointer pointer = EntityPointer.create(queryVC, topEntityVariableName);
-        for (String traversedField : traversedFields) {
-            pointer = pointer.next(model, traversedField);
-        }
-        return pointer;
     }
 }

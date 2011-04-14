@@ -15,4 +15,9 @@ public class ErrorRec {
         this.node = node;
         this.message = message;
     }
+
+    @Override
+    public String toString() {
+        return message + "[" + node.toString() + "]";
+    }
 }

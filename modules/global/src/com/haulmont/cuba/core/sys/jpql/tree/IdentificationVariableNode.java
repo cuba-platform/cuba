@@ -1,15 +1,11 @@
 package com.haulmont.cuba.core.sys.jpql.tree;
 
-import com.haulmont.cuba.core.sys.jpql.DomainModel;
-import com.haulmont.cuba.core.sys.jpql.ErrorRec;
-import com.haulmont.cuba.core.sys.jpql.QueryVariableContext;
-import com.haulmont.cuba.core.sys.jpql.UnknownEntityNameException;
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
-import com.haulmont.cuba.core.sys.jpql.model.NoEntity;
+import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.pointer.SimpleAttributePointer;
 import com.haulmont.cuba.core.sys.jpql.pointer.NoPointer;
 import com.haulmont.cuba.core.sys.jpql.pointer.Pointer;
 import com.haulmont.cuba.core.sys.jpql.pointer.EntityPointer;
+import com.haulmont.cuba.core.sys.jpql.model.*;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonErrorNode;
@@ -24,7 +20,7 @@ import java.util.List;
  * Date: 30.10.2010
  * Time: 4:15:07
  */
-public class IdentificationVariableNode extends CommonTree {
+public class IdentificationVariableNode extends BaseCustomNode {
     private String variableName;
 
     private IdentificationVariableNode(Token token, String variableName) {
@@ -88,6 +84,7 @@ public class IdentificationVariableNode extends CommonTree {
         List children = node.getChildren();
         CommonTree T_SELECTED_ITEMS_NODE = (CommonTree) children.get(0);
         for (Object o : T_SELECTED_ITEMS_NODE.getChildren()) {
+            o = ((SelectedItemNode) o).getChild(0);
             if (!(o instanceof PathNode)) {
                 throw new RuntimeException("Not a path node");
             }
@@ -106,7 +103,7 @@ public class IdentificationVariableNode extends CommonTree {
             } else if (pointer instanceof EntityPointer) {
                 if (T_SELECTED_ITEMS_NODE.getChildren().size() != 1) {
                     //todo implement
-                    throw new RuntimeException("");
+                    throw new RuntimeException("Не реализован вариант, когда возвращается массив");
                 } else {
                     queryVC.setEntity(((EntityPointer) pointer).getEntity());
                 }
@@ -121,6 +118,21 @@ public class IdentificationVariableNode extends CommonTree {
 
     @Override
     public Tree dupNode() {
-        return new IdentificationVariableNode(token, variableName);
+        IdentificationVariableNode result = new IdentificationVariableNode(token, variableName);
+        dupChildren(result);
+        return result;
+    }
+
+
+    @Override
+    public CommonTree treeToQueryPost(QueryBuilder sb, List<ErrorRec> invalidNodes) {
+        // должно появится после определения сущности, из которой выбирают, поэтому в post
+        sb.appendSpace();
+        sb.appendString(variableName);
+        return this;
+    }
+
+    public String getEntityName() {
+        return getChild(0).getText();
     }
 }

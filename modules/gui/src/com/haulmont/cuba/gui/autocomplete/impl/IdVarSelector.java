@@ -71,7 +71,7 @@ public class IdVarSelector implements TreeVisitorAction {
 
 
         if ((node instanceof QueryNode) && node.getParent() != null && "T_CONDITION".equals(((CommonTree) node.getParent()).token.getText())) {
-            stack.peekLast().setPropateVariablesUp(false);
+            stack.peekLast().setPropagateVariablesUp(false);
             return t;
         }
 

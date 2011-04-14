@@ -290,7 +290,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     public String getResult() {
-        return buffer.toString();
+        return buffer.toString().trim();
     }
 
     public Set<String> getAddedParams() {

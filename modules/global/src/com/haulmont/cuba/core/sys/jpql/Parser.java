@@ -19,16 +19,31 @@ import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTree;
 
 public class Parser {
-
     public static CommonTree parse(String input) throws RecognitionException {
+        JPAParser parser = createParser(input);
+        JPAParser.ql_statement_return aReturn = parser.ql_statement();
+        return (CommonTree) aReturn.getTree();
+    }
+
+    public static CommonTree parseWhereClause(String input) throws RecognitionException {
+        JPAParser parser = createParser(input);
+        JPAParser.where_clause_return aReturn = parser.where_clause();
+        return (CommonTree) aReturn.getTree();
+    }
+
+    public static CommonTree parseJoinClause(String join) throws RecognitionException {
+        JPAParser parser = createParser(join);
+        JPAParser.join_return aReturn = parser.join();
+        return (CommonTree) aReturn.getTree();
+    }
+
+    private static JPAParser createParser(String input) {
         if (input.contains("~"))
             throw new IllegalArgumentException("Input string cannot contain \"~\"");
 
         CharStream cs = new AntlrNoCaseStringStream(input);
         JPALexer lexer = new JPALexer(cs);
         TokenStream tstream = new CommonTokenStream(lexer);
-        JPAParser parser = new JPAParser(tstream);
-        JPAParser.ql_statement_return aReturn = parser.ql_statement();
-        return (CommonTree) aReturn.getTree();
+        return new JPAParser(tstream);
     }
 }

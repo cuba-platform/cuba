@@ -1,6 +1,9 @@
 package com.haulmont.cuba.core.sys.jpql.model;
 
+import com.haulmont.cuba.core.sys.jpql.InferredType;
+
 import java.util.List;
+import java.util.Set;
 
 /**
  * Author: Alexander Chevelev
@@ -13,17 +16,11 @@ public interface Entity {
 
     String getUserFriendlyName();
 
-    void addSingleValueAttribute(Class aClass, String name);
-
     Attribute getAttributeByName(String attributeName);
 
-    List<Attribute> findAttributesStartingWith(String fieldNamePattern);
-
-    void addReferenceAttribute(String referencedEntityName, String name);
+    List<Attribute> findAttributesStartingWith(String fieldNamePattern, Set<InferredType> expectedTypes);
 
     void addAttributeCopy(Attribute attribute);
-
-    void addCollectionReferenceAttribute(String referencedEntityName, String name);
 
     void addSingleValueAttribute(Class aClass, String name, String userFriendlyName);
 

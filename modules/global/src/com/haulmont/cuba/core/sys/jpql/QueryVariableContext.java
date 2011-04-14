@@ -37,7 +37,7 @@ public class QueryVariableContext {
         return propagateVariablesUpstairs;
     }
 
-    public void setPropateVariablesUp(boolean propateVariablesUpdatairs) {
+    public void setPropagateVariablesUp(boolean propateVariablesUpdatairs) {
         this.propagateVariablesUpstairs = propateVariablesUpdatairs;
     }
 
@@ -63,6 +63,9 @@ public class QueryVariableContext {
         if (entity == null) {
             throw new NullPointerException("No entity passed");
         }
+        if (entityVariableName2entity.containsKey(variableName))
+            throw new IllegalArgumentException("Trying to rebing variable [" + variableName + "]");
+        
         entityVariableName2entity.put(variableName, entity);
     }
 
@@ -105,5 +108,18 @@ public class QueryVariableContext {
 
     private void setParent(QueryVariableContext parent) {
         this.parent = parent;
+    }
+
+    public String getVariableNameByEntity(String entityName) {
+        if (entityName == null)
+            throw new NullPointerException("No entity name passed");
+
+        for (Map.Entry<String, Entity> entry : entityVariableName2entity.entrySet()) {
+            if (entityName.equals(entry.getValue().getName())) {
+                return entry.getKey();
+            }
+        }
+
+        return parent == null ? null : parent.getVariableNameByEntity(entityName);
     }
 }

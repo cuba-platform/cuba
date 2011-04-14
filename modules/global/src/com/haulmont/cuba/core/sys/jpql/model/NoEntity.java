@@ -1,6 +1,9 @@
 package com.haulmont.cuba.core.sys.jpql.model;
 
+import com.haulmont.cuba.core.sys.jpql.InferredType;
+
 import java.util.List;
+import java.util.Set;
 
 /**
  * Author: Alexander Chevelev
@@ -21,18 +24,12 @@ public class NoEntity implements Entity{
         return null;
     }
 
-    public void addSingleValueAttribute(Class aClass, String name) {
-    }
-
     public Attribute getAttributeByName(String attributeName) {
         return null;
     }
 
-    public List<Attribute> findAttributesStartingWith(String fieldNamePattern) {
+    public List<Attribute> findAttributesStartingWith(String fieldNamePattern, Set<InferredType> expectedTypes) {
         return null;
-    }
-
-    public void addReferenceAttribute(String referencedEntityName, String name) {
     }
 
     public void addAttributeCopy(Attribute attribute) {
@@ -40,9 +37,6 @@ public class NoEntity implements Entity{
 
     public static NoEntity getInstance() {
         return instance;
-    }
-
-    public void addCollectionReferenceAttribute(String referencedEntityName, String name) {
     }
 
     public void addSingleValueAttribute(Class aClass, String name, String userFriendlyName) {

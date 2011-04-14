@@ -10,7 +10,6 @@ import com.haulmont.cuba.core.sys.jpql.DomainModel;
 public class NoPointer implements Pointer {
     private static final NoPointer instance = new NoPointer();
 
-    //todo
     private NoPointer() {
     }
 

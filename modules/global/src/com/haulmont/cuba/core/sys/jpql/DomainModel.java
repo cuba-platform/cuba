@@ -13,6 +13,12 @@ import java.util.List;
 public class DomainModel {
     private List<Entity> entities = new ArrayList<Entity>();
 
+    public DomainModel(Entity... initialEntities) {
+        for (Entity initialEntity : initialEntities) {
+            add(initialEntity);
+        }
+    }
+
     public void add(Entity entity) {
         if (entity == null)
             throw new NullPointerException("No entity passed");

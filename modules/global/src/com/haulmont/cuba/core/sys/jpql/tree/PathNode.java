@@ -1,47 +1,88 @@
 package com.haulmont.cuba.core.sys.jpql.tree;
 
-import com.haulmont.cuba.core.sys.jpql.DomainModel;
-import com.haulmont.cuba.core.sys.jpql.EntityPath;
-import com.haulmont.cuba.core.sys.jpql.QueryVariableContext;
+import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.pointer.Pointer;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Author: Alexander Chevelev
  * Date: 30.10.2010
  * Time: 4:15:07
  */
-public class PathNode extends CommonTree {
-    private String path;
+public class PathNode extends BaseCustomNode {
+    private String entityVariableName;
 
-    private PathNode(Token token, String path) {
+    public PathNode(Token token, String entityVariableName) {
         super(token);
-        this.path = path;
+        this.entityVariableName = entityVariableName;
     }
 
-    public PathNode(int type, String path) {
-        this(new CommonToken(type, path), path);
+    public PathNode(int type, String entityVariableName) {
+        this(new CommonToken(type, ""), entityVariableName);
+    }
+
+    public String getEntityVariableName() {
+        return entityVariableName;
     }
 
     @Override
-    public Tree dupNode() {
-        return new PathNode(token, path);
+    public PathNode dupNode() {
+        PathNode result = new PathNode(token, entityVariableName);
+        dupChildren(result);
+        return result;
     }
 
     public Pointer walk(DomainModel model, QueryVariableContext queryVC) {
-        EntityPath entityPath = EntityPath.parseEntityPath(path);
-        Pointer pointer = entityPath.walk(model, queryVC);
-        if (!(entityPath.lastEntityFieldPattern == null || "".equals(entityPath.lastEntityFieldPattern))) {
-            pointer = pointer.next(model, entityPath.lastEntityFieldPattern);
+        List treeItems = getChildren();
+        if (treeItems == null) {
+            treeItems = Collections.emptyList();
         }
-        return pointer;
+        String[] parts = new String[treeItems.size()];
+        for (int i = 0; i < treeItems.size(); i++) {
+            CommonTree treeItem = (CommonTree) treeItems.get(i);
+            parts[i] = treeItem.getText();
+        }
+
+        EntityPath path = new EntityPath();
+        path.topEntityVariableName = entityVariableName;
+        path.lastEntityFieldPattern = null;
+        path.traversedFields = parts;
+        return path.walk(model, queryVC);
     }
 
     @Override
     public String toString() {
-        return (token != null ? token.getText() : "Path is: " + path);
+        return (token != null ? token.getText() : "") + "Path entity variable: " + entityVariableName;
+    }
+
+    public CommonTree treeToQueryPre(QueryBuilder sb, List<ErrorRec> invalidNodes) {
+        sb.appendString(asPathString());
+        return null;
+    }
+
+    public String asPathString() {
+        String result = "";
+        result += entityVariableName;
+        if (children != null) {
+            for (Object child : children) {
+                result += '.' + child.toString();
+            }
+        }
+        return result;
+    }
+
+    public void renameVariableTo(String newVariableName) {
+        entityVariableName = newVariableName;
+    }
+
+    public void changeField(String newField) {
+        CommonTree lastChild = (CommonTree) getChild(getChildCount() - 1);
+        lastChild.getToken().setText(newField);
     }
 }

@@ -4,6 +4,7 @@ import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.gui.autocomplete.impl.HintProvider;
+import com.haulmont.cuba.gui.autocomplete.impl.HintRequest;
 import com.haulmont.cuba.gui.autocomplete.impl.HintResponse;
 import com.haulmont.cuba.gui.autocomplete.impl.Option;
 
@@ -45,7 +46,10 @@ public class JpqlSuggestionFactory {
 
         HintProvider provider = new HintProvider(domainModel);
         try {
-            HintResponse response = provider.requestHint(query, queryPosition);
+            HintRequest request = new HintRequest();
+            request.setQuery(query);
+            request.setPosition(queryPosition);
+            HintResponse response = provider.requestHint(request);
             String prefix = response.getLastWord();
             List<Option> options = response.getOptionObjects();
 

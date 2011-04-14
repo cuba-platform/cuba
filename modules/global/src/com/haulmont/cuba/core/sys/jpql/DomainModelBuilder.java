@@ -25,7 +25,7 @@ public class DomainModelBuilder {
         DomainModel result = new DomainModel();
         EntityBuilder builder = new EntityBuilder();
         for (MetaClass aClass : classes) {
-            builder.startNewEntity(aClass);
+            builder.startNewEntity(aClass.getName());
 
             Collection<MetaProperty> props = aClass.getProperties();
             for (MetaProperty prop : props) {

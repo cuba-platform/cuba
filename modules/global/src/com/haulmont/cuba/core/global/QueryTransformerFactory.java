@@ -10,13 +10,30 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.cuba.core.sys.jpql.DomainModel;
+import com.haulmont.cuba.core.sys.jpql.DomainModelBuilder;
+import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
+import org.antlr.runtime.RecognitionException;
+
 /**
  * Factory to get {@link QueryParser} and {@link QueryTransformer} instances
  */
-public class QueryTransformerFactory
-{
+public class QueryTransformerFactory {
+    private static boolean useAst = false;
+
     public static QueryTransformer createTransformer(String query, String targetEntity) {
-        return new QueryTransformerRegex(query, targetEntity);
+        if (useAst) {
+            try {
+                DomainModelBuilder builder = new DomainModelBuilder();
+                DomainModel domainModel = builder.produce(MetadataHelper.getAllPersistentMetaClasses());
+                //todo кэшировать метамодель - слишком долго строить каждый раз
+                return new QueryTransformerAstBased(domainModel, query, targetEntity);
+            } catch (RecognitionException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            return new QueryTransformerRegex(query, targetEntity);
+        }
     }
 
     public static QueryParser createParser(String query) {

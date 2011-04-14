@@ -1,7 +1,6 @@
 package com.haulmont.cuba.gui.autocomplete.impl;
 
 import com.haulmont.cuba.core.sys.jpql.*;
-import com.haulmont.cuba.core.sys.jpql.Parser;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.pointer.CollectionPointer;
@@ -10,10 +9,13 @@ import com.haulmont.cuba.core.sys.jpql.pointer.NoPointer;
 import com.haulmont.cuba.core.sys.jpql.pointer.Pointer;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.TreeVisitor;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * User: Alex Chevelev
@@ -23,6 +25,8 @@ import java.util.List;
 public class HintProvider {
     private DomainModel model;
     private static final char CARET_POSITION_SYMBOL = '~';
+    public static final Pattern COLLECTION_MEMBER_PATTERN = Pattern.compile(".*\\sin\\s*[(]\\s*[a-zA-Z0-9]+[.][a-zA-Z0-9.]*$");
+    public static final Pattern JOIN_PATTERN = Pattern.compile(".*\\sjoin\\s*[a-zA-Z0-9]+[.][a-zA-Z0-9.]*$");
 
     public HintProvider(DomainModel model) {
         if (model == null)
@@ -34,12 +38,16 @@ public class HintProvider {
         if (caretPosition < 0)
             return "";
 
-        // todo
+        // todo только ли пробелы здесь возможны?
         if (queryString.charAt(caretPosition) == ' ') {
             return "";
         }
         int lastWordStart = queryString.lastIndexOf(' ', caretPosition);
-        return queryString.substring(lastWordStart + 1, caretPosition + 1);
+        String result = queryString.substring(lastWordStart + 1, caretPosition + 1);
+        if (result.startsWith("in("))
+            result = result.substring(3);
+
+        return result;
     }
 
     public HintResponse requestHint(String queryStringWithCaret) throws RecognitionException {
@@ -54,29 +62,30 @@ public class HintProvider {
         String queryString = queryStringWithCaret.substring(0, caretPosition + 1) +
                 queryStringWithCaret.substring(caretPosition + 2);
 
-        return requestHint(queryString, caretPosition);
+        MacroProcessor macroProcessor = new MacroProcessor();
+        HintRequest hintRequest = macroProcessor.inlineFake(queryString, caretPosition);
+        return requestHint(hintRequest);
     }
 
-    public HintResponse requestHint(String input, int cursorPos) throws RecognitionException {
-        // todo текст-дерево-обратная генерация запроса по дереву будет съедать эти символы в исходном выражении
-        input = input.replace("\n", " ");
-        input = input.replace("\r", " ");
-        input = input.replace("\t", " ");
+    public HintResponse requestHint(HintRequest hintRequest) throws RecognitionException {
+        String input = hintRequest.getQuery();
+        int cursorPos = hintRequest.getPosition();
+        Set<InferredType> expectedTypes = hintRequest.getExpectedTypes() == null ?
+                EnumSet.of(InferredType.Any) :
+                hintRequest.getExpectedTypes();
         String lastWord = getLastWord(input, cursorPos);
-
-        CommonTree tree = Parser.parse(input);
+        expectedTypes = narrowExpectedTypes(input, cursorPos, expectedTypes);
 
         return (!lastWord.contains(".")) ?
                 hintEntityName(lastWord) :
-                hintFieldName(lastWord, tree, cursorPos);
+                hintFieldName(lastWord, input, cursorPos, expectedTypes);
     }
 
-    private HintResponse hintFieldName(String lastWord, CommonTree tree, int caretPosition) {
-        TreeVisitor visitor = new TreeVisitor();
-        IdVarSelector idVarSelector = new IdVarSelector(model);
-        visitor.visit(tree, idVarSelector);
-        List<ErrorRec> errorRecs = idVarSelector.getInvalidNodes();
-        QueryVariableContext root = idVarSelector.getContextTree();
+    private HintResponse hintFieldName(String lastWord, String input, int caretPosition, Set<InferredType> expectedTypes) throws RecognitionException {
+        QueryTreeAnalyzer queryAnalyzer = new QueryTreeAnalyzer();
+        queryAnalyzer.prepare(model, input);
+        List<ErrorRec> errorRecs = queryAnalyzer.getInvalidIdVarNodes();
+        QueryVariableContext root = queryAnalyzer.getRootQueryVariableContext();
         QueryVariableContext queryVC = root.getContextByCaretPosition(caretPosition);
 
         EntityPath path = EntityPath.parseEntityPath(lastWord);
@@ -100,7 +109,7 @@ public class HintProvider {
 
         Entity targetEntity = ((EntityPointer) pointer).getEntity();
         List<Attribute> attributes = targetEntity.findAttributesStartingWith(
-                path.lastEntityFieldPattern);
+                path.lastEntityFieldPattern, expectedTypes);
 
         List<Option> options = new ArrayList<Option>();
         for (Attribute attribute : attributes) {
@@ -132,5 +141,21 @@ public class HintProvider {
             options.add(new Option(entity.getName(), entity.getUserFriendlyName()));
         }
         return new HintResponse(options, lastWord);
+    }
+
+    public static Set<InferredType> narrowExpectedTypes(String input, int cursorPos, Set<InferredType> expectedTypes) {
+        if (input.charAt(cursorPos) == ' ') {
+            return expectedTypes;
+        }
+        String matchingInput = input.substring(0, cursorPos + 1);
+        Matcher matcher = COLLECTION_MEMBER_PATTERN.matcher(matchingInput);
+        if (matcher.matches()) {
+            return EnumSet.of(InferredType.Collection, InferredType.Entity);
+        }
+        matcher = JOIN_PATTERN.matcher(matchingInput);
+        if (matcher.matches()) {
+            return EnumSet.of(InferredType.Collection, InferredType.Entity);
+        }
+        return expectedTypes;
     }
 }

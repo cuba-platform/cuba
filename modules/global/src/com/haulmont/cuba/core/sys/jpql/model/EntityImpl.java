@@ -1,9 +1,8 @@
 package com.haulmont.cuba.core.sys.jpql.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.haulmont.cuba.core.sys.jpql.InferredType;
+
+import java.util.*;
 
 /**
  * User: Alex Chevelev
@@ -55,11 +54,18 @@ public class EntityImpl implements Entity {
         return name2attribute.get(attributeName);
     }
 
-    public List<Attribute> findAttributesStartingWith(String fieldNamePattern) {
+    public List<Attribute> findAttributesStartingWith(String fieldNamePattern, Set<InferredType> expectedTypes) {
         List<Attribute> result = new ArrayList<Attribute>();
         for (Map.Entry<String, AttributeImpl> entry : name2attribute.entrySet()) {
-            if (entry.getKey().startsWith(fieldNamePattern))
-                result.add(entry.getValue());
+            if (entry.getKey().startsWith(fieldNamePattern)) {
+                for (InferredType expectedType : expectedTypes) {
+                    AttributeImpl attribute = entry.getValue();
+                    if (expectedType.matches(attribute)) {
+                        result.add(attribute);
+                        break;
+                    }
+                }
+            }
         }
         return result;
     }

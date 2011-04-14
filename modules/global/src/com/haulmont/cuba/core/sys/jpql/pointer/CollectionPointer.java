@@ -8,7 +8,7 @@ import com.haulmont.cuba.core.sys.jpql.model.Entity;
  * Date: 01.11.2010
  * Time: 0:27:12
  */
-public class CollectionPointer implements Pointer {
+public class CollectionPointer implements com.haulmont.cuba.core.sys.jpql.pointer.Pointer {
     private Entity entity;
 
     public CollectionPointer(Entity entity) {

@@ -1,15 +1,19 @@
 package com.haulmont.cuba.core.sys.jpql.tree;
 
+import com.haulmont.cuba.core.sys.jpql.ErrorRec;
+import com.haulmont.cuba.core.sys.jpql.QueryBuilder;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
+
+import java.util.List;
 
 /**
  * Author: Alexander Chevelev
  * Date: 20.10.2010
  * Time: 23:20:41
  */
-public class QueryNode extends CommonTree {
+public class QueryNode extends BaseCustomNode {
     private Token lastToken;
 
     private QueryNode(Token token, Token lastToken) {
@@ -34,7 +38,27 @@ public class QueryNode extends CommonTree {
 
     @Override
     public Tree dupNode() {
-        return new QueryNode(token, lastToken);
+        QueryNode result = new QueryNode(token, lastToken);
+        dupChildren(result);
+        return result;
     }
 
+    @Override
+    public String toStringTree() {
+        return super.toStringTree();
+    }
+
+    public CommonTree treeToQueryPre(QueryBuilder sb, List<ErrorRec> invalidNodes) {
+        sb.appendString(getText());
+        return this;
+    }
+
+    public CommonTree treeToQueryPost(QueryBuilder sb, List<ErrorRec> invalidNodes) {
+        if (parent != null) {
+            if (' ' == sb.getLast())
+                sb.deleteLast();
+            sb.appendString(") ");
+        }
+        return this;
+    }
 }

@@ -11,21 +11,25 @@ import com.haulmont.cuba.core.global.MessageUtils;
 public class EntityBuilder {
     private EntityImpl result;
 
-//    public EntityImpl produce(String entityName) {
-//        return new EntityImpl(entityName);
-//    }
-//
-//    public Entity produce(String entityName, String... stringAttributeNames) {
-//        EntityImpl result = new EntityImpl(entityName);
-//        for (String stringAttributeName : stringAttributeNames) {
-//            result.addSingleValueAttribute(String.class, stringAttributeName);
-//        }
-//        return result;
-//    }
+    public EntityImpl produceImmediately(String entityName) {
+        return new EntityImpl(entityName);
+    }
 
     public void startNewEntity(MetaClass metaClass) {
         result = new EntityImpl(metaClass.getName());
         result.setUserFriendlyName(MessageUtils.getEntityCaption(metaClass));
+    }
+
+    public Entity produceImmediately(String entityName, String... stringAttributeNames) {
+        EntityImpl result = new EntityImpl(entityName);
+        for (String stringAttributeName : stringAttributeNames) {
+            result.addSingleValueAttribute(String.class, stringAttributeName);
+        }
+        return result;
+    }
+
+    public void startNewEntity(String name) {
+        result = new EntityImpl(name);
     }
 
     public void addStringAttribute(String name) {
