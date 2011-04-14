@@ -20,6 +20,8 @@ import java.util.*;
 public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Container {
     private static final long serialVersionUID = -2956008661221108673L;
 
+    private Stack<Component> openedComponents = new Stack<Component>();
+
     protected TabSheetActionsManager actionManager;
 
     protected TabSheetActionsManager getActionManager() {
@@ -49,13 +51,37 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
 
     @Override
     public void changeVariables(Object source, Map variables) {
-        super.changeVariables(source, variables);
+        if (variables.containsKey("close")) {
+            final Component tab = (Component) keyMapper.get((String) variables
+                    .get("close"));
+            if (tab != null) {
+                while (openedComponents.removeElement(tab))
+                    openedComponents.removeElement(tab);
+                if ((!openedComponents.empty()) && (selected.equals(tab)))
+                    setSelectedTab(openedComponents.pop());
+                closeHandler.onTabClose(this, tab);
+            }
+        } else {
+            super.changeVariables(source, variables);
+        }
         if (actionManager != null) {
             getActionManager().handleActions(variables, this);
         }
     }
 
+    @Override
+    public void setSelectedTab(Component c) {
+        if (c != null && components.contains(c) && !c.equals(selected)) {
+            selected = c;
+            openedComponents.push(c);
+            fireSelectedTabChange();
+            requestRepaint();
+        }
+    }
+
     protected void closeTab(Component tab) {
+        while (openedComponents.removeElement(tab))
+                    openedComponents.removeElement(tab);
         if (closeHandler != null) {
             closeHandler.onTabClose(this, tab);
         }
