@@ -111,11 +111,6 @@ public class WebWindowManager extends WindowManager {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    protected DataService createDefaultDataService() {
-        return new GenericDataService();
-    }
-
-    @Override
     public Collection<Window> getOpenWindows() {
         return new ArrayList<Window>(getWindowOpenMode().keySet());
     }
@@ -287,12 +282,7 @@ public class WebWindowManager extends WindowManager {
             getWindowOpenMode().put(window, openMode);
         }
 
-        if (window.getContext() != null &&
-                !BooleanUtils.isTrue((Boolean) window.getContext().getParams().get("disableApplySettings")) && newTab) {
-            window.applySettings(new SettingsImpl(window.getId()));
-        }
-
-        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+        afterShowWindow(window, newTab);
     }
 
     private void closeStartupScreen(AppWindow appWindow) {

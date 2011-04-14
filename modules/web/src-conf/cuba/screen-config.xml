@@ -1,7 +1,6 @@
 <screen-config xmlns="http://www.haulmont.com/schema/cuba/gui/screen-config.xsd">
 
-    <screen id="tableTest"
-            class="com.haulmont.cuba.web.app.ui.LazyLoadingTableScreen"/>
+    <include file="/com/haulmont/cuba/gui/screen-config.xml"/>
 
     <screen id="core$Server.browse"
             template="/com/haulmont/cuba/web/app/ui/core/server/server-browse.xml"/>
@@ -12,56 +11,8 @@
     <screen id="core$FileDescriptor.edit"
             template="/com/haulmont/cuba/web/app/ui/core/file/file-edit.xml"/>
 
-    <screen id="sec$User.browse"
-            template="/com/haulmont/cuba/gui/app/security/user/browse/user-browse.xml"/>
-    <screen id="sec$User.lookup"
-            template="/com/haulmont/cuba/gui/app/security/user/browse/user-lookup.xml"/>
-
-    <screen id="sec$User.edit"
-            template="/com/haulmont/cuba/gui/app/security/user/edit/user-edit.xml"/>
-
-    <screen id="sec$User.changePassw"
-            template="/com/haulmont/cuba/gui/app/security/user/changepassw/user-changepassw.xml"/>
-
-    <screen id="sec$UserSubstitution.edit"
-            template="/com/haulmont/cuba/gui/app/security/usersubst/edit/usersubst-edit.xml"/>
-
-    <screen id="sec$Group.edit"
-            template="/com/haulmont/cuba/gui/app/security/group/edit/group-edit.xml"/>
-
-    <screen id="sec$Group.browse"
-            template="/com/haulmont/cuba/gui/app/security/group/browse/group-browse.xml"/>
-
-    <screen id="sec$Group.lookup"
-            template="/com/haulmont/cuba/gui/app/security/group/lookup/group-lookup.xml"/>
-
-    <screen id="sec$Role.browse"
-            template="/com/haulmont/cuba/gui/app/security/role/browse/role-browse.xml"/>
-    <screen id="sec$Role.edit"
-            template="/com/haulmont/cuba/gui/app/security/role/edit/role-edit.xml"/>
-
-    <screen id="sec$Target.entityPermissions.lookup"
-            template="/com/haulmont/cuba/gui/app/security/role/edit/entity-permission-lookup.xml"/>
-    <screen id="sec$Target.propertyPermissions.lookup"
-            template="/com/haulmont/cuba/gui/app/security/role/edit/property-permission-lookup.xml"/>
-    <screen id="sec$Target.screenPermissions.lookup"
-            template="/com/haulmont/cuba/gui/app/security/role/edit/screen-permission-lookup.xml"/>
-    <screen id="sec$Target.specificPermissions.lookup"
-            template="/com/haulmont/cuba/gui/app/security/role/edit/specific-permission-lookup.xml"/>
-    <screen id="sec$Permission.show"
-            template="/com/haulmont/cuba/gui/app/security/role/edit/permission-show.xml"/>
-
     <screen id="cuba$ExcelExport"
             template="/com/haulmont/cuba/web/app/ui/export/excel/excel-export.xml"/>
-
-    <screen id="sec$UserSessionEntity.browse"
-            template="/com/haulmont/cuba/gui/app/security/session/browse/session-browse.xml"/>
-
-    <screen id="sec$Constraint.edit"
-            template="/com/haulmont/cuba/gui/app/security/constraint/edit/constraint-edit.xml"/>
-
-    <screen id="sec$SessionAttribute.edit"
-            template="/com/haulmont/cuba/gui/app/security/sessionattr/edit/session-attr-edit.xml"/>
 
     <screen id="settings"
             template="/com/haulmont/cuba/web/app/ui/core/settings/settings-window.xml"/>
@@ -71,12 +22,6 @@
 
     <screen id="logWindow"
             class="com.haulmont.cuba.web.log.LogWindowLauncher"/>
-
-    <screen id="core$SimpleLookup"
-            template="/com/haulmont/cuba/gui/app/core/lookup/simple-lookup.xml"/>
-
-    <screen id="core$LockInfo.browse"
-            template="/com/haulmont/cuba/gui/app/core/locking/lock-browse.xml"/>
 
     <screen id="fts$Search"
             class="com.haulmont.fts.web.ui.results.SearchLauncher"/>

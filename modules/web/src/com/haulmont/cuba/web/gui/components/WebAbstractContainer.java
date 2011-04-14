@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.ui.AbstractOrderedLayout;
@@ -66,7 +67,7 @@ class WebAbstractContainer extends AbstractOrderedLayout
     }
 
     public Collection<Component> getComponents() {
-        return WebComponentsHelper.getComponents(this);
+        return ComponentsHelper.getComponents(this);
     }
 
     public String getId() {

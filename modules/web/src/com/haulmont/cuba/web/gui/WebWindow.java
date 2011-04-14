@@ -472,7 +472,7 @@ public class WebWindow
             Component frame = allComponents.get(elements[0]);
             if (frame != null && frame instanceof Container) {
                 final List<String> subList = Arrays.asList(elements).subList(1, elements.length);
-                String subPath = ValuePathHelper.format(subList.toArray(new String[]{}));
+                String subPath = ValuePathHelper.format(subList.toArray(new String[subList.size()]));
                 return (T) ((Container) frame).getComponent(subPath);
             } else
                 return null;

@@ -7,7 +7,7 @@
  * Created: 19.12.2008 16:05:08
  * $Id$
  */
-package com.haulmont.cuba.web.xml.layout;
+package com.haulmont.cuba.web.gui;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.charts.BarChart;

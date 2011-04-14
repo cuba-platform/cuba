@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
@@ -57,6 +58,8 @@ public class DesktopAppContextLoader {
 
     private void initAppProperties() {
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.DESKTOP.toString());
+        AppContext.setProperty(AppConfig.IMPL_PROP, DesktopAppConfig.class.getName());
+        AppContext.setProperty(AppConfig.WINDOW_CONFIG_IMPL_PROP, WindowConfig.class.getName());
 
         String appPropertiesConfig = System.getProperty(APP_PROPERTIES_CONFIG_SYS_PROP);
         if (StringUtils.isBlank(appPropertiesConfig))

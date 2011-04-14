@@ -63,6 +63,7 @@
         <ext:install-lib groupId="org.springframework" artifactId="spring-asm" version="${springframework.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="org.springframework" artifactId="spring-expression" version="${springframework.version}" toDir="${lib.common.dir}"/>
         <ext:install-lib groupId="org.springframework" artifactId="spring-web" version="${springframework.version}" toDir="${lib.common.dir}"/>
+        <ext:install-lib groupId="org.springframework" artifactId="spring-tx" version="${springframework.version}" toDir="${lib.common.dir}"/>
 
         <ext:install-lib groupId="xerces" artifactId="xercesImpl" version="${xercesImpl.version}" toDir="${lib.common.dir}"/>
         <!--<ext:install-lib name="jaxen" version="${jaxen.version}" toDir="${lib.common.dir}"/>-->
@@ -78,7 +79,6 @@
 
         <ext:install-lib groupId="org.springframework" artifactId="spring-jdbc" version="${springframework.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib groupId="org.springframework" artifactId="spring-orm" version="${springframework.version}" toDir="${lib.server.dir}"/>
-        <ext:install-lib groupId="org.springframework" artifactId="spring-tx" version="${springframework.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib groupId="org.springframework" artifactId="spring-context-support" version="${springframework.version}" toDir="${lib.server.dir}"/>
 
         <ext:install-lib groupId="org.apache.commons" artifactId="commons-compress" version="${commons-compress.version}" toDir="${lib.server.dir}"/>
@@ -125,6 +125,9 @@
         <!--XStream-->
         <ext:install-lib groupId="com.haulmont.thirdparty" artifactId="xstream" version="${xstream.version}" toDir="${lib.server.dir}"/>
         <ext:install-lib groupId="xpp3" artifactId="xpp3_min" version="${xpp3.version}" toDir="${lib.server.dir}"/>
+
+        <!-- Desktop libs -->
+        <ext:install-lib groupId="com.haulmont.thirdparty" artifactId="miglayout" version="${miglayout.version}" toDir="${lib.desktop.dir}"/>
 	</target>
 	
 	<target name="compile">

@@ -25,6 +25,8 @@ import java.util.UUID;
 @MappedSuperclass
 public class BaseUuidEntity implements BaseEntity<UUID>
 {
+    private static final long serialVersionUID = -2217624132287086972L;
+
     @Id
     @Column(name = "ID")
     @Persistent

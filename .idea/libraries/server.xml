@@ -6,7 +6,6 @@
     <JAVADOC />
     <SOURCES>
       <root url="jar://$PROJECT_DIR$/../lib/server/src/cas-client-core-sources.jar!/" />
-      <root url="jar://$PROJECT_DIR$/../lib/server/src/spring-tx-sources.jar!/" />
       <root url="jar://$PROJECT_DIR$/../lib/server/src/spring-orm-sources.jar!/" />
       <root url="jar://$PROJECT_DIR$/../lib/server/src/xpp3_min-sources.jar!/" />
       <root url="jar://$PROJECT_DIR$/../lib/server/src/ooo-bootstrapconnector-sources.jar!/" />

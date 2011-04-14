@@ -20,6 +20,9 @@ import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
+import com.haulmont.cuba.gui.data.impl.GenericDataService;
+import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
@@ -30,6 +33,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.PermissionType;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -87,7 +91,9 @@ public abstract class WindowManager implements Serializable {
         return settingService;
     }
 
-    protected abstract DataService createDefaultDataService();
+    protected DataService createDefaultDataService() {
+        return new GenericDataService();
+    }
 
     public abstract Collection<Window> getOpenWindows();
 
@@ -579,6 +585,15 @@ public abstract class WindowManager implements Serializable {
     protected abstract void showWindow(Window window, String caption, String description, OpenType openType);
 
     protected abstract void showFrame(Component parent, IFrame frame);
+
+    protected void afterShowWindow(Window window, boolean newTab) {
+        if (window.getContext() != null &&
+                !BooleanUtils.isTrue((Boolean) window.getContext().getParams().get("disableApplySettings")) && newTab) {
+            window.applySettings(new SettingsImpl(window.getId()));
+        }
+
+        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+    }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

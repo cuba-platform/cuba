@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.entity.Updatable;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Column;
 import javax.persistence.Version;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -27,6 +28,8 @@ public class HardDeleteEntity
         extends BaseUuidEntity
         implements Versioned, Updatable
 {
+    private static final long serialVersionUID = -7868980589172607336L;
+
     @Version
     @Column(name = "VERSION")
     protected Integer version;

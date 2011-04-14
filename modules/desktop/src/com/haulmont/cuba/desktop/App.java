@@ -6,8 +6,13 @@
 
 package com.haulmont.cuba.desktop;
 
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.sys.DesktopAppContextLoader;
+import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
+import com.haulmont.cuba.desktop.sys.MenuBuilder;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.security.global.LoginException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
@@ -21,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.Locale;
 
 /**
  * <p>$Id$</p>
@@ -31,13 +37,17 @@ public class App implements ConnectionListener {
 
     protected static App app;
 
+    private Log log;
+
     protected JFrame frame;
 
     protected JMenuBar menuBar;
 
     protected Connection connection;
 
-    private Log log;
+    protected DesktopWindowManager windowManager;
+
+    private JTabbedPane tabsPane;
 
     public static void main(String[] args) {
         app = new App();
@@ -62,10 +72,13 @@ public class App implements ConnectionListener {
 
         try {
             initConnection();
-            initUI();
 
             DesktopAppContextLoader contextLoader = new DesktopAppContextLoader(getDefaultAppPropertiesConfig());
             contextLoader.load();
+
+            windowManager = new DesktopWindowManager();
+
+            initUI();
         } catch (Throwable t) {
             log.error("Error initializing application", t);
             System.exit(-1);
@@ -80,6 +93,10 @@ public class App implements ConnectionListener {
 
     public Connection getConnection() {
         return connection;
+    }
+
+    public JTabbedPane getTabsPane() {
+        return tabsPane;
     }
 
     protected void showLoginDialog() {
@@ -183,12 +200,14 @@ public class App implements ConnectionListener {
         menuBar = new JMenuBar();
         pane.add(menuBar, BorderLayout.NORTH);
 
-        JMenu menu = new JMenu("File");
+        Locale loc = Locale.getDefault();
+
+        JMenu menu = new JMenu(MessageProvider.getMessage(AppConfig.getMessagesPack(), "mainMenu.file", loc));
         menuBar.add(menu);
 
         JMenuItem item;
 
-        item = new JMenuItem("Connect");
+        item = new JMenuItem(MessageProvider.getMessage(AppConfig.getMessagesPack(), "mainMenu.connect", loc));
         item.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -198,7 +217,7 @@ public class App implements ConnectionListener {
         );
         menu.add(item);
 
-        item = new JMenuItem("Exit");
+        item = new JMenuItem(MessageProvider.getMessage(AppConfig.getMessagesPack(), "mainMenu.exit", loc));
         item.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -228,12 +247,12 @@ public class App implements ConnectionListener {
     protected JComponent createMenuBar() {
         menuBar = new JMenuBar();
 
-        JMenu menu = new JMenu("File");
+        JMenu menu = new JMenu(MessageProvider.getMessage(AppConfig.getMessagesPack(), "mainMenu.file"));
         menuBar.add(menu);
 
         JMenuItem item;
 
-        item = new JMenuItem("Disconnect");
+        item = new JMenuItem(MessageProvider.getMessage(AppConfig.getMessagesPack(), "mainMenu.disconnect"));
         item.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -243,7 +262,7 @@ public class App implements ConnectionListener {
         );
         menu.add(item);
 
-        item = new JMenuItem("Exit");
+        item = new JMenuItem(MessageProvider.getMessage(AppConfig.getMessagesPack(), "mainMenu.exit"));
         item.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -252,6 +271,9 @@ public class App implements ConnectionListener {
                 }
         );
         menu.add(item);
+
+        MenuBuilder builder = new MenuBuilder(connection.getSession(), menuBar);
+        builder.build();
 
         return menuBar;
     }
@@ -269,18 +291,33 @@ public class App implements ConnectionListener {
         return pane;
     }
 
-    private JComponent createTabsPane() {
-        return new JTabbedPane();
+    protected JComponent createTabsPane() {
+        tabsPane = new JTabbedPane();
+        return tabsPane;
+    }
+
+    protected void initExceptionHandlers(boolean isConnected) {
+        // TODO
     }
 
     public void connectionStateChanged(Connection connection) throws LoginException {
         if (connection.isConnected()) {
             frame.setContentPane(createContentPane());
             frame.repaint();
+            initExceptionHandlers(true);
         } else {
             frame.setContentPane(createStartContentPane());
             frame.repaint();
+            initExceptionHandlers(false);
             showLoginDialog();
         }
+    }
+
+    public WindowManager getWindowManager() {
+        return windowManager;
+    }
+
+    public JFrame getMainFrame() {
+        return frame;
     }
 }

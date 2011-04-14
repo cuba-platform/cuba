@@ -10,12 +10,8 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.app.DataService;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
@@ -25,6 +21,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.config.MenuCommand;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.config.WindowInfo;
@@ -43,9 +40,7 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.*;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.Element;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -540,7 +535,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         return null;
     }
 
-    private void createShortcut(MenuBar.MenuItem menuItem, MenuItem item) {
+    private void assignShortcut(MenuBar.MenuItem menuItem, MenuItem item) {
         if (item.getShortcut() != null) {
             MenuShortcutAction shortcut = new MenuShortcutAction(menuItem, "shortcut_" + item.getId(), item.getShortcut());
             this.addAction(shortcut);
@@ -558,9 +553,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         final UserSession session = connection.getSession();
         if (item.isPermitted(session)) {
             MenuBar.MenuItem menuItem = menuBar.addItem(MenuConfig.getMenuItemCaption(item.getId()), createMenuBarCommand(item));
-            createShortcut(menuItem, item);
+            assignShortcut(menuItem, item);
             createSubMenu(menuItem, item, session);
-            createDebugIds(menuItem, item);
+            assignDebugIds(menuItem, item);
             if (isMenuItemEmpty(menuItem)) {
                 menuBar.removeItem(menuItem);
             }
@@ -573,15 +568,15 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                 if (child.getChildren().isEmpty()) {
                     if (child.isPermitted(session)) {
                         MenuBar.MenuItem menuItem = (child.isSeparator()) ? vItem.addSeparator() : vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), createMenuBarCommand(child));
-                        createShortcut(menuItem, child);
-                        createDebugIds(menuItem, child);
+                        assignShortcut(menuItem, child);
+                        assignDebugIds(menuItem, child);
                     }
                 } else {
                     if (child.isPermitted(session)) {
                         MenuBar.MenuItem menuItem = vItem.addItem(MenuConfig.getMenuItemCaption(child.getId()), null);
-                        createShortcut(menuItem, child);
+                        assignShortcut(menuItem, child);
                         createSubMenu(menuItem, child, session);
-                        createDebugIds(menuItem, child);
+                        assignDebugIds(menuItem, child);
                         if (isMenuItemEmpty(menuItem)) {
                             vItem.removeChild(menuItem);
                         }
@@ -591,7 +586,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         }
     }
 
-    private void createDebugIds(MenuBar.MenuItem menuItem, MenuItem conf) {
+    private void assignDebugIds(MenuBar.MenuItem menuItem, MenuItem conf) {
         if (menuBar.getDebugId() != null && !conf.isSeparator()) {
             menuBar.setDebugId(menuItem, menuBar.getDebugId() + ":" + conf.getId());
         }
@@ -605,7 +600,12 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         } catch (NoSuchScreenException e) {
             return null;
         }
-        return new MainMenuCommand(item, windowInfo);
+        final MenuCommand command = new MenuCommand(App.getInstance().getWindowManager(), item, windowInfo);
+        return new com.vaadin.ui.MenuBar.Command() {
+            public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
+                command.execute();
+            }
+        };
     }
 
     protected void fillSubstitutedUsers(AbstractSelect select) {
@@ -795,100 +795,6 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                 );
             }
 
-        }
-    }
-
-    public static class MainMenuCommand implements MenuBar.Command {
-
-        private final MenuItem item;
-        private final WindowInfo windowInfo;
-
-        public MainMenuCommand(MenuItem item, WindowInfo windowInfo) {
-            this.item = item;
-            this.windowInfo = windowInfo;
-        }
-
-        public void menuSelected(MenuBar.MenuItem selectedItem) {
-            String caption = MenuConfig.getMenuItemCaption(item.getId());
-
-            Map<String, Object> params = new HashMap<String, Object>();
-            Element descriptor = item.getDescriptor();
-            for (Element element : Dom4j.elements(descriptor, "param")) {
-                String value = element.attributeValue("value");
-                EntityLoadInfo info = EntityLoadInfo.parse(value);
-                if (info == null) {
-                    if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
-                        Boolean booleanValue = Boolean.valueOf(value);
-                        params.put(element.attributeValue("name"), booleanValue);
-                    } else {
-                        params.put(element.attributeValue("name"), value);
-                    }
-                } else
-                    params.put(element.attributeValue("name"), loadEntityInstance(info));
-            }
-            params.put("caption", caption);
-
-            WindowManager.OpenType openType = WindowManager.OpenType.NEW_TAB;
-            String openTypeStr = descriptor.attributeValue("openType");
-            if (openTypeStr != null) {
-                openType = WindowManager.OpenType.valueOf(openTypeStr);
-            }
-
-            if (openType == WindowManager.OpenType.DIALOG) {
-                String resizable = descriptor.attributeValue("resizable");
-                if (!StringUtils.isEmpty(resizable)) {
-                    App.getInstance().getWindowManager().getDialogParams()
-                            .setResizable(BooleanUtils.toBoolean(resizable));
-                }
-            }
-
-            final String id = windowInfo.getId();
-            if (id.endsWith(".create") || id.endsWith(".edit")) {
-                Entity entityItem;
-                if (params.containsKey("item")) {
-                    entityItem = (Entity) params.get("item");
-                } else {
-                    final String[] strings = id.split("[.]");
-                    String metaClassName;
-                    if (strings.length == 2)
-                        metaClassName = strings[0];
-                    else if (strings.length == 3)
-                        metaClassName = strings[1];
-                    else
-                        throw new UnsupportedOperationException();
-
-                    final MetaClass metaClass = MetadataProvider.getSession().getClass(metaClassName);
-                    if (metaClass == null)
-                        throw new IllegalStateException(String.format("Can't find metaClass %s", metaClassName));
-
-                    try {
-                        entityItem = metaClass.createInstance();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                App.getInstance().getWindowManager().openEditor(
-                        windowInfo,
-                        entityItem,
-                        openType,
-                        params
-                );
-            } else {
-                App.getInstance().getWindowManager().openWindow(
-                        windowInfo,
-                        openType,
-                        params
-                );
-            }
-        }
-
-        private Entity loadEntityInstance(EntityLoadInfo info) {
-            DataService ds = ServiceLocator.getDataService();
-            LoadContext ctx = new LoadContext(info.getMetaClass()).setId(info.getId());
-            if (info.getViewName() != null)
-                ctx.setView(info.getViewName());
-            Entity entity = ds.load(ctx);
-            return entity;
         }
     }
 

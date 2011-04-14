@@ -6,8 +6,15 @@
 
 package com.haulmont.cuba.desktop;
 
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.security.app.LoginService;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,18 +31,35 @@ public class Connection {
 
     private boolean connected;
 
+    private UserSession session;
+
+    private Log log = LogFactory.getLog(Connection.class);
+
     public void login(String login, String password, Locale locale) throws LoginException {
+        LoginService loginService = ServiceLocator.lookup(LoginService.NAME);
+        session = loginService.login(login, password, locale);
+        AppContext.setSecurityContext(new SecurityContext(session.getId()));
+
         connected = true;
         fireConnectionListeners();
     }
 
     public void logout() {
+        try {
+            LoginService loginService = ServiceLocator.lookup(LoginService.NAME);
+            loginService.logout();
+            AppContext.setSecurityContext(null);
+        } catch (Exception e) {
+            log.warn("Error on logout", e);
+        }
+
         connected = false;
         try {
             fireConnectionListeners();
         } catch (LoginException e) {
-            //
+            log.warn("Error on logout", e);
         }
+        session = null;
     }
 
     public boolean isConnected() {
@@ -43,7 +67,7 @@ public class Connection {
     }
 
     public UserSession getSession() {
-        return null;
+        return session;
     }
 
     public void addListener(ConnectionListener listener) {

@@ -35,6 +35,7 @@
       <root url="jar://$PROJECT_DIR$/../lib/common/src/spring-expression-sources.jar!/" />
       <root url="jar://$PROJECT_DIR$/../lib/common/src/guava-sources.jar!/" />
       <root url="jar://$PROJECT_DIR$/../lib/common/src/spring-web-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/common/src/spring-tx-sources.jar!/" />
     </SOURCES>
     <jarDirectory url="file://$PROJECT_DIR$/../lib/common" recursive="false" />
   </library>

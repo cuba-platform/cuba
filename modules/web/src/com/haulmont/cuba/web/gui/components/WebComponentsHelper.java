@@ -103,6 +103,10 @@ public class WebComponentsHelper {
         return (com.vaadin.ui.Component) comp;
     }
 
+    /**
+     * @deprecated Use ComponentsHelper.getComponents() instead
+     */
+    @Deprecated
     public static Collection<com.haulmont.cuba.gui.components.Component> getComponents(
             com.haulmont.cuba.gui.components.Component.Container container) {
         final Collection<com.haulmont.cuba.gui.components.Component> ownComponents = container.getOwnComponents();
@@ -142,7 +146,7 @@ public class WebComponentsHelper {
                 final List<String> subpath = Arrays.asList(elements).subList(1, elements.length);
                 if (component instanceof com.haulmont.cuba.gui.components.Component.Container) {
                     return ((com.haulmont.cuba.gui.components.Component.Container) component).<T>getComponent(
-                            ValuePathHelper.format(subpath.toArray(new String[]{})));
+                            ValuePathHelper.format(subpath.toArray(new String[subpath.size()])));
                 } else {
                     return null;
                 }

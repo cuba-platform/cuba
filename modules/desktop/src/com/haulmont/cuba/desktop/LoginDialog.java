@@ -6,7 +6,13 @@
 
 package com.haulmont.cuba.desktop;
 
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
+import net.miginfocom.swing.MigLayout;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,27 +31,40 @@ public class LoginDialog extends JDialog {
 
     public LoginDialog(Connection connection) {
         this.connection = connection;
-        setTitle("Login");
+        setTitle(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.caption", Locale.getDefault()));
         setContentPane(createContentPane());
-        setSize(300, 200);
-//        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setResizable(false);
+        pack();
     }
 
     private Container createContentPane() {
-        JPanel contentPane = new JPanel(new BorderLayout());
-        contentPane.add(createButtonsPane(), BorderLayout.SOUTH);
-        return contentPane;
-    }
+        MigLayout layout = new MigLayout("fillx, insets dialog", "[right][]");
+        JPanel panel = new JPanel(layout);
 
-    private JComponent createButtonsPane() {
-        JPanel buttonsPane = new JPanel(new FlowLayout());
+        panel.add(new JLabel(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.loginField", Locale.getDefault())));
 
-        JButton loginBtn = new JButton("Login");
+        final JTextField nameField = new JTextField();
+        String defaultName = AppContext.getProperty("cuba.desktop.loginDialogDefaultUser");
+        if (!StringUtils.isBlank(defaultName))
+            nameField.setText(defaultName);
+        panel.add(nameField, "width 150!, wrap");
+
+        panel.add(new JLabel(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.passwordField", Locale.getDefault())));
+
+        final JTextField passwordField = new JPasswordField();
+        String defaultPassword = AppContext.getProperty("cuba.desktop.loginDialogDefaultPassword");
+        if (!StringUtils.isBlank(defaultPassword))
+            passwordField.setText(defaultPassword);
+        panel.add(passwordField, "width 150!, wrap");
+
+        JButton loginBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.okButton", Locale.getDefault()));
         loginBtn.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         try {
-                            connection.login("", "", Locale.getDefault());
+                            String name = nameField.getText();
+                            String password = passwordField.getText();
+                            connection.login(name, DigestUtils.md5Hex(password), Locale.getDefault());
                             setVisible(false);
                         } catch (LoginException ex) {
                             throw new RuntimeException(ex);
@@ -53,8 +72,9 @@ public class LoginDialog extends JDialog {
                     }
                 }
         );
-        buttonsPane.add(loginBtn);
+        panel.add(loginBtn, "span, align center");
 
-        return buttonsPane;
+        return panel;
     }
+
 }

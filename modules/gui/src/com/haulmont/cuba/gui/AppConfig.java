@@ -29,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class AppConfig
 {
     public static final String IMPL_PROP = "cuba.appConfig.impl";
-    public static final String DEFAULT_IMPL = "com.haulmont.cuba.gui.AppConfig";
 
     public static final String WINDOW_CONFIG_IMPL_PROP = "cuba.windowConfig.impl";
     public static final String WINDOW_CONFIG_XML_PROP = "cuba.windowConfig";
@@ -57,7 +56,7 @@ public abstract class AppConfig
 
     public static AppConfig getInstance() {
         if (instance == null) {
-            instance = createInstance(IMPL_PROP, DEFAULT_IMPL);
+            instance = createInstance(IMPL_PROP, null);
         }
         return instance;
     }
@@ -66,6 +65,9 @@ public abstract class AppConfig
         String implClassName = AppContext.getProperty(propertyName);
         if (implClassName == null)
             implClassName = defaultImplementation;
+
+        if (implClassName == null)
+            throw new IllegalStateException("Property " + propertyName + " is not set");
         try {
             Class implClass = ReflectionHelper.getClass(implClassName);
             //noinspection unchecked
@@ -144,7 +146,11 @@ public abstract class AppConfig
      * Message pack used by GenericUI components.
      * Set up through system property by specific client implementation.
      */
-    public String getMessagesPack() {
+    public static String getMessagesPack() {
+        return getInstance().__getMessagesPack();
+    }
+
+    protected String __getMessagesPack() {
         if (messagesPackage == null) {
             messagesPackage = AppContext.getProperty(MESSAGES_PACK_PROP);
         }

@@ -112,7 +112,7 @@ public class MetadataProviderClientImpl extends MetadataProvider {
 
         List<View> views = deployerService.getViews();
         for (View view : views) {
-            MetaClass metaClass = session.getClass(view.getEntityClass());
+            MetaClass metaClass = __getSession().getClass(view.getEntityClass());
             vr.storeView(metaClass, view);
         }
 

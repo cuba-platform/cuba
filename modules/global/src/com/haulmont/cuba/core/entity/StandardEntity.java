@@ -24,6 +24,8 @@ public class StandardEntity
         extends BaseUuidEntity
         implements Versioned, Updatable, SoftDelete
 {
+    private static final long serialVersionUID = 5642226839555253331L;
+
     @Version
     @Column(name = "VERSION")
     protected Integer version;

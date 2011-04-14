@@ -11,10 +11,10 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.List;
 import com.haulmont.cuba.gui.components.actions.*;
 
-import java.util.Arrays;
-import java.util.EnumSet;
+import java.util.*;
 
 /**
  * Utility class to work for GenericUI components
@@ -22,6 +22,19 @@ import java.util.EnumSet;
 public abstract class ComponentsHelper {
     public static final String[] UNIT_SYMBOLS = { "px", "pt", "pc", "em", "ex",
             "mm", "cm", "in", "%" };
+
+    public static Collection<Component> getComponents(Component.Container container) {
+        final Collection<Component> ownComponents = container.getOwnComponents();
+        Set<Component> res = new HashSet<Component>(ownComponents);
+
+        for (Component component : ownComponents) {
+            if (component instanceof Component.Container) {
+                res.addAll(getComponents((Component.Container) component));
+            }
+        }
+
+        return res;
+    }
 
     /**
      * Visit all components below the specified container

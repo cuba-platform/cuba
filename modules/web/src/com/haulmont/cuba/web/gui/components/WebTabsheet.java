@@ -16,7 +16,7 @@ import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.ComponentVisitor;
-import com.haulmont.cuba.web.xml.layout.WebComponentsFactory;
+import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import com.vaadin.ui.TabSheet;
 
 import java.io.Serializable;
