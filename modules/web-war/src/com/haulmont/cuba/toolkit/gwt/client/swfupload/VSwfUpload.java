@@ -16,57 +16,46 @@ import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.xml.client.Document;
 import com.haulmont.cuba.toolkit.gwt.client.Properties;
 import com.haulmont.cuba.toolkit.gwt.client.ResourcesLoader;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
 
-public class
-        VSwfUpload extends FormPanel implements Paintable {
+@SuppressWarnings("unused")
+public class VSwfUpload
+        extends FormPanel
+        implements Paintable {
+
+    public static final String CLASSNAME = "v-multiupload";
+
     private String paintableId;
     private ApplicationConnection client;
 
-    private Element uploadButton = DOM.createSpan();
+    private Element uploadButton = DOM.createDiv();
     private Element progressDiv = DOM.createDiv();
 
     public VSwfUpload() {
+        setStyleName(CLASSNAME);
         DOM.appendChild(getElement(), uploadButton);
+
+        progressDiv.setClassName(CLASSNAME + "-progress");
         initProgressWindow();
         Element parentDoc = (Element) getElement().getOwnerDocument().getElementsByTagName("body").getItem(0);
-        DOM.appendChild(parentDoc,progressDiv);
+        DOM.appendChild(parentDoc, progressDiv);
     }
 
-    private void initProgressWindow(){
-        NodeList<Node> nodes = progressDiv.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++){
-            progressDiv.removeChild(nodes.getItem(i));
-        }
-
-        progressDiv.setAttribute("style", "");
-        progressDiv.getStyle().setPosition(Style.Position.FIXED);
-        progressDiv.getStyle().setPadding(10,Style.Unit.PX);
-
-        progressDiv.getStyle().setProperty("left","50%");
-        progressDiv.getStyle().setProperty("top","50%");
-
-        progressDiv.getStyle().setHeight(50,Style.Unit.PX);
-        progressDiv.getStyle().setWidth(250,Style.Unit.PX);
-
-        progressDiv.getStyle().setMarginLeft(-125, Style.Unit.PX);
-        progressDiv.getStyle().setMarginTop(-25, Style.Unit.PX);
-        progressDiv.getStyle().setBackgroundColor("#eaeef2");
-        progressDiv.getStyle().setBorderColor("#4e7bb3");
-        progressDiv.getStyle().setOverflow(Style.Overflow.VISIBLE);
-        progressDiv.getStyle().setBorderStyle(Style.BorderStyle.SOLID);
-        progressDiv.getStyle().setBorderWidth(2, Style.Unit.PX);
+    private void initProgressWindow() {
         progressDiv.getStyle().setVisibility(Style.Visibility.HIDDEN);
         progressDiv.getStyle().setDisplay(Style.Display.NONE);
 
-        progressDiv.getStyle().setZIndex(15000);
+        NodeList<Node> nodes = progressDiv.getChildNodes();
+        if (nodes != null) {
+            for (int i = 0; i < nodes.getLength(); i++) {
+                progressDiv.removeChild(nodes.getItem(i));
+            }
+        }
     }
 
     private static String getValueFromUIDL(UIDL uidl, String attribute, String defaultValue) {
@@ -83,7 +72,7 @@ public class
             return defaultValue;
     }
 
-    public void updateFromUIDL(UIDL uidl, final ApplicationConnection client) {
+    public void updateFromUIDL(final UIDL uidl, final ApplicationConnection client) {
         paintableId = uidl.getId();
 
         uploadButton.setId(paintableId + "_upload");
@@ -91,12 +80,13 @@ public class
 
         this.client = client;
 
-        injectJs();
-
         if (client.updateComponent(this, uidl, false)) {
             return;
         }
-        String actionString = "#";
+
+        injectJs();
+
+        String actionString;
         if (uidl.hasAttribute("action")) {
             String action = uidl.getStringAttribute("action");
             actionString = "".equals(action) ? "#" : action;
@@ -112,10 +102,10 @@ public class
         final Double fileQueueLimit = getValueFromUIDL(uidl, "fileQueueLimit", 0.0);
 
         final String caption = getValueFromUIDL(uidl, "caption", "Upload");
-        final String width = getValueFromUIDL(uidl, "width", "90px");
-        final String height = getValueFromUIDL(uidl, "height", "25px");
+        final String width = getValueFromUIDL(uidl, "width", "90").replace("px", "");
+        final String height = getValueFromUIDL(uidl, "height", "25").replace("px", "");
 
-        final String controlPid = paintableId.toString();
+        final String controlPid = paintableId;
 
         SwfUploadAPI.onReady(new Runnable() {
             public void run() {
@@ -127,7 +117,7 @@ public class
                 opts.set("flash_url", uri + (uri.endsWith("/") ? "" : "/") + "VAADIN/resources/flash/" + "swfupload.swf");
                 // Resource url
                 opts.set("upload_url", ";jsessionid=" + client.getConfiguration().getSessionId()
-                        + "?pid=" + controlPid.toString() + "&multiupload=true");
+                        + "?pid=" + controlPid + "&multiupload=true");
 
                 // Set file parameters
                 opts.set("file_size_limit", fileSizeLimit);
@@ -145,10 +135,12 @@ public class
                 opts.set("debug", false);
                 uri = client.getThemeUri();
                 // Appearance properties
-                opts.set("button_image_url", uri + (uri.endsWith("/") ? "" : "/") +
-                        "images/selectfiles.png");
+                String imageUrl = uri + (uri.endsWith("/") ? "" : "/") + "multiupload/images/button.png";
+                opts.set("button_image_url", imageUrl);
+
                 opts.set("button_width", width);
                 opts.set("button_height", height);
+
                 opts.set("button_placeholder_id", uploadButton.getId());
                 opts.set("button_text_left_padding", "22");
                 opts.set("button_text_top_padding", "4");
@@ -157,18 +149,18 @@ public class
                         ".swfupload {font-size: 12px; font-family: verdana,Tahoma,sans-serif; }");
 
                 /*
-                    SWF Handlers list
-
-                    file_queued_handler           : fileQueued
-                    file_queue_error_handler      : fileQueueError
-                    file_dialog_complete_handler  : fileDialogComplete
-                    upload_start_handler          : uploadStart
-                    upload_progress_handler       : uploadProgress
-                    upload_error_handler          : uploadError
-                    upload_success_handler        : uploadSuccess
-                    upload_complete_handler       : uploadComplete
-                    queue_complete_handler        : queueComplete
-                */
+                 *   SWF Handlers list
+                 *
+                 *   file_queued_handler           : fileQueued
+                 *   file_queue_error_handler      : fileQueueError
+                 *   file_dialog_complete_handler  : fileDialogComplete
+                 *   upload_start_handler          : uploadStart
+                 *   upload_progress_handler       : uploadProgress
+                 *   upload_error_handler          : uploadError
+                 *   upload_success_handler        : uploadSuccess
+                 *   upload_complete_handler       : uploadComplete
+                 *   queue_complete_handler        : queueComplete
+                 */
 
                 // Add event handlers
                 applyJsObjectByName(opts, "file_dialog_complete_handler", "fileDialogComplete");
@@ -204,7 +196,7 @@ public class
 
     public void errorNotify(String file, String message, int errorCode) {
         initProgressWindow();
-        
+
         client.updateVariable(paintableId, "uploadError", new String[]{file, message, String.valueOf(errorCode)}, true);
     }
 
@@ -214,14 +206,14 @@ public class
 
     private native void addErrorHandler(Options opts, String optionName)/*-{
         var swfu = this;
-        opts[optionName] = function(file, errorCode, message){
-            swfu.@com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload::errorNotify(Ljava/lang/String;Ljava/lang/String;I)(file.name,message,errorCode);
-        }; 
+        opts[optionName] = function(file, errorCode, message) {
+            swfu.@com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload::errorNotify(Ljava/lang/String;Ljava/lang/String;I)(file.name, message, errorCode);
+        };
     }-*/;
 
     private native void addRefresher(Options opts, String optionName)/*-{
         var swfu = this;
-        opts[optionName] = function(numFilesUploaded){
+        opts[optionName] = function(numFilesUploaded) {
             swfu.@com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload::refreshServerSide()();
         };
     }-*/;

@@ -142,12 +142,12 @@ SWFUpload.prototype.initSettings = function () {
 
 	// Flash Settings
 	this.ensureDefault("flash_url", "swfupload.swf");
-	this.ensureDefault("prevent_swf_caching", true);
+	this.ensureDefault("prevent_swf_caching", false);
 	
 	// Button Settings
 	this.ensureDefault("button_image_url", "");
-	this.ensureDefault("button_width", 1);
-	this.ensureDefault("button_height", 1);
+	this.ensureDefault("button_width", 90);
+	this.ensureDefault("button_height", 25);
 	this.ensureDefault("button_text", "");
 	this.ensureDefault("button_text_style", "color: #000000; font-size: 16pt;");
 	this.ensureDefault("button_text_top_padding", 0);
@@ -156,8 +156,8 @@ SWFUpload.prototype.initSettings = function () {
 	this.ensureDefault("button_disabled", false);
 	this.ensureDefault("button_placeholder_id", "");
 	this.ensureDefault("button_placeholder", null);
-	this.ensureDefault("button_cursor", SWFUpload.CURSOR.ARROW);
-	this.ensureDefault("button_window_mode", SWFUpload.WINDOW_MODE.WINDOW);
+	this.ensureDefault("button_cursor", SWFUpload.CURSOR.HAND);
+	this.ensureDefault("button_window_mode", SWFUpload.WINDOW_MODE.TRANSPARENT);
 	
 	// Debug Settings
 	this.ensureDefault("debug", false);
