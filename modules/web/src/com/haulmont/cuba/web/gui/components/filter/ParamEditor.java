@@ -10,21 +10,21 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.haulmont.cuba.web.gui.components.WebLookupField;
-import com.vaadin.incubator.dashlayout.ui.HorDashLayout;
-import com.vaadin.terminal.Sizeable;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 
 public class ParamEditor extends CustomComponent implements Condition.Listener {
 
     private Condition condition;
-    private HorDashLayout layout;
+    private HorizontalLayout layout;
     private Component field;
 
     public ParamEditor(final Condition condition, boolean showOperation) {
         this.condition = condition;
 
-        layout = new HorDashLayout();
+        layout = new HorizontalLayout();
         layout.setSpacing(true);
         layout.setSizeFull();
         setCompositionRoot(layout);
