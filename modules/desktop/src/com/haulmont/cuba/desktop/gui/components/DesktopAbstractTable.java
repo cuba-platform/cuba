@@ -7,13 +7,16 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.presentations.Presentations;
+import net.miginfocom.swing.MigLayout;
 import org.dom4j.Element;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -27,10 +30,27 @@ public class DesktopAbstractTable
         extends DesktopAbstractActionOwnerComponent<JTable>
         implements Table
 {
+    protected MigLayout layout;
+    protected JPanel panel;
     protected CollectionDatasource datasource;
 
     public DesktopAbstractTable() {
+        layout = new MigLayout("flowy, fill, insets 0");
+        panel = new JPanel(layout);
         jComponent = new JTable();
+        initComponent((JTable) jComponent);
+        panel.add(jComponent, "grow");
+    }
+
+    protected void initComponent(JTable table) {
+        table.setModel(
+                new DefaultTableModel(new String[]{"col1", "col2"}, 3)
+        );
+    }
+
+    @Override
+    public JComponent getComposition() {
+        return panel;
     }
 
     public List<Column> getColumns() {

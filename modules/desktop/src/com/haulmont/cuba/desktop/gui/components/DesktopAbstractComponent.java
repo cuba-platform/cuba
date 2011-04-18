@@ -26,7 +26,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     protected String id;
     protected IFrame frame;
     protected Element xmlDescriptor;
-    protected boolean expandable;
+    protected boolean expandable = true;
 
     public <A extends IFrame> A getFrame() {
         return (A) frame;

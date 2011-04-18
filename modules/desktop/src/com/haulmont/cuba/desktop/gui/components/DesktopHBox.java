@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
+
 /**
  * <p>$Id$</p>
  *
@@ -14,5 +16,6 @@ package com.haulmont.cuba.desktop.gui.components;
 public class DesktopHBox extends DesktopAbstractContainer {
 
     public DesktopHBox() {
+        layoutAdapter.setFlowDirection(LayoutAdapter.FlowDirection.X);
     }
 }

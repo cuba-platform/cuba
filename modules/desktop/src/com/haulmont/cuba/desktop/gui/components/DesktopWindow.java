@@ -7,6 +7,9 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -32,26 +35,36 @@ public class DesktopWindow implements  Window, Component.Wrapper, Component.HasX
 {
     private static final long serialVersionUID = 1026363207247384464L;
 
+    protected LayoutAdapter layoutAdapter;
     protected JPanel panel;
 
     protected String id;
 
     protected Window wrapper;
 
+    protected Map<String, Component> componentByIds = new HashMap<String, Component>();
+    protected Collection<Component> ownComponents = new HashSet<Component>();
+
     protected Map<String, Component> allComponents = new HashMap<String, Component>();
 
     private DsContext dsContext;
     private WindowContext context;
+    private String messagePack;
+    private Element xmlDescriptor;
 
     public DesktopWindow() {
         panel = new JPanel();
+        layoutAdapter = LayoutAdapter.create(panel);
+        layoutAdapter.setFlowDirection(LayoutAdapter.FlowDirection.Y);
+        layoutAdapter.setMargin(true);
     }
 
     public Element getXmlDescriptor() {
-        return null;
+        return xmlDescriptor;
     }
 
     public void setXmlDescriptor(Element element) {
+        xmlDescriptor = element;
     }
 
     public void addListener(CloseListener listener) {
@@ -133,14 +146,17 @@ public class DesktopWindow implements  Window, Component.Wrapper, Component.HasX
     }
 
     public String getMessagesPack() {
-        return null;
+        return messagePack;
     }
 
     public void setMessagesPack(String name) {
+        messagePack = name;
     }
 
     public String getMessage(String key) {
-        return null;
+        if (messagePack == null)
+            throw new IllegalStateException("MessagePack is not set");
+        return MessageProvider.getMessage(messagePack, key);
     }
 
     public void registerComponent(Component component) {
@@ -215,16 +231,29 @@ public class DesktopWindow implements  Window, Component.Wrapper, Component.HasX
     }
 
     public void expand(Component component, String height, String width) {
+        JComponent composition = DesktopComponentsHelper.getComposition(component);
+        layoutAdapter.expand(composition, height, width);
     }
 
     public void add(Component component) {
+        panel.add(DesktopComponentsHelper.getComposition(component));
+        if (component.getId() != null) {
+            componentByIds.put(component.getId(), component);
+            registerComponent(component);
+        }
+        ownComponents.add(component);
     }
 
     public void remove(Component component) {
+        panel.remove(DesktopComponentsHelper.getComposition(component));
+        if (component.getId() != null) {
+            componentByIds.remove(component.getId());
+        }
+        ownComponents.remove(component);
     }
 
     public <T extends Component> T getOwnComponent(String id) {
-        return null;
+        return (T) componentByIds.get(id);
     }
 
     public <T extends Component> T getComponent(String id) {
@@ -243,11 +272,11 @@ public class DesktopWindow implements  Window, Component.Wrapper, Component.HasX
     }
 
     public Collection<Component> getOwnComponents() {
-        return null;
+        return Collections.unmodifiableCollection(ownComponents);
     }
 
     public Collection<Component> getComponents() {
-        return null;
+        return ComponentsHelper.getComponents(this);
     }
 
     public void expandLayout(boolean expandLayout) {
@@ -330,12 +359,15 @@ public class DesktopWindow implements  Window, Component.Wrapper, Component.HasX
     }
 
     public void setMargin(boolean enable) {
+        layoutAdapter.setMargin(enable);
     }
 
     public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
+        layoutAdapter.setMargin(topEnable, rightEnable, bottomEnable, leftEnable);
     }
 
     public void setSpacing(boolean enabled) {
+        layoutAdapter.setSpacing(enabled);
     }
 
     public Window wrapBy(Class<Window> aClass) {

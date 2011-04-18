@@ -384,7 +384,7 @@ public class WebWindow
     }
 
     public Collection<Component> getComponents() {
-        return WebComponentsHelper.getComponents(this);
+        return ComponentsHelper.getComponents(this);
     }
 
     public boolean onClose(String actionId) {

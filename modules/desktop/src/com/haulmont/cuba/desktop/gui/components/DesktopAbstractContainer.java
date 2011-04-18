@@ -6,9 +6,9 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
-import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.util.*;
@@ -22,14 +22,14 @@ public abstract class DesktopAbstractContainer
         extends DesktopAbstractComponent<JPanel>
         implements Component.Container, Component.Expandable, Component.BelongToFrame, com.haulmont.cuba.gui.components.BoxLayout
 {
-    protected MigLayout layout;
+    protected LayoutAdapter layoutAdapter;
 
     protected Collection<Component> ownComponents = new HashSet<Component>();
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
 
     public DesktopAbstractContainer() {
-        layout = new MigLayout();
-        jComponent = new JPanel(layout);
+        jComponent = new JPanel();
+        layoutAdapter = LayoutAdapter.create(jComponent);
     }
 
     public void add(Component component) {
@@ -73,14 +73,19 @@ public abstract class DesktopAbstractContainer
     }
 
     public void expand(Component component, String height, String width) {
+        JComponent composition = DesktopComponentsHelper.getComposition(component);
+        layoutAdapter.expand(composition, height, width);
     }
 
     public void setMargin(boolean enable) {
+        layoutAdapter.setMargin(enable);
     }
 
     public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
+        layoutAdapter.setMargin(topEnable, rightEnable, bottomEnable, leftEnable);
     }
 
     public void setSpacing(boolean enabled) {
+        layoutAdapter.setSpacing(enabled);
     }
 }
