@@ -213,7 +213,7 @@ public class WebFileUploadField
     public void setButtonWidth(String buttonWidth) {
         component.setButtonWidth(buttonWidth);
     }
-}
+
     /**
      * Get id for uploaded file in {@link FileUploadService}
      *
