@@ -17,6 +17,7 @@ import com.vaadin.terminal.PaintTarget;
 public class Upload extends com.vaadin.ui.Upload {
 
     private String action;
+    private String buttonWidth = "-1px";
     
     public Upload(String caption, Receiver uploadReceiver) {
         super(caption, uploadReceiver);
@@ -28,6 +29,7 @@ public class Upload extends com.vaadin.ui.Upload {
         if (getAction() != null) {
             target.addAttribute("action", getAction());
         }
+        target.addAttribute("buttonwidth", buttonWidth);
     }
 
     public String getAction() {
@@ -37,5 +39,13 @@ public class Upload extends com.vaadin.ui.Upload {
     public void setAction(String action) {
         this.action = action;
         requestRepaint();
+    }
+
+    public String getButtonWidth() {
+        return buttonWidth;
+    }
+
+    public void setButtonWidth(String buttonWidth) {
+        this.buttonWidth = buttonWidth;
     }
 }
