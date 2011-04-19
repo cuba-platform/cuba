@@ -132,7 +132,8 @@ public class VUpload extends FormPanel implements Paintable,
             setAction(client.getAppUri());
         }
         submitButton.setText(uidl.getStringAttribute("buttoncaption"));
-        submitButton.setWidth(uidl.getStringAttribute("buttonwidth"));
+        if(uidl.hasAttribute("buttonwidth"))
+            submitButton.setWidth(uidl.getStringAttribute("buttonwidth"));
         fu.setName(paintableId + "_file");
 
         if (uidl.hasAttribute("disabled") || uidl.hasAttribute("readonly")) {
