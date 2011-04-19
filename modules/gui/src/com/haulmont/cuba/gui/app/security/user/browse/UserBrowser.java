@@ -94,6 +94,11 @@ public class UserBrowser extends AbstractLookup {
                             newUser.setGroup(selectedUser.getGroup());
                             UserEditor editor = openEditor("sec$User.edit", newUser, WindowManager.OpenType.THIS_TAB);
                             editor.initCopy();
+                            editor.addListener(new CloseListener() {
+                                public void windowClosed(String actionId) {
+                                    getDsContext().get("users").refresh();
+                                }
+                            });
                         }
                     }
                 }
