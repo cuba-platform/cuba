@@ -7,6 +7,7 @@
 package com.haulmont.cuba.gui.app.security.user.browse;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.EntityFactory;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.client.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
@@ -76,7 +77,7 @@ public class UserBrowser extends AbstractLookup {
                         if (!table.getSelected().isEmpty()){
                             User selectedUser = (User) table.getSelected().iterator().next();
                             selectedUser = getDsContext().getDataService().reload(selectedUser, "user.edit");
-                            User newUser = new User();
+                            User newUser = EntityFactory.create(User.class);
                             if(selectedUser.getUserRoles()!=null){
                                 Set<UserRole> userRoles = new HashSet<UserRole>();
                                 for (UserRole oldUserRole : selectedUser.getUserRoles()) {
