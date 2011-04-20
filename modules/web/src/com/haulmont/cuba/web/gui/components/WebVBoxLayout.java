@@ -16,14 +16,9 @@ import com.vaadin.ui.ClientWidget;
 
 @SuppressWarnings("serial")
 @ClientWidget(VVerticalLayout.class)
-public class WebVBoxLayout extends WebAbstractContainer implements BoxLayout {
+public class WebVBoxLayout extends WebAbstractBox implements BoxLayout {
 
     public WebVBoxLayout() {
         setWidth("100%");
-    }
-
-    public void expand(Component component, String height, String width) {
-        final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(component);
-        WebComponentsHelper.expand(this, expandedComponent, height, width);
     }
 }

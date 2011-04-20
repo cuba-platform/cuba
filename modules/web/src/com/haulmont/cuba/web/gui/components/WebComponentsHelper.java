@@ -298,25 +298,6 @@ public class WebComponentsHelper {
         return getControllerFrame(frame.getFrame());
     }
 
-    public static com.haulmont.cuba.gui.components.Component findComponent(IFrame frame, String id) {
-        com.haulmont.cuba.gui.components.Component find = frame.getComponent(id);
-        if (find != null) {
-            return find;
-        } else {
-            for (com.haulmont.cuba.gui.components.Component c : frame.getComponents()) {
-                if (c instanceof IFrame) {
-                    com.haulmont.cuba.gui.components.Component comp = ((IFrame) c).getComponent(id);
-                    if (comp != null) {
-                        return comp;
-                    } else {
-                        findComponent((IFrame) c, id);
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
     public static void setLabelText(com.vaadin.ui.Label label, Object value, Formatter formatter) {
         label.setValue(value == null
                 ? "" : String.class.isInstance(value)

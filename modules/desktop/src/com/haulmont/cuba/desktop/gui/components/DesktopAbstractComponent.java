@@ -21,7 +21,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     implements
         Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.Expandable
 {
-    protected C jComponent;
+    protected C impl;
 
     protected String id;
     protected IFrame frame;
@@ -61,27 +61,27 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     }
 
     public boolean isEnabled() {
-        return jComponent.isEnabled();
+        return impl.isEnabled();
     }
 
     public void setEnabled(boolean enabled) {
-        jComponent.setEnabled(enabled);
+        impl.setEnabled(enabled);
     }
 
     public boolean isVisible() {
-        return jComponent.isVisible();
+        return impl.isVisible();
     }
 
     public void setVisible(boolean visible) {
-        jComponent.setVisible(visible);
+        impl.setVisible(visible);
     }
 
     public void requestFocus() {
-        jComponent.requestFocus();
+        impl.requestFocus();
     }
 
     public float getHeight() {
-        return jComponent.getHeight();
+        return impl.getHeight();
     }
 
     public int getHeightUnits() {
@@ -93,7 +93,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     }
 
     public float getWidth() {
-        return jComponent.getWidth();
+        return impl.getWidth();
     }
 
     public int getWidthUnits() {
@@ -127,10 +127,10 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     }
 
     public <T> T getComponent() {
-        return (T) jComponent;
+        return (T) impl;
     }
 
     public JComponent getComposition() {
-        return jComponent;
+        return impl;
     }
 }

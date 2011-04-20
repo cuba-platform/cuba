@@ -114,5 +114,9 @@ public interface GlobalConfig extends Config {
     @Factory(factory = AvailableLocalesFactory.class)
     @Default("English|en;Russian|ru")
     Map<String, Locale> getAvailableLocales();
+
+    @Property("cuba.screenIdsToSaveHistory")
+    @Default("sec$User.edit,sec$Group.edit,sec$Role.edit")
+    String getScreenIdsToSaveHistory();
 }
 

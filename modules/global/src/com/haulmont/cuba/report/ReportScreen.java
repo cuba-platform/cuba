@@ -16,6 +16,8 @@ import javax.persistence.*;
 @Table(name = "REPORT_REPORT_SCREEN")
 public class ReportScreen extends HardDeleteEntity {
 
+    private static final long serialVersionUID = -7416940515333599470L;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REPORT_ID")
     private Report report;

@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface HtmlBoxLayout extends Layout, Component.Expandable, Component.BelongToFrame {
+public interface HtmlBoxLayout extends ExpandingLayout, Component.Expandable, Component.BelongToFrame {
 
     String NAME = "htmlbox";
 

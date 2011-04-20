@@ -13,7 +13,7 @@ package com.haulmont.cuba.gui.components;
 
 import java.io.Serializable;
 
-public interface GroupBox extends Layout, Component.HasCaption, Component.Expandable, Component.HasLayout,
+public interface GroupBox extends ExpandingLayout, Component.HasCaption, Component.Expandable, Component.HasLayout,
         Component.BelongToFrame, Component.ActionsHolder {
 
     String NAME = "groupBox";

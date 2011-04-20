@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
+import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 
@@ -18,23 +18,23 @@ import java.util.*;
  *
  * @author krivopustov
  */
-public abstract class DesktopAbstractContainer
+public abstract class DesktopAbstractBox
         extends DesktopAbstractComponent<JPanel>
-        implements Component.Container, Component.Expandable, Component.BelongToFrame, com.haulmont.cuba.gui.components.BoxLayout
+        implements com.haulmont.cuba.gui.components.BoxLayout
 {
-    protected LayoutAdapter layoutAdapter;
+    protected BoxLayoutAdapter layoutAdapter;
 
     protected Collection<Component> ownComponents = new HashSet<Component>();
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
 
-    public DesktopAbstractContainer() {
-        jComponent = new JPanel();
-        layoutAdapter = LayoutAdapter.create(jComponent);
+    public DesktopAbstractBox() {
+        impl = new JPanel();
+        layoutAdapter = BoxLayoutAdapter.create(impl);
     }
 
     public void add(Component component) {
         JComponent composition = DesktopComponentsHelper.getComposition(component);
-        jComponent.add(composition);
+        impl.add(composition);
 //        setComponentAlignment(itmillComponent, WebComponentsHelper.convertAlignment(component.getAlignment()));
 
         if (component.getId() != null) {
@@ -48,7 +48,7 @@ public abstract class DesktopAbstractContainer
 
     public void remove(Component component) {
         JComponent composition = DesktopComponentsHelper.getComposition(component);
-        jComponent.remove(composition);
+        impl.remove(composition);
 
         if (component.getId() != null) {
             componentByIds.remove(component.getId());

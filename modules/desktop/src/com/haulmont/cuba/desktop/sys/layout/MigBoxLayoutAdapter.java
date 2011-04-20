@@ -18,17 +18,17 @@ import java.awt.LayoutManager;
  *
  * @author krivopustov
  */
-public class MigLayoutAdapter extends LayoutAdapter {
+public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
 
     protected MigLayout layout;
     protected JComponent container;
     protected Component expandedComponent;
 
-    public MigLayoutAdapter(JComponent container) {
+    public MigBoxLayoutAdapter(JComponent container) {
         this(new MigLayout(), container);
     }
 
-    public MigLayoutAdapter(MigLayout layout, JComponent container) {
+    public MigBoxLayoutAdapter(MigLayout layout, JComponent container) {
         this.layout = layout;
         this.container = container;
         update();
@@ -40,28 +40,7 @@ public class MigLayoutAdapter extends LayoutAdapter {
     }
 
     @Override
-    public void update() {
-//        List<String> list = new ArrayList<String>();
-//
-//        list.add("fill");
-//
-//        if (direction.equals(FlowDirection.Y))
-//            list.add("flowy");
-//
-//        if (margins == null)
-//            list.add("insets " + inset(margin));
-//        else
-//            list.add("insets " + inset(margins[0]) + " " + inset(margins[1]) + " " + inset(margins[2]) + " " + inset(margins[3]));
-//
-//        if (!spacing)
-//            list.add("gap n");
-//
-//        if (isDebug())
-//            list.add("debug");
-//
-//        String constraints = new StrBuilder().appendWithSeparators(list, ",").toString();
-//        layout.setLayoutConstraints(constraints);
-
+    protected void update() {
         LC lc = new LC();
         AC rowConstr = new AC();
         AC colConstr = new AC();
@@ -80,7 +59,7 @@ public class MigLayoutAdapter extends LayoutAdapter {
                 lc.fillX();
         }
 
-        lc.setInsets(makeInsets());
+        lc.setInsets(MigLayoutHelper.makeInsets(margins));
 
         if (!spacing) {
             if (direction.equals(FlowDirection.X))
@@ -110,16 +89,7 @@ public class MigLayoutAdapter extends LayoutAdapter {
 
     @Override
     public void expand(Component component, String height, String width) {
-        expandedComponent = component;
-        update();
+        super.expand(component, height, width);
         layout.setComponentConstraints(component, new CC().grow());
-    }
-
-    protected UnitValue[] makeInsets() {
-        UnitValue[] unitValues = new UnitValue[4];
-        for (int i = 0; i < unitValues.length; i++) {
-            unitValues[i] = margins[i] ? PlatformDefaults.getPanelInsets(i) : new UnitValue(0);
-        }
-        return unitValues;
     }
 }

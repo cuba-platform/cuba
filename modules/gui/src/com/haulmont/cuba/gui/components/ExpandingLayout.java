@@ -12,16 +12,7 @@ package com.haulmont.cuba.gui.components;
 /**
  * Component container which can expand enclosing components
  */
-public interface Layout extends Component.Container {
+public interface ExpandingLayout extends Component.Container {
 
     void expand(Component component, String height, String width);
-
-    interface Spacing{
-        void setSpacing(boolean enabled);
-    }
-
-    interface Margin {
-        void setMargin(boolean enable);
-        void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable);
-    }
 }

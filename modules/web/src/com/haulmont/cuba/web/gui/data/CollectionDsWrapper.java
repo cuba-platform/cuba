@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.haulmont.cuba.web.App;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -42,7 +43,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     protected Collection<MetaPropertyPath> properties = new ArrayList<MetaPropertyPath>();
     private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<ItemSetChangeListener>();
 
-    private PersistenceManagerService persistenceManager;
+//    private PersistenceManagerService persistenceManager;
 
     private static Log log = LogFactory.getLog(CollectionDsWrapper.class);
 
@@ -71,7 +72,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         this.datasource = datasource;
         this.dsManager = dsManager;
         this.autoRefresh = autoRefresh;
-        this.persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
+//        this.persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
 
         final View view = datasource.getView();
         final MetaClass metaClass = datasource.getMetaClass();
@@ -93,34 +94,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     }
 
     protected void createProperties(View view, MetaClass metaClass) {
-        if (view != null) {
-            for (ViewProperty property : view.getProperties()) {
-                final String name = property.getName();
-
-                final MetaProperty metaProperty = metaClass.getProperty(name);
-                final Range range = metaProperty.getRange();
-                if (range == null) continue;
-
-                final Range.Cardinality cardinality = range.getCardinality();
-                if (Range.Cardinality.ONE_TO_ONE.equals(cardinality) ||
-                        Range.Cardinality.MANY_TO_ONE.equals(cardinality))
-                {
-                    properties.add(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
-                }
-            }
-        } else {
-            for (MetaProperty metaProperty : metaClass.getProperties()) {
-                final Range range = metaProperty.getRange();
-                if (range == null) continue;
-
-                final Range.Cardinality cardinality = range.getCardinality();
-                if (Range.Cardinality.ONE_TO_ONE.equals(cardinality) ||
-                        Range.Cardinality.MANY_TO_ONE.equals(cardinality))
-                {
-                    properties.add(new MetaPropertyPath(metaProperty.getDomain(), metaProperty));
-                }
-            }
-        }
+        properties.addAll(CollectionDsHelper.createProperties(view, metaClass));
     }
 
     protected void fireItemSetChanged() {
@@ -137,7 +111,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     }
 
     public Item getItem(Object itemId) {
-        __autoRefreshInvalid();
+        CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
         final Object item = datasource.getItem(itemId);
         return item == null ? null : getItemWrapper(item);
     }
@@ -163,7 +137,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     }
 
     public synchronized Collection getItemIds() {
-        __autoRefreshInvalid();
+        CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
         return datasource.getItemIds();
     }
 
@@ -178,12 +152,12 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
     }
 
     public synchronized int size() {
-        __autoRefreshInvalid();
+        CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
         return datasource.size();
     }
 
     public synchronized boolean containsId(Object itemId) {
-        __autoRefreshInvalid();
+        CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
         return datasource.containsItem(itemId);
     }
 
@@ -217,22 +191,6 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
 
     public void removeListener(ItemSetChangeListener listener) {
         this.itemSetChangeListeners.remove(listener);
-    }
-
-    protected void __autoRefreshInvalid() {
-        if (autoRefresh && Datasource.State.INVALID.equals(datasource.getState())) {
-            DsContext dsContext = datasource.getDsContext();
-            Map<String, Object> params = null;
-            if (dsContext != null && dsContext.getWindowContext() != null) {
-                params = dsContext.getWindowContext().getParams();
-            }
-            if (params == null || !BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
-                if (datasource instanceof CollectionDatasource.Suspendable)
-                    ((CollectionDatasource.Suspendable) datasource).refreshIfNotSuspended();
-                else
-                    datasource.refresh();
-            }
-        }
     }
 
     protected void checkMaxFetchUI(CollectionDatasource ds) {

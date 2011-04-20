@@ -1,0 +1,45 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.server.edit.ServerEditor"
+        messagesPack="com.haulmont.cuba.gui.app.core.server"
+        datasource="serverDs"
+        caption="msg://server.editor.caption">
+
+    <dsContext>
+        <datasource
+                id="serverDs"
+                class="com.haulmont.cuba.core.entity.Server"
+                view="_local">
+        </datasource>
+    </dsContext>
+
+    <layout expand="space">
+        <!--<fieldGroup datasource="serverDs" stylename="edit-area" width="500px">-->
+            <!--<column width="100%">-->
+                <!--<field id="name"/>-->
+                <!--<field id="address"/>-->
+                <!--<field id="running"/>-->
+            <!--</column>-->
+        <!--</fieldGroup>-->
+        <grid>
+            <columns count="2"/>
+            <rows>
+                <row>
+                    <label value="msg://name"/>
+                    <label datasource="serverDs" property="name"/>
+                </row>
+                <row>
+                    <label value="msg://address"/>
+                    <label datasource="serverDs" property="address"/>
+                </row>
+            </rows>
+        </grid>
+        <iframe id="buttons" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <hbox id="space"></hbox>
+    </layout>
+</window>

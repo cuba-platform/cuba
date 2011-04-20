@@ -6,10 +6,6 @@
 
 package com.haulmont.cuba.desktop.sys.layout;
 
-import com.haulmont.cuba.gui.components.Layout;
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -17,44 +13,23 @@ import java.awt.*;
  *
  * @author krivopustov
  */
-public abstract class LayoutAdapter implements Layout.Margin, Layout.Spacing {
-
-    public enum FlowDirection { X, Y }
+public abstract class LayoutAdapter
+        implements
+            com.haulmont.cuba.gui.components.Component.Margin,
+            com.haulmont.cuba.gui.components.Component.Spacing
+{
 
     protected boolean[] margins = new boolean[4];
     protected boolean spacing;
-    protected FlowDirection direction = FlowDirection.X;
 
     public static boolean isDebug() {
         String property = System.getProperty("cuba.desktop.debugLayouts");
         return Boolean.valueOf(property);
     }
 
-    public static LayoutAdapter create(JComponent container) {
-        MigLayoutAdapter layoutAdapter = new MigLayoutAdapter(container);
-        container.setLayout(layoutAdapter.getLayout());
-        return layoutAdapter;
-    }
-
-    public static LayoutAdapter create(LayoutManager layout, JComponent container) {
-        if (layout instanceof MigLayout) {
-            MigLayoutAdapter layoutAdapter = new MigLayoutAdapter((MigLayout) layout, container);
-            container.setLayout(layoutAdapter.getLayout());
-            return layoutAdapter;
-        }
-        else
-            throw new UnsupportedOperationException("Unsupported layout manager: " + layout);
-    }
-
     public abstract LayoutManager getLayout();
 
-    public abstract void update();
-
-    public abstract void expand(java.awt.Component component, String height, String width);
-
-    public void expand(java.awt.Component component) {
-        expand(component, null, null);
-    }
+    protected abstract void update();
 
     public void setMargin(boolean enable) {
         margins[0] = enable;
@@ -74,11 +49,6 @@ public abstract class LayoutAdapter implements Layout.Margin, Layout.Spacing {
 
     public void setSpacing(boolean enabled) {
         spacing = enabled;
-        update();
-    }
-
-    public void setFlowDirection(FlowDirection direction) {
-        this.direction = direction;
         update();
     }
 }

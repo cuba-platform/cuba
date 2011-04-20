@@ -10,7 +10,7 @@
 package com.haulmont.cuba.gui.components;
 
 public interface GridLayout 
-        extends Component.Container, Layout.Spacing, Layout.Margin, Component.Expandable, Component.BelongToFrame
+        extends Component.Container, Component.Spacing, Component.Margin, Component.Expandable, Component.BelongToFrame
 {
     String NAME = "grid";
 

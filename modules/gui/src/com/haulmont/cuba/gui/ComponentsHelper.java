@@ -36,6 +36,25 @@ public abstract class ComponentsHelper {
         return res;
     }
 
+    public static Component findComponent(IFrame frame, String id) {
+        Component find = frame.getComponent(id);
+        if (find != null) {
+            return find;
+        } else {
+            for (Component c : frame.getComponents()) {
+                if (c instanceof IFrame) {
+                    Component comp = ((IFrame) c).getComponent(id);
+                    if (comp != null) {
+                        return comp;
+                    } else {
+                        findComponent((IFrame) c, id);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * Visit all components below the specified container
      */

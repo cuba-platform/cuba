@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
@@ -27,6 +28,11 @@ import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.data.Item;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.DateField;
+import com.vaadin.ui.Field;
+import com.vaadin.ui.TextField;
 import org.apache.commons.lang.StringUtils;
 
 import java.text.FieldPosition;
@@ -34,6 +40,7 @@ import java.text.Format;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.*;
+import java.util.List;
 
 public class GenericEditorWindow
     extends
@@ -92,8 +99,6 @@ public class GenericEditorWindow
     }
 
     public void setItem(Entity item) {
-        this.item = item;
-
         final MetaClass metaClass = getMetaClass(item);
         setCaption("Edit " + metaClass.getName());
 
@@ -222,4 +227,17 @@ public class GenericEditorWindow
             }
         }
     }
+
+    protected static class CloseWindowAction implements Button.ClickListener {
+        private com.haulmont.cuba.gui.components.Window window;
+
+        public CloseWindowAction(com.haulmont.cuba.gui.components.Window window) {
+            this.window = window;
+        }
+
+        public void buttonClick(Button.ClickEvent event) {
+            window.close("cancel");
+        }
+    }
+
 }

@@ -25,11 +25,15 @@ public class DesktopComponentsFactory implements ComponentsFactory {
 
     static {
         classes.put(Window.NAME, DesktopWindow.class);
+        classes.put(Window.Editor.NAME, DesktopWindow.Editor.class);
 
+        classes.put(IFrame.NAME, DesktopFrame.class);
         classes.put("hbox", DesktopHBox.class);
         classes.put("vbox", DesktopVBox.class);
+        classes.put(GridLayout.NAME, DesktopGridLayout.class);
 
         classes.put(Button.NAME, DesktopButton.class);
+        classes.put(Label.NAME, DesktopLabel.class);
         classes.put(Table.NAME, DesktopTable.class);
         classes.put(ButtonsPanel.NAME, DesktopButtonsPanel.class);
     }

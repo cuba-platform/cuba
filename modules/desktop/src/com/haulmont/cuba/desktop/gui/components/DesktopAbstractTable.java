@@ -6,47 +6,56 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.client.UserSessionClient;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
+import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.presentations.Presentations;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.util.Collection;
+import javax.swing.table.TableModel;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 /**
  * <p>$Id$</p>
  *
  * @author krivopustov
  */
-public class DesktopAbstractTable
-        extends DesktopAbstractActionOwnerComponent<JTable>
+public abstract class DesktopAbstractTable<C extends JTable>
+        extends DesktopAbstractActionOwnerComponent<C>
         implements Table
 {
     protected MigLayout layout;
     protected JPanel panel;
     protected CollectionDatasource datasource;
+    protected ButtonsPanel buttonsPanel;
+    protected Map<MetaPropertyPath, Column> columns = new HashMap<MetaPropertyPath, Column>();
+    protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
+    protected boolean sortable = true;
 
-    public DesktopAbstractTable() {
-        layout = new MigLayout("flowy, fill, insets 0");
+    protected void initComponent() {
+        layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
         panel = new JPanel(layout);
-        jComponent = new JTable();
-        initComponent((JTable) jComponent);
-        panel.add(jComponent, "grow");
+        JScrollPane scrollPane = new JScrollPane(impl);
+        impl.setFillsViewportHeight(true);
+        panel.add(scrollPane, "grow");
     }
 
-    protected void initComponent(JTable table) {
-        table.setModel(
-                new DefaultTableModel(new String[]{"col1", "col2"}, 3)
-        );
-    }
+    protected abstract TableModel createTableModel(CollectionDatasource datasource);
 
     @Override
     public JComponent getComposition() {
@@ -54,21 +63,150 @@ public class DesktopAbstractTable
     }
 
     public List<Column> getColumns() {
-        return null;
+        return columnsOrder;
     }
 
     public Column getColumn(String id) {
+        for (Table.Column column : columnsOrder) {
+            if (column.getId().toString().equals(id))
+                return column;
+        }
         return null;
     }
 
     public void addColumn(Column column) {
+        columns.put((MetaPropertyPath) column.getId(), column);
+        columnsOrder.add(column);
     }
 
     public void removeColumn(Column column) {
+        columns.remove((MetaPropertyPath) column.getId());
+        columnsOrder.remove(column);
     }
 
     public void setDatasource(CollectionDatasource datasource) {
+        UserSession userSession = UserSessionClient.getUserSession();
+        if (!userSession.isEntityOpPermitted(datasource.getMetaClass(), EntityOp.READ)) {
+            impl.setVisible(false);
+            return;
+        }
+
+        final Collection<MetaPropertyPath> properties;
+        if (this.columns.isEmpty()) {
+            Collection<MetaPropertyPath> paths = MetadataHelper.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
+            for (MetaPropertyPath metaPropertyPath : paths) {
+                MetaProperty property = metaPropertyPath.getMetaProperty();
+                if (!property.getRange().getCardinality().isMany() && !MetadataHelper.isSystem(property)) {
+                    Table.Column column = new Table.Column(metaPropertyPath);
+
+                    column.setCaption(MessageUtils.getPropertyCaption(property));
+                    column.setType(metaPropertyPath.getRangeJavaClass());
+
+                    Element element = DocumentHelper.createElement("column");
+                    column.setXmlDescriptor(element);
+
+                    addColumn(column);
+                }
+            }
+        }
+        properties = this.columns.keySet();
+
         this.datasource = datasource;
+        TableModel tableModel = createTableModel(datasource);
+        impl.setModel(tableModel);
+
+        List<MetaPropertyPath> editableColumns = null;
+        if (isEditable()) {
+            editableColumns = new LinkedList<MetaPropertyPath>();
+        }
+
+        for (final MetaPropertyPath propertyPath : properties) {
+            final Table.Column column = this.columns.get(propertyPath);
+
+            final String caption;
+            if (column != null) {
+                caption = StringUtils.capitalize(column.getCaption() != null ? column.getCaption() : propertyPath.getMetaProperty().getName());
+            } else {
+                caption = StringUtils.capitalize(propertyPath.getMetaProperty().getName());
+            }
+
+            setColumnHeader(propertyPath, caption);
+
+            if (column != null) {
+                if (editableColumns != null && column.isEditable()) {
+                    MetaProperty colMetaProperty = propertyPath.getMetaProperty();
+                    MetaClass colMetaClass = colMetaProperty.getDomain();
+                    if (userSession.isEntityAttrPermitted(colMetaClass, colMetaProperty.getName(), EntityAttrAccess.MODIFY)) {
+                        editableColumns.add((MetaPropertyPath) column.getId());
+                    }
+                }
+
+//                if (column.isCollapsed() && component.isColumnCollapsingAllowed()) {
+//                    try {
+//                        component.setColumnCollapsed(column.getId(), true);
+//                    } catch (IllegalAccessException e) {
+//                        // do nothing
+//                    }
+//                }
+
+//                if (column.getAggregation() != null && isAggregatable()) {
+//                    component.addContainerPropertyAggregation(column.getId(),
+//                            WebComponentsHelper.convertAggregationType(column.getAggregation().getType()));
+//                }
+            }
+        }
+
+        if (editableColumns != null && !editableColumns.isEmpty()) {
+            setEditableColumns(editableColumns);
+        }
+
+        createColumns(tableModel);
+
+        List<MetaPropertyPath> columnsOrder = new ArrayList<MetaPropertyPath>();
+        for (Table.Column column : this.columnsOrder) {
+            MetaProperty colMetaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
+            MetaClass colMetaClass = colMetaProperty.getDomain();
+            if (userSession.isEntityOpPermitted(colMetaClass, EntityOp.READ)
+                    && userSession.isEntityAttrPermitted(
+                    colMetaClass, colMetaProperty.getName(), EntityAttrAccess.VIEW)) {
+                columnsOrder.add((MetaPropertyPath) column.getId());
+            }
+//            if (editable && column.getAggregation() != null
+//                    && (BooleanUtils.isTrue(column.isEditable()) || BooleanUtils.isTrue(column.isCalculatable())))
+//            {
+//                addAggregationCell(column);
+//            }
+        }
+
+//        if (aggregationCells != null) {
+//            dsManager.addListener(createAggregationDatasourceListener());
+//        }
+
+        setVisibleColumns(columnsOrder);
+
+//        if (UserSessionClient.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
+//            ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
+//            if (action == null) {
+//                action = new ShowInfoAction();
+//                addAction(action);
+//            }
+//            action.setDatasource(datasource);
+//        }
+//
+//        if (rowsCount != null)
+//            rowsCount.setDatasource(datasource);
+    }
+
+    protected void setVisibleColumns(List<MetaPropertyPath> columnsOrder) {
+    }
+
+    protected void createColumns(TableModel tableModel) {
+    }
+
+    protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
+    }
+
+    protected void setColumnHeader(MetaPropertyPath propertyPath, String caption) {
     }
 
     public void setRequired(Column column, boolean required, String message) {
@@ -92,10 +230,11 @@ public class DesktopAbstractTable
     }
 
     public void setSortable(boolean sortable) {
+        this.sortable = sortable;
     }
 
     public boolean isSortable() {
-        return false;
+        return sortable;
     }
 
     public void setAggregatable(boolean aggregatable) {
@@ -152,10 +291,17 @@ public class DesktopAbstractTable
     }
 
     public ButtonsPanel getButtonsPanel() {
-        return null;
+        return buttonsPanel;
     }
 
     public void setButtonsPanel(ButtonsPanel panel) {
+        if (buttonsPanel != null) {
+            this.panel.remove(DesktopComponentsHelper.unwrap(buttonsPanel));
+        }
+        buttonsPanel = panel;
+        if (panel != null) {
+            this.panel.add(DesktopComponentsHelper.unwrap(panel), 0);
+        }
     }
 
     public void usePresentations(boolean b) {

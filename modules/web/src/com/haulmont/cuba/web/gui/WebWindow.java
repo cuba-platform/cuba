@@ -14,30 +14,28 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.gui.data.impl.*;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.gui.settings.Settings;
-import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.gui.components.WebAbstractTable;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.toolkit.ui.FieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.data.Validator;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
-import com.haulmont.cuba.web.toolkit.ui.FieldGroup;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Field;
@@ -49,8 +47,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
-import java.lang.reflect.Constructor;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -92,13 +88,14 @@ public class WebWindow
 
     private Runnable doAfterClose;
 
-    private Window wrapper;
+    protected WindowDelegate delegate;
 
     protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<com.haulmont.cuba.gui.components.Action>();
     protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
 
     public WebWindow() {
         component = createLayout();
+        delegate = createDelegate();
         ((com.vaadin.event.Action.Container) component).addActionHandler(new com.vaadin.event.Action.Handler() {
             public com.vaadin.event.Action[] getActions(Object target, Object sender) {
                 final Set<com.vaadin.event.Action> keys = actions.keySet();
@@ -112,6 +109,10 @@ public class WebWindow
                 }
             }
         });
+    }
+
+    protected WindowDelegate createDelegate() {
+        return new WindowDelegate(this, App.getInstance().getWindowManager());
     }
 
     protected com.vaadin.ui.Component createLayout() {
@@ -204,63 +205,43 @@ public class WebWindow
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType, params);
+        return delegate.<T>openWindow(windowAlias, openType, params);
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openWindow(windowInfo, openType);
+        return delegate.<T>openWindow(windowAlias, openType);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params, parentDs);
+        return delegate.<T>openEditor(windowAlias, item, openType, params, parentDs);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, params);
+        return delegate.<T>openEditor(windowAlias, item, openType, params);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType, parentDs);
+        return delegate.<T>openEditor(windowAlias, item, openType, parentDs);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openEditor(windowInfo, item, openType);
+        return delegate.<T>openEditor(windowAlias, item, openType);
     }
 
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openLookup(windowInfo, handler, openType, params);
+        return delegate.<T>openLookup(windowAlias, handler, openType, params);
     }
 
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openLookup(windowInfo, handler, openType);
+        return delegate.<T>openLookup(windowAlias, handler, openType);
     }
 
     public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openFrame(wrapper, parent, windowInfo);
+        return delegate.<T>openFrame(parent, windowAlias);
     }
 
     public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-        return App.getInstance().getWindowManager().<T>openFrame(wrapper, parent, windowInfo, params);
+        return delegate.<T>openFrame(parent, windowAlias, params);
     }
 
     public void showMessageDialog(String title, String message, MessageType messageType) {
@@ -310,7 +291,8 @@ public class WebWindow
     }
 
     public void addListener(CloseListener listener) {
-        if (!listeners.contains(listener)) listeners.add(listener);
+        if (!listeners.contains(listener))
+            listeners.add(listener);
     }
 
     public void removeListener(CloseListener listener) {
@@ -387,7 +369,7 @@ public class WebWindow
         return ComponentsHelper.getComponents(this);
     }
 
-    public boolean onClose(String actionId) {
+    protected boolean onClose(String actionId) {
         fireWindowClosed(actionId);
         return true;
     }
@@ -623,259 +605,41 @@ public class WebWindow
         }
     }
 
-    public Window wrapBy(Class<Window> aClass) {
-        try {
-            Constructor<?> constructor;
-            try {
-                constructor = aClass.getConstructor(Window.class);
-            } catch (NoSuchMethodException e) {
-                constructor = aClass.getConstructor(IFrame.class);
-            }
-
-            wrapper = (Window) constructor.newInstance(this);
-            return wrapper;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public Window wrapBy(Class<Window> wrapperClass) {
+        return delegate.wrapBy(wrapperClass);
     }
 
     public Window getWrapper() {
-        return wrapper;
+        return delegate.getWrapper();
     }
 
     public static class Editor extends WebWindow implements Window.Editor {
 
-        protected Entity item;
-        protected boolean justLocked;
-
-        private boolean commitActionPerformed;
-
-        private boolean commitAndCloseButtonExists = false;
+        @Override
+        protected WindowDelegate createDelegate() {
+            return new EditorWindowDelegate(this, App.getInstance().getWindowManager());
+        }
 
         public Entity getItem() {
-            return item;
-        }
-
-        public Editor() {
-            super();
-
-            addAction(new ActionWrapper(WINDOW_COMMIT) {
-                @Override
-                public String getCaption() {
-                    final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                    if (commitAndCloseButtonExists) return MessageProvider.getMessage(messagesPackage, "actions.Apply");
-                    else return MessageProvider.getMessage(messagesPackage, "actions.Ok");
-                }
-
-                @Override
-                public boolean isEnabled() {
-                    return super.isEnabled() &&
-                            UserSessionClient.getUserSession().isEntityOpPermitted(getMetaClass(), EntityOp.UPDATE);
-                }
-
-                public void actionPerform(Component component) {
-                    if (action != null) {
-                        action.actionPerform(component);
-                    } else {
-                        commit();
-                    }
-                }
-            });
-
-            addAction(new ActionWrapper(WINDOW_COMMIT_AND_CLOSE) {
-                @Override
-                public String getCaption() {
-                    final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                    return MessageProvider.getMessage(messagesPackage, "actions.OkClose");
-                }
-
-                @Override
-                public boolean isEnabled() {
-                    return super.isEnabled() &&
-                            UserSessionClient.getUserSession().isEntityOpPermitted(getMetaClass(), EntityOp.UPDATE);
-                }
-
-                public void actionPerform(Component component) {
-                    if (action != null) {
-                        action.actionPerform(component);
-                    } else {
-                        commitAndClose();
-                    }
-                }
-            });
-
-            addAction(new ActionWrapper(WINDOW_CLOSE) {
-                @Override
-                public String getCaption() {
-                    final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                    boolean commitPermitted = UserSessionClient.getUserSession().isEntityOpPermitted(
-                            getMetaClass(), EntityOp.UPDATE);
-                    return MessageProvider.getMessage(messagesPackage,
-                            commitPermitted ? "actions.Cancel" : "actions.Close");
-                }
-
-                public void actionPerform(Component component) {
-                    if (action != null) {
-                        action.actionPerform(component);
-                    } else {
-                        close(getId());
-                    }
-                }
-            });
-        }
-
-        @Override
-        public Window wrapBy(Class<Window> aClass) {
-            final Window.Editor window = (Window.Editor) super.wrapBy(aClass);
-            final Component commitAndCloseButton = WebComponentsHelper.findComponent(window, WINDOW_COMMIT_AND_CLOSE);
-            if (commitAndCloseButton!=null) commitAndCloseButtonExists = true; 
-            final Action commitAction = getAction(WINDOW_COMMIT);
-            ((ActionWrapper) commitAction).setAction(new AbstractAction(WINDOW_COMMIT) {
-                @Override
-                public String getCaption() {
-                    final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                    return MessageProvider.getMessage(messagesPackage, "actions.Ok");
-                }
-
-                public void actionPerform(Component component) {
-                    if (!commitAndCloseButtonExists) {
-                        window.commitAndClose();
-                    } else {
-                        if (window.commit()) {
-                            commitActionPerformed = true;
-                            window.showNotification(MessageProvider.formatMessage(AppConfig.getInstance().getMessagesPack(),
-                                    "info.EntitySave", ((Instance) window.getItem()).getInstanceName()),
-                                    NotificationType.HUMANIZED);
-                        }
-                    }
-                }
-            });
-
-            if (commitAndCloseButtonExists) {
-                final Action commitAndCloseAction = getAction(WINDOW_COMMIT_AND_CLOSE);
-                ((ActionWrapper) commitAndCloseAction).setAction(new AbstractAction(WINDOW_COMMIT_AND_CLOSE) {
-                    @Override
-                    public String getCaption() {
-                        final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                        return MessageProvider.getMessage(messagesPackage, "actions.OkClose");
-                    }
-
-                    public void actionPerform(Component component) {
-                        window.commitAndClose();
-                    }
-                });
-            }
-
-            final Action closeAction = getAction(WINDOW_CLOSE);
-            ((ActionWrapper) closeAction).setAction(new AbstractAction(WINDOW_CLOSE) {
-                @Override
-                public String getCaption() {
-                    final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-                    return MessageProvider.getMessage(messagesPackage, "actions.Cancel");
-                }
-
-                public void actionPerform(Component component) {
-                    window.close(commitActionPerformed ? COMMIT_ACTION_ID : getId());
-                }
-            });
-
-            return window;
+            return ((EditorWindowDelegate) delegate).getItem();
         }
 
         public void setItem(Entity item) {
-            final Datasource ds = getDatasource();
-
-            if (ds.getCommitMode().equals(Datasource.CommitMode.PARENT)) {
-                Datasource parentDs = ((DatasourceImpl) ds).getParent();
-                //We have to reload items in parent datasource because when item in child datasource is commited,
-                //item in parant datasource must already have all item fields loaded.
-                if (parentDs != null) {
-                    Collection justChangedItems = new HashSet(((AbstractDatasource) parentDs).getItemsToCreate());
-                    justChangedItems.addAll(((AbstractDatasource) parentDs).getItemsToUpdate());
-
-                    DataService dataservice = ds.getDataService();
-                    if ((parentDs instanceof CollectionDatasourceImpl) && !(justChangedItems.contains(item)) && ((CollectionDatasourceImpl) parentDs).containsItem(item)) {
-                        item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
-                        ((CollectionDatasourceImpl) parentDs).updateItem(item);
-                    } else if ((parentDs instanceof LazyCollectionDatasource) && !(justChangedItems.contains(item)) && ((LazyCollectionDatasource) parentDs).containsItem(item)) {
-                        item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
-                        ((LazyCollectionDatasource) parentDs).updateItem(item);
-                    } else if ((parentDs instanceof CollectionPropertyDatasourceImpl) && !(justChangedItems.contains(item)) && ((CollectionPropertyDatasourceImpl) parentDs).containsItem(item)) {
-                        item = dataservice.reload(item, ds.getView(), ds.getMetaClass());
-                        ((CollectionPropertyDatasourceImpl) parentDs).replaceItem(item);
-                    }
-                }
-                item = (Entity) InstanceUtils.copy((Instance) item);
-            } else {
-                if (!PersistenceHelper.isNew(item)) {
-                    String useSecurityConstraintsParam = (String) getContext().getParams().get("useSecurityConstraints");
-                    boolean useSecurityConstraints = !("false".equals(useSecurityConstraintsParam));
-                    final DataService dataservice = ds.getDataService();
-                    item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), useSecurityConstraints);
-                }
-            }
-
-            if (PersistenceHelper.isNew(item)
-                    && !ds.getMetaClass().equals(((Instance) item).getMetaClass()))
-            {
-                Entity newItem = ds.getDataService().newInstance(ds.getMetaClass());
-                InstanceUtils.copy(((Instance) item), ((Instance) newItem));
-                item = newItem;
-            }
-
-            this.item = item;
-            //noinspection unchecked
-            ds.setItem(item);
-            ((DatasourceImplementation) ds).setModified(false);
-
-            LockService lockService = ServiceLocator.lookup(LockService.NAME);
-            LockInfo lockInfo = lockService.lock(ds.getMetaClass().getName(), item.getId().toString());
-            if (lockInfo == null) {
-                justLocked = true;
-            } else if (!(lockInfo instanceof LockNotSupported)) {
-                String mp = AppConfig.getInstance().getMessagesPack();
-                App.getInstance().getWindowManager().showNotification(
-                        MessageProvider.getMessage(mp, "entityLocked.msg"),
-                        MessageProvider.formatMessage(mp, "entityLocked.desc",
-                                lockInfo.getUser().getLogin(),
-                                new SimpleDateFormat(MessageProvider.getMessage(mp, "dateTimeFormat")).format(lockInfo.getSince())
-                        ),
-                        NotificationType.HUMANIZED
-                );
-                Action action = getAction(WINDOW_COMMIT);
-                if (action != null)
-                    action.setEnabled(false);
-                action = getAction(WINDOW_COMMIT_AND_CLOSE);
-                if (action != null)
-                    action.setEnabled(false);
-            }
+            ((EditorWindowDelegate) delegate).setItem(item);
         }
 
         @Override
-        public boolean onClose(String actionId) {
+        protected boolean onClose(String actionId) {
             releaseLock();
             return super.onClose(actionId);
         }
 
         public void releaseLock() {
-            if (justLocked) {
-                Entity entity = getDatasource().getItem();
-                if (entity != null) {
-                    LockService lockService = ServiceLocator.lookup(LockService.NAME);
-                    lockService.unlock(getDatasource().getMetaClass().getName(), entity.getId().toString());
-                }
-            }
+            ((EditorWindowDelegate) delegate).releaseLock();
         }
 
         public void setParentDs(Datasource parentDs) {
-            Datasource ds = getDatasource();
-
-            if (parentDs == null) {
-                ((DatasourceImplementation) ds).setCommitMode(Datasource.CommitMode.DATASTORE);
-            } else {
-                ((DatasourceImplementation) ds).setCommitMode(Datasource.CommitMode.PARENT);
-                ((DatasourceImplementation) ds).setParent(parentDs);
-            }
+            ((EditorWindowDelegate) delegate).setParentDs(parentDs);
         }
 
         protected Collection<com.vaadin.ui.Field> getFields() {
@@ -904,19 +668,7 @@ public class WebWindow
         }
 
         protected Datasource getDatasource() {
-            Datasource ds = null;
-            Element element = getXmlDescriptor();
-            String datasourceName = element.attributeValue("datasource");
-            if (!StringUtils.isEmpty(datasourceName)) {
-                final DsContext context = getDsContext();
-                if (context != null) {
-                    ds = context.get(datasourceName);
-                }
-            }
-            if (ds == null)
-                throw new IllegalStateException("Can't find main datasource");
-            else
-                return ds;
+            return delegate.getDatasource();
         }
 
         protected MetaClass getMetaClass(Object item) {
@@ -945,20 +697,7 @@ public class WebWindow
             if (validate && !__validate())
                 return false;
 
-            final DsContext context = getDsContext();
-            if (context != null) {
-                context.commit();
-                item = getDatasource().getItem();
-            } else {
-                if (item instanceof Datasource) {
-                    final Datasource ds = (Datasource) item;
-                    ds.commit();
-                } else {
-                    DataService service = getDataService();
-                    item = service.commit((Entity) item, null);
-                }
-            }
-
+            ((EditorWindowDelegate) delegate).commit();
             return true;
         }
 
@@ -969,7 +708,7 @@ public class WebWindow
         }
 
         public boolean isLocked() {
-            return !justLocked;
+            return ((EditorWindowDelegate) delegate).isLocked();
         }
 
         protected boolean __validate() {
@@ -1062,27 +801,6 @@ public class WebWindow
             } catch (Validator.InvalidValueException e) {
                 problems.put(e, ((Field) impl));
             }
-        }
-
-        protected DataService getDataService() {
-            final DsContext context = getDsContext();
-            if (context == null) {
-                throw new UnsupportedOperationException();
-            } else {
-                return context.getDataService();
-            }
-        }
-    }
-
-    protected static class CloseWindowAction implements Button.ClickListener {
-        private Window window;
-
-        public CloseWindowAction(com.haulmont.cuba.gui.components.Window window) {
-            this.window = window;
-        }
-
-        public void buttonClick(Button.ClickEvent event) {
-            window.close("cancel");
         }
     }
 

@@ -1,0 +1,32 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.server.browse.ServerBrowser"
+        messagesPack="com.haulmont.cuba.gui.app.core.server"
+        lookupComponent="table"
+        caption="msg://server.browse.caption"
+        >
+
+    <dsContext>
+        <collectionDatasource id="serversDs" class="com.haulmont.cuba.core.entity.Server" view="_local">
+            <query>
+                select s from core$Server s
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expand="table" spacing="true">
+        <table id="table">
+            <buttonsPanel>
+                <button action="table.create" icon="icons/create.png"/>
+                <button action="table.edit" icon="icons/edit.png"/>
+                <button action="table.remove" icon="icons/remove.png"/>
+            </buttonsPanel>
+            <columns>
+                <column id="name"/>
+                <column id="address"/>
+                <column id="running"/>
+            </columns>
+            <rows datasource="serversDs"/>
+        </table>
+    </layout>
+</window>

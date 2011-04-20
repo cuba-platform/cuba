@@ -10,6 +10,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ExpandingLayout;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
@@ -20,7 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class WebAbstractPanel extends Panel
-        implements com.haulmont.cuba.gui.components.Layout, Component.Container, Component.Expandable, Component.BelongToFrame
+        implements ExpandingLayout, Component.Container, Component.Expandable, Component.BelongToFrame
 {
     private String id;
     protected Component component;

@@ -16,7 +16,6 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.WindowContext;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -24,7 +23,8 @@ import java.util.Map;
  * Having its own XML descriptor, but can be instantiated only inside a {@link Window}.
  * Includes functionality for work with datasources and other windows.
  */
-public interface IFrame extends Layout, Component.BelongToFrame, Component.HasLayout, Layout.Spacing, Layout.Margin {
+public interface IFrame
+        extends ExpandingLayout, Component.BelongToFrame, Component.HasLayout, Component.Spacing, Component.Margin {
 
     String NAME = "iframe";
 

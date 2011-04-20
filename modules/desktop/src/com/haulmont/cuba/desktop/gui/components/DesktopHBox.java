@@ -6,16 +6,16 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
+import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 
 /**
  * <p>$Id$</p>
  *
  * @author krivopustov
  */
-public class DesktopHBox extends DesktopAbstractContainer {
+public class DesktopHBox extends DesktopAbstractBox {
 
     public DesktopHBox() {
-        layoutAdapter.setFlowDirection(LayoutAdapter.FlowDirection.X);
+        layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.X);
     }
 }

@@ -68,10 +68,16 @@ public abstract class WindowManager implements Serializable {
         DIALOG
     }
 
+    public interface WindowCloseListener extends Serializable {
+        void onWindowClose(Window window, boolean anyOpenWindowExist);
+    }
+
     private transient DataService defaultDataService;
     private transient UserSettingService settingService;
 
     private DialogParams dialogParams;
+
+    protected List<WindowCloseListener> listeners = new ArrayList<WindowCloseListener>();
 
     protected WindowManager() {
         dialogParams = createDialogParams();
@@ -568,6 +574,12 @@ public abstract class WindowManager implements Serializable {
         return dialogParams;
     }
 
+    protected void fireListeners(Window window, boolean anyOpenWindowExist) {
+        for (WindowCloseListener wcl : listeners) {
+            wcl.onWindowClose(window, anyOpenWindowExist);
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public <T extends Window> T openWindow(WindowInfo windowInfo, OpenType openType) {
@@ -594,6 +606,8 @@ public abstract class WindowManager implements Serializable {
 
         ((DsContextImplementation) window.getDsContext()).resumeSuspended();
     }
+
+    public abstract void close(Window window);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

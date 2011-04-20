@@ -50,9 +50,13 @@ public class App implements ConnectionListener {
     private JTabbedPane tabsPane;
 
     public static void main(String[] args) {
-        app = new App();
-        app.show();
-        app.showLoginDialog();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                app = new App();
+                app.show();
+                app.showLoginDialog();
+            }
+        });
     }
 
     public static App getInstance() {
@@ -75,8 +79,6 @@ public class App implements ConnectionListener {
 
             DesktopAppContextLoader contextLoader = new DesktopAppContextLoader(getDefaultAppPropertiesConfig());
             contextLoader.load();
-
-            windowManager = new DesktopWindowManager();
 
             initUI();
         } catch (Throwable t) {
@@ -302,10 +304,13 @@ public class App implements ConnectionListener {
 
     public void connectionStateChanged(Connection connection) throws LoginException {
         if (connection.isConnected()) {
+            windowManager = new DesktopWindowManager();
             frame.setContentPane(createContentPane());
             frame.repaint();
+            windowManager.setTabsPane(tabsPane);
             initExceptionHandlers(true);
         } else {
+            windowManager = null;
             frame.setContentPane(createStartContentPane());
             frame.repaint();
             initExceptionHandlers(false);

@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.gui.components.Layout;
+import com.haulmont.cuba.gui.components.ExpandingLayout;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ToggleBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.TogglePanel;
@@ -33,12 +33,12 @@ public class WebToggleBoxLayout
         component.setCollapseLayout(offLayout);
     }
 
-    public Layout getOnLayout() {
-        return (Layout) onLayout;
+    public ExpandingLayout getOnLayout() {
+        return (ExpandingLayout) onLayout;
     }
 
-    public Layout getOffLayout() {
-        return (Layout) offLayout;
+    public ExpandingLayout getOffLayout() {
+        return (ExpandingLayout) offLayout;
     }
 
     public void toggle() {
@@ -98,18 +98,18 @@ public class WebToggleBoxLayout
 
     @SuppressWarnings({"unchecked"})
     public <T extends Component> T getOwnComponent(String id) {
-        Component component = ((Layout) offLayout).getOwnComponent(id);
+        Component component = ((Container) offLayout).getOwnComponent(id);
         if (component == null) {
-            component = ((Layout) onLayout).getOwnComponent(id);
+            component = ((Container) onLayout).getOwnComponent(id);
         }
         return (T) component;
     }
 
     @SuppressWarnings({"unchecked"})
     public <T extends Component> T getComponent(String id) {
-        Component component = ((Layout) offLayout).getComponent(id);
+        Component component = ((Container) offLayout).getComponent(id);
         if (component == null) {
-            component = ((Layout) onLayout).getComponent(id);
+            component = ((Container) onLayout).getComponent(id);
         }
         return (T) component;
     }
@@ -117,8 +117,8 @@ public class WebToggleBoxLayout
     public Collection<Component> getOwnComponents() {
         Set<Component> ownComponents = new LinkedHashSet<Component>();
 
-        ownComponents.addAll(((Layout) offLayout).getOwnComponents());
-        ownComponents.addAll(((Layout) onLayout).getOwnComponents());
+        ownComponents.addAll(((Container) offLayout).getOwnComponents());
+        ownComponents.addAll(((Container) onLayout).getOwnComponents());
 
         return Collections.unmodifiableCollection(ownComponents);
     }
@@ -126,13 +126,13 @@ public class WebToggleBoxLayout
     public Collection<Component> getComponents() {
         Set<Component> components = new LinkedHashSet<Component>();
 
-        components.addAll(((Layout) offLayout).getComponents());
-        components.addAll(((Layout) onLayout).getComponents());
+        components.addAll(((Container) offLayout).getComponents());
+        components.addAll(((Container) onLayout).getComponents());
 
         return components;
     }
 
-    public class LayoutWrapper extends VerticalLayout implements Layout {
+    public class LayoutWrapper extends VerticalLayout implements ExpandingLayout {
 
         protected Collection<Component> ownComponents = new HashSet<Component>();
         protected Map<String, Component> componentByIds = new HashMap<String, Component>();

@@ -243,11 +243,11 @@ public class WebTabsheet
 
     private class LazyTabChangeListener implements TabSheet.SelectedTabChangeListener {
 
-        private WebAbstractContainer tabContent;
+        private WebAbstractBox tabContent;
         private Element descriptor;
         private ComponentLoader loader;
 
-        public LazyTabChangeListener(WebAbstractContainer tabContent, Element descriptor, ComponentLoader loader) {
+        public LazyTabChangeListener(WebAbstractBox tabContent, Element descriptor, ComponentLoader loader) {
             this.tabContent = tabContent;
             this.descriptor = descriptor;
             this.loader = loader;

@@ -10,32 +10,24 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.*;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
-import com.haulmont.cuba.gui.data.impl.GenericDataService;
-import com.haulmont.cuba.gui.settings.SettingsImpl;
-import com.haulmont.cuba.gui.components.AbstractCompanion;
-import com.haulmont.cuba.gui.components.AbstractFrame;
-import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.*;
-import org.apache.commons.lang.BooleanUtils;
+import com.vaadin.ui.Label;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
@@ -62,8 +54,6 @@ public class WebWindowManager extends WindowManager {
 
     protected App app;
 
-    protected List<WindowCloseListener> listeners = new ArrayList<WindowCloseListener>();
-
     protected List<ShowStartupLayoutListener> showStartupLayoutListeners = new ArrayList<ShowStartupLayoutListener>();
 
     protected List<CloseStartupLayoutListener> closeStartupLayoutListeners = new ArrayList<CloseStartupLayoutListener>();
@@ -74,9 +64,8 @@ public class WebWindowManager extends WindowManager {
 
     private static Log log = LogFactory.getLog(WebWindowManager.class);
     
-    private List<String> screenIds;
-
-    private boolean allReady;
+    private boolean disableSavingScreenHistory;
+    private ScreenHistorySupport screenHistorySupport = new ScreenHistorySupport();
 
     public WebWindowManager(final App app) {
         this.app = app;
@@ -86,9 +75,6 @@ public class WebWindowManager extends WindowManager {
                 showStartupScreen(app.getAppWindow());
             }
         });
-        String property = AppContext.getProperty("cuba.web.screenHistoryIds");
-        if (property != null && StringUtils.isNotBlank(property))
-            screenIds = Arrays.asList(StringUtils.split(property, ','));
     }
 
     private WindowData getCurrentWindowData() {
@@ -151,20 +137,6 @@ public class WebWindowManager extends WindowManager {
 
         public void setVaadinWindow(com.vaadin.ui.Window vaadinWindow) {
             this.vaadinWindow = vaadinWindow;
-        }
-    }
-
-    public void addWindowCloseListener(WindowCloseListener listener) {
-        if (!listeners.contains(listener)) listeners.add(listener);
-    }
-
-    public void removeWindowCloseListener(WindowCloseListener listener) {
-        listeners.remove(listener);
-    }
-
-    protected void fireListeners(Window window, boolean anyOpenWindowExist) {
-        for (WindowCloseListener wcl : listeners) {
-            wcl.onWindowClose(window, anyOpenWindowExist);
         }
     }
 
@@ -282,14 +254,7 @@ public class WebWindowManager extends WindowManager {
             getWindowOpenMode().put(window, openMode);
         }
 
-        if (window.getContext() != null &&
-                !BooleanUtils.isTrue((Boolean) window.getContext().getParams().get("disableApplySettings")) &&
-                ((AppWindow.Mode.TABBED.equals(appWindow.getMode()) && newTab) || (AppWindow.Mode.SINGLE.equals(appWindow.getMode())))) {
-
-            window.applySettings(new SettingsImpl(window.getId()));
-        }
-
-        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+        afterShowWindow(window, newTab || AppWindow.Mode.SINGLE.equals(appWindow.getMode()));
     }
 
     private void closeStartupScreen(AppWindow appWindow) {
@@ -550,6 +515,7 @@ public class WebWindowManager extends WindowManager {
         return new com.vaadin.ui.Window(window.getCaption());
     }
 
+    @Override
     public void close(Window window) {
         if (window instanceof Window.Wrapper) {
             window = ((Window.Wrapper) window).getWrappedWindow();
@@ -560,7 +526,7 @@ public class WebWindowManager extends WindowManager {
             log.warn("Problem closing window " + window + " : WindowOpenMode not found");
             return;
         }
-        allReady = false;
+        disableSavingScreenHistory = false;
         closeWindow(window, openMode);
         getWindowOpenMode().remove(window);
         removeFromWindowMap(openMode.getWindow());
@@ -569,16 +535,15 @@ public class WebWindowManager extends WindowManager {
     public void checkModificationsAndCloseAll(final Runnable runIfOk, final Runnable runIfCancel) {
         boolean modified = false;
         for (Window window : getOpenWindows()) {
-            if (!allReady && window.getFrame() != null && (window.getFrame() instanceof Window.Editor) && !getWindowOpenMode().get(window).getOpenType().equals(OpenType.DIALOG)) {
-                if (screenIds == null || (screenIds != null && screenIds.contains(window.getId())))
-                    saveScreenHistory(window, window.getCaption());
+            if (!disableSavingScreenHistory) {
+                screenHistorySupport.saveScreenHistory(window, getWindowOpenMode().get(window).getOpenType());
             }
             window.saveSettings();
             if (window.getDsContext() != null && window.getDsContext().isModified()) {
                 modified = true;
             }
         }
-        allReady = true;
+        disableSavingScreenHistory = true;
         if (modified) {
             showOptionDialog(
                     MessageProvider.getMessage(WebWindow.class, "closeUnsaved.caption"),
@@ -621,7 +586,7 @@ public class WebWindowManager extends WindowManager {
             }
             closeWindow(window, entries.get(i).getValue());
         }
-        allReady = false;
+        disableSavingScreenHistory = false;
         getWindowOpenMode().clear();
         getCurrentWindowData().windows.clear();
         Collection windows = App.getInstance().getWindows();
@@ -637,9 +602,8 @@ public class WebWindowManager extends WindowManager {
     private void closeWindow(Window window, WindowOpenMode openMode) {
         AppWindow appWindow = app.getAppWindow();
 
-        if (!allReady && window.getFrame() != null && (window.getFrame() instanceof Window.Editor) && !openMode.openType.equals(OpenType.DIALOG)) {
-            if (screenIds == null || (screenIds != null && screenIds.contains(window.getId())))
-                saveScreenHistory(window, window.getCaption());
+        if (!disableSavingScreenHistory) {
+            screenHistorySupport.saveScreenHistory(window, openMode.getOpenType());
         }
 
         switch (openMode.openType) {
@@ -759,56 +723,6 @@ public class WebWindowManager extends WindowManager {
             appWindow.initStartupLayout();
             fireShowStartupLayoutListeners();
         }
-    }
-
-    protected void saveScreenHistory(Window window, String caption){
-        IFrame frame = window.getFrame();
-        if (frame instanceof WebWindow.Editor) {
-            Instance entity = (Instance) ((WebWindow.Editor) frame).getItem();
-            if (entity != null) {
-                caption = MessageUtils.getEntityCaption(entity.getMetaClass()) + " " + entity.getInstanceName();
-            }
-        }
-        ScreenHistoryEntity screenHistoryEntity = EntityFactory.create(ScreenHistoryEntity.class);
-        screenHistoryEntity.setCaption(StringUtils.abbreviate(caption, 255));
-        screenHistoryEntity.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
-        screenHistoryEntity.setUrl(makeLink(window));
-
-        CommitContext cc = new CommitContext(Collections.singleton(screenHistoryEntity));
-        ServiceLocator.getDataService().commit(cc);
-    }
-
-    protected String makeLink(Window window) {
-        GlobalConfig c = ConfigProvider.getConfig(GlobalConfig.class);
-        Entity entity = null;
-        if (window.getFrame() instanceof WebWindow.Editor)
-            entity = ((WebWindow.Editor) window.getFrame()).getItem();
-        String url = "http://" + c.getWebHostName() + ":" + c.getWebPort() + "/" + c.getWebContextName() + "/open?" +
-                "screen=" + window.getFrame().getId();
-        if (entity != null) {
-            String item = MetadataProvider.getSession().getClass(entity.getClass()).getName() + "-" + entity.getId();
-            url += "&" + "item=" + item + "&" + "params=item:" + item;
-        }
-        Map<String, Object> params = window.getContext().getParams();
-        StringBuilder sb = new StringBuilder();
-        if (params != null) {
-            for (Map.Entry<String, Object> param : params.entrySet()) {
-                Object value = param.getValue();
-                if (value instanceof String /*|| value instanceof Integer || value instanceof Double*/
-                        || value instanceof Boolean) {
-                    sb.append(",").append(param.getKey()).append(":").append(value.toString());
-                }
-            }
-        }
-        if (sb.length() > 0) {
-            if (entity != null) {
-                url += sb.toString();
-            } else {
-                url += "&params=" + sb.deleteCharAt(0).toString();
-            }
-        }
-
-        return url;
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1056,10 +970,6 @@ public class WebWindowManager extends WindowManager {
         return id + "." + count;
     }
 
-    public interface WindowCloseListener extends Serializable {
-        void onWindowClose(Window window, boolean anyOpenWindowExist);
-    }
-
     public interface ShowStartupLayoutListener extends Serializable {
         void onShowStartupLayout();
     }
@@ -1067,5 +977,4 @@ public class WebWindowManager extends WindowManager {
     public interface CloseStartupLayoutListener extends Serializable {
         void onCloseStartupLayout();
     }
-
 }

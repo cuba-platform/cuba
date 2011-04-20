@@ -8,21 +8,22 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.DialogParams;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
+import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
+import com.haulmont.cuba.gui.*;
+import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.gui.settings.Settings;
+import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 
 import javax.swing.*;
-import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.List;
 
@@ -31,11 +32,11 @@ import java.util.List;
  *
  * @author krivopustov
  */
-public class DesktopWindow implements  Window, Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow
+public class DesktopWindow implements Window, Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow
 {
     private static final long serialVersionUID = 1026363207247384464L;
 
-    protected LayoutAdapter layoutAdapter;
+    protected BoxLayoutAdapter layoutAdapter;
     protected JPanel panel;
 
     protected String id;
@@ -47,16 +48,32 @@ public class DesktopWindow implements  Window, Component.Wrapper, Component.HasX
 
     protected Map<String, Component> allComponents = new HashMap<String, Component>();
 
-    private DsContext dsContext;
-    private WindowContext context;
-    private String messagePack;
-    private Element xmlDescriptor;
+    protected DsContext dsContext;
+    protected WindowContext context;
+    protected String messagePack;
+    protected Element xmlDescriptor;
+    protected String caption;
+    protected String description;
+
+    protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<com.haulmont.cuba.gui.components.Action>();
+
+    protected WindowDelegate delegate;
+
+    private List<CloseListener> listeners = new ArrayList<CloseListener>();
+
+    protected boolean forceClose;
+    protected Runnable doAfterClose;
 
     public DesktopWindow() {
         panel = new JPanel();
-        layoutAdapter = LayoutAdapter.create(panel);
-        layoutAdapter.setFlowDirection(LayoutAdapter.FlowDirection.Y);
+        layoutAdapter = BoxLayoutAdapter.create(panel);
+        layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.Y);
         layoutAdapter.setMargin(true);
+        delegate = createDelegate();
+    }
+
+    protected WindowDelegate createDelegate() {
+        return new WindowDelegate(this, App.getInstance().getWindowManager());
     }
 
     public Element getXmlDescriptor() {
@@ -68,9 +85,12 @@ public class DesktopWindow implements  Window, Component.Wrapper, Component.HasX
     }
 
     public void addListener(CloseListener listener) {
+        if (!listeners.contains(listener))
+            listeners.add(listener);
     }
 
     public void removeListener(CloseListener listener) {
+        listeners.remove(listener);
     }
 
     public void applySettings(Settings settings) {
@@ -83,15 +103,59 @@ public class DesktopWindow implements  Window, Component.Wrapper, Component.HasX
         return null;
     }
 
-    public boolean close(String actionId) {
-        return false;
+    public boolean close(final String actionId) {
+        WindowManager windowManager = App.getInstance().getWindowManager();
+
+        if (!forceClose && getDsContext() != null && getDsContext().isModified()) {
+            windowManager.showOptionDialog(
+                    MessageProvider.getMessage(AppConfig.getMessagesPack(), "closeUnsaved.caption"),
+                    MessageProvider.getMessage(AppConfig.getMessagesPack(), "closeUnsaved"),
+                    MessageType.WARNING,
+                    new Action[]{
+                            new AbstractAction(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Yes")) {
+                                public void actionPerform(Component component) {
+                                    forceClose = true;
+                                    close(actionId);
+                                }
+
+                                @Override
+                                public String getIcon() {
+                                    return "icons/ok.png";
+                                }
+                            },
+                            new AbstractAction(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.No")) {
+                                public void actionPerform(Component component) {
+                                    doAfterClose = null;
+                                }
+
+                                @Override
+                                public String getIcon() {
+                                    return "icons/cancel.png";
+                                }
+                            }
+                    }
+            );
+            return false;
+        }
+
+        saveSettings();
+
+        windowManager.close(this);
+        boolean res = onClose(actionId);
+        if (res && doAfterClose != null) {
+            doAfterClose.run();
+        }
+        return res;
     }
 
     public boolean close(String actionId, boolean force) {
-        return false;
+        forceClose = force;
+        return close(actionId);
     }
 
     public void closeAndRun(String actionId, Runnable runnable) {
+        this.doAfterClose = runnable;
+        close(actionId);
     }
 
     public void addTimer(Timer timer) {
@@ -102,31 +166,40 @@ public class DesktopWindow implements  Window, Component.Wrapper, Component.HasX
     }
 
     public void addAction(Action action) {
+        actionsOrder.add(action);
     }
 
     public void removeAction(Action action) {
+        actionsOrder.remove(action);
     }
 
     public Collection<Action> getActions() {
-        return null;
+        return Collections.unmodifiableCollection(actionsOrder);
     }
 
     public Action getAction(String id) {
+        for (com.haulmont.cuba.gui.components.Action action : getActions()) {
+            if (ObjectUtils.equals(action.getId(), id)) {
+                return action;
+            }
+        }
         return null;
     }
 
     public String getCaption() {
-        return null;
+        return caption;
     }
 
     public void setCaption(String caption) {
+        this.caption = caption;
     }
 
     public String getDescription() {
-        return null;
+        return description;
     }
 
     public void setDescription(String description) {
+        this.description = description;
     }
 
     public WindowContext getContext() {
@@ -165,47 +238,47 @@ public class DesktopWindow implements  Window, Component.Wrapper, Component.HasX
     }
 
     public DialogParams getDialogParams() {
-        return null;
+        return App.getInstance().getWindowManager().getDialogParams();
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
-        return null;
+        return delegate.<T>openWindow(windowAlias, openType, params);
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
-        return null;
+        return delegate.<T>openWindow(windowAlias, openType);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
-        return null;
+        return delegate.<T>openEditor(windowAlias, item, openType, params, parentDs);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
-        return null;
+        return delegate.<T>openEditor(windowAlias, item, openType, params);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
-        return null;
+        return delegate.<T>openEditor(windowAlias, item, openType, parentDs);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
-        return null;
+        return delegate.<T>openEditor(windowAlias, item, openType);
     }
 
-    public <T extends Window> T openLookup(String windowAlias, Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
-        return null;
+    public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
+        return delegate.<T>openLookup(windowAlias, handler, openType, params);
     }
 
-    public <T extends Window> T openLookup(String windowAlias, Lookup.Handler handler, WindowManager.OpenType openType) {
-        return null;
+    public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        return delegate.<T>openLookup(windowAlias, handler, openType);
     }
 
     public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
-        return null;
+        return delegate.<T>openFrame(parent, windowAlias);
     }
 
     public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
-        return null;
+        return delegate.<T>openFrame(parent, windowAlias, params);
     }
 
     public void showMessageDialog(String title, String message, MessageType messageType) {
@@ -306,17 +379,19 @@ public class DesktopWindow implements  Window, Component.Wrapper, Component.HasX
     }
 
     public boolean isEnabled() {
-        return false;
+        return panel.isEnabled();
     }
 
     public void setEnabled(boolean enabled) {
+        panel.setEnabled(enabled);
     }
 
     public boolean isVisible() {
-        return false;
+        return true;
     }
 
     public void setVisible(boolean visible) {
+        throw new UnsupportedOperationException();
     }
 
     public void requestFocus() {
@@ -370,23 +445,94 @@ public class DesktopWindow implements  Window, Component.Wrapper, Component.HasX
         layoutAdapter.setSpacing(enabled);
     }
 
-    public Window wrapBy(Class<Window> aClass) {
-        try {
-            Constructor<?> constructor;
-            try {
-                constructor = aClass.getConstructor(Window.class);
-            } catch (NoSuchMethodException e) {
-                constructor = aClass.getConstructor(IFrame.class);
-            }
-
-            wrapper = (Window) constructor.newInstance(this);
-            return wrapper;
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public Window wrapBy(Class<Window> wrapperClass) {
+        return delegate.wrapBy(wrapperClass);
     }
 
     public Window getWrapper() {
         return wrapper;
+    }
+
+    protected boolean onClose(String actionId) {
+        fireWindowClosed(actionId);
+        return true;
+    }
+
+    protected void fireWindowClosed(String actionId) {
+        for (Object listener : listeners) {
+            if (listener instanceof CloseListener) {
+                ((CloseListener) listener).windowClosed(actionId);
+            }
+        }
+    }
+
+    public static class Editor extends DesktopWindow implements Window.Editor {
+
+        private static final long serialVersionUID = -7042930104147784581L;
+
+        @Override
+        protected WindowDelegate createDelegate() {
+            return new EditorWindowDelegate(this, App.getInstance().getWindowManager());
+        }
+
+        public Entity getItem() {
+            return ((EditorWindowDelegate) delegate).getItem();
+        }
+
+        public void setItem(Entity item) {
+            ((EditorWindowDelegate) delegate).setItem(item);
+        }
+
+        public boolean isValid() {
+            return true;
+        }
+
+        public void validate() throws ValidationException {
+        }
+
+        @Override
+        public boolean onClose(String actionId) {
+            releaseLock();
+            return super.onClose(actionId);
+        }
+
+        public void releaseLock() {
+            ((EditorWindowDelegate) delegate).releaseLock();
+        }
+
+        public void setParentDs(Datasource parentDs) {
+            ((EditorWindowDelegate) delegate).setParentDs(parentDs);
+        }
+
+        protected Datasource getDatasource() {
+            return delegate.getDatasource();
+        }
+
+        public boolean commit() {
+            return commit(true);
+        }
+
+        public boolean commit(boolean validate) {
+            if (validate && !__validate())
+                return false;
+
+            ((EditorWindowDelegate) delegate).commit();
+            return true;
+        }
+
+        protected boolean __validate() {
+            return true;
+        }
+
+        public void commitAndClose() {
+            if (commit()) {
+                close(COMMIT_ACTION_ID);
+            }
+        }
+
+        public boolean isLocked() {
+            return ((EditorWindowDelegate) delegate).isLocked();
+        }
+
     }
 }

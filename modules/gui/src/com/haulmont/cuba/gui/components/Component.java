@@ -241,4 +241,13 @@ public interface Component {
 
         Object getDefaultPresentationId();
     }
+
+    interface Spacing {
+        void setSpacing(boolean enabled);
+    }
+
+    interface Margin {
+        void setMargin(boolean enable);
+        void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable);
+    }
 }

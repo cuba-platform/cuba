@@ -17,9 +17,11 @@ import com.vaadin.ui.Layout;
 
 import java.util.*;
 
-class WebAbstractContainer extends AbstractOrderedLayout
-        implements Component.Container, Component.Expandable, Component.BelongToFrame
+class WebAbstractBox extends AbstractOrderedLayout
+        implements com.haulmont.cuba.gui.components.BoxLayout
 {
+    private static final long serialVersionUID = 2221267347055089920L;
+
     protected String id;
 
     protected Collection<Component> ownComponents = new HashSet<Component>();
@@ -117,5 +119,10 @@ class WebAbstractContainer extends AbstractOrderedLayout
     public void setFrame(IFrame frame) {
         this.frame = frame;
         frame.registerComponent(this);
+    }
+
+    public void expand(Component component, String height, String width) {
+        final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(component);
+        WebComponentsHelper.expand(this, expandedComponent, height, width);
     }
 }

@@ -8,6 +8,7 @@
         <item id="core$LockInfo.browse"/>
         <item id="jmxcontrol$DisplayMbeans"/>
         <item id="core$Entity.restore"/>
+        <item id="core$Server.browse"/>
     </menu>
     <menu id="reports">
         <item id="report$Report.browse"/>

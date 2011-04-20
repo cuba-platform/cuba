@@ -9,7 +9,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface ScrollBoxLayout extends Layout, Component.BelongToFrame {
+public interface ScrollBoxLayout extends ExpandingLayout, Component.BelongToFrame {
 
     String NAME = "scrollbox";
 }

@@ -19,6 +19,6 @@ public interface ToggleBoxLayout extends Component.Container,
     void setOn(boolean on);
     boolean isOn();
 
-    Layout getOnLayout();
-    Layout getOffLayout();
+    ExpandingLayout getOnLayout();
+    ExpandingLayout getOffLayout();
 }
