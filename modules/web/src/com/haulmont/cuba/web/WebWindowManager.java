@@ -282,7 +282,14 @@ public class WebWindowManager extends WindowManager {
             getWindowOpenMode().put(window, openMode);
         }
 
-        afterShowWindow(window, newTab);
+        if (window.getContext() != null &&
+                !BooleanUtils.isTrue((Boolean) window.getContext().getParams().get("disableApplySettings")) &&
+                ((AppWindow.Mode.TABBED.equals(appWindow.getMode()) && newTab) || (AppWindow.Mode.SINGLE.equals(appWindow.getMode())))) {
+
+            window.applySettings(new SettingsImpl(window.getId()));
+        }
+
+        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
     }
 
     private void closeStartupScreen(AppWindow appWindow) {
