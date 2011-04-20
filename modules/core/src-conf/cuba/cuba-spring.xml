@@ -79,7 +79,8 @@
 
     <!-- Various beans -->
 
-    <bean id="cuba_TimeBetweenQueryMacroHandler" class="com.haulmont.cuba.core.sys.querymacro.TimeBetweenQueryMacroHandler"
+    <bean id="cuba_TimeBetweenQueryMacroHandler"
+          class="com.haulmont.cuba.core.sys.querymacro.TimeBetweenQueryMacroHandler"
           scope="prototype"/>
 
     <bean id="cuba_TimeTodayQueryMacroHandler" class="com.haulmont.cuba.core.sys.querymacro.TimeTodayQueryMacroHandler"
@@ -127,7 +128,8 @@
             <bean class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
                 <property name="interfaceMappings">
                     <map>
-                        <entry key="cuba_PersistenceManager" value="com.haulmont.cuba.core.app.PersistenceManagerMBean"/>
+                        <entry key="cuba_PersistenceManager"
+                               value="com.haulmont.cuba.core.app.PersistenceManagerMBean"/>
                         <entry key="cuba_ConfigStorage" value="com.haulmont.cuba.core.app.ConfigStorageMBean"/>
                         <entry key="cuba_DataCache" value="com.haulmont.cuba.core.app.DataCacheMBean"/>
                         <entry key="cuba_ResourceRepository"
@@ -219,6 +221,7 @@
         <task:scheduled ref="cuba_LockManager" method="expireLocks" fixed-rate="60000"/>
         <task:scheduled ref="cuba_CachingFacade" method="clearStorageTempDirectory" cron="0 0 0 * * 2,4,6"/>
         <task:scheduled ref="cuba_ScreenHistory" method="cleanup" fixed-delay="60000"/>
+        <task:scheduled ref="cuba_EmailManager" method="queueEmailsToSend" cron="${cuba.email.async.schedulerCron}"/>
     </task:scheduled-tasks>
 
     <!-- Email setup -->
@@ -238,6 +241,12 @@
 
     <bean id="mailSenderPostProcessor" class="com.haulmont.cuba.core.app.JavaMailSenderPostProcessor">
         <property name="authRequired" value="${cuba.email.authRequired}"/>
+    </bean>
+
+    <bean id="mailSendTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="5"/>
+        <property name="maxPoolSize" value="10"/>
+        <property name="queueCapacity" value="200"/>
     </bean>
 
 </beans>

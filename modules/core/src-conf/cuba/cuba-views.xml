@@ -87,4 +87,19 @@
     <view class="com.haulmont.cuba.security.entity.ScreenHistoryEntity" name="browse" extends="_local">
         <property name="user" view="_minimal"/>
     </view>
+
+    <view entity="sys$SendingMessage" name="sendingMessage.browse">
+        <property name="address"/>
+        <property name="attachments"/>
+        <property name="attachmentsName"/>
+        <property name="attemptsCount"/>
+        <property name="attemptsMade"/>
+        <property name="caption"/>
+        <property name="contentText"/>
+        <property name="dateSent"/>
+        <property name="deadline"/>
+        <property name="from"/>
+        <property name="status"/>
+    </view>
+
 </views>

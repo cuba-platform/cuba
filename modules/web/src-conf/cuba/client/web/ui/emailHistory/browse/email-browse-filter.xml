@@ -1,0 +1,9 @@
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd">
+    <layout>
+        <vbox id="filter-pane" stylename="edit-area" margin="false;true;false;true" spacing="true">
+            <filter id="genericFilter" datasource="sendingMessageDs" >
+                <properties include=".*"/>
+            </filter>
+        </vbox>
+    </layout>
+</window>

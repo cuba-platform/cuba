@@ -255,12 +255,54 @@ begin
 end^
 
 ------------------------------------------------------------------------------------------------------------
+create table SYS_SENDING_MESSAGE (
+    ID  binary(16),
+    CREATE_TS datetime,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS datetime,
+    UPDATED_BY varchar(50),
+    DELETE_TS datetime,
+    DELETED_BY varchar(50),
+    ADDRESS_TO varchar(500),
+    ADDRESS_FROM varchar(100),
+    CAPTION varchar(500),
+	CONTENT_TEXT text,
+	DEADLINE datetime,
+	STATUS integer,
+	DATE_SENT datetime,
+	ATTEMPTS_COUNT integer,
+	ATTEMPTS_MADE integer,
+	ATTACHMENTS_NAME varchar(500),
+    primary key (ID)
+)^
+ ------------------------------------------------------------------------------------------------------------
+create table SYS_SENDING_ATTACHMENT(
+	ID  binary(16),
+	CREATE_TS timestamp,
+	CREATED_BY varchar(50),
+	MESSAGE_ID  binary(16),
+	CONTENT BLOB,
+	CONTENT_ID varchar(50)
+	NAME varchar(500),
+	primary key (ID)
+)^
+
+alter table SYS_SENDING_ATTACHMENT add constraint FK_SYS_SENDING_ATTACHMENT_SENDING_MESSAGE foreign key (MESSAGE_ID) references SYS_SENDING_MESSAGE (ID)^
+
+CREATE INDEX SYS_SENDING_ATTACHMENT_MESSAGE_IDX
+  ON SYS_SENDING_ATTACHMENT(MESSAGE_ID )^
+
+------------------------------------------------------------------------------------------------------------
 
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values (to_id('0fa2b1a5-1d68-4d69-9fbd-dff348347f93'), current_timestamp, 0, 'Company', null)^
 
 insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, PASSWORD, NAME, GROUP_ID)
 values (to_id('60885987-1b61-4247-94c7-dff348347f93'), current_timestamp, 0, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', to_id('0fa2b1a5-1d68-4d69-9fbd-dff348347f93'))^
+
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, PASSWORD, NAME, GROUP_ID)
+values (to_id('60885987-1b61-4247-94c7-dff348347f94'), current_timestamp, 0, 'emailer', '2f22cf032e4be87de59e4e8bfd066ed1', 'User for Email sending', to_id('0fa2b1a5-1d68-4d69-9fbd-dff348347f93'))^
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, IS_SUPER)
 values (to_id('0c018061-b26f-4de2-a5be-dff348347f93'), current_timestamp, 0, 'Administrators', 1)^

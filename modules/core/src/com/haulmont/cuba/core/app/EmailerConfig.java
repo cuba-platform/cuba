@@ -10,7 +10,10 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.config.*;
+import com.haulmont.cuba.core.config.Config;
+import com.haulmont.cuba.core.config.Prefix;
+import com.haulmont.cuba.core.config.Source;
+import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
 
 /**
@@ -26,4 +29,10 @@ public interface EmailerConfig extends Config
 
     @Default("test.host")
     String getSmtpHost();
+
+    @Default("2")
+    int getDelayCallCount();
+
+    @Default("100")
+    int getMessageQueueSize();
 }
