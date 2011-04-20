@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
@@ -23,8 +24,10 @@ import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebFilter;
 import com.haulmont.cuba.web.gui.components.WebTable;
 import com.haulmont.cuba.web.gui.components.WebVBoxLayout;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
+import java.util.List;
 
 public class EntityRestore extends AbstractWindow{
 
@@ -141,12 +144,24 @@ public class EntityRestore extends AbstractWindow{
         });
         primaryFilter.setVisible(false);
         tablePanel = getComponent("table-panel");
+        String property = AppContext.getProperty("cuba.web.screenRestoreEntityIds");
         Map<String,Object> options = new java.util.TreeMap<String,Object>();
-        for(MetaClass metaClass : MetadataProvider.getSession().getClasses()){
-            if(metaClass.getProperty("deleteTs") == null) continue;
-            if(metaClass.getDescendants() != null && metaClass.getDescendants().size() > 0) continue;
-            Class classJava = metaClass.getJavaClass();
-            options.put(MessageProvider.getMessage(classJava,classJava.getSimpleName())+" ["+metaClass.getName()+"]",metaClass);
+        if (property == null || StringUtils.isBlank(property)) {
+            for (MetaClass metaClass : MetadataProvider.getSession().getClasses()) {
+                if (metaClass.getProperty("deleteTs") == null) continue;
+                if (metaClass.getDescendants() != null && metaClass.getDescendants().size() > 0) continue;
+                Class classJava = metaClass.getJavaClass();
+                options.put(MessageProvider.getMessage(classJava, classJava.getSimpleName()) + " [" + metaClass.getName() + "]", metaClass);
+            }
+        } else {
+            for (MetaClass metaClass : MetadataProvider.getSession().getClasses()) {
+                if (metaClass.getProperty("deleteTs") == null) continue;
+                if (metaClass.getDescendants() != null && metaClass.getDescendants().size() > 0) continue;
+                if (property.contains(metaClass.getName())) {
+                    Class classJava = metaClass.getJavaClass();
+                    options.put(MessageProvider.getMessage(classJava, classJava.getSimpleName()) + " [" + metaClass.getName() + "]", metaClass);
+                }
+            }
         }
         entities.setOptionsMap(options);
     }
