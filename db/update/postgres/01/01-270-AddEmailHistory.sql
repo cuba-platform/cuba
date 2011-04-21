@@ -29,7 +29,7 @@ create table SYS_SENDING_ATTACHMENT(
 	CREATED_BY varchar(50),
 	MESSAGE_ID uuid,
 	CONTENT bytea,
-	CONTENT_ID varchar(50)
+	CONTENT_ID varchar(50),
 	NAME varchar(500),
 	primary key (ID)
 )^
