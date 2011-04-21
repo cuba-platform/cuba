@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author krivopustov
  */
-public class DesktopTableModel extends AbstractTableModel {
+public class TableModelAdapter extends AbstractTableModel {
 
     private static final long serialVersionUID = -3892470031734710618L;
 
@@ -34,7 +34,7 @@ public class DesktopTableModel extends AbstractTableModel {
     protected List<Table.Column> columns;
     protected boolean autoRefresh;
 
-    public DesktopTableModel(
+    public TableModelAdapter(
             CollectionDatasource datasource,
             List<Table.Column> columns,
             boolean autoRefresh)
@@ -76,6 +76,20 @@ public class DesktopTableModel extends AbstractTableModel {
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
+        Object id = getItemId(rowIndex);
+
+        Entity item = datasource.getItem(id);
+        Table.Column column = columns.get(columnIndex);
+        if (column.getId() instanceof MetaPropertyPath) {
+            String property = column.getId().toString();
+            Object value = ((Instance) item).getValueEx(property);
+            return value;
+        } else {
+            return null;
+        }
+    }
+
+    public Object getItemId(int rowIndex) {
         Object id = null;
         if (datasource instanceof CollectionDatasource.Ordered) {
             int idx = 0;
@@ -92,16 +106,11 @@ public class DesktopTableModel extends AbstractTableModel {
                     break;
             }
         }
-
-        Entity item = datasource.getItem(id);
-        Table.Column column = columns.get(columnIndex);
-        if (column.getId() instanceof MetaPropertyPath) {
-            String property = column.getId().toString();
-            Object value = ((Instance) item).getValueEx(property);
-            return value;
-        } else {
-            return null;
-        }
+        return id;
     }
 
+    public Entity getItem(int rowIndex) {
+        Object itemId = getItemId(rowIndex);
+        return datasource.getItem(itemId);
+    }
 }

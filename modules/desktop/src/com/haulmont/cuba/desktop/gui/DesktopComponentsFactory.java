@@ -34,6 +34,8 @@ public class DesktopComponentsFactory implements ComponentsFactory {
 
         classes.put(Button.NAME, DesktopButton.class);
         classes.put(Label.NAME, DesktopLabel.class);
+        classes.put(CheckBox.NAME, DesktopCheckBox.class);
+        classes.put(TextField.NAME, DesktopTextField.class);
         classes.put(Table.NAME, DesktopTable.class);
         classes.put(ButtonsPanel.NAME, DesktopButtonsPanel.class);
     }

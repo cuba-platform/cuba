@@ -13,6 +13,7 @@ import com.haulmont.cuba.client.UserSessionClient;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.desktop.gui.data.TableModelAdapter;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -26,6 +27,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
 import java.util.*;
 import java.util.List;
@@ -41,6 +44,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
 {
     protected MigLayout layout;
     protected JPanel panel;
+    protected TableModelAdapter tableModel;
     protected CollectionDatasource datasource;
     protected ButtonsPanel buttonsPanel;
     protected Map<MetaPropertyPath, Column> columns = new HashMap<MetaPropertyPath, Column>();
@@ -48,14 +52,15 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected boolean sortable = true;
 
     protected void initComponent() {
-        layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
-        panel = new JPanel(layout);
         JScrollPane scrollPane = new JScrollPane(impl);
         impl.setFillsViewportHeight(true);
+
+        layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
+        panel = new JPanel(layout);
         panel.add(scrollPane, "grow");
     }
 
-    protected abstract TableModel createTableModel(CollectionDatasource datasource);
+    protected abstract TableModelAdapter createTableModel(CollectionDatasource datasource);
 
     @Override
     public JComponent getComposition() {
@@ -84,7 +89,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
         columnsOrder.remove(column);
     }
 
-    public void setDatasource(CollectionDatasource datasource) {
+    public void setDatasource(final CollectionDatasource datasource) {
         UserSession userSession = UserSessionClient.getUserSession();
         if (!userSession.isEntityOpPermitted(datasource.getMetaClass(), EntityOp.READ)) {
             impl.setVisible(false);
@@ -112,8 +117,19 @@ public abstract class DesktopAbstractTable<C extends JTable>
         properties = this.columns.keySet();
 
         this.datasource = datasource;
-        TableModel tableModel = createTableModel(datasource);
+        tableModel = createTableModel(datasource);
         impl.setModel(tableModel);
+
+        impl.getSelectionModel().addListSelectionListener(
+                new ListSelectionListener() {
+                    public void valueChanged(ListSelectionEvent e) {
+                        int idx = e.getFirstIndex();
+                        int modelIdx = impl.convertRowIndexToModel(idx);
+                        Entity item = tableModel.getItem(modelIdx);
+                        datasource.setItem(item);
+                    }
+                }
+        );
 
         List<MetaPropertyPath> editableColumns = null;
         if (isEditable()) {
@@ -347,7 +363,14 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     public Set getSelected() {
-        return null;
+        Set set = new HashSet();
+        int[] rows = impl.getSelectedRows();
+        for (int row : rows) {
+            int modelRow = impl.convertRowIndexToModel(row);
+            Object item = tableModel.getItem(modelRow);
+            set.add(item);
+        }
+        return set;
     }
 
     public void setSelected(Entity item) {
@@ -361,5 +384,6 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     public void refresh() {
+        datasource.refresh();
     }
 }

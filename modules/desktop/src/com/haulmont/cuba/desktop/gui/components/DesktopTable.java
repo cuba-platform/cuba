@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.cuba.desktop.gui.data.DesktopTableModel;
+import com.haulmont.cuba.desktop.gui.data.TableModelAdapter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import javax.swing.*;
@@ -25,7 +25,7 @@ public class DesktopTable extends DesktopAbstractTable<JTable> {
     }
 
     @Override
-    protected TableModel createTableModel(CollectionDatasource datasource) {
-        return new DesktopTableModel(datasource, columnsOrder, true);
+    protected TableModelAdapter createTableModel(CollectionDatasource datasource) {
+        return new TableModelAdapter(datasource, columnsOrder, true);
     }
 }

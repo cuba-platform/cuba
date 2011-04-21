@@ -31,11 +31,15 @@
             <rows>
                 <row>
                     <label value="msg://name"/>
-                    <label datasource="serverDs" property="name"/>
+                    <textField id="nameField" datasource="serverDs" property="name"/>
                 </row>
                 <row>
                     <label value="msg://address"/>
-                    <label datasource="serverDs" property="address"/>
+                    <textField id="addressField" datasource="serverDs" property="address"/>
+                </row>
+                <row>
+                    <label value="msg://running"/>
+                    <checkBox id="runningField" datasource="serverDs" property="running"/>
                 </row>
             </rows>
         </grid>

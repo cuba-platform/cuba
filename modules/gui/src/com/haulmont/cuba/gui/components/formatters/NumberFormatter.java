@@ -59,7 +59,7 @@ public class NumberFormatter implements Formatter<Number> {
         } else {
             if (pattern.startsWith("msg://")) {
                 pattern = MessageProvider.getMessage(
-                        AppConfig.getInstance().getMessagesPack(), pattern.substring(6, pattern.length()));
+                        AppConfig.getMessagesPack(), pattern.substring(6, pattern.length()));
             }
         }
 

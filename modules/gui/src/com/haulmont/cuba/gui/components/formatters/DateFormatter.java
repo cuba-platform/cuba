@@ -59,7 +59,7 @@ public class DateFormatter implements Formatter<Date> {
         else {
             if (format.startsWith("msg://")) {
                 format = MessageProvider.getMessage(
-                        AppConfig.getInstance().getMessagesPack(), format.substring(6, format.length()));
+                        AppConfig.getMessagesPack(), format.substring(6, format.length()));
             }
             DateFormat df = new SimpleDateFormat(format);
             return df.format(value);
