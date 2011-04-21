@@ -442,7 +442,7 @@
     <xs:group name="component">
         <xs:sequence>
             <xs:choice minOccurs="1" maxOccurs="unbounded">
-                <xs:element name="button" type="buttonType" />
+                <xs:element name="button" type="buttonType"/>
                 <xs:element name="popupButton" type="popupButtonType"/>
 
                 <xs:element name="label">
@@ -491,7 +491,7 @@
                 <xs:element name="textField">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="validator" minOccurs="0" maxOccurs="unbounded" type="validatorType" />
+                            <xs:element name="validator" minOccurs="0" maxOccurs="unbounded" type="validatorType"/>
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:string" use="required"/>
 
@@ -687,7 +687,8 @@
                         <xs:sequence>
                             <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelType"/>
                             <xs:element name="rowsCount" minOccurs="0" maxOccurs="1" type="rowsCountType"/>
-                            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded" type="groupTableColumnsType" />
+                            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded"
+                                        type="groupTableColumnsType"/>
                             <xs:element name="rows" minOccurs="1">
                                 <xs:complexType>
                                     <xs:attribute name="datasource" type="xs:string" use="required"/>
@@ -786,7 +787,8 @@
                             <xs:element name="column">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element name="field" minOccurs="1" maxOccurs="unbounded" type="fieldGroupType"/>
+                                        <xs:element name="field" minOccurs="1" maxOccurs="unbounded"
+                                                    type="fieldGroupType"/>
                                     </xs:sequence>
                                     <xs:attribute name="width" type="xs:string" use="optional"/>
                                     <xs:attribute name="flex" type="xs:string" use="optional"/>
@@ -883,6 +885,11 @@
                     </xs:complexType>
                 </xs:element>
 
+                <xs:element name="scriptHost">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+                    </xs:complexType>
+                </xs:element>
             </xs:choice>
         </xs:sequence>
     </xs:group>
@@ -931,7 +938,8 @@
         <xs:sequence>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element name="collectionDatasource" minOccurs="0" maxOccurs="unbounded" type="nestedCollectionDs"/>
-                <xs:element name="hierarchicalDatasource" minOccurs="0" maxOccurs="unbounded" type="nestedHierarchicalDs"/>
+                <xs:element name="hierarchicalDatasource" minOccurs="0" maxOccurs="unbounded"
+                            type="nestedHierarchicalDs"/>
                 <xs:element name="datasource">
                     <xs:complexType>
                         <xs:group ref="nestedDatasources"/>
@@ -1000,7 +1008,7 @@
         <xs:sequence>
             <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelType"/>
             <xs:element name="rowsCount" minOccurs="0" maxOccurs="1" type="rowsCountType"/>
-            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded" type="tableColumnsType" />
+            <xs:element name="columns" minOccurs="1" maxOccurs="unbounded" type="tableColumnsType"/>
             <xs:element name="rows" minOccurs="1">
                 <xs:complexType>
                     <xs:attribute name="datasource" type="xs:string" use="required"/>
@@ -1059,8 +1067,8 @@
 
     <xs:complexType name="buttonsPanelType">
         <xs:sequence>
-            <xs:element name="button" minOccurs="0" maxOccurs="unbounded" type="buttonType" />
-            <xs:element name="popupButton" minOccurs="0" maxOccurs="unbounded" type="popupButtonType" />
+            <xs:element name="button" minOccurs="0" maxOccurs="unbounded" type="buttonType"/>
+            <xs:element name="popupButton" minOccurs="0" maxOccurs="unbounded" type="popupButtonType"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="optional"/>
         <xs:attribute name="width" type="xs:string" use="optional"/>

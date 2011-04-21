@@ -17,6 +17,7 @@ package com.vaadin.terminal.gwt.client;
 
 import com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload;
 import com.haulmont.cuba.toolkit.gwt.client.ui.VerticalMenuBar;
+import com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost;
 import com.vaadin.terminal.gwt.client.ui.*;
 
 public abstract class WidgetMap {
@@ -33,7 +34,7 @@ public abstract class WidgetMap {
             return new VSplitPanelVertical();
         } else if (VTextArea.class == classType) {
             return new VTextArea();
-        } else if (VSwfUpload.class == classType){
+        } else if (VSwfUpload.class == classType) {
             return new VSwfUpload();
         } else if (VDateFieldCalendar.class == classType) {
             return new VDateFieldCalendar();
@@ -43,6 +44,8 @@ public abstract class WidgetMap {
             return new VWindow();
         } else if (VerticalMenuBar.class == classType) {
             return new VerticalMenuBar();
+        } else if (VScriptHost.class == classType) {
+            return new VScriptHost();
         } else {
             return null; // let generated type handle this
         }
@@ -50,5 +53,4 @@ public abstract class WidgetMap {
 
     public abstract Class<? extends Paintable> getImplementationByServerSideClassName(
             String fullyqualifiedName);
-
 }

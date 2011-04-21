@@ -92,6 +92,8 @@ public class LayoutLoaderConfig implements Serializable {
         config.register("pieChart", PieChartLoader.class);
         config.register("barChart", BarChartLoader.class);
         config.register("lineChart", LineChartLoader.class);
+
+        config.register("scriptHost", ScriptHostLoader.class);
     }
 
     public static void registerLoader(String tagName, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {
