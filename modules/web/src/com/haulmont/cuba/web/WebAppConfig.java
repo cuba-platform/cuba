@@ -9,8 +9,9 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
-import com.haulmont.cuba.web.rpt.WebExportDisplay;
+import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 
 /**
  * <p>$Id$</p>
