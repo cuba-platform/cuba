@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package cuba.client.web.ui.report.edit;
+package cuba.client.web.ui.report.valueformat.edit;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.*;
@@ -26,7 +26,7 @@ public class ValueFormatEditor extends BasicEditor {
             "#,##0.###",
             "#,##0.##",
             "dd/MM/yyyy HH:mm",
-            "${image:WxH>}",
+            "${image:WxH}",
             "${html}"
     };
     private static final long serialVersionUID = 3406588486315509607L;
@@ -35,6 +35,8 @@ public class ValueFormatEditor extends BasicEditor {
 
     public ValueFormatEditor(IFrame frame) {
         super(frame);
+
+        getDialogParams().setWidth(450);
     }
 
     @Override

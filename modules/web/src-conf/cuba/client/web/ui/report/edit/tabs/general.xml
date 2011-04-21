@@ -3,60 +3,34 @@
     <#assign treeHeight = 400>
     <#assign treeWidth = 650>
     <layout expand="vSplit" expandLayout="true">
-        <split orientation="vertical" expandable="true" id="vSplit" pos="70">
+        <split orientation="vertical" expandable="true" id="vSplit" pos="60">
             <split orientation="horizontal" id="split">
                 <groupBox stylename="edit-area">
-                    <grid spacing="true" expandable="false">
-                        <columns>
-                            <column flex="1"/>
-                            <column flex="1"/>
-                            <column flex="1"/>
-                        </columns>
-                        <rows>
-                            <!--<row>
-                                <label value="msg://report.generalParameters" stylename="h2"/>
-                            </row>-->
-                            <row>
-                                <label value="msg://report.name"/>
-                                <textField id="name" datasource="reportDs" property="name"
-                                           width="${width}" required="true"
-                                           requiredMessage="msg://report.nameMsg"/>
-                            </row>
-                            <row>
-                                <label value="msg://report.reportType"/>
-                                <lookupField id="reportType" datasource="reportDs" property="reportType"
-                                             width="${width}" required="true"
-                                             requiredMessage="msg://report.reportTypeMsg"/>
-                            </row>
-                            <row>
-                                <label value="msg://report.reportOutputType"/>
-                                <lookupField id="reportOutputType" datasource="reportDs"
-                                             property="reportOutputType"
-                                             width="${width}" required="true"
-                                             requiredMessage="msg://report.reportOutputTypeMsg"/>
-                            </row>
-                            <row>
-                                <label value="msg://report.template"/>
-                                <hbox spacing="true">
-                                    <button id="templatePath" stylename="link"/>
-                                    <upload id="uploadTemplate"/>
-                                </hbox>
-
-                            </row>
-                            <row>
-                                <label value="msg://report.isCustom"/>
-                                <checkBox id="isCustom" datasource="reportDs" property="isCustom"
-                                          width="${width}"/>
-                            </row>
-                            <row>
-                                <label value="msg://report.customClass"/>
-                                <textField id="customClass" datasource="reportDs" property="customClass"
-                                           width="${width}"/>
-                            </row>
-                        </rows>
-                    </grid>
+                    <vbox spacing="true" align="TOP_LEFT" expand="templatesTable">
+                        <fieldGroup caption="msg://report.properties" datasource="reportDs">
+                            <field id="name" required="true" requiredMessage="msg://report.nameMsg"/>
+                            <field id="reportType" required="true" requiredMessage="msg://report.reportTypeMsg"/>
+                        </fieldGroup>
+                        <label value="msg://report.templates" stylename="h2"/>
+                        <table id="templatesTable" sortable="false" height="200">
+                            <buttonsPanel>
+                                <button action="templatesTable.create" icon="icons/create.png"/>
+                                <button action="templatesTable.edit" icon="icons/edit.png"/>
+                                <button action="templatesTable.remove" icon="icons/remove.png"/>
+                                <button id="defaultTemplateBtn" icon="icons/ok.png"/>
+                            </buttonsPanel>
+                            <columns>
+                                <column id="code"/>
+                                <column id="templateFileDescriptor"/>
+                                <column id="reportOutputType"/>
+                                <column id="customClass"/>
+                                <column id="defaultFlag"/>
+                            </columns>
+                            <rows datasource="templatesDs"/>
+                        </table>
+                    </vbox>
                 </groupBox>
-                <!-- Splitter -->
+                <!-- Vertical Splitter -->
                 <groupBox stylename="edit-area" expand="treeBox">
                     <vbox id="treeBox" expand="serviceTree" spacing="true">
                         <label value="msg://report.bands" stylename="h2"/>
@@ -75,7 +49,7 @@
                     </vbox>
                 </groupBox>
             </split>
-            <!-- Vertical split -->
+            <!-- Horizontal Splitter -->
             <hbox width="100%" spacing="true" margin="false;true;true;true">
                 <iframe src="/cuba/client/web/ui/report/edit/tabs/parameters.xml" id="parametersFrame"/>
                 <iframe src="/cuba/client/web/ui/report/edit/tabs/formats.xml" id="formatsFrame"/>

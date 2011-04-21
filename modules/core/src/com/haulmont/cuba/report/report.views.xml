@@ -1,16 +1,12 @@
 <views xmlns="http://www.haulmont.com/schema/cuba/view.xsd">
+
     <view entity="report$BandDefinition" name="report.edit" extends="_local">
         <property name="parentBandDefinition" view="_local"/>
         <property name="childrenBandDefinitions" view="_local"/>
         <property name="dataSets" view="report.edit"/>
     </view>
 
-    <view entity="report$Report" name="report.edit" extends="_local">
-        <property name="rootBandDefinition" view="report.edit"/>
-        <property name="inputParameters" view="_local"/>
-        <property name="valuesFormats" view="_local"/>
-        <property name="roles" view="_local"/>
-        <property name="reportScreens" view="_local"/>
+    <view entity="report$ReportTemplate" name="template.edit" extends="_local">
         <property name="templateFileDescriptor" view="_local"/>
     </view>
 
@@ -26,7 +22,21 @@
         <property name="bandDefinition" view="_local"/>
     </view>
 
+    <view entity="report$Report" name="report.edit" extends="_local">
+        <property name="rootBandDefinition" view="report.edit"/>
+        <property name="inputParameters" view="_local"/>
+        <property name="valuesFormats" view="_local"/>
+        <property name="roles" view="_local"/>
+        <property name="reportScreens" view="_local"/>
+        <property name="templates" view="template.edit"/>
+    </view>
+
     <!--export-->
+
+    <view entity="report$ReportTemplate" name="template.export" extends="_local">
+        <property name="templateFileDescriptor" view="_local"/>
+    </view>
+
     <view entity="report$BandDefinition" name="report.export" extends="_local">
         <property name="parentBandDefinition" view="_local"/>
         <property name="childrenBandDefinitions" view="_local"/>
@@ -37,9 +47,9 @@
         <property name="rootBandDefinition" view="report.export"/>
         <property name="inputParameters" view="_local"/>
         <property name="valuesFormats" view="_local"/>
-        <property name="templateFileDescriptor" view="_local"/>
         <property name="roles" view="_local"/>
         <property name="reportScreens" view="_local"/>
+        <property name="templates" view="template.export"/>
     </view>
 
 </views>

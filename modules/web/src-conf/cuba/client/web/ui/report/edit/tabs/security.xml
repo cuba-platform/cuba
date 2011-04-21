@@ -7,11 +7,12 @@
             <groupBox>
                 <vbox margin="true" spacing="true" expand="rolesTable">
                     <label value="msg://securityFrame.roles" stylename="h2"/>
-                    <hbox spacing="true" margin="true">
-                        <button action="rolesTable.add" caption="msg://roles.addRole" icon="icons/add.png"/>
-                        <button action="rolesTable.remove" caption="msg://roles.removeRole" icon="icons/remove.png"/>
-                    </hbox>
                     <table id="rolesTable" width="60%">
+                        <buttonsPanel>
+                            <button action="rolesTable.add" caption="msg://roles.addRole" icon="icons/add.png"/>
+                            <button action="rolesTable.remove" caption="msg://roles.removeRole"
+                                    icon="icons/remove.png"/>
+                        </buttonsPanel>
                         <columns>
                             <column id="name" caption="msg://roles.roleName"/>
                         </columns>
@@ -22,13 +23,13 @@
             <groupBox>
                 <vbox margin="true" spacing="true" expand="screenTable">
                     <label value="msg://securityFrame.screens" stylename="h2"/>
-                    <hbox spacing="true" margin="true">
-                        <button action="screenTable.create" caption="msg://screens.createScreen"
-                                icon="icons/create.png"/>
-                        <button action="screenTable.remove" caption="msg://screens.removeScreen"
-                                icon="icons/remove.png"/>
-                    </hbox>
                     <table id="screenTable" width="60%">
+                        <buttonsPanel>
+                            <button action="screenTable.create" caption="msg://screens.createScreen"
+                                    icon="icons/create.png"/>
+                            <button action="screenTable.remove" caption="msg://screens.removeScreen"
+                                    icon="icons/remove.png"/>
+                        </buttonsPanel>
                         <columns>
                             <column id="screenId" caption="msg://screens.screenId"/>
                         </columns>

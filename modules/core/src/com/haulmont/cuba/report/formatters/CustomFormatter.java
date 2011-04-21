@@ -14,20 +14,23 @@ import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.CustomReport;
 import com.haulmont.cuba.report.Report;
+import com.haulmont.cuba.report.ReportTemplate;
 
 import java.util.Map;
 
 public class CustomFormatter implements Formatter {
     private Report report;
+    private ReportTemplate template;
     private Map<String, Object> params;
 
-    public CustomFormatter(Report report, Map<String, Object> params) {
+    public CustomFormatter(Report report, ReportTemplate template, Map<String, Object> params) {
         this.report = report;
         this.params = params;
+        this.template = template;
     }
 
     public byte[] createDocument(Band rootBand) {
-        Class clazz = ScriptingProvider.loadClass(report.getCustomClass());
+        Class clazz = ScriptingProvider.loadClass(template.getCustomClass());
         try {
             CustomReport customReport = (CustomReport) clazz.newInstance();
             return customReport.createReport(report, params);

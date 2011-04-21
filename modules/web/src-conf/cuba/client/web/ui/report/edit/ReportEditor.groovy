@@ -11,12 +11,12 @@
 package cuba.client.web.ui.report.edit
 
 import com.haulmont.chile.core.model.MetaPropertyPath
-import com.haulmont.cuba.core.app.FileStorageService
-import com.haulmont.cuba.core.app.FileUploadService
 import com.haulmont.cuba.core.entity.Entity
-import com.haulmont.cuba.gui.ServiceLocator
+import com.haulmont.cuba.core.global.MessageProvider
+import com.haulmont.cuba.core.global.MetadataProvider
+import com.haulmont.cuba.core.global.PersistenceHelper
+import com.haulmont.cuba.core.global.View
 import com.haulmont.cuba.gui.WindowManager
-import com.haulmont.cuba.gui.components.FileUploadField.Listener.Event
 import com.haulmont.cuba.gui.components.actions.AddAction
 import com.haulmont.cuba.gui.components.actions.CreateAction
 import com.haulmont.cuba.gui.components.actions.EditAction
@@ -24,17 +24,19 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction
 import com.haulmont.cuba.gui.data.CollectionDatasource
 import com.haulmont.cuba.gui.data.DataService
 import com.haulmont.cuba.gui.data.Datasource
-import com.haulmont.cuba.gui.data.ValueListener
 import com.haulmont.cuba.report.BandDefinition
 import com.haulmont.cuba.report.Orientation
 import com.haulmont.cuba.report.Report
 import com.haulmont.cuba.report.ReportInputParameter
-import com.haulmont.cuba.web.app.FileDownloadHelper
-import com.haulmont.cuba.web.filestorage.FileDisplay
-import java.util.List
 import org.apache.commons.lang.StringUtils
-import com.haulmont.cuba.core.global.*
 import com.haulmont.cuba.gui.components.*
+import com.haulmont.cuba.gui.WindowManager.OpenType
+import com.haulmont.cuba.gui.data.DsContext.CommitListener
+import com.haulmont.cuba.core.global.CommitContext
+import com.haulmont.cuba.report.ReportTemplate
+import com.haulmont.cuba.core.app.FileStorageService
+import com.haulmont.cuba.gui.ServiceLocator
+import com.haulmont.cuba.core.entity.FileDescriptor
 
 public class ReportEditor extends AbstractEditor {
 
@@ -54,37 +56,62 @@ public class ReportEditor extends AbstractEditor {
         if (!StringUtils.isEmpty(this.report.name)) {
             caption = MessageProvider.formatMessage(getClass(), 'reportEditor.format', this.report.name)
         }
-
-        templateDescriptor = report.templateFileDescriptor;
-        if (templateDescriptor)
-            templatePath.setCaption(templateDescriptor.getName())
-
-        [templatePath, uploadTemplate].each { it.setEnabled(!report.getIsCustom()) }
-        customClass.setEnabled(report.getIsCustom())
-
         bandTree.datasource.refresh()
         bandTree.expandTree()
     }
 
-    private Button templatePath
-    private CheckBox isCustom
-    private TextField customClass
-    private com.haulmont.cuba.core.entity.FileDescriptor templateDescriptor
     private Report report
-    private FileUploadField uploadTemplate;
-    private com.haulmont.cuba.core.entity.FileDescriptor oldTemplateDescriptor
 
     private Tree bandTree
     private Datasource treeDs
+    private deletedFiles = [:]
 
     protected void init(Map<String, Object> params) {
         super.init(params);
         initGeneral()
+        initTemplates()
         initParameters()
         initRoles()
         initValuesFormats()
 
         getDsContext().get('reportDs').refresh()
+        getDsContext().addListener(new CommitListener() {
+            void beforeCommit(CommitContext<Entity> context) {
+                // delete descriptors from db
+                for (Entity entity: context.commitInstances) {
+                    if (ReportTemplate.isInstance(entity)) {
+                        java.util.List deletedFilesList = (java.util.List) deletedFiles.get(entity)
+                        if ((deletedFilesList != null) && (deletedFilesList.size() > 0)) {
+                            context.removeInstances.add((Entity) deletedFilesList.get(0))
+                        }
+                    }
+                }
+            }
+
+            void afterCommit(CommitContext<Entity> context, Map<Entity, Entity> result) {
+                FileStorageService storageService = ServiceLocator.lookup(FileStorageService.NAME)
+
+                for (Entity entity: context.commitInstances) {
+                    if (ReportTemplate.isInstance(entity) && result.containsKey(entity)) {
+                        java.util.List deletedFilesList = (java.util.List) deletedFiles.get(entity)
+                        for (FileDescriptor fileDescriptor: deletedFilesList) {
+                            storageService.removeFile(fileDescriptor)
+                        }
+                    }
+                }
+
+                for (Entity entity: context.removeInstances) {
+                    if (ReportTemplate.isInstance(entity) && result.containsKey(entity)) {
+                        java.util.List deletedFilesList = (java.util.List) deletedFiles.get(entity)
+                        for (FileDescriptor fileDescriptor: deletedFilesList) {
+                            storageService.removeFile(fileDescriptor)
+                        }
+                        ReportTemplate template = (ReportTemplate) entity
+                        storageService.removeFile(template.templateFileDescriptor)
+                    }
+                }
+            }
+        })
     }
 
     private def initParameters() {
@@ -95,15 +122,14 @@ public class ReportEditor extends AbstractEditor {
 
         Table parametersTable = getComponent('generalFrame.parametersFrame.inputParametersTable')
         parametersTable.addAction(
-                new CreateAction(parametersTable) {
+                new CreateAction(parametersTable, WindowManager.OpenType.DIALOG) {
                     @Override protected Map<String, Object> getInitialValues() {
                         return ['position': parametersDs.itemIds.size(), 'report': report]
                     }
-
                 }
         )
         parametersTable.addAction(new RemoveAction(parametersTable, false));
-        parametersTable.addAction(new EditAction(parametersTable));
+        parametersTable.addAction(new EditAction(parametersTable, WindowManager.OpenType.DIALOG));
 
         Button upButton = getComponent('generalFrame.parametersFrame.up')
         Button downButton = getComponent('generalFrame.parametersFrame.down')
@@ -112,7 +138,7 @@ public class ReportEditor extends AbstractEditor {
                 actionPerform: {Component component ->
                     ReportInputParameter parameter = (ReportInputParameter) parametersDs.getItem()
                     if (parameter) {
-                        List parametersList = report.getInputParameters()
+                        Collection parametersList = report.getInputParameters()
                         int index = parameter.position
                         if (index > 0) {
                             ReportInputParameter previousParameter = null
@@ -136,7 +162,7 @@ public class ReportEditor extends AbstractEditor {
                 actionPerform: {Component component ->
                     ReportInputParameter parameter = (ReportInputParameter) parametersDs.getItem()
                     if (parameter) {
-                        List parametersList = report.getInputParameters()
+                        Collection parametersList = report.getInputParameters()
                         int index = parameter.position
                         if (index < parametersDs.itemIds.size() - 1) {
                             ReportInputParameter nextParameter = null
@@ -208,26 +234,23 @@ public class ReportEditor extends AbstractEditor {
         Button removeBandDefinitionButton = getComponent('generalFrame.removeBandDefinition')
         Button upButton = getComponent('generalFrame.up')
         Button downButton = getComponent('generalFrame.down')
-        uploadTemplate = getComponent('generalFrame.uploadTemplate');
-        customClass = getComponent('generalFrame.customClass')
-        isCustom = getComponent('generalFrame.isCustom')
-        templatePath = getComponent('generalFrame.templatePath')
-
-        isCustom.addListener([
-                valueChanged: {Object source, String property, Object prevValue, Object value ->
-                    Boolean isCustom = Boolean.TRUE.equals(value)
-                    [templatePath, uploadTemplate].each {Component c -> c.setEnabled(!isCustom)}
-                    customClass.setEnabled(isCustom)
-                }
-
-        ] as ValueListener)
 
         def createBandDefinition = [
                 actionPerform: {Component component ->
                     BandDefinition parentDefinition = treeDs.getItem()
                     if (parentDefinition) {
                         if (!Orientation.VERTICAL.equals(parentDefinition.orientation)) {
-                            Window.Editor editor = openEditor('report$BandDefinition.edit', new BandDefinition(), WindowManager.OpenType.THIS_TAB, (Map<String, Object>) ['parentDefinition': parentDefinition, 'position': parentDefinition.childrenBandDefinitions?.size()])
+
+                            Window.Editor editor = openEditor(
+                                    'report$BandDefinition.edit',
+                                    new BandDefinition(),
+                                    WindowManager.OpenType.THIS_TAB,
+                                    (Map<String, Object>) [
+                                            'parentDefinition': parentDefinition,
+                                            'position': parentDefinition.childrenBandDefinitions?.size()
+                                    ]
+                            )
+
                             editor.addListener(
                                     [
                                             windowClosed: { String actionId -> treeDs.refresh() }
@@ -269,7 +292,7 @@ public class ReportEditor extends AbstractEditor {
                     BandDefinition definition = (BandDefinition) treeDs.getItem()
                     if (definition && definition.getParentBandDefinition()) {
                         BandDefinition parentDefinition = dataService.reload(definition.getParentBandDefinition(), bandDefinitionView);
-                        List definitionsList = parentDefinition.getChildrenBandDefinitions()
+                        java.util.List definitionsList = parentDefinition.getChildrenBandDefinitions()
                         int index = definitionsList.indexOf(definition);
                         if (index > 0) {
                             BandDefinition previousDefinition = definitionsList.get(index - 1)
@@ -288,7 +311,7 @@ public class ReportEditor extends AbstractEditor {
                     BandDefinition definition = (BandDefinition) treeDs.getItem()
                     if (definition && definition.getParentBandDefinition()) {
                         BandDefinition parentDefinition = dataService.reload(definition.getParentBandDefinition(), bandDefinitionView);
-                        List definitionsList = parentDefinition.getChildrenBandDefinitions()
+                        java.util.List definitionsList = parentDefinition.getChildrenBandDefinitions()
                         int index = definitionsList.indexOf(definition);
                         if (index < definitionsList.size() - 1) {
                             BandDefinition nextDefinition = definitionsList.get(index + 1)
@@ -302,59 +325,47 @@ public class ReportEditor extends AbstractEditor {
                 }
         ]
 
-        def showLink = [
-                actionPerform: {Component component ->
-                    if (templateDescriptor != null) {
-                        FileDisplay fileDisplay = new FileDisplay(true);
-                        fileDisplay.show(templateDescriptor.getName(), templateDescriptor, true);
-                    }
-                }
-        ]
-
-        def uploadListener = [
-                uploadStarted: { Event event ->
-                    uploadTemplate.setEnabled(false)
-                },
-
-                uploadFinished: { Event event ->
-                    uploadTemplate.setEnabled(true)
-                    treeDs.refresh()
-                },
-
-                uploadSucceeded: { Event event ->
-                    templateDescriptor = new com.haulmont.cuba.core.entity.FileDescriptor();
-                    templateDescriptor.setName(uploadTemplate.getFileName());
-                    templateDescriptor.setExtension(FileDownloadHelper.getFileExt(uploadTemplate.getFileName()));
-
-                    FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
-                    File file = uploadService.getFile(uploadTemplate.getFileId());
-                    templateDescriptor.setSize((int) file.length());
-
-                    templateDescriptor.setCreateDate(TimeProvider.currentTimestamp());
-                    saveFile(templateDescriptor, uploadTemplate);
-                    templatePath.setCaption(templateDescriptor.getName());
-                    oldTemplateDescriptor = report.templateFileDescriptor
-                    report.templateFileDescriptor = templateDescriptor;
-                    showNotification(MessageProvider.getMessage(ReportEditor.class, 'generalFrame.uploadSuccess'), IFrame.NotificationType.HUMANIZED);
-                },
-
-                uploadFailed: {Event event ->
-                    showNotification(MessageProvider.getMessage(ReportEditor.class, 'generalFrame.uploadUnsuccess'), IFrame.NotificationType.WARNING);
-                },
-
-                updateProgress: {
-                    long readBytes, long contentLength ->
-
-                }
-        ] as FileUploadField.Listener;
-
-        uploadTemplate.addListener(uploadListener);
         createBandDefinitionButton.action = new ActionAdapter('generalFrame.createBandDefinition', messagesPack, createBandDefinition)
         editBandDefinitionButton.action = new ActionAdapter('generalFrame.editBandDefinition', messagesPack, editBandDefinition)
         removeBandDefinitionButton.action = new ActionAdapter('generalFrame.removeBandDefinition', messagesPack, removeBandDefinition)
         upButton.action = new ActionAdapter('generalFrame.up', messagesPack, up)
         downButton.action = new ActionAdapter('generalFrame.down', messagesPack, down)
-        templatePath.action = new ActionAdapter('report.template', messagesPack, showLink)
+    }
+
+    private def initTemplates() {
+        Table templatesTable = getComponent('generalFrame.templatesTable')
+        templatesTable.addAction(new CreateAction(templatesTable, OpenType.DIALOG) {
+            @Override protected Map<String, Object> getInitialValues() {
+                return ['report': report]
+            }
+
+            @Override protected Map<String, Object> getWindowParams() {
+                return ['deletedContainer': deletedFiles]
+            }
+        });
+        templatesTable.addAction(new EditAction(templatesTable, OpenType.DIALOG) {
+            @Override protected Map<String, Object> getWindowParams() {
+                return ['deletedContainer': deletedFiles]
+            }
+        });
+        templatesTable.addAction(new RemoveAction(templatesTable, false));
+
+        Button defaultTemplateBtn = getComponent("generalFrame.defaultTemplateBtn")
+        defaultTemplateBtn.action = new AbstractAction("report.defaultTemplate") {
+            void actionPerform(Component component) {
+                ReportTemplate template = templatesTable.getSingleSelected()
+                if ((template != null) && !template.getDefaultFlag()) {
+                    template.setDefaultFlag(true)
+                    Collection itemIds = templatesTable.getDatasource().getItemIds()
+                    for (id in itemIds){
+                        ReportTemplate temp = (ReportTemplate)templatesTable.getDatasource().getItem(id)
+                        if (!template.equals(temp) && (temp.getDefaultFlag()))
+                            temp.setDefaultFlag(false)
+                    }
+                    templatesTable.refresh();
+                }
+            }
+        };
     }
 
     private def refreshBand(actionId, editor, band) {
@@ -364,7 +375,7 @@ public class ReportEditor extends AbstractEditor {
     }
 
     private void replaceInBands(BandDefinition rootBand, BandDefinition lastBand, BandDefinition newBand) {
-        List<BandDefinition> defs = rootBand.getChildrenBandDefinitions()
+        java.util.List<BandDefinition> defs = rootBand.getChildrenBandDefinitions()
         if (defs != null) {
             def index = defs.indexOf(lastBand)
             if (index >= 0) {
@@ -379,7 +390,7 @@ public class ReportEditor extends AbstractEditor {
     }
 
     private void removeBandFromChilds(BandDefinition rootBand, BandDefinition band) {
-        List<BandDefinition> defs = rootBand.getChildrenBandDefinitions()
+        java.util.List<BandDefinition> defs = rootBand.getChildrenBandDefinitions()
         if (defs.contains(band))
             defs.remove(band)
         else {
@@ -389,24 +400,7 @@ public class ReportEditor extends AbstractEditor {
         }
     }
 
-    private void saveFile(com.haulmont.cuba.core.entity.FileDescriptor fd, FileUploadField uploadField) {
-        FileStorageService fss = ServiceLocator.lookup(FileStorageService.NAME);
-        FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
-        try {
-            UUID fileId = uploadField.getFileId();
-            File file = uploadService.getFile(fileId);
-            fss.putFile(templateDescriptor, file);
-            uploadService.deleteFile(fileId);
-        } catch (FileStorageException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public void commitAndClose() {
         super.commitAndClose();
-        if (oldTemplateDescriptor) {
-            FileStorageService storageService = ServiceLocator.lookup(FileStorageService.NAME)
-            storageService.removeFile(oldTemplateDescriptor)
-        }
     }
 }

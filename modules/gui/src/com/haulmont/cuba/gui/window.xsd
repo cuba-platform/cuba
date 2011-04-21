@@ -368,6 +368,7 @@
                             <xs:group ref="layoutOrComponent" minOccurs="0"/>
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:string" use="optional"/>
+                        <xs:attribute name="expand" type="xs:string" use="optional"/>
                         <xs:attribute name="expandable" type="xs:string" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                         <xs:attribute name="height" type="xs:string" use="optional"/>
@@ -892,7 +893,7 @@
             <xs:element name="validator" minOccurs="0" maxOccurs="1" type="validatorType"/>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
-        <xs:attribute name="required" type="xs:string" use="optional"/>
+        <xs:attribute name="required" type="xs:boolean" use="optional"/>
         <xs:attribute name="editable" type="xs:string" use="optional"/>
         <xs:attribute name="requiredMessage" type="xs:string" use="optional"/>
         <xs:attribute name="visible" type="xs:string" use="optional"/>
@@ -1086,13 +1087,15 @@
     </xs:complexType>
 
     <xs:complexType name="popupButtonType">
-        <xs:extension base="buttonType">
-            <xs:choice minOccurs="1" maxOccurs="1">
-                <xs:group ref="component"/>
-                <xs:group ref="layout"/>
-            </xs:choice>
-        </xs:extension>
-        <xs:attribute name="menuWidth" type="xs:string" use="optional"/>
+        <xs:complexContent>
+            <xs:extension base="buttonType">
+                <xs:choice minOccurs="1" maxOccurs="1">
+                    <xs:group ref="component"/>
+                    <xs:group ref="layout"/>
+                </xs:choice>
+                <xs:attribute name="menuWidth" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:complexContent>
     </xs:complexType>
 
     <xs:simpleType name="orientation">

@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
+@SuppressWarnings({"serial", "unused"})
 public class ReportHelper {
     static HashMap<ReportOutputType, ExportFormat> exportFormats = new HashMap<ReportOutputType, ExportFormat>();
 
@@ -94,22 +95,21 @@ public class ReportHelper {
     }
 
     public static void printReport(Report report, String name, Map<String, Object> params) {
-        ReportOutputType reportOutputType = report.getReportOutputType();
-        Iterator iterator = exportFormats.entrySet().iterator();
-        boolean find = false;
-        Map.Entry<ReportOutputType, ExportFormat> item = null;
-        while (iterator.hasNext() && !find) {
-            item = (Map.Entry<ReportOutputType, ExportFormat>) iterator.next();
-            find = item.getKey().equals(reportOutputType);
-        }
-        if (find)
-            printReport(report, name, params, item.getKey(), item.getValue());
+        // select default template
+        ReportTemplate template = report.getDefaultTemplate();
+        // generate
+        if (template != null) {
+            ReportOutputType reportOutputType = template.getReportOutputType();
+            ExportFormat exportFormat = exportFormats.get(reportOutputType);
+            printReport(report, name, params, exportFormat);
+        } else
+            throw new NullPointerException("Report hasn't templates");
     }
 
-    private static void printReport(Report report, String name, Map<String, Object> params, ReportOutputType reportOutputType, ExportFormat exportFormat) {
+    private static void printReport(Report report, String name, Map<String, Object> params, ExportFormat exportFormat) {
         try {
             ReportService srv = ServiceLocator.lookup(ReportService.NAME);
-            byte[] byteArr = srv.createReport(report, reportOutputType, params);
+            byte[] byteArr = srv.createReport(report, params);
 
             if (exportFormat == ExportFormat.HTML)
                 new WebExportDisplay(false, true).show(new ByteArrayDataProvider(byteArr), name, exportFormat);

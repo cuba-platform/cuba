@@ -22,6 +22,8 @@ import java.util.Date;
 @NamePattern("%s (%s)|name,createDate")
 public class FileDescriptor extends StandardEntity {
 
+    private static final long serialVersionUID = 564683944299730504L;
+
     @Column(name = "NAME", length = 500)
     private String name;
 

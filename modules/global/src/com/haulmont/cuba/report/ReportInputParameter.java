@@ -14,6 +14,7 @@ import javax.persistence.*;
 
 @Entity(name = "report$ReportInputParameter")
 @Table(name = "REPORT_INPUT_PARAMETER")
+@SuppressWarnings("unused")
 public class ReportInputParameter extends HardDeleteEntity {
     private static final long serialVersionUID = 6231014880104406246L;
 
@@ -41,9 +42,6 @@ public class ReportInputParameter extends HardDeleteEntity {
 
     @Column(name = "SCREEN")
     private String screen;
-
-/*    @Column(name = "CLASS_NAME")
-    private String className;*/
 
     @Column(name = "FROM_BROWSER")
     private Boolean getFromBrowser = false;
@@ -90,14 +88,6 @@ public class ReportInputParameter extends HardDeleteEntity {
     public void setEntityMetaClass(String entityMetaClass) {
         this.entityMetaClass = entityMetaClass;
     }
-
-    /*public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }*/
 
     public String getEnumerationClass() {
         return enumerationClass;

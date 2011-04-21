@@ -52,13 +52,16 @@
             template="/cuba/client/web/ui/report/browse/common-lookup.xml"/>
 
     <screen id="report$ReportInputParameter.edit"
-            template="/cuba/client/web/ui/report/edit/parameter-edit.xml"/>
+            template="/cuba/client/web/ui/report/parameter/edit/parameter-edit.xml"/>
 
     <screen id="report$ReportValueFormat.edit"
-            template="/cuba/client/web/ui/report/edit/formats-edit.xml"/>
+            template="/cuba/client/web/ui/report/valueformat/edit/format-edit.xml"/>
 
     <screen id="report$ReportScreen.edit"
-            template="/cuba/client/web/ui/report/edit/report-screen-edit.xml"/>
+            template="/cuba/client/web/ui/report/screen/edit/report-screen-edit.xml"/>
+
+    <screen id="report$ReportTemplate.edit"
+            template="/cuba/client/web/ui/report/template/edit/template-edit.xml"/>
 
     <screen id="core$Entity.restore"
             template="/com/haulmont/cuba/web/app/ui/core/restore/entity-restore.xml"/>

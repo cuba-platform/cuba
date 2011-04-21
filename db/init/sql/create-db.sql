@@ -552,21 +552,20 @@ values ('0c018061-b26f-4de2-a5be-dff348347f93', current_timestamp, 0, 'Administr
 insert into SEC_USER_ROLE (ID, CREATE_TS, VERSION, USER_ID, ROLE_ID)
 values ('c838be0a-96d0-4ef4-a7c0-dff348347f93', current_timestamp, 0, '60885987-1b61-4247-94c7-dff348347f93', '0c018061-b26f-4de2-a5be-dff348347f93');
 
-INSERT INTO sec_filter (id,create_ts,created_by,version,update_ts,updated_by,delete_ts,deleted_by,component,name,xml,user_id) VALUES ('b61d18cb-e79a-46f3-b16d-eaf4aebb10dd',{ts '2010-03-01 11:14:06.830'},'admin',2,{ts '2010-03-01 11:52:53.170'},'admin',null,null,'[sec$User.browse].genericFilter','Search by role','<?xml version="1.0" encoding="UTF-8"?>\n
+INSERT INTO sec_filter (id,create_ts,created_by,version,update_ts,updated_by,delete_ts,deleted_by,component,name,xml,user_id) VALUES ('b61d18cb-e79a-46f3-b16d-eaf4aebb10dd',{ts '2010-03-01 11:14:06.830'},'admin',2,{ts '2010-03-01 11:52:53.170'},'admin',null,null,'[sec$User.browse].genericFilter','Search by role',
+'<?xml version="1.0" encoding="UTF-8"?>\n
 <filter>\n  <and>\n    <c name="UrMxpkfMGn" class="com.haulmont.cuba.security.entity.Role" type="CUSTOM" locCaption="Role" entityAlias="u" join="join u.userRoles ur">ur.role.id = :component$genericFilter.UrMxpkfMGn32565\n      <param name="component$genericFilter.UrMxpkfMGn32565">NULL</param>\n    </c>\n  </and>\n</filter>\n','60885987-1b61-4247-94c7-dff348347f93');
 
 --------------------------------------------------------------------------------------------------------------
 
 create table REPORT_BAND_DEFINITION
 (
-  ID varchar(36) NOT NULL,
+  ID varchar(36) not null,
   CREATE_TS timestamp,
   CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp,
   UPDATED_BY varchar(50),
-  DELETE_TS timestamp,
-  DELETED_BY varchar(50),
 
   QUERY varchar(255),
   PARENT_DEFINITION_ID varchar(36),
@@ -583,23 +582,15 @@ create table REPORT_BAND_DEFINITION
 
 create table REPORT_REPORT
 (
-  ID varchar(36) NOT NULL,
+  ID varchar(36) not null,
   CREATE_TS timestamp,
   CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp,
   UPDATED_BY varchar(50),
-  DELETE_TS timestamp,
-  DELETED_BY varchar(50),
 
   NAME varchar(255),
   ROOT_DEFINITION_ID varchar(36),
-  TEMPLATE_PATH longvarchar,
-  REPORT_OUTPUT_TYPE integer default 0,
-  IS_CUSTOM boolean default false,
-  CUSTOM_CLASS varchar,
-  LINKED_ENTITY varchar,
-  TEMPLATE_FILE_ID varchar(36),
   REPORT_TYPE integer,
 
   primary key (ID),
@@ -609,16 +600,38 @@ create table REPORT_REPORT
 
 --------------------------------------------------------------------------------------------------------------
 
-create table REPORT_INPUT_PARAMETER
+create table REPORT_TEMPLATE
 (
-  ID varchar(36) NOT NULL,
+  ID varchar(36) not null,
   CREATE_TS timestamp,
   CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp,
   UPDATED_BY varchar(50),
-  DELETE_TS timestamp,
-  DELETED_BY varchar(50),
+
+  REPORT_ID varchar(36),
+  CODE varchar(50),
+  TEMPLATE_FILE_ID varchar(36),
+  OUTPUT_TYPE integer default 0,
+  IS_DEFAULT boolean default false,
+  IS_CUSTOM boolean default false,
+  CUSTOM_CLASS varchar,
+
+  primary key (ID),
+  constraint FK_REPORT_TEMPLATE_TO_REPORT foreign key (REPORT_ID)
+      references REPORT_REPORT (ID)
+);
+
+--------------------------------------------------------------------------------------------------------------
+
+create table REPORT_INPUT_PARAMETER
+(
+  ID varchar(36) not null,
+  CREATE_TS timestamp,
+  CREATED_BY varchar(50),
+  VERSION integer,
+  UPDATE_TS timestamp,
+  UPDATED_BY varchar(50),
 
   REPORT_ID varchar(36),
   TYPE integer,
@@ -640,14 +653,12 @@ create table REPORT_INPUT_PARAMETER
 
 create table REPORT_DATA_SET
 (
-  ID varchar(36) NOT NULL,
+  ID varchar(36) not null,
   CREATE_TS timestamp,
   CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp,
   UPDATED_BY varchar(50),
-  DELETE_TS timestamp,
-  DELETED_BY varchar(50),
 
   NAME varchar(255),
   TEXT longvarchar,
@@ -676,35 +687,31 @@ create table REPORT_REPORTS_ROLES (
 
 create table REPORT_REPORT_SCREEN
 (
-  ID varchar(36) NOT NULL,
+  ID varchar(36) not null,
   CREATE_TS timestamp,
   CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp,
   UPDATED_BY varchar(50),
-  DELETE_TS timestamp,
-  DELETED_BY varchar(50),
 
   REPORT_ID varchar(36),
   SCREEN_ID varchar(255),
 
   primary key (ID),
   constraint FK_REPORT_REPORT_SCREEN_TO_REPORT_REPORT foreign key (REPORT_ID)
-      references REPORT_REPORT (id)
+      references REPORT_REPORT (ID)
 );
 
 --------------------------------------------------------------------------------------------------------------
 
 create table REPORT_VALUE_FORMAT
 (
-  ID varchar(36) NOT NULL,
+  ID varchar(36) not null,
   CREATE_TS timestamp,
   CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp,
   UPDATED_BY varchar(50),
-  DELETE_TS timestamp,
-  DELETED_BY varchar(50),
 
   REPORT_ID varchar(36),
   NAME varchar(255),

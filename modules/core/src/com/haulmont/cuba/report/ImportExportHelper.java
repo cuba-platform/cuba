@@ -47,7 +47,7 @@ public class ImportExportHelper {
         zipOutputStream.setEncoding(ENCODING);
 
         FileStorageAPI fileStorage = Locator.lookup(FileStorageAPI.NAME);
-        for (FileDescriptor fileDescriptor: files) {
+        for (FileDescriptor fileDescriptor : files) {
             byte[] bytes = fileStorage.loadFile(fileDescriptor);
             ArchiveEntry singleReportEntry = newStoredEntry(replaceForbiddenCharacters(fileDescriptor.getName()), bytes);
             zipOutputStream.putArchiveEntry(singleReportEntry);
@@ -98,13 +98,22 @@ public class ImportExportHelper {
         ArchiveEntry zipEntryReportObject = newStoredEntry("report.xml", xmlBytes);
         zipOutputStream.putArchiveEntry(zipEntryReportObject);
         zipOutputStream.write(xmlBytes);
-        FileDescriptor fd = report.getTemplateFileDescriptor();
-        if (fd != null) {
-            FileStorageAPI mbean = Locator.lookup(FileStorageAPI.NAME);
-            byte[] fileBytes = mbean.loadFile(fd);
-            ArchiveEntry zipEntryTemplate = newStoredEntry(fd.getName(), fileBytes);
-            zipOutputStream.putArchiveEntry(zipEntryTemplate);
-            zipOutputStream.write(fileBytes);
+
+        if (report.getTemplates() != null) {
+            for (int i = 0; i < report.getTemplates().size(); i++) {
+                ReportTemplate template = report.getTemplates().get(i);
+
+                FileDescriptor fd = template.getTemplateFileDescriptor();
+                if (fd != null) {
+                    FileStorageAPI mbean = Locator.lookup(FileStorageAPI.NAME);
+                    byte[] fileBytes = mbean.loadFile(fd);
+                    ArchiveEntry zipEntryTemplate = newStoredEntry(
+                            "templates/" + Integer.toString(i) + "/" + fd.getName(),
+                            fileBytes);
+                    zipOutputStream.putArchiveEntry(zipEntryTemplate);
+                    zipOutputStream.write(fileBytes);
+                }
+            }
         }
 
         zipOutputStream.closeArchiveEntry();
@@ -167,8 +176,7 @@ public class ImportExportHelper {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(zipBytes);
         ZipArchiveInputStream archiveReader;
         archiveReader = new ZipArchiveInputStream(byteArrayInputStream);
-        ZipArchiveEntry archiveEntry;
-        while ((archiveEntry = archiveReader.getNextZipEntry()) != null) {
+        while (archiveReader.getNextZipEntry() != null) {
             if (reports == null) {
                 reports = new LinkedList<Report>();
             }
@@ -191,54 +199,72 @@ public class ImportExportHelper {
         archiveReader = new ZipArchiveInputStream(byteArrayInputStream);
         ZipArchiveEntry archiveEntry;
         // importing report.xml to report object
-        while ((archiveEntry = archiveReader.getNextZipEntry()) != null) {
+        while (((archiveEntry = archiveReader.getNextZipEntry()) != null) && (report == null)) {
             if (archiveEntry.getName().equals("report.xml")) {
                 String xml = new String(readBytesFromEntry(archiveReader));
                 report = fromXML(Report.class, xml);
-                break;
             }
         }
 
         byteArrayInputStream.close();
+
         // importring template files
         // not using zipInputStream.reset here because marks not supported.
         byteArrayInputStream = new ByteArrayInputStream(zipBytes);
-        while ((archiveEntry = archiveReader.getNextZipEntry()) != null) {
-            if (!archiveEntry.getName().equals("report.xml")) {
-                FileDescriptor fd = report.getTemplateFileDescriptor();
-                FileStorageAPI mbean = Locator.lookup(FileStorageAPI.NAME);
-                try {
-                    mbean.removeFile(fd);
-                } catch (FileStorageException e) {/*Do nothing*/}
-                mbean.saveFile(fd, readBytesFromEntry(archiveReader));
+        archiveReader = new ZipArchiveInputStream(byteArrayInputStream);
+
+        if ((report != null) && (report.getTemplates() != null)) {
+            // unpack templates
+            int i = 0;
+            while ((archiveEntry = archiveReader.getNextZipEntry()) != null
+                    && (i < report.getTemplates().size())) {
+
+                if (!archiveEntry.getName().equals("report.xml") && !archiveEntry.isDirectory()) {
+                    String[] namePaths = archiveEntry.getName().split("/");
+                    int index = Integer.parseInt(namePaths[1]);
+
+                    if (index >= 0) {
+                        ReportTemplate template = report.getTemplates().get(index);
+                        FileDescriptor fd = template.getTemplateFileDescriptor();
+                        FileStorageAPI mbean = Locator.lookup(FileStorageAPI.NAME);
+                        try {
+                            mbean.removeFile(fd);
+                        } catch (FileStorageException ignored) {//*Do nothing*//*
+                        }
+                        mbean.saveFile(fd, readBytesFromEntry(archiveReader));
+                    }
+                    i++;
+                }
             }
         }
         byteArrayInputStream.close();
 
-        Transaction tx = Locator.createTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            Report exisitngReport = em.find(Report.class, report.getId());
-            if (exisitngReport != null) {
-                em.remove(exisitngReport);
-                em.flush();
+        if (report != null) {
+            Transaction tx = Locator.createTransaction();
+            try {
+                EntityManager em = PersistenceProvider.getEntityManager();
+                Report exisitngReport = em.find(Report.class, report.getId());
+                if (exisitngReport != null) {
+                    em.remove(exisitngReport);
+                    em.flush();
+                }
+                tx.commit();
+            } finally {
+                tx.end();
             }
-            tx.commit();
-        } finally {
-            tx.end();
-        }
 
-        tx = Locator.createTransaction();
-        try {
-            EntityManager em = PersistenceProvider.getEntityManager();
-            if (PersistenceHelper.isNew(report)) {
-                em.persist(report);
-            } else {
-                em.merge(report);
+            tx = Locator.createTransaction();
+            try {
+                EntityManager em = PersistenceProvider.getEntityManager();
+                if (PersistenceHelper.isNew(report)) {
+                    em.persist(report);
+                } else {
+                    em.merge(report);
+                }
+                tx.commit();
+            } finally {
+                tx.end();
             }
-            tx.commit();
-        } finally {
-            tx.end();
         }
         return report;
     }

@@ -15,6 +15,7 @@
             <collectionDatasource id="valuesFormatsDs" property="valuesFormats"/>
             <collectionDatasource id="rolesDs" property="roles"/>
             <collectionDatasource id="reportScreensDs" property="reportScreens"/>
+            <collectionDatasource id="templatesDs" property="templates"/>
         </datasource>
         <hierarchicalDatasource id="treeDs" class="com.haulmont.cuba.report.BandDefinition" view="report.edit">
             <datasourceClass>cuba.client.web.ui.report.BandDefinitionsDatasource</datasourceClass>

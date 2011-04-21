@@ -1,13 +1,10 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="cuba.client.web.ui.report.edit.ReportScreenEditor"
+        class="cuba.client.web.ui.report.screen.edit.ReportScreenEditor"
         datasource="reportScreenDs"
-        caption="msg://ReportScreenEditor"
+        caption="msg://reportScreenEditor"
+        messagesPack="cuba.client.web.ui.report"
         >
-
-
-    <metadataContext>
-    </metadataContext>
 
     <dsContext>
         <datasource

@@ -11,32 +11,25 @@
 package com.haulmont.cuba.report;
 
 import com.haulmont.chile.core.annotations.Aggregation;
-import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.global.DeletePolicy;
-import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.security.entity.Role;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
+import java.util.Iterator;
 import java.util.List;
 
 @Entity(name = "report$Report")
 @Table(name = "REPORT_REPORT")
 @NamePattern("%s|name")
+@SuppressWarnings("unused")
 public class Report extends HardDeleteEntity {
     private static final long serialVersionUID = -2817764915661205093L;
 
     @Column(name = "NAME")
     private String name;
-
-    @Column(name = "REPORT_OUTPUT_TYPE")
-    private Integer reportOutputType;
-
-    @Column(name = "IS_CUSTOM")
-    private Boolean isCustom = false;
-
-    @Column(name = "CUSTOM_CLASS")
-    private String customClass;
 
     @Column(name = "REPORT_TYPE")
     private Integer reportType;
@@ -46,10 +39,10 @@ public class Report extends HardDeleteEntity {
     @OnDelete(value = DeletePolicy.CASCADE)
     private BandDefinition rootBandDefinition;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "TEMPLATE_FILE_ID")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @OnDelete(value = DeletePolicy.CASCADE)
-    private FileDescriptor templateFileDescriptor;
+    @Aggregation
+    private List<ReportTemplate> templates;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @OnDelete(value = DeletePolicy.CASCADE)
@@ -106,38 +99,6 @@ public class Report extends HardDeleteEntity {
         this.valuesFormats = valuesFormats;
     }
 
-    public ReportOutputType getReportOutputType() {
-        return reportOutputType != null ? ReportOutputType.fromId(reportOutputType) : null;
-    }
-
-    public void setReportOutputType(ReportOutputType reportOutputType) {
-        this.reportOutputType = reportOutputType != null ? reportOutputType.getId() : null;
-    }
-
-    public Boolean getIsCustom() {
-        return isCustom;
-    }
-
-    public void setIsCustom(Boolean custom) {
-        isCustom = custom;
-    }
-
-    public String getCustomClass() {
-        return customClass;
-    }
-
-    public void setCustomClass(String customClass) {
-        this.customClass = customClass;
-    }
-
-    public FileDescriptor getTemplateFileDescriptor() {
-        return templateFileDescriptor;
-    }
-
-    public void setTemplateFileDescriptor(FileDescriptor templateFileDescriptor) {
-        this.templateFileDescriptor = templateFileDescriptor;
-    }
-
     public ReportType getReportType() {
         return reportType != null ? ReportType.fromId(reportType) : null;
     }
@@ -160,5 +121,52 @@ public class Report extends HardDeleteEntity {
 
     public void setReportScreens(List<ReportScreen> reportScreens) {
         this.reportScreens = reportScreens;
+    }
+
+    public List<ReportTemplate> getTemplates() {
+        return templates;
+    }
+
+    public void setTemplates(List<ReportTemplate> templates) {
+        this.templates = templates;
+    }
+
+    /**
+     * Get default template for report
+     * @return Template
+     */
+    public ReportTemplate getDefaultTemplate(){
+        ReportTemplate template = null;
+        if (templates != null) {
+            if (templates.size() == 1)
+                template = templates.get(0);
+            else {
+                Iterator<ReportTemplate> iter = templates.iterator();
+                while (iter.hasNext() && template == null) {
+                    ReportTemplate temp = iter.next();
+                    if (temp.getDefaultFlag())
+                        template = temp;
+                }
+            }
+        }
+        return template;
+    }
+
+    public ReportTemplate getTemplateByCode(String templateCode){
+        ReportTemplate template = null;
+        if (templates != null) {
+            if (templates.size() == 1)
+                template = templates.get(0);
+            else {
+                Iterator<ReportTemplate> iter = templates.iterator();
+                while (iter.hasNext() && template == null) {
+                    ReportTemplate temp = iter.next();
+                    if (StringUtils.equalsIgnoreCase(temp.getCode(), templateCode)){
+                        template = temp;
+                    }
+                }
+            }
+        }
+        return template;
     }
 }

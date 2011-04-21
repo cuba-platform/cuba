@@ -38,16 +38,28 @@ public class ReportServiceBean implements ReportService {
     private ThreadLocal<Map<String, Object>> params = new ThreadLocal<Map<String, Object>>();
     private ThreadLocal<Set<String>> bandDefinitionNames = new ThreadLocal<Set<String>>();
 
-    public byte[] createReport(Report report, ReportOutputType format, Map<String, Object> params) throws IOException {
+    public byte[] createReport(Report report, Map<String, Object> params) throws IOException {
+        ReportTemplate reportTemplate = report.getDefaultTemplate();
+        return createReport(report, reportTemplate, params);
+    }
+
+    public byte[] createReport(Report report, String templateCode, Map<String, Object> params) throws IOException {
+        ReportTemplate template = report.getTemplateByCode(templateCode);
+        return createReport(report, template, params);
+    }
+
+    public byte[] createReport(Report report, ReportTemplate template, Map<String, Object> params) throws IOException {
+        if (template == null)
+            throw new NullPointerException("Report template is null");
+
         try {
             this.params.set(params);
             this.bandDefinitionNames.set(new HashSet<String>());
             report = reloadEntity(report, "report.edit");
 
-            if (report.getIsCustom()) {
-                return new CustomFormatter(report, params).createDocument(null);
+            if (template.getCustomFlag()) {
+                return new CustomFormatter(report, template, params).createDocument(null);
             }
-
             BandDefinition rootBandDefinition = report.getRootBandDefinition();
 
             List<BandDefinition> childrenBandDefinitions = rootBandDefinition.getChildrenBandDefinitions();
@@ -68,9 +80,12 @@ public class ReportServiceBean implements ReportService {
 
             ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
 
-            ReportEngine reportEngine = getReportEngine(report);
-            if (reportEngine.hasSupportReport(report.getTemplateFileDescriptor().getExtension(), format)) {
-                reportEngine.setTemplateFile(report.getTemplateFileDescriptor());
+            ReportEngine reportEngine = getReportEngine(template);
+            ReportOutputType format = template.getReportOutputType();
+
+            if (reportEngine.hasSupportReport(
+                    template.getTemplateFileDescriptor().getExtension(), format)) {
+                reportEngine.setTemplateFile(template.getTemplateFileDescriptor());
                 reportEngine.createDocument(rootBand, format, resultStream);
             } else
                 throw new UnsupportedFormatException();
@@ -101,14 +116,27 @@ public class ReportServiceBean implements ReportService {
         return ImportExportHelper.exportReports(reports);
     }
 
-    public FileDescriptor createAndSaveReport(Report report, Map<String, Object> params, String fileName) throws IOException {
+    public FileDescriptor createAndSaveReport(Report report,
+                                              Map<String, Object> params, String fileName) throws IOException {
+        ReportTemplate template = report.getDefaultTemplate();
+        return createAndSaveReport(report, template, params, fileName);
+    }
+
+    public FileDescriptor createAndSaveReport(Report report, String templateCode,
+                                              Map<String, Object> params, String fileName) throws IOException {
+        ReportTemplate template = report.getTemplateByCode(templateCode);
+        return createAndSaveReport(report, template, params, fileName);
+    }
+
+    public FileDescriptor createAndSaveReport(Report report, ReportTemplate template,
+                                              Map<String, Object> params, String fileName) throws IOException {
         report = reloadEntity(report, "_local");
 
-        byte[] reportData = createReport(report, report.getReportOutputType(), params);
+        byte[] reportData = createReport(report, template, params);
 
         FileDescriptor file = new FileDescriptor();
         file.setCreateDate(TimeProvider.currentTimestamp());
-        String ext = report.getReportOutputType().toString().toLowerCase();
+        String ext = template.getReportOutputType().toString().toLowerCase();
         file.setName(fileName + "." + ext);
         file.setExtension(ext);
         file.setSize(reportData.length);
@@ -143,9 +171,9 @@ public class ReportServiceBean implements ReportService {
         }
     }
 
-    private ReportEngine getReportEngine(Report report) {
-        String extension = report.getTemplateFileDescriptor().getExtension();
+    private ReportEngine getReportEngine(ReportTemplate template) {
         ReportEngine reportEngine = null;
+        String extension = template.getTemplateFileDescriptor().getExtension();
         if (StringUtils.isNotEmpty(extension)) {
             ReportFileExtension reportExt = ReportFileExtension.fromId(extension.toLowerCase());
             if (reportExt != null) {
@@ -224,10 +252,13 @@ public class ReportServiceBean implements ReportService {
         return result;
     }
 
-    /*
-    *   Create band from band definition
-    *   Perform query from definition and create band from each result row. Do it recursive down
-    */
+    /**
+     * Create band from band definition
+     * Perform query from definition and create band from each result row. Do it recursive down
+     * @param definition Band definition
+     * @param parentBand Parent band
+     * @return Data bands
+     */
     private List<Band> createBands(BandDefinition definition, Band parentBand) {
         definition = reloadEntity(definition, "report.edit");
         List<Map<String, Object>> outputData = getBandData(definition, parentBand);

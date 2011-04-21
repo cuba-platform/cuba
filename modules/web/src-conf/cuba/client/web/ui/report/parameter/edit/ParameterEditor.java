@@ -8,19 +8,18 @@
  *
  * $Id$
  */
-package cuba.client.web.ui.report.edit;
+package cuba.client.web.ui.report.parameter.edit;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.report.ParameterType;
 import com.haulmont.cuba.report.ReportInputParameter;
 
@@ -31,6 +30,8 @@ public class ParameterEditor extends AbstractEditor {
 
     public ParameterEditor(IFrame frame) {
         super(frame);
+
+        getDialogParams().setWidth(450);
     }
 
     private ReportInputParameter parameter;
@@ -56,6 +57,7 @@ public class ParameterEditor extends AbstractEditor {
     }
 
     @Override
+    @SuppressWarnings({"unchecked", "serial"})
     protected void init(Map<String, Object> params) {
         super.init(params);
 
@@ -78,10 +80,6 @@ public class ParameterEditor extends AbstractEditor {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 String metaClassName = value != null ? classNamesToMetaNames.get(value.toString()) : null;
                 parameter.setEntityMetaClass(metaClassName);
-                /*if (metaClassName != null) {
-                    MetaClass metaClass = MetadataProvider.getSession().getClass(metaClassName);
-                    parameter.setClassName(metaClass.getJavaClass().getCanonicalName());
-                }*/
             }
         });
 
@@ -89,7 +87,7 @@ public class ParameterEditor extends AbstractEditor {
         for (Class enumClass : MetadataHelper.getAllEnums()) {
             enums.add(enumClass.getSimpleName());
             enumNamesToEnumClass.put(enumClass.getSimpleName(), enumClass);
-            enumClassToEnumNames.put(enumClass.getCanonicalName(),enumClass.getSimpleName());
+            enumClassToEnumNames.put(enumClass.getCanonicalName(), enumClass.getSimpleName());
         }
         enumLookup.setOptionsList(enums);
         enumLookup.addListener(new ValueListener() {

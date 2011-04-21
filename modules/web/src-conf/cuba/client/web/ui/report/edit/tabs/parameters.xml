@@ -5,7 +5,7 @@
     <layout expandLayout="true">
         <vbox spacing="true" expand="inputParametersTable">
             <label value="msg://report.parameters" stylename="h2"/>
-            <hbox spacing="true" margin="true">
+            <hbox spacing="true">
                 <button action="inputParametersTable.create" icon="icons/create.png"/>
                 <button action="inputParametersTable.edit" caption="msg://parametersFrame.editParameter"
                         icon="icons/edit.png"/>

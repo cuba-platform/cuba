@@ -505,14 +505,12 @@ INSERT INTO sec_filter (id,create_ts,created_by,version,update_ts,updated_by,del
 
 create table REPORT_BAND_DEFINITION
 (
-  ID uuid NOT NULL,
+  ID uuid not null,
   CREATE_TS timestamp without time zone,
   CREATED_BY character varying(50),
   VERSION integer,
   UPDATE_TS timestamp without time zone,
   UPDATED_BY character varying(50),
-  DELETE_TS timestamp without time zone,
-  DELETED_BY character varying(50),
 
   QUERY character varying(255),
   PARENT_DEFINITION_ID uuid,
@@ -522,53 +520,63 @@ create table REPORT_BAND_DEFINITION
 
   primary key (ID),
   constraint FK_REPORT_BAND_DEFINITION_TO_REPORT_BAND_DEFINITION foreign key (PARENT_DEFINITION_ID)
-      references REPORT_BAND_DEFINITION (ID) match SIMPLE
-      on update no action
-      on delete no action
+      references REPORT_BAND_DEFINITION (ID)
 )^
 
 --------------------------------------------------------------------------------------------------------------
 
 create table REPORT_REPORT
 (
-  ID uuid NOT NULL,
+  ID uuid not null,
   CREATE_TS timestamp without time zone,
   CREATED_BY character varying(50),
   VERSION integer,
   UPDATE_TS timestamp without time zone,
   UPDATED_BY character varying(50),
-  DELETE_TS timestamp without time zone,
-  DELETED_BY character varying(50),
 
   NAME character varying(255),
   ROOT_DEFINITION_ID uuid,
-  TEMPLATE_PATH text,
-  REPORT_OUTPUT_TYPE integer default 0,
-  IS_CUSTOM boolean default false,
-  CUSTOM_CLASS character varying,
-  LINKED_ENTITY character varying,
-  TEMPLATE_FILE_ID uuid,
   REPORT_TYPE integer,
 
   primary key (ID),
   constraint FK_REPORT_REPORT_TO_REPORT_BAND_DEFINITION foreign key (ROOT_DEFINITION_ID)
-      references REPORT_BAND_DEFINITION (ID) match SIMPLE
-      on update no action
-      on delete no action
+      references REPORT_BAND_DEFINITION (ID)
+)^
+
+--------------------------------------------------------------------------------------------------------------
+
+create table REPORT_TEMPLATE
+(
+  ID uuid not null,
+  CREATE_TS timestamp without time zone,
+  CREATED_BY character varying(50),
+  VERSION integer,
+  UPDATE_TS timestamp without time zone,
+  UPDATED_BY character varying(50),
+
+  REPORT_ID uuid,
+  CODE varchar(50),
+  TEMPLATE_FILE_ID uuid,
+  OUTPUT_TYPE integer default 0,
+  IS_DEFAULT boolean default false,
+  IS_CUSTOM boolean default false,
+  CUSTOM_CLASS character varying,
+
+  primary key (ID),
+  constraint FK_REPORT_TEMPLATE_TO_REPORT foreign key (REPORT_ID)
+      references REPORT_REPORT (ID)
 )^
 
 --------------------------------------------------------------------------------------------------------------
 
 create table REPORT_INPUT_PARAMETER
 (
-  ID uuid NOT NULL,
+  ID uuid not null,
   CREATE_TS timestamp without time zone,
   CREATED_BY character varying(50),
   VERSION integer,
   UPDATE_TS timestamp without time zone,
   UPDATED_BY character varying(50),
-  DELETE_TS timestamp without time zone,
-  DELETED_BY character varying(50),
 
   REPORT_ID uuid,
   TYPE integer,
@@ -583,23 +591,19 @@ create table REPORT_INPUT_PARAMETER
 
   primary key (ID),
   constraint FK_REPOR_INPUT_PARAMETER_TO_REPORT_REPORT foreign key (REPORT_ID)
-      references REPORT_REPORT (ID) match SIMPLE
-      on update no action
-      on delete no action
+      references REPORT_REPORT (ID)
 )^
 
 --------------------------------------------------------------------------------------------------------------
 
 create table REPORT_DATA_SET
 (
-  ID uuid NOT NULL,
+  ID uuid not null,
   CREATE_TS timestamp without time zone,
   CREATED_BY character varying(50),
   VERSION integer,
   UPDATE_TS timestamp without time zone,
   UPDATED_BY character varying(50),
-  DELETE_TS timestamp without time zone,
-  DELETED_BY character varying(50),
 
   NAME character varying(255),
   TEXT text,
@@ -608,9 +612,7 @@ create table REPORT_DATA_SET
 
   primary key (ID),
   constraint FK_REPORT_DATA_SET_TO_REPORT_BAND_DEFINITION foreign key (BAND_DEFINITION)
-      references REPORT_BAND_DEFINITION (ID) match SIMPLE
-      on update no action
-      on delete no action
+      references REPORT_BAND_DEFINITION (ID)
 )^
 
 --------------------------------------------------------------------------------------------------------------
@@ -630,37 +632,31 @@ create table REPORT_REPORTS_ROLES (
 
 create table REPORT_REPORT_SCREEN
 (
-  ID uuid NOT NULL,
+  ID uuid not null,
   CREATE_TS timestamp without time zone,
   CREATED_BY character varying(50),
   VERSION integer,
   UPDATE_TS timestamp without time zone,
   UPDATED_BY character varying(50),
-  DELETE_TS timestamp without time zone,
-  DELETED_BY character varying(50),
 
   REPORT_ID uuid,
   SCREEN_ID character varying(255),
 
   primary key (ID),
   constraint FK_REPORT_REPORT_SCREEN_TO_REPORT_REPORT foreign key (REPORT_ID)
-      references REPORT_REPORT (id) match SIMPLE
-      on update no action
-      on delete no action
+      references REPORT_REPORT (ID)
 )^
 
 --------------------------------------------------------------------------------------------------------------
 
 create table REPORT_VALUE_FORMAT
 (
-  ID uuid NOT NULL,
+  ID uuid not null,
   CREATE_TS timestamp without time zone,
   CREATED_BY character varying(50),
   VERSION integer,
   UPDATE_TS timestamp without time zone,
   UPDATED_BY character varying(50),
-  DELETE_TS timestamp without time zone,
-  DELETED_BY character varying(50),
 
   REPORT_ID uuid,
   NAME character varying(255),
@@ -668,9 +664,7 @@ create table REPORT_VALUE_FORMAT
 
   primary key (ID),
   constraint FK_REPORT_VALUE_FORMAT_TO_REPORT_REPORT foreign key (REPORT_ID)
-      references report_report (ID) match SIMPLE
-      on update no action
-      on delete no action
+      references REPORT_REPORT (ID)
 )^
 
 ------------------------------------------------------------------------------------------------------------

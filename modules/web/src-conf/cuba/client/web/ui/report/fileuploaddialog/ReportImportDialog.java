@@ -18,7 +18,10 @@ import com.haulmont.cuba.gui.components.Window;
 import java.util.Map;
 
 public class ReportImportDialog extends AbstractWindow {
-    byte[] bytes;
+
+    private static final long serialVersionUID = -8624761668385369711L;
+
+    private byte[] bytes;
 
     public ReportImportDialog(IFrame frame) {
         super(frame);

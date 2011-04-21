@@ -5,7 +5,7 @@
     <layout expandLayout="true">
         <vbox spacing="true" expand="valuesFormatsTable">
             <label value="msg://report.valuesFormats" stylename="h2"/>
-            <hbox spacing="true" margin="true">
+            <hbox spacing="true">
                 <button action="valuesFormatsTable.create" icon="icons/create.png"/>
                 <button action="valuesFormatsTable.edit" icon="icons/edit.png"/>
                 <button action="valuesFormatsTable.remove" icon="icons/remove.png"/>
