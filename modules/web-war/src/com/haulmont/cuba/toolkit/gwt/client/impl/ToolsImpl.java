@@ -14,12 +14,12 @@ import com.google.gwt.dom.client.Element;
 public class ToolsImpl {
 
     public native int parseSize(String s) /*-{
-         try {
+        try {
             var result = /^(\d+)(%|px|em|ex|in|cm|mm|pt|pc)$/.exec(s);
             return parseInt(result[1]);
-         } catch (e) {
+        } catch (e) {
             return -1;
-         }
+        }
     }-*/;
 
     public native String format(String message) /*-{
@@ -55,13 +55,16 @@ public class ToolsImpl {
     }-*/;
 
     public native boolean isRadio(Element e) /*-{
-         return (e && e.tagName.toUpperCase() == "INPUT" && e.type == "radio"); 
+        return (e && e.tagName.toUpperCase() == "INPUT" && e.type == "radio");
     }-*/;
 
     public native boolean isCheckbox(Element e) /*-{
-         return (e && e.tagName.toUpperCase() == "INPUT" && e.type == "checkbox");
+        return (e && e.tagName.toUpperCase() == "INPUT" && e.type == "checkbox");
     }-*/;
 
+    public native void alert(String msg)/*-{
+        $wnd.alert(msg);
+    }-*/;
 
     public native void textSelectionEnable(Element el, boolean b) /*-{
         if (b) {
@@ -73,30 +76,30 @@ public class ToolsImpl {
 
     public native void updatePrimaryAndDependentStyleNames(Element elem,
                                                            String newPrimaryStyle) /*-{
-      var classes = elem.className.split(/\s+/);
-      if (!classes) {
-        return;
-      }
-
-      var oldPrimaryStyle = classes[0];
-      var oldPrimaryStyleLen = oldPrimaryStyle.length;
-
-      classes[0] = newPrimaryStyle;
-      for (var i = 1, n = classes.length; i < n; i++) {
-        var name = classes[i];
-        if (name.length > oldPrimaryStyleLen
-            && name.charAt(oldPrimaryStyleLen) == '-'
-            && name.indexOf(oldPrimaryStyle) == 0) {
-          classes[i] = newPrimaryStyle + name.substring(oldPrimaryStyleLen);
+        var classes = elem.className.split(/\s+/);
+        if (!classes) {
+            return;
         }
-      }
-      elem.className = classes.join(" ");
+
+        var oldPrimaryStyle = classes[0];
+        var oldPrimaryStyleLen = oldPrimaryStyle.length;
+
+        classes[0] = newPrimaryStyle;
+        for (var i = 1, n = classes.length; i < n; i++) {
+            var name = classes[i];
+            if (name.length > oldPrimaryStyleLen
+                    && name.charAt(oldPrimaryStyleLen) == '-'
+                    && name.indexOf(oldPrimaryStyle) == 0) {
+                classes[i] = newPrimaryStyle + name.substring(oldPrimaryStyleLen);
+            }
+        }
+        elem.className = classes.join(" ");
     }-*/;
 
     public native boolean hasStyleName(Element el, String style) /*-{
         var classes = elem.className.split(/\s+/);
         if (!classes) {
-        return false;
+            return false;
         }
         for (var i = 0; i < classes.length; i++) {
             if (classes[i] == style) return true;

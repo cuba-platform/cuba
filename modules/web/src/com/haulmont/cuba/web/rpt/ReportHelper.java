@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.*;

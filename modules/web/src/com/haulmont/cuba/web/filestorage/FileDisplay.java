@@ -10,14 +10,18 @@
  */
 package com.haulmont.cuba.web.filestorage;
 
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.vaadin.ui.Window;
+import com.haulmont.cuba.web.App;
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.ui.Window;
 
-import java.net.URL;
 import java.io.File;
+import java.net.URL;
 
+/**
+ * @deprecated Please use {@link WebExportDisplay}
+ */
+@Deprecated
 public class FileDisplay {
     private boolean newWindow;
 
@@ -68,7 +72,7 @@ public class FileDisplay {
         return new FileDownloadWindow(windowName, fd);
     }
 
-     protected FileWindow createDownloadWindow(String windowName, File f) {
+    protected FileWindow createDownloadWindow(String windowName, File f) {
         return new FileDownloadWindow(windowName, f);
     }
 

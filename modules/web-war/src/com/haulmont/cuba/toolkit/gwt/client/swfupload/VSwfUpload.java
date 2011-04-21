@@ -200,10 +200,6 @@ public class VSwfUpload
         client.updateVariable(paintableId, "uploadError", new String[]{file, message, String.valueOf(errorCode)}, true);
     }
 
-    private native void alert(String msg)/*-{
-        $wnd.alert(msg);
-    }-*/;
-
     private native void addErrorHandler(Options opts, String optionName)/*-{
         var swfu = this;
         opts[optionName] = function(file, errorCode, message) {

@@ -22,6 +22,10 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * @deprecated Please use {@link ResourceWindow}
+ */
+@Deprecated
 public class FileDownloadWindow extends FileWindow {
 
     public FileDownloadWindow(String windowName, FileDescriptor fd) {

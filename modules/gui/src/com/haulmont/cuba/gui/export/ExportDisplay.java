@@ -16,5 +16,5 @@ package com.haulmont.cuba.gui.export;
  */
 public interface ExportDisplay
 {
-    void show(ExportDataProvider dataProvider, String name, ExportFormat format);
+    void show(ExportDataProvider dataProvider, String resourceName, ExportFormat format);
 }

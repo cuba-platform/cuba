@@ -35,7 +35,7 @@ public class VScriptHost extends SimplePanel implements Paintable {
 
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         String paintableId = uidl.getId();
-        String jSessionId = client.getConfiguration().getSessionId();
+//        String jSessionId = client.getConfiguration().getSessionId();
 
         this.getElement().setId("scriptHost_" + paintableId);
 
@@ -52,8 +52,8 @@ public class VScriptHost extends SimplePanel implements Paintable {
         } else if (GET_COMMAND.equals(command)) {
             // download file
             String url = uidl.getStringAttribute(URL_PARAM_KEY);
-            if ((url != null) && (jSessionId != null)) {
-                url = url + "&jsessionid=" + jSessionId;
+            if (url != null) {
+//                url = url + "&jsessionid=" + jSessionId;
                 getResource(url);
             }
         }
@@ -64,10 +64,13 @@ public class VScriptHost extends SimplePanel implements Paintable {
     }-*/;
 
     private native void viewDocument(String documentUrl)/*-{
-        $wnd.open(documentUrl, '')
+        window.open(documentUrl, '');
     }-*/;
 
     private native void getResource(String resourceUrl)/*-{
-        $wnd.location.href = resourceUrl;
+        var timedAction = function() {
+            document.location.href = resourceUrl;
+        };
+        setTimeout(timedAction, 50);
     }-*/;
 }

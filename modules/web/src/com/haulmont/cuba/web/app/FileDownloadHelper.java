@@ -10,15 +10,17 @@
  */
 package com.haulmont.cuba.web.app;
 
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.filestorage.FileDisplay;
+import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.vaadin.data.Property;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -57,38 +59,47 @@ public class FileDownloadHelper {
         return sb.toString();
     }
 
-    public static void initGeneratedColumn(Table table) {
+    public static void initGeneratedColumn(final Table table) {
         final CollectionDatasource ds = table.getDatasource();
-        MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyEx("name");
+        MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyPath("name");
         final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
 
         vTable.addGeneratedColumn(nameProperty, new com.vaadin.ui.Table.ColumnGenerator() {
-            public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-                final FileDescriptor fd = (FileDescriptor) ds.getItem(itemId);
-                if (fd == null) {
-                    return new Label();
-                }
-                Component component;
-                if (PersistenceHelper.isNew(fd)) {
-                    component = new Label(fd.getName());
-                } else {
-                    component = new Button(fd.getName(), new Button.ClickListener() {
+            private static final long serialVersionUID = -8909453319289476141L;
 
-                        public void buttonClick(Button.ClickEvent event) {
-                            FileDisplay fileDisplay = new FileDisplay(true);
-                            fileDisplay.show(fd.getName(), fd, false);
-                        }
-                    });
+            public Component generateCell(com.vaadin.ui.Table source, final Object itemId, Object columnId) {
+
+                Property prop = source.getItem(itemId).getItemProperty(columnId);
+                if (prop.getType().equals(String.class)) {
+
+                    final FileDescriptor fd = (FileDescriptor) ds.getItem(itemId);
+                    if (fd == null) {
+                        return new Label();
+                    }
+                    Component component;
+                    if (PersistenceHelper.isNew(fd)) {
+                        component = new Label(fd.getName());
+                    } else {
+                        component = new Button(fd.getName(), new Button.ClickListener() {
+
+                            public void buttonClick(Button.ClickEvent event) {
+                                new WebExportDisplay().show(fd);
+                            }
+                        });
+                    }
+                    ((AbstractComponent)component).setImmediate(true);
+                    component.setStyleName("link");
+                    return component;
                 }
-                component.setStyleName("link");
-                return component;
+                return null;
+
             }
         });
     }
 
     public static void initGeneratedColumn(Table table, final String fileProperty) {
         final CollectionDatasource ds = table.getDatasource();
-        MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyEx(fileProperty + ".name");
+        MetaPropertyPath nameProperty = ds.getMetaClass().getPropertyPath(fileProperty + ".name");
         final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
 
         vTable.addGeneratedColumn(nameProperty, new com.vaadin.ui.Table.ColumnGenerator() {
@@ -104,8 +115,7 @@ public class FileDownloadHelper {
                             component = new Button(fd.getName(),
                                     new Button.ClickListener() {
                                         public void buttonClick(Button.ClickEvent event) {
-                                            FileDisplay fileDisplay = new FileDisplay(true);
-                                            fileDisplay.show(fd.getName(), fd, false);
+                                            new WebExportDisplay().show(fd);
                                         }
                                     });
                         }

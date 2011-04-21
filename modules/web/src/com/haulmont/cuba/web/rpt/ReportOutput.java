@@ -12,6 +12,10 @@ package com.haulmont.cuba.web.rpt;
 
 import com.haulmont.cuba.gui.export.ExportFormat;
 
+/**
+ * @deprecated Please use {@link com.haulmont.cuba.web.filestorage.ResourceWindow}
+ */
+@Deprecated
 public class ReportOutput {
 
     private ExportFormat format;

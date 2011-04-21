@@ -21,7 +21,8 @@ public enum ExportFormat {
     DOC("application/doc", "doc"),
     XML("text/xml", "xml"),
     ZIP("application/zip", "zip"),
-    CSV("application/csv", "csv");
+    CSV("application/csv", "csv"),
+    OCTET_STREAM("application/octet-stream", "");
 
     private String contentType;
     private String fileExt;

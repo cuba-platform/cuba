@@ -12,6 +12,10 @@ package com.haulmont.cuba.web.rpt;
 
 import com.vaadin.ui.Window;
 
+/**
+ * @deprecated Please use {@link com.haulmont.cuba.web.filestorage.ResourceWindow}
+ */
+@Deprecated
 public class ReportOutputWindow extends Window
 {
     public ReportOutputWindow(String caption) {

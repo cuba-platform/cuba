@@ -18,11 +18,13 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.report.ReportTemplate;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
-import com.haulmont.cuba.web.filestorage.FileDisplay;
+import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * <p>$Id$</p>
@@ -130,8 +132,8 @@ public class TemplateEditor extends BasicEditor {
         templatePath.setAction(new AbstractAction("report.template") {
             public void actionPerform(Component component) {
                 if (templateDescriptor != null) {
-                    FileDisplay fileDisplay = new FileDisplay(true);
-                    fileDisplay.show(templateDescriptor.getName(), templateDescriptor, true);
+                    WebExportDisplay display = new WebExportDisplay();
+                    display.show(templateDescriptor);
                 }
             }
         });

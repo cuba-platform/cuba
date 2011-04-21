@@ -18,7 +18,7 @@ import com.haulmont.cuba.gui.components.actions.ExcelAction;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
-import com.haulmont.cuba.web.rpt.WebExportDisplay;
+import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 
 import java.util.Collections;
 import java.util.List;

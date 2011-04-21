@@ -14,5 +14,5 @@ package com.haulmont.cuba.core.app;
  * Management interface of the {@link FileUploading} MBean.<br>
  */
 public interface FileUploadingMBean {
-    public String showTempFiles();
+    String showTempFiles();
 }

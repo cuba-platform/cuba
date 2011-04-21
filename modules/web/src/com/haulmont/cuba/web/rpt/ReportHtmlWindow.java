@@ -10,10 +10,13 @@
  */
 package com.haulmont.cuba.web.rpt;
 
-import com.vaadin.ui.Window;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 
+/**
+ * @deprecated Please use {@link com.haulmont.cuba.web.filestorage.ResourceWindow}
+ */
+@Deprecated
 public class ReportHtmlWindow extends ReportOutputWindow
 {
     public ReportHtmlWindow(String rptName, String content) {

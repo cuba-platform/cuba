@@ -15,7 +15,7 @@ import com.vaadin.terminal.DownloadStream;
 import com.vaadin.Application;
 import com.vaadin.service.FileTypeResolver;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
-import com.haulmont.cuba.web.rpt.CloseableDownloadStream;
+import com.haulmont.cuba.web.filestorage.CloseableDownloadStream;
 
 public class WebEmbeddedApplicationResource implements ApplicationResource {
 

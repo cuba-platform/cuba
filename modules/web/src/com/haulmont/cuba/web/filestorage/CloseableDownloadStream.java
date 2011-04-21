@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.web.rpt;
+package com.haulmont.cuba.web.filestorage;
 
 import com.vaadin.terminal.DownloadStream;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
@@ -17,6 +17,8 @@ import java.io.Closeable;
 import java.io.IOException;
 
 public class CloseableDownloadStream extends DownloadStream implements Closeable {
+
+    private static final long serialVersionUID = -9108244903369511793L;
 
     private ExportDataProvider dataProvider;
 

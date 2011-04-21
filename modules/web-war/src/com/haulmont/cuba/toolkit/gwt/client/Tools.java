@@ -21,6 +21,10 @@ public class Tools {
         impl = new ToolsImpl();
     }
 
+    public static void alert(String message){
+        impl.alert(message);
+    }
+
     public static int parseSize(String s) {
         return impl.parseSize(s);
     }

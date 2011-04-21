@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.rpt;
 
+import com.haulmont.cuba.web.filestorage.CloseableDownloadStream;
 import com.vaadin.terminal.DownloadStream;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 
@@ -17,6 +18,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+/**
+ * @deprecated Please use {@link com.haulmont.cuba.web.filestorage.ResourceWindow}
+ */
+@Deprecated
 public class ReportDownloadWindow extends ReportOutputWindow
 {
     private String name;
@@ -60,5 +65,4 @@ public class ReportDownloadWindow extends ReportOutputWindow
         dataProvider.close();
         super.dispose();
     }
-
 }

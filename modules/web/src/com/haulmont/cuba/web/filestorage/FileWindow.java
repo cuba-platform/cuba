@@ -19,6 +19,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
+/**
+ * @deprecated Please use {@link ResourceWindow}
+ */
+@Deprecated
 public abstract class FileWindow extends ReportOutputWindow {
 
     protected FileDescriptor fd;
