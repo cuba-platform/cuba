@@ -288,6 +288,13 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
                 return true;
             }
         }
+        for (DsContext childDsContext : children) {
+            for (Datasource datasource : childDsContext.getAll()) {
+                if (datasource.isModified()) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
