@@ -26,7 +26,7 @@ public class AppContext {
 
     private static Map<String, String> properties = new Hashtable<String, String>();
 
-    private static ThreadLocal<SecurityContext> securityContextHolder = new ThreadLocal<SecurityContext>();
+    private static SecurityContextHolder securityContextHolder = new ThreadLocalSecurityContextHolder();
 
     private static Set<Listener> listeners = new LinkedHashSet<Listener>();
 
@@ -52,6 +52,10 @@ public class AppContext {
 
     public static void setProperty(String key, String value) {
         properties.put(key, value);
+    }
+
+    public static void setSecurityContextHolder(SecurityContextHolder holder) {
+        securityContextHolder = holder;
     }
 
     public static SecurityContext getSecurityContext() {

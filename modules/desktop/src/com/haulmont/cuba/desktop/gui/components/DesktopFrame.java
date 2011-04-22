@@ -150,11 +150,11 @@ public class DesktopFrame
     }
 
     public void showNotification(String caption, String description, NotificationType type) {
-//        getWindow().showNotification(caption, description, WebComponentsHelper.convertNotificationType(type));
+        App.getInstance().getWindowManager().showNotification(caption, description, type);
     }
 
     public void showNotification(String caption, NotificationType type) {
-//        getWindow().showNotification(caption, WebComponentsHelper.convertNotificationType(type));
+        App.getInstance().getWindowManager().showNotification(caption, type);
     }
 
     public void expandLayout(boolean expandLayout) {

@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
 
 import javax.swing.*;
@@ -67,4 +68,12 @@ public class DesktopComponentsHelper {
         throw new UnsupportedOperationException();
     }
 
+    public static int convertMessageType(IFrame.MessageType messageType) {
+        if (messageType.equals(IFrame.MessageType.CONFIRMATION))
+            return JOptionPane.QUESTION_MESSAGE;
+        else if (messageType.equals(IFrame.MessageType.WARNING))
+            return JOptionPane.WARNING_MESSAGE;
+        else
+            return JOptionPane.INFORMATION_MESSAGE;
+    }
 }

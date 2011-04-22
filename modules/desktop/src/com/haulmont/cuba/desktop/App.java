@@ -281,10 +281,12 @@ public class App implements ConnectionListener {
     }
 
     protected JComponent createBottomPane() {
-        JPanel pane = new JPanel();
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createLineBorder(Color.gray));
+        panel.setPreferredSize(new Dimension(0, 20));
         JLabel connectionStateLab = new JLabel("Connected");
-        pane.add(connectionStateLab);
-        return pane;
+        panel.add(connectionStateLab, BorderLayout.WEST);
+        return panel;
     }
 
     protected JComponent createCenterPane() {

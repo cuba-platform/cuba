@@ -8,11 +8,13 @@ package com.haulmont.cuba.desktop.sys;
 
 import com.haulmont.cuba.gui.components.Window;
 
+import java.awt.FlowLayout;
+import java.awt.Color;
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <p>$Id$</p>
@@ -26,10 +28,15 @@ public class WindowBreadCrumbs extends JPanel {
     }
 
     protected LinkedList<Window> windows = new LinkedList<Window>();
+    protected Map<JButton, Window> btn2win = new HashMap<JButton, Window>();
 
     protected Set<Listener> listeners = new HashSet<Listener>();
 
     public WindowBreadCrumbs() {
+        FlowLayout layout = new FlowLayout(FlowLayout.LEFT, 5, 5);
+        setLayout(layout);
+        setBorder(BorderFactory.createLineBorder(Color.gray));
+        setVisible(false);
     }
 
     public Window getCurrentWindow() {
@@ -74,6 +81,30 @@ public class WindowBreadCrumbs extends JPanel {
     }
 
     public void update() {
+        removeAll();
+        btn2win.clear();
+        for (Iterator<Window> it = windows.iterator(); it.hasNext();) {
+            Window window = it.next();
+            JButton button = new JButton(window.getCaption().trim());
+            button.addActionListener(
+                    new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            Window win = btn2win.get((JButton)e.getSource());
+                            if (win != null)
+                                fireListeners(win);
+                        }
+                    }
+            );
 
+            btn2win.put(button, window);
+
+            if (it.hasNext()) {
+                add(button);
+                JLabel separatorLab = new JLabel(">");
+                add(separatorLab);
+            } else {
+                add(new JLabel(window.getCaption()));
+            }
+        }
     }
 }

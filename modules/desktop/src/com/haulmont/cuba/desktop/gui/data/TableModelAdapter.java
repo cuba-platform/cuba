@@ -13,7 +13,10 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
@@ -54,6 +57,20 @@ public class TableModelAdapter extends AbstractTableModel {
                     properties.add((MetaPropertyPath) column.getId());
             }
         }
+
+        datasource.addListener(
+                new CollectionDsListenerAdapter() {
+                    @Override
+                    public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                        fireTableDataChanged();
+                    }
+
+                    @Override
+                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+                        fireTableDataChanged();
+                    }
+                }
+        );
     }
 
     protected void createProperties(View view, MetaClass metaClass) {

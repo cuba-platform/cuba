@@ -9,6 +9,7 @@ package com.haulmont.cuba.desktop.sys;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SingleSecurityContextHolder;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -47,6 +48,8 @@ public class DesktopAppContextLoader {
     }
 
     public void load() {
+        AppContext.setSecurityContextHolder(new SingleSecurityContextHolder());
+
         initAppProperties();
         MessageUtils.setMessagePack(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP));
         initAppContext();

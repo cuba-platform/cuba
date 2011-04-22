@@ -26,6 +26,8 @@ import javax.swing.*;
 import javax.swing.AbstractAction;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.*;
 
 /**
@@ -340,18 +342,94 @@ public class DesktopWindowManager extends WindowManager {
 
     @Override
     public void showNotification(String caption, IFrame.NotificationType type) {
+        JOptionPane.showMessageDialog(
+                App.getInstance().getMainFrame(),
+                caption
+        );
     }
 
     @Override
     public void showNotification(String caption, String description, IFrame.NotificationType type) {
+        JOptionPane.showMessageDialog(
+                App.getInstance().getMainFrame(),
+                caption + "\n" + description
+        );
     }
 
     @Override
     public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
+        JOptionPane.showMessageDialog(
+                App.getInstance().getMainFrame(),
+                message,
+                title,
+                DesktopComponentsHelper.convertMessageType(messageType)
+        );
     }
 
     @Override
     public void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
+
+        class ActionWrapper {
+            Action action;
+
+            ActionWrapper(Action action) {
+                this.action = action;
+            }
+
+            Action getAction() {
+                return action;
+            }
+
+            @Override
+            public String toString() {
+                return action.getCaption();
+            }
+        }
+
+        Object[] options = new Object[actions.length];
+        for (int i = 0; i < actions.length; i++) {
+            Action action = actions[i];
+            options[i] = new ActionWrapper(action);
+        }
+        int optionType;
+        if (options.length == 1)
+            optionType = JOptionPane.DEFAULT_OPTION;
+        else if (options.length == 2)
+            optionType = JOptionPane.YES_NO_OPTION;
+        else if (options.length == 3)
+            optionType = JOptionPane.YES_NO_CANCEL_OPTION;
+        else
+            throw new UnsupportedOperationException("Not more than 3 actions supported");
+
+        final JOptionPane optionPane = new JOptionPane(
+                message,
+                DesktopComponentsHelper.convertMessageType(messageType),
+                optionType,
+                null,
+                options,
+                options[0]
+        );
+        final JDialog dialog = new JDialog(App.getInstance().getMainFrame(), title, true);
+        dialog.setContentPane(optionPane);
+        dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        optionPane.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    public void propertyChange(PropertyChangeEvent e) {
+                        String prop = e.getPropertyName();
+                        if (dialog.isVisible()
+                                && (e.getSource() == optionPane)
+                                && (prop.equals(JOptionPane.VALUE_PROPERTY)))
+                        {
+                            ActionWrapper actionWrapper = (ActionWrapper) e.getNewValue();
+                            actionWrapper.getAction().actionPerform(null);
+
+                            dialog.setVisible(false);
+                        }
+                    }
+                });
+        dialog.pack();
+        dialog.setLocationRelativeTo(App.getInstance().getMainFrame());
+        dialog.setVisible(true);
     }
 
     protected JComponent findTab(Window window) {

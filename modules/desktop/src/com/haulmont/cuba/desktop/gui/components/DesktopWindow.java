@@ -282,25 +282,31 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     }
 
     public void showMessageDialog(String title, String message, MessageType messageType) {
+        App.getInstance().getWindowManager().showMessageDialog(title, message, messageType);
     }
 
     public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
+        App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions);
     }
 
     public void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions) {
+        App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
     }
 
     public void showNotification(String caption, NotificationType type) {
+        App.getInstance().getWindowManager().showNotification(caption, type);
     }
 
     public void showNotification(String caption, String description, NotificationType type) {
+        App.getInstance().getWindowManager().showNotification(caption, description, type);
     }
 
     public <A extends IFrame> A getFrame() {
-        return null;
+        return (A) this;
     }
 
     public void setFrame(IFrame frame) {
+        throw new UnsupportedOperationException();
     }
 
     public void expand(Component component, String height, String width) {
