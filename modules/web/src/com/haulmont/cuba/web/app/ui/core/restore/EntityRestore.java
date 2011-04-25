@@ -14,6 +14,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -144,9 +146,10 @@ public class EntityRestore extends AbstractWindow{
         });
         primaryFilter.setVisible(false);
         tablePanel = getComponent("table-panel");
-        String property = AppContext.getProperty("cuba.web.screenRestoreEntityIds");
+        GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
+        String restoreEntitys = globalConfig.getRestoreEntityId();
         Map<String,Object> options = new java.util.TreeMap<String,Object>();
-        if (property == null || StringUtils.isBlank(property)) {
+        if (restoreEntitys == null || StringUtils.isBlank(restoreEntitys)) {
             for (MetaClass metaClass : MetadataProvider.getSession().getClasses()) {
                 if (metaClass.getProperty("deleteTs") == null) continue;
                 if (metaClass.getDescendants() != null && metaClass.getDescendants().size() > 0) continue;
@@ -157,7 +160,7 @@ public class EntityRestore extends AbstractWindow{
             for (MetaClass metaClass : MetadataProvider.getSession().getClasses()) {
                 if (metaClass.getProperty("deleteTs") == null) continue;
                 if (metaClass.getDescendants() != null && metaClass.getDescendants().size() > 0) continue;
-                if (property.contains(metaClass.getName())) {
+                if (restoreEntitys.contains(metaClass.getName())) {
                     Class classJava = metaClass.getJavaClass();
                     options.put(MessageProvider.getMessage(classJava, classJava.getSimpleName()) + " [" + metaClass.getName() + "]", metaClass);
                 }

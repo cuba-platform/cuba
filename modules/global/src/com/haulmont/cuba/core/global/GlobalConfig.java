@@ -36,6 +36,12 @@ public interface GlobalConfig extends Config {
     String getWebContextName();
 
     /**
+     * List of entitys' id which can restore into the restore screen
+     */
+    @Property("cuba.restoreScreenEntityIds")
+    String getRestoreEntityId();
+
+    /**
      * Config directory. Root of all not deployable application configuration and logic.
      * Does not end with "/"
      */
