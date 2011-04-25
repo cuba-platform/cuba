@@ -497,7 +497,7 @@ public class FoldersPane extends VerticalLayout {
             else
                 filterEntity.setName(folder.getName());
             filterEntity.setXml(folder.getFilterXml());
-
+            filterEntity.setApplyDefault(folder.getApplyDefault());
             filterComponent.setFilterEntity(filterEntity);
         }
 

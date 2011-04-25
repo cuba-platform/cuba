@@ -419,6 +419,7 @@ create table SYS_APP_FOLDER (
     FILTER_XML varchar(7000),
     VISIBILITY_SCRIPT text,
     QUANTITY_SCRIPT text,
+    APPLY_DEFAULT boolean,
 
     primary key (FOLDER_ID),
     constraint FK_SYS_APP_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID)
@@ -451,6 +452,7 @@ create table SEC_SEARCH_FOLDER (
     FILTER_XML varchar(7000),
     USER_ID uuid,
     PRESENTATION_ID uuid,
+    APPLY_DEFAULT boolean,
 
     primary key (FOLDER_ID),
     constraint FK_SEC_SEARCH_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID),

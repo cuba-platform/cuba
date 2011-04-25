@@ -42,6 +42,9 @@ public class FilterEntity extends StandardEntity {
     private Boolean isDefault;
 
     @Transient
+    private Boolean applyDefault;
+
+    @Transient
     private AbstractSearchFolder folder;
 
     public String getComponentId() {
@@ -82,6 +85,14 @@ public class FilterEntity extends StandardEntity {
 
     public void setIsDefault(Boolean aDefault) {
         isDefault = aDefault;
+    }
+
+    public Boolean getApplyDefault(){
+        return applyDefault;
+    }
+
+    public void setApplyDefault(Boolean applyDefault){
+        this.applyDefault=applyDefault;
     }
 
     public AbstractSearchFolder getFolder() {

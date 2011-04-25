@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.gui.components.filter;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.UserSessionClient;
@@ -21,6 +22,7 @@ import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFilter;
 import com.vaadin.data.Property;
@@ -53,6 +55,8 @@ public class FilterEditor {
     private String messagesPack;
     private String filterComponentName;
     private Select addSelect;
+    private CheckBox defaultCb;
+    private CheckBox applyDefaultCb;
 
     private static final String EDITOR_WIDTH = "640px";
     private static final String TABLE_WIDTH = "600px";
@@ -63,6 +67,8 @@ public class FilterEditor {
     private Button upBtn;
     private Button downBtn;
 
+    private Boolean manualApplyRequired;
+
     public FilterEditor(final WebFilter webFilter, FilterEntity filterEntity,
                         Element filterDescriptor, List<String> existingNames) {
         this.webFilter = webFilter;
@@ -72,6 +78,8 @@ public class FilterEditor {
         this.messagesPack = webFilter.getFrame().getMessagesPack();
         this.metaClass = datasource.getMetaClass();
         this.existingNames = existingNames;
+
+        this.manualApplyRequired = ConfigProvider.getConfig(WebConfig.class).getGenericFilterManualApplyRequired();
 
         String[] strings = ValuePathHelper.parse(filterEntity.getComponentId());
         this.filterComponentName = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
@@ -92,7 +100,7 @@ public class FilterEditor {
         topGrid.setWidth("100%");
         topGrid.setSpacing(true);
 
-        GridLayout bottomGrid = new GridLayout(2, 1);
+        GridLayout bottomGrid = new GridLayout(2, 3);
         bottomGrid.setWidth("100%");
         bottomGrid.setSpacing(true);
 
@@ -161,7 +169,7 @@ public class FilterEditor {
         });
         controlLayout.addComponent(cancelBtn);
 
-        bottomGrid.addComponent(controlLayout, 0, 0);
+        bottomGrid.addComponent(controlLayout, 0, 2);
 
         globalCb = new CheckBox();
         globalCb.setCaption(getMessage("FilterEditor.global"));
@@ -171,6 +179,43 @@ public class FilterEditor {
 
         bottomGrid.addComponent(globalCb, 1, 0);
         bottomGrid.setComponentAlignment(globalCb, Alignment.MIDDLE_RIGHT);
+
+        defaultCb = new CheckBox();
+        defaultCb.setCaption(getMessage("FilterEditor.isDefault"));
+        defaultCb.setImmediate(true);
+
+        defaultCb.addListener(new Property.ValueChangeListener() {
+
+            public void valueChange(Property.ValueChangeEvent event) {
+                if ((Boolean) defaultCb.getValue()) {
+                    applyDefaultCb.setEnabled(true);
+                } else {
+                    applyDefaultCb.setEnabled(false);
+                    applyDefaultCb.setValue(false);
+                }
+                if (filterEntity != null) {
+                    filterEntity.setIsDefault(isTrue((Boolean) defaultCb.getValue()));
+
+                }
+            }
+        });
+        bottomGrid.addComponent(defaultCb, 1, 1);
+        bottomGrid.setComponentAlignment(defaultCb, Alignment.MIDDLE_RIGHT);
+
+        applyDefaultCb = new CheckBox();
+        applyDefaultCb.setCaption(getMessage("FilterEditor.applyDefault"));
+        applyDefaultCb.setImmediate(true);
+
+        applyDefaultCb.addListener(new Property.ValueChangeListener() {
+            public void valueChange(Property.ValueChangeEvent event) {
+                if (filterEntity != null) {
+                    filterEntity.setApplyDefault(isTrue((Boolean) applyDefaultCb.getValue()));
+                }
+            }
+        });
+
+        bottomGrid.addComponent(applyDefaultCb, 1, 2);
+        bottomGrid.setComponentAlignment(applyDefaultCb, Alignment.MIDDLE_RIGHT);
 
         HorizontalLayout nameLayout = new HorizontalLayout();
         nameLayout.setSpacing(true);
@@ -213,6 +258,10 @@ public class FilterEditor {
         layout.addComponent(bottomGrid);
 
         updateControls();
+    }
+
+    public Button getSaveButton(){
+        return saveBtn;
     }
 
     private void initAddSelect(AbstractLayout layout) {
@@ -350,6 +399,10 @@ public class FilterEditor {
             saveBtn.setEnabled(!conditions.isEmpty());
         else
             saveBtn.setEnabled(false);
+        defaultCb.setVisible(filterEntity.getFolder() == null);
+        defaultCb.setValue(isTrue(filterEntity.getIsDefault()));
+        applyDefaultCb.setVisible(defaultCb.isVisible() && manualApplyRequired);
+        applyDefaultCb.setValue(BooleanUtils.isTrue(filterEntity.getApplyDefault()));
     }
 
     private void updateTable() {

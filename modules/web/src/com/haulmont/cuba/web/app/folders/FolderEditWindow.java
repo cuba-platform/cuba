@@ -11,6 +11,7 @@
 package com.haulmont.cuba.web.app.folders;
 
 import com.haulmont.cuba.core.app.FoldersService;
+import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
@@ -21,9 +22,13 @@ import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,6 +42,7 @@ public class FolderEditWindow extends Window {
     protected TextField sortOrderField;
     protected Select presentation;
     protected CheckBox globalCb;
+    protected CheckBox applyDefaultCb;
     protected Runnable commitHandler;
     protected VerticalLayout layout;
     protected Button okBtn;
@@ -110,6 +116,10 @@ public class FolderEditWindow extends Window {
             layout.addComponent(globalCb);
         }
 
+        applyDefaultCb = new CheckBox(getMessage("folders.folderEditWindow.applyDefault"));
+        applyDefaultCb.setValue(BooleanUtils.isTrue(((AbstractSearchFolder)folder).getApplyDefault()));
+        layout.addComponent(applyDefaultCb);
+
         HorizontalLayout buttonsLayout = new HorizontalLayout();
         buttonsLayout.setMargin(true, false, false, false);
         buttonsLayout.setSpacing(true);
@@ -131,11 +141,14 @@ public class FolderEditWindow extends Window {
     protected void initButtonOkListener() {
         okBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                FolderEditWindow.this.folder.setName((String) nameField.getValue());
-                FolderEditWindow.this.folder.setTabName((String) tabNameField.getValue());
+                SearchFolder folder = (SearchFolder)FolderEditWindow.this.folder;
+
+                folder.setName((String) nameField.getValue());
+                folder.setTabName((String) tabNameField.getValue());
+
 
                 if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
-                    FolderEditWindow.this.folder.setSortOrder(null);
+                    folder.setSortOrder(null);
                 } else {
                     Object value = sortOrderField.getValue();
                     int sortOrder;
@@ -149,27 +162,28 @@ public class FolderEditWindow extends Window {
                             showNotification(msg, Notification.TYPE_WARNING_MESSAGE);
                             return;
                         }
-                    FolderEditWindow.this.folder.setSortOrder(sortOrder);
+                    folder.setSortOrder(sortOrder);
                 }
 
                 Object parent = parentSelect.getValue();
                 if (parent instanceof Folder)
-                    FolderEditWindow.this.folder.setParent((Folder) parent);
+                    folder.setParent((Folder) parent);
                 else
-                    FolderEditWindow.this.folder.setParent(null);
+                    folder.setParent(null);
 
+                folder.setApplyDefault(Boolean.valueOf(applyDefaultCb.getValue().toString()));
                 if (globalCb != null) {
                     if (BooleanUtils.isTrue((Boolean) globalCb.getValue())) {
-                        ((SearchFolder) FolderEditWindow.this.folder).setUser(null);
+                        folder.setUser(null);
                     } else {
-                        ((SearchFolder) FolderEditWindow.this.folder).setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+                        folder.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
                     }
                 } else {
-                    ((SearchFolder) FolderEditWindow.this.folder).setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+                    folder.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
                 }
 
                 if (presentation != null) {
-                    ((SearchFolder) FolderEditWindow.this.folder).setPresentation((Presentation) presentation.getValue());
+                    folder.setPresentation((Presentation) presentation.getValue());
                 }
 
                 FolderEditWindow.this.commitHandler.run();

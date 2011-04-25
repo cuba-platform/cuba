@@ -24,6 +24,9 @@ public abstract class AbstractSearchFolder extends Folder {
     @Column(name = "FILTER_XML")
     protected String filterXml;
 
+    @Column(name="APPLY_DEFAULT")
+    protected Boolean applyDefault;
+
     public String getFilterComponentId() {
         return filterComponentId;
     }
@@ -38,5 +41,13 @@ public abstract class AbstractSearchFolder extends Folder {
 
     public void setFilterXml(String filterXml) {
         this.filterXml = filterXml;
+    }
+
+    public Boolean getApplyDefault(){
+        return applyDefault;
+    }
+
+    public void setApplyDefault(Boolean applyDefault){
+        this.applyDefault=applyDefault;
     }
 }

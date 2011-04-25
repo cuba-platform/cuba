@@ -84,7 +84,6 @@ public class WebFilter
     private WebPopupButton actions;
 
     private Button applyBtn;
-    private CheckBox defaultCb;
 
     private boolean changingFilter;
     private boolean applyingDefault;
@@ -152,26 +151,6 @@ public class WebFilter
         actions = new WebPopupButton();
         actions.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "actionsCaption"));
         topLayout.addComponent((com.vaadin.ui.Component) actions.getComponent());
-
-        defaultCb = new CheckBox();
-        defaultCb.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "defaultCb"));
-        defaultCb.setImmediate(true);
-
-        defaultCb.addListener(new Button.ClickListener() {
-            public void buttonClick(Button.ClickEvent event) {
-                if (filterEntity != null) {
-                    filterEntity.setIsDefault(isTrue((Boolean) defaultCb.getValue()));
-
-                    Collection<FilterEntity> filters = select.getItemIds();
-                    for (FilterEntity filter : filters) {
-                        if (!filter.equals(filterEntity))
-                            filter.setIsDefault(false);
-                    }
-                }
-
-            }
-        });
-        topLayout.addComponent(defaultCb);
 
         initMaxResultsLayout();
         topLayout.addComponent(maxResultsLayout);
@@ -412,7 +391,8 @@ public class WebFilter
         } finally {
             changingFilter = false;
         }
-        apply(true);
+        if (BooleanUtils.isTrue(filterEntity.getApplyDefault()))
+            apply(true);
     }
 
     public void loadFiltersAndApplyDefault() {
@@ -428,6 +408,7 @@ public class WebFilter
         Element e = settings.get(name).element("defaultFilter");
         if (e != null) {
             String defIdStr = e.attributeValue("id");
+            Boolean applyDefault = Boolean.valueOf(e.attributeValue("applyDefault"));
             if (!StringUtils.isBlank(defIdStr)) {
                 UUID defaultId = null;
                 try {
@@ -440,6 +421,7 @@ public class WebFilter
                     for (FilterEntity filter : filters) {
                         if (defaultId.equals(filter.getId())) {
                             filter.setIsDefault(true);
+                            filter.setApplyDefault(applyDefault);
 
                             Map<String, Object> params = window.getContext().getParams();
                             if (!BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
@@ -447,7 +429,11 @@ public class WebFilter
                                 try {
                                     select.setValue(filter);
                                     updateControls();
-                                    apply(true);
+                                    if (ConfigProvider.getConfig(WebConfig.class).getGenericFilterManualApplyRequired()) {
+                                        if (filter.getApplyDefault()) {
+                                            apply(true);
+                                        }
+                                    } else apply(true);
                                     if (filterEntity != null)
                                         if (filterEntity.getCode() != null) {
                                             window.setDescription(MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode()));
@@ -458,6 +444,9 @@ public class WebFilter
                                 } finally {
                                     applyingDefault = false;
                                 }
+                            }
+                            else{
+
                             }
                             break;
                         }
@@ -586,11 +575,16 @@ public class WebFilter
     }
 
     private void saveFilterEntity() {
+        Boolean isDefault = filterEntity.getIsDefault();
+        Boolean applyDefault = filterEntity.getApplyDefault();
         if (filterEntity.getFolder() == null) {
             DataService ds = ServiceLocator.getDataService();
             CommitContext ctx = new CommitContext(Collections.singletonList(filterEntity));
             Map<Entity, Entity> result = ds.commit(ctx);
             filterEntity = (FilterEntity) result.get(filterEntity);
+            filterEntity.setApplyDefault(applyDefault);
+            filterEntity.setIsDefault(isDefault);
+
 
         } else if (filterEntity.getFolder() instanceof SearchFolder) {
             filterEntity.getFolder().setName(filterEntity.getName());
@@ -628,6 +622,18 @@ public class WebFilter
 
         editor = new FilterEditor(this, filterEntity, getXmlDescriptor(), names);
         editor.init();
+        editor.getSaveButton().addListener(new Button.ClickListener() {
+
+            public void buttonClick(Button.ClickEvent event) {
+                if (BooleanUtils.isTrue(filterEntity.getIsDefault())) {
+                    Collection<FilterEntity> filters = select.getItemIds();
+                    for (FilterEntity filter : filters) {
+                        if (!filter.equals(filterEntity))
+                            filter.setIsDefault(false);
+                    }
+                }
+            }
+        });
         editLayout.addComponent(editor.getLayout());
     }
 
@@ -684,11 +690,6 @@ public class WebFilter
         select.setEnabled(!editing);
         applyBtn.setVisible(!editing);
 
-        defaultCb.setVisible(filterEntity != null && !editing && filterEntity.getFolder() == null);
-        if (filterEntity != null && !editing)
-            defaultCb.setValue(isTrue(filterEntity.getIsDefault()));
-        else
-            defaultCb.setValue(false);
     }
 
     private boolean checkGlobalAppFolderPermission() {
@@ -757,18 +758,22 @@ public class WebFilter
     }
 
     public boolean saveSettings(Element element) {
+        Boolean changed = false;
         Element e = element.element("defaultFilter");
         if (e == null)
             e = element.addElement("defaultFilter");
 
         UUID defaultId = null;
+        Boolean applyDefault = false;
         Collection<FilterEntity> filters = select.getItemIds();
         for (FilterEntity filter : filters) {
             if (isTrue(filter.getIsDefault())) {
                 defaultId = filter.getId();
+                applyDefault = filter.getApplyDefault();
                 break;
             }
         }
+
         String newDef = defaultId != null ? defaultId.toString() : null;
         Attribute attr = e.attribute("id");
         String oldDef = attr != null ? attr.getValue() : null;
@@ -781,9 +786,21 @@ public class WebFilter
                 else
                     attr.setValue(newDef);
             }
-            return true;
+            changed = true;
         }
-        return false;
+        Boolean newApplyDef = BooleanUtils.isTrue(applyDefault);
+        Attribute applyDefaultAttr = e.attribute("applyDefault");
+        Boolean oldApplyDef = applyDefaultAttr != null ? Boolean.valueOf(applyDefaultAttr.getValue()) : false;
+        if (!ObjectUtils.equals(oldApplyDef, newApplyDef)) {
+            if (applyDefaultAttr != null) {
+                applyDefaultAttr.setValue(newApplyDef.toString());
+            } else {
+                e.addAttribute("applyDefault", newApplyDef.toString());
+            }
+            changed = true;
+        }
+
+        return changed;
     }
 
     public Component getApplyTo() {
