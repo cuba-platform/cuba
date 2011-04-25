@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import java.awt.BorderLayout;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -44,19 +45,25 @@ public abstract class DesktopAbstractTable<C extends JTable>
 {
     protected MigLayout layout;
     protected JPanel panel;
+    protected JPanel topPanel;
     protected TableModelAdapter tableModel;
     protected CollectionDatasource datasource;
     protected ButtonsPanel buttonsPanel;
+    protected RowsCount rowsCount;
     protected Map<MetaPropertyPath, Column> columns = new HashMap<MetaPropertyPath, Column>();
     protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
     protected boolean sortable = true;
 
     protected void initComponent() {
-        JScrollPane scrollPane = new JScrollPane(impl);
-        impl.setFillsViewportHeight(true);
-
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
         panel = new JPanel(layout);
+
+        topPanel = new JPanel(new BorderLayout());
+        topPanel.setVisible(false);
+        panel.add(topPanel, "growx");
+
+        JScrollPane scrollPane = new JScrollPane(impl);
+        impl.setFillsViewportHeight(true);
         panel.add(scrollPane, "grow");
     }
 
@@ -275,6 +282,14 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     public void setRowsCount(RowsCount rowsCount) {
+        if (this.rowsCount != null) {
+            topPanel.remove(DesktopComponentsHelper.getComposition(this.rowsCount));
+        }
+        this.rowsCount = rowsCount;
+        if (rowsCount != null) {
+            topPanel.add(DesktopComponentsHelper.getComposition(rowsCount), BorderLayout.EAST);
+            topPanel.setVisible(true);
+        }
     }
 
     public boolean isAllowMultiStringCells() {
@@ -312,11 +327,12 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
     public void setButtonsPanel(ButtonsPanel panel) {
         if (buttonsPanel != null) {
-            this.panel.remove(DesktopComponentsHelper.unwrap(buttonsPanel));
+            topPanel.remove(DesktopComponentsHelper.unwrap(buttonsPanel));
         }
         buttonsPanel = panel;
         if (panel != null) {
-            this.panel.add(DesktopComponentsHelper.unwrap(panel), 0);
+            topPanel.add(DesktopComponentsHelper.unwrap(panel), BorderLayout.WEST);
+            topPanel.setVisible(true);
         }
     }
 

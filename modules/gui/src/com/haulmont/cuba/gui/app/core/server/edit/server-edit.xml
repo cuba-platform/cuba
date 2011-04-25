@@ -19,30 +19,30 @@
     </dsContext>
 
     <layout expand="space">
-        <!--<fieldGroup datasource="serverDs" stylename="edit-area" width="500px">-->
-            <!--<column width="100%">-->
-                <!--<field id="name"/>-->
-                <!--<field id="address"/>-->
-                <!--<field id="running"/>-->
-            <!--</column>-->
-        <!--</fieldGroup>-->
-        <grid>
-            <columns count="2"/>
-            <rows>
-                <row>
-                    <label value="msg://name"/>
-                    <textField id="nameField" datasource="serverDs" property="name"/>
-                </row>
-                <row>
-                    <label value="msg://address"/>
-                    <textField id="addressField" datasource="serverDs" property="address"/>
-                </row>
-                <row>
-                    <label value="msg://running"/>
-                    <checkBox id="runningField" datasource="serverDs" property="running"/>
-                </row>
-            </rows>
-        </grid>
+        <fieldGroup datasource="serverDs" stylename="edit-area" width="500px">
+            <column width="100%">
+                <field id="name"/>
+                <field id="address"/>
+                <field id="running"/>
+            </column>
+        </fieldGroup>
+        <!--<grid>-->
+            <!--<columns count="2"/>-->
+            <!--<rows>-->
+                <!--<row>-->
+                    <!--<label value="msg://name"/>-->
+                    <!--<textField id="nameField" datasource="serverDs" property="name"/>-->
+                <!--</row>-->
+                <!--<row>-->
+                    <!--<label value="msg://address"/>-->
+                    <!--<textField id="addressField" datasource="serverDs" property="address"/>-->
+                <!--</row>-->
+                <!--<row>-->
+                    <!--<label value="msg://running"/>-->
+                    <!--<checkBox id="runningField" datasource="serverDs" property="running"/>-->
+                <!--</row>-->
+            <!--</rows>-->
+        <!--</grid>-->
         <iframe id="buttons" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
         <hbox id="space"></hbox>
     </layout>

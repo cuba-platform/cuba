@@ -97,6 +97,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         context.addLazyTask(new LazyTask() {
             public void execute(Context context, IFrame frame) {
+                component.postInit();
                 final List<FieldGroup.Field> fields = component.getFields();
                 for (final FieldGroup.Field field : fields) {
                     loadValidators(component, field);

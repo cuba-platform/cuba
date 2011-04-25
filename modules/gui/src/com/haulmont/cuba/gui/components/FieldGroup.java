@@ -81,6 +81,8 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
     void addListener(CollapseListener listener);
     void removeListener(CollapseListener listener);
 
+    void postInit();
+
     enum FieldCaptionAlignment {
         LEFT,
         TOP

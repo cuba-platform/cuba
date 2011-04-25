@@ -37,7 +37,11 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(CheckBox.NAME, DesktopCheckBox.class);
         classes.put(TextField.NAME, DesktopTextField.class);
         classes.put(Table.NAME, DesktopTable.class);
+        classes.put(GroupTable.NAME, DesktopGroupTable.class);
         classes.put(ButtonsPanel.NAME, DesktopButtonsPanel.class);
+        classes.put(Filter.NAME, DesktopFilter.class);
+        classes.put(FieldGroup.NAME, DesktopFieldGroup.class);
+        classes.put(RowsCount.NAME, DesktopRowsCount.class);
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {

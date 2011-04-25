@@ -23,8 +23,6 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
     protected MigLayout layout;
     protected JComponent container;
 
-    private boolean[][] matrix;
-
     public MigGridLayoutAdapter(JComponent container) {
         this(new MigLayout(), container);
     }
@@ -54,8 +52,6 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
             lc.debug(1000);
 
         layout.setLayoutConstraints(lc);
-
-        matrix = new boolean[colCount][rowCount];
     }
 
     @Override

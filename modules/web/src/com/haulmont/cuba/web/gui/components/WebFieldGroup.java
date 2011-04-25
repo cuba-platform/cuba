@@ -670,6 +670,9 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
+    public void postInit() {
+    }
+
     protected void fireCollapseListeners() {
         if (collapseListeners != null) {
             for (final CollapseListener listener : collapseListeners) {
