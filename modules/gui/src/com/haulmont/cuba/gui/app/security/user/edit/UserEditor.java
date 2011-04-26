@@ -377,7 +377,7 @@ public class UserEditor extends AbstractEditor {
                 params.put("existingIds", list);
             }
 
-            getDialogParams().setWidth(450);
+            getDialogParams().setWidth(500);
 
             openEditor("sec$UserSubstitution.edit", substitution,
                     WindowManager.OpenType.DIALOG, params, usDs);
