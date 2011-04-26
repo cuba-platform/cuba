@@ -75,7 +75,9 @@
         <property name="jpaEmf" ref="entityManagerFactory"/>
     </bean>
 
-    <bean id="cuba_SecurityProvider" class="com.haulmont.cuba.core.sys.SecurityProviderImpl"/>
+    <bean id="cuba_SecurityProvider" class="com.haulmont.cuba.core.sys.SecurityProviderImpl">
+        <property name="userSessionManager" ref="cuba_UserSessionManager"/>
+    </bean>
 
     <!-- Various beans -->
 

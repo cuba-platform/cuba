@@ -19,6 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Service providing methods for user login/logout to the middleware
@@ -78,5 +79,9 @@ public class LoginServiceBean implements LoginService
 
     public void ping() {
         log.debug("ping");
+    }
+
+    public UserSession getSession(UUID sessionId) {
+        return loginWorker.getSession(sessionId);
     }
 }

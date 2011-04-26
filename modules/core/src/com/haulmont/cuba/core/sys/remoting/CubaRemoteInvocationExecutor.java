@@ -2,26 +2,72 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 25.03.11 15:42
- *
- * $Id$
  */
 package com.haulmont.cuba.core.sys.remoting;
 
+import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.app.ServerConfig;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.sys.UserSessionManager;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationExecutor;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.UUID;
 
+/**
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
+
+    private Log log = LogFactory.getLog(CubaRemoteInvocationExecutor.class);
+
+    private UserSessionManager userSessionManager;
+
+    public CubaRemoteInvocationExecutor() {
+        userSessionManager = Locator.lookup("cuba_UserSessionManager");
+    }
 
     public Object invoke(RemoteInvocation invocation, Object targetObject) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         if (invocation instanceof CubaRemoteInvocation) {
-            AppContext.setSecurityContext(new SecurityContext(((CubaRemoteInvocation) invocation).getSessionId()));
+            UUID sessionId = ((CubaRemoteInvocation) invocation).getSessionId();
+            if (sessionId != null) {
+                UserSession session = userSessionManager.findSession(sessionId);
+                if (session == null) {
+                    String sessionProviderUrl = ConfigProvider.getConfig(ServerConfig.class).getUserSessionProviderUrl();
+                    if (StringUtils.isNotBlank(sessionProviderUrl)) {
+                        log.debug("User session " + sessionId + " not found, trying to get it from " + sessionProviderUrl);
+                        try {
+                            HttpInvokerProxyFactoryBean proxyFactory = new HttpInvokerProxyFactoryBean();
+                            proxyFactory.setServiceUrl(sessionProviderUrl + "/remoting/cuba_LoginService");
+                            proxyFactory.setServiceInterface(LoginService.class);
+                            proxyFactory.afterPropertiesSet();
+                            LoginService loginService = (LoginService) proxyFactory.getObject();
+                            if (loginService != null) {
+                                UserSession userSession = loginService.getSession(sessionId);
+                                if (userSession != null) {
+                                    userSessionManager.putSession(userSession);
+                                } else {
+                                    log.debug("User session " + sessionId + " not found on " + sessionProviderUrl);
+                                }
+                            }
+                        } catch (Exception e) {
+                            log.error("Error getting user session from " + sessionProviderUrl, e);
+                        }
+                    }
+                }
+            }
+            AppContext.setSecurityContext(new SecurityContext(sessionId));
         }
         return invocation.invoke(targetObject);
     }

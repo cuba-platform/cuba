@@ -18,13 +18,19 @@ import java.util.UUID;
 
 public class SecurityProviderImpl extends SecurityProvider
 {
+    private UserSessionManager userSessionManager;
+
+    public void setUserSessionManager(UserSessionManager userSessionManager) {
+        this.userSessionManager = userSessionManager;
+    }
+
     @Override
     protected boolean __checkCurrentUserSession() {
         UUID sessionId = ServerSecurityUtils.getSessionId();
         if (sessionId == null)
             return false;
 
-        UserSession userSession = UserSessionManager.getInstance().findSession(sessionId);
+        UserSession userSession = userSessionManager.findSession(sessionId);
         return userSession != null;
     }
 
@@ -34,7 +40,7 @@ public class SecurityProviderImpl extends SecurityProvider
         if (sessionId == null)
             throw new SecurityException("Session ID not found in security context");
 
-        UserSession session = UserSessionManager.getInstance().getSession(sessionId);
+        UserSession session = userSessionManager.getSession(sessionId);
         return session;
     }
 }

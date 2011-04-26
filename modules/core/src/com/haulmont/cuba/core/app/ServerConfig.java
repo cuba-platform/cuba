@@ -26,11 +26,11 @@ import com.haulmont.cuba.core.config.defaults.DefaultString;
 public interface ServerConfig extends Config {
 
     /**
-     * DB scripts directory.
-     * Does not end with "/"
+     * URL of user session provider - usually the main application core.
+     * Used by modules which don't login themselves but get existing sessions from main app.
      */
-    @Property("cuba.dbDir")
-    String getDbDir();
+    @Property("cuba.userSessionProviderUrl")
+    String getUserSessionProviderUrl();
 
     /**
      * User session expiration timeout in seconds.
@@ -39,12 +39,14 @@ public interface ServerConfig extends Config {
     @Property("cuba.userSessionExpirationTimeoutSec")
     @DefaultInt(1800)
     int getUserSessionExpirationTimeoutSec();
+    void setUserSessionExpirationTimeoutSec(int timeout);
 
     /**
-     * User session expiration timeout in seconds.
-     * Not the same as HTTP session timeout, but should have the same value.
+     * DB scripts directory.
+     * Does not end with "/"
      */
-    void setUserSessionExpirationTimeoutSec(int timeout);
+    @Property("cuba.dbDir")
+    String getDbDir();
 
     /**
      * Whether the server will try to init/update database on each start

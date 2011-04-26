@@ -29,13 +29,15 @@ import java.util.UUID;
 @Service(UserSessionService.NAME)
 public class UserSessionServiceBean implements UserSessionService
 {
+    private UserSessionManager userSessionManager;
+
     public UserSession getUserSession(UUID sessionId) {
-        UserSession userSession = UserSessionManager.getInstance().getSession(sessionId);
+        UserSession userSession = userSessionManager.getSession(sessionId);
         return userSession;
     }
 
     public void putSessionAttribute(UUID sessionId, String name, Serializable value) {
-        UserSession userSession = UserSessionManager.getInstance().getSession(sessionId);
+        UserSession userSession = userSessionManager.getSession(sessionId);
         userSession.setAttribute(name, value);
     }
 
@@ -55,6 +57,6 @@ public class UserSessionServiceBean implements UserSessionService
     }
 
     public Integer getPermissionValue(User user, PermissionType permissionType, String target) {
-        return UserSessionManager.getInstance().getPermissionValue(user, permissionType, target);
+        return userSessionManager.getPermissionValue(user, permissionType, target);
     }
 }

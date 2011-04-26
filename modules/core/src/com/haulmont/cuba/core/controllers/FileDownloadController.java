@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,6 +35,9 @@ import java.util.UUID;
 public class FileDownloadController {
 
     private static Log log = LogFactory.getLog(FileDownloadController.class);
+
+    @Inject
+    private UserSessionManager userSessionManager;
 
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     public ModelAndView download(
@@ -94,7 +98,7 @@ public class FileDownloadController {
         } catch (Exception e) {
             return null;
         }
-        UserSession userSession = UserSessionManager.getInstance().getSession(sessionId);
+        UserSession userSession = userSessionManager.getSession(sessionId);
         return userSession;
     }
 

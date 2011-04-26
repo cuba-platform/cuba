@@ -15,6 +15,7 @@ import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Interface to LoginServiceBean
@@ -50,4 +51,6 @@ public interface LoginService
     UserSession substituteUser(User substitutedUser);
 
     void ping();
+
+    UserSession getSession(UUID sessionId);
 }

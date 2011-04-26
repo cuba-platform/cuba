@@ -41,11 +41,6 @@ public class UserSessionManager
 
     private static Log log = LogFactory.getLog(UserSessionManager.class);
 
-    public static UserSessionManager getInstance() {
-        // TODO KK: remove this, change to injection
-        return AppContext.getApplicationContext().getBean(NAME, UserSessionManager.class);
-    }
-
     private UserSessionManager() {
         User noUser = new User();
         noUser.setLogin("server");
@@ -170,6 +165,10 @@ public class UserSessionManager
             return sessions.get(sessionId);
         else
             return NO_USER_SESSION;
+    }
+
+    public void putSession(UserSession session) {
+        sessions.add(session);
     }
 
     public Integer getPermissionValue(User user, PermissionType permissionType, String target) {

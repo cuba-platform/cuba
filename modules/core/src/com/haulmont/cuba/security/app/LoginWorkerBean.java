@@ -11,6 +11,7 @@
 package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -24,8 +25,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Worker bean providing middleware login/logout functionality.
@@ -35,6 +38,9 @@ import java.util.Locale;
 public class LoginWorkerBean implements LoginWorker
 {
     private Log log = LogFactory.getLog(LoginWorkerBean.class);
+
+    @Inject
+    private UserSessionManager userSessionManager;
 
     private User loadUser(String login, String password, Locale locale)
             throws LoginException
@@ -76,9 +82,9 @@ public class LoginWorkerBean implements LoginWorker
         Transaction tx = Locator.createTransaction();
         try {
             User user = loadUser(login, password, locale);
-            UserSession session = UserSessionManager.getInstance().createSession(user, locale, false);
+            UserSession session = userSessionManager.createSession(user, locale, false);
             if (user.getDefaultSubstitutedUser() != null) {
-                UserSessionManager.getInstance().updateSession(session, user.getDefaultSubstitutedUser());
+                userSessionManager.updateSession(session, user.getDefaultSubstitutedUser());
             }
             log.info("Logged in: " + session);
 
@@ -93,9 +99,9 @@ public class LoginWorkerBean implements LoginWorker
         Transaction tx = Locator.createTransaction();
         try {
             User user = loadUser(login, password, Locale.getDefault());
-            UserSession session = UserSessionManager.getInstance().createSession(user, Locale.getDefault(), true);
+            UserSession session = userSessionManager.createSession(user, Locale.getDefault(), true);
             if (user.getDefaultSubstitutedUser() != null) {
-                UserSessionManager.getInstance().updateSession(session, user.getDefaultSubstitutedUser());
+                userSessionManager.updateSession(session, user.getDefaultSubstitutedUser());
             }
             log.info("Logged in: " + session);
 
@@ -116,9 +122,9 @@ public class LoginWorkerBean implements LoginWorker
         Transaction tx = Locator.createTransaction();
         try {
             User user = loadUser(login, null, locale);
-            UserSession session = UserSessionManager.getInstance().createSession(user, locale, false);
+            UserSession session = userSessionManager.createSession(user, locale, false);
             if (user.getDefaultSubstitutedUser() != null) {
-                UserSessionManager.getInstance().updateSession(session, user.getDefaultSubstitutedUser());
+                userSessionManager.updateSession(session, user.getDefaultSubstitutedUser());
             }
             log.info("Logged in: " + session);
 
@@ -132,7 +138,7 @@ public class LoginWorkerBean implements LoginWorker
     public void logout() {
         try {
             UserSession session = SecurityProvider.currentUserSession();
-            UserSessionManager.getInstance().removeSession(session);
+            userSessionManager.removeSession(session);
             log.info("Logged out: " + session);
         }
         catch (SecurityException e) {
@@ -153,7 +159,7 @@ public class LoginWorkerBean implements LoginWorker
             if (user == null)
                 throw new javax.persistence.NoResultException("User not found");
 
-            UserSession session = UserSessionManager.getInstance().updateSession(currentSession, user);
+            UserSession session = userSessionManager.updateSession(currentSession, user);
 
             tx.commit();
 
@@ -164,5 +170,17 @@ public class LoginWorkerBean implements LoginWorker
     }
 
     public void ping() {
+    }
+
+    public UserSession getSession(UUID sessionId) {
+        try {
+            UserSession session = userSessionManager.getSession(sessionId);
+            return session;
+        } catch (RuntimeException e) {
+            if (e instanceof NoUserSessionException)
+                return null;
+            else
+                throw e;
+        }
     }
 }
