@@ -124,6 +124,7 @@
                 <entry key="${cuba.webContextName}.cuba:service=ClusterManager" value-ref="cuba_ClusterManager"/>
                 <entry key="${cuba.webContextName}.cuba:service=Scripting" value-ref="cuba_Scripting"/>
                 <entry key="${cuba.webContextName}.cuba:service=CubaDeployer" value-ref="cuba_CubaDeployer"/>
+                <entry key="${cuba.webContextName}.cuba:service=EmailManager" value-ref="cuba_EmailManager"/>
             </map>
         </property>
         <property name="assembler">
@@ -148,6 +149,7 @@
                         <entry key="cuba_ClusterManager" value="com.haulmont.cuba.core.app.ClusterManagerMBean"/>
                         <entry key="cuba_Scripting" value="com.haulmont.cuba.core.app.ScriptingMBean"/>
                         <entry key="cuba_CubaDeployer" value="com.haulmont.cuba.core.app.CubaDeployerMBean"/>
+                        <entry key="cuba_EmailManager" value="com.haulmont.cuba.core.app.EmailManager"/>
                     </map>
                 </property>
             </bean>
@@ -209,6 +211,11 @@
     <bean id="haulmont_cuba_service_FileStorage" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
         <property name="objectName" value="${cuba.webContextName}.cuba:service=FileStorage"/>
         <property name="proxyInterface" value="com.haulmont.cuba.core.app.FileStorageMBean"/>
+    </bean>
+
+    <bean id="haulmont_cuba_service_EmailManager" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
+        <property name="objectName" value="${cuba.webContextName}.cuba:service=EmailManager"/>
+        <property name="proxyInterface" value="com.haulmont.cuba.core.app.EmailManagerMBean"/>
     </bean>
 
     <!-- Scheduling setup -->

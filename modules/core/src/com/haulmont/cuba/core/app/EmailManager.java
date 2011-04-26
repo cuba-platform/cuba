@@ -2,11 +2,6 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Sergey Ovchinnikov
- * Created: 13.04.11 11:17
- *
- * $Id$
  */
 
 package com.haulmont.cuba.core.app;
@@ -30,14 +25,22 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.RejectedExecutionException;
 
-@ManagedBean(EmailManagerMBean.NAME)
-public class EmailManager extends ManagementBean implements EmailManagerMBean {
+/**
+ * <p>$Id$</p>
+ *
+ * @author ovchinnikov
+ */
+
+@ManagedBean(EmailManagerAPI.NAME)
+public class EmailManager extends ManagementBean implements EmailManagerMBean,EmailManagerAPI {
 
     private Log log = LogFactory.getLog(EmailManager.class);
 
     private Set<SendingMessage> messageQueue;
     private static int callCount = 0;
     private static final int MAX_SENDING_TIME_SEC = 120;
+    private static final String EMAIL_DELAY_CALL_COUNT_PROPERTY_NAME = "cuba.email.delayCallCount";
+    private static final String EMAIL_MESSAGE_QUEUE_CAPACITY_PROPERTY_NAME = "cuba.email.messageQueueCapacity";
 
     @Inject
     private ThreadPoolTaskExecutor mailSendTaskExecutor;
@@ -55,7 +58,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean {
 
     public void queueEmailsToSend() {
         try {
-            int delay = config.getDelayCallCount();
+            int delay = getDelayCallCount();
             if (callCount >= delay) {
                 loginOnce();
                 List<SendingMessage> loadedMessages = loadEmailsToSend();
@@ -82,7 +85,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean {
                 callCount++;
             }
         } catch (Throwable e) {
-            log.error(EmailManagerMBean.NAME + " error:" + ExceptionUtils.getStackTrace(e));
+            log.error(EmailManagerAPI.NAME + " error:" + ExceptionUtils.getStackTrace(e));
         }
     }
 
@@ -151,7 +154,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean {
                     .setParameter("statusQueue", SendingStatus.QUEUE.getId())
                     .setParameter("time", DateUtils.addSeconds(TimeProvider.currentTimestamp(), -MAX_SENDING_TIME_SEC))
                     .setParameter("statusSending", SendingStatus.SENDING.getId());
-            List<SendingMessage> res = query.setMaxResults(config.getMessageQueueSize()).getResultList();
+            List<SendingMessage> res = query.setMaxResults(getMessageQueueCapacity()).getResultList();
             tx.commit();
             return res;
         } finally {
@@ -239,5 +242,37 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean {
         }
     }
 
+    private int getMessageQueueCapacity() {
+        String messageQueueCapacity = AppContext.getProperty(EMAIL_MESSAGE_QUEUE_CAPACITY_PROPERTY_NAME);
+        int capacity = 0;
+        if (messageQueueCapacity != null)
+            try {
+                capacity = Integer.valueOf(messageQueueCapacity);
+            } catch (Exception e) {
+                capacity = config.getMessageQueueCapacity();
+            }
+        capacity = capacity == 0 ? config.getMessageQueueCapacity() : capacity;
+        return capacity;
+    }
 
+    private int getDelayCallCount() {
+        String delayCallCountStr = AppContext.getProperty(EMAIL_DELAY_CALL_COUNT_PROPERTY_NAME);
+        int delayCallCount = 0;
+        if (delayCallCountStr != null)
+            try {
+                delayCallCount = Integer.valueOf(delayCallCountStr);
+            } catch (Exception e) {
+                delayCallCount = config.getMessageQueueCapacity();
+            }
+        delayCallCount = delayCallCount == 0 ? config.getDelayCallCount() : delayCallCount;
+        return delayCallCount;
+    }
+
+    public String getDelayCallCountAsString() {
+        return String.valueOf(getDelayCallCount());
+    }
+
+    public String getMessageQueueCapacityAsString() {
+        return String.valueOf(getMessageQueueCapacity());
+    }
 }

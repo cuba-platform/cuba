@@ -17,10 +17,10 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
 
 /**
- * Parameters 
+ * Parameters
  */
 @Prefix("cuba.email.")
-@Source(type = SourceType.APP)
+@Source(type = SourceType.DATABASE)
 public interface EmailerConfig extends Config
 {
     @Default("DoNotReply@haulmont.com")
@@ -34,5 +34,5 @@ public interface EmailerConfig extends Config
     int getDelayCallCount();
 
     @Default("100")
-    int getMessageQueueSize();
+    int getMessageQueueCapacity();
 }

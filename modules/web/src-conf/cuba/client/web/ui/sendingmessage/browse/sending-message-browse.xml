@@ -1,6 +1,6 @@
 <window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="cuba.client.web.ui.emailHistory.browse.SendingMessageBrowser"
-        messagesPack="cuba.client.web.ui.emailHistory"
+        class="cuba.client.web.ui.sendingmessage.browse.SendingMessageBrowser"
+        messagesPack="cuba.client.web.ui.sendingmessage"
         lookupComponent="table"
         caption="msg://sendingMessage.browser.caption">
     <dsContext>
@@ -16,7 +16,7 @@
     <layout expand="table">
         <split id="split" orientation="horizontal" pos="70" >
             <vbox expand="table">
-                <iframe id="filter" src="cuba/client/web/ui/emailHistory/browse/email-browse-filter.xml"/>
+                <iframe id="filter" src="cuba/client/web/ui/sendingmessage/browse/sending-message-browse-filter.xml"/>
                 <table id="table">
                     <columns>
                         <column id="address" />

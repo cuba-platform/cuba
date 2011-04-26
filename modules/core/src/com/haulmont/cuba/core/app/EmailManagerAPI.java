@@ -6,17 +6,19 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.entity.SendingMessage;
+
+import java.util.List;
+
 /**
  * <p>$Id$</p>
  *
  * @author ovchinnikov
  */
+public interface EmailManagerAPI {
+    String NAME = "cuba_EmailManager";
 
-public interface EmailManagerMBean {
-    String OBJECT_NAME = "haulmont.cuba:service=Emailer";
+    void addEmailsToQueue(List<SendingMessage> sendingMessageList);
 
-    String getDelayCallCountAsString();
-
-    String getMessageQueueCapacityAsString();
-
+    void queueEmailsToSend();
 }

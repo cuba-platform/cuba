@@ -2,11 +2,6 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Sergey Ovchinnikov
- * Created: 26.01.11 16:53
- *
- * $Id$
  */
 
 package com.haulmont.cuba.core.entity;
@@ -15,6 +10,12 @@ import com.haulmont.cuba.core.global.EmailAttachment;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+
+/**
+ * <p>$Id$</p>
+ *
+ * @author ovchinnikov
+ */
 
 @Entity(name = "sys$SendingAttachment")
 @Table(name = "SYS_SENDING_ATTACHMENT")

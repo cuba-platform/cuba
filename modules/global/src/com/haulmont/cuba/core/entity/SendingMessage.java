@@ -2,11 +2,6 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Sergey Ovchinnikov
- * Created: 26.01.11 16:37
- *
- * $Id$
  */
 
 package com.haulmont.cuba.core.entity;
@@ -17,6 +12,12 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import java.util.Date;
 import java.util.List;
+
+/**
+ * <p>$Id$</p>
+ *
+ * @author ovchinnikov
+ */
 
 @Entity(name = "sys$SendingMessage")
 @Table(name = "SYS_SENDING_MESSAGE")

@@ -54,7 +54,10 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
     private EmailerConfig config;
 
     @Inject
-    EmailManager emailManager;
+    private EmailManagerAPI emailManager;
+
+    private static final String EMAIL_SMTP_HOST_PROPERTY_NAME = "cuba.email.smtpHost";
+    private static final String EMAIL_DEFAULT_FROM_ADDRESS_PROPERTY_NAME = "cuba.email.fromAddress";
 
     @Inject
     public void setMailSender(JavaMailSender mailSender) {
@@ -213,10 +216,10 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
                 Query query = em.createQuery(queryStr.toString())
                         .setParameter("status", status.getId())
                         .setParameter("id", sendingMessage.getId())
-                        .setParameter("updateTs",currentTimestamp)
-                        .setParameter("updatedBy",SecurityProvider.currentUserSession().getUser().getLogin());
+                        .setParameter("updateTs", currentTimestamp)
+                        .setParameter("updatedBy", SecurityProvider.currentUserSession().getUser().getLogin());
                 if (status.equals(SendingStatus.SENT))
-                    query.setParameter("dateSent", currentTimestamp );
+                    query.setParameter("dateSent", currentTimestamp);
                 query.executeUpdate();
                 tx.commit();
             } finally {
@@ -287,7 +290,8 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
     }
 
     public String getFromAddress() {
-        return config.getFromAddress();
+        String fromAddress = AppContext.getProperty(EMAIL_DEFAULT_FROM_ADDRESS_PROPERTY_NAME);
+        return fromAddress != null ? fromAddress : config.getFromAddress() ;
     }
 
     public void setFromAddress(String address) {
@@ -304,7 +308,8 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
     }
 
     public String getSmtpHost() {
-        return config.getSmtpHost();
+        String smtpHost = AppContext.getProperty(EMAIL_SMTP_HOST_PROPERTY_NAME);
+        return smtpHost != null ? smtpHost : config.getSmtpHost();
     }
 
     public String sendTestEmail(String addresses) {

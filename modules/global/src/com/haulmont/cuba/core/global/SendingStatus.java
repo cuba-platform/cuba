@@ -2,16 +2,17 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Sergey Ovchinnikov
- * Created: 27.01.11 15:42
- *
- * $Id$
  */
 
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
+
+/**
+ * <p>$Id$</p>
+ *
+ * @author ovchinnikov
+ */
 
 public enum SendingStatus implements EnumClass<Integer> {
     QUEUE(0),
