@@ -168,8 +168,8 @@ public class XLSFormatter extends AbstractFormatter {
             int offset = 0;
 
             topLeft = new CellReference(rownum, 0);
-            copyMergeRegions(resultSheet, rangeName,
-                    rownum, getCellFromReference(crefs[0], templateSheet).getColumnIndex());
+            copyMergeRegions(resultSheet, rangeName, rownum + rowsAddedByHorizontalBand,
+                    getCellFromReference(crefs[0], templateSheet).getColumnIndex());
 
             for (CellReference cellRef : crefs) {
                 HSSFCell templateCell = getCellFromReference(cellRef, templateSheet);
