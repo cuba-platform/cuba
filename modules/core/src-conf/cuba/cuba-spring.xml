@@ -117,7 +117,6 @@
                 <entry key="${cuba.webContextName}.cuba:service=Emailer" value-ref="cuba_Emailer"/>
                 <entry key="${cuba.webContextName}.cuba:service=FileUploading" value-ref="cuba_FileUploading"/>
                 <entry key="${cuba.webContextName}.cuba:service=EntityLog" value-ref="cuba_EntityLog"/>
-                <entry key="${cuba.webContextName}.cuba:service=ReportEngine" value-ref="cuba_ReportEngine"/>
                 <entry key="${cuba.webContextName}.cuba:service=FileStorage" value-ref="cuba_FileStorage"/>
                 <entry key="${cuba.webContextName}.cuba:service=LockManager" value-ref="cuba_LockManager"/>
                 <entry key="${cuba.webContextName}.cuba:service=CachingFacade" value-ref="cuba_CachingFacade"/>
@@ -141,7 +140,6 @@
                         <entry key="cuba_UniqueNumbers" value="com.haulmont.cuba.core.app.UniqueNumbersMBean"/>
                         <entry key="cuba_Emailer" value="com.haulmont.cuba.core.app.EmailerMBean"/>
                         <entry key="cuba_EntityLog" value="com.haulmont.cuba.security.app.EntityLogMBean"/>
-                        <entry key="cuba_ReportEngine" value="com.haulmont.cuba.core.app.ReportEngineMBean"/>
                         <entry key="cuba_FileStorage" value="com.haulmont.cuba.core.app.FileStorageMBean"/>
                         <entry key="cuba_FileUploading" value="com.haulmont.cuba.core.app.FileUploadingMBean"/>
                         <entry key="cuba_LockManager" value="com.haulmont.cuba.core.app.LockManagerMBean"/>
@@ -201,11 +199,6 @@
     <bean id="haulmont_cuba_service_EntityLog" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
         <property name="objectName" value="${cuba.webContextName}.cuba:service=EntityLog"/>
         <property name="proxyInterface" value="com.haulmont.cuba.security.app.EntityLogMBean"/>
-    </bean>
-
-    <bean id="haulmont_cuba_service_ReportEngine" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
-        <property name="objectName" value="${cuba.webContextName}.cuba:service=ReportEngine"/>
-        <property name="proxyInterface" value="com.haulmont.cuba.core.app.ReportEngineMBean"/>
     </bean>
 
     <bean id="haulmont_cuba_service_FileStorage" class="org.springframework.jmx.access.MBeanProxyFactoryBean">

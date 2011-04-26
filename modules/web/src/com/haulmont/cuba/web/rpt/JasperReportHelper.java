@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.web.rpt;
 
-import com.haulmont.cuba.core.app.ReportService;
+import com.haulmont.cuba.core.app.JasperReportService;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
@@ -29,15 +29,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ReportHelper
+public class JasperReportHelper
 {
     public static JasperPrint executeJasperReport(String name, Map<String, Object> params) {
-        ReportService rs = ServiceLocator.lookup(ReportService.JNDI_NAME);
+        JasperReportService rs = ServiceLocator.lookup(JasperReportService.JNDI_NAME);
         return rs.executeJasperReport(name, params);
     }
 
     public static JasperPrint executeJasperReport(String name, Map<String, Object> params, JRDataSource dataSource) {
-        ReportService rs = ServiceLocator.lookup(ReportService.JNDI_NAME);
+        JasperReportService rs = ServiceLocator.lookup(JasperReportService.JNDI_NAME);
         return rs.executeJasperReport(name, params, dataSource);
     }
 

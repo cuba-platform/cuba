@@ -4,26 +4,28 @@
  * Use is subject to license terms.
 
  * Author: Konstantin Krivopustov
- * Created: 22.05.2009 18:29:43
+ * Created: 25.05.2009 11:04:05
  *
  * $Id$
  */
 package com.haulmont.cuba.core.app;
 
-import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JRDataSource;
 
 import java.util.Map;
 
 /**
- * API of {@link ReportEngine} MBean.<br>
+ * Service interface for ReportEngine
  */
-public interface ReportEngineAPI
+public interface JasperReportService
 {
-    String NAME = "cuba_ReportEngine";
-    
-    JasperReport getJasperReport(String name);
+    String NAME = "cuba_JasperReportService";
+
+    @Deprecated
+    String JNDI_NAME = NAME;
+
+    JasperPrint executeJasperReport(String name, Map<String, Object> params);
 
     JasperPrint executeJasperReport(String name, Map<String, Object> params, JRDataSource dataSource);
 
