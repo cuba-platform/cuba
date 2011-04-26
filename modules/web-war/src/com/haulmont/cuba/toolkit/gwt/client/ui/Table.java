@@ -410,7 +410,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected void setWidthDependsOnStyle(Element el, int w) {
         RenderInformation.Size paddingBorders = getElementPaddingBorders(el);
-        if (paddingBorders != null) {
+        if (paddingBorders != null && (w - paddingBorders.getWidth() > 0)) {
             DOM.setStyleAttribute(el, "width", (w - paddingBorders.getWidth()) + "px");
         } else {
             DOM.setStyleAttribute(el, "width", w + "px");
@@ -983,7 +983,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             if (enabled && event != null) {
                 if (isResizing || event.getEventTarget().cast() == colResizeWidget) {
                     onResizeEvent(event);
-                    //Fixes #415 (Изменение ширины столбцов таблицы приводит к ее кривому отображению)
+                    //Fixes #415 (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
                     int scrollLeft = bodyContainer.getElement().getScrollLeft();
                     tHead.setHorizontalScrollPosition(scrollLeft);
                 } else {
