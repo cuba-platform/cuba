@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
+import org.apache.commons.collections.map.SingletonMap;
 import org.apache.commons.lang.BooleanUtils;
 
 import java.util.HashSet;
@@ -102,6 +103,20 @@ public class UserBrowser extends AbstractLookup {
                         }
                     }
                 }
+        );
+
+        table.addAction(new AbstractAction("copySettings") {
+            public void actionPerform(Component component) {
+                if (!table.getSelected().isEmpty()) {
+                    openWindow(
+                            "sec$User.copySettings",
+                            WindowManager.OpenType.DIALOG,
+                            new SingletonMap("users", table.getSelected())
+                    );
+
+                }
+            }
+        }
         );
     }
 }

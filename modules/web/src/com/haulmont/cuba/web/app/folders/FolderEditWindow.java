@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.app.folders;
 import com.haulmont.cuba.core.app.FoldersService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -20,6 +21,7 @@ import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.SearchFolder;
+import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
@@ -28,7 +30,6 @@ import com.vaadin.ui.Window;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 
@@ -118,6 +119,7 @@ public class FolderEditWindow extends Window {
 
         applyDefaultCb = new CheckBox(getMessage("folders.folderEditWindow.applyDefault"));
         applyDefaultCb.setValue(BooleanUtils.isTrue(((AbstractSearchFolder)folder).getApplyDefault()));
+        applyDefaultCb.setVisible(ConfigProvider.getConfig(WebConfig.class).getGenericFilterManualApplyRequired());
         layout.addComponent(applyDefaultCb);
 
         HorizontalLayout buttonsLayout = new HorizontalLayout();

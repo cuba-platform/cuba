@@ -1,0 +1,36 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+    xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+    datasource="users"
+    caption="msg://copySettings"
+    class="com.haulmont.cuba.web.app.ui.security.user.copysettings.CopySettings"
+    messagesPack="com.haulmont.cuba.web.app.ui.security.user.copysettings"
+>
+    <dsContext>
+        <collectionDatasource id="users"
+                    class="com.haulmont.cuba.security.entity.User"
+                    view="user.copySettings">
+            <query>select u from sec$User u</query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout>
+        <vbox spacing="true">
+            <label id="label" value="msg://copyFromUser" width="200px"/>
+            <lookupField width="200px" id="user"
+                         optionsDatasource="users"
+                         required="true"
+                         requiredMessage="msg://selectUser"/>
+            <buttonsPanel id="panel">
+                <button id="copyBtn" caption="msg://copy" icon="icons/ok.png" />
+                <button id="cancelBtn" caption="msg://cancel" icon="icons/cancel.png" />
+            </buttonsPanel>
+        </vbox>
+    </layout>
+</window>
+

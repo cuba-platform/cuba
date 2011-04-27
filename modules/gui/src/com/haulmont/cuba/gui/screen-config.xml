@@ -11,6 +11,9 @@
     <screen id="sec$User.changePassw"
             template="/com/haulmont/cuba/gui/app/security/user/changepassw/user-changepassw.xml"/>
 
+    <screen id="sec$User.copySettings"
+            template="/com/haulmont/cuba/web/app/ui/security/user/copysettings/copy-settings.xml" />
+
     <screen id="sec$UserSubstitution.edit"
             template="/com/haulmont/cuba/gui/app/security/usersubst/edit/usersubst-edit.xml"/>
 

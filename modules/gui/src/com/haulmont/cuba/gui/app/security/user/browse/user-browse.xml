@@ -40,12 +40,13 @@
                 </filter>
             </vbox>
             <vbox id="table-panel" expand="users" spacing="true">
-                <groupTable id="users" editable="false" presentations="true">
+                <groupTable id="users" editable="false" presentations="true" multiselect="true">
                     <buttonsPanel align="MIDDLE_LEFT">
                         <button action="users.create" icon="icons/create.png"/>
                         <button action="users.edit" icon="icons/edit.png"/>
                         <button action="users.copy" icon="icons/copy.png"/>
                         <button action="users.remove" icon="icons/remove.png"/>
+                        <button action="users.copySettings" icon="icons/copy.png" />
                         <button action="users.changePassw" icon="icons/change-pass.png"/>
                         <button action="users.excel" icon="icons/excel.png"/>
                     </buttonsPanel>

@@ -38,6 +38,11 @@
         <property name="group" view="_local"/>
     </view>
 
+    <view entity="sec$User" name="user.copySettings" extends="_minimal">
+        <property name="login" />
+        <property name="name" />
+    </view>
+
     <view class="com.haulmont.cuba.security.entity.User" name="user.changepassw">
         <property name="password"/>
     </view>

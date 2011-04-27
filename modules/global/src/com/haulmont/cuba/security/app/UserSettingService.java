@@ -11,6 +11,7 @@
 package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.security.entity.User;
 
 /**
  * Service interface to UserSettingServiceBean
@@ -33,4 +34,6 @@ public interface UserSettingService
 
     /** Save settings for the current user */
     void saveSetting(ClientType clientType, String name, String value);
+
+    void copySettings(User fromUser,User toUser);
 }
