@@ -147,7 +147,7 @@
                         <entry key="cuba_ClusterManager" value="com.haulmont.cuba.core.app.ClusterManagerMBean"/>
                         <entry key="cuba_Scripting" value="com.haulmont.cuba.core.app.ScriptingMBean"/>
                         <entry key="cuba_CubaDeployer" value="com.haulmont.cuba.core.app.CubaDeployerMBean"/>
-                        <entry key="cuba_EmailManager" value="com.haulmont.cuba.core.app.EmailManager"/>
+                        <entry key="cuba_EmailManager" value="com.haulmont.cuba.core.app.EmailManagerMBean"/>
                     </map>
                 </property>
             </bean>
