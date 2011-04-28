@@ -175,8 +175,8 @@ public class UserEditor extends AbstractEditor {
                     options.put(entry.getKey(), entry.getValue().getLanguage());
                 }
                 languageLookup.setOptionsMap(options);
-                com.vaadin.ui.Select languageLookupUnwrap = (com.vaadin.ui.Select) WebComponentsHelper.unwrap(languageLookup);
-                languageLookupUnwrap.setNullSelectionAllowed(false);
+                //com.vaadin.ui.Select languageLookupUnwrap = (com.vaadin.ui.Select) WebComponentsHelper.unwrap(languageLookup);
+                //languageLookupUnwrap.setNullSelectionAllowed(false);
 
                 return languageLookup;
             }
