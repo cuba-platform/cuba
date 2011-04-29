@@ -70,6 +70,16 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 Collection coll = item == null ? null : (Collection) ((Instance) item).getValue(metaProperty.getName());
                 reattachListeners(prevColl, coll);
 
+                if (coll != null) {
+                    for (Object collItem : coll) {
+                        if (PersistenceHelper.isNew(collItem)) {
+                            itemToCreate.remove(collItem);
+                            itemToCreate.add((T) collItem);
+                            modified = true;
+                        }
+                    }
+                }
+
                 forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
             }
 
