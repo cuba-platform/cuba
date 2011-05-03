@@ -68,9 +68,13 @@ public class VScriptHost extends SimplePanel implements Paintable {
     }-*/;
 
     private native void getResource(String resourceUrl)/*-{
-        var timedAction = function() {
-            document.location.href = resourceUrl;
+        var loadFrame = document.createElement('iframe');
+        loadFrame.style.display = 'none';
+        document.body.appendChild(loadFrame);
+        loadFrame.src = resourceUrl;
+        loadFrame.onload = function(e) {
+            document.body.removeChild(loadFrame);
+            loadFrame = null;
         };
-        setTimeout(timedAction, 50);
     }-*/;
 }

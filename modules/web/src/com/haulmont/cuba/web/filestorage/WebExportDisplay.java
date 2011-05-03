@@ -81,21 +81,10 @@ public class WebExportDisplay implements ExportDisplay, Serializable {
         final ResourceWindow window = new ResourceWindow(dataProvider, resourceName, format, attachment);
         final App app = App.getInstance();
 
-        JavaScriptHost webScriptHost = null;
-        Iterator<Component> componentIterator = app.getAppWindow().getComponentIterator();
-        while (componentIterator.hasNext() && (webScriptHost == null)) {
-            Component component = componentIterator.next();
-            if (component instanceof JavaScriptHost) {
-                webScriptHost = (JavaScriptHost) component;
-            }
-        }
-        if (webScriptHost == null) {
-            webScriptHost = new JavaScriptHost();
-            app.getAppWindow().addComponent(webScriptHost);
-        }
-
         cleanOpenedWindows(app);
         app.addWindow(window);
+
+        JavaScriptHost webScriptHost = app.getAppWindow().getScriptHost();
 
         if (newWindow) {
             webScriptHost.viewDocument(window.getURL().toString());

@@ -30,9 +30,11 @@ import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
+import com.haulmont.cuba.web.gui.components.WebScriptHost;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
+import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.haulmont.cuba.web.toolkit.ui.MenuBar;
 import com.haulmont.cuba.web.toolkit.ui.RichNotification;
 import com.vaadin.data.Property;
@@ -117,6 +119,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     private NativeSelect substUserSelect;
 
+    private JavaScriptHost scriptHost;
+
     public AppWindow(Connection connection) {
         super();
 
@@ -132,6 +136,13 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         setContent(rootLayout);
         postInitLayout();
         initStartupLayout();
+
+        initStaticComponents();
+    }
+
+    private void initStaticComponents() {
+        scriptHost = new JavaScriptHost();
+        addComponent(scriptHost);
     }
 
     /**
@@ -264,6 +275,14 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     @Nullable
     public FoldersPane getFoldersPane() {
         return foldersPane;
+    }
+
+    /**
+     * Native client script invoker
+     * @return JavaScriptHost
+     */
+    public JavaScriptHost getScriptHost() {
+        return scriptHost;
     }
 
     /**
