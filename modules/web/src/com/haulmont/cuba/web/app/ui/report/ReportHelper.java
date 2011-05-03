@@ -107,11 +107,8 @@ public class ReportHelper {
             ReportService srv = ServiceLocator.lookup(ReportService.NAME);
             byte[] byteArr = srv.createReport(report, params);
 
-            if ((exportFormat == ExportFormat.HTML) || (exportFormat == ExportFormat.PDF))
-                new WebExportDisplay(false, true).show(new ByteArrayDataProvider(byteArr), report.getName(), exportFormat);
-            else {
-                new WebExportDisplay().show(new ByteArrayDataProvider(byteArr), report.getName() + "." + file.getExtension(), null);
-            }
+            WebExportDisplay exportDisplay = new WebExportDisplay();
+            exportDisplay.show(new ByteArrayDataProvider(byteArr), report.getName(), exportFormat);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

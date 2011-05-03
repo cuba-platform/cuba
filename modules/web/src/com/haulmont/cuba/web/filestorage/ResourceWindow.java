@@ -8,8 +8,10 @@ package com.haulmont.cuba.web.filestorage;
 
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
+import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.vaadin.terminal.DownloadStream;
 import com.vaadin.ui.Window;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -53,7 +55,8 @@ public class ResourceWindow extends Window {
         String contentType;
         if (exportFormat != null) {
             contentType = exportFormat.getContentType();
-            fileName += "." + exportFormat.getFileExt();
+            if (StringUtils.isEmpty(FileDownloadHelper.getFileExt(fileName)))
+                fileName += "." + exportFormat.getFileExt();
         } else {
             contentType = "application/octet-stream";
         }

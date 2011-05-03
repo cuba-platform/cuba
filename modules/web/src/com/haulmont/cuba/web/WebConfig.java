@@ -15,6 +15,10 @@ import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultInteger;
+import com.haulmont.cuba.core.config.type.Factory;
+import com.haulmont.cuba.core.config.type.StringListTypeFactory;
+
+import java.util.List;
 
 /**
  * Common web layer configuration parameters. Can be set up in <code>conf/system.properties</code> file.
@@ -96,6 +100,10 @@ public interface WebConfig extends Config
     /** If true, then check filter conditions(empty or not) before apply filter */
     @DefaultBoolean(true)
     boolean getGenericFilterChecking();
+    
+    @Factory(factory = StringListTypeFactory.class)
+    @Default("pdf|htm|html")
+    List<String> getViewFileExtensions();
 
     @DefaultBoolean(false)
     boolean getFoldersPaneVisibleByDefault();

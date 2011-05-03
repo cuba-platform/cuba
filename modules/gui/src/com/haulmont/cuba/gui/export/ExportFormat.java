@@ -32,6 +32,18 @@ public enum ExportFormat {
         this.fileExt = fileExt;
     }
 
+    public static ExportFormat getByExtension(String extension){
+        ExportFormat format = null;
+        ExportFormat[] formats = values();
+        int i = 0;
+        while ((i < formats.length) && (format == null)){
+            if (formats[i].fileExt.equals(extension))
+                format = formats[i];
+            i++;
+        }
+        return format;
+    }
+
     public String getContentType() {
         return contentType;
     }
