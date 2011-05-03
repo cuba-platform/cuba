@@ -136,6 +136,8 @@ public class DocFormatter extends AbstractFormatter {
         }
         saveXComponent(xComponent, ooos, filterName);
         closeXComponent(xComponent);
+
+        officeComponent.getOfficeConnection().close();
     }
 
     private void fillTables() throws com.sun.star.uno.Exception {

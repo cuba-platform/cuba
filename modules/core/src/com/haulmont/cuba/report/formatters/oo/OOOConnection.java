@@ -16,14 +16,17 @@ import com.sun.star.frame.XDispatchHelper;
 import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.uno.Exception;
 import com.sun.star.uno.XComponentContext;
+import ooo.connector.BootstrapSocketConnector;
 
 import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.*;
 
 public class OOOConnection {
     private XComponentContext xComponentContext;
+    private BootstrapSocketConnector bsc;
 
-    public OOOConnection(XComponentContext xComponentContext) {
+    public OOOConnection(XComponentContext xComponentContext, BootstrapSocketConnector bsc) {
         this.xComponentContext = xComponentContext;
+        this.bsc = bsc;
     }
 
     public XMultiComponentFactory getXMultiComponentFactory() {
@@ -48,5 +51,12 @@ public class OOOConnection {
 
     public XComponentContext getxComponentContext() {
         return xComponentContext;
+    }
+
+    public void close() {
+        if (bsc != null) {
+            bsc.disconnect();
+            bsc = null;
+        }
     }
 }

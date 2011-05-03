@@ -16,8 +16,9 @@ import ooo.connector.BootstrapSocketConnector;
 
 public class OOOConnector {
     public static OOOConnection createConnection(String openOfficePath) throws BootstrapException {
-        XComponentContext xComponentContext = new BootstrapSocketConnector(openOfficePath).connect();
-        OOOConnection oooConnection = new OOOConnection(xComponentContext);
+        BootstrapSocketConnector bsc = new BootstrapSocketConnector(openOfficePath);
+        XComponentContext xComponentContext = bsc.connect();
+        OOOConnection oooConnection = new OOOConnection(xComponentContext, bsc);
         return oooConnection;
     }
 }
