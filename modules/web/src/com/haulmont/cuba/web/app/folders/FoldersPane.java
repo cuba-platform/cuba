@@ -498,6 +498,9 @@ public class FoldersPane extends VerticalLayout {
                 filterEntity.setName(folder.getName());
             filterEntity.setXml(folder.getFilterXml());
             filterEntity.setApplyDefault(folder.getApplyDefault());
+            if (folder instanceof SearchFolder) {
+                filterEntity.setIsSet(((SearchFolder) folder).getIsSet());
+            }
             filterComponent.setFilterEntity(filterEntity);
         }
 
@@ -530,7 +533,7 @@ public class FoldersPane extends VerticalLayout {
         return (Folder) res.get(folder);
     }
 
-    protected void removeFolder(Folder folder) {
+    public void removeFolder(Folder folder) {
         CommitContext commitContext = new CommitContext(Collections.emptySet(), Collections.singleton(folder));
         ServiceLocator.getDataService().commit(commitContext);
     }

@@ -511,6 +511,8 @@ create table SEC_SEARCH_FOLDER (
     USER_ID varchar(36),
     PRESENTATION_ID varchar(36),
     APPLY_DEFAULT boolean,
+    IS_SET boolean,
+    ENTITY_TYPE varchar(50),
 
     primary key (FOLDER_ID),
     constraint FK_SEC_SEARCH_FOLDER_FOLDER foreign key (FOLDER_ID) references SYS_FOLDER(ID),

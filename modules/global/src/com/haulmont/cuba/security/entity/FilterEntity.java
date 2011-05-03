@@ -47,6 +47,9 @@ public class FilterEntity extends StandardEntity {
     @Transient
     private AbstractSearchFolder folder;
 
+    @Transient
+    private Boolean isSet;
+
     public String getComponentId() {
         return componentId;
     }
@@ -109,5 +112,13 @@ public class FilterEntity extends StandardEntity {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public Boolean getIsSet(){
+        return isSet;
+    }
+
+    public void setIsSet(Boolean isSet){
+        this.isSet=isSet;
     }
 }

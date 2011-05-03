@@ -18,14 +18,17 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.client.UserSessionClient;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -52,12 +55,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.dom4j.Attribute;
-import org.dom4j.Element;
+import org.apache.commons.lang.*;
+import org.dom4j.*;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import java.util.*;
@@ -205,19 +204,19 @@ public class WebFilter
         if (filterEntity == null)
             return;
 
-        if (!filterEntity.equals(noFilter))
+        if (!filterEntity.equals(noFilter)&&(BooleanUtils.isNotTrue(filterEntity.getIsSet())))
             actions.addAction(new CopyAction());
 
         if (checkGlobalFilterPermission()) {
-            if ((filterEntity.getFolder() == null) || (filterEntity.getFolder() instanceof SearchFolder) ||
-                    ((filterEntity.getFolder() instanceof AppFolder) && checkGlobalAppFolderPermission()))
+            if ((BooleanUtils.isNotTrue(filterEntity.getIsSet()))&&((filterEntity.getFolder() == null) || (filterEntity.getFolder() instanceof SearchFolder) ||
+                    ((filterEntity.getFolder() instanceof AppFolder) && checkGlobalAppFolderPermission())))
                 actions.addAction(new EditAction());
 
             if (filterEntity.getCode() == null && filterEntity.getFolder() == null)
                 actions.addAction(new DeleteAction());
         } else {
             if (filterEntity.getFolder() instanceof SearchFolder) {
-                if ((UserSessionClient.getUserSession().getUser().equals(((SearchFolder) filterEntity.getFolder()).getUser())))
+                if ((BooleanUtils.isNotTrue(filterEntity.getIsSet()))&&(com.haulmont.cuba.client.UserSessionClient.getUserSession().getUser().equals(((SearchFolder) filterEntity.getFolder()).getUser())))
                     actions.addAction(new EditAction());
             }
             if (filterEntity.getCode() == null && filterEntity.getFolder() == null)
@@ -374,15 +373,77 @@ public class WebFilter
         paramsLayout = grid;
     }
 
+    private void setActions(Table table){
+        ButtonsPanel buttons = table.getButtonsPanel();
+        com.haulmont.cuba.gui.components.Button addToSetBtn = buttons.getButton("addToSetBtn");
+        com.haulmont.cuba.gui.components.Button addToCurSetBtn = buttons.getButton("addToCurSetBtn");
+        com.haulmont.cuba.gui.components.Button removeFromCurSetBtn = buttons.getButton("removeFromCurSetBtn");
+
+        Action addToSet = table.getAction("addToSet");
+
+        Action addToCurrSet = table.getAction("addToCurSet");
+        Action removeFromCurrSet = table.getAction("removeFromCurSet");
+
+        if (addToSet != null)
+            table.removeAction(addToSet);
+        if (addToSetBtn != null)
+            buttons.removeButton(addToSetBtn);
+        if (addToCurrSet != null) {
+            table.removeAction(addToCurrSet);
+        }
+        if (addToCurSetBtn != null) {
+            buttons.removeButton(addToCurSetBtn);
+        }
+        if (removeFromCurrSet != null) {
+            table.removeAction(removeFromCurrSet);
+        }
+        if (removeFromCurSetBtn != null) {
+            buttons.removeButton(removeFromCurSetBtn);
+        }
+        if ((filterEntity != null) && (BooleanUtils.isTrue(filterEntity.getIsSet()))) {
+            addToCurrSet = new AddToCurrSetAction();
+
+            addToCurSetBtn = new WebButton();
+            addToCurSetBtn.setIcon("icons/join-to-set.png");
+            addToCurSetBtn.setAction(addToCurrSet);
+            addToCurSetBtn.setId("addToCurSetBtn");
+            addToCurSetBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "addToCurSet"));
+            buttons.addButton(addToCurSetBtn);
+
+            removeFromCurrSet = new RemoveFromSetAction(table);
+            removeFromCurSetBtn = new WebButton();
+            removeFromCurSetBtn.setIcon("icons/delete-from-set.png");
+            removeFromCurSetBtn.setAction(removeFromCurrSet);
+            removeFromCurSetBtn.setId("removeFromCurSetBtn");
+            removeFromCurSetBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "removeFromCurSet"));
+            buttons.addButton(removeFromCurSetBtn);
+
+            table.addAction(removeFromCurrSet);
+        } else {
+            addToSet = new AddToSetAction(table);
+            addToSetBtn = new WebButton();
+            addToSetBtn.setIcon("icons/insert-to-set.png");
+            addToSetBtn.setAction(addToSet);
+            addToSetBtn.setId("addToSetBtn");
+            addToSetBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "addToSet"));
+
+            table.addAction(addToSet);
+            buttons.addButton(addToSetBtn);
+        }
+    }
+
     public void setFilterEntity(FilterEntity filterEntity) {
         changingFilter = true;
         try {
             this.filterEntity = filterEntity;
 
+            if ((filterEntity != null) && (applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
+                Table table = (Table) applyTo;
+                setActions(table);
+            }
+
             parseFilterXml();
-
             internalSetFilterEntity();
-
             updateControls();
             if (paramsLayout != null)
                 component.removeComponent(paramsLayout);
@@ -391,7 +452,9 @@ public class WebFilter
         } finally {
             changingFilter = false;
         }
-        if (BooleanUtils.isTrue(filterEntity.getApplyDefault()))
+        if (BooleanUtils.isTrue(filterEntity.getApplyDefault()) ||
+                BooleanUtils.isTrue(filterEntity.getIsSet()) ||
+                !ConfigProvider.getConfig(WebConfig.class).getGenericFilterManualApplyRequired())
             apply(true);
     }
 
@@ -536,7 +599,10 @@ public class WebFilter
             else if (!StringUtils.isBlank(folder.getName())) {
                 name = MessageProvider.getMessage(mainMessagesPack, folder.getName());
             }
-            name = MessageProvider.getMessage(MESSAGES_PACK, "folderPrefix") + " " + name;
+            if (BooleanUtils.isTrue(filterEntity.getIsSet()))
+                name = MessageProvider.getMessage(MESSAGES_PACK, "setPrefix") + " " + name;
+            else
+                name = MessageProvider.getMessage(MESSAGES_PACK, "folderPrefix") + " " + name;
         }
         return name;
     }
@@ -809,6 +875,10 @@ public class WebFilter
 
     public void setApplyTo(Component component) {
         applyTo = component;
+        if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
+            Table table = (Table) applyTo;
+            setActions(table);
+        }
     }
 
     private void saveAsFolder(boolean isAppFolder) {
@@ -969,8 +1039,12 @@ public class WebFilter
                 return;
 
             filterEntity = (FilterEntity) select.getValue();
-            parseFilterXml();
+            if ((filterEntity != null) && (applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
+                Table table = (Table) applyTo;
+                setActions(table);
+            }
 
+            parseFilterXml();
             updateControls();
             component.removeComponent(paramsLayout);
             createParamsLayout();
@@ -1210,6 +1284,215 @@ public class WebFilter
         }
 
         public void setFrame(IFrame frame) {
+        }
+    }
+     private class AddToSetAction extends AbstractAction {
+        private Table table;
+
+        private AddToSetAction(Table table) {
+            super("addToSet");
+            this.table = table;
+        }
+
+        @Override
+        public String getCaption() {
+            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+        }
+
+
+        public void actionPerform(Component component) {
+
+            if (!table.getSelected().isEmpty()) {
+                String entityType = table.getDatasource().getMetaClass().getName();
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("entityType", entityType);
+                params.put("items", table.getSelected());
+                params.put("componentPath", getComponentPath());
+                params.put("componentId", WebFilter.this.getId());
+                params.put("foldersPane", foldersPane);
+                params.put("entityClass", datasource.getMetaClass().getJavaClass().getName());
+                params.put("query", datasource.getQuery());
+                WebFilter.this.getFrame().openWindow("sec$SaveSetWindow",
+                        WindowManager.OpenType.DIALOG,
+                        params);
+            }
+        }
+    }
+
+    private class RemoveFromSetAction extends AbstractAction {
+        private Table table;
+
+        protected RemoveFromSetAction(Table table) {
+            super("removeFromCurSet");
+            this.table = table;
+        }
+
+        @Override
+        public String getCaption() {
+            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+        }
+
+        public void actionPerform(Component component) {
+            Set selected = table.getSelected();
+            if (selected.isEmpty())
+                return;
+            if (table.getDatasource().getItemIds().size() == 1) {
+                deleteFilterEntity();
+                foldersPane.removeFolder(filterEntity.getFolder());
+                foldersPane.refreshFolders();
+                Collection<Window> windows = App.getInstance().getWindowManager().getOpenWindows();
+                for (Window window : windows) {
+                    if (window.equals(WebFilter.this.getFrame())) {
+                        App.getInstance().getWindowManager().close(window);
+                        break;
+                    }
+                }
+                return;
+            }
+            String filterXml = filterEntity.getXml();
+            filterEntity.setXml(WebFilter.UserSetHelper.removeEntities(filterXml, selected));
+            filterEntity.getFolder().setFilterXml(filterEntity.getXml());
+            filterEntity.setFolder(saveFolder((SearchFolder) filterEntity.getFolder()));
+            parseFilterXml();
+            apply(false);
+        }
+    }
+
+    private class AddToCurrSetAction extends AbstractAction {
+
+        protected AddToCurrSetAction() {
+            super("addToCurSet");
+        }
+
+        @Override
+        public String getCaption() {
+            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+        }
+
+        public void actionPerform(Component component) {
+            IFrame frame = WebFilter.this.getFrame();
+            String windowAlias = frame.getId();
+            frame.openLookup(windowAlias, new Window.Lookup.Handler() {
+                public void handleLookup(Collection items) {
+                    String filterXml = filterEntity.getXml();
+                    filterEntity.setXml(WebFilter.UserSetHelper.addEntities(filterXml, items));
+                    filterEntity.getFolder().setFilterXml(filterEntity.getXml());
+                    filterEntity.setFolder(saveFolder((SearchFolder) filterEntity.getFolder()));
+                    parseFilterXml();
+                    apply(false);
+                }
+            }, WindowManager.OpenType.THIS_TAB);
+        }
+    }
+
+    public static class UserSetHelper {
+        public static String generateSetFilter(Set ids, String entityClass, String componentId, String entityAlias) {
+            Document document = DocumentHelper.createDocument();
+            Element root = DocumentHelper.createElement("filter");
+            Element or = root.addElement("and");
+            Element condition = or.addElement("c");
+            condition.addAttribute("name", "set");
+            condition.addAttribute("inExpr", "true");
+            condition.addAttribute("hidden", "true");
+            condition.addAttribute("locCaption", "Set filter");
+            condition.addAttribute("entityAlias", entityAlias);
+            condition.addAttribute("class", entityClass);
+            condition.addAttribute("type", ConditionType.CUSTOM.name());
+            String listOfId = createIdsString(ids);
+            String randomName = RandomStringUtils.randomAlphabetic(10);
+            condition.addText(entityAlias + ".id in (:component$" + componentId + "." + randomName + ")");
+            Element param = condition.addElement("param");
+            param.addAttribute("name", "component$" + componentId + "." + randomName);
+            param.addText(listOfId);
+            document.add(root);
+            return Dom4j.writeDocument(document, true);
+        }
+
+        public static Set parseSet(String text) {
+            Set<String> set = new HashSet<String>();
+            if ("NULL".equals(StringUtils.trimToEmpty(text)))
+                return set;
+            String[] ids = text.split(",");
+            for (String id : ids) {
+                String s = StringUtils.trimToNull(id);
+                if (s != null)
+                    set.add(s);
+            }
+            return set;
+        }
+
+        public static String createIdsString(Set entities) {
+            return createIdsString(new HashSet<String>(), entities);
+        }
+
+        public static String createIdsString(Set<String> current, Collection entities) {
+            Set<String> convertedSet = new HashSet<String>();
+            for (Object entity : entities) {
+                convertedSet.add(((BaseUuidEntity) entity).getId().toString());
+            }
+            current.addAll(convertedSet);
+            if (current.isEmpty()) {
+                return "NULL";
+            }
+            StringBuilder listOfId = new StringBuilder();
+            Iterator it = current.iterator();
+            while (it.hasNext()) {
+                listOfId.append(it.next());
+                if (it.hasNext()) {
+                    listOfId.append(',');
+                }
+            }
+            return listOfId.toString();
+        }
+
+        public static String removeIds(Set<String> current, Collection entities) {
+            Set<String> convertedSet = new HashSet<String>();
+            for (Object entity : entities) {
+                convertedSet.add(((BaseUuidEntity) entity).getId().toString());
+            }
+            current.removeAll(convertedSet);
+            if (current.isEmpty()) {
+                return "NULL";
+            }
+            StringBuilder listOfId = new StringBuilder();
+            Iterator it = current.iterator();
+            while (it.hasNext()) {
+                listOfId.append(it.next());
+                if (it.hasNext()) {
+                    listOfId.append(',');
+                }
+            }
+            return listOfId.toString();
+        }
+
+        public static String removeEntities(String filterXml, Collection ids) {
+            Document document;
+            try {
+                document = DocumentHelper.parseText(filterXml);
+            } catch (DocumentException e) {
+                throw new RuntimeException(e);
+            }
+            Element param = document.getRootElement().element("and").element("c").element("param");
+            String currentIds = param.getTextTrim();
+            Set set = parseSet(currentIds);
+            String listOfIds = removeIds(set, ids);
+            param.setText(listOfIds);
+            return document.asXML();
+        }
+
+        public static String addEntities(String filterXml, Collection ids) {
+            Document document;
+            try {
+                document = DocumentHelper.parseText(filterXml);
+            } catch (DocumentException e) {
+                throw new RuntimeException(e);
+            }
+            Element param = document.getRootElement().element("and").element("c").element("param");
+            String currentIds = param.getTextTrim();
+            Set set = parseSet(currentIds);
+            String listOfIds = createIdsString(set, ids);
+            param.setText(listOfIds);
+            return document.asXML();
         }
     }
 }

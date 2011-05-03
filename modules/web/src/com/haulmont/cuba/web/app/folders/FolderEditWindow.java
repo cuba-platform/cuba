@@ -111,7 +111,8 @@ public class FolderEditWindow extends Window {
         layout.addComponent(sortOrderField);
 
         if (UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global")
-                && folder instanceof SearchFolder) {
+                && folder instanceof SearchFolder
+                && BooleanUtils.isNotTrue(((SearchFolder) folder).getIsSet())) {
             globalCb = new CheckBox(getMessage("folders.folderEditWindow.global"));
             globalCb.setValue(((SearchFolder) folder).getUser() == null);
             layout.addComponent(globalCb);
@@ -119,7 +120,9 @@ public class FolderEditWindow extends Window {
 
         applyDefaultCb = new CheckBox(getMessage("folders.folderEditWindow.applyDefault"));
         applyDefaultCb.setValue(BooleanUtils.isTrue(((AbstractSearchFolder)folder).getApplyDefault()));
-        applyDefaultCb.setVisible(ConfigProvider.getConfig(WebConfig.class).getGenericFilterManualApplyRequired());
+        applyDefaultCb.setVisible(ConfigProvider.getConfig(WebConfig.class).getGenericFilterManualApplyRequired()
+                && folder instanceof SearchFolder
+                && BooleanUtils.isNotTrue(((SearchFolder) folder).getIsSet()));
         layout.addComponent(applyDefaultCb);
 
         HorizontalLayout buttonsLayout = new HorizontalLayout();
@@ -144,10 +147,9 @@ public class FolderEditWindow extends Window {
         okBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 SearchFolder folder = (SearchFolder)FolderEditWindow.this.folder;
-
+                //TODO check empty name
                 folder.setName((String) nameField.getValue());
                 folder.setTabName((String) tabNameField.getValue());
-
 
                 if (sortOrderField.getValue() == null || "".equals(sortOrderField.getValue())) {
                     folder.setSortOrder(null);

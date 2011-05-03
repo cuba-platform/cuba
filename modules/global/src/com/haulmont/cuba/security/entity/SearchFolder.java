@@ -30,6 +30,12 @@ public class SearchFolder extends AbstractSearchFolder {
     @JoinColumn(name = "PRESENTATION_ID")
     private Presentation presentation;
 
+    @Column(name="IS_SET")
+    private Boolean isSet;
+
+    @Column(name="ENTITY_TYPE")
+    private String entityType;
+
     public User getUser() {
         return user;
     }
@@ -54,6 +60,22 @@ public class SearchFolder extends AbstractSearchFolder {
     @Override
     public String getCaption() {
         return MessageProvider.getMessage(MessageUtils.getMessagePack(), name);
+    }
+
+    public Boolean getIsSet(){
+        return isSet;
+    }
+
+    public void setIsSet(Boolean isSet){
+        this.isSet=isSet;
+    }
+
+    public String getEntityType(){
+        return entityType;
+    }
+
+    public void setEntityType(String entityType){
+        this.entityType=entityType;
     }
 
 }

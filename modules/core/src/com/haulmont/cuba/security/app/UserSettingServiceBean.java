@@ -230,6 +230,8 @@ public class UserSettingServiceBean implements UserSettingService
         newFolder.setName(searchFolder.getName());
         newFolder.setTabName(searchFolder.getTabName());
         newFolder.setSortOrder(searchFolder.getSortOrder());
+        newFolder.setIsSet(searchFolder.getIsSet());
+        newFolder.setEntityType(searchFolder.getEntityType());
         SearchFolder copiedFolder = copiedFolders.get(searchFolder.getParent());
         if (searchFolder.getParent() != null) {
             if (copiedFolder != null) {
