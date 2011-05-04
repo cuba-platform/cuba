@@ -12,11 +12,13 @@ package com.haulmont.cuba.security.app;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.lang.BooleanUtils;
@@ -26,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -152,6 +155,9 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
         try {
             String entityName = entity.getClass().getName();
             Set<String> attributes = getLoggedAttributes(entityName, auto);
+            if (attributes != null && attributes.contains("*")) {
+                attributes = getAllAttributes(entity);
+            }
             if (attributes == null) {
                 return;
             }
@@ -193,6 +199,9 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
         try {
             String entityName = entity.getClass().getName();
             Set<String> attributes = getLoggedAttributes(entityName, auto);
+            if (attributes != null && attributes.contains("*")) {
+                attributes = getAllAttributes(entity);
+            }
             if (attributes == null) {
                 return;
             }
@@ -239,6 +248,9 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
         try {
             String entityName = entity.getClass().getName();
             Set<String> attributes = getLoggedAttributes(entityName, auto);
+            if (attributes != null && attributes.contains("*")) {
+                attributes = getAllAttributes(entity);
+            }
             if (attributes == null) {
                 return;
             }
@@ -270,6 +282,15 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
         }
     }
 
+    private Set<String> getAllAttributes(Entity entity) {
+        if (entity == null) return null;
+        Set<String> attributes = new HashSet<String>();
+        for (MetaProperty metaProperty : MetadataProvider.getSession().getClass(entity.getClass()).getProperties()) {
+            attributes.add(metaProperty.getName());
+        }
+        return attributes;
+    }
+
     private UUID getValueId(Object value) {
         if (value instanceof Entity) {
             return ((Entity<UUID>) value).getId();
@@ -287,19 +308,23 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             return Datatypes.getInstance().get(Date.class).format((Date) value);
         } else if (value instanceof Set) {
             StringBuffer sb = new StringBuffer();
+            sb.append("[");
             for (Object obj : (Set) value) {
                 sb.append(stringify(obj)).append(",");
             }
-            if (sb.length() > 0)
+            if (sb.length() > 1)
                 sb.deleteCharAt(sb.length() - 1);
+            sb.append("]");
             return sb.toString();
         } else if (value instanceof List) {
             StringBuffer sb = new StringBuffer();
+            sb.append("[");
             for (Object obj : (List) value) {
                 sb.append(stringify(obj)).append(",");
             }
-            if (sb.length() > 0)
+            if (sb.length() > 1)
                 sb.deleteCharAt(sb.length() - 1);
+            sb.append("]");
             return sb.toString();
         } else {
             return StringUtils.abbreviate(value.toString(), EntityLogAttr.VALUE_LEN - 3);

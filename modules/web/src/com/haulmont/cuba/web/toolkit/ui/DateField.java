@@ -54,6 +54,7 @@ public class
 
     @Override
     protected Date handleUnparsableDateString(String dateString) throws ConversionException {
+        requestRepaint();
         return null;
     }
 
