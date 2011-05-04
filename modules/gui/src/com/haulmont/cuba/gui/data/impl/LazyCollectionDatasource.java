@@ -76,7 +76,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         setSoftDeletion(softDeletion);
     }
 
-    public void addItem(T item) throws UnsupportedOperationException {
+    public synchronized void addItem(T item) throws UnsupportedOperationException {
         checkState();
 
         attachListener((Instance) item);
@@ -97,7 +97,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
 
-    public void removeItem(T item) throws UnsupportedOperationException {
+    public synchronized void removeItem(T item) throws UnsupportedOperationException {
         checkState();
 
         data.remove(item.getId());
@@ -111,7 +111,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
-    public void excludeItem(T item) throws UnsupportedOperationException {
+    public synchronized void excludeItem(T item) throws UnsupportedOperationException {
         checkState();
 
         data.remove(item.getId());
@@ -123,7 +123,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
-    public void includeItem(T item) throws UnsupportedOperationException {
+    public synchronized void includeItem(T item) throws UnsupportedOperationException {
         checkState();
 
         data.put(item.getId(), item);
@@ -133,6 +133,20 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             size++;
 
         forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+    }
+
+    public synchronized void clear() throws UnsupportedOperationException {
+        checkState();
+        for (Object obj : data.entrySet()) {
+            T item = (T) obj;
+            detachListener((Instance) item);
+
+            if (size != null && size > 0)
+                size--;
+
+            forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+        }
+        data.clear();
     }
 
     public void modifyItem(T item) {
@@ -158,7 +172,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
-    public boolean containsItem(K itemId) {
+    public synchronized boolean containsItem(K itemId) {
         return data.containsKey(itemId);
     }
 

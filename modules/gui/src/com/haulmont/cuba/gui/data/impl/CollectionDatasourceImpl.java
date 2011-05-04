@@ -305,6 +305,16 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
+    public synchronized void clear() throws UnsupportedOperationException {
+        checkState();
+        for (Object obj : data.entrySet()) {
+            T item = (T)obj;
+            detachListener((Instance) item);
+            forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+        }
+        data.clear();
+    }
+
     public void modifyItem(T item) {
         if (data.containsKey(item.getId())) {
             if (PersistenceHelper.isNew(item)) {

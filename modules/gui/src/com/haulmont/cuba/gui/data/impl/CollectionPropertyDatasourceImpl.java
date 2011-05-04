@@ -206,7 +206,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             throw new IllegalStateException("Invalid datasource state: " + getState());
     }
 
-    public void addItem(T item) throws UnsupportedOperationException {
+    public synchronized void addItem(T item) throws UnsupportedOperationException {
         checkState();
 
         if (__getCollection() == null) {
@@ -257,7 +257,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
     }
 
-    public void removeItem(T item) throws UnsupportedOperationException {
+    public synchronized void removeItem(T item) throws UnsupportedOperationException {
         checkState();
         __getCollection().remove(item);
         detachListener((Instance) item);
@@ -273,7 +273,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
-    public void excludeItem(T item) throws UnsupportedOperationException {
+    public synchronized void excludeItem(T item) throws UnsupportedOperationException {
         checkState();
         __getCollection().remove(item);
 
@@ -289,7 +289,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
-    public void includeItem(T item) throws UnsupportedOperationException {
+    public synchronized void includeItem(T item) throws UnsupportedOperationException {
         checkState();
         __getCollection().add(item);
 
@@ -303,6 +303,26 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         attachListener((Instance) item);
 
         forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+    }
+
+    public synchronized void clear() throws UnsupportedOperationException {
+        checkState();
+
+        for (Object obj : __getCollection()) {
+            T item = (T) obj;
+
+            MetaProperty inverseProperty = metaProperty.getInverse();
+            if (inverseProperty == null)
+                throw new UnsupportedOperationException("No inverse property for " + metaProperty);
+
+            ((Instance) item).setValue(inverseProperty.getName(), null);
+
+            // detach listener only after setting value to the link property
+            detachListener((Instance) item);
+
+            forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+        }
+        __getCollection().clear();
     }
 
     public void modifyItem(T item) {
@@ -331,7 +351,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
-    public void replaceItem(T item) {
+    public synchronized void replaceItem(T item) {
         Collection<T> collection = __getCollection();
         for (T t : collection) {
             if (t.equals(item)) {
@@ -351,7 +371,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
     }
 
-    public boolean containsItem(K itemId) {
+    public synchronized boolean containsItem(K itemId) {
         Collection<T> coll = __getCollection();
         if (coll == null)
             return false;

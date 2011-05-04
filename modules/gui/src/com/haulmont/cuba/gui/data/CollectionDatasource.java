@@ -71,6 +71,9 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
     /** Include item from the collection. The datasource "modified" state doesn't change. */
     void includeItem(T item) throws UnsupportedOperationException;
 
+    /** Clear data collection. The datasource "modified" state doesn't change. */
+    void clear() throws UnsupportedOperationException;
+
     /** Updates item in the collection if it is already there. The datasource becomes modified. */
     void modifyItem(T item);
 
