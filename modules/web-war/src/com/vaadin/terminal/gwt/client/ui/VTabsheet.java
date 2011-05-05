@@ -39,6 +39,7 @@ public class VTabsheet extends VTabsheetBase {
         private boolean hidden = false;
         private boolean closable = false;
         private Element closeButton;
+        private boolean hasIcon = false;
 
         private String[] actionKeys = null;
 
@@ -49,6 +50,7 @@ public class VTabsheet extends VTabsheetBase {
 
         @Override
         public boolean updateCaption(UIDL uidl) {
+            hasIcon = uidl.hasAttribute(ATTRIBUTE_ICON);
             if (uidl.hasAttribute(ATTRIBUTE_DESCRIPTION)
                     || uidl.hasAttribute(ATTRIBUTE_ERROR)) {
                 TooltipInfo tooltipInfo = new TooltipInfo();
@@ -125,7 +127,7 @@ public class VTabsheet extends VTabsheetBase {
         @Override
         public void setWidth(String width) {
             super.setWidth(width);
-            if (BrowserInfo.get().isIE7()) {
+            if (BrowserInfo.get().isIE7() && hasIcon) {
                 /*
                  * IE7 apparently has problems with calculating width for
                  * floated elements inside a DIV with padding. Set the width
