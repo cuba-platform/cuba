@@ -14,5 +14,8 @@ package com.haulmont.cuba.core.app;
  * Management interface of the {@link FileUploading} MBean.<br>
  */
 public interface FileUploadingMBean {
+
+    String OBJECT_NAME = "haulmont.cuba:service=FileUploading";
+
     String showTempFiles();
 }
