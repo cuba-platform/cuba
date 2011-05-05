@@ -307,12 +307,22 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     public synchronized void clear() throws UnsupportedOperationException {
         checkState();
-        for (Object obj : data.entrySet()) {
-            T item = (T)obj;
+        for (Object obj : data.values()) {
+            T item = (T) obj;
             detachListener((Instance) item);
             forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
         }
         data.clear();
+    }
+
+    public void revert() throws UnsupportedOperationException {
+        if (refreshMode != RefreshMode.NEVER)
+            refresh();
+        else {
+            clear();
+            invalidate();
+            valid();
+        }
     }
 
     public void modifyItem(T item) {

@@ -230,8 +230,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 && !PersistenceHelper.isNew(item)) {
             // do not mark for update existing many-to-many item;
             // item is not updated here, but many-to-many table entry is added
-        }
-        else {
+        } else {
             modified(item);
         }
 
@@ -323,6 +322,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
         }
         __getCollection().clear();
+    }
+
+    public void revert() throws UnsupportedOperationException {
+        refresh();
     }
 
     public void modifyItem(T item) {
