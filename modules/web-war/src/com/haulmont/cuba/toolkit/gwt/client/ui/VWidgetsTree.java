@@ -279,4 +279,8 @@ public class VWidgetsTree extends VTree implements Container {
             }
         }
     }
+
+    public boolean allowTextSelection() {
+        return true;
+    }
 }
