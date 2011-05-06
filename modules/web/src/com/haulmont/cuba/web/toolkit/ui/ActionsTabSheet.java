@@ -57,8 +57,13 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
             if (tab != null) {
                 while (openedComponents.removeElement(tab))
                     openedComponents.removeElement(tab);
-                if ((!openedComponents.empty()) && (selected.equals(tab)))
-                    setSelectedTab(openedComponents.pop());
+                if ((!openedComponents.empty()) && (selected.equals(tab))) {
+                    Component c = openedComponents.pop();
+                    while (!components.contains(c) && !openedComponents.isEmpty())
+                        c = openedComponents.pop();
+
+                    setSelectedTab(c);
+                }
                 closeHandler.onTabClose(this, tab);
             }
         } else {

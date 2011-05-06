@@ -50,6 +50,7 @@ public class WebWindowManager extends WindowManager {
         protected final Map<WindowBreadCrumbs,Stack<Map.Entry<Window,Integer>>> stacks = new HashMap<WindowBreadCrumbs,Stack<Map.Entry<Window,Integer>>>();
         protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
         protected final Map<Window,Integer> windows = new HashMap<Window,Integer>();
+		protected final Map<Layout, WindowBreadCrumbs> fakeTabs = new HashMap<Layout, WindowBreadCrumbs>();
     }
 
     protected App app;
@@ -88,6 +89,10 @@ public class WebWindowManager extends WindowManager {
 
     protected Map<Layout, WindowBreadCrumbs> getTabs() {
         return getCurrentWindowData().tabs;
+    }
+
+	protected Map<Layout, WindowBreadCrumbs> getFakeTabs() {
+        return getCurrentWindowData().fakeTabs;
     }
 
     private Map<Window, WindowOpenMode> getWindowOpenMode() {
@@ -177,7 +182,13 @@ public class WebWindowManager extends WindowManager {
     }
 
     protected Layout findTab(Integer hashCode) {
-        Set<Map.Entry<Layout, WindowBreadCrumbs>> set = getTabs().entrySet();
+        Set<Map.Entry<Layout, WindowBreadCrumbs>> set = getFakeTabs().entrySet();
+        for (Map.Entry<Layout, WindowBreadCrumbs> entry : set) {
+            Window currentWindow = entry.getValue().getCurrentWindow();
+            if (hashCode.equals(getWindowHashCode(currentWindow)))
+                return entry.getKey();
+        }
+        set = getTabs().entrySet();
         for (Map.Entry<Layout, WindowBreadCrumbs> entry : set) {
             Window currentWindow = entry.getValue().getCurrentWindow();
             if (hashCode.equals(getWindowHashCode(currentWindow)))
@@ -235,7 +246,7 @@ public class WebWindowManager extends WindowManager {
                         final Window oldWindow = oldBreadCrumbs.getCurrentWindow();
                         Layout l = new VerticalLayout();
                         appWindow.getTabSheet().replaceComponent(tab, l);
-                        getCurrentWindowData().tabs.put(l, oldBreadCrumbs);
+                        getCurrentWindowData().fakeTabs.put(l, oldBreadCrumbs);
                         oldWindow.closeAndRun("mainMenu", new Runnable() {
                             public void run() {
                                 putToWindowMap(oldWindow, hashCode);
@@ -330,8 +341,6 @@ public class WebWindowManager extends WindowManager {
 
         final Layout layout = createNewTabLayout(window, caption, description, appWindow, breadCrumbs);
 
-        getTabs().put(layout, breadCrumbs);
-
         return layout;
     }
 
@@ -359,9 +368,10 @@ public class WebWindowManager extends WindowManager {
                 tab = findTab(hashCode);
             if (tab != null) {
                 tabSheet.replaceComponent(tab, layout);
+                tabSheet.removeComponent(tab);
                 getTabs().put(layout, (WindowBreadCrumbs) components[0]);
-                removeFromWindowMap(getTabs().get(tab).getCurrentWindow());
-                getTabs().remove(tab);
+                removeFromWindowMap(getFakeTabs().get(tab).getCurrentWindow());
+                getFakeTabs().remove(tab);
                 newTab = tabSheet.getTab(layout);
             } else {
                 newTab = tabSheet.addTab(layout, formatTabCaption(caption, description), null);
