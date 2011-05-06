@@ -63,7 +63,7 @@ public class WebWindowManager extends WindowManager {
     protected Map<String, Integer> debugIds = new HashMap<String, Integer>();
 
     private static Log log = LogFactory.getLog(WebWindowManager.class);
-    
+
     private boolean disableSavingScreenHistory;
     private ScreenHistorySupport screenHistorySupport = new ScreenHistorySupport();
 
@@ -176,10 +176,11 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
-    protected Layout findTab(Window window) {
+    protected Layout findTab(Integer hashCode) {
         Set<Map.Entry<Layout, WindowBreadCrumbs>> set = getTabs().entrySet();
         for (Map.Entry<Layout, WindowBreadCrumbs> entry : set) {
-            if (entry.getValue().getCurrentWindow().equals(window))
+            Window currentWindow = entry.getValue().getCurrentWindow();
+            if (hashCode.equals(getWindowHashCode(currentWindow)))
                 return entry.getKey();
         }
         return null;
@@ -201,12 +202,12 @@ public class WebWindowManager extends WindowManager {
         window.setCaption(caption);
         window.setDescription(description);
 
-        boolean newTab=true;
+
         switch (type) {
             case NEW_TAB:
                 closeStartupScreen(appWindow);
                 if (AppWindow.Mode.SINGLE.equals(appWindow.getMode())) {
-                    newTab=false;
+
                     VerticalLayout mainLayout = appWindow.getMainLayout();
                     if (mainLayout.getComponentIterator().hasNext()) {
                         Layout oldLayout = (Layout) mainLayout.getComponentIterator().next();
@@ -221,15 +222,31 @@ public class WebWindowManager extends WindowManager {
                             return;
                         }
                     }
-                }
-                Layout tab = findTab(window);
-                if (tab!=null) {
-                    appWindow.getTabSheet().setSelectedTab(tab);
-                    component = tab;
-                    newTab=false;
                 } else {
-                    component = showWindowNewTab(window, caption, description, appWindow);
+                    final Integer hashCode = getWindowHashCode(window);
+                    Layout tab = null;
+                    if (hashCode != null)
+                        tab = findTab(hashCode);
+                    Layout oldLayout = tab;
+                    final WindowBreadCrumbs oldBreadCrumbs = getTabs().get(oldLayout);
+
+                    if (oldBreadCrumbs != null &&
+                            getCurrentWindowData().windowOpenMode.containsKey(oldBreadCrumbs.getCurrentWindow().<IFrame>getFrame())) {
+                        final Window oldWindow = oldBreadCrumbs.getCurrentWindow();
+                        Layout l = new VerticalLayout();
+                        appWindow.getTabSheet().replaceComponent(tab, l);
+                        getCurrentWindowData().tabs.put(l, oldBreadCrumbs);
+                        oldWindow.closeAndRun("mainMenu", new Runnable() {
+                            public void run() {
+                                putToWindowMap(oldWindow, hashCode);
+                                oldBreadCrumbs.addWindow(oldWindow);
+                                showWindow(window, caption, description, OpenType.NEW_TAB);
+                            }
+                        });
+                        return;
+                    }
                 }
+				 component = showWindowNewTab(window, caption, description, appWindow);
                 break;
 
             case THIS_TAB:
@@ -254,7 +271,7 @@ public class WebWindowManager extends WindowManager {
             getWindowOpenMode().put(window, openMode);
         }
 
-        afterShowWindow(window, newTab || AppWindow.Mode.SINGLE.equals(appWindow.getMode()));
+        afterShowWindow(window);
     }
 
     private void closeStartupScreen(AppWindow appWindow) {
@@ -335,7 +352,21 @@ public class WebWindowManager extends WindowManager {
         if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
             TabSheet tabSheet = appWindow.getTabSheet();
             layout.setMargin(true);
-            TabSheet.Tab newTab = tabSheet.addTab(layout, formatTabCaption(caption, description), null);
+            TabSheet.Tab newTab;
+            Integer hashCode = getWindowHashCode(window);
+            Layout tab = null;
+            if (hashCode != null)
+                tab = findTab(hashCode);
+            if (tab != null) {
+                tabSheet.replaceComponent(tab, layout);
+                getTabs().put(layout, (WindowBreadCrumbs) components[0]);
+                removeFromWindowMap(getTabs().get(tab).getCurrentWindow());
+                getTabs().remove(tab);
+                newTab = tabSheet.getTab(layout);
+            } else {
+                newTab = tabSheet.addTab(layout, formatTabCaption(caption, description), null);
+                getTabs().put(layout, (WindowBreadCrumbs) components[0]);
+            }
             newTab.setDescription(formatTabDescription(caption, description));
             if (tabSheet instanceof AppWindow.AppTabSheet) {
                 newTab.setClosable(true);
@@ -351,6 +382,7 @@ public class WebWindowManager extends WindowManager {
             }
             tabSheet.setSelectedTab(layout);
         } else {
+			getTabs().put(layout, (WindowBreadCrumbs) components[0]);
             layout.addStyleName("single");
             layout.setMargin(true);
             layout.setWidth("99.9%");
@@ -923,6 +955,10 @@ public class WebWindowManager extends WindowManager {
 
     protected void removeFromWindowMap(Window window) {
         getCurrentWindowData().windows.remove(window);
+    }
+
+    private Integer getWindowHashCode(Window window){
+       return getCurrentWindowData().windows.get(window);
     }
 
     @Override

@@ -299,13 +299,7 @@ public abstract class WindowManager implements Serializable {
         params = createParametersMap(windowInfo, params);
         String template = windowInfo.getTemplate();
 
-        Window window = getWindow(hashCode);
-        if (window != null) {
-            String caption = loadCaption(window, params);
-            String description = loadDescription(window, params);
-            showWindow(window, caption, description, openType);
-            return (T) window;
-        }
+        Window window;
 
         if (template != null) {
             //noinspection unchecked
@@ -313,8 +307,8 @@ public abstract class WindowManager implements Serializable {
             window.setId(windowInfo.getId());
             String caption = loadCaption(window, params);
             String description = loadDescription(window, params);
-            showWindow(window, caption, description, openType);
             putToWindowMap(window, hashCode);
+            showWindow(window, caption, description, openType);
             return (T) window;
         } else {
             Class screenClass = windowInfo.getScreenClass();
@@ -598,9 +592,9 @@ public abstract class WindowManager implements Serializable {
 
     protected abstract void showFrame(Component parent, IFrame frame);
 
-    protected void afterShowWindow(Window window, boolean newTab) {
+    protected void afterShowWindow(Window window) {
         if (window.getContext() != null &&
-                !BooleanUtils.isTrue((Boolean) window.getContext().getParams().get("disableApplySettings")) && newTab) {
+                !BooleanUtils.isTrue((Boolean) window.getContext().getParams().get("disableApplySettings"))) {
             window.applySettings(new SettingsImpl(window.getId()));
         }
 
