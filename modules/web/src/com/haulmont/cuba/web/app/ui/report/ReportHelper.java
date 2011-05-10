@@ -12,7 +12,6 @@ package com.haulmont.cuba.web.app.ui.report;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataHelper;
@@ -30,6 +29,7 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -91,24 +91,35 @@ public class ReportHelper {
     }
 
     public static void printReport(Report report, Map<String, Object> params) {
+        printReport(report, report.getName(), params);
+    }
+
+    public static void printReport(Report report, String reportTitle, Map<String, Object> params) {
         // select default template
         ReportTemplate template = report.getDefaultTemplate();
         // generate
         if (template != null) {
             ReportOutputType reportOutputType = template.getReportOutputType();
             ExportFormat exportFormat = exportFormats.get(reportOutputType);
-            printReport(report, template.getTemplateFileDescriptor(), params, exportFormat);
+            printReport(report, reportTitle, params, exportFormat);
         } else
             throw new NullPointerException("Report hasn't templates");
     }
 
-    private static void printReport(Report report, FileDescriptor file, Map<String, Object> params, ExportFormat exportFormat) {
+    private static void printReport(Report report, Map<String, Object> params, ExportFormat exportFormat) {
+        printReport(report, report.getName(), params, exportFormat);
+    }
+
+    private static void printReport(Report report, String reportTitle, Map<String, Object> params, ExportFormat exportFormat) {
         try {
+            if (StringUtils.isEmpty(reportTitle))
+                reportTitle = report.getName();
+
             ReportService srv = ServiceLocator.lookup(ReportService.NAME);
             byte[] byteArr = srv.createReport(report, params);
 
             WebExportDisplay exportDisplay = new WebExportDisplay();
-            exportDisplay.show(new ByteArrayDataProvider(byteArr), report.getName(), exportFormat);
+            exportDisplay.show(new ByteArrayDataProvider(byteArr), reportTitle, exportFormat);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
