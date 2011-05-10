@@ -10,7 +10,6 @@
  */
 package com.haulmont.cuba.report.formatters;
 
-import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.Orientation;
 import com.haulmont.cuba.report.ReportOutputType;
@@ -18,15 +17,17 @@ import com.haulmont.cuba.report.exception.ReportFormatterException;
 import com.haulmont.cuba.report.formatters.xls.Area;
 import com.haulmont.cuba.report.formatters.xls.AreaAlign;
 import com.haulmont.cuba.report.formatters.xls.Cell;
+import com.haulmont.cuba.report.formatters.xls.XlsFontCache;
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.model.HSSFFormulaParser;
-import org.apache.poi.hssf.model.Sheet;
 import org.apache.poi.hssf.record.EscherAggregate;
 import org.apache.poi.hssf.record.PaletteRecord;
-import org.apache.poi.hssf.record.formula.AreaPtg;
-import org.apache.poi.hssf.record.formula.Ptg;
-import org.apache.poi.hssf.record.formula.RefPtg;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.formula.ptg.AreaPtg;
+import org.apache.poi.ss.formula.ptg.Ptg;
+import org.apache.poi.ss.formula.ptg.RefPtg;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.AreaReference;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
@@ -42,6 +43,8 @@ import static com.haulmont.cuba.report.formatters.xls.HSSFRangeHelper.*;
 public class XLSFormatter extends AbstractFormatter {
     private HSSFWorkbook templateWorkbook;
     private HSSFSheet currentTemplateSheet = null;
+
+    private XlsFontCache fontCache = new XlsFontCache();
 
     private int rownum;
     private int colnum;
@@ -70,6 +73,7 @@ public class XLSFormatter extends AbstractFormatter {
         templateWorkbook = new HSSFWorkbook(getFileInputStream(templateFile));
         resultWorkbook = new HSSFWorkbook();
 
+        cloneWorkbookDataFormats();
         cloneWorkbookStyles();
         copyAllPictures();
 
@@ -79,6 +83,9 @@ public class XLSFormatter extends AbstractFormatter {
 
         rownum = 0;
         colnum = 0;
+    }
+
+    private void cloneWorkbookDataFormats() {
     }
 
     public void createDocument(Band rootBand, ReportOutputType outputType, OutputStream outputStream) {
@@ -408,17 +415,66 @@ public class XLSFormatter extends AbstractFormatter {
     private void copyCellFromTemplate(HSSFCell templateCell, HSSFRow resultRow, int resultColumn, Band band) {
         if (templateCell != null) {
             HSSFCell resultCell = resultRow.createCell(resultColumn);
-            HSSFCellStyle resultStyle = resultWorkbook.createCellStyle();
-            resultStyle.cloneStyleFrom(templateCell.getCellStyle());
-            resultCell.setCellStyle(resultStyle);
 
-            if (templateCell.getCellType() == HSSFCell.CELL_TYPE_STRING && isOneValueCell(templateCell))
+            // trouble with maximum font count
+            // try to use font cache
+            HSSFCellStyle templateStyle = templateCell.getCellStyle();
+            HSSFCellStyle resultStyle = copyCellStyle(templateStyle);
+            resultCell.setCellStyle(resultStyle);
+//            resultCell.setCellType(HSSFCell.CELL_TYPE_STRING);
+
+            int cellType = templateCell.getCellType();
+            if (cellType == HSSFCell.CELL_TYPE_STRING && isOneValueCell(templateCell))
                 updateValueCell(band, templateCell, resultCell);
-            else if (templateCell.getCellType() == HSSFCell.CELL_TYPE_FORMULA)
+            else if (cellType == HSSFCell.CELL_TYPE_FORMULA)
                 resultCell.setCellFormula(inlineBandDataToCellString(templateCell, band));
-            else
+            else if (cellType == HSSFCell.CELL_TYPE_STRING)
                 resultCell.setCellValue(new HSSFRichTextString(inlineBandDataToCellString(templateCell, band)));
+            else
+                resultCell.setCellValue(inlineBandDataToCellString(templateCell, band));
         }
+    }
+
+    private HSSFCellStyle copyCellStyle(HSSFCellStyle templateStyle) {
+        HSSFCellStyle resultStyle = resultWorkbook.createCellStyle();
+        resultStyle.cloneStyleFrom(templateStyle);
+        /*String dataFormat = templateStyle.getDataFormatString().toLowerCase();
+
+        if (!"general".equals(dataFormat)) {
+            resultStyle.setDataFormat(templateStyle.getDataFormat());
+        } else
+            resultStyle.setDataFormat((short) 0);
+        resultStyle.setAlignment(templateStyle.getAlignment());
+
+        resultStyle.setBorderBottom(templateStyle.getBorderBottom());
+        resultStyle.setBorderLeft(templateStyle.getBorderLeft());
+        resultStyle.setBorderRight(templateStyle.getBorderRight());
+        resultStyle.setBorderTop(templateStyle.getBorderTop());
+
+        resultStyle.setBottomBorderColor(templateStyle.getBottomBorderColor());
+        resultStyle.setLeftBorderColor(templateStyle.getLeftBorderColor());
+        resultStyle.setRightBorderColor(templateStyle.getRightBorderColor());
+        resultStyle.setTopBorderColor(templateStyle.getTopBorderColor());
+
+        resultStyle.setFillPattern(templateStyle.getFillPattern());
+        resultStyle.setFillBackgroundColor(templateStyle.getFillBackgroundColor());
+        resultStyle.setFillForegroundColor(templateStyle.getFillForegroundColor());
+
+        resultStyle.setHidden(templateStyle.getHidden());
+        resultStyle.setIndention(templateStyle.getIndention());
+        resultStyle.setLocked(templateStyle.getLocked());
+        resultStyle.setRotation(templateStyle.getRotation());
+        resultStyle.setWrapText(templateStyle.getWrapText());
+        resultStyle.setVerticalAlignment(templateStyle.getVerticalAlignment());
+
+        if (StringUtils.isNotEmpty(templateStyle.getUserStyleName()))
+            resultStyle.setUserStyleName(templateStyle.getUserStyleName());
+        HSSFFont templateFont = templateStyle.getFont(templateWorkbook);*/
+        HSSFFont font = resultStyle.getFont(resultWorkbook);
+
+        resultStyle.setFont(fontCache.processFont(font/*, templateFont*/));
+
+        return resultStyle;
     }
 
     /**
