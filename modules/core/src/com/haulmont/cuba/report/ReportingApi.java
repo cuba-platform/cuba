@@ -22,11 +22,11 @@ import java.util.Map;
 public interface ReportingApi {
     String NAME = "report_ReportingApi";
 
-    byte[] createReport(Report report, Map<String, Object> params) throws IOException;
+    ReportOutputDocument createReport(Report report, Map<String, Object> params) throws IOException;
 
-    byte[] createReport(Report report, String templateCode, Map<String, Object> params) throws IOException;
+    ReportOutputDocument createReport(Report report, String templateCode, Map<String, Object> params) throws IOException;
 
-    byte[] createReport(Report report, ReportTemplate template, Map<String, Object> params) throws IOException;
+    ReportOutputDocument createReport(Report report, ReportTemplate template, Map<String, Object> params) throws IOException;
 
     Report reloadReport(Report report) ;
 

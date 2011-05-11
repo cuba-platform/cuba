@@ -38,27 +38,34 @@ public class ReportingBean implements ReportingApi {
     private ThreadLocal<Map<String, Object>> params = new ThreadLocal<Map<String, Object>>();
     private ThreadLocal<Set<String>> bandDefinitionNames = new ThreadLocal<Set<String>>();
 
-    public byte[] createReport(Report report, Map<String, Object> params) throws IOException {
+    public ReportOutputDocument createReport(Report report, Map<String, Object> params) throws IOException {
+        report = reloadEntity(report, "report.edit");
         ReportTemplate reportTemplate = report.getDefaultTemplate();
-        return createReport(report, reportTemplate, params);
+        return createReportDocument(report, reportTemplate, params);
     }
 
-    public byte[] createReport(Report report, String templateCode, Map<String, Object> params) throws IOException {
+    public ReportOutputDocument createReport(Report report, String templateCode, Map<String, Object> params) throws IOException {
+        report = reloadEntity(report, "report.edit");
         ReportTemplate template = report.getTemplateByCode(templateCode);
-        return createReport(report, template, params);
+        return createReportDocument(report, template, params);
     }
 
-    public byte[] createReport(Report report, ReportTemplate template, Map<String, Object> params) throws IOException {
+    public ReportOutputDocument createReport(Report report, ReportTemplate template, Map<String, Object> params) throws IOException {
+        report = reloadEntity(report, "report.edit");
+        return createReportDocument(report, template, params);
+    }
+
+    private ReportOutputDocument createReportDocument(Report report, ReportTemplate template, Map<String, Object> params) throws IOException {
         if (template == null)
             throw new NullPointerException("Report template is null");
 
         try {
             this.params.set(params);
             this.bandDefinitionNames.set(new HashSet<String>());
-            report = reloadEntity(report, "report.edit");
 
             if (template.getCustomFlag()) {
-                return new CustomFormatter(report, template, params).createDocument(null);
+                byte[] content = new CustomFormatter(report, template, params).createDocument(null);
+                return new ReportOutputDocument(report, template.getReportOutputType(), content);
             }
             BandDefinition rootBandDefinition = report.getRootBandDefinition();
 
@@ -90,7 +97,8 @@ public class ReportingBean implements ReportingApi {
             } else
                 throw new UnsupportedFormatException();
 
-            return resultStream.toByteArray();
+            byte[] result = resultStream.toByteArray();
+            return new ReportOutputDocument(report, template.getReportOutputType(), result);
         } catch (ReportFormatterException ex) {
             throw ex;
         } catch (Exception e) {
@@ -132,7 +140,7 @@ public class ReportingBean implements ReportingApi {
                                               Map<String, Object> params, String fileName) throws IOException {
         report = reloadEntity(report, "_local");
 
-        byte[] reportData = createReport(report, template, params);
+        byte[] reportData = createReport(report, template, params).getContent();
 
         FileDescriptor file = new FileDescriptor();
         file.setCreateDate(TimeProvider.currentTimestamp());
@@ -255,6 +263,7 @@ public class ReportingBean implements ReportingApi {
     /**
      * Create band from band definition
      * Perform query from definition and create band from each result row. Do it recursive down
+     *
      * @param definition Band definition
      * @param parentBand Parent band
      * @return Data bands

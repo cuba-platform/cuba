@@ -23,17 +23,17 @@ import java.util.Map;
 @Service(ReportService.NAME)
 public class ReportServiceBean implements ReportService {
 
-    public byte[] createReport(Report report, Map<String, Object> params) throws IOException {
+    public ReportOutputDocument createReport(Report report, Map<String, Object> params) throws IOException {
         ReportingApi uploadingApi = Locator.lookup(ReportingApi.NAME);
         return uploadingApi.createReport(report, params);
     }
 
-    public byte[] createReport(Report report, String templateCode, Map<String, Object> params) throws IOException {
+    public ReportOutputDocument createReport(Report report, String templateCode, Map<String, Object> params) throws IOException {
         ReportingApi uploadingApi = Locator.lookup(ReportingApi.NAME);
         return uploadingApi.createReport(report, templateCode, params);
     }
 
-    public byte[] createReport(Report report, ReportTemplate template, Map<String, Object> params) throws IOException {
+    public ReportOutputDocument createReport(Report report, ReportTemplate template, Map<String, Object> params) throws IOException {
         ReportingApi uploadingApi = Locator.lookup(ReportingApi.NAME);
         return uploadingApi.createReport(report, template, params);
     }

@@ -13,7 +13,7 @@ package com.haulmont.cuba.report.app;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.report.Report;
-import com.haulmont.cuba.report.ReportOutputType;
+import com.haulmont.cuba.report.ReportOutputDocument;
 import com.haulmont.cuba.report.ReportTemplate;
 
 import java.io.IOException;
@@ -23,14 +23,14 @@ import java.util.Map;
 public interface ReportService {
     String NAME = "report_ReportService";
 
-    byte[] createReport(Report report,
-                        Map<String, Object> params) throws IOException;
+    ReportOutputDocument createReport(Report report,
+                                      Map<String, Object> params) throws IOException;
 
-    byte[] createReport(Report report, String templateCode,
-                        Map<String, Object> params) throws IOException;
+    ReportOutputDocument createReport(Report report, String templateCode,
+                                      Map<String, Object> params) throws IOException;
 
-    byte[] createReport(Report report, ReportTemplate template,
-                        Map<String, Object> params) throws IOException;
+    ReportOutputDocument createReport(Report report, ReportTemplate template,
+                                      Map<String, Object> params) throws IOException;
 
     FileDescriptor createAndSaveReport(Report report,
                                        Map<String, Object> params, String fileName) throws IOException;
@@ -57,7 +57,8 @@ public interface ReportService {
      *
      * @param reports Collection of Report objects to be exported.
      * @return ZIP byte array with zip archives inside.
-     * @throws com.haulmont.cuba.core.global.FileStorageException Exception in file system
+     * @throws com.haulmont.cuba.core.global.FileStorageException
+     *                             Exception in file system
      * @throws java.io.IOException Exception in I/O streams
      */
     byte[] exportReports(Collection<Report> reports) throws IOException, FileStorageException;
@@ -67,7 +68,7 @@ public interface ReportService {
      *
      * @param zipBytes ZIP archive as a byte array.
      * @return Collection of imported reports.
-     * @throws IOException Exception in I/O streams
+     * @throws IOException          Exception in I/O streams
      * @throws FileStorageException Exception in file system
      */
     Collection<Report> importReports(byte[] zipBytes) throws IOException, FileStorageException;
