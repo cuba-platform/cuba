@@ -11,10 +11,7 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.*;
 
 import javax.annotation.ManagedBean;
 import java.io.*;
@@ -43,7 +40,7 @@ public class FileUploading extends ManagementBean implements FileUploadingApi, F
         checkNotNull(data, "No file content");
 
         String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
-        UUID uuid = UUID.randomUUID();
+        UUID uuid = UuidProvider.createUuid();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
         try {
@@ -78,7 +75,7 @@ public class FileUploading extends ManagementBean implements FileUploadingApi, F
         if (stream == null)
             throw new NullPointerException("Null input stream for save file");
         String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
-        UUID uuid = UUID.randomUUID();
+        UUID uuid = UuidProvider.createUuid();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
         if (file.exists()) {
@@ -113,7 +110,7 @@ public class FileUploading extends ManagementBean implements FileUploadingApi, F
     }
 
     public UUID createEmptyFile() throws FileStorageException {
-        UUID uuid = UUID.randomUUID();
+        UUID uuid = UuidProvider.createUuid();
         String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
@@ -134,7 +131,7 @@ public class FileUploading extends ManagementBean implements FileUploadingApi, F
     }
 
     public UUID getNewDescriptor() throws FileStorageException {
-        UUID uuid = UUID.randomUUID();
+        UUID uuid = UuidProvider.createUuid();
         String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());

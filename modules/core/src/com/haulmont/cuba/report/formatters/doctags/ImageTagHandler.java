@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.report.formatters.doctags;
 
+import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.report.formatters.oo.OOOConnection;
 import com.haulmont.cuba.report.formatters.oo.OfficeComponent;
 import com.sun.star.awt.Size;
@@ -92,7 +93,7 @@ public class ImageTagHandler implements TagHandler {
         Object oImage = xFactory.createInstance(TEXT_GRAPHIC_OBJECT);
         XNameContainer xContainer = asXNameContainer(oBitmapTable);
 
-        String fieldName = UUID.randomUUID().toString();
+        String fieldName = UuidProvider.createUuid().toString();
         xContainer.insertByName(fieldName, imageUrl);
         String internalImageURL = (String) xContainer.getByName(fieldName);
 

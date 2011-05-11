@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.report.formatters.doctags;
 
+import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.report.formatters.oo.OfficeComponent;
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.document.XDocumentInsertable;
@@ -68,7 +69,7 @@ public class HtmlContentTagHandler implements TagHandler {
 
     private void insertHTML(XText destination, XTextRange textRange, String htmlContent)
             throws Exception {
-        File tempFile = File.createTempFile(UUID.randomUUID().toString(), ".htm");
+        File tempFile = File.createTempFile(UuidProvider.createUuid().toString(), ".htm");
 
         StringBuilder contentBuilder = new StringBuilder();
         contentBuilder.append(ENCODING_HEADER);
