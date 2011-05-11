@@ -106,6 +106,29 @@ public class ReportHelper {
             throw new NullPointerException("Report hasn't templates");
     }
 
+    public static void printReport(Report report, String templateCode, String reportTitle, Map<String, Object> params) {
+        try {
+            if (StringUtils.isEmpty(reportTitle))
+                reportTitle = report.getName();
+
+            ReportTemplate template = report.getTemplateByCode(templateCode);
+            if (template != null) {
+                ReportOutputType reportOutputType = template.getReportOutputType();
+                ExportFormat exportFormat = exportFormats.get(reportOutputType);
+
+                ReportService srv = ServiceLocator.lookup(ReportService.NAME);
+                byte[] byteArr = srv.createReport(report, template, params);
+
+                WebExportDisplay exportDisplay = new WebExportDisplay();
+                exportDisplay.show(new ByteArrayDataProvider(byteArr), reportTitle, exportFormat);
+            } else
+                throw new NullPointerException("Specified template could not be found");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static void printReport(Report report, Map<String, Object> params, ExportFormat exportFormat) {
         printReport(report, report.getName(), params, exportFormat);
     }

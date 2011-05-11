@@ -91,11 +91,11 @@ public class Report extends HardDeleteEntity {
         this.inputParameters = inputParameters;
     }
 
-    public List<ReportValueFormat> getValuesFormats(){
+    public List<ReportValueFormat> getValuesFormats() {
         return valuesFormats;
     }
 
-    public void setValuesFormats(List<ReportValueFormat> valuesFormats){
+    public void setValuesFormats(List<ReportValueFormat> valuesFormats) {
         this.valuesFormats = valuesFormats;
     }
 
@@ -133,6 +133,7 @@ public class Report extends HardDeleteEntity {
 
     /**
      * Get default template for report
+     *
      * @return Template
      */
     public ReportTemplate getDefaultTemplate(){
@@ -152,18 +153,14 @@ public class Report extends HardDeleteEntity {
         return template;
     }
 
-    public ReportTemplate getTemplateByCode(String templateCode){
+    public ReportTemplate getTemplateByCode(String templateCode) {
         ReportTemplate template = null;
         if (templates != null) {
-            if (templates.size() == 1)
-                template = templates.get(0);
-            else {
-                Iterator<ReportTemplate> iter = templates.iterator();
-                while (iter.hasNext() && template == null) {
-                    ReportTemplate temp = iter.next();
-                    if (StringUtils.equalsIgnoreCase(temp.getCode(), templateCode)){
-                        template = temp;
-                    }
+            Iterator<ReportTemplate> iter = templates.iterator();
+            while (iter.hasNext() && template == null) {
+                ReportTemplate temp = iter.next();
+                if (StringUtils.equalsIgnoreCase(temp.getCode(), templateCode)) {
+                    template = temp;
                 }
             }
         }
