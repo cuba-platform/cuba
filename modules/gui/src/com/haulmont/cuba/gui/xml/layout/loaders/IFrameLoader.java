@@ -12,9 +12,12 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
@@ -30,8 +33,19 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
-        final String src = element.attributeValue("src");
-
+        String src = element.attributeValue("src");
+        final String screenId = element.attributeValue("screen");
+        if (src == null && screenId == null) {
+            throw new RuntimeException("Either src or screen must be specified for <iframe>");
+        }
+        if (src == null) {
+            final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+            WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
+            src = windowInfo.getTemplate();
+            if (src == null) {
+                throw new RuntimeException("Screen " + screenId + " doesn't have template path configured");
+            }
+        }
         final LayoutLoader loader = new LayoutLoader(context, factory, LayoutLoaderConfig.getFrameLoaders());
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
