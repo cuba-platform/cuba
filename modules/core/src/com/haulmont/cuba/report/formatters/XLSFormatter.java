@@ -18,15 +18,14 @@ import com.haulmont.cuba.report.formatters.xls.Area;
 import com.haulmont.cuba.report.formatters.xls.AreaAlign;
 import com.haulmont.cuba.report.formatters.xls.Cell;
 import com.haulmont.cuba.report.formatters.xls.XlsFontCache;
-import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.model.HSSFFormulaParser;
 import org.apache.poi.hssf.record.EscherAggregate;
 import org.apache.poi.hssf.record.PaletteRecord;
+import org.apache.poi.hssf.record.formula.AreaPtg;
+import org.apache.poi.hssf.record.formula.Ptg;
+import org.apache.poi.hssf.record.formula.RefPtg;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.formula.ptg.AreaPtg;
-import org.apache.poi.ss.formula.ptg.Ptg;
-import org.apache.poi.ss.formula.ptg.RefPtg;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.AreaReference;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -437,42 +436,10 @@ public class XLSFormatter extends AbstractFormatter {
 
     private HSSFCellStyle copyCellStyle(HSSFCellStyle templateStyle) {
         HSSFCellStyle resultStyle = resultWorkbook.createCellStyle();
+
         resultStyle.cloneStyleFrom(templateStyle);
-        /*String dataFormat = templateStyle.getDataFormatString().toLowerCase();
-
-        if (!"general".equals(dataFormat)) {
-            resultStyle.setDataFormat(templateStyle.getDataFormat());
-        } else
-            resultStyle.setDataFormat((short) 0);
-        resultStyle.setAlignment(templateStyle.getAlignment());
-
-        resultStyle.setBorderBottom(templateStyle.getBorderBottom());
-        resultStyle.setBorderLeft(templateStyle.getBorderLeft());
-        resultStyle.setBorderRight(templateStyle.getBorderRight());
-        resultStyle.setBorderTop(templateStyle.getBorderTop());
-
-        resultStyle.setBottomBorderColor(templateStyle.getBottomBorderColor());
-        resultStyle.setLeftBorderColor(templateStyle.getLeftBorderColor());
-        resultStyle.setRightBorderColor(templateStyle.getRightBorderColor());
-        resultStyle.setTopBorderColor(templateStyle.getTopBorderColor());
-
-        resultStyle.setFillPattern(templateStyle.getFillPattern());
-        resultStyle.setFillBackgroundColor(templateStyle.getFillBackgroundColor());
-        resultStyle.setFillForegroundColor(templateStyle.getFillForegroundColor());
-
-        resultStyle.setHidden(templateStyle.getHidden());
-        resultStyle.setIndention(templateStyle.getIndention());
-        resultStyle.setLocked(templateStyle.getLocked());
-        resultStyle.setRotation(templateStyle.getRotation());
-        resultStyle.setWrapText(templateStyle.getWrapText());
-        resultStyle.setVerticalAlignment(templateStyle.getVerticalAlignment());
-
-        if (StringUtils.isNotEmpty(templateStyle.getUserStyleName()))
-            resultStyle.setUserStyleName(templateStyle.getUserStyleName());
-        HSSFFont templateFont = templateStyle.getFont(templateWorkbook);*/
         HSSFFont font = resultStyle.getFont(resultWorkbook);
-
-        resultStyle.setFont(fontCache.processFont(font/*, templateFont*/));
+        resultStyle.setFont(fontCache.processFont(font));
 
         return resultStyle;
     }
