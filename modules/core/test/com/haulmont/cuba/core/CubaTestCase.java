@@ -18,6 +18,7 @@ import com.haulmont.cuba.testsupport.TestDataSource;
 import com.haulmont.cuba.testsupport.TestTransactionManager;
 import com.haulmont.cuba.testsupport.TestUserTransaction;
 import junit.framework.TestCase;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
@@ -27,6 +28,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 
 import javax.naming.NamingException;
 import java.io.File;
@@ -68,8 +71,6 @@ public abstract class CubaTestCase extends TestCase
         StrTokenizer tokenizer = new StrTokenizer(configProperty);
 
         PersistenceConfigProcessor processor = new PersistenceConfigProcessor();
-
-        processor.setBaseDir(AppContext.getProperty("cuba.confDir"));
         processor.setSourceFiles(tokenizer.getTokenList());
 
         String dataDir = AppContext.getProperty("cuba.dataDir");
@@ -81,21 +82,22 @@ public abstract class CubaTestCase extends TestCase
     protected void initAppProperties() {
         final Properties properties = new Properties();
 
-        List<String> fileNames = getTestAppProperties();
-        for (String fileName : fileNames) {
-            File file = new File(System.getProperty("user.dir") + fileName);
-            InputStream stream = null;
-            try {
-                stream = new FileInputStream(file);
-                properties.load(stream);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
+        List<String> locations = getTestAppProperties();
+        DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+        for (String location : locations) {
+            Resource resource = resourceLoader.getResource(location);
+            if (resource.exists()) {
+                InputStream stream = null;
                 try {
-                    if (stream != null) stream.close();
+                    stream = resource.getInputStream();
+                    properties.load(stream);
                 } catch (IOException e) {
-                    //
+                    throw new RuntimeException(e);
+                } finally {
+                    IOUtils.closeQuietly(stream);
                 }
+            } else {
+                log.warn("Resource " + location + " not found, ignore it");
             }
         }
 
@@ -112,6 +114,8 @@ public abstract class CubaTestCase extends TestCase
         }
 
         File dir;
+        dir = new File(AppContext.getProperty("cuba.confDir"));
+        dir.mkdirs();
         dir = new File(AppContext.getProperty("cuba.logDir"));
         dir.mkdirs();
         dir = new File(AppContext.getProperty("cuba.tempDir"));
@@ -122,8 +126,8 @@ public abstract class CubaTestCase extends TestCase
 
     protected List<String> getTestAppProperties() {
         String[] files = {
-                "/modules/core/src-conf/app.properties",
-                "/modules/core/test/test-app.properties",
+                "classpath:cuba-app.properties",
+                "classpath:test-app.properties",
         };
         return Arrays.asList(files);
     }
@@ -131,22 +135,16 @@ public abstract class CubaTestCase extends TestCase
     protected void initAppContext() {
         String configProperty = AppContext.getProperty(AppContextLoader.SPRING_CONTEXT_CONFIG);
 
-        String baseDir = AppContext.getProperty("cuba.confDir");
-
         StrTokenizer tokenizer = new StrTokenizer(configProperty);
-        String[] tokenArray = tokenizer.getTokenArray();
-        List<String> locations = new ArrayList<String>(tokenArray.length + 1);
-        for (int i = 0; i < tokenArray.length; i++) {
-            locations.add(baseDir + "/" + tokenArray[i]);
-        }
+        List<String> locations = tokenizer.getTokenList();
         locations.add(getTestSpringConfig());
 
-        ApplicationContext appContext = new FileSystemXmlApplicationContext(locations.toArray(new String[locations.size()]));
+        ApplicationContext appContext = new ClassPathXmlApplicationContext(locations.toArray(new String[locations.size()]));
         AppContext.setApplicationContext(appContext);
     }
 
     protected String getTestSpringConfig() {
-        return "/modules/core/test/test-spring.xml";
+        return "classpath:test-spring.xml";
     }
 
     protected void initTxManager() throws NamingException {

@@ -417,6 +417,9 @@ public class CubaApplicationServlet extends ApplicationServlet {
         if (releaseTimestamp == null) {
             CubaDeployerService service = ServiceLocator.lookup(CubaDeployerService.NAME);
             String timestamp = service.getReleaseTimestamp();
+            if (timestamp == null || timestamp.equals("") || timestamp.equals("?")) {
+                timestamp = "0.9";
+            }
             timestamp = timestamp.replaceAll("[^0-9]", "");
             releaseTimestamp = timestamp;
         }

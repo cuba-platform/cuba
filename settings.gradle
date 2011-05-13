@@ -1,0 +1,17 @@
+/*
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+include(':cuba-shared-lib', ':cuba-global', ':cuba-core', ':cuba-client', ':cuba-gui', ':cuba-web-toolkit',
+        ':cuba-web', ':cuba-desktop')
+rootProject.name = 'cuba'
+project(':cuba-shared-lib').projectDir = new File(settingsDir, 'modules/shared-lib')
+project(':cuba-global').projectDir = new File(settingsDir, 'modules/global')
+project(':cuba-core').projectDir = new File(settingsDir, 'modules/core')
+project(':cuba-client').projectDir = new File(settingsDir, 'modules/client')
+project(':cuba-gui').projectDir = new File(settingsDir, 'modules/gui')
+project(':cuba-web-toolkit').projectDir = new File(settingsDir, 'modules/web-toolkit')
+project(':cuba-web').projectDir = new File(settingsDir, 'modules/web')
+project(':cuba-desktop').projectDir = new File(settingsDir, 'modules/desktop')

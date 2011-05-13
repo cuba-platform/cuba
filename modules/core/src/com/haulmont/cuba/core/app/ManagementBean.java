@@ -55,7 +55,7 @@ public class ManagementBean
     }
 
     /**
-     * Performs login with credentials set in app.properties<br>
+     * Performs login with credentials set in cuba-app.properties<br>
      * First checks if a current thread session exists or the bean is already logged in and that session is still valid.
      * If no, performs login and stores sessionId in the protected field.<br>
      * No logout assumed.
@@ -96,7 +96,7 @@ public class ManagementBean
     }
 
     /**
-     * Performs login with credentials set in app.properties<br>
+     * Performs login with credentials set in cuba-app.properties<br>
      * Should be placed inside try/finally block with logout in "finally" section
      * @throws LoginException
      */

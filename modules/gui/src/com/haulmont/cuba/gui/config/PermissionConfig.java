@@ -22,11 +22,19 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrTokenizer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -98,6 +106,8 @@ public class PermissionConfig {
     private Tree<Target> screens;
     private Tree<Target> entities;
     private Tree<Target> specific;
+
+    private Log log = LogFactory.getLog(PermissionConfig.class);
 
     public PermissionConfig() {
         this.clientType = AppConfig.getInstance().getClientType();
@@ -175,11 +185,26 @@ public class PermissionConfig {
         Node<Target> root = new Node<Target>(new Target("specific", getMessage("permissionConfig.specificRoot"), null));
         specific = new Tree<Target>(root);
 
-        final String configPath = AppContext.getProperty(AppConfig.PERMISSION_CONFIG_XML_PROP);
-        String xml = ScriptingProvider.getResourceAsString(configPath);
-        if (xml == null)
-            throw new RuntimeException("Config file not found: " + configPath);
-        compileSpecific(xml, root);
+        final String configName = AppContext.getProperty(AppConfig.PERMISSION_CONFIG_XML_PROP);
+        DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+        StrTokenizer tokenizer = new StrTokenizer(configName);
+        for (String location : tokenizer.getTokenArray()) {
+            Resource resource = resourceLoader.getResource(location);
+            if (resource.exists()) {
+                InputStream stream = null;
+                try {
+                    stream = resource.getInputStream();
+                    String xml = IOUtils.toString(stream);
+                    compileSpecific(xml, root);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    IOUtils.closeQuietly(stream);
+                }
+            } else {
+                log.warn("Resource " + location + " not found, ignore it");
+            }
+        }
     }
 
     private void compileSpecific(String xml, Node<Target> root) {

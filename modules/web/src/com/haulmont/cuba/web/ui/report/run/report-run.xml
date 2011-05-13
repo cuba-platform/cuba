@@ -1,0 +1,42 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.web.ui.report.run.ReportRun"
+        messagesPack="com.haulmont.cuba.web.ui.report"
+        lookupComponent="table"
+        caption="msg://reportBrowser"
+        >
+
+    <dsContext>
+        <collectionDatasource
+                id="reportDs"
+                class="com.haulmont.cuba.report.Report"
+                view="report.edit"
+                >
+            <datasourceClass>com.haulmont.cuba.web.ui.report.RunReportDatasource</datasourceClass>
+            <query>
+                <![CDATA[select r from report$Report r]]>
+                <filter>
+                    <and>
+                        <!--todo: move it to datasource-->
+                        <c join=",report$ReportInputParameter p">p.report.id = r.id and p.entityMetaClass like :param$entityMetaClass</c>
+                        <c>r.reportType = :param$reportType</c>
+                    </and>
+                </filter>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expand="table-panel">
+        <vbox id="table-panel" expand="table" spacing="true">
+            <hbox align="MIDDLE_LEFT" spacing="true" margin="true;false;true;false">
+                <button id="runReport" action="table.runReport" icon="icons/run.png"/>
+            </hbox>
+            <table id="table" editable="false">
+                <columns>
+                    <column id="name" caption="msg://report.name"/>
+                </columns>
+                <rows datasource="reportDs"/>
+            </table>
+        </vbox>
+    </layout>
+</window>

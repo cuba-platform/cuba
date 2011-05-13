@@ -9,11 +9,15 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrTokenizer;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 
-import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,9 +36,12 @@ public class MetadataBuildHelper {
     }
 
     public static Collection<String> getTransientEntitiesPackages() {
-        String path = MetadataProvider.getMetadataXmlPath();
+        String config = MetadataProvider.getMetadataConfig();
         Collection<String> packages = new ArrayList<String>();
-        getPackages(packages, path, "metadata-model");
+        StrTokenizer tokenizer = new StrTokenizer(config);
+        for (String fileName : tokenizer.getTokenArray()) {
+            getPackages(packages, fileName, "metadata-model");
+        }
         return packages;
     }
 
@@ -80,14 +87,16 @@ public class MetadataBuildHelper {
     }
 
     public static Element readXml(String path) {
-        if (!path.startsWith("/"))
-            path = "/" + path;
-
-        File file = new File(AppContext.getProperty("cuba.confDir"), path);
-        if (!file.exists())
-            throw new IllegalStateException("File not found: " + file.getAbsolutePath());
-
-        Document document = Dom4j.readDocument(file);
-        return document.getRootElement();
+        Resource resource = new DefaultResourceLoader().getResource(path);
+        InputStream stream = null;
+        try {
+            stream = resource.getInputStream();
+            Document document = Dom4j.readDocument(stream);
+            return document.getRootElement();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(stream);
+        }
     }
 }

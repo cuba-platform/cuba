@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.web.sys.remoting;
 
-import com.haulmont.cuba.client.UserSessionClient;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceDirectory;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceInvocation;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceInvocationResult;
@@ -101,7 +101,7 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
                 }
             }
 
-            UUID sessionId = UserSessionClient.getUserSession() == null ? null : UserSessionClient.getUserSession().getId();
+            UUID sessionId = AppContext.getSecurityContext() == null ? null : AppContext.getSecurityContext().getSessionId();
             LocalServiceInvocation invocation = new LocalServiceInvocation(
                     method.getName(), parameterTypeNames, argumentsData, sessionId);
 

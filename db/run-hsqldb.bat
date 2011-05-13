@@ -1,2 +1,2 @@
-java -cp ..\..\lib\jdbc\hsqldb.jar org.hsqldb.Server -database.0 file:%1 -dbname.0 %1
+java -cp %1 org.hsqldb.Server -database.0 file:%2 -dbname.0 %2
 exit

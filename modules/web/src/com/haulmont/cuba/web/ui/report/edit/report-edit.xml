@@ -1,0 +1,35 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.web.ui.report.edit.ReportEditor"
+        messagesPack="com.haulmont.cuba.web.ui.report"
+        datasource="reportDs"
+        caption="msg://reportEditor"
+        >
+
+    <dsContext>
+        <datasource
+                id="reportDs"
+                class="com.haulmont.cuba.report.Report"
+                view="report.edit">
+            <collectionDatasource id="parametersDs" property="inputParameters"/>
+            <collectionDatasource id="valuesFormatsDs" property="valuesFormats"/>
+            <collectionDatasource id="rolesDs" property="roles"/>
+            <collectionDatasource id="reportScreensDs" property="reportScreens"/>
+            <collectionDatasource id="templatesDs" property="templates"/>
+        </datasource>
+        <hierarchicalDatasource id="treeDs" class="com.haulmont.cuba.report.BandDefinition" view="report.edit">
+            <datasourceClass>com.haulmont.cuba.web.ui.report.BandDefinitionsDatasource</datasourceClass>
+        </hierarchicalDatasource>
+    </dsContext>
+    <layout expand="tabsheet">
+        <tabsheet id="tabsheet">
+            <tab id="generalTab" caption="msg://generalTab">
+                <iframe src="/com/haulmont/cuba/web/ui/report/edit/tabs/general.xml" id="generalFrame"/>
+            </tab>
+            <tab id="securityTab" caption="msg://securityTab">
+                <iframe src="/com/haulmont/cuba/web/ui/report/edit/tabs/security.xml" id="securityFrame"/>
+            </tab>
+        </tabsheet>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

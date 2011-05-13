@@ -29,16 +29,7 @@ public class CubaDispatcherServlet extends DispatcherServlet {
         if (StringUtils.isBlank(configProperty)) {
             throw new IllegalStateException("Missing " + SPRING_CONTEXT_CONFIG + " application property");
         }
-
-        String baseDir = AppContext.getProperty("cuba.confDir");
-
-        StrTokenizer tokenizer = new StrTokenizer(configProperty);
-        String[] tokenArray = tokenizer.getTokenArray();
-        StringBuilder locations = new StringBuilder();
-        for (String token : tokenArray) {
-            locations.append("file:").append(baseDir).append("/").append(token).append(" ");
-        }
-        return locations.toString();
+        return configProperty;
     }
 
     @Override

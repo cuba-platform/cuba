@@ -1,0 +1,55 @@
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.web.ui.sendingmessage.browse.SendingMessageBrowser"
+        messagesPack="com.haulmont.cuba.web.ui.sendingmessage"
+        lookupComponent="table"
+        caption="msg://sendingMessage.browser.caption">
+    <dsContext>
+        <collectionDatasource
+                id="sendingMessageDs"
+                class="com.haulmont.cuba.core.entity.SendingMessage"
+                view="sendingMessage.browse" fetchMode="AUTO">
+            <query>
+                <![CDATA[select sm from sys$SendingMessage sm order by sm.dateSent desc]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <layout expand="table">
+        <split id="split" orientation="horizontal" pos="70" >
+            <vbox expand="table">
+                <iframe id="filter" src="cuba/client/web/ui/sendingmessage/browse/sending-message-browse-filter.xml"/>
+                <table id="table">
+                    <columns>
+                        <column id="address" />
+                        <column id="from"/>
+                        <column id="caption"/>
+                        <column id="status"/>
+                        <column id="dateSent"/>
+                        <column id="updateTs"/>
+                        <column id="attachmentsName"/>
+                        <column id="attemptsCount"/>
+                        <column id="deadline"/>
+                        <column id="attemptsMade"/>
+                    </columns>
+                    <rows datasource="sendingMessageDs"/>
+                </table>
+            </vbox>
+            <vbox expand="fg" margin="5px">
+                <fieldGroup id="fg" datasource="sendingMessageDs" stylename="edit-area" width="500px" editable="false">
+                    <column width="100%">
+                        <field id="address"/>
+                        <field id="from"/>
+                        <field id="caption"/>
+                        <field id="contentText" rows="20"/>
+                        <field id="status"/>
+                        <field id="attachmentsName"/>
+                        <field id="dateSent"/>
+                        <field id="updateTs"/>
+                        <field id="deadline"/>
+                        <field id="attemptsCount"/>
+                        <field id="attemptsMade"/>
+                    </column>
+                </fieldGroup>
+            </vbox>
+        </split>
+    </layout>
+</window>

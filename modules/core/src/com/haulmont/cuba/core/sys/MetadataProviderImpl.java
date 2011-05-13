@@ -18,6 +18,7 @@ import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.ViewRepository;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -95,15 +96,23 @@ public class MetadataProviderImpl extends MetadataProvider
         ViewRepository vr = new ViewRepository();
 
         String configName = AppContext.getProperty("cuba.viewsConfig");
-        if (!StringUtils.isBlank(configName))
-            vr.deployViews(configName);
+        if (!StringUtils.isBlank(configName)) {
+            StrTokenizer tokenizer = new StrTokenizer(configName);
+            for (String fileName : tokenizer.getTokenArray()) {
+                vr.deployViews(fileName);
+            }
+        }
 
         return vr;
     }
 
     private Map<Class, Class> initReplacedEntities() {
         Map<Class, Class> map = new HashMap<Class, Class>();
-        loadReplacedEntities(map, MetadataProvider.getMetadataXmlPath());
+        String config = MetadataProvider.getMetadataConfig();
+        StrTokenizer tokenizer = new StrTokenizer(config);
+        for (String fileName : tokenizer.getTokenArray()) {
+            loadReplacedEntities(map, fileName);
+        }
         return map;
     }
 

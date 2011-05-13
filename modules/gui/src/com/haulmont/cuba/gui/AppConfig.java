@@ -19,7 +19,15 @@ import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.text.StrTokenizer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -53,6 +61,8 @@ public abstract class AppConfig
     protected ClientType clientType;
     protected String messagesPackage;
     protected Map<Locale, PermissionConfig> permissionsConfigMap = new ConcurrentHashMap<Locale, PermissionConfig>();
+
+    private Log log = LogFactory.getLog(AppConfig.class);
 
     public static AppConfig getInstance() {
         if (instance == null) {
@@ -105,11 +115,26 @@ public abstract class AppConfig
     public MenuConfig getMenuConfig() {
         if (menuConfig == null) {
             menuConfig = createInstance(MENU_CONFIG_IMPL_PROP, MENU_CONFIG_DEFAULT_IMPL);
-            final String path = AppContext.getProperty(MENU_CONFIG_XML_PROP);
+            final String configName = AppContext.getProperty(MENU_CONFIG_XML_PROP);
 
-            String xml = ScriptingProvider.getResourceAsString(path);
-            if (xml != null)
-                menuConfig.loadConfig(xml);
+            DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+            StrTokenizer tokenizer = new StrTokenizer(configName);
+            for (String location : tokenizer.getTokenArray()) {
+                Resource resource = resourceLoader.getResource(location);
+                if (resource.exists()) {
+                    InputStream stream = null;
+                    try {
+                        stream = resource.getInputStream();
+                        menuConfig.loadConfig(stream);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } finally {
+                        IOUtils.closeQuietly(stream);
+                    }
+                } else {
+                    log.warn("Resource " + location + " not found, ignore it");
+                }
+            }
         }
         return menuConfig;
     }
@@ -122,11 +147,26 @@ public abstract class AppConfig
     public WindowConfig getWindowConfig() {
         if (windowConfig == null) {
             windowConfig = createInstance(WINDOW_CONFIG_IMPL_PROP, WINDOW_CONFIG_DEFAULT_IMPL);
-            final String path = AppContext.getProperty(WINDOW_CONFIG_XML_PROP);
+            final String configName = AppContext.getProperty(WINDOW_CONFIG_XML_PROP);
 
-            String xml = ScriptingProvider.getResourceAsString(path);
-            if (xml != null)
-                windowConfig.loadConfig(xml);
+            DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+            StrTokenizer tokenizer = new StrTokenizer(configName);
+            for (String location : tokenizer.getTokenArray()) {
+                Resource resource = resourceLoader.getResource(location);
+                if (resource.exists()) {
+                    InputStream stream = null;
+                    try {
+                        stream = resource.getInputStream();
+                        windowConfig.loadConfig(stream);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } finally {
+                        IOUtils.closeQuietly(stream);
+                    }
+                } else {
+                    log.warn("Resource " + location + " not found, ignore it");
+                }
+            }
         }
         return windowConfig;
     }

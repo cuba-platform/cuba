@@ -1,0 +1,338 @@
+/*
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+allprojects {
+    artifactGroup = 'com.haulmont.cuba'
+    artifactVersion = '3.0'
+    isSnapshot = true
+    //tomcatDir = rootDir.absolutePath + '/../tomcat'
+}
+
+buildscript {
+    org.apache.ivy.util.url.CredentialsStore.INSTANCE.addCredentials(
+        'Sonatype Nexus Repository Manager',
+        'repository.haulmont.com',
+        System.getenv('HAULMONT_REPOSITORY_USER'),
+        System.getenv('HAULMONT_REPOSITORY_PASSWORD')
+    )
+    repositories {
+            mavenLocal()
+            mavenRepo(urls: "http://repository.haulmont.com:8587/nexus/content/groups/work")
+    }
+    dependencies {
+        classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.0-SNAPSHOT'
+    }
+}
+
+apply(plugin: 'idea')
+apply(plugin: 'cuba')
+
+def sharedLibModule = project(':cuba-shared-lib')
+def globalModule = project(':cuba-global')
+def coreModule = project(':cuba-core')
+def clientModule = project(':cuba-client')
+def guiModule = project(':cuba-gui')
+def webToolkitModule = project(':cuba-web-toolkit')
+def webModule = project(':cuba-web')
+def desktopModule = project(':cuba-desktop')
+
+def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
+def vaadin = [group: 'com.haulmont.thirdparty', name: 'vaadin', version: '6.3.1.81']
+def dashlayout = [group: 'com.haulmont.thirdparty', name: 'dashlayout', version: '0.1.5']
+def popupbutton = [group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '1.0.0']
+def gwtUser = [group: 'com.google.gwt', name: 'gwt-user', version: '2.0.3']
+def gwtDev = [group: 'com.google.gwt', name: 'gwt-dev', version: '2.0.3']
+def postgres = [group: 'postgresql', name: 'postgresql', version: '8.3-603.jdbc4']
+def hsqldb = [group: 'hsqldb', name: 'hsqldb', version: '1.8.0.10']
+
+configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webToolkitModule,
+        webModule, desktopModule]) {
+    apply(plugin: 'java')
+    apply(plugin: 'idea')
+    apply(plugin: 'maven')
+    apply(plugin: 'cuba')
+
+    dependencies {
+        compile(group: 'com.haulmont.bali', name: 'bali', version: '3.0-SNAPSHOT')
+        compile(group: 'com.haulmont.chile', name: 'chile-core', version: '3.0-SNAPSHOT')
+        compile(group: 'com.haulmont.chile', name: 'chile-jpa', version: '3.0-SNAPSHOT')
+        
+        compile(group: 'antlr', name: 'antlr', version: '2.7.7')
+        compile(group: 'aopalliance', name: 'aopalliance', version: '1.0')       
+        compile(group: 'asm', name: 'asm', version: '3.2')
+        compile(group: 'com.google.guava', name: 'guava', version: 'r07')
+        compile(group: 'com.haulmont.thirdparty', name: 'openjpa', version: '1.2.2')
+        compile(group: 'commons-cli', name: 'commons-cli', version: '1.2')       
+        compile(group: 'commons-codec', name: 'commons-codec', version: '1.3')
+        compile(group: 'commons-pool', name: 'commons-pool', version: '1.5.1')       
+        compile(group: 'jasperreports', name: 'jasperreports', version: '3.5.1', transitive: false)
+        compile(group: 'jfree', name: 'jfreechart', version: '1.0.13')
+        compile(group: 'net.sourceforge.serp', name: 'serp', version: '1.13.1')       
+        compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.2')       
+        compile(group: 'org.freemarker', name: 'freemarker', version: '2.3.16')       
+        compile(group: 'org.perf4j', name: 'perf4j', version: '0.9.10')
+        compile(group: 'org.springframework', name: 'spring-beans', version: '3.0.5.RELEASE')       
+        compile(group: 'org.springframework', name: 'spring-context', version: '3.0.5.RELEASE')       
+        compile(group: 'org.springframework', name: 'spring-web', version: '3.0.5.RELEASE')       
+
+        testCompile(group: 'junit', name: 'junit', version: '4.5')
+    }
+
+    task sourceJar(type: Jar) {
+        from file('src')
+        classifier = 'sources'
+    } 
+
+    artifacts {
+        archives sourceJar
+    }
+}
+
+configure(sharedLibModule) {
+    dependencies {
+        jdbc(postgres)
+        jdbc(hsqldb)
+    }
+}
+
+configure(globalModule) {
+    task enhance(dependsOn: [compileJava, processResources], type: CubaEnhancing) {
+        persistenceXml = "$globalModule.projectDir/src/cuba-persistence.xml"
+    }
+    classes.dependsOn enhance
+}
+
+configure(coreModule) {
+    dependencies {
+        compile(globalModule)
+        compile(sharedLibModule)
+        compile(group: 'com.haulmont.thirdparty', name: 'ooo-bootstrapconnector', version: '3.0.0')       
+        compile(group: 'com.haulmont.thirdparty', name: 'xstream', version: '1.3.1.20100706')       
+        compile(group: 'com.lowagie', name: 'itext', version: '2.1.0')
+        compile(group: 'jgroups', name: 'jgroups', version: '2.9.0.GA')       
+        compile(group: 'org.apache.commons', name: 'commons-compress', version: '1.1')       
+        compile(group: 'org.apache.poi', name: 'poi', version: '3.6')       
+        compile(group: 'org.aspectj', name: 'aspectjrt', version: '1.6.6')       
+        compile(group: 'org.aspectj', name: 'aspectjweaver', version: '1.6.6')       
+        compile(group: 'org.mybatis', name: 'mybatis', version: '3.0.4')
+        compile(group: 'org.mybatis', name: 'mybatis-spring', version: '1.0.0')       
+        compile(group: 'org.openoffice', name: 'juh', version: '3.0.0')       
+        compile(group: 'org.openoffice', name: 'ridl', version: '3.0.0')       
+        compile(group: 'org.openoffice', name: 'unoil', version: '3.0.0')       
+        compile(group: 'org.springframework', name: 'spring-context-support', version: '3.0.5.RELEASE')       
+        compile(group: 'org.springframework', name: 'spring-orm', version: '3.0.5.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-tx', version: '3.0.5.RELEASE')       
+        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.0.5.RELEASE')       
+
+        provided(servletApi)
+
+        jdbc(postgres)
+        jdbc(hsqldb)
+    }
+
+    task testsJar(dependsOn: testClasses, type: Jar) {
+        from sourceSets.test.classesDir
+        classifier = 'tests'
+    }
+
+    assembleDbScripts << {
+        copy {
+            from new File(rootProject.projectDir, 'db')
+            into "$buildDir/db/10-cuba"
+        }
+    }
+
+    artifacts {
+        archives testsJar
+    }
+
+    task deploy(dependsOn: assemble, type: CubaDeployment) {
+        appName = 'cuba-core'
+        appJars('bali', 'chile-core', 'chile-jpa', 'cuba-global', 'cuba-core')
+    }
+}
+
+configure(clientModule) {
+    dependencies {
+        compile(globalModule)
+    }
+}
+
+configure(guiModule) {
+    apply(plugin: 'groovy')
+
+    sourceSets {
+        main {
+            groovy { srcDir 'src' }
+        }
+    }
+
+    dependencies {
+        compile(globalModule)
+        compile(clientModule)
+        compile(group: 'org.apache.poi', name: 'poi', version: '3.6')
+        groovy(localGroovy())
+    }
+}
+
+configure(webToolkitModule) {
+    dependencies {
+        compile(vaadin)
+        compile(dashlayout)
+        compile(popupbutton)
+
+        provided(gwtUser)
+        provided(gwtDev)
+    }
+
+    jar {
+        manifest {
+            attributes("Vaadin-Widgetsets": "com.haulmont.cuba.toolkit.gwt.WidgetSet")
+        }
+    }
+}
+
+configure(webModule) {
+    dependencies {
+        compile(sharedLibModule)
+        compile(globalModule)
+        compile(clientModule)
+        compile(guiModule)
+        compile(group: 'com.haulmont.thirdparty', name: 'jespa', version: '1.0.7')
+        compile(group: 'commons-fileupload', name: 'commons-fileupload', version: '1.2.2')
+        compile(group: 'org.jasig.cas', name: 'cas-client-core', version: '3.1.10')
+        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.0.5.RELEASE')
+        compile(vaadin)
+        compile(dashlayout)
+        compile(popupbutton)
+
+        runtime(group: 'com.haulmont.thirdparty', name: 'jcifs', version: '1.3.10')
+
+        provided(webToolkitModule)
+        provided(gwtUser)
+        provided(gwtDev)
+        provided(servletApi)
+    }
+
+    jar {
+        manifest {
+            attributes("Vaadin-Widgetsets": "com.haulmont.cuba.toolkit.gwt.WidgetSet")
+        }
+    }
+
+    task buildThemes(dependsOn: compileJava) << {
+        File outDir = new File("$buildDir/web/VAADIN/themes")
+        outDir.mkdirs()
+        copy {
+            from 'css/VAADIN/themes'
+            into outDir
+            include 'blacklabel/**'
+            include 'peyto/**'
+        }
+
+        ant.taskdef(name: 'buildTheme', classname: 'com.haulmont.cuba.ant.BuildThemeTask', classpath: configurations.provided.asPath)
+        ant.buildTheme(themeDir: new File(outDir, '/blacklabel'), destFile: 'styles-include.css')
+        ant.buildTheme(themeDir: new File(outDir, '/peyto'), destFile: 'styles-include.css')
+    }
+
+    File webOutDir = new File("$buildDir/web")
+
+    task buildGwt(dependsOn: buildThemes) << {
+        File widgetsetsDir = new File(webOutDir, "VAADIN/widgetsets")
+        File webToolkitSrcDir = new File(webToolkitModule.projectDir, 'src')
+        if (!widgetsetsDir.exists()) {
+            javaexec {
+                main = 'com.google.gwt.dev.Compiler'
+                classpath(webToolkitSrcDir, webToolkitModule.sourceSets.main.classesDir, sourceSets.main.compileClasspath, sourceSets.main.classesDir)
+                args('-war', widgetsetsDir.absolutePath, '-style', 'OBF', 'com.haulmont.cuba.toolkit.gwt.WidgetSet')
+                jvmArgs('-Xmx512m', '-Xss8m', '-XX:MaxPermSize=256m', '-Djava.awt.headless=true')
+            }
+        } else {
+            println "Widgetsets dir exists, skip build GWT"
+        }
+    }
+    assemble.dependsOn buildGwt
+
+    task webArchive(dependsOn: buildGwt, type: Zip) {
+        from file('web')
+        from webOutDir
+        exclude '**/web.xml', '**/app.properties'
+        classifier = 'web'
+    }
+
+    artifacts {
+        archives webArchive
+    }
+
+    task deploy(dependsOn: assemble, type: CubaDeployment) {
+        appName = 'cuba'
+        appJars('bali', 'chile-core', 'chile-jpa', 'cuba-global', 'cuba-client', 'cuba-gui', 'cuba-web')
+    }
+    deploy << {
+        delete {
+            "$tomcatDir/webapps/cuba/VAADIN/widgetsets"
+        }
+        copy {
+            from "$buildDir/web"
+            into "$tomcatDir/webapps/cuba"
+        }
+    }
+}
+
+configure(desktopModule) {
+    dependencies {
+        compile(globalModule)
+        compile(clientModule)
+        compile(guiModule)
+        compile(group: 'com.haulmont.thirdparty', name: 'miglayout', version: '3.7.4')
+    }
+}
+
+task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy'], description: 'Redeploys applications and restarts local Tomcat') << {
+    ant.waitfor(maxwait: 6, maxwaitunit: 'second', checkevery: 2, checkeveryunit: 'second') {
+        not {
+            socket(server: 'localhost', port: '8787')
+        }
+    }
+    start.execute()
+}
+
+/***************************** Database related stuff *****************************/
+
+configurations {
+    jdbc
+}
+
+dependencies {
+    jdbc(hsqldb)
+}
+
+def dbName = 'cubadb'
+def File dbDataDir = file('data')
+def File dbSqlDir = file('db/init/sql')
+def dbClasspath = configurations.jdbc.fileCollection{ true }.asPath
+
+task startDb(description: 'Starts local HSQLDB server') << {
+    dbDataDir.mkdirs()
+    ant.exec(dir: dbDataDir.absolutePath, executable: 'cmd.exe', spawn: true) {
+        arg(line: "/c start $projectDir/db/run-hsqldb.bat $dbClasspath $dbName")
+    }
+}
+
+task removeDb(description: 'Removes local HSQL database') << {
+    delete {
+        dbDataDir
+    }
+}
+
+task createDb(description: 'Creates local HSQL database') << {
+    ant.sql(classpath: dbClasspath, src: "$dbSqlDir/create-db.sql", delimiter: ";",
+            driver: 'org.hsqldb.jdbcDriver',
+            url: "jdbc:hsqldb:hsql://localhost/$dbName",
+            userid: 'sa', password: '',
+            autocommit: true
+    )
+}

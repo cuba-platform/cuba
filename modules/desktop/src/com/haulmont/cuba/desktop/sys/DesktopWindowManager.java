@@ -145,7 +145,7 @@ public class DesktopWindowManager extends WindowManager {
             windowOpenMode.put(window, openMode);
         }
 
-        afterShowWindow(window, newTab);
+        afterShowWindow(window);
     }
 
     private JComponent showWindowThisTab(Window window, String caption, String description) {

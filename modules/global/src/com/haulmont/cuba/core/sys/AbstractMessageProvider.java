@@ -13,13 +13,13 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
+import org.apache.commons.lang.text.StrBuilder;
+import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractMessageProvider extends MessageProvider
@@ -72,22 +72,29 @@ public abstract class AbstractMessageProvider extends MessageProvider
         return __getMessage(pack, key, loc);
     }
 
-    protected String __getMessage(String pack, String key, Locale locale) {
-        if (pack == null)
+    protected String __getMessage(String packs, String key, Locale locale) {
+        if (packs == null)
             throw new IllegalArgumentException("Messages pack name is null");
         if (key == null)
             throw new IllegalArgumentException("Message key is null");
 
-        String msg = searchFiles(pack, key, locale);
-        if (msg == null) {
-            msg = searchClasspath(pack, key, locale);
+        StrTokenizer tokenizer = new StrTokenizer(packs);
+        List<String> list = tokenizer.getTokenList();
+        Collections.reverse(list);
+        for (String pack : list) {
+            String msg = searchFiles(pack, key, locale);
+            if (msg == null) {
+                msg = searchClasspath(pack, key, locale);
+            }
+            if (msg != null)
+                return msg;
         }
-        if (msg == null) {
-            if (log.isTraceEnabled())
-                log.trace("Resource '" + makeCacheKey(pack, key, locale) + "' not found");
-            return key;
-        } else
-            return msg;
+
+        if (log.isTraceEnabled()) {
+            String packName = new StrBuilder().appendWithSeparators(list, ",").toString();
+            log.trace("Resource '" + makeCacheKey(packName, key, locale) + "' not found");
+        }
+        return key;
     }
 
     private String searchFiles(String pack, String key, Locale locale) {

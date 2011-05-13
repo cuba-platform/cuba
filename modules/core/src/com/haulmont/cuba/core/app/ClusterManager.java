@@ -11,9 +11,13 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jgroups.*;
+import org.jgroups.conf.XmlConfigurator;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 
 import javax.annotation.ManagedBean;
 import java.io.*;
@@ -72,19 +76,18 @@ public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, A
     public void start() {
         log.info("Starting cluster");
 
+        InputStream stream = null;
         try {
             String configName = AppContext.getProperty("cuba.cluster.jgroupsConfig");
             if (configName == null) {
                 log.error("No property 'cuba.cluster.jgroupsConfig' specified");
                 return;
             }
-            File configFile = new File(configName);
-            if (!configFile.exists()) {
-                log.error("JGroups config file doesn't exist: " + configName);
-                return;
-            }
+            DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+            Resource resource = resourceLoader.getResource(configName);
+            stream = resource.getInputStream();
 
-            channel = new JChannel(configFile);
+            channel = new JChannel(XmlConfigurator.getInstance(stream));
             channel.setOpt(Channel.LOCAL, false); // do not receive a copy of our own messages
             channel.setReceiver(new ClusterReceiver());
             channel.connect("cubaCluster");
@@ -92,6 +95,8 @@ public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, A
         } catch (Exception e) {
             log.error("Unable to start cluster", e);
             channel = null;
+        } finally {
+            IOUtils.closeQuietly(stream);
         }
     }
 

@@ -113,7 +113,7 @@ public class App implements ConnectionListener {
     }
 
     protected String getDefaultAppPropertiesConfig() {
-        return "/META-INF/cuba/app.properties";
+        return "/cuba-desktop-app.properties";
     }
 
     protected String getDefaultHomeDir() {
@@ -121,7 +121,7 @@ public class App implements ConnectionListener {
     }
 
     protected String getDefaultLog4jConfig() {
-        return "META-INF/cuba/log4j.xml";
+        return "cuba-log4j.xml";
     }
 
     protected void initHomeDir() {

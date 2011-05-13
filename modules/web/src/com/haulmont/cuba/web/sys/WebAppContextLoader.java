@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.WebAppConfig;
 import com.haulmont.cuba.web.WebWindowConfig;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
@@ -24,13 +25,14 @@ import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -50,7 +52,15 @@ public class WebAppContextLoader implements ServletContextListener {
             ServletContext sc = servletContextEvent.getServletContext();
 
             initAppProperties(sc);
+
             MessageUtils.setMessagePack(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP));
+
+            File file = new File(AppContext.getProperty("cuba.confDir"));
+            if (!file.exists())
+                file.mkdirs();
+            file = new File(AppContext.getProperty("cuba.tempDir"));
+            if (!file.exists())
+                file.mkdirs();
 
             initAppContext();
             initServiceLocator();
@@ -84,30 +94,29 @@ public class WebAppContextLoader implements ServletContextListener {
             }
         }
 
-        // get properties from app.properties
+        // get properties from cuba-web-app.properties
         String propsConfigName = sc.getInitParameter(APP_PROPS_CONFIG_PARAM);
         if (propsConfigName == null)
             throw new IllegalStateException(APP_PROPS_CONFIG_PARAM + " servlet context parameter not defined");
 
         final Properties properties = new Properties();
 
+        DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
         StrTokenizer tokenizer = new StrTokenizer(propsConfigName);
         for (String str : tokenizer.getTokenArray()) {
-            File file = new File(str);
-            if (file.exists()) {
+            Resource resource = resourceLoader.getResource(str);
+            if (resource.exists()) {
                 InputStream stream = null;
                 try {
-                    stream = new FileInputStream(file);
+                    stream = resource.getInputStream();
                     properties.load(stream);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 } finally {
-                    try {
-                        if (stream != null) stream.close();
-                    } catch (IOException e) {
-                        //
-                    }
+                    IOUtils.closeQuietly(stream);
                 }
+            } else {
+                log.warn("Resource " + str + " not found, ignore it");
             }
         }
 
@@ -130,16 +139,10 @@ public class WebAppContextLoader implements ServletContextListener {
             throw new IllegalStateException("Missing " + SPRING_CONTEXT_CONFIG + " application property");
         }
 
-        String baseDir = AppContext.getProperty("cuba.confDir");
-
         StrTokenizer tokenizer = new StrTokenizer(configProperty);
-        String[] tokenArray = tokenizer.getTokenArray();
-        String[] locations = new String[tokenArray.length];
-        for (int i = 0; i < tokenArray.length; i++) {
-            locations[i] = baseDir + "/" + tokenArray[i];
-        }
+        String[] locations = tokenizer.getTokenArray();
 
-        ApplicationContext appContext = new FileSystemXmlApplicationContext(locations);
+        ApplicationContext appContext = new ClassPathXmlApplicationContext(locations);
         AppContext.setApplicationContext(appContext);
     }
 

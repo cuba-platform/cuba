@@ -1,0 +1,59 @@
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd">
+    <#assign width = 200>
+    <#assign treeHeight = 400>
+    <#assign treeWidth = 650>
+    <layout expand="vSplit" expandLayout="true">
+        <split orientation="vertical" expandable="true" id="vSplit" pos="60">
+            <split orientation="horizontal" id="split">
+                <groupBox stylename="edit-area">
+                    <vbox spacing="true" align="TOP_LEFT" expand="templatesTable">
+                        <fieldGroup caption="msg://report.properties" datasource="reportDs">
+                            <field id="name" required="true" requiredMessage="msg://report.nameMsg"/>
+                            <field id="reportType" required="true" requiredMessage="msg://report.reportTypeMsg"/>
+                        </fieldGroup>
+                        <label value="msg://report.templates" stylename="h2"/>
+                        <table id="templatesTable" sortable="false" height="200">
+                            <buttonsPanel>
+                                <button action="templatesTable.create" icon="icons/create.png"/>
+                                <button action="templatesTable.edit" icon="icons/edit.png"/>
+                                <button action="templatesTable.remove" icon="icons/remove.png"/>
+                                <button id="defaultTemplateBtn" icon="icons/ok.png"/>
+                            </buttonsPanel>
+                            <columns>
+                                <column id="code"/>
+                                <column id="templateFileDescriptor"/>
+                                <column id="reportOutputType"/>
+                                <column id="customClass"/>
+                                <column id="defaultFlag"/>
+                            </columns>
+                            <rows datasource="templatesDs"/>
+                        </table>
+                    </vbox>
+                </groupBox>
+                <!-- Vertical Splitter -->
+                <groupBox stylename="edit-area" expand="treeBox">
+                    <vbox id="treeBox" expand="serviceTree" spacing="true">
+                        <label value="msg://report.bands" stylename="h2"/>
+
+                        <buttonsPanel>
+                            <button id="createBandDefinition" icon="icons/create.png"/>
+                            <button id="editBandDefinition" icon="icons/edit.png"/>
+                            <button id="removeBandDefinition" icon="icons/remove.png"/>
+                            <button id="up" icon="icons/up.png"/>
+                            <button id="down" icon="icons/down.png"/>
+                        </buttonsPanel>
+
+                        <tree id="serviceTree">
+                            <treechildren datasource="treeDs" captionProperty="name"/>
+                        </tree>
+                    </vbox>
+                </groupBox>
+            </split>
+            <!-- Horizontal Splitter -->
+            <hbox width="100%" spacing="true" margin="false;true;true;true">
+                <iframe src="/com/haulmont/cuba/web/ui/report/edit/tabs/parameters.xml" id="parametersFrame"/>
+                <iframe src="/com/haulmont/cuba/web/ui/report/edit/tabs/formats.xml" id="formatsFrame"/>
+            </hbox>
+        </split>
+    </layout>
+</window>

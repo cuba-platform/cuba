@@ -18,6 +18,7 @@ import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.PersistentClassesMetadataLoader;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -117,8 +118,12 @@ public class MetadataProviderClientImpl extends MetadataProvider {
         }
 
         String configName = AppContext.getProperty("cuba.viewsConfig");
-        if (!StringUtils.isBlank(configName))
-            vr.deployViews(configName);
+        if (!StringUtils.isBlank(configName)) {
+            StrTokenizer tokenizer = new StrTokenizer(configName);
+            for (String fileName : tokenizer.getTokenArray()) {
+                vr.deployViews(fileName);
+            }
+        }
 
         return vr;
     }

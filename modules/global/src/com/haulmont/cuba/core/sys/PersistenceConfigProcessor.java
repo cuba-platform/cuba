@@ -13,10 +13,13 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import org.apache.commons.cli.*;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 
 import javax.persistence.Entity;
 import java.io.*;
@@ -24,7 +27,7 @@ import java.util.*;
 
 public class PersistenceConfigProcessor {
 
-    private String baseDir = "";
+    private String baseDir;
     private List<String> sourceFileNames;
     private String outFileName;
 
@@ -40,50 +43,50 @@ public class PersistenceConfigProcessor {
         outFileName = file;
     }
 
-    public static void main(String[] args) {
-        Options options = new Options();
-        options.addOption("e", false, "enhance entities");
-        options.addOption("c", false, "create persistence config");
-        options.addOption("f", true, "source persistence.xml comma-separated list");
-        options.addOption("o", true, "output persistence.xml");
-
-        CommandLineParser parser = new PosixParser();
-        CommandLine cmd = null;
-        try {
-            cmd = parser.parse( options, args);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
-
-        PersistenceConfigProcessor processor = new PersistenceConfigProcessor();
-        if (cmd.hasOption('f')) {
-            String[] strings = cmd.getOptionValue('f').split(",");
-            processor.setSourceFiles(Arrays.asList(strings));
-        }
-
-        if (cmd.hasOption('c')) {
-            processor.create();
-        } else if (cmd.hasOption('e')) {
-            processor.enhance();
-        } else {
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("PersistenceConfigProcessor", options);
-        }
-    }
-
-    public void enhance() {
-        if (sourceFileNames == null || sourceFileNames.isEmpty())
-            throw new IllegalStateException("Source file not set");
-
-        List<String> options = new ArrayList<String>();
-
-        options.add("-properties");
-        options.add(sourceFileNames.get(0));
-
-        System.out.println("Enhancing " + sourceFileNames.get(0));
-        PCEnhancer.main(options.toArray(new String[options.size()]));
-    }
+//    public static void main(String[] args) {
+//        Options options = new Options();
+//        options.addOption("e", false, "enhance entities");
+//        options.addOption("c", false, "create persistence config");
+//        options.addOption("f", true, "source persistence.xml comma-separated list");
+//        options.addOption("o", true, "output persistence.xml");
+//
+//        CommandLineParser parser = new PosixParser();
+//        CommandLine cmd = null;
+//        try {
+//            cmd = parser.parse( options, args);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//            System.exit(-1);
+//        }
+//
+//        PersistenceConfigProcessor processor = new PersistenceConfigProcessor();
+//        if (cmd.hasOption('f')) {
+//            String[] strings = cmd.getOptionValue('f').split(",");
+//            processor.setSourceFiles(Arrays.asList(strings));
+//        }
+//
+//        if (cmd.hasOption('c')) {
+//            processor.create();
+//        } else if (cmd.hasOption('e')) {
+//            processor.enhance();
+//        } else {
+//            HelpFormatter formatter = new HelpFormatter();
+//            formatter.printHelp("PersistenceConfigProcessor", options);
+//        }
+//    }
+//
+//    public void enhance() {
+//        if (sourceFileNames == null || sourceFileNames.isEmpty())
+//            throw new IllegalStateException("Source file not set");
+//
+//        List<String> options = new ArrayList<String>();
+//
+//        options.add("-properties");
+//        options.add(sourceFileNames.get(0));
+//
+//        System.out.println("Enhancing " + sourceFileNames.get(0));
+//        PCEnhancer.main(options.toArray(new String[options.size()]));
+//    }
 
     public void create() {
         if (sourceFileNames == null || sourceFileNames.isEmpty())
@@ -167,14 +170,27 @@ public class PersistenceConfigProcessor {
     }
 
     private Document getDocument(String fileName) {
-        if (!fileName.startsWith("/"))
-            fileName = "/" + fileName;
+        Document doc;
+        if (baseDir == null) {
+            Resource resource = new DefaultResourceLoader().getResource(fileName);
+            InputStream stream = null;
+            try {
+                stream = resource.getInputStream();
+                doc = Dom4j.readDocument(stream);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                IOUtils.closeQuietly(stream);
+            }
+        } else {
+            if (!fileName.startsWith("/"))
+                fileName = "/" + fileName;
+            File file = new File(baseDir, fileName);
+            if (!file.exists())
+                throw new IllegalArgumentException("File not found: " + file.getAbsolutePath());
 
-        File file = new File(baseDir, fileName);
-        if (!file.exists())
-            throw new IllegalArgumentException("File not found: " + file.getAbsolutePath());
-
-        Document doc = Dom4j.readDocument(file);
+            doc = Dom4j.readDocument(file);
+        }
         return doc;
     }
 }

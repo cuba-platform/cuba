@@ -66,7 +66,6 @@ public class MenuConfig implements Serializable
     }
 
     public void loadConfig(Element rootElem) {
-        rootItems.clear();
         loadMenuItems(rootElem, null);
     }
 

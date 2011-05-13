@@ -1,0 +1,70 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.web.ui.report.edit.ParameterEditor"
+        messagesPack="com.haulmont.cuba.web.ui.report"
+        datasource="parameterDs"
+        caption="msg://parameterEditor"
+        >
+
+    <dsContext>
+        <datasource
+                id="parameterDs"
+                class="com.haulmont.cuba.report.ReportInputParameter"
+                view="report.edit">
+        </datasource>
+    </dsContext>
+    <#assign width = 200>
+    <layout expand="windowActions">
+        <vbox margin="true" stylename="edit-area">
+            <grid spacing="true" expandable="false">
+                <columns>
+                    <column flex="1"/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="msg://parameters.name"/>
+                        <textField id="name" datasource="parameterDs" property="name" required="true"
+                                   width="${width}" requiredMessage="msg://parameters.nameMsg"/>
+                    </row>
+                    <row>
+                        <label value="msg://parameters.alias"/>
+                        <textField id="alias" datasource="parameterDs" property="alias" required="true"
+                                   width="${width}" requiredMessage="msg://parameters.aliasMsg"/>
+                    </row>
+                    <row>
+                        <label value="msg://parameters.type"/>
+                        <lookupField id="type" datasource="parameterDs" property="type" required="true"
+                                     width="${width}" requiredMessage="msg://parameters.typeMsg"/>
+                    </row>
+
+                    <row>
+                        <label value="msg://parameters.getFromBrowser"/>
+                        <checkBox  id="getFromBrowser" datasource="parameterDs" property="getFromBrowser"/>
+                    </row>
+
+                    <row>
+                        <label value="msg://parameters.required"/>
+                        <checkBox  id="required" datasource="parameterDs" property="required"/>
+                    </row>
+
+                    <row>
+                        <label value="msg://parameters.metaClass"/>
+                        <lookupField id="metaClass" width="${width}" requiredMessage="msg://parameters.requiredMetaClass"/>
+                    </row>
+
+                    <row>
+                        <label value="msg://parameters.enum"/>
+                        <lookupField id="enumeration" width="${width}" requiredMessage="msg://parameters.requiredEnumClass"/>
+                    </row>
+
+                    <row>
+                        <label value="msg://parameters.screen"/>
+                        <lookupField id="screen" width="${width}"/>
+                    </row>
+                </rows>
+            </grid>
+        </vbox>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>
