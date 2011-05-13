@@ -33,6 +33,7 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.PermissionType;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -120,7 +121,12 @@ public abstract class WindowManager implements Serializable {
             }
         }
 
-        Document document = LayoutLoader.parseDescriptor(stream, params);
+        Document document = null;
+        try {
+            document = LayoutLoader.parseDescriptor(stream, params);
+        } finally {
+            IOUtils.closeQuietly(stream);
+        }
         XmlInheritanceProcessor processor = new XmlInheritanceProcessor(document, params);
         Element element = processor.getResultRoot();
 
@@ -512,7 +518,12 @@ public abstract class WindowManager implements Serializable {
             }
         }
 
-        final IFrame component = (IFrame) loader.loadComponent(stream, parent, context.getParams());
+        final IFrame component;
+        try {
+            component = (IFrame) loader.loadComponent(stream, parent, context.getParams());
+        } finally {
+            IOUtils.closeQuietly(stream);
+        }
         if (component.getMessagesPack() == null) {
             component.setMessagesPack(window.getMessagesPack());
         }

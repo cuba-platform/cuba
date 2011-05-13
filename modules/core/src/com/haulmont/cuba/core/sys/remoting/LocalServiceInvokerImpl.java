@@ -47,7 +47,7 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
             String[] parameterTypeNames = invocation.getParameterTypeNames();
             Class[] parameterTypes = new Class[parameterTypeNames.length];
             for (int i = 0; i < parameterTypeNames.length; i++) {
-                Class<?> paramClass = classLoader.loadClass(parameterTypeNames[i]);
+                Class<?> paramClass = Class.forName(parameterTypeNames[i], true, classLoader); // use Class.forName() because array parameters possible
                 parameterTypes[i] = paramClass;
             }
 

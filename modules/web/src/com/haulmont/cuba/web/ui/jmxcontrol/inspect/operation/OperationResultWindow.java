@@ -15,6 +15,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebLabel;
 import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 
 public class OperationResultWindow extends AbstractWindow {
@@ -37,8 +38,18 @@ public class OperationResultWindow extends AbstractWindow {
             title.setStyleName("h2");
             title.setValue(getMessage("operationResult.exception"));
 
+            if (ex instanceof UndeclaredThrowableException)
+                ex = ex.getCause();
+
+            String msg;
+            if (ex != null) {
+                msg = ex.getClass().getName() + ": \n" + ex.getMessage();
+            } else {
+                msg = "";
+            }
+
             Label trace = new WebLabel();
-            trace.setValue(ex.getMessage());
+            trace.setValue(msg);
 
             container.add(title);
             container.add(trace);

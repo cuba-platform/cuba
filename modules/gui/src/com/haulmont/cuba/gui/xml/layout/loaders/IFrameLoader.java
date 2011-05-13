@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import org.apache.commons.io.IOUtils;
 import org.dom4j.Element;
 
 import java.io.InputStream;
@@ -61,7 +62,12 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
             }
         }
 
-        final IFrame component = (IFrame) loader.loadComponent(stream, parent, context.getParams());
+        final IFrame component;
+        try {
+            component = (IFrame) loader.loadComponent(stream, parent, context.getParams());
+        } finally {
+            IOUtils.closeQuietly(stream);
+        }
         if (component.getMessagesPack() == null) {
             component.setMessagesPack(messagesPack);
         }

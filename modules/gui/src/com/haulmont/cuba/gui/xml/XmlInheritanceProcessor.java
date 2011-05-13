@@ -13,6 +13,7 @@ package com.haulmont.cuba.gui.xml;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,7 +58,12 @@ public class XmlInheritanceProcessor {
                     throw new RuntimeException("Bad template path: " + ancestorTemplate);
                 }
             }
-            Document ancestorDocument = LayoutLoader.parseDescriptor(ancestorStream, params);
+            Document ancestorDocument;
+            try {
+                ancestorDocument = LayoutLoader.parseDescriptor(ancestorStream, params);
+            } finally {
+                IOUtils.closeQuietly(ancestorStream);
+            }
             XmlInheritanceProcessor processor = new XmlInheritanceProcessor(ancestorDocument, params);
             result = processor.getResultRoot();
             process(result, root);

@@ -72,7 +72,11 @@ final class ClassLoaderImpl extends ClassLoader {
    @Override
    protected synchronized Class<?> loadClass(final String name, final boolean resolve)
          throws ClassNotFoundException {
-      return super.loadClass(name, resolve);
+       Class clazz = findClass(name);
+       if (clazz != null)
+           return clazz;
+       else
+           return super.loadClass(name, resolve);
    }
 
    @Override

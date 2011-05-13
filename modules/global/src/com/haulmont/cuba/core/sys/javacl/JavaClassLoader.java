@@ -22,6 +22,7 @@ import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
@@ -74,15 +75,11 @@ public class JavaClassLoader extends URLClassLoader {
 
         @Override
         protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-            Class clazz = null;
-            try {
-                return super.loadClass(name, resolve);
-            } catch (ClassNotFoundException e) {
-                //do nothing
-            }
             TimestampClass tsClass = compiled.get(name);
-            if (tsClass != null) return tsClass.clazz;
-            throw new ClassNotFoundException(name);
+            if (tsClass != null)
+                return tsClass.clazz;
+
+            return super.loadClass(name, resolve);
         }
     }
 
@@ -199,15 +196,13 @@ public class JavaClassLoader extends URLClassLoader {
     }
 
     public Class loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        Class clazz = null;
-        try {
-            clazz = super.loadClass(name, resolve);
-        } catch (ClassNotFoundException e) {
-            //
-        }
+        Class clazz;
 
-        if (clazz != null)
+        File sourceFile = getSourceFile(name);
+        if (!sourceFile.exists()) {
+            clazz = super.loadClass(name, resolve);
             return clazz;
+        }
 
         if (!compilationNeeded(name)) {
             return getTimestampClass(name).clazz;
@@ -216,7 +211,7 @@ public class JavaClassLoader extends URLClassLoader {
         try {
             log.debug("Compiling " + name);
 
-            String src = FileUtils.readFileToString(getSourceFile(name));
+            String src = FileUtils.readFileToString(sourceFile);
             final DiagnosticCollector<JavaFileObject> errs = new DiagnosticCollector<JavaFileObject>();
 
             CharSequenceCompiler compiler = new CharSequenceCompiler(
@@ -251,6 +246,30 @@ public class JavaClassLoader extends URLClassLoader {
             }
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public URL findResource(String name) {
+        if (name.startsWith("/"))
+            name = name.substring(1);
+        File file = new File(rootDir, name);
+        if (file.exists()) {
+            try {
+                return file.toURI().toURL();
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        } else
+            return null;
+    }
+
+    @Override
+    public URL getResource(String name) {
+        URL resource = findResource(name);
+        if (resource != null)
+            return resource;
+        else
+            return super.getResource(name);
     }
 
     private String buildClasspath() {

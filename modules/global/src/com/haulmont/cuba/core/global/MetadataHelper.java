@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.entity.BaseLongIdEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -192,7 +193,11 @@ public abstract class MetadataHelper {
                 if (resourceInputStream == null) {
                     throw new RuntimeException("View resource not found: " + ((resource == null) ? "[null]" : resource));
                 }
-                MetadataProvider.getViewRepository().deployViews(resourceInputStream);
+                try {
+                    MetadataProvider.getViewRepository().deployViews(resourceInputStream);
+                } finally {
+                    IOUtils.closeQuietly(resourceInputStream);
+                }
             }
 
             @SuppressWarnings({"unchecked"})
