@@ -166,6 +166,15 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
         return MessageProvider.getMessage(msgPack, key);
     }
 
+    // wonder, if getMessage() is invoked anywhere from non-child class
+    protected String formatMessage(String key, Object... params) {
+        String msgPack = getMessagesPack();
+        if (msgPack == null)
+            throw new IllegalStateException("MessagePack is not set");
+
+        return MessageProvider.formatMessage(msgPack, key, params);
+    }
+
     public void registerComponent(Component component) {
         frame.registerComponent(component);
     }

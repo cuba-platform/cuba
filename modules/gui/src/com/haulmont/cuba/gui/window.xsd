@@ -384,6 +384,10 @@
                         <xs:attribute name="src" type="xs:string" use="optional"/>
                         <xs:attribute name="screen" type="xs:string" use="optional"/>
                         <xs:attribute name="visible" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
+                        <xs:attribute name="align" type="align" use="optional"/>
                     </xs:complexType>
                 </xs:element>
 
