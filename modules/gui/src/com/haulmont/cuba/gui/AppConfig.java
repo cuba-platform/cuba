@@ -12,8 +12,8 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.config.WindowConfig;
@@ -23,7 +23,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
@@ -117,7 +116,7 @@ public abstract class AppConfig
             menuConfig = createInstance(MENU_CONFIG_IMPL_PROP, MENU_CONFIG_DEFAULT_IMPL);
             final String configName = AppContext.getProperty(MENU_CONFIG_XML_PROP);
 
-            DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+            ConfigurationResourceLoader resourceLoader = new ConfigurationResourceLoader();
             StrTokenizer tokenizer = new StrTokenizer(configName);
             for (String location : tokenizer.getTokenArray()) {
                 Resource resource = resourceLoader.getResource(location);
@@ -149,7 +148,7 @@ public abstract class AppConfig
             windowConfig = createInstance(WINDOW_CONFIG_IMPL_PROP, WINDOW_CONFIG_DEFAULT_IMPL);
             final String configName = AppContext.getProperty(WINDOW_CONFIG_XML_PROP);
 
-            DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+            ConfigurationResourceLoader resourceLoader = new ConfigurationResourceLoader();
             StrTokenizer tokenizer = new StrTokenizer(configName);
             for (String location : tokenizer.getTokenArray()) {
                 Resource resource = resourceLoader.getResource(location);

@@ -14,7 +14,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
@@ -87,7 +86,7 @@ public class MetadataBuildHelper {
     }
 
     public static Element readXml(String path) {
-        Resource resource = new DefaultResourceLoader().getResource(path);
+        Resource resource = new ConfigurationResourceLoader().getResource(path);
         InputStream stream = null;
         try {
             stream = resource.getInputStream();

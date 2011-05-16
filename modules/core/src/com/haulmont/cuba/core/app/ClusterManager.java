@@ -11,12 +11,12 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jgroups.*;
 import org.jgroups.conf.XmlConfigurator;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 
 import javax.annotation.ManagedBean;
@@ -83,7 +83,7 @@ public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, A
                 log.error("No property 'cuba.cluster.jgroupsConfig' specified");
                 return;
             }
-            DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+            ConfigurationResourceLoader resourceLoader = new ConfigurationResourceLoader();
             Resource resource = resourceLoader.getResource(configName);
             stream = resource.getInputStream();
 

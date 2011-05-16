@@ -17,6 +17,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,7 +27,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
@@ -102,7 +102,7 @@ public class ViewRepository
             log.debug("Deploying views config: " + resourceUrl);
 
             InputStream stream = null;
-            Resource resource = new DefaultResourceLoader().getResource(resourceUrl);
+            Resource resource = new ConfigurationResourceLoader().getResource(resourceUrl);
             try {
                 stream = resource.getInputStream();
                 deployViews(stream);

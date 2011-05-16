@@ -10,8 +10,11 @@ import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
+
+import java.io.File;
 
 /**
  * <p>$Id$</p>
@@ -30,7 +33,28 @@ public class RemotingServlet extends DispatcherServlet {
         if (StringUtils.isBlank(configProperty)) {
             throw new IllegalStateException("Missing " + SPRING_CONTEXT_CONFIG + " application property");
         }
-        return configProperty;
+        File baseDir = new File(AppContext.getProperty("cuba.confDir"));
+
+        StrTokenizer tokenizer = new StrTokenizer(configProperty);
+        String[] tokenArray = tokenizer.getTokenArray();
+        StringBuilder locations = new StringBuilder();
+        for (String token : tokenArray) {
+            String location;
+            if (ResourceUtils.isUrl(token)) {
+                location = token;
+            } else {
+                if (token.startsWith("/"))
+                    token = token.substring(1);
+                File file = new File(baseDir, token);
+                if (file.exists()) {
+                    location = file.toURI().toString();
+                } else {
+                    location = "classpath:" + token;
+                }
+            }
+            locations.append(location).append(" ");
+        }
+        return locations.toString();
     }
 
     @Override

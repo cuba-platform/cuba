@@ -1,6 +1,6 @@
 <views xmlns="http://www.haulmont.com/schema/cuba/view.xsd">
 
-    <include file="/com/haulmont/cuba/report/report.views.xml"/>
+    <include file="com/haulmont/cuba/report/report.views.xml"/>
 
     <view class="com.haulmont.cuba.security.entity.User" name="app">
         <property name="login"/>

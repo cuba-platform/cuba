@@ -126,8 +126,8 @@ public abstract class CubaTestCase extends TestCase
 
     protected List<String> getTestAppProperties() {
         String[] files = {
-                "classpath:cuba-app.properties",
-                "classpath:test-app.properties",
+                "cuba-app.properties",
+                "test-app.properties",
         };
         return Arrays.asList(files);
     }
@@ -144,7 +144,7 @@ public abstract class CubaTestCase extends TestCase
     }
 
     protected String getTestSpringConfig() {
-        return "classpath:test-spring.xml";
+        return "test-spring.xml";
     }
 
     protected void initTxManager() throws NamingException {

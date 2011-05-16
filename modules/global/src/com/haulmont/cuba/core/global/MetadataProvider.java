@@ -23,7 +23,7 @@ import java.util.Map;
 public abstract class MetadataProvider
 {
     public static final String METADATA_CONFIG = "cuba.metadataConfig";
-    protected static final String DEFAULT_METADATA_CONFIG = "classpath:cuba-metadata.xml";
+    protected static final String DEFAULT_METADATA_CONFIG = "cuba-metadata.xml";
 
     private static MetadataProvider getInstance() {
         return AppContext.getApplicationContext().getBean("cuba_MetadataProvider", MetadataProvider.class);

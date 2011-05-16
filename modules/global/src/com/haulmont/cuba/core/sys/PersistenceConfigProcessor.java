@@ -12,18 +12,18 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
-import org.apache.commons.cli.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.enhance.PCEnhancer;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 
 import javax.persistence.Entity;
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PersistenceConfigProcessor {
 
@@ -172,7 +172,7 @@ public class PersistenceConfigProcessor {
     private Document getDocument(String fileName) {
         Document doc;
         if (baseDir == null) {
-            Resource resource = new DefaultResourceLoader().getResource(fileName);
+            Resource resource = new ConfigurationResourceLoader().getResource(fileName);
             InputStream stream = null;
             try {
                 stream = resource.getInputStream();

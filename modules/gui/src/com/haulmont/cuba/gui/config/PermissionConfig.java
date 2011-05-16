@@ -20,6 +20,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.io.IOUtils;
@@ -30,7 +31,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
@@ -186,7 +186,7 @@ public class PermissionConfig {
         specific = new Tree<Target>(root);
 
         final String configName = AppContext.getProperty(AppConfig.PERMISSION_CONFIG_XML_PROP);
-        DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+        ConfigurationResourceLoader resourceLoader = new ConfigurationResourceLoader();
         StrTokenizer tokenizer = new StrTokenizer(configName);
         for (String location : tokenizer.getTokenArray()) {
             Resource resource = resourceLoader.getResource(location);
