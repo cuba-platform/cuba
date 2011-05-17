@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
+import com.haulmont.cuba.core.sys.AppContext;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter;
 
@@ -31,7 +32,9 @@ public class HttpServiceExporter extends HttpInvokerServiceExporter implements B
         if (service == null)
             throw new IllegalStateException("Target service is null");
 
+        String entryName = AppContext.getProperty("cuba.webContextName") + name;
+
         LocalServiceInvoker invoker = new LocalServiceInvokerImpl(service);
-        LocalServiceDirectory.registerInvoker(name, invoker);
+        LocalServiceDirectory.registerInvoker(entryName, invoker);
     }
 }
