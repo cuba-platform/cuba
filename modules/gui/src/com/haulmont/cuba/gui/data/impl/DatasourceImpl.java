@@ -13,13 +13,12 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.*;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
 
 public class DatasourceImpl<T extends Entity>
     extends
@@ -154,7 +153,7 @@ public class DatasourceImpl<T extends Entity>
         this.modified = false;
         clearCommitLists();
 
-        if (PersistenceHelper.isNew(item)) {
+        if (item != null && PersistenceHelper.isNew(item)) {
             itemToCreate.add(item);
             this.modified = true;
         }
