@@ -17,10 +17,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.sql.*;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DBDictionaryUtils
 {
@@ -128,7 +125,8 @@ public class DBDictionaryUtils
                     for (Column col : (Collection<Column>) buf.getColumns()) {
                         if (col != null && col.getTableName().equals(tableName)
                                 && !col.getName().equals(idCol)
-                                && !whereSql.contains(alias + "." + deleteTsCol + " IS NULL"))
+                                && !whereSql.contains(alias + "." + deleteTsCol + " IS NULL")
+                                && !aliasForOuterJoin(alias, (SelectImpl) sel))
                         {
                             add = true;
                             break;
@@ -181,6 +179,16 @@ public class DBDictionaryUtils
             }
             return where;
         }
+    }
+
+    private static boolean aliasForOuterJoin(String alias, SelectImpl sel) {
+        Iterator it = sel.getJoinIterator();
+        while (it.hasNext()) {
+            Join join = (Join) it.next();
+            if (alias.equals(join.getAlias2()) && join.getType() == Join.TYPE_OUTER)
+                return true;
+        }
+        return false;
     }
 
     private static PersistenceManagerAPI getPersistenceManagerAPI() {
