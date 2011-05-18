@@ -142,8 +142,7 @@ public class DeletePolicyHelper
         }
 
         String invPropName = inverseProperty.getName();
-        MetaClass invClass = inverseProperty.getDomain();
-        String qlStr = "select e.id from " + invClass.getName() + " e where e." + invPropName + ".id = ?1";
+        String qlStr = "select e.id from " + property.getRange().asClass().getName() + " e where e." + invPropName + ".id = ?1";
 
         EntityManager em = PersistenceProvider.getEntityManager();
         Query query = em.createQuery(qlStr);
@@ -163,8 +162,7 @@ public class DeletePolicyHelper
         }
 
         String invPropName = inverseProperty.getName();
-        MetaClass invClass = inverseProperty.getDomain();
-        String qlStr = "select e from " + invClass.getName() + " e where e." + invPropName + ".id = ?1";
+        String qlStr = "select e from " + property.getRange().asClass().getName() + " e where e." + invPropName + ".id = ?1";
 
         EntityManager em = PersistenceProvider.getEntityManager();
         Query query = em.createQuery(qlStr);
