@@ -92,23 +92,21 @@ public class WebPickerField
     }
 
     private void __setValue(Object newValue) {
-        if (component.getPropertyDataSource() != null) {
-            setValue(newValue);
-        } else {
-            value = newValue;
-            ItemWrapper wrapper = new ItemWrapper(newValue, metaClass, dsManager) {
-                @Override
-                public String toString() {
-                    if (CaptionMode.PROPERTY.equals(captionMode)) {
-                        return String.valueOf(getValue() == null ? ""
-                                : ((Instance) getValue()).getValue(captionProperty));
-                    } else {
-                        return super.toString();
-                    }
+        setValue(newValue);
+    }
+
+    private ItemWrapper createItemWrapper(final Object newValue) {
+        return new ItemWrapper(newValue, metaClass, dsManager) {
+            @Override
+            public String toString() {
+                if (CaptionMode.PROPERTY.equals(captionMode)) {
+                    return String.valueOf(getValue() == null ? ""
+                            : ((Instance) getValue()).getValue(captionProperty));
+                } else {
+                    return super.toString();
                 }
-            };
-            super.setValue(wrapper);
-        }
+            }
+        };
     }
 
     public MetaClass getMetaClass() {
@@ -153,8 +151,15 @@ public class WebPickerField
 
     @Override
     public void setValue(Object value) {
-        this.value = value;
-        super.setValue(value);
+        if (component.getPropertyDataSource() != null) {
+            this.value = value;
+            super.setValue(value);
+        }
+        else {
+            this.value = value;
+            ItemWrapper wrapper = createItemWrapper(value);
+            super.setValue(wrapper);
+        }
     }
 
     @Override
@@ -190,7 +195,7 @@ public class WebPickerField
                         if (CaptionMode.PROPERTY.equals(captionMode)) {
                             return String.valueOf(getValue() == null ? "" : ((Instance) getValue()).getValue(captionProperty));
                         } else {
-                            return String.valueOf(getValue());
+                            return super.toString();
                         }
                     }
                 };
