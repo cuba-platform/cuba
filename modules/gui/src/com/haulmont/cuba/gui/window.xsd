@@ -497,6 +497,7 @@
                 <xs:element name="textField">
                     <xs:complexType>
                         <xs:sequence>
+                            <xs:element name="formatter" minOccurs="0" maxOccurs="1" type="formatterType"/>
                             <xs:element name="validator" minOccurs="0" maxOccurs="unbounded" type="validatorType"/>
                         </xs:sequence>
                         <xs:attribute name="id" type="xs:string" use="required"/>

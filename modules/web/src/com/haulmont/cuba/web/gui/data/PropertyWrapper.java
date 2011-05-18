@@ -10,6 +10,10 @@
 package com.haulmont.cuba.web.gui.data;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.BigDecimalDatatype;
+import com.haulmont.chile.core.datatypes.impl.DoubleDatatype;
+import com.haulmont.chile.core.datatypes.impl.IntegerDatatype;
+import com.haulmont.chile.core.datatypes.impl.LongDatatype;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
@@ -19,6 +23,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.formatters.NumberFormatter;
+import com.haulmont.cuba.gui.components.validators.ValidationHelper;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.vaadin.data.Property;
@@ -88,16 +93,26 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
         if (range == null) {
             return newValue;
         } else {
+            final Object obj;
             if (range.isDatatype() && newValue instanceof String) {
                 try {
-                    final Object value = range.asDatatype().parse((String) newValue);
-                    return value;
+                    String typeName = range.asDatatype().getName();
+                    if (DoubleDatatype.NAME.equals(typeName)
+                            || BigDecimalDatatype.NAME.equals(typeName)
+                            || IntegerDatatype.NAME.equals(typeName)
+                            || LongDatatype.NAME.equals(typeName))
+                    {
+                        obj = ValidationHelper.parseNumber((String) newValue, "#.#");
+                    } else {
+                        obj = range.asDatatype().parse((String) newValue);
+                    }
                 } catch (ParseException e) {
                     throw new Property.ConversionException(e);
                 }
             } else {
-                return newValue;
+                obj = newValue;
             }
+            return obj;
         }
     }
 
