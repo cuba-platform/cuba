@@ -317,8 +317,14 @@ def dbClasspath = configurations.jdbc.fileCollection{ true }.asPath
 
 task startDb(description: 'Starts local HSQLDB server') << {
     dbDataDir.mkdirs()
-    ant.exec(dir: dbDataDir.absolutePath, executable: 'cmd.exe', spawn: true) {
-        arg(line: "/c start $projectDir/db/run-hsqldb.bat $dbClasspath $dbName")
+    if ('linux'.equalsIgnoreCase(System.getProperty('os.name'))) {
+        ant.exec(dir: dbDataDir.absolutePath, executable: '/bin/sh', spawn: true) {
+            arg(line: "$projectDir/db/run-hsqldb.sh $dbClasspath $dbName")
+        }
+    } else {
+        ant.exec(dir: dbDataDir.absolutePath, executable: 'cmd.exe', spawn: true) {
+            arg(line: "/c start $projectDir/db/run-hsqldb.bat $dbClasspath $dbName")
+        }
     }
 }
 

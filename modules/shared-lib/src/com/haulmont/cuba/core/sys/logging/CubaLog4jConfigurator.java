@@ -26,7 +26,8 @@ public class CubaLog4jConfigurator extends DOMConfigurator {
 
         String path = url.getFile();
         for (String name : System.getProperties().stringPropertyNames()) {
-            path = path.replace("${" + name + "}", System.getProperty(name));
+            path = path.replace("${" + name + "}", System.getProperty(name)); // for backward compatibility
+            path = path.replace("{" + name + "}", System.getProperty(name));
         }
         URL realUrl;
         try {
