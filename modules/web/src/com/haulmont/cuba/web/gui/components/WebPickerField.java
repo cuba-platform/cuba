@@ -328,9 +328,13 @@ public class WebPickerField
             if (isReadOnly()) {
                 setPickerButtonIcon(new ThemeResource("pickerfield/img/lookup-btn-readonly.png"));
                 setClearButtonIcon(new ThemeResource("pickerfield/img/clear-btn-readonly.png"));
+                pickerButton.setVisible(false);
+                clearButton.setVisible(false);
             } else {
                 setPickerButtonIcon(new ThemeResource("pickerfield/img/lookup-btn.png"));
                 setClearButtonIcon(new ThemeResource("pickerfield/img/clear-btn.png"));
+                pickerButton.setVisible(true);
+                clearButton.setVisible(true);
             }
         }
 

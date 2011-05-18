@@ -20,10 +20,7 @@ import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -38,7 +35,7 @@ import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
@@ -472,6 +469,13 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     public void setEditable(boolean editable) {
         component.setReadOnly(!editable);
+        // if we have editable field group with some read-only fields then we keep them read-only
+        if (editable) {
+            for (Field field: readOnlyFields) {
+                com.vaadin.ui.Field f = component.getField(field.getId());
+                f.setReadOnly(true);
+            }
+        }
     }
 
     public boolean isRequired(Field field) {
