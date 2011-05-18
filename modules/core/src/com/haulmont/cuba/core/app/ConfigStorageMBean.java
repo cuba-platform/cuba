@@ -11,7 +11,7 @@
 package com.haulmont.cuba.core.app;
 
 /**
- * Management interface of the {@link com.haulmont.cuba.core.app.ConfigStorage} MBean.<br>
+ * Management interface of the {@link ConfigStorageService} MBean.<br>
  */
 public interface ConfigStorageMBean
 {

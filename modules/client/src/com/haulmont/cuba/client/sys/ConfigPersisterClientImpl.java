@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.client.sys;
 
+import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -31,8 +32,7 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
                 value = AppContext.getProperty(name);
                 break;
             case DATABASE:
-//todo                value = getConfigStorageAPI().getConfigProperty(name);
-                value = null;
+                value = getConfigStorage().getConfigProperty(name);
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported config source type: " + sourceType);
@@ -50,10 +50,14 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
                 AppContext.setProperty(name, value);
                 break;
             case DATABASE:
-//todo                getConfigStorageAPI().setConfigProperty(name, value);
+                getConfigStorage().setConfigProperty(name, value);
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported config source type: " + sourceType);
         }
+    }
+
+    private ConfigStorageService getConfigStorage() {
+        return (ConfigStorageService) AppContext.getApplicationContext().getBean(ConfigStorageService.NAME);
     }
 }

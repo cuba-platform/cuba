@@ -11,7 +11,7 @@
 package com.haulmont.cuba.core.app;
 
 /**
- * API of {@link ConfigStorage} MBean.<br>
+ * API of {@link ConfigStorageService} MBean.<br>
  */
 public interface ConfigStorageAPI
 {

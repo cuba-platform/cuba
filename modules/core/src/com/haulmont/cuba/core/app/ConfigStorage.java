@@ -11,7 +11,6 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.entity.Config;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -31,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @ManagedBean(ConfigStorageAPI.NAME)
 public class ConfigStorage extends ManagementBean implements ConfigStorageMBean, ConfigStorageAPI
 {
-    private Log log = LogFactory.getLog(ConfigStorage.class);
+    private Log log = LogFactory.getLog(ConfigStorageService.class);
 
     private Map<String, String> cache = new ConcurrentHashMap<String, String>();
 
