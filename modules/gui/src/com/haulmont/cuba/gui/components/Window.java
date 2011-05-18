@@ -35,6 +35,9 @@ public interface Window extends Serializable, IFrame, Component.HasCaption, Comp
     /** Save this window user settings if they have been changed */
     void saveSettings();
 
+    /** Set focus to component **/
+    void setFocusComponent(String componentId);
+
     /** Get this window user settings */
     Settings getSettings();
 

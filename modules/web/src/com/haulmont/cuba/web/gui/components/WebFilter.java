@@ -156,10 +156,14 @@ public class WebFilter
 
         component.addComponent(topLayout);
 
-        createParamsLayout();
+        createParamsLayout(false);
         component.addComponent(paramsLayout);
 
         updateControls();
+    }
+
+    public void requestFocus() {
+        select.focus();
     }
 
     private void initMaxResultsLayout() {
@@ -334,7 +338,7 @@ public class WebFilter
         return sb.toString();
     }
 
-    private void createParamsLayout() {
+    private void createParamsLayout(boolean focusOnConditions) {
         List<Condition> visibleConditions = new ArrayList<Condition>();
         for (Condition condition : conditions) {
             if (!condition.isHidden())
@@ -352,7 +356,7 @@ public class WebFilter
             rows++;
         com.vaadin.ui.GridLayout grid = new com.vaadin.ui.GridLayout(columns, rows);
         grid.setMargin(true, false, false, false);
-
+        boolean focusSetted=false;
         for (int i = 0; i < visibleConditions.size(); i++) {
             Condition condition = visibleConditions.get(i);
             HorizontalLayout paramLayout = new HorizontalLayout();
@@ -364,6 +368,10 @@ public class WebFilter
                 paramLayout.addComponent(label);
 
                 ParamEditor paramEditor = new ParamEditor(condition, true);
+                if (focusOnConditions && !focusSetted) {
+                    paramEditor.setFocused();
+                    focusSetted = true;
+                }
                 paramLayout.addComponent(paramEditor);
             }
             grid.addComponent(paramLayout, i % columns, i / columns);
@@ -450,7 +458,7 @@ public class WebFilter
             updateControls();
             if (paramsLayout != null)
                 component.removeComponent(paramsLayout);
-            createParamsLayout();
+            createParamsLayout(false);
             component.addComponent(paramsLayout);
         } finally {
             changingFilter = false;
@@ -739,7 +747,7 @@ public class WebFilter
         editor = null;
         updateControls();
         component.removeComponent(editLayout);
-        createParamsLayout();
+        createParamsLayout(true);
         component.addComponent(paramsLayout);
     }
 
@@ -1050,7 +1058,7 @@ public class WebFilter
             parseFilterXml();
             updateControls();
             component.removeComponent(paramsLayout);
-            createParamsLayout();
+            createParamsLayout(true);
             component.addComponent(paramsLayout);
 
             if (!applyingDefault) {

@@ -290,6 +290,12 @@ public class WebWindow
         this.dsContext = dsContext;
     }
 
+    public void setFocusComponent(String componentId) {
+        Component component = getComponent(componentId);
+        if (component != null)
+            component.requestFocus();
+    }
+
     public void addListener(CloseListener listener) {
         if (!listeners.contains(listener))
             listeners.add(listener);

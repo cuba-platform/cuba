@@ -16,12 +16,14 @@ import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
+import com.vaadin.event.*;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
@@ -299,6 +301,33 @@ public class WebWindowManager extends WindowManager {
                 appWindow.setTabSheet(tabSheet);
             }
         }
+
+        appWindow.getMainLayout().getWindow().addAction(new ShortcutListener("onEscape", com.vaadin.event.ShortcutAction.KeyCode.ESCAPE, null) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                AppWindow appWindow = app.getAppWindow();
+                if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
+                    TabSheet tabSheet = appWindow.getTabSheet();
+                    if (tabSheet != null) {
+                        VerticalLayout layout = (VerticalLayout) tabSheet.getSelectedTab();
+                        if (layout != null) {
+                            WindowBreadCrumbs breadCrumbs = getTabs().get(layout);
+                            if (getCurrentWindowData().stacks.get(breadCrumbs).empty()) {
+                                ((AppWindow.AppTabSheet) tabSheet).closeTabAndSelectPrevious(layout);
+                            } else {
+                                breadCrumbs.getCurrentWindow().close("close");
+                            }
+
+                        }
+                    }
+                } else {
+                    Iterator<WindowBreadCrumbs> it = getCurrentWindowData().tabs.values().iterator();
+                    if (it.hasNext()) {
+                        it.next().getCurrentWindow().close("close");
+                    }
+                }
+            }
+        });
     }
 
     protected Layout createNewWinLayout(Window window, Component... components) {

@@ -50,6 +50,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         loadTimers(factory, window, element);
 
         loadShortcuts(window, element);
+        loadFocusedComponent(window,element);
 
         return window;
     }
@@ -189,6 +190,13 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
             } else {
                 throw new InstantiationException("Shortcut must contains \"action\" or \"invoke\" attribute");
             }
+        }
+    }
+
+    protected void loadFocusedComponent(Window window, Element element) {
+        String componentId = element.attributeValue("focusComponent");
+        if (componentId != null) {
+            window.setFocusComponent(componentId);
         }
     }
 

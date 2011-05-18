@@ -155,6 +155,12 @@ public class AbstractWindow extends AbstractFrame
         }
     }
 
+    public void setFocusComponent(String componentId) {
+        Component component = getComponent(componentId);
+        if (component != null)
+            component.requestFocus();
+    }
+
     public Settings getSettings() {
         if (frame instanceof Window) {
             return ((Window) frame).getSettings();

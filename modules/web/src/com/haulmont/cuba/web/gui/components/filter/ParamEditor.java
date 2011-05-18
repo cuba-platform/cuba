@@ -53,4 +53,8 @@ public class ParamEditor extends CustomComponent implements Condition.Listener {
 
     public void captionChanged() {
     }
+
+    public void setFocused() {
+        ((Focusable) field).focus();
+    }
 }

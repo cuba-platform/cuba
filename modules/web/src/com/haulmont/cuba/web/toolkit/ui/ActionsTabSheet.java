@@ -55,16 +55,7 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
             final Component tab = (Component) keyMapper.get((String) variables
                     .get("close"));
             if (tab != null) {
-                while (openedComponents.removeElement(tab))
-                    openedComponents.removeElement(tab);
-                if ((!openedComponents.empty()) && (selected.equals(tab))) {
-                    Component c = openedComponents.pop();
-                    while (!components.contains(c) && !openedComponents.isEmpty())
-                        c = openedComponents.pop();
-
-                    setSelectedTab(c);
-                }
-                closeHandler.onTabClose(this, tab);
+                closeTabAndSelectPrevious(tab);
             }
         } else {
             super.changeVariables(source, variables);
@@ -72,6 +63,18 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
         if (actionManager != null) {
             getActionManager().handleActions(variables, this);
         }
+    }
+
+    public void closeTabAndSelectPrevious(Component tab) {
+        while (openedComponents.removeElement(tab))
+            openedComponents.removeElement(tab);
+        if ((!openedComponents.empty()) && (selected.equals(tab))) {
+            Component c = openedComponents.pop();
+            while (!components.contains(c) && !openedComponents.isEmpty())
+                c = openedComponents.pop();
+            setSelectedTab(c);
+        }
+        closeHandler.onTabClose(this, tab);
     }
 
     @Override

@@ -99,6 +99,11 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     public void saveSettings() {
     }
 
+    @Override
+    public void setFocusComponent(String componentId) {
+        getComponent(componentId).requestFocus();
+    }
+
     public Settings getSettings() {
         return null;
     }
