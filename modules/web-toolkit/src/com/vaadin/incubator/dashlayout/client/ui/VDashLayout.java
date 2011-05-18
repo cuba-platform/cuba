@@ -330,6 +330,8 @@ public class VDashLayout extends ComplexPanel implements Container {
 
         useSpacing = uidl.hasAttribute("spacing");
 
+        if (!uidl.hasAttribute("margins"))
+            return;
         // Margins need to be set before any size calculations
         int bitMask = uidl.getIntAttribute("margins");
         if (marginInfo == null || marginInfo.getBitMask() != bitMask) {

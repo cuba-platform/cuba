@@ -64,10 +64,15 @@ public class PopupButton extends Button implements ComponentContainer {
 						"component cannot be null. Use addComponent to set the component.");
 			}
             component.setVisible(true);
+            component.setSizeUndefined();
 			target.startTag("component");
 			component.paint(target);
 			target.endTag("component");
-		}
+		} else {
+            if (component != null) {
+                component.setWidth("100%");
+            }
+        }
 	}
 
 	/*

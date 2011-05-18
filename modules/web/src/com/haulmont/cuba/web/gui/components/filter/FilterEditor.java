@@ -510,6 +510,14 @@ public class FilterEditor {
     }
 
     public boolean commit() {
+        if (StringUtils.isBlank((String) nameField.getValue())) {
+            App.getInstance().getAppWindow().showNotification(
+                    getMessage("FilterEditor.commitError"),
+                    getMessage("FilterEditor.nameNotSet"),
+                    Window.Notification.TYPE_HUMANIZED_MESSAGE);
+            return false;
+        }
+
         if (filterEntity.getFolder() == null) {
             if (existingNames.contains(nameField.getValue())) {
                 App.getInstance().getAppWindow().showNotification(
@@ -537,7 +545,7 @@ public class FilterEditor {
         FilterParser parser = new FilterParser(conditions, messagesPack, filterComponentName, datasource);
         String xml = parser.toXml().getXml();
 
-        filterEntity.setName((String) nameField.getValue());
+        filterEntity.setName(((String) nameField.getValue()).trim());
         filterEntity.setXml(xml);
 
         if (isTrue((Boolean) globalCb.getValue()))
