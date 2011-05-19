@@ -100,3 +100,8 @@
 .v-ie6 .widgets-tree .v-tree-node-children {
     clear: left;
 }
+
+.v-ie7 .widgets-tree {
+	position: relative;
+	overflow-x:hidden;
+}
