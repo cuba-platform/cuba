@@ -55,7 +55,7 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
         this.frame = frame;
     }
 
-    public void addLazyTask(ComponentLoader.PostInitTask task) {
+    public void addPostInitTask(ComponentLoader.PostInitTask task) {
         postInitTasks.add(task);
     }
 
@@ -67,7 +67,7 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
         this.parent = parent;
     }
 
-    public void executeLazyTasks() {
+    public void executePostInitTasks() {
         if (!getPostInitTasks().isEmpty()) {
             new TastExecutor(getPostInitTasks().get(0)).run();
         }

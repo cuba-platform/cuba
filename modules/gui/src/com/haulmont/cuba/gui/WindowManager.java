@@ -27,7 +27,6 @@ import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
@@ -147,7 +146,7 @@ public abstract class WindowManager implements Serializable {
 
         final Window windowWrapper = wrapByCustomClass(window, element, params);
         componentLoaderContext.setFrame(windowWrapper);
-        componentLoaderContext.executeLazyTasks();
+        componentLoaderContext.executePostInitTasks();
 
         if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
             initDebugIds(window);
@@ -530,7 +529,7 @@ public abstract class WindowManager implements Serializable {
 
         component.setFrame(window);
         context.setFrame(component);
-        context.executeLazyTasks();
+        context.executePostInitTasks();
 
         showFrame(parent, component);
 

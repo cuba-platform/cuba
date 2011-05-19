@@ -185,7 +185,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected void loadAlign(final Component component, Element element) {
         final String align = element.attributeValue("align");
         if (!StringUtils.isBlank(align)) {
-            context.addLazyTask(new PostInitTask() {
+            context.addPostInitTask(new PostInitTask() {
                 public void execute(Context context, IFrame window) {
                     component.setAlignment(Component.Alignment.valueOf(align));
                 }
@@ -251,7 +251,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected void loadAction(Component.ActionOwner component, Element element) {
         final String actionName = element.attributeValue("action");
         if (!StringUtils.isEmpty(actionName)) {
-            context.addLazyTask(new AssignActionPostInitTask(component, actionName, context.getFrame()));
+            context.addPostInitTask(new AssignActionPostInitTask(component, actionName, context.getFrame()));
         }
     }
 
@@ -259,7 +259,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         String presentations = element.attributeValue("presentations");
         if (!StringUtils.isEmpty(presentations) && isBoolean(presentations)) {
             component.usePresentations(evaluateBoolean(presentations));
-            context.addLazyTask(new LoadPresentationsPostInitTask(component));
+            context.addPostInitTask(new LoadPresentationsPostInitTask(component));
         }
     }
 

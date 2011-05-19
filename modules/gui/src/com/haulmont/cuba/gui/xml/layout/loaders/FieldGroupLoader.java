@@ -95,7 +95,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         loadCaptionAlignment(component, element);
 
-        context.addLazyTask(new PostInitTask() {
+        context.addPostInitTask(new PostInitTask() {
             public void execute(Context context, IFrame window) {
                 component.postInit();
                 final List<FieldGroup.Field> fields = component.getFields();

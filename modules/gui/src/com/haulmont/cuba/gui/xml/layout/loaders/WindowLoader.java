@@ -155,7 +155,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
         final String actionName = element.attributeValue("action");
         if (!StringUtils.isEmpty(actionName)) {
-            context.addLazyTask(new PostInitTask() {
+            context.addPostInitTask(new PostInitTask() {
                 public void execute(Context context, final IFrame window) {
                     component.addAction(new AbstractShortcutAction(keyCode, combination) {
                         public void actionPerform(Component component) {
@@ -172,7 +172,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         } else {
             final String methodName = element.attributeValue("invoke");
             if (!StringUtils.isEmpty(methodName)) {
-                context.addLazyTask(new PostInitTask() {
+                context.addPostInitTask(new PostInitTask() {
                     public void execute(Context context, final IFrame window) {
                         component.addAction(new AbstractShortcutAction(keyCode, combination) {
                             public void actionPerform(Component component) {
@@ -200,7 +200,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     }
 
     private void addAssignTimerFrameTask(final Timer timer) {
-        context.addLazyTask(new PostInitTask() {
+        context.addPostInitTask(new PostInitTask() {
             public void execute(Context context, IFrame window) {
                 timer.setFrame((Window) window);
             }

@@ -124,13 +124,13 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                     aClass = ReflectionHelper.getClass(screenClass);
                 res = ((WrappedFrame) frame).wrapBy(aClass);
 
-                parentContext.addLazyTask(new FrameLoaderPostInitTask(res, params, true));
+                parentContext.addPostInitTask(new FrameLoaderPostInitTask(res, params, true));
                 return res;
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
         } else {
-            parentContext.addLazyTask(new FrameLoaderPostInitTask(res, params, false));
+            parentContext.addPostInitTask(new FrameLoaderPostInitTask(res, params, false));
             return res;
         }
     }
@@ -204,7 +204,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                     // do nothing
                 } 
 
-                FrameLoader.this.context.executeLazyTasks();
+                FrameLoader.this.context.executePostInitTasks();
             }
         }
     }

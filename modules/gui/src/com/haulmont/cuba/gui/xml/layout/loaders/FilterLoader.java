@@ -51,7 +51,7 @@ public class FilterLoader extends ComponentLoader {
         final IFrame frame = context.getFrame();
         final String applyTo = element.attributeValue("applyTo");
         if (!StringUtils.isEmpty(applyTo)) {
-            context.addLazyTask(new PostInitTask() {
+            context.addPostInitTask(new PostInitTask() {
                 public void execute(Context context, IFrame window) {
                     Component c = frame.getComponent(applyTo);
                     if (c == null) {
@@ -62,7 +62,7 @@ public class FilterLoader extends ComponentLoader {
             });
         }
 
-        context.addLazyTask(
+        context.addPostInitTask(
                 new PostInitTask() {
                     public void execute(Context context, IFrame window) {
                         filter.loadFiltersAndApplyDefault();

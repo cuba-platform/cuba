@@ -208,9 +208,9 @@ public class WebTabsheet
                     // Fire GUI listener
                     fireTabChanged();
                     // Execute outstanding lazy tasks after GUI listener.
-                    // We suppose that context.executeLazyTasks() executes a task once and then remove it from task list.
+                    // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
                     if (context != null)
-                        context.executeLazyTasks();
+                        context.executePostInitTasks();
                 }
             });
             componentTabChangeListenerInitialized = true;

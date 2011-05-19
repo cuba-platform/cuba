@@ -47,7 +47,7 @@ public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
             for (Table.Column column : columns) {
                 groupProperties.add(column.getId());
             }
-            context.addLazyTask(new PostInitTask() {
+            context.addPostInitTask(new PostInitTask() {
                 public void execute(Context context, IFrame window) {
                     ((GroupTable) component).groupBy(groupProperties.toArray());
                 }

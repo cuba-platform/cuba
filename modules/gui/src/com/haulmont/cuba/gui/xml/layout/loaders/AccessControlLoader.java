@@ -104,7 +104,7 @@ public class AccessControlLoader extends ContainerLoader {
         }
 
         if (component instanceof Button && !editable) {
-            context.addLazyTask(new AccessControlLoaderPostInitTask(component));
+            context.addPostInitTask(new AccessControlLoaderPostInitTask(component));
         }
 
         if (component instanceof Component.HasButtonsPanel && !editable) {

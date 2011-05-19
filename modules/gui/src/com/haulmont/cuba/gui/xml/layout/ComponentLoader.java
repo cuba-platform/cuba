@@ -27,8 +27,8 @@ public interface ComponentLoader extends Serializable {
         DsContext getDsContext();
         Binding getBinding();
 
-        void addLazyTask(PostInitTask task);
-        void executeLazyTasks();
+        void addPostInitTask(PostInitTask task);
+        void executePostInitTasks();
 
         IFrame getFrame();
         void setFrame(IFrame frame);
