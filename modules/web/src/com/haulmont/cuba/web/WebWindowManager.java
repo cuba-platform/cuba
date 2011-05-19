@@ -30,6 +30,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
@@ -561,14 +562,11 @@ public class WebWindowManager extends WindowManager {
             win.getContent().setHeight("100%");
         }
 
-        if (dialogParams.getResizable() != null) {
-            win.setResizable(Boolean.valueOf(dialogParams.getResizable()));
-        }
+        win.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
 
         dialogParams.reset();
 
         win.setModal(true);
-        win.setResizable(false);
 
         App.getInstance().getAppWindow().addWindow(win);
         win.center();

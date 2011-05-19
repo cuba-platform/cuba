@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.charts.Chart;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(Label.NAME, DesktopLabel.class);
         classes.put(CheckBox.NAME, DesktopCheckBox.class);
         classes.put(TextField.NAME, DesktopTextField.class);
+        classes.put(DateField.NAME, DesktopDateField.class);
         classes.put(Table.NAME, DesktopTable.class);
         classes.put(GroupTable.NAME, DesktopGroupTable.class);
         classes.put(ButtonsPanel.NAME, DesktopButtonsPanel.class);

@@ -24,6 +24,7 @@ import java.util.Map;
  *
  * @author krivopustov
  */
+// TODO DesktopLookupField
 public class DesktopLookupField
     extends DesktopAbstractComponent<JPanel>
     implements LookupField

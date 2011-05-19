@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.ScreenHistorySupport;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -17,15 +18,18 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
-import javax.swing.*;
 import javax.swing.AbstractAction;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
@@ -111,7 +115,7 @@ public class DesktopWindowManager extends WindowManager {
         window.setCaption(caption);
         window.setDescription(description);
 
-        JComponent jComponent = null;
+        Object windowData = null;
 
         final WindowOpenMode openMode = new WindowOpenMode(window, openType);
 
@@ -121,22 +125,23 @@ public class DesktopWindowManager extends WindowManager {
                 JComponent tab = findTab(window);
                 if (tab != null) {
                     tabsPane.setSelectedComponent(tab);
-                    jComponent = tab;
+                    windowData = tab;
                     newTab = false;
                 } else {
-                    jComponent = showWindowNewTab(window, caption, description);
+                    windowData = showWindowNewTab(window, caption, description);
                 }
                 break;
             case THIS_TAB:
-                jComponent = showWindowThisTab(window, caption, description);
+                windowData = showWindowThisTab(window, caption, description);
                 break;
             case DIALOG:
+                windowData = showWindowDialog(window, caption, description);
                 break;
             default:
                 throw new UnsupportedOperationException();
         }
 
-        openMode.setData(jComponent);
+        openMode.setData(windowData);
 
         if (window instanceof Window.Wrapper) {
             Window wrappedWindow = ((Window.Wrapper) window).getWrappedWindow();
@@ -146,6 +151,44 @@ public class DesktopWindowManager extends WindowManager {
         }
 
         afterShowWindow(window);
+    }
+
+    private JDialog showWindowDialog(final Window window, String caption, String description) {
+        JDialog dialog = new JDialog(App.getInstance().getMainFrame(), caption);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+        JComponent jComponent = DesktopComponentsHelper.getComposition(window);
+        dialog.add(jComponent);
+        dialog.addWindowListener(
+                new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                        window.close("close", true);
+                    }
+                }
+        );
+
+        Dimension dim = new Dimension();
+        final DialogParams dialogParams = getDialogParams();
+        if (dialogParams.getWidth() != null)
+            dim.width = dialogParams.getWidth();
+        else
+            dim.width = 600;
+
+        if (dialogParams.getHeight() != null) {
+            dim.height = dialogParams.getHeight();
+        }
+        dialog.setMinimumSize(dim);
+        dialog.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
+        dialog.setLocationRelativeTo(App.getInstance().getMainFrame());
+        dialog.pack();
+
+        dialogParams.reset();
+
+        App.getInstance().disable(null);
+        dialog.setVisible(true);
+
+        return dialog;
     }
 
     private JComponent showWindowThisTab(Window window, String caption, String description) {
@@ -288,6 +331,10 @@ public class DesktopWindowManager extends WindowManager {
 
         switch (openMode.openType) {
             case DIALOG: {
+                JDialog dialog = (JDialog) openMode.getData();
+                dialog.setVisible(false);
+                App.getInstance().enable();
+                fireListeners(window, tabs.size() != 0);
                 break;
             }
             case NEW_TAB: {

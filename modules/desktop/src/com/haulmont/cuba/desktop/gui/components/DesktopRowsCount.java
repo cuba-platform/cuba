@@ -16,6 +16,7 @@ import javax.swing.*;
  *
  * @author krivopustov
  */
+// TODO DesktopRowsCount
 public class DesktopRowsCount extends DesktopAbstractComponent<JPanel> implements RowsCount {
 
     private CollectionDatasource datasource;

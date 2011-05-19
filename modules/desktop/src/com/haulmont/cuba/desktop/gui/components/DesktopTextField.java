@@ -223,7 +223,12 @@ public class DesktopTextField extends DesktopAbstractComponent<JTextComponent> i
                             return;
                         Object value = InstanceUtils.getValueEx((Instance) item, metaPropertyPath.getPath());
                         String text = formatValue(value);
-                        getImpl().setText(text);
+                        updatingInstance = true;
+                        try {
+                            getImpl().setText(text);
+                        } finally {
+                            updatingInstance = false;
+                        }
                     }
 
                     @Override
@@ -232,7 +237,12 @@ public class DesktopTextField extends DesktopAbstractComponent<JTextComponent> i
                             return;
                         if (property.equals(metaPropertyPath.toString())) {
                             String text = formatValue(value);
-                            getImpl().setText(text);
+                            updatingInstance = true;
+                            try {
+                                getImpl().setText(text);
+                            } finally {
+                                updatingInstance = false;
+                            }
                         }
                     }
                 }

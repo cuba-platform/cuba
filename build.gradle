@@ -124,8 +124,8 @@ configure(coreModule) {
         compile(group: 'org.openoffice', name: 'unoil', version: '3.0.0')       
         compile(group: 'org.springframework', name: 'spring-context-support', version: '3.0.5.RELEASE')       
         compile(group: 'org.springframework', name: 'spring-orm', version: '3.0.5.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-tx', version: '3.0.5.RELEASE')       
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.0.5.RELEASE')       
+        compile(group: 'org.springframework', name: 'spring-tx', version: '3.0.5.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.0.5.RELEASE')
 
         provided(servletApi)
 
@@ -288,6 +288,7 @@ configure(desktopModule) {
         compile(clientModule)
         compile(guiModule)
         compile(group: 'com.haulmont.thirdparty', name: 'miglayout', version: '3.7.4')
+        runtime(group: 'org.springframework', name: 'spring-tx', version: '3.0.5.RELEASE')
     }
 }
 

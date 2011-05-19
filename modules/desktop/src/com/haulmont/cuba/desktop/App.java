@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.sys.DesktopAppContextLoader;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
+import com.haulmont.cuba.desktop.sys.DisabledGlassPane;
 import com.haulmont.cuba.desktop.sys.MenuBuilder;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
@@ -19,6 +20,7 @@ import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -48,6 +50,8 @@ public class App implements ConnectionListener {
     protected DesktopWindowManager windowManager;
 
     private JTabbedPane tabsPane;
+
+    private DisabledGlassPane glassPane;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -183,6 +187,10 @@ public class App implements ConnectionListener {
                     }
                 }
         );
+
+        glassPane = new DisabledGlassPane();
+        JRootPane rootPane = SwingUtilities.getRootPane(frame);
+        rootPane.setGlassPane(glassPane);
 
         frame.setContentPane(createStartContentPane());
     }
@@ -326,5 +334,13 @@ public class App implements ConnectionListener {
 
     public JFrame getMainFrame() {
         return frame;
+    }
+
+    public void disable(@Nullable String message) {
+        glassPane.activate(message);
+    }
+
+    public void enable() {
+        glassPane.deactivate();
     }
 }

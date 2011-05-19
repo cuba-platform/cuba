@@ -21,6 +21,7 @@ import java.util.Collections;
  *
  * @author krivopustov
  */
+// TODO DesktopFilter
 public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements Filter {
 
     private CollectionDatasource datasource;
