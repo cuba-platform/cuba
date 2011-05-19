@@ -93,3 +93,7 @@
     padding-left: 0;
     color: #c0c0c0;
 }
+
+.v-menubar .menuitem div{
+	white-space: nowrap;
+}
