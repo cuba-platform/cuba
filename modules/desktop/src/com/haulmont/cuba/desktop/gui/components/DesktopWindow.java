@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
+import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
@@ -20,12 +21,16 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.gui.settings.Settings;
+import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ConcurrentNavigableMap;
 
 /**
  * <p>$Id$</p>
@@ -65,11 +70,15 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     protected Runnable doAfterClose;
 
     public DesktopWindow() {
+        initLayout();
+        delegate = createDelegate();
+    }
+
+    protected void initLayout() {
         panel = new JPanel();
         layoutAdapter = BoxLayoutAdapter.create(panel);
         layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.Y);
         layoutAdapter.setMargin(true);
-        delegate = createDelegate();
     }
 
     protected WindowDelegate createDelegate() {
@@ -320,7 +329,7 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     }
 
     public void add(Component component) {
-        panel.add(DesktopComponentsHelper.getComposition(component));
+        getContainer().add(DesktopComponentsHelper.getComposition(component));
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
             registerComponent(component);
@@ -329,7 +338,7 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     }
 
     public void remove(Component component) {
-        panel.remove(DesktopComponentsHelper.getComposition(component));
+        getContainer().remove(DesktopComponentsHelper.getComposition(component));
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
         }
@@ -477,6 +486,10 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         }
     }
 
+    protected JComponent getContainer() {
+        return panel;
+    }
+
     public static class Editor extends DesktopWindow implements Window.Editor {
 
         private static final long serialVersionUID = -7042930104147784581L;
@@ -545,5 +558,115 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
             return ((EditorWindowDelegate) delegate).isLocked();
         }
 
+    }
+
+    public static class Lookup extends DesktopWindow implements Window.Lookup {
+
+        private Component lookupComponent;
+        private Handler handler;
+        private Validator validator;
+
+        private JPanel container;
+
+        @Override
+        public Component getLookupComponent() {
+            return lookupComponent;
+        }
+
+        @Override
+        public void setLookupComponent(Component lookupComponent) {
+            this.lookupComponent = lookupComponent;
+        }
+
+        @Override
+        public Handler getLookupHandler() {
+            return handler;
+        }
+
+        @Override
+        public void setLookupHandler(Handler handler) {
+            this.handler = handler;
+        }
+
+        @Override
+        public Validator getLookupValidator() {
+            return validator;
+        }
+
+        @Override
+        public void setLookupValidator(Validator validator) {
+            this.validator = validator;
+        }
+
+        @Override
+        protected void initLayout() {
+            panel = new JPanel();
+            panel.setLayout(
+                    new MigLayout(
+                            "flowy, fillx, ins 0" + (LayoutAdapter.isDebug() ? ", debug" : ""),
+                            "",
+                            "[]0[]")
+            );
+
+            container = new JPanel();
+            layoutAdapter = BoxLayoutAdapter.create(container);
+            layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.Y);
+            layoutAdapter.setMargin(true);
+
+            panel.add(container, "grow");
+
+            JPanel buttonsPanel = new JPanel();
+            buttonsPanel.setLayout(
+                    new MigLayout("ins 0 n n n" + (LayoutAdapter.isDebug() ? ", debug" : ""))
+            );
+
+            JButton selectBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
+            selectBtn.addActionListener(
+                    new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            if (validator != null && !validator.validate())
+                                return;
+
+                            Collection selected;
+                            if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table ) {
+                                selected = ((com.haulmont.cuba.gui.components.Table) lookupComponent).getSelected();
+                            } else if (lookupComponent instanceof com.haulmont.cuba.gui.components.Tree) {
+                                selected = ((com.haulmont.cuba.gui.components.Tree) lookupComponent).getSelected();
+                            } else if (lookupComponent instanceof LookupField) {
+                                selected = Collections.singleton(((LookupField) lookupComponent).getValue());
+                            } else if (lookupComponent instanceof PickerField) {
+                                selected = Collections.singleton(((PickerField) lookupComponent).getValue());
+                            } else if (lookupComponent instanceof OptionsGroup) {
+                                final OptionsGroup optionsGroup = (OptionsGroup) lookupComponent;
+                                selected = optionsGroup.getValue();
+                            } else {
+                                throw new UnsupportedOperationException();
+                            }
+                            close("select");
+                            handler.handleLookup(selected);
+                        }
+                    }
+            );
+            buttonsPanel.add(selectBtn);
+
+            JButton cancelBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
+            cancelBtn.addActionListener(
+                    new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            close("cancel");
+                        }
+                    }
+            );
+            buttonsPanel.add(cancelBtn);
+
+            panel.add(buttonsPanel);
+        }
+
+        @Override
+        protected JComponent getContainer() {
+            return container;
+        }
     }
 }

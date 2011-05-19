@@ -26,11 +26,13 @@ public class DesktopComponentsFactory implements ComponentsFactory {
     static {
         classes.put(Window.NAME, DesktopWindow.class);
         classes.put(Window.Editor.NAME, DesktopWindow.Editor.class);
+        classes.put(Window.Lookup.NAME, DesktopWindow.Lookup.class);
 
         classes.put(IFrame.NAME, DesktopFrame.class);
         classes.put("hbox", DesktopHBox.class);
         classes.put("vbox", DesktopVBox.class);
         classes.put(GridLayout.NAME, DesktopGridLayout.class);
+        classes.put(SplitPanel.NAME, DesktopSplitPanel.class);
 
         classes.put(Button.NAME, DesktopButton.class);
         classes.put(Label.NAME, DesktopLabel.class);
@@ -42,6 +44,8 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(Filter.NAME, DesktopFilter.class);
         classes.put(FieldGroup.NAME, DesktopFieldGroup.class);
         classes.put(RowsCount.NAME, DesktopRowsCount.class);
+        classes.put(PopupButton.NAME, DesktopPopupButton.class);
+        classes.put(LookupField.NAME, DesktopLookupField.class);
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {

@@ -123,39 +123,6 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
     @Override
     public String toString() {
         final Object value = getValue();
-        if (value == null) return null;
-
-        final Range range = propertyPath.getRange();
-        if (range.isDatatype()) {
-            return formatDatatype(value, range);
-        } else if (range.isEnum()) {
-            String nameKey = value.getClass().getSimpleName() + "." + value.toString();
-            return MessageProvider.getMessage(value.getClass(), nameKey);
-        } else {
-            if (value instanceof Instance)
-                return ((Instance) value).getInstanceName();
-            else
-                return value.toString();
-        }
-    }
-
-    protected String formatDatatype(final Object value, Range range) {
-        if (range.asDatatype().equals(Datatypes.getInstance().get(Date.class))) {
-            String formatStr;
-            TemporalType tt = (TemporalType) propertyPath.getMetaProperty().getAnnotations().get("temporal");
-            if (TemporalType.DATE.equals(tt)) {
-                formatStr = MessageUtils.getDateFormat();
-            } else {
-                formatStr = MessageUtils.getDateTimeFormat();
-            }
-            return new SimpleDateFormat(formatStr).format(value);
-        } else {
-            Class datatypeClass = range.asDatatype().getJavaClass();
-            if (Number.class.isAssignableFrom(datatypeClass)) {
-                Formatter formatter = new NumberFormatter();
-                return formatter.format(value);
-            }
-            return value.toString();
-        }
+        return MessageUtils.format(value, propertyPath.getMetaProperty());
     }
 }

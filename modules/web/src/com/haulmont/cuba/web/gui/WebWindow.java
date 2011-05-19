@@ -817,7 +817,7 @@ public class WebWindow
         private Validator validator;
 
         private Component lookupComponent;
-        private VerticalLayout contaiter;
+        private VerticalLayout container;
         private Button selectButton;
         private Button cancelButton;
 
@@ -839,7 +839,7 @@ public class WebWindow
 
         @Override
         protected ComponentContainer getContainer() {
-            return contaiter;
+            return container;
         }
 
         public void setLookupValidator(Validator validator) {
@@ -864,7 +864,7 @@ public class WebWindow
         protected com.vaadin.ui.Component createLayout() {
             final VerticalLayout form = new VerticalActionsLayout();
 
-            contaiter = new VerticalLayout();
+            container = new VerticalLayout();
 
             HorizontalLayout okbar = new HorizontalLayout();
             okbar.setHeight(-1, Sizeable.UNITS_PIXELS);
@@ -892,11 +892,11 @@ public class WebWindow
             okbar.addComponent(selectButton);
             okbar.addComponent(cancelButton);
 
-            form.addComponent(contaiter);
+            form.addComponent(container);
             form.addComponent(okbar);
 
-            contaiter.setSizeFull();
-            form.setExpandRatio(contaiter, 1);
+            container.setSizeFull();
+            form.setExpandRatio(container, 1);
             form.setComponentAlignment(okbar, com.vaadin.ui.Alignment.MIDDLE_LEFT);
 
             return form;

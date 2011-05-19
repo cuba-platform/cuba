@@ -9,17 +9,21 @@
  */
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.impl.BigDecimalDatatype;
+import com.haulmont.chile.core.datatypes.impl.DateDatatype;
+import com.haulmont.chile.core.datatypes.impl.IntegerDatatype;
+import com.haulmont.chile.core.datatypes.impl.LongDatatype;
+import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.entity.annotation.LocalizedValue;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.persistence.TemporalType;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
 
 /**
  * Utility class to get localized messages by references defined in XML descriptors
@@ -260,5 +264,56 @@ public class MessageUtils {
             }
         }
         return null;
+    }
+
+    public static String format(Object value, MetaProperty property) {
+        if (value == null)
+            return null;
+
+        Range range = property.getRange();
+        if (range.isDatatype()) {
+            Datatype datatype = range.asDatatype();
+            if (datatype.getName().equals(DateDatatype.NAME)) {
+                String formatStr;
+                TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
+                if (TemporalType.DATE.equals(tt)) {
+                    formatStr = MessageUtils.getDateFormat();
+                } else {
+                    formatStr = MessageUtils.getDateTimeFormat();
+                }
+                return new SimpleDateFormat(formatStr).format(value);
+            } else {
+                Class datatypeClass = datatype.getJavaClass();
+                if (Number.class.isAssignableFrom(datatypeClass)) {
+                    String pattern;
+                    if (datatype.getName().equals(IntegerDatatype.NAME)) {
+                        pattern = MessageUtils.getIntegerFormat();
+                    } else if (datatype.getName().equals(BigDecimalDatatype.NAME)) {
+                        pattern = MessageUtils.getBigDecimalFormat();
+                    } else if (datatype.getName().equals(LongDatatype.NAME)) {
+                        pattern = MessageUtils.getLongFormat();
+                    } else {
+                        pattern = MessageUtils.getDoubleFormat();
+                    }
+
+                    DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+                    symbols.setDecimalSeparator(MessageUtils.getNumberDecimalSeparator());
+                    symbols.setGroupingSeparator(MessageUtils.getNumberGroupingSeparator());
+
+                    DecimalFormat format = new DecimalFormat(pattern, symbols);
+                    return format.format(value);
+                }
+                return value.toString();
+            }
+        } else if (range.isEnum()) {
+            String nameKey = value.getClass().getSimpleName() + "." + value.toString();
+            return MessageProvider.getMessage(value.getClass(), nameKey);
+        } else {
+            if (value instanceof Instance)
+                return ((Instance) value).getInstanceName();
+            else
+                return value.toString();
+        }
+
     }
 }

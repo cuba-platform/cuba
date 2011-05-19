@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.SplitPanel;
@@ -68,7 +69,7 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
     }
 
     public Collection<Component> getComponents() {
-        return WebComponentsHelper.getComponents(this);
+        return ComponentsHelper.getComponents(this);
     }
 
     public String getId() {

@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
 import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -22,12 +23,21 @@ public class FieldFactory {
     public Component createField(Datasource datasource, String property) {
         MetaClass metaClass = datasource.getMetaClass();
         MetaPropertyPath mpp = metaClass.getPropertyPath(property);
-        if (mpp.getRange().isDatatype() && mpp.getRange().asDatatype().getName().equals(StringDatatype.NAME)) {
-            return createStringField(datasource, property);
-        } else {
-            return createUnsupportedField(datasource, property);
+        if (mpp.getRange().isDatatype()) {
+            String typeName = mpp.getRange().asDatatype().getName();
+            if (typeName.equals(StringDatatype.NAME)) {
+                return createStringField(datasource, property);
+            } else if (typeName.equals(BooleanDatatype.NAME)) {
+                return createBooleanField(datasource, property);
+            }
         }
+        return createUnsupportedField(mpp);
+    }
 
+    private Component createBooleanField(Datasource datasource, String property) {
+        DesktopCheckBox checkBox = new DesktopCheckBox();
+        checkBox.setDatasource(datasource, property);
+        return checkBox;
     }
 
     private Component createStringField(Datasource datasource, String property) {
@@ -36,9 +46,9 @@ public class FieldFactory {
         return textField;
     }
 
-    private Component createUnsupportedField(Datasource datasource, String property) {
+    private Component createUnsupportedField(MetaPropertyPath mpp) {
         DesktopLabel label = new DesktopLabel();
-        label.setValue("<not supported yet>");
+        label.setValue("TODO: " + mpp.getRange());
         return label;
     }
 }
