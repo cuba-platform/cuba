@@ -639,15 +639,29 @@ public class WebFilter
                 .addParameter("component", getComponentPath())
                 .addParameter("userId", user.getId());
 
-        List<FilterEntity> filters = ds.loadList(ctx);
+        List<FilterEntity> filters = new ArrayList(ds.loadList(ctx));
+        final Map<FilterEntity, String> captions = new HashMap<FilterEntity, String>();
+        for (FilterEntity filter : filters) {
+            if (filter.getCode() == null)
+                captions.put(filter, filter.getName());
+            else {
+                captions.put(filter, MessageProvider.getMessage(mainMessagesPack, filter.getCode()));
+            }
+        }
+
+        Collections.sort(
+                filters,
+                new Comparator<FilterEntity>() {
+                    public int compare(FilterEntity f1, FilterEntity f2) {
+                        return captions.get(f1).compareTo(captions.get(f2));
+                    }
+                }
+        );
+
         select.addItem(noFilter);
         for (FilterEntity filter : filters) {
             select.addItem(filter);
-            if (filter.getCode() == null)
-                select.setItemCaption(filter, filter.getName());
-            else {
-                select.setItemCaption(filter, MessageProvider.getMessage(mainMessagesPack, filter.getCode()));
-            }
+            select.setItemCaption(filter, captions.get(filter));
         }
     }
 
