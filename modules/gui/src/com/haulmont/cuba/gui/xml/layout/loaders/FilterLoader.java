@@ -48,10 +48,11 @@ public class FilterLoader extends ComponentLoader {
 
         assignFrame(filter);
 
+        final IFrame frame = context.getFrame();
         final String applyTo = element.attributeValue("applyTo");
         if (!StringUtils.isEmpty(applyTo)) {
-            context.addLazyTask(new LazyTask() {
-                public void execute(Context context, IFrame frame) {
+            context.addLazyTask(new PostInitTask() {
+                public void execute(Context context, IFrame window) {
                     Component c = frame.getComponent(applyTo);
                     if (c == null) {
                         throw new IllegalArgumentException("Cannot apply filter to component with id: " + applyTo);
@@ -62,8 +63,8 @@ public class FilterLoader extends ComponentLoader {
         }
 
         context.addLazyTask(
-                new LazyTask() {
-                    public void execute(Context context, IFrame frame) {
+                new PostInitTask() {
+                    public void execute(Context context, IFrame window) {
                         filter.loadFiltersAndApplyDefault();
                     }
                 }

@@ -16,7 +16,7 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
     protected IFrame frame;
     protected transient Binding binding;
 
-    protected List<ComponentLoader.LazyTask> lazyTasks = new ArrayList<ComponentLoader.LazyTask>();
+    protected List<ComponentLoader.PostInitTask> postInitTasks = new ArrayList<ComponentLoader.PostInitTask>();
     protected Map<String, Object> parameters;
 
     protected ComponentLoader.Context parent;
@@ -55,8 +55,8 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
         this.frame = frame;
     }
 
-    public void addLazyTask(ComponentLoader.LazyTask task) {
-        lazyTasks.add(task);
+    public void addLazyTask(ComponentLoader.PostInitTask task) {
+        postInitTasks.add(task);
     }
 
     public ComponentLoader.Context getParent() {
@@ -68,35 +68,35 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
     }
 
     public void executeLazyTasks() {
-        if (!getLazyTasks().isEmpty()) {
-            new TastExecutor(getLazyTasks().get(0)).run();
+        if (!getPostInitTasks().isEmpty()) {
+            new TastExecutor(getPostInitTasks().get(0)).run();
         }
     }
 
-    public List<ComponentLoader.LazyTask> getLazyTasks() {
-        return lazyTasks;
+    public List<ComponentLoader.PostInitTask> getPostInitTasks() {
+        return postInitTasks;
     }
 
-    protected void removeTask(ComponentLoader.LazyTask task, ComponentLoaderContext context) {
-        if (context.getLazyTasks().remove(task) && context.getParent() != null) {
+    protected void removeTask(ComponentLoader.PostInitTask task, ComponentLoaderContext context) {
+        if (context.getPostInitTasks().remove(task) && context.getParent() != null) {
             removeTask(task, (ComponentLoaderContext) context.getParent());
         }
     }
 
     private class TastExecutor implements Runnable, Serializable {
-        private final ComponentLoader.LazyTask task;
+        private final ComponentLoader.PostInitTask task;
 
         private static final long serialVersionUID = 4776677725415883750L;
 
-        private TastExecutor(ComponentLoader.LazyTask task) {
+        private TastExecutor(ComponentLoader.PostInitTask task) {
             this.task = task;
         }
 
         public void run() {
             removeTask(task, ComponentLoaderContext.this);
             task.execute(ComponentLoaderContext.this, frame);
-            if (!getLazyTasks().isEmpty()) {
-                new TastExecutor(getLazyTasks().get(0)).run();
+            if (!getPostInitTasks().isEmpty()) {
+                new TastExecutor(getPostInitTasks().get(0)).run();
             }
         }
     }

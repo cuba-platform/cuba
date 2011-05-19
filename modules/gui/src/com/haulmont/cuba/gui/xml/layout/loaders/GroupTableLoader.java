@@ -10,7 +10,6 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Table;
@@ -48,8 +47,8 @@ public class GroupTableLoader extends AbstractTableLoader<GroupTable> {
             for (Table.Column column : columns) {
                 groupProperties.add(column.getId());
             }
-            context.addLazyTask(new LazyTask() {
-                public void execute(Context context, IFrame frame) {
+            context.addLazyTask(new PostInitTask() {
+                public void execute(Context context, IFrame window) {
                     ((GroupTable) component).groupBy(groupProperties.toArray());
                 }
             });

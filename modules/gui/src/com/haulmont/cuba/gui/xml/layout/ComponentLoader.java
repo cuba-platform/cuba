@@ -10,7 +10,6 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.DsContext;
 import org.dom4j.Element;
@@ -28,7 +27,7 @@ public interface ComponentLoader extends Serializable {
         DsContext getDsContext();
         Binding getBinding();
 
-        void addLazyTask(LazyTask task);
+        void addLazyTask(PostInitTask task);
         void executeLazyTasks();
 
         IFrame getFrame();
@@ -38,8 +37,16 @@ public interface ComponentLoader extends Serializable {
         void setParent(Context parent);
     }
 
-    public interface LazyTask extends Serializable {
-        void execute(Context context, IFrame frame);
+    /**
+     * PostInitTasks are used to perform deferred initialization of visual components
+     */
+    public interface PostInitTask extends Serializable {
+        /**
+         * This method will be invoked after window initialization
+         * @param context loader context
+         * @param window top-most window
+         */
+        void execute(Context context, IFrame window);
     }
 
     Context getContext();

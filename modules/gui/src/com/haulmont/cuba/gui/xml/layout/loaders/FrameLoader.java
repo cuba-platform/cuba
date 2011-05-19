@@ -104,7 +104,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         }
         component = wrapByCustomClass(component, element, params, parentContext);
 
-        parentContext.getLazyTasks().addAll(newContext.getLazyTasks());
+        parentContext.getPostInitTasks().addAll(newContext.getPostInitTasks());
 
         return component;
     }
@@ -124,13 +124,13 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                     aClass = ReflectionHelper.getClass(screenClass);
                 res = ((WrappedFrame) frame).wrapBy(aClass);
 
-                parentContext.addLazyTask(new FrameLoaderLazyTask(res, params, true));
+                parentContext.addLazyTask(new FrameLoaderPostInitTask(res, params, true));
                 return res;
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
         } else {
-            parentContext.addLazyTask(new FrameLoaderLazyTask(res, params, false));
+            parentContext.addLazyTask(new FrameLoaderPostInitTask(res, params, false));
             return res;
         }
     }
@@ -184,19 +184,19 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         }
     }
 
-    private class FrameLoaderLazyTask implements LazyTask {
+    private class FrameLoaderPostInitTask implements PostInitTask {
 
         private IFrame frame;
         private Map<String, Object> params;
         private boolean wrapped;
 
-        public FrameLoaderLazyTask(IFrame frame, Map<String, Object> params, boolean wrapped) {
+        public FrameLoaderPostInitTask(IFrame frame, Map<String, Object> params, boolean wrapped) {
             this.frame = frame;
             this.params = params;
             this.wrapped = wrapped;
         }
 
-        public void execute(Context context, IFrame frame) {
+        public void execute(Context context, IFrame window) {
             if (wrapped) {
                 try {
                     ReflectionHelper.invokeMethod(this.frame, "init", params);

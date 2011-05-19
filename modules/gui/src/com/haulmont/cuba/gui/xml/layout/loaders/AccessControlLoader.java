@@ -104,7 +104,7 @@ public class AccessControlLoader extends ContainerLoader {
         }
 
         if (component instanceof Button && !editable) {
-            context.addLazyTask(new AccessControlLoaderLazyTask(component));
+            context.addLazyTask(new AccessControlLoaderPostInitTask(component));
         }
 
         if (component instanceof Component.HasButtonsPanel && !editable) {
@@ -166,15 +166,15 @@ public class AccessControlLoader extends ContainerLoader {
         return true;
     }
 
-    private static class AccessControlLoaderLazyTask implements LazyTask {
+    private static class AccessControlLoaderPostInitTask implements PostInitTask {
 
         private final Component component;
 
-        public AccessControlLoaderLazyTask(Component component) {
+        public AccessControlLoaderPostInitTask(Component component) {
             this.component = component;
         }
 
-        public void execute(Context context, IFrame frame) {
+        public void execute(Context context, IFrame window) {
 
             final String messagesPackage = AppConfig.getInstance().getMessagesPack();
             component.setEnabled(false);

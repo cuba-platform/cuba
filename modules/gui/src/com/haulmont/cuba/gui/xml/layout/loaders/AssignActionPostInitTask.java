@@ -15,18 +15,18 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import java.util.Arrays;
 import java.util.List;
 
-public class AssignActionLazyTask implements com.haulmont.cuba.gui.xml.layout.ComponentLoader.LazyTask {
+public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
     protected Component.ActionOwner component;
     protected String actionName;
     private IFrame frame;
 
-    public AssignActionLazyTask(Component.ActionOwner component, String actionName, IFrame frame) {
+    public AssignActionPostInitTask(Component.ActionOwner component, String actionName, IFrame frame) {
         this.component = component;
         this.actionName = actionName;
         this.frame = frame;
     }
 
-    public void execute(ComponentLoader.Context context, IFrame frame) {
+    public void execute(ComponentLoader.Context context, IFrame window) {
         final String[] elements = ValuePathHelper.parse(actionName);
         if (elements.length > 1) {
             final String id = elements[elements.length - 1];

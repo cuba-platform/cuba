@@ -155,12 +155,12 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
         final String actionName = element.attributeValue("action");
         if (!StringUtils.isEmpty(actionName)) {
-            context.addLazyTask(new LazyTask() {
-                public void execute(Context context, final IFrame frame) {
+            context.addLazyTask(new PostInitTask() {
+                public void execute(Context context, final IFrame window) {
                     component.addAction(new AbstractShortcutAction(keyCode, combination) {
                         public void actionPerform(Component component) {
                             //todo
-                            final Action action = ComponentsHelper.findAction(actionName, frame);
+                            final Action action = ComponentsHelper.findAction(actionName, window);
                             if (action == null) {
                                 throw new IllegalArgumentException(String.format("Can't find action '%s'", actionName));
                             }
@@ -172,11 +172,10 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         } else {
             final String methodName = element.attributeValue("invoke");
             if (!StringUtils.isEmpty(methodName)) {
-                context.addLazyTask(new LazyTask() {
-                    public void execute(Context context, final IFrame frame) {
+                context.addLazyTask(new PostInitTask() {
+                    public void execute(Context context, final IFrame window) {
                         component.addAction(new AbstractShortcutAction(keyCode, combination) {
                             public void actionPerform(Component component) {
-                                Window window = (Window) frame;
                                 try {
                                     Method method = window.getClass().getMethod(methodName);
                                     method.invoke(window);
@@ -201,9 +200,9 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
     }
 
     private void addAssignTimerFrameTask(final Timer timer) {
-        context.addLazyTask(new LazyTask() {
-            public void execute(Context context, IFrame frame) {
-                timer.setFrame((Window) frame);
+        context.addLazyTask(new PostInitTask() {
+            public void execute(Context context, IFrame window) {
+                timer.setFrame((Window) window);
             }
         });
     }
