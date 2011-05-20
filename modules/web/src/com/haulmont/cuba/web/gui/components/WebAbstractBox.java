@@ -125,4 +125,8 @@ class WebAbstractBox extends AbstractOrderedLayout
         final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(component);
         WebComponentsHelper.expand(this, expandedComponent, height, width);
     }
+
+    public void expand(Component component) {
+        expand(component, "", "");
+    }
 }

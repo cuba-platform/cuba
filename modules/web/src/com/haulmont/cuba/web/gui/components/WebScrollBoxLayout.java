@@ -110,6 +110,10 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
 //        }
     }
 
+    public void expand(Component component) {
+        expand(component, "", "");
+    }
+
     public <A extends IFrame> A getFrame() {
         return (A) frame;
     }

@@ -10,7 +10,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 
 import javax.swing.*;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * <p>$Id$</p>
@@ -22,6 +22,8 @@ public class DesktopPopupButton
         extends DesktopAbstractComponent<JPanel>
         implements PopupButton
 {
+    private java.util.List<Action> actionOrder = new LinkedList<Action>();
+
     public DesktopPopupButton() {
         impl = new JPanel(new java.awt.FlowLayout());
         impl.setBorder(BorderFactory.createLineBorder(java.awt.Color.gray));
@@ -82,7 +84,7 @@ public class DesktopPopupButton
 
     @Override
     public Collection<Action> getActions() {
-        return null;
+        return Collections.unmodifiableCollection(actionOrder);
     }
 
     @Override

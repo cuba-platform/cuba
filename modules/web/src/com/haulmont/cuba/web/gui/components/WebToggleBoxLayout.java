@@ -142,6 +142,10 @@ public class WebToggleBoxLayout
             WebComponentsHelper.expand(this, expandedComponent, height, width);
         }
 
+        public void expand(Component component) {
+            expand(component, "", "");
+        }
+
         public void add(Component component) {
             addComponent(WebComponentsHelper.getComposition(component));
             if (component.getId() != null) {

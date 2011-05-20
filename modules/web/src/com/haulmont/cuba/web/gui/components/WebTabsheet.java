@@ -9,20 +9,20 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ComponentVisitor;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.Tabsheet;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
-import com.haulmont.cuba.gui.ComponentVisitor;
-import com.haulmont.cuba.web.gui.WebComponentsFactory;
 import com.vaadin.ui.TabSheet;
+import org.dom4j.Element;
 
 import java.io.Serializable;
 import java.util.*;
-
-import org.dom4j.Element;
 
 public class WebTabsheet
     extends
@@ -76,7 +76,7 @@ public class WebTabsheet
     }
 
     public Collection<Component> getComponents() {
-        return WebComponentsHelper.getComponents(this);
+        return ComponentsHelper.getComponents(this);
     }
 
     protected class Tab implements com.haulmont.cuba.gui.components.Tabsheet.Tab, Serializable {
@@ -207,7 +207,7 @@ public class WebTabsheet
                 public void selectedTabChange(TabSheet.SelectedTabChangeEvent event) {
                     // Fire GUI listener
                     fireTabChanged();
-                    // Execute outstanding lazy tasks after GUI listener.
+                    // Execute outstanding post init tasks after GUI listener.
                     // We suppose that context.executePostInitTasks() executes a task once and then remove it from task list.
                     if (context != null)
                         context.executePostInitTasks();
@@ -258,7 +258,7 @@ public class WebTabsheet
             if (selectedTab == tabContent && lazyTabs.remove(tabContent)) {
                 Component comp;
                 try {
-                    comp = loader.loadComponent(new WebComponentsFactory(), descriptor, null);
+                    comp = loader.loadComponent(AppConfig.getFactory(), descriptor, null);
                 } catch (InstantiationException e) {
                     throw new RuntimeException(e);
                 } catch (IllegalAccessException e) {

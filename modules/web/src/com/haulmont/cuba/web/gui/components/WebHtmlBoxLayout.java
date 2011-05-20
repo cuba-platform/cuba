@@ -39,6 +39,10 @@ public class WebHtmlBoxLayout extends CustomLayout implements HtmlBoxLayout {
         //do nothing
     }
 
+    public void expand(Component component) {
+        expand(component, "", "");
+    }
+
     public void add(Component component) {
         final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(component);
 

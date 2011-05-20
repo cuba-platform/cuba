@@ -135,6 +135,10 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
         frame.expand(component, height, width);
     }
 
+    public void expand(Component component) {
+        frame.expand(component);
+    }
+
     public WindowContext getContext() {
         return frame.getContext();
     }

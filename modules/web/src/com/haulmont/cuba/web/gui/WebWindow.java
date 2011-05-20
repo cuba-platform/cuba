@@ -484,6 +484,10 @@ public class WebWindow
         }
     }
 
+    public void expand(Component component) {
+        expand(component, "", "");
+    }
+
     public <T> T getComponent() {
         //noinspection unchecked
         return (T) component;

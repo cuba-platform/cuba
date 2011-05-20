@@ -77,6 +77,10 @@ public abstract class DesktopAbstractBox
         layoutAdapter.expand(composition, height, width);
     }
 
+    public void expand(Component component) {
+        expand(component, "", "");
+    }
+
     public void setMargin(boolean enable) {
         layoutAdapter.setMargin(enable);
     }

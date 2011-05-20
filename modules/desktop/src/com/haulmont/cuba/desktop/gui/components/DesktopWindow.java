@@ -328,6 +328,10 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         layoutAdapter.expand(composition, height, width);
     }
 
+    public void expand(Component component) {
+        expand(component, "", "");
+    }
+
     public void add(Component component) {
         getContainer().add(DesktopComponentsHelper.getComposition(component));
         if (component.getId() != null) {

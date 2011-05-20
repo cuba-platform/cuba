@@ -131,4 +131,8 @@ public class WebAbstractPanel extends Panel
 //            throw new UnsupportedOperationException();
 //        }
     }
+
+    public void expand(Component component) {
+        expand(component, "", "");
+    }
 }
