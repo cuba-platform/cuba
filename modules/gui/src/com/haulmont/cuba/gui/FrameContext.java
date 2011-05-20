@@ -65,15 +65,22 @@ public class FrameContext implements WindowContext {
 
         Component component = frame.getComponent(property);
         while (component == null && path.length > 1) {
+            // in case of property contains a drill-down part
             path = (String[]) ArrayUtils.subarray(path, 0, path.length - 1);
-
             component = frame.getComponent(ValuePathHelper.format(path));
         }
 
-        if (component == null) return null;
+        if (component == null || component == frame) {
+            // if component not found or found the frame itself, try to search in parent frame
+            if (frame.getFrame() != null)
+                return frame.getFrame().getContext().<T>getValue(property);
+            else
+                return null;
+        }
 
         final Object value = getValue(component);
-        if (value == null) return null;
+        if (value == null)
+            return null;
 
         if (path.length == elements.length) {
             //noinspection unchecked
