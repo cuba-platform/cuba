@@ -221,7 +221,7 @@ public class DesktopTextField extends DesktopAbstractComponent<JTextComponent> i
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
                         if (updatingInstance)
                             return;
-                        Object value = InstanceUtils.getValueEx((Instance) item, metaPropertyPath.getPath());
+                        Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         String text = formatValue(value);
                         updatingInstance = true;
                         try {
@@ -273,7 +273,7 @@ public class DesktopTextField extends DesktopAbstractComponent<JTextComponent> i
         updatingInstance = true;
         try {
             String value = getImpl().getText();
-            InstanceUtils.setValueEx((Instance) datasource.getItem(), metaPropertyPath.getPath(), value);
+            InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
         } finally {
             updatingInstance = false;
         }

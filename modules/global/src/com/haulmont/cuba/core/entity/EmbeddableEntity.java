@@ -10,6 +10,9 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.impl.AbstractInstance;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.UuidProvider;
 
 import javax.persistence.Id;
@@ -18,7 +21,7 @@ import javax.persistence.Transient;
 import java.util.UUID;
 
 @MappedSuperclass
-public abstract class EmbeddableEntity implements Entity<UUID> {
+public abstract class EmbeddableEntity extends AbstractInstance implements Entity<UUID> {
     private static final long serialVersionUID = 266201862280559076L;
 
     @Id
@@ -31,6 +34,16 @@ public abstract class EmbeddableEntity implements Entity<UUID> {
 
     protected EmbeddableEntity() {
         id = UuidProvider.createUuid();
+    }
+
+    @Override
+    public MetaClass getMetaClass() {
+        return MetadataProvider.getSession().getClass(getClass());
+    }
+
+    @Override
+    public UUID getUuid() {
+        return id;
     }
 
     @Override

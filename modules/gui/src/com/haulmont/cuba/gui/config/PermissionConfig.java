@@ -15,7 +15,6 @@ import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
-import com.haulmont.chile.core.model.utils.MethodsCache;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.global.*;
@@ -48,13 +47,9 @@ public class PermissionConfig {
      */
     @com.haulmont.chile.core.annotations.MetaClass(name = "sec$Target")
     public static class Target
-            extends
-            AbstractInstance
-            implements
-            Entity<String>
+            extends AbstractInstance
+            implements Entity<String>
     {
-        protected static transient MethodsCache __cache = new MethodsCache(Target.class);
-
         @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
         private String id;
         @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
@@ -84,10 +79,6 @@ public class PermissionConfig {
 
         public String toString() {
             return caption;
-        }
-
-        protected MethodsCache getMethodsCache() {
-            return __cache;
         }
 
         public UUID getUuid() {

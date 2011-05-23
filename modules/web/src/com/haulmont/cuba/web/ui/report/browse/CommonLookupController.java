@@ -46,9 +46,9 @@ public class CommonLookupController extends AbstractLookup {
                 super.initComponent(component);
                 com.vaadin.ui.Table.ColumnGenerator generator = new com.vaadin.ui.Table.ColumnGenerator() {
                     public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-                        Object inst = cds.getItem(itemId);
+                        Instance inst = cds.getItem(itemId);
                         WebLabel label = new WebLabel();
-                        label.setValue(((Instance) inst).getInstanceName());
+                        label.setValue(inst.getInstanceName());
                         return WebComponentsHelper.unwrap(label);
                     }
                 };

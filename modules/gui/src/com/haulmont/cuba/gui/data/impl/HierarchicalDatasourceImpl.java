@@ -12,7 +12,6 @@ package com.haulmont.cuba.gui.data.impl;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.DataService;
@@ -78,7 +77,7 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
             Collection<K> ids = getItemIds();
             for (K id : ids) {
                 Entity<K> currentItem = getItem(id);
-                Object parentItem = ((Instance) currentItem).getValue(hierarchyPropertyName);
+                Object parentItem = currentItem.getValue(hierarchyPropertyName);
                 if (parentItem != null && parentItem.equals(item))
                     res.add(currentItem.getId());
             }
@@ -90,7 +89,7 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
 
     public K getParent(K itemId) {
         if (hierarchyPropertyName != null) {
-            Instance item = (Instance) getItem(itemId);
+            Instance item = getItem(itemId);
             if (item == null)
                 return null;
             else {
@@ -108,7 +107,7 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
             Set<K> result = new LinkedHashSet<K>();
             for (K id : ids) {
                 Entity<K> item = getItem(id);
-                Object value = ((Instance) item).getValue(hierarchyPropertyName);
+                Object value = item.getValue(hierarchyPropertyName);
                 if (value == null || !containsItem(getItemId((T) value))) result.add(item.getId());
             }
             return result;
@@ -118,7 +117,7 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
     }
 
     public boolean isRoot(K itemId) {
-        Instance item = (Instance) getItem(itemId);
+        Instance item = getItem(itemId);
         if (item == null) return false;
 
         if (hierarchyPropertyName != null) {
@@ -137,7 +136,7 @@ public class HierarchicalDatasourceImpl<T extends Entity<K>, K>
             Collection<K> ids = getItemIds();
             for (K id : ids) {
                 Entity currentItem = getItem(id);
-                Object parentItem = ((Instance) currentItem).getValue(hierarchyPropertyName);
+                Object parentItem = currentItem.getValue(hierarchyPropertyName);
                 if (parentItem != null && parentItem.equals(item))
                     return true;
             }

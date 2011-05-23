@@ -57,7 +57,7 @@ public class CustomCollectionDatasource<T extends Entity<K>, K>
 
         for (T entity : entities) {
             data.put(entity.getId(), entity);
-            attachListener((Instance) entity);
+            attachListener(entity);
         }
 
         sw.stop();

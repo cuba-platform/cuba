@@ -1,6 +1,5 @@
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -80,12 +79,12 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
             // if (parentItem == null) return;
 
             final Entity item = dataservice.<Entity>newInstance(datasource.getMetaClass());
-            ((Instance) item).setValue(hierarchyProperty, parentItem);
+            item.setValue(hierarchyProperty, parentItem);
 
             final String windowID = datasource.getMetaClass().getName() + ".edit";
             if (valueProvider.getValues() != null) {
                 for (Map.Entry<String, Object> entry : valueProvider.getValues().entrySet()) {
-                    ((Instance) item).setValue(entry.getKey(), entry.getValue());
+                    item.setValue(entry.getKey(), entry.getValue());
                 }
             }
 

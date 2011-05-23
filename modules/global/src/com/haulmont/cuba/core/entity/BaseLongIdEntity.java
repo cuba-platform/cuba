@@ -9,12 +9,16 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.impl.AbstractInstance;
+import com.haulmont.cuba.core.global.MetadataProvider;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import java.util.UUID;
 import java.util.Date;
 
-public class BaseLongIdEntity implements BaseEntity<Long>
+public abstract class BaseLongIdEntity extends AbstractInstance implements BaseEntity<Long>
 {
     @Id
     @Column(name = "ID")
@@ -38,6 +42,11 @@ public class BaseLongIdEntity implements BaseEntity<Long>
 
     public UUID getUuid() {
         return uuid;
+    }
+
+    @Override
+    public MetaClass getMetaClass() {
+        return MetadataProvider.getSession().getClass(getClass());
     }
 
     public void setUuid(UUID uuid) {

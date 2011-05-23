@@ -894,7 +894,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             component.setStyleName("link");
             component.addListener(new Button.ClickListener() {
                 public void buttonClick(Button.ClickEvent event) {
-                    final Instance entity = (Instance) datasource.getItem();
+                    final Instance entity = datasource.getItem();
                     final Entity value = entity.getValueEx(fieldConf.getId());
                     String clickAction = fieldConf.getXmlDescriptor().attributeValue("clickAction");
                     if (!StringUtils.isEmpty(clickAction)) {

@@ -34,8 +34,8 @@ public class EntityComparator<T extends Entity> extends AbstractComparator<T> {
     }
 
     public int compare(T o1, T o2) {
-        Object v1 = getValue((Instance) o1);
-        Object v2 = getValue((Instance) o2);
+        Object v1 = getValue(o1);
+        Object v2 = getValue(o2);
         
         return __compare(v1, v2);
     }

@@ -10,7 +10,6 @@
 */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
@@ -109,7 +108,7 @@ public class ActionsFieldHelper {
                 }
 
                 if (entity != null) {
-                    String windowAlias = ((Instance) entity).getMetaClass().getName() + ".edit";
+                    String windowAlias = entity.getMetaClass().getName() + ".edit";
                     final Window.Editor editor = component.getFrame().openEditor(windowAlias, entity, openType);
                     editor.addListener(new Window.CloseListener() {
                         public void windowClosed(String actionId) {

@@ -188,7 +188,7 @@ public class WebActionsField
     public <T> T getValue() {
         Datasource ds = getDatasource();
         if (ds != null && Datasource.State.VALID.equals(ds.getState())) {
-            Instance instance = (Instance) ds.getItem();
+            Instance instance = ds.getItem();
             return instance == null ? null : (T) instance.getValue(getMetaProperty().getName());
         }
         return (T) lookupField.getValue();

@@ -79,7 +79,7 @@ public class DataServiceBean implements DataService
             for (Map.Entry<Entity, Entity> entry : res.entrySet()) {
                 View view = context.getViews().get(entry.getKey());
                 if (view != null) {
-                    ViewHelper.fetchInstance((Instance) entry.getValue(), view);
+                    ViewHelper.fetchInstance(entry.getValue(), view);
                 }
             }
 
@@ -272,7 +272,7 @@ public class DataServiceBean implements DataService
         Set<MetaClass> checkedDeleteRights = new HashSet<MetaClass>();
 
         for (Entity entity : context.getCommitInstances()) {
-            MetaClass metaClass = entity instanceof Instance ? ((Instance) entity).getMetaClass() : null;
+            MetaClass metaClass = entity != null ? entity.getMetaClass() : null;
             if (metaClass == null) continue;
 
             if (PersistenceHelper.isNew(entity)) {
@@ -283,7 +283,7 @@ public class DataServiceBean implements DataService
         }
 
         for (Entity entity : context.getRemoveInstances()) {
-            MetaClass metaClass = entity instanceof Instance ? ((Instance) entity).getMetaClass() : null;
+            MetaClass metaClass = entity != null ? entity.getMetaClass() : null;
             if (metaClass == null) continue;
             checkPermission(checkedDeleteRights, metaClass, EntityOp.DELETE);
 

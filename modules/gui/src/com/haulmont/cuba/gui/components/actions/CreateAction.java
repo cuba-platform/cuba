@@ -10,7 +10,6 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -78,7 +77,7 @@ public class CreateAction extends AbstractAction {
                 parentItem = null;
             }
 
-            ((Instance) item).setValue(hierarchyProperty, parentItem);
+            item.setValue(hierarchyProperty, parentItem);
         }
 
         Map<String, Object> values = getInitialValues();
@@ -91,11 +90,11 @@ public class CreateAction extends AbstractAction {
                         if (collection.size() != 1) {
                             throw new UnsupportedOperationException();
                         } else {
-                            ((Instance) item).setValue(entry.getKey(), collection.iterator().next());
+                            item.setValue(entry.getKey(), collection.iterator().next());
                         }
                     }
                 } else {
-                    ((Instance) item).setValue(entry.getKey(), value);
+                    item.setValue(entry.getKey(), value);
                 }
             }
         }

@@ -12,7 +12,6 @@ package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Query;
@@ -23,7 +22,6 @@ import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.core.global.DeletePolicyException;
 import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.View;
 
 import java.util.*;
 
@@ -100,7 +98,7 @@ public class DeletePolicyHelper
                             throw new DeletePolicyException(metaClass.getName());
                     }
                     else {
-                        Object value = ((Instance) entity).getValue(property.getName());
+                        Object value = entity.getValue(property.getName());
                         if (value != null)
                             throw new DeletePolicyException(metaClass.getName());
                     }
@@ -115,7 +113,7 @@ public class DeletePolicyHelper
                         }
                     }
                     else {
-                        BaseEntity value = ((Instance) entity).getValue(property.getName());
+                        BaseEntity value = entity.getValue(property.getName());
                         if (value != null) {
                             em.remove(value);
                         }
@@ -126,7 +124,7 @@ public class DeletePolicyHelper
                         throw new UnsupportedOperationException("Unable to unlink nested collection items");
                     }
                     else {
-                        ((Instance) entity).setValue(property.getName(), null);
+                        entity.setValue(property.getName(), null);
                     }
                     break;
             }
@@ -137,7 +135,7 @@ public class DeletePolicyHelper
         MetaProperty inverseProperty = property.getInverse();
         if (inverseProperty == null) {
             log.warn("Inverse property not found for property " + property);
-            Collection<Entity> value = ((Instance) entity).getValue(property.getName());
+            Collection<Entity> value = entity.getValue(property.getName());
             return value == null || value.isEmpty();
         }
 
@@ -157,7 +155,7 @@ public class DeletePolicyHelper
         MetaProperty inverseProperty = property.getInverse();
         if (inverseProperty == null) {
             log.warn("Inverse property not found for property " + property);
-            Collection<Entity> value = ((Instance) entity).getValue(property.getName());
+            Collection<Entity> value = entity.getValue(property.getName());
             return value == null ? Collections.EMPTY_LIST : value;
         }
 
@@ -222,7 +220,7 @@ public class DeletePolicyHelper
         query.setParameter(1, entity.getId());
         List<BaseEntity> list = query.getResultList();
         for (BaseEntity e : list) {
-            ((Instance) e).setValue(property.getName(), null);
+            e.setValue(property.getName(), null);
         }
     }
 }

@@ -240,9 +240,9 @@ public class WebLookupField
 
                 Object value;
                 if (WebLookupField.this.metaPropertyPath != null)
-                    value = InstanceUtils.getValueEx((Instance) containingEntity, WebLookupField.this.metaPropertyPath.getPath());
+                    value = InstanceUtils.getValueEx(containingEntity, WebLookupField.this.metaPropertyPath.getPath());
                 else
-                    value = ((Instance) containingEntity).getValue(WebLookupField.this.metaProperty.getName());
+                    value = containingEntity.getValue(WebLookupField.this.metaProperty.getName());
 
                 if (value instanceof Entity && ((Entity) value).getId().equals(itemId)) {
                     item = getItemWrapper(value);
@@ -300,9 +300,9 @@ public class WebLookupField
 
                     Object value;
                     if (WebLookupField.this.metaPropertyPath != null)
-                        value = InstanceUtils.getValueEx((Instance) containingEntity, WebLookupField.this.metaPropertyPath.getPath());
+                        value = InstanceUtils.getValueEx(containingEntity, WebLookupField.this.metaPropertyPath.getPath());
                     else
-                        value = ((Instance) containingEntity).getValue(WebLookupField.this.metaProperty.getName());
+                        value = containingEntity.getValue(WebLookupField.this.metaProperty.getName());
 
                     if (value instanceof Entity) {
                         return ((Entity) value).getId();

@@ -136,15 +136,15 @@ public class DatasourceImpl<T extends Entity>
 
     protected void __setItem(T item) {
         if (this.item != null) {
-            detachListener((Instance) this.item);
+            detachListener(this.item);
         }
 
         if (item instanceof Instance) {
-            final MetaClass aClass = ((Instance) item).getMetaClass();
+            final MetaClass aClass = item.getMetaClass();
             if (!aClass.equals(metaClass) && !metaClass.getDescendants().contains(aClass)) {
                 throw new IllegalStateException(String.format("Invalid item MetaClass: " + aClass));
             }
-            attachListener((Instance) item);
+            attachListener(item);
         }
 
         this.item = item;
@@ -180,7 +180,7 @@ public class DatasourceImpl<T extends Entity>
     public void commited(Map<Entity, Entity> map) {
         if (map.containsKey(item)) {
             item = (T) map.get(item);
-            attachListener((Instance) item);
+            attachListener(item);
         }
 
         modified = false;

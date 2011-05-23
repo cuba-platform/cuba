@@ -649,7 +649,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     protected String getSubstitutedUserCaption(User user) {
-        return InstanceUtils.getInstanceName((Instance) user);
+        return InstanceUtils.getInstanceName(user);
     }
 
     public void userSubstituted(Connection connection) {

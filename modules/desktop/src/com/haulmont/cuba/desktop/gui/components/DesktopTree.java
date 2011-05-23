@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
 import com.haulmont.cuba.gui.components.CaptionMode;
@@ -181,10 +180,10 @@ public class DesktopTree
     private TreePath getTreePath(Entity item) {
         List<Object> list = new ArrayList<Object>();
         list.add(model.createNode(item));
-        Instance instance = (Instance) item;
-        while (instance.getValue(hierarchyProperty) != null) {
-            instance = instance.getValue(hierarchyProperty);
-            list.add(0, model.createNode((Entity) instance));
+        Entity entity = item;
+        while (entity.getValue(hierarchyProperty) != null) {
+            entity = entity.getValue(hierarchyProperty);
+            list.add(0, model.createNode(entity));
         }
         return new TreePath(list.toArray(new Object[list.size()]));
     }

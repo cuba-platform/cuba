@@ -14,7 +14,6 @@ import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.chile.core.model.Instance;
 
 @MetaClass(name = "sec$EntityLogAttrWrapper")
 public class EntityLogAttrWrapper extends AbstractNotPersistentEntity {
@@ -52,6 +51,6 @@ public class EntityLogAttrWrapper extends AbstractNotPersistentEntity {
 
     @MetaProperty
     public String getDisplayValue() {
-        return valueAttr == null ? entityLogAttr.getDisplayValue() : ((Instance) valueAttr).getInstanceName();
+        return valueAttr == null ? entityLogAttr.getDisplayValue() : valueAttr.getInstanceName();
     }
 }

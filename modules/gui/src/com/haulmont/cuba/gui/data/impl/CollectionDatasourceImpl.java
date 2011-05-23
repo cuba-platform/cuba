@@ -266,7 +266,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         checkState();
 
         data.put(item.getId(), item);
-        attachListener((Instance) item);
+        attachListener(item);
 
         if (PersistenceHelper.isNew(item)) {
             itemToCreate.add(item);
@@ -280,7 +280,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         checkState();
 
         data.remove(item.getId());
-        detachListener((Instance) item);
+        detachListener(item);
 
         deleted(item);
 
@@ -291,7 +291,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         checkState();
 
         data.put(item.getId(), item);
-        attachListener((Instance) item);
+        attachListener(item);
 
         forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
@@ -300,7 +300,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         checkState();
 
         data.remove(item.getId());
-        detachListener((Instance) item);
+        detachListener(item);
 
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
@@ -309,7 +309,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         checkState();
         for (Object obj : data.values()) {
             T item = (T) obj;
-            detachListener((Instance) item);
+            detachListener(item);
             forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
         }
         data.clear();
@@ -329,7 +329,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         if (data.containsKey(item.getId())) {
             if (PersistenceHelper.isNew(item)) {
                 Object existingItem = data.get(item.getId());
-                InstanceUtils.copy((Instance) item, (Instance) existingItem);
+                InstanceUtils.copy(item, (Instance) existingItem);
                 modified((T) existingItem);
             } else {
                 updateItem(item);
@@ -343,7 +343,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
         if (data.containsKey(item.getId())) {
             data.put(item.getId(), item);
-            attachListener((Instance) item);
+            attachListener(item);
             forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
         }
     }
@@ -420,7 +420,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
             for (T entity : entities) {
                 data.put(entity.getId(), entity);
-                attachListener((Instance) entity);
+                attachListener(entity);
             }
         }
 
@@ -433,7 +433,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected Object getItemValue(MetaPropertyPath property, K itemId) {
-        Instance instance = (Instance) getItem(itemId);
+        Instance instance = getItem(itemId);
         if (property.getMetaProperties().length == 1) {
             return instance.getValue(property.getMetaProperty().getName());
         } else {

@@ -79,7 +79,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     public synchronized void addItem(T item) throws UnsupportedOperationException {
         checkState();
 
-        attachListener((Instance) item);
+        attachListener(item);
 
         data.put(item.getId(), item);
         
@@ -101,7 +101,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         checkState();
 
         data.remove(item.getId());
-        detachListener((Instance) item);
+        detachListener(item);
 
         if (size != null && size > 0)
             size--;
@@ -115,7 +115,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         checkState();
 
         data.remove(item.getId());
-        detachListener((Instance) item);
+        detachListener(item);
 
         if (size != null && size > 0)
             size--;
@@ -127,7 +127,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         checkState();
 
         data.put(item.getId(), item);
-        attachListener((Instance) item);
+        attachListener(item);
 
         if (size != null && size > 0)
             size++;
@@ -139,7 +139,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         checkState();
         for (Object obj : data.values()) {
             T item = (T) obj;
-            detachListener((Instance) item);
+            detachListener(item);
 
             if (size != null && size > 0)
                 size--;
@@ -157,7 +157,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         if (data.containsKey(item.getId())) {
             if (PersistenceHelper.isNew(item)) {
                 Object existingItem = data.get(item.getId());
-                InstanceUtils.copy((Instance) item, (Instance) existingItem);
+                InstanceUtils.copy(item, (Instance) existingItem);
                 modified((T) existingItem);
             } else {
                 updateItem(item);
@@ -171,7 +171,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
 
         if (data.containsKey(item.getId())) {
             data.put(item.getId(), item);
-            attachListener((Instance) item);
+            attachListener(item);
             forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
         }
     }
@@ -375,7 +375,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
                 List<T> res = dataservice.loadList(ctx);
                 for (T t : res) {
                     data.put(t.getId(), t);
-                    attachListener((Instance) t);
+                    attachListener(t);
                 }
 
                 if (res.size() < chunk || (maxResults > 0 && data.size() >= maxResults)) {

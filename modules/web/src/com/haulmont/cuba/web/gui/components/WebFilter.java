@@ -597,7 +597,7 @@ public class WebFilter
         String name;
         if (filterEntity != null)
             if (filterEntity.getCode() == null)
-                name = InstanceUtils.getInstanceName((Instance) filterEntity);
+                name = InstanceUtils.getInstanceName(filterEntity);
             else {
                 name = MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode());
             }

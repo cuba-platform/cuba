@@ -176,10 +176,10 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             for (String attr : attributes) {
                 EntityLogAttr attribute = new EntityLogAttr();
                 attribute.setName(attr);
-                Object value = ((Instance) entity).getValue(attr);
+                Object value = entity.getValue(attr);
                 attribute.setValue(stringify(value));
                 attribute.setValueId(getValueId(value));
-                attribute.setMessagesPack(MessageUtils.inferMessagePack(attr, (Instance) entity));
+                attribute.setMessagesPack(MessageUtils.inferMessagePack(attr, entity));
                 attribute.setLogItem(item);
                 em.persist(attribute);
             }
@@ -224,10 +224,10 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
                     }
                     EntityLogAttr attribute = new EntityLogAttr();
                     attribute.setName(attr);
-                    Object value = ((Instance) entity).getValue(attr);
+                    Object value = entity.getValue(attr);
                     attribute.setValue(stringify(value));
                     attribute.setValueId(getValueId(value));
-                    attribute.setMessagesPack(MessageUtils.inferMessagePack(attr, (Instance) entity));
+                    attribute.setMessagesPack(MessageUtils.inferMessagePack(attr, entity));
                     attribute.setLogItem(item);
                     em.persist(attribute);
                 }
@@ -270,10 +270,10 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             for (String attr : attributes) {
                 EntityLogAttr attribute = new EntityLogAttr();
                 attribute.setName(attr);
-                Object value = ((Instance) entity).getValue(attr);
+                Object value = entity.getValue(attr);
                 attribute.setValue(stringify(value));
                 attribute.setValueId(getValueId(value));
-                attribute.setMessagesPack(MessageUtils.inferMessagePack(attr, (Instance) entity));
+                attribute.setMessagesPack(MessageUtils.inferMessagePack(attr, entity));
                 attribute.setLogItem(item);
                 em.persist(attribute);
             }

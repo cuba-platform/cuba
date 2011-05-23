@@ -122,9 +122,8 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
         for (Entity entity : addedAttributes) {
             try {
                 Entity en = (Entity) attributeValueMetaClass.getJavaClass().newInstance();
-                Instance ins = (Instance) en;
-                ins.setValue(inverseMainEntityPropertyInValue, mainDs.getItem());
-                ins.setValue(inverseAttributePropertyInValue, entity);
+                en.setValue(inverseMainEntityPropertyInValue, mainDs.getItem());
+                en.setValue(inverseAttributePropertyInValue, entity);
                 cds.addItem(en);
             } catch (Exception e) {
                 log.error("error instantiating class " + attributeValueMetaClass);
@@ -172,7 +171,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
         List<Entity> result = new ArrayList<Entity>(attributes);
         List<Entity> valuesList = new ArrayList<Entity>();
         for (Object id : values.getItemIds()) {
-            Instance ins = (Instance) values.getItem(id);
+            Instance ins = values.getItem(id);
             Entity value = ins.getValue(inverseAttributePropertyInValue);
             if (value != null) {
                 valuesList.add(value);
@@ -243,7 +242,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
     }
 
     protected Component defineComponent(Entity entity) {
-        final Instance instance = ((Instance) entity);
+        final Instance instance = entity;
         AttributeEntity value = instance.getValue(inverseAttributePropertyInValue);
         if (value == null) {
             throw new RuntimeException("attribute entity can not be null");
@@ -376,7 +375,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
 
     protected Component createCaption(Entity entity) {
         Label label = new WebLabel();
-        Instance instance = (Instance) entity;
+        Instance instance = entity;
         AttributeEntity value = instance.getValue(inverseAttributePropertyInValue);
         if (value == null) {
             throw new RuntimeException("attribute entity can not be null");
@@ -393,7 +392,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
         DataService service = ServiceLocator.getDataService();
         LoadContext lc = new LoadContext(attributeMetaClass);
         String typeName = getInversePropertyName(attributeMetaClass, mainEntityTypeMetaClass);
-        Instance ins = (Instance) mainDs.getItem();
+        Instance ins = mainDs.getItem();
         Entity type = ins.getValueEx(typeProperty);
         if (type == null) {
             return Collections.EMPTY_LIST;

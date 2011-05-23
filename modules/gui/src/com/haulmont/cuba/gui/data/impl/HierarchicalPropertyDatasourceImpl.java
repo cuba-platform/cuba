@@ -43,7 +43,7 @@ public class HierarchicalPropertyDatasourceImpl <T extends Entity<K>, K> extends
             Collection<K> ids = getItemIds();
             for (K id : ids) {
                 Entity<K> currentItem = getItem(id);
-                Object parentItem = ((Instance) currentItem).getValue(hierarchyPropertyName);
+                Object parentItem = currentItem.getValue(hierarchyPropertyName);
                 if (parentItem != null && parentItem.equals(item))
                     res.add(currentItem.getId());
             }
@@ -55,7 +55,7 @@ public class HierarchicalPropertyDatasourceImpl <T extends Entity<K>, K> extends
 
     public K getParent(K itemId) {
         if (hierarchyPropertyName != null) {
-            Instance item = (Instance) getItem(itemId);
+            Instance item = getItem(itemId);
             if (item == null)
                 return null;
             else {
@@ -73,7 +73,7 @@ public class HierarchicalPropertyDatasourceImpl <T extends Entity<K>, K> extends
             Set<K> result = new LinkedHashSet<K>();
             for (K id : ids) {
                 Entity<K> item = getItem(id);
-                Object value = ((Instance) item).getValue(hierarchyPropertyName);
+                Object value = item.getValue(hierarchyPropertyName);
                 if (value == null || !containsItem(getItemId((T) value))) result.add(item.getId());
             }
             return result;
@@ -83,7 +83,7 @@ public class HierarchicalPropertyDatasourceImpl <T extends Entity<K>, K> extends
     }
 
     public boolean isRoot(K itemId) {
-        Instance item = (Instance) getItem(itemId);
+        Instance item = getItem(itemId);
         if (item == null) return false;
 
         if (hierarchyPropertyName != null) {
@@ -102,7 +102,7 @@ public class HierarchicalPropertyDatasourceImpl <T extends Entity<K>, K> extends
             Collection<K> ids = getItemIds();
             for (K id : ids) {
                 Entity currentItem = getItem(id);
-                Object parentItem = ((Instance) currentItem).getValue(hierarchyPropertyName);
+                Object parentItem = currentItem.getValue(hierarchyPropertyName);
                 if (parentItem != null && parentItem.equals(item))
                     return true;
             }

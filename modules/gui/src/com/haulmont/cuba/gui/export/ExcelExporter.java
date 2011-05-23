@@ -193,7 +193,7 @@ public class ExcelExporter {
             return;
         }
         HSSFRow row = sheet.createRow(rowNumber);
-        Instance instance = (Instance) table.getDatasource().getItem(itemId);
+        Instance instance = table.getDatasource().getItem(itemId);
 
         int level = 0;
         if (table instanceof TreeTable) {
@@ -286,7 +286,7 @@ public class ExcelExporter {
             }
         } else if (val instanceof Entity){
             Entity entityVal = (Entity) val;
-            String instanceName = ((Instance) entityVal).getInstanceName();
+            String instanceName = entityVal.getInstanceName();
             String str = sizersIndex == 0 ? createSpaceString(level) + instanceName : instanceName;
             cell.setCellValue(new HSSFRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {

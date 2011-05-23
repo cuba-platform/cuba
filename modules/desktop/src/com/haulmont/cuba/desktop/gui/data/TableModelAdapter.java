@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.desktop.gui.data;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
@@ -98,7 +97,7 @@ public class TableModelAdapter extends AbstractTableModel {
         Table.Column column = columns.get(columnIndex);
         if (column.getId() instanceof MetaPropertyPath) {
             String property = column.getId().toString();
-            Object value = ((Instance) item).getValueEx(property);
+            Object value = item.getValueEx(property);
             return MessageUtils.format(value, ((MetaPropertyPath) column.getId()).getMetaProperty());
         } else {
             return null;

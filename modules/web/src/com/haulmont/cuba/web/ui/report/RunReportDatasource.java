@@ -57,7 +57,7 @@ public class RunReportDatasource extends CollectionDatasourceImpl {
         List<Report> filter = ReportHelper.applySecurityPolicies(user,screen,reports);
         for (Report report : filter) {
             data.put(report.getId(), report);
-            attachListener((Instance) report);     
+            attachListener(report);
         }
     }
 }

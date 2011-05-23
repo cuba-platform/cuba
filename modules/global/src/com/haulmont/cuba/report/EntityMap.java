@@ -23,7 +23,7 @@ public class EntityMap implements Map<String, Object> {
     private HashMap<String, Object> explicitData;
 
     public EntityMap(Entity entity) {
-        instance = (Instance) entity;
+        instance = entity;
         explicitData = new HashMap<String, Object>();
     }
 

@@ -31,8 +31,8 @@ public class EntityByIdComparator<T extends Entity<K>, K> extends AbstractCompar
     }
 
     public int compare(K key1, K key2) {
-        Object o1 = getValue((Instance) datasource.getItem(key1));
-        Object o2 = getValue((Instance) datasource.getItem(key2));
+        Object o1 = getValue(datasource.getItem(key1));
+        Object o2 = getValue(datasource.getItem(key2));
 
         return __compare(o1, o2);
     }

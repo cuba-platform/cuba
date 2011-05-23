@@ -94,10 +94,10 @@ public class GenericDataService implements DataService, Serializable {
             return result;
         } catch (RuntimeException e) {
             for (Entity entity : context.getCommitInstances()) {
-                MetadataHelper.walkProperties((Instance) entity, new RefiningPropertyVisitor());
+                MetadataHelper.walkProperties(entity, new RefiningPropertyVisitor());
             }
             for (Entity entity : context.getRemoveInstances()) {
-                MetadataHelper.walkProperties((Instance) entity, new RefiningPropertyVisitor());
+                MetadataHelper.walkProperties(entity, new RefiningPropertyVisitor());
             }
             throw e;
         }

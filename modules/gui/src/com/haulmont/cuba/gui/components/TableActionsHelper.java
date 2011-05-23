@@ -9,7 +9,6 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -118,11 +117,11 @@ public class TableActionsHelper extends ListActionsHelper<Table> {
                             if (collection.size() != 1) {
                                 throw new UnsupportedOperationException();
                             } else {
-                                ((Instance) item).setValue(entry.getKey(), collection.iterator().next());
+                                item.setValue(entry.getKey(), collection.iterator().next());
                             }
                         }
                     } else {
-                        ((Instance) item).setValue(entry.getKey(), value);
+                        item.setValue(entry.getKey(), value);
                     }
                 }
             }

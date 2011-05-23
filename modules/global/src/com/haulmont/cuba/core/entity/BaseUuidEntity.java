@@ -9,6 +9,9 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.impl.AbstractInstance;
+import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.UuidProvider;
 import org.apache.openjpa.persistence.Persistent;
 
@@ -23,7 +26,7 @@ import java.util.UUID;
  * Inherit from it if you need an entity without optimistic locking, update and soft deletion info.
  */
 @MappedSuperclass
-public class BaseUuidEntity implements BaseEntity<UUID>
+public abstract class BaseUuidEntity extends AbstractInstance implements BaseEntity<UUID>
 {
     private static final long serialVersionUID = -2217624132287086972L;
 
@@ -52,6 +55,11 @@ public class BaseUuidEntity implements BaseEntity<UUID>
 
     public UUID getUuid() {
         return id;
+    }
+
+    @Override
+    public MetaClass getMetaClass() {
+        return MetadataProvider.getSession().getClass(getClass());
     }
 
     public Date getCreateTs() {

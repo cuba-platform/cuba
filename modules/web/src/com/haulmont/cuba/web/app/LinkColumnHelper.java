@@ -37,7 +37,7 @@ public class LinkColumnHelper {
 
         vTable.addGeneratedColumn(nameProperty, new com.vaadin.ui.Table.ColumnGenerator() {
             public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-                final Instance enclosingEntity = (Instance) ds.getItem(itemId);
+                final Instance enclosingEntity = ds.getItem(itemId);
                 if (enclosingEntity != null) {
                     //process properties like building.house.room
                     String[] props = propertyName.split("\\.");

@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -106,7 +105,7 @@ public class DesktopCheckBox extends DesktopAbstractComponent<JCheckBox> impleme
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
                         if (updatingInstance)
                             return;
-                        Boolean value = InstanceUtils.getValueEx((Instance) item, metaPropertyPath.getPath());
+                        Boolean value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         impl.setSelected(BooleanUtils.isTrue(value));
                     }
 
@@ -162,7 +161,7 @@ public class DesktopCheckBox extends DesktopAbstractComponent<JCheckBox> impleme
         updatingInstance = true;
         try {
             boolean value = impl.isSelected();
-            InstanceUtils.setValueEx((Instance) datasource.getItem(), metaPropertyPath.getPath(), value);
+            InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
         } finally {
             updatingInstance = false;
         }

@@ -8,7 +8,6 @@ package com.haulmont.cuba.desktop.gui.data;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
@@ -186,10 +185,10 @@ public class TreeModelAdapter implements TreeModel {
         @Override
         public String toString() {
             Object value;
-            if (captionMode.equals(CaptionMode.ITEM) || !(entity instanceof Instance)) {
+            if (captionMode.equals(CaptionMode.ITEM)) {
                 value = entity;
             } else {
-                value = ((Instance) entity).getValue(captionProperty);
+                value = entity.getValue(captionProperty);
             }
             return value == null ? "" : value.toString();
         }

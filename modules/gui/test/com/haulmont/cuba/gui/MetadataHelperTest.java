@@ -37,7 +37,7 @@ public class MetadataHelperTest extends TestCase {
 
         user.getUserRoles().add(userRole);
         
-        MetadataHelper.walkProperties((Instance) user, new PropertyVisitor() {
+        MetadataHelper.walkProperties(user, new PropertyVisitor() {
             public void visit(Instance instance, MetaProperty property) {
                 System.out.println("Instance=" + instance + ", property=" + property.getName());
             }

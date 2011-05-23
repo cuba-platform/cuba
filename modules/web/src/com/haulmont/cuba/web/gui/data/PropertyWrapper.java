@@ -72,7 +72,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
         if (item instanceof Datasource) {
             final Datasource ds = (Datasource) item;
             if (Datasource.State.VALID.equals(ds.getState())) {
-                return (Instance) ds.getItem();
+                return ds.getItem();
             } else {
                 return null;
             }

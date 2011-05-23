@@ -51,7 +51,7 @@ public class HierarchicalDsWrapper
     }
 
     public boolean setParent(Object itemId, Object newParentId) throws UnsupportedOperationException {
-        Instance item = (Instance) datasource.getItem(itemId);
+        Instance item = datasource.getItem(itemId);
         if (item != null) {
             item.setValue(parentPropertyName, datasource.getItem(newParentId));
             return true;

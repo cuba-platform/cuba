@@ -45,8 +45,8 @@ public class PropertyDatasourceImpl<T extends Entity>
         ds.addListener(new DatasourceListener<Entity>() {
 
             public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                Entity prevValue = getItem((Instance) prevItem);
-                Entity newValue = getItem((Instance) item);
+                Entity prevValue = getItem(prevItem);
+                Entity newValue = getItem(item);
                 reattachListeners(prevValue, newValue);
                 forceItemChanged(prevValue);
             }
@@ -69,8 +69,8 @@ public class PropertyDatasourceImpl<T extends Entity>
 //                Entity newValue = getItem((Instance) item);
 
                 if (!ObjectUtils.equals(prevItem, item)) {
-                    detachListener((Instance) prevItem);
-                    attachListener((Instance) item);
+                    detachListener(prevItem);
+                    attachListener(item);
                 }
             }
         });
@@ -81,7 +81,7 @@ public class PropertyDatasourceImpl<T extends Entity>
     }
 
     public T getItem() {
-        final Instance item = (Instance) ds.getItem();
+        final Instance item = ds.getItem();
         return getItem(item);
     }
 
@@ -117,10 +117,10 @@ public class PropertyDatasourceImpl<T extends Entity>
 
     public void setItem(T item) {
         if (getItem() != null) {
-            InstanceUtils.copy((Instance) item, (Instance) getItem());
+            InstanceUtils.copy(item, getItem());
             itemToUpdate.add(item);
         } else {
-            final Instance parentItem = (Instance) ds.getItem();
+            final Instance parentItem = ds.getItem();
             parentItem.setValue(metaProperty.getName(), item);
         }
         setModified(true);

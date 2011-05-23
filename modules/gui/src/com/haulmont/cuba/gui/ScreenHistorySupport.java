@@ -45,7 +45,7 @@ public class ScreenHistorySupport {
             String caption = window.getCaption();
             IFrame frame = window.getFrame();
             if (frame instanceof Window.Editor) {
-                Instance entity = (Instance) ((Window.Editor) frame).getItem();
+                Instance entity = ((Window.Editor) frame).getItem();
                 if (entity != null) {
                     caption = MessageUtils.getEntityCaption(entity.getMetaClass()) + " " + entity.getInstanceName();
                 }

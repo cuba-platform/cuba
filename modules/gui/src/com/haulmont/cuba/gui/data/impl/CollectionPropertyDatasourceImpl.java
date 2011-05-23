@@ -66,8 +66,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
                 log.trace("itemChanged: prevItem=" + prevItem + ", item=" + item);
 
-                Collection prevColl = prevItem == null ? null : (Collection) ((Instance) prevItem).getValue(metaProperty.getName());
-                Collection coll = item == null ? null : (Collection) ((Instance) item).getValue(metaProperty.getName());
+                Collection prevColl = prevItem == null ? null : (Collection) prevItem.getValue(metaProperty.getName());
+                Collection coll = item == null ? null : (Collection) item.getValue(metaProperty.getName());
                 reattachListeners(prevColl, coll);
 
                 if (coll != null) {
@@ -168,8 +168,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
             if (prevItem != item) {
 
-                if (item instanceof Instance) {
-                    final MetaClass aClass = ((Instance) item).getMetaClass();
+                if (item != null) {
+                    final MetaClass aClass = item.getMetaClass();
                     MetaClass metaClass = getMetaClass();
                     if (!aClass.equals(metaClass) && !metaClass.getDescendants().contains(aClass)) {
                         throw new IllegalStateException(String.format("Invalid item metaClass"));
@@ -197,7 +197,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected Collection<T> __getCollection() {
-        final Instance master = (Instance) ds.getItem();
+        final Instance master = ds.getItem();
         return master == null ? null : (Collection<T>) master.getValue(metaProperty.getName());
     }
 
@@ -214,7 +214,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
 
         __getCollection().add(item);
-        attachListener((Instance) item);
+        attachListener(item);
 
         if (ObjectUtils.equals(this.item, item)) {
             this.item = item;
@@ -238,7 +238,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     private void initCollection() {
-        Instance item = (Instance) ds.getItem();
+        Instance item = ds.getItem();
         if (item == null)
             throw new IllegalStateException("Item is null");
 
@@ -259,7 +259,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public synchronized void removeItem(T item) throws UnsupportedOperationException {
         checkState();
         __getCollection().remove(item);
-        detachListener((Instance) item);
+        detachListener(item);
 
         modified = true;
         if (cascadeProperty) {
@@ -280,10 +280,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (inverseProperty == null)
             throw new UnsupportedOperationException("No inverse property for " + metaProperty);
 
-        ((Instance) item).setValue(inverseProperty.getName(), null);
+        item.setValue(inverseProperty.getName(), null);
 
         // detach listener only after setting value to the link property
-        detachListener((Instance) item);
+        detachListener(item);
 
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
@@ -296,10 +296,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (inverseProperty == null)
             throw new UnsupportedOperationException("No inverse property for " + metaProperty);
 
-        ((Instance) item).setValue(inverseProperty.getName(), parentDs.getItem());
+        item.setValue(inverseProperty.getName(), parentDs.getItem());
 
         // attach listener only after setting value to the link property
-        attachListener((Instance) item);
+        attachListener(item);
 
         forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
     }
@@ -314,10 +314,10 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             if (inverseProperty == null)
                 throw new UnsupportedOperationException("No inverse property for " + metaProperty);
 
-            ((Instance) item).setValue(inverseProperty.getName(), null);
+            item.setValue(inverseProperty.getName(), null);
 
             // detach listener only after setting value to the link property
-            detachListener((Instance) item);
+            detachListener(item);
 
             forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
         }
@@ -331,7 +331,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public void modifyItem(T item) {
         for (T t : __getCollection()) {
             if (t.equals(item)) {
-                InstanceUtils.copy((Instance) item, (Instance) t);
+                InstanceUtils.copy(item, t);
 
                 modified = true;
                 if (cascadeProperty) {
@@ -348,7 +348,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public void updateItem(T item) {
         for (T t : __getCollection()) {
             if (t.equals(item)) {
-                InstanceUtils.copy((Instance) item, (Instance) t);
+                InstanceUtils.copy(item, t);
             }
         }
         forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
@@ -444,7 +444,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                         set.remove(item);
                         set.add(committedItem);
                     }
-                    attachListener((Instance) committedItem);
+                    attachListener(committedItem);
                 }
             }
         }
@@ -551,7 +551,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected Object getItemValue(MetaPropertyPath property, K itemId) {
-        Instance instance = (Instance) getItem(itemId);
+        Instance instance = getItem(itemId);
         if (property.getMetaProperties().length == 1) {
             return instance.getValue(property.getMetaProperty().getName());
         } else {

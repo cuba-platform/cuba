@@ -693,7 +693,7 @@ public class WebWindow
 
         protected Instance getInstance(Object item) {
             if (item instanceof Datasource) {
-                return (Instance) ((Datasource) item).getItem();
+                return ((Datasource) item).getItem();
             } else {
                 return (Instance) item;
             }

@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.gui.components;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
@@ -80,7 +79,7 @@ public class EditorWindowDelegate extends WindowDelegate {
                             if (window.commit()) {
                                 commitActionPerformed = true;
                                 window.showNotification(MessageProvider.formatMessage(AppConfig.getMessagesPack(),
-                                        "info.EntitySave", ((Instance) window.getItem()).getInstanceName()),
+                                        "info.EntitySave", window.getItem().getInstanceName()),
                                         IFrame.NotificationType.HUMANIZED);
                             }
                         }
@@ -132,7 +131,7 @@ public class EditorWindowDelegate extends WindowDelegate {
                     ((CollectionPropertyDatasourceImpl) parentDs).replaceItem(item);
                 }
             }
-            item = (Entity) InstanceUtils.copy((Instance) item);
+            item = (Entity) InstanceUtils.copy(item);
         } else {
             if (!PersistenceHelper.isNew(item)) {
                 String useSecurityConstraintsParam = (String) window.getContext().getParams().get("useSecurityConstraints");
@@ -143,10 +142,10 @@ public class EditorWindowDelegate extends WindowDelegate {
         }
 
         if (PersistenceHelper.isNew(item)
-                && !ds.getMetaClass().equals(((Instance) item).getMetaClass()))
+                && !ds.getMetaClass().equals(item.getMetaClass()))
         {
             Entity newItem = ds.getDataService().newInstance(ds.getMetaClass());
-            InstanceUtils.copy(((Instance) item), ((Instance) newItem));
+            InstanceUtils.copy(item, newItem);
             item = newItem;
         }
 

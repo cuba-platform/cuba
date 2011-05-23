@@ -104,7 +104,7 @@ public class FileDownloadHelper {
 
         vTable.addGeneratedColumn(nameProperty, new com.vaadin.ui.Table.ColumnGenerator() {
             public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-                Instance enclosingEntity = (Instance) ds.getItem(itemId);
+                Instance enclosingEntity = ds.getItem(itemId);
                 if (enclosingEntity != null) {
                     final FileDescriptor fd = enclosingEntity.getValue(fileProperty);
                     if (fd != null) {

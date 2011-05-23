@@ -70,8 +70,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
 
             if (prevItem != item)
             {
-                if (item instanceof Instance) {
-                    final MetaClass aClass = ((Instance) item).getMetaClass();
+                if (item != null) {
+                    final MetaClass aClass = item.getMetaClass();
                     if (!aClass.equals(this.metaClass) && !this.metaClass.getDescendants().contains(aClass)) {
                         throw new IllegalStateException(String.format("Invalid item metaClass"));
                     }
@@ -178,7 +178,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                         if (elements.length > 1) {
                             String[] valuePath = (String[]) ArrayUtils.subarray(elements, 1, elements.length);
                             String propertyName = InstanceUtils.formatValuePath(valuePath);
-                            Object value = InstanceUtils.getValueEx((Instance) item, propertyName);
+                            Object value = InstanceUtils.getValueEx(item, propertyName);
                             map.put(name, value);
                         } else {
                             map.put(name, item);

@@ -425,7 +425,7 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             container.removeAllComponents();
 
             for (final Object itemId : datasource.getItemIds()) {
-                final Instance item = (Instance) datasource.getItem(itemId);
+                final Instance item = datasource.getItem(itemId);
                 TokenListLabel f = itemComponents.get(item);
                 if (f == null) {
                     f = createToken();

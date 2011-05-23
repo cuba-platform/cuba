@@ -59,7 +59,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
                 new DsListenerAdapter() {
                     @Override
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        Object value = InstanceUtils.getValueEx((Instance) item, metaPropertyPath.getPath());
+                        Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         String text = formatValue(value);
                         impl.setText(text);
                     }

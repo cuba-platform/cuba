@@ -257,7 +257,7 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
     }
 
     protected Object getItemValue(MetaPropertyPath property, K itemId) {
-        Instance instance = (Instance) datasource.getItem(itemId);
+        Instance instance = datasource.getItem(itemId);
         if (property.getMetaProperties().length == 1) {
             return instance.getValue(property.getMetaProperty().getName());
         } else {
