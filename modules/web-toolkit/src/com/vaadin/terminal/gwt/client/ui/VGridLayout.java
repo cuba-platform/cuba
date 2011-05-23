@@ -1086,4 +1086,8 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
         return Util.getChildPaintableForElement(client, this, element);
     }
 
+    public Set<Widget> getChildWidgets() {
+        return widgetToComponentContainer.keySet();
+    }
+
 }

@@ -1138,4 +1138,12 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         }
         return componentWidth;
     }
+
+    public boolean isOpened() {
+        return suggestionPopup.isShowing();
+    }
+
+    public void close() {
+        reset();
+    }
 }

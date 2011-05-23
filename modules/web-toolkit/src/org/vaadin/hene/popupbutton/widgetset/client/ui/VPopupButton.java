@@ -400,4 +400,13 @@ public class VPopupButton extends VButton implements Container,
 		super.onDetach();
 		hidePopup();
 	}
+
+    public boolean isOpened() {
+        return popupVisible;
+    }
+
+    public void close() {
+        hidePopup();
+        updateState(false, true);
+    }
 }

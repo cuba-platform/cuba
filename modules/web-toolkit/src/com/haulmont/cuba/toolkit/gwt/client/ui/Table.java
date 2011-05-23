@@ -20,10 +20,8 @@ import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.*;
-import com.vaadin.terminal.gwt.client.ui.Action;
-import com.vaadin.terminal.gwt.client.ui.ActionOwner;
-import com.vaadin.terminal.gwt.client.ui.TreeAction;
-import com.vaadin.terminal.gwt.client.ui.VTabsheet;
+import com.vaadin.terminal.gwt.client.ui.*;
+import org.vaadin.hene.popupbutton.widgetset.client.ui.VPopupButton;
 
 import java.util.*;
 
@@ -194,7 +192,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     /*
      * The currently focused row
      */
-    private ITableBody.ITableRow focusedRow;
+    protected ITableBody.ITableRow focusedRow;
 
     /*
      * Helper to store selection range start in when using the keyboard
@@ -2457,6 +2455,25 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 // Should never be called,
                 // Component container interface faked here to get layouts
                 // render properly
+            }
+
+            public void onScroll() {
+                if (childWidgets != null) {
+                    for (Object widget : childWidgets) {
+                        if (widget instanceof VCustomComponent) {
+                            VCustomComponent root = (VCustomComponent) ((VCustomComponent) widget).getWidget();
+                            if (root != null && root.getWidget() instanceof VGridLayout) {
+                                for (Widget child : ((VGridLayout) root.getWidget()).getChildWidgets()) {
+                                    if (child instanceof VFilterSelect && ((VFilterSelect) child).isOpened()) {
+                                        ((VFilterSelect) child).close();
+                                    }
+                                }
+                            }
+                        } else if (widget instanceof VPopupButton && ((VPopupButton) widget).isOpened()) {
+                            ((VPopupButton) widget).close();
+                        }
+                    }
+                }
             }
         }
     }

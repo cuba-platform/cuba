@@ -282,6 +282,9 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
 
         runWebkitOverflowAutoFix();
 
+        if (focusedRow != null)
+            focusedRow.onScroll();
+
         // fix headers horizontal scrolling
         tHead.setHorizontalScrollPosition(scrollLeft);
 
