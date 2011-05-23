@@ -14,8 +14,6 @@ import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 
@@ -33,7 +31,7 @@ public class TableModelAdapter extends AbstractTableModel {
 
     private static final long serialVersionUID = -3892470031734710618L;
 
-    protected CollectionDatasource datasource;
+    protected CollectionDatasource<Entity<Object>, Object> datasource;
     protected List<MetaPropertyPath> properties = new ArrayList<MetaPropertyPath>();
     protected List<Table.Column> columns;
     protected boolean autoRefresh;

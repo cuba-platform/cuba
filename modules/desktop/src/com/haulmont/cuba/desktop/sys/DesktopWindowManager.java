@@ -115,18 +115,15 @@ public class DesktopWindowManager extends WindowManager {
         window.setCaption(caption);
         window.setDescription(description);
 
-        Object windowData = null;
+        WindowOpenMode openMode = new WindowOpenMode(window, openType);
+        Object windowData;
 
-        final WindowOpenMode openMode = new WindowOpenMode(window, openType);
-
-        boolean newTab = true;
         switch (openType) {
             case NEW_TAB:
                 JComponent tab = findTab(window);
                 if (tab != null) {
                     tabsPane.setSelectedComponent(tab);
                     windowData = tab;
-                    newTab = false;
                 } else {
                     windowData = showWindowNewTab(window, caption, description);
                 }

@@ -42,6 +42,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(DateField.NAME, DesktopDateField.class);
         classes.put(Table.NAME, DesktopTable.class);
         classes.put(GroupTable.NAME, DesktopGroupTable.class);
+        classes.put(Tree.NAME, DesktopTree.class);
         classes.put(ButtonsPanel.NAME, DesktopButtonsPanel.class);
         classes.put(Filter.NAME, DesktopFilter.class);
         classes.put(FieldGroup.NAME, DesktopFieldGroup.class);

@@ -12,7 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.client.UserSessionClient;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Tree;
