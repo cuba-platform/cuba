@@ -22,7 +22,6 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
 
     protected MigLayout layout;
     protected JComponent container;
-    protected Component expandedComponent;
 
     public MigBoxLayoutAdapter(JComponent container) {
         this(new MigLayout(), container);
