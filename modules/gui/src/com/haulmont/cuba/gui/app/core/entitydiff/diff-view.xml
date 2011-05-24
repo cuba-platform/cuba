@@ -1,0 +1,71 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.entitydiff.EntityDiffViewer"
+        messagesPack="com.haulmont.cuba.gui.app.core.entitydiff"
+        >
+
+    <dsContext>
+        <collectionDatasource id="snapshotsDs" class="com.haulmont.cuba.core.entity.EntitySnapshot"
+                              view="_local" refreshMode="NEVER"/>
+
+        <datasource id="entityDiffDs" view="_local" class="com.haulmont.cuba.core.global.EntityDiff"/>
+
+        <collectionDatasource id="diffDs" class="com.haulmont.cuba.core.global.EntityPropertyDiff" view="_local">
+            <datasourceClass>com.haulmont.cuba.gui.app.core.entitydiff.DiffTreeDatasource</datasourceClass>
+        </collectionDatasource>
+    </dsContext>
+    <layout expand="vBox" height="300px">
+        <vbox id="vBox" expand="diffSplit">
+            <split id="diffSplit" orientation="horizontal" pos="20">
+                <vbox expand="versionsList" spacing="true" margin="true">
+                    <label value="msg://versions" stylename="h2"/>
+                    <table id="versionsList" height="250px" multiselect="true">
+                        <columns>
+                            <column id="author"/>
+                            <column id="changeDate"/>
+                        </columns>
+                        <rows datasource="snapshotsDs"/>
+                    </table>
+                    <buttonsPanel>
+                        <button id="compareBtn" icon="icons/copy.png"/>
+                    </buttonsPanel>
+                </vbox>
+
+                <split orientation="vertical">
+                    <vbox id="diffVBox" expand="diffTable" spacing="true" margin="true" width="100%">
+                        <label value="msg://difference" stylename="h2"/>
+                        <label property="label" datasource="entityDiffDs"/>
+                        <treeTable id="diffTable">
+                            <columns>
+                                <column id="name"/>
+                                <column id="label"/>
+                            </columns>
+                            <rows datasource="diffDs"/>
+                        </treeTable>
+                    </vbox>
+
+                    <vbox id="valuesVBox" spacing="true" margin="true" expand="diffValuesField">
+                        <label value="msg://changes" stylename="h2"/>
+                        <label id="messageLabel"/>
+                        <hbox id="itemStateField" visible="false" spacing="true">
+                            <label value="msg://itemState"/>
+                            <label id="itemStateLabel"/>
+                        </hbox>
+                        <fieldGroup id="diffValuesField" datasource="diffDs" expandable="true" visible="false">
+                            <column>
+                                <field id="afterString" rows="4" editable="false" cols="40"/>
+                                <field id="beforeString" rows="4" editable="false" cols="40"/>
+                            </column>
+                        </fieldGroup>
+                    </vbox>
+                </split>
+            </split>
+        </vbox>
+    </layout>
+</window>

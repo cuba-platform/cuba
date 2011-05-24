@@ -45,6 +45,7 @@
                 <entry key="cuba_FileUploadService" value="com.haulmont.cuba.core.app.FileUploadService"/>
                 <entry key="cuba_FoldersService" value="com.haulmont.cuba.core.app.FoldersService"/>
                 <entry key="cuba_EmailService" value="com.haulmont.cuba.core.app.EmailService"/>
+                <entry key="cuba_EntitySnapshotService" value="com.haulmont.cuba.core.app.EntitySnapshotService"/>
                 <entry key="cuba_FileStorageService" value="com.haulmont.cuba.core.app.FileStorageService"/>
                 <entry key="cuba_UniqueNumbersService" value="com.haulmont.cuba.core.app.UniqueNumbersService"/>
                 <entry key="cuba_ReportService" value="com.haulmont.cuba.core.app.JasperReportService"/>

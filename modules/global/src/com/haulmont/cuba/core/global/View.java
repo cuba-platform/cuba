@@ -115,4 +115,8 @@ public class View implements Serializable
     public ViewProperty getProperty(String name) {
         return properties.get(name);
     }
+
+    public boolean containsProperty(String name) {
+        return properties.containsKey(name);
+    }
 }

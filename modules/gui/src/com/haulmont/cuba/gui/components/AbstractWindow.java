@@ -99,10 +99,6 @@ public class AbstractWindow extends AbstractFrame
         }
     }
 
-    protected void init(Map<String, Object> params) {
-
-    }
-
     public <T extends Window> T getWrappedWindow() {
         return (T) frame;
     }

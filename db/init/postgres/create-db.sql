@@ -732,3 +732,16 @@ create index IDX_SEC_SESSION_ATTR_GROUP on SEC_SESSION_ATTR (GROUP_ID)^
 create index IDX_SEC_SEARCH_FOLDER_USER on SEC_SEARCH_FOLDER (USER_ID)^
 
 create index IDX_SEC_PRESENTATION_COMPONENT_USER on SEC_PRESENTATION (COMPONENT, USER_ID)^
+
+------------------------------------------------------------------------------------------------------------
+
+create table SYS_ENTITY_SNAPSHOT (
+    ID uuid not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    ENTITY_META_CLASS varchar(50),
+    ENTITY_ID uuid,
+    VIEW_XML text,
+    SNAPSHOT_XML text,
+	primary key (ID)
+)^

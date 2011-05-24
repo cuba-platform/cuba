@@ -422,6 +422,27 @@
 * Correspondence History style
 */
 
+.v-table-cell-content-red,
+.v-table-cell-content .v-table-cell-content-red,
+.v-collapsed .v-table-cell-content-red .v-table-float,
+.v-expanded .v-table-cell-content-red .v-table-float{
+    color : red !important;
+}
+
+.v-table-cell-content-green,
+.v-table-cell-content .v-table-cell-content-green,
+.v-collapsed .v-table-cell-content-green .v-table-float,
+.v-expanded .v-table-cell-content-green .v-table-float{
+    color : green !important;
+}
+
+.v-table-cell-content-blue,
+.v-table-cell-content .v-table-cell-content-blue,
+.v-collapsed .v-table-cell-content-blue .v-table-float,
+.v-expanded .v-table-cell-content-blue .v-table-float{
+    color : blue !important;
+}
+
 .v-table-cell-content-income,
 .v-collapsed .v-table-cell-content-income .v-table-float,
 .v-expanded .v-table-cell-content-income .v-table-float {

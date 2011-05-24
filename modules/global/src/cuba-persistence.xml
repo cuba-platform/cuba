@@ -17,6 +17,7 @@
         <class>com.haulmont.cuba.core.entity.EntityStatistics</class>
         <class>com.haulmont.cuba.core.entity.SendingMessage</class>
         <class>com.haulmont.cuba.core.entity.SendingAttachment</class>
+        <class>com.haulmont.cuba.core.entity.EntitySnapshot</class>
 
         <class>com.haulmont.cuba.core.entity.EmbeddableEntity</class>
 
@@ -38,7 +39,6 @@
         <class>com.haulmont.cuba.security.entity.SearchFolder</class>
         <class>com.haulmont.cuba.security.entity.Presentation</class>
         <class>com.haulmont.cuba.security.entity.ScreenHistoryEntity</class>
-
 
         <class>com.haulmont.cuba.report.HardDeleteEntity</class>
         <class>com.haulmont.cuba.report.DataSet</class>

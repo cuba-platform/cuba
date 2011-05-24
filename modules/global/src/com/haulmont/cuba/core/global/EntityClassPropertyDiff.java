@@ -1,0 +1,110 @@
+/*
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+package com.haulmont.cuba.core.global;
+
+import com.haulmont.chile.core.annotations.MetaClass;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * <p>$Id$</p>
+ *
+ * @author artamonov
+ */
+@MetaClass(name = "core$EntityClassPropertyDiff")
+public class EntityClassPropertyDiff extends EntityPropertyDiff {
+    private static final long serialVersionUID = -6783119655414015181L;
+
+    private Object beforeValue;
+
+    private Object afterValue;
+
+    private ItemState itemState = ItemState.Normal;
+
+    private boolean isLinkChange;
+
+    private List<EntityPropertyDiff> propertyDiffs = new ArrayList<EntityPropertyDiff>();
+
+    private String beforeString = "";
+
+    private String afterString = "";
+
+    public EntityClassPropertyDiff(Object beforeValue, Object afterValue,
+                                   ViewProperty viewProperty, MetaProperty metaProperty,
+                                   boolean linkChange) {
+        super(viewProperty, metaProperty);
+        this.beforeValue = beforeValue;
+        this.afterValue = afterValue;
+        this.isLinkChange = linkChange;
+
+        if ((afterValue!=null) && isLinkChange)
+            label = InstanceUtils.getInstanceName((Instance)afterValue);
+        else
+            label = "";
+
+        if (afterValue != null)
+            afterString = InstanceUtils.getInstanceName((Instance)afterValue);
+
+        if (beforeValue != null)
+            beforeString = InstanceUtils.getInstanceName((Instance)beforeValue);
+    }
+
+    @Override
+    public boolean hasStateValues() {
+        return true;
+    }
+
+    @Override
+    public Object getBeforeValue() {
+        return beforeValue;
+    }
+
+    @Override
+    public Object getAfterValue() {
+        return afterValue;
+    }
+
+    @Override
+    public ItemState getItemState() {
+        return itemState;
+    }
+
+    public void setItemState(ItemState itemState) {
+        this.itemState = itemState;
+    }
+
+    public List<EntityPropertyDiff> getPropertyDiffs() {
+        return propertyDiffs;
+    }
+
+    public void setPropertyDiffs(List<EntityPropertyDiff> propertyDiffs) {
+        this.propertyDiffs = propertyDiffs;
+    }
+
+    public boolean isLinkChange() {
+        return isLinkChange;
+    }
+
+    @Override
+    public String getBeforeString() {
+        return beforeString;
+    }
+
+    @Override
+    public String getAfterString() {
+        return afterString;
+    }
+
+    @Override
+    public boolean itemStateVisible() {
+        return itemState != ItemState.Normal;
+    }
+}

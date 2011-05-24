@@ -31,6 +31,10 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
         this.frame = frame;
     }
 
+    protected void init(Map<String, Object> params) {
+
+    }
+
     public String getId() {
         return frame.getId();
     }

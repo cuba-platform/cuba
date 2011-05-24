@@ -160,12 +160,17 @@ public abstract class MetadataHelper {
 
     public static boolean isAnnotationPresent(Object object, String property,
                                               Class<? extends Annotation> annotationClass) {
+        return isAnnotationPresent(object.getClass(), property, annotationClass);
+    }
+
+    public static boolean isAnnotationPresent(Class javaClass, String property,
+                                              Class<? extends Annotation> annotationClass) {
         Field field;
         try {
-            field = object.getClass().getDeclaredField(property);
+            field = javaClass.getDeclaredField(property);
             return field.isAnnotationPresent(annotationClass);
         } catch (NoSuchFieldException e) {
-            Class superclass = object.getClass().getSuperclass();
+            Class superclass = javaClass.getSuperclass();
             while (superclass != null) {
                 try {
                     field = superclass.getDeclaredField(property);
@@ -180,6 +185,10 @@ public abstract class MetadataHelper {
 
     public static boolean isTransient(Object object, String property) {
         return isAnnotationPresent(object, property, Transient.class);
+    }
+
+    public static boolean isTransient(MetaProperty metaProperty) {
+        return isAnnotationPresent(metaProperty.getDeclaringClass(), metaProperty.getName(), Transient.class);
     }
 
     public static void deployViews(Element rootFrameElement) {
