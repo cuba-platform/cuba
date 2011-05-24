@@ -22,8 +22,10 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebFilter;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.vaadin.event.*;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
@@ -325,6 +327,42 @@ public class WebWindowManager extends WindowManager {
                     Iterator<WindowBreadCrumbs> it = getCurrentWindowData().tabs.values().iterator();
                     if (it.hasNext()) {
                         it.next().getCurrentWindow().close("close");
+                    }
+                }
+            }
+        });
+
+        appWindow.getMainLayout().getWindow().addAction(new ShortcutListener("onEnter", ShortcutAction.KeyCode.ENTER, null) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                AppWindow appWindow = app.getAppWindow();
+                Window window = null;
+                if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
+                    TabSheet tabSheet = appWindow.getTabSheet();
+                    if (tabSheet != null) {
+                        VerticalLayout layout = (VerticalLayout) tabSheet.getSelectedTab();
+                        if (layout != null) {
+                            WindowBreadCrumbs breadCrumbs = getTabs().get(layout);
+                            window = breadCrumbs.getCurrentWindow();
+                        }
+                    }
+                } else {
+                    Iterator<WindowBreadCrumbs> it = getCurrentWindowData().tabs.values().iterator();
+                    if (it.hasNext()) {
+                        window = it.next().getCurrentWindow();
+                    }
+                }
+                if (window == null)
+                    return;
+
+                if (window instanceof com.haulmont.cuba.gui.components.AbstractEditor) {
+                    ((com.haulmont.cuba.gui.components.AbstractEditor) window).commitAndClose();
+                } else {
+                    Collection<com.haulmont.cuba.gui.components.Component> components = window.getComponents();
+                    for (com.haulmont.cuba.gui.components.Component c : components) {
+                        if (c instanceof WebFilter) {
+                            ((WebFilter) c).apply(false);
+                        }
                     }
                 }
             }
