@@ -14,7 +14,9 @@
         <collectionDatasource id="snapshotsDs" class="com.haulmont.cuba.core.entity.EntitySnapshot"
                               view="_local" refreshMode="NEVER"/>
 
-        <datasource id="entityDiffDs" view="_local" class="com.haulmont.cuba.core.global.EntityDiff"/>
+        <datasource id="entityDiffDs" view="_local" class="com.haulmont.cuba.core.global.EntityDiff">
+            <datasourceClass>com.haulmont.cuba.gui.app.core.entitydiff.EntityDiffDatasource</datasourceClass>
+        </datasource>
 
         <collectionDatasource id="diffDs" class="com.haulmont.cuba.core.global.EntityPropertyDiff" view="_local">
             <datasourceClass>com.haulmont.cuba.gui.app.core.entitydiff.DiffTreeDatasource</datasourceClass>
