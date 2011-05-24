@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -127,5 +128,25 @@ public class TableModelAdapter extends AbstractTableModel {
     public Entity getItem(int rowIndex) {
         Object itemId = getItemId(rowIndex);
         return datasource.getItem(itemId);
+    }
+
+    public void sort(List<? extends RowSorter.SortKey> sortKeys) {
+        if (!(datasource instanceof CollectionDatasource.Sortable) || sortKeys == null)
+            return;
+
+        List<CollectionDatasource.Sortable.SortInfo> sortInfos = new ArrayList<CollectionDatasource.Sortable.SortInfo>();
+        for (RowSorter.SortKey sortKey : sortKeys) {
+            if (!sortKey.getSortOrder().equals(SortOrder.UNSORTED)) {
+                Table.Column c = columns.get(sortKey.getColumn());
+                CollectionDatasource.Sortable.SortInfo<Object> sortInfo = new CollectionDatasource.Sortable.SortInfo<Object>();
+                sortInfo.setPropertyPath(c.getId());
+                sortInfo.setOrder(sortKey.getSortOrder().equals(SortOrder.ASCENDING)
+                        ? CollectionDatasource.Sortable.Order.ASC
+                        : CollectionDatasource.Sortable.Order.DESC);
+                sortInfos.add(sortInfo);
+            }
+        }
+        ((CollectionDatasource.Sortable) datasource).sort(
+                sortInfos.toArray(new CollectionDatasource.Sortable.SortInfo[sortInfos.size()]));
     }
 }

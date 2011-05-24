@@ -13,9 +13,11 @@ import com.haulmont.cuba.client.UserSessionClient;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.desktop.gui.data.RowSorterImpl;
 import com.haulmont.cuba.desktop.gui.data.TableModelAdapter;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -26,11 +28,13 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import java.awt.BorderLayout;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableModel;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 
@@ -65,6 +69,19 @@ public abstract class DesktopAbstractTable<C extends JTable>
         JScrollPane scrollPane = new JScrollPane(impl);
         impl.setFillsViewportHeight(true);
         panel.add(scrollPane, "grow");
+
+        impl.addMouseListener(
+                new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if (e.getClickCount() == 2) {
+                            Action action = getAction(EditAction.ACTION_ID);
+                            if (action != null)
+                                action.actionPerform(DesktopAbstractTable.this);
+                        }
+                    }
+                }
+        );
     }
 
     protected abstract TableModelAdapter createTableModel(CollectionDatasource datasource);
@@ -126,6 +143,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
         this.datasource = datasource;
         tableModel = createTableModel(datasource);
         impl.setModel(tableModel);
+        impl.setRowSorter(new RowSorterImpl(tableModel));
+
 
         impl.getSelectionModel().addListSelectionListener(
                 new ListSelectionListener() {
