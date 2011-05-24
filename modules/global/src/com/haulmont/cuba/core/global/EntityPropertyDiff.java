@@ -33,14 +33,20 @@ public abstract class EntityPropertyDiff extends AbstractNotPersistentEntity imp
     private ViewProperty viewProperty;
     protected String propertyCaption;
     protected String label = "";
+    protected String metaClassName = "";
 
     protected EntityPropertyDiff(ViewProperty viewProperty, com.haulmont.chile.core.model.MetaProperty metaProperty) {
         this.viewProperty = viewProperty;
         this.propertyCaption = MessageUtils.getPropertyCaption(metaProperty);
+        this.metaClassName = metaProperty.getDomain().getFullName();
     }
 
     public ViewProperty getViewProperty() {
         return viewProperty;
+    }
+
+    public String getMetaClassName() {
+        return metaClassName;
     }
 
     @MetaProperty
