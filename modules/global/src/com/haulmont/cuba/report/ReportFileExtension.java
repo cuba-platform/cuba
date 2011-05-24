@@ -14,6 +14,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import org.apache.commons.lang.ObjectUtils;
 
 public enum ReportFileExtension implements EnumClass<String> {
+    XLT("xlt"),
     XLS("xls"),
     DOC("doc"),
     ODT("odt"),

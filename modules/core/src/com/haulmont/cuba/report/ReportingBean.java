@@ -197,6 +197,7 @@ public class ReportingBean implements ReportingApi {
                         break;
 
                     case XLS:
+                    case XLT:
                         reportEngine = new XLSFormatter();
                         break;
                 }

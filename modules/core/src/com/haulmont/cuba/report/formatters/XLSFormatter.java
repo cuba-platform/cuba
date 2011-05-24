@@ -63,6 +63,8 @@ public class XLSFormatter extends AbstractFormatter {
 
     public XLSFormatter() {
         registerReportExtension("xls");
+        registerReportExtension("xlt");
+
         registerReportOutput(ReportOutputType.XLS);
 
         defaultOutputType = ReportOutputType.XLS;
