@@ -17,8 +17,8 @@ import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
+import com.haulmont.cuba.report.exception.UnsupportedFormatException;
 import com.haulmont.cuba.report.formatters.*;
-import com.haulmont.cuba.report.formatters.exception.UnsupportedFormatException;
 import com.haulmont.cuba.report.loaders.*;
 import org.apache.commons.lang.StringUtils;
 

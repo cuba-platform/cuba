@@ -18,7 +18,7 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
-import com.haulmont.cuba.report.formatters.exception.UnsupportedFormatException;
+import com.haulmont.cuba.report.exception.UnsupportedFormatException;
 import com.lowagie.text.*;
 import com.lowagie.text.Font;
 import com.lowagie.text.Image;
@@ -90,9 +90,6 @@ public class HtmlFormatter extends AbstractFormatter {
     }
 
     private void writePdfDocument(InputStream htmlInput, OutputStream outputStream) {
-//        String htmlContent = htmlWriter.getBuffer().toString();
-        /*ByteArrayInputStream htmlInput = new ByteArrayInputStream(
-                htmlContent.getBytes(Charset.forName(PDF_DEFAULT_ENCODING)));*/
         InputStreamReader htmlReader = new InputStreamReader(htmlInput, Charset.forName(PDF_DEFAULT_ENCODING));
 
         GlobalConfig config = ConfigProvider.getConfig(GlobalConfig.class);

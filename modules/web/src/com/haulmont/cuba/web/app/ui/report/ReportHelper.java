@@ -11,13 +11,13 @@
 package com.haulmont.cuba.web.app.ui.report;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.client.UserSessionClient;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -31,6 +31,7 @@ import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -68,7 +69,7 @@ public class ReportHelper {
         runReport(report, window, paramAlias, paramValue, null);
     }
 
-    public static void runReport(Report report, Window window, final String paramAlias, final Object paramValue, final String name) {
+    public static void runReport(Report report, Window window, final String paramAlias, final Object paramValue, @Nullable final String name) {
         if (report != null) {
             List<ReportInputParameter> params = report.getInputParameters();
             if (params != null && params.size() > 1) {
@@ -130,20 +131,20 @@ public class ReportHelper {
                 params.put("screen", window.getId());
 
                 window.openLookup("report$Report.run", new Window.Lookup.Handler() {
-                    public void handleLookup(Collection items) {
-                        if (items != null && items.size() > 0) {
-                            Report report = (Report) items.iterator().next();
-                            report = window.getDsContext().getDataService().reload(report, "report.edit");
-                            if (report != null) {
-                                if (report.getInputParameters() != null && report.getInputParameters().size() > 0) {
-                                    openReportParamsDialog(report, window);
-                                } else {
-                                    ReportHelper.printReport(report, Collections.<String, Object>emptyMap());
+                            public void handleLookup(Collection items) {
+                                if (items != null && items.size() > 0) {
+                                    Report report = (Report) items.iterator().next();
+                                    report = window.getDsContext().getDataService().reload(report, "report.edit");
+                                    if (report != null) {
+                                        if (report.getInputParameters() != null && report.getInputParameters().size() > 0) {
+                                            openReportParamsDialog(report, window);
+                                        } else {
+                                            ReportHelper.printReport(report, Collections.<String, Object>emptyMap());
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
-                }, WindowManager.OpenType.DIALOG, params);
+                        }, WindowManager.OpenType.DIALOG, params);
             }
 
             @Override
@@ -157,7 +158,7 @@ public class ReportHelper {
         return createPrintformFromEditorAction(captionId, editor, null);
     }
 
-    public static AbstractAction createPrintformFromEditorAction(String captionId, final Window.Editor editor, final String name) {
+    public static AbstractAction createPrintformFromEditorAction(String captionId, final Window.Editor editor, @Nullable final String name) {
         return new AbstractAction(captionId) {
             public void actionPerform(Component component) {
                 final Entity entity = editor.getItem();
@@ -202,7 +203,7 @@ public class ReportHelper {
     }
 
     private static void openRunReportScreen(final Window window, final String paramAlias, final Object paramValue,
-                                            String javaClassName, ReportType reportType, final String name) {
+                                            String javaClassName, ReportType reportType, @Nullable final String name) {
         Map<String, Object> params = new HashMap<String, Object>();
 
         String metaClass;
@@ -218,14 +219,14 @@ public class ReportHelper {
 
         if (checkReportsForStart(window, paramAlias, paramValue, javaClassName, reportType, name)) {
             window.openLookup("report$Report.run", new Window.Lookup.Handler() {
-                public void handleLookup(Collection items) {
-                    if (items != null && items.size() > 0) {
-                        Report report = (Report) items.iterator().next();
-                        report = window.getDsContext().getDataService().reload(report, "report.edit");
-                        runReport(report, window, paramAlias, paramValue, name);
-                    }
-                }
-            }, WindowManager.OpenType.DIALOG, params);
+                        public void handleLookup(Collection items) {
+                            if (items != null && items.size() > 0) {
+                                Report report = (Report) items.iterator().next();
+                                report = window.getDsContext().getDataService().reload(report, "report.edit");
+                                runReport(report, window, paramAlias, paramValue, name);
+                            }
+                        }
+                    }, WindowManager.OpenType.DIALOG, params);
         }
     }
 
@@ -235,7 +236,7 @@ public class ReportHelper {
     }
 
     private static boolean checkReportsForStart(final Window window, final String paramAlias, final Object paramValue,
-                                                String javaClassName, ReportType reportType, final String name) {
+                                                String javaClassName, ReportType reportType, @Nullable final String name) {
         Collection<MetaClass> metaClasses = MetadataHelper.getAllMetaClasses();
         String metaClassName = "";
         Iterator<MetaClass> iterator = metaClasses.iterator();

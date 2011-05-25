@@ -8,9 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.report.formatters.exception;
-
-import com.haulmont.cuba.report.exception.ReportFormatterException;
+package com.haulmont.cuba.report.exception;
 
 public class UnsupportedFormatException extends ReportFormatterException {
     public UnsupportedFormatException() {
