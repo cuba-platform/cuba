@@ -170,6 +170,8 @@ public class UserEditor extends AbstractEditor {
             public Component generateField(Datasource datasource, Object propertyId) {
                 languageLookup = AppConfig.getFactory().createComponent(LookupField.NAME);
 
+                languageLookup.setDatasource(datasource, (String) propertyId);
+
                 Map<String, Locale> locales = ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales();
                 TreeMap<String, Object> options = new TreeMap<String, Object>();
                 for (Map.Entry<String, Locale> entry : locales.entrySet()) {

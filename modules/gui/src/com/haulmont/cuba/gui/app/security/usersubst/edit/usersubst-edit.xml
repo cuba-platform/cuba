@@ -47,12 +47,12 @@
                     <row>
                         <label value="msg://user"/>
                         <textField id="user" datasource="subst" property="user"
-                                   required="true" editable="false" requiredMessage="msg://userMsg" width="${250}"/>
+                                   required="true" editable="false" requiredMessage="msg://userMsg" width="250"/>
                     </row>
                     <row>
                         <label value="msg://substUser"/>
                         <lookupField id="substUser" datasource="subst" property="substitutedUser"
-                                     required="true" optionsDatasource="users" requiredMessage="msg://substUserMsg" width="${250}"/>
+                                     required="true" optionsDatasource="users" requiredMessage="msg://substUserMsg" width="250"/>
                     </row>
                     <row>
                         <label value="msg://endDate"/>

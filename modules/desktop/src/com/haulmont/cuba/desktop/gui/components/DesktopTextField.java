@@ -77,16 +77,6 @@ public class DesktopTextField extends DesktopAbstractComponent<JTextComponent> i
     }
 
     @Override
-    public float getHeight() {
-        return getImpl().getHeight();
-    }
-
-    @Override
-    public float getWidth() {
-        return getImpl().getWidth();
-    }
-
-    @Override
     public boolean isEnabled() {
         return enabled;
     }
@@ -96,14 +86,6 @@ public class DesktopTextField extends DesktopAbstractComponent<JTextComponent> i
         this.enabled = enabled;
         if (impl != null)
             impl.setEnabled(enabled);
-    }
-
-    @Override
-    public void setHeight(String height) {
-    }
-
-    @Override
-    public void setWidth(String width) {
     }
 
     @Override

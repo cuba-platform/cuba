@@ -8,9 +8,12 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * <p>$Id$</p>
@@ -27,6 +30,12 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     protected IFrame frame;
     protected Element xmlDescriptor;
     protected boolean expandable = true;
+
+    protected Log log = LogFactory.getLog(getClass());
+
+    protected C getImpl() {
+        return impl;
+    }
 
     public <A extends IFrame> A getFrame() {
         return (A) frame;
@@ -81,7 +90,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     }
 
     public float getHeight() {
-        return impl.getHeight();
+        return getImpl().getHeight();
     }
 
     public int getHeightUnits() {
@@ -89,11 +98,19 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     }
 
     public void setHeight(String height) {
-        // TODO
+        Integer h;
+        try {
+            h = Integer.valueOf(height);
+        } catch (NumberFormatException e) {
+            log.trace("Unable to parse height value: " + height);
+            return;
+        }
+        int width = (int) getImpl().getPreferredSize().getWidth();
+        getImpl().setPreferredSize(new Dimension(width, h));
     }
 
     public float getWidth() {
-        return impl.getWidth();
+        return getImpl().getWidth();
     }
 
     public int getWidthUnits() {
@@ -101,7 +118,15 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     }
 
     public void setWidth(String width) {
-        // TODO
+        Integer w;
+        try {
+            w = Integer.valueOf(width);
+        } catch (NumberFormatException e) {
+            log.trace("Unable to parse width value: " + width);
+            return;
+        }
+        int height = (int) getImpl().getPreferredSize().getHeight();
+        getImpl().setPreferredSize(new Dimension(w, height));
     }
 
     public Alignment getAlignment() {
