@@ -97,12 +97,21 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
             if (range.isDatatype() && newValue instanceof String) {
                 try {
                     String typeName = range.asDatatype().getName();
-                    if (DoubleDatatype.NAME.equals(typeName)
-                            || BigDecimalDatatype.NAME.equals(typeName)
-                            || IntegerDatatype.NAME.equals(typeName)
-                            || LongDatatype.NAME.equals(typeName))
-                    {
-                        obj = ValidationHelper.parseNumber((String) newValue, "#.#");
+                    if (BigDecimalDatatype.NAME.equals(typeName)) {
+                        obj = ValidationHelper.parseNumber((String) newValue, "#.#", true);
+
+                    } else if (DoubleDatatype.NAME.equals(typeName)) {
+                        Number num = ValidationHelper.parseNumber((String) newValue, "#.#");
+                        obj = num.doubleValue();
+
+                    } else if (IntegerDatatype.NAME.equals(typeName)) {
+                        Number num = ValidationHelper.parseNumber((String) newValue, "#");
+                        obj = num.intValue();
+
+                    } else if (LongDatatype.NAME.equals(typeName)) {
+                        Number num = ValidationHelper.parseNumber((String) newValue, "#");
+                        obj = num.longValue();
+
                     } else {
                         obj = range.asDatatype().parse((String) newValue);
                     }

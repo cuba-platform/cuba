@@ -16,7 +16,8 @@ import java.text.*;
 import java.util.Date;
 
 public abstract class ValidationHelper {
-    public static Number parseNumber(String value, String pattern) throws ParseException {
+
+    public static Number parseNumber(String value, String pattern, boolean isBigDecimal) throws ParseException {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setDecimalSeparator(MessageUtils.getNumberDecimalSeparator());
         symbols.setGroupingSeparator(MessageUtils.getNumberGroupingSeparator());
@@ -26,6 +27,7 @@ public abstract class ValidationHelper {
         }
 
         DecimalFormat format = new DecimalFormat(pattern, symbols);
+        format.setParseBigDecimal(isBigDecimal);
 
         ParsePosition pos = new ParsePosition(0);
         Number result = format.parse(value, pos);
@@ -36,6 +38,10 @@ public abstract class ValidationHelper {
             );
         }
         return result;
+    }
+
+    public static Number parseNumber(String value, String pattern) throws ParseException {
+        return parseNumber(value, pattern, false);
     }
 
     public static Date parseDate(String value) throws ParseException {
