@@ -6,8 +6,6 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.chile.core.datatypes.impl.StringDatatype;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageUtils;
@@ -211,6 +209,12 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     public void setFieldValue(String fieldId, Object value) {
+    }
+
+    @Override
+    public void setFieldCaption(String fieldId, String caption) {
+        // todo
+        throw new UnsupportedOperationException();
     }
 
     public void setCaptionAlignment(FieldCaptionAlignment captionAlignment) {

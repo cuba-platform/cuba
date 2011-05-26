@@ -64,6 +64,8 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
     Object getFieldValue(String fieldId);
     void setFieldValue(String fieldId, Object value);
 
+    void setFieldCaption(String fieldId, String caption);
+
     void setCaptionAlignment(FieldCaptionAlignment captionAlignment);
 
     int getColumns();

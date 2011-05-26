@@ -605,6 +605,16 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         setFieldValue(field, value);
     }
 
+    @Override
+    public void setFieldCaption(String fieldId, String caption) {
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+
+        com.vaadin.ui.Field f = component.getField(field.getId());
+        f.setCaption(caption);
+    }
+
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {
         return new ItemWrapper(datasource, propertyPaths, dsManager) {
             @Override
