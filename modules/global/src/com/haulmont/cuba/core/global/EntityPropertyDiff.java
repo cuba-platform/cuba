@@ -92,6 +92,16 @@ public abstract class EntityPropertyDiff extends AbstractNotPersistentEntity imp
     }
 
     @MetaProperty
+    public String getBeforeCaption() {
+        return getBeforeString();
+    }
+
+    @MetaProperty
+    public String getAfterCaption() {
+        return getAfterString();
+    }
+
+    @MetaProperty
     public ItemState getItemState() {
         return ItemState.Normal;
     }

@@ -27,6 +27,9 @@
             <split id="diffSplit" orientation="horizontal" pos="20">
                 <vbox expand="versionsList" spacing="true" margin="true">
                     <label value="msg://versions" stylename="h2"/>
+                    <buttonsPanel>
+                        <button id="compareBtn" icon="icons/copy.png"/>
+                    </buttonsPanel>
                     <table id="versionsList" height="250px" multiselect="true">
                         <columns>
                             <column id="author"/>
@@ -34,9 +37,6 @@
                         </columns>
                         <rows datasource="snapshotsDs"/>
                     </table>
-                    <buttonsPanel>
-                        <button id="compareBtn" icon="icons/copy.png"/>
-                    </buttonsPanel>
                 </vbox>
 
                 <split orientation="vertical">
@@ -46,15 +46,15 @@
                         <treeTable id="diffTable">
                             <columns>
                                 <column id="name"/>
-                                <column id="label"/>
+                                <column id="beforeCaption"/>
+                                <column id="afterCaption"/>
                             </columns>
                             <rows datasource="diffDs"/>
                         </treeTable>
                     </vbox>
 
                     <vbox id="valuesVBox" spacing="true" margin="true" expand="diffValuesField">
-                        <label value="msg://changes" stylename="h2"/>
-                        <label id="messageLabel"/>
+                        <label id="valuesHeader" visible="false" value="msg://changes" stylename="h2"/>
                         <hbox id="itemStateField" visible="false" spacing="true">
                             <label value="msg://itemState"/>
                             <label id="itemStateLabel"/>

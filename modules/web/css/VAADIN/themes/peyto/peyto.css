@@ -334,6 +334,63 @@
     padding-left: 20px;
 }
 
+/* Markers for TreeTable component */
+
+.v-table-cell-content-categoryItem,
+.v-collapsed .v-table-cell-content-categoryItem .v-table-float,
+.v-expanded .v-table-cell-content-categoryItem .v-table-float {
+     background: transparent url(icons/category.png) 0 center no-repeat;
+     padding-left: 19px;
+}
+
+.v-table-cell-content-addedItem,
+.v-collapsed .v-table-cell-content-addedItem .v-table-float,
+.v-expanded .v-table-cell-content-addedItem .v-table-float {
+    padding-left: 19px;
+    color : green !important;
+    background: transparent url(icons/plus.png) 0 center no-repeat;
+}
+
+.v-table-cell-content-removedItem,
+.v-collapsed .v-table-cell-content-removedItem .v-table-float,
+.v-expanded .v-table-cell-content-removedItem .v-table-float {
+    padding-left: 19px;
+    color : red !important;
+    background: transparent url(icons/minus.png) 0 center no-repeat;
+}
+
+.v-table-cell-content-modifiedItem,
+.v-collapsed .v-table-cell-content-modifiedItem .v-table-float,
+.v-expanded .v-table-cell-content-modifiedItem .v-table-float {
+    padding-left: 19px;
+    color : blue !important;
+    background: transparent url(icons/edit.png) 0 center no-repeat;
+}
+
+.v-table-cell-content-chainItem,
+.v-collapsed .v-table-cell-content-chainItem .v-table-float,
+.v-expanded .v-table-cell-content-chainItem .v-table-float {
+    padding-left: 19px;
+    color : blue !important;
+    background: transparent url(icons/chain.png) 0 center no-repeat;
+}
+
+.v-collapsed .v-table-cell-content-categoryItem,
+.v-expanded .v-table-cell-content-categoryItem,
+.v-collapsed .v-table-cell-content-addedItem,
+.v-expanded .v-table-cell-content-addedItem,
+.v-collapsed .v-table-cell-content-removedItem,
+.v-expanded .v-table-cell-content-removedItem,
+.v-collapsed .v-table-cell-content-modifiedItem,
+.v-expanded .v-table-cell-content-modifiedItem,
+.v-collapsed .v-table-cell-content-chainItem,
+.v-expanded .v-table-cell-content-chainItem
+{
+     background: transparent;
+     padding-left: 0;
+}
+
+/***********/
 
 /*
  * Next styles are moved from thesis project
@@ -421,27 +478,6 @@
 /*
 * Correspondence History style
 */
-
-.v-table-cell-content-red,
-.v-table-cell-content .v-table-cell-content-red,
-.v-collapsed .v-table-cell-content-red .v-table-float,
-.v-expanded .v-table-cell-content-red .v-table-float{
-    color : red !important;
-}
-
-.v-table-cell-content-green,
-.v-table-cell-content .v-table-cell-content-green,
-.v-collapsed .v-table-cell-content-green .v-table-float,
-.v-expanded .v-table-cell-content-green .v-table-float{
-    color : green !important;
-}
-
-.v-table-cell-content-blue,
-.v-table-cell-content .v-table-cell-content-blue,
-.v-collapsed .v-table-cell-content-blue .v-table-float,
-.v-expanded .v-table-cell-content-blue .v-table-float{
-    color : blue !important;
-}
 
 .v-table-cell-content-income,
 .v-collapsed .v-table-cell-content-income .v-table-float,

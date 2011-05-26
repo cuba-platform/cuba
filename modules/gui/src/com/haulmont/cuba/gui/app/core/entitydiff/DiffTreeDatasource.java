@@ -25,13 +25,14 @@ import com.haulmont.cuba.security.global.UserSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * <p>$Id$</p>
  *
  * @author artamonov
  */
-public class DiffTreeDatasource extends AbstractTreeDatasource {
+public class DiffTreeDatasource<T extends EntityPropertyDiff> extends AbstractTreeDatasource<T, UUID> {
 
     private static final long serialVersionUID = -6298466301673067199L;
 
@@ -59,15 +60,14 @@ public class DiffTreeDatasource extends AbstractTreeDatasource {
     private Node<EntityPropertyDiff> loadPropertyDiff(EntityPropertyDiff propertyDiff) {
         Node<EntityPropertyDiff> diffNode = null;
         if (propertyDiff != null) {
-
             // check security
             String propName = propertyDiff.getViewProperty().getName();
             MetaClass propMetaClass = MetadataProvider.getSession().getClass(propertyDiff.getMetaClassName());
             UserSession userSession = UserSessionClient.getUserSession();
-            if (!userSession.isEntityOpPermitted(metaClass, EntityOp.READ))
+            if (!userSession.isEntityOpPermitted(propMetaClass, EntityOp.READ))
                 return diffNode;
 
-            if (!userSession.isEntityAttrPermitted(metaClass, propName, EntityAttrAccess.VIEW))
+            if (!userSession.isEntityAttrPermitted(propMetaClass, propName, EntityAttrAccess.VIEW))
                 return diffNode;
 
             diffNode = new Node<EntityPropertyDiff>(propertyDiff);

@@ -45,16 +45,16 @@ public class EntityClassPropertyDiff extends EntityPropertyDiff {
         this.afterValue = afterValue;
         this.isLinkChange = linkChange;
 
-        if ((afterValue!=null) && isLinkChange)
-            label = InstanceUtils.getInstanceName((Instance)afterValue);
+        if ((afterValue != null) && isLinkChange)
+            label = InstanceUtils.getInstanceName((Instance) afterValue);
         else
             label = "";
 
         if (afterValue != null)
-            afterString = InstanceUtils.getInstanceName((Instance)afterValue);
+            afterString = InstanceUtils.getInstanceName((Instance) afterValue);
 
         if (beforeValue != null)
-            beforeString = InstanceUtils.getInstanceName((Instance)beforeValue);
+            beforeString = InstanceUtils.getInstanceName((Instance) beforeValue);
     }
 
     @Override
@@ -95,16 +95,30 @@ public class EntityClassPropertyDiff extends EntityPropertyDiff {
 
     @Override
     public String getBeforeString() {
-        return beforeString;
+        if (itemState != ItemState.Added)
+            return beforeString;
+        else
+            return "";
     }
 
     @Override
     public String getAfterString() {
-        return afterString;
+        if (itemState != ItemState.Removed)
+            return afterString;
+        else
+            return "";
     }
 
     @Override
     public boolean itemStateVisible() {
         return itemState != ItemState.Normal;
+    }
+
+    @Override
+    public String getLabel() {
+        if (itemState == ItemState.Normal)
+            return super.getLabel();
+        else
+            return "";
     }
 }

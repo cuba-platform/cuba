@@ -19,6 +19,8 @@ public class EntityBasicPropertyDiff extends EntityPropertyDiff {
 
     private static final long serialVersionUID = -1532265990429557046L;
 
+    private static final int CAPTION_CHAR_COUNT = 30;
+
     private Object beforeValue;
 
     private Object afterValue;
@@ -65,6 +67,22 @@ public class EntityBasicPropertyDiff extends EntityPropertyDiff {
         if (afterValue != null)
             return String.valueOf(afterValue);
         return super.getAfterString();
+    }
+
+    @Override
+    public String getBeforeCaption() {
+        String value = getBeforeString();
+        if (value.length() > CAPTION_CHAR_COUNT)
+            return value.substring(0, CAPTION_CHAR_COUNT) + "...";
+        return super.getBeforeCaption();
+    }
+
+    @Override
+    public String getAfterCaption() {
+        String value = getAfterString();
+        if (value.length() > CAPTION_CHAR_COUNT)
+            return value.substring(0, CAPTION_CHAR_COUNT) + "...";
+        return super.getAfterCaption();
     }
 
     @Override

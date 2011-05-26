@@ -56,9 +56,4 @@ public class EntityCollectionPropertyDiff extends EntityPropertyDiff {
     public void setModifiedEntities(List<EntityPropertyDiff> modifiedEntities) {
         this.modifiedEntities = modifiedEntities;
     }
-
-    @Override
-    public String getLabel() {
-        return super.getLabel();
-    }
 }

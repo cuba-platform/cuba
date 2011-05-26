@@ -34,12 +34,14 @@ public class EntityDiffViewer extends AbstractFrame {
     private List<EntitySnapshot> snapshots;
 
     private CollectionDatasource<EntitySnapshot, UUID> snapshotsDs;
-    private Datasource entityDiffDs;
-    private DiffTreeDatasource diffDs;
+    private Datasource<EntityDiff> entityDiffDs;
+    private DiffTreeDatasource<EntityPropertyDiff> diffDs;
 
     private Table snapshotsTable;
     private TreeTable diffTable;
+
     private Label itemStateLabel;
+    private Label valuesHeader;
 
     private Component itemStateField;
     private Component diffValuesField;
@@ -58,7 +60,9 @@ public class EntityDiffViewer extends AbstractFrame {
 
         snapshotsTable = getComponent("versionsList");
         diffTable = getComponent("diffTable");
+
         itemStateLabel = getComponent("itemStateLabel");
+        valuesHeader = getComponent("valuesHeader");
 
         diffValuesField = getComponent("diffValuesField");
         itemStateField = getComponent("itemStateField");
@@ -93,6 +97,7 @@ public class EntityDiffViewer extends AbstractFrame {
                 }
 
                 diffTable.refresh();
+                diffTable.expandAll();
             }
         });
 
@@ -100,16 +105,22 @@ public class EntityDiffViewer extends AbstractFrame {
             @Override
             public void itemChanged(Datasource<EntityPropertyDiff> ds,
                                     EntityPropertyDiff prevItem, EntityPropertyDiff item) {
-                boolean stateVisible = (item != null) && (item.hasStateValues());
+                boolean valuesVisible = (item != null) && (item.hasStateValues());
+                boolean stateVisible = (item != null) && (item.hasStateValues() && item.itemStateVisible());
 
+                valuesHeader.setVisible(stateVisible || valuesVisible);
                 itemStateField.setVisible(stateVisible);
-                diffValuesField.setVisible(stateVisible);
+                diffValuesField.setVisible(valuesVisible);
 
                 if (item != null) {
                     EntityPropertyDiff.ItemState itemState = item.getItemState();
-                    String messageCode = "ItemState." + itemState.toString();
-                    itemStateLabel.setValue(getMessage(messageCode));
-                    itemStateField.setVisible(item.itemStateVisible());
+                    if (itemState != EntityPropertyDiff.ItemState.Normal) {
+                        String messageCode = "ItemState." + itemState.toString();
+                        itemStateLabel.setValue(getMessage(messageCode));
+                        itemStateLabel.setVisible(true);
+                    } else {
+                        itemStateField.setVisible(false);
+                    }
                 }
             }
 
