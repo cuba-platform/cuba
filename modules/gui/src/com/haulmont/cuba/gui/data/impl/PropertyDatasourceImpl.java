@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.EntityFactory;
 import com.haulmont.cuba.core.global.MetadataProvider;
@@ -26,11 +27,10 @@ import java.util.Map;
 import org.apache.commons.lang.ObjectUtils;
 
 public class PropertyDatasourceImpl<T extends Entity>
-    extends
+        extends
         AbstractDatasource<T>
-    implements
-        Datasource<T>, DatasourceImplementation<T>, PropertyDatasource<T>
-{
+        implements
+        Datasource<T>, DatasourceImplementation<T>, PropertyDatasource<T> {
     protected Datasource ds;
     protected MetaProperty metaProperty;
 
@@ -137,6 +137,14 @@ public class PropertyDatasourceImpl<T extends Entity>
     }
 
     public void commited(Map<Entity, Entity> map) {
+        Entity previousItem = getItem();
+        T newItem = (T) map.get(previousItem);
+
+        AbstractInstance parentItem = (AbstractInstance) ds.getItem();
+        parentItem.setValue(metaProperty.getName(), newItem, false);
+        detachListener(previousItem);
+        attachListener(newItem);
+
         modified = false;
         clearCommitLists();
     }
