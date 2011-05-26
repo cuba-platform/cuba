@@ -62,15 +62,15 @@ public class WebGroupBox extends WebAbstractPanel implements GroupBox {
     @Override
     public void add(Component component) {
         final com.vaadin.ui.Component comp = WebComponentsHelper.unwrap(component);
-        if (comp instanceof Layout) {
+        if (comp instanceof Layout || comp instanceof com.vaadin.ui.Panel) {
             if (getContent() == null) {
-                setContent(((Layout) comp));
+                setContent((com.vaadin.ui.ComponentContainer) comp);
             } else {
                 getContent().addComponent(comp);
             }
             this.component = component;
         } else {
-            throw new UnsupportedOperationException("Only layout component is supported inside groupBox");
+            throw new UnsupportedOperationException("Only layout or panel component is supported inside groupBox");
         }
     }
 
