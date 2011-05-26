@@ -126,9 +126,6 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
                 parentContext.addPostInitTask(new FrameLoaderPostInitTask(res, params, true));
 
-                if (ReflectionHelper.findMethod(res.getClass(), "init", parentContext.getParams()) != null)
-                    ReflectionHelper.invokeMethod(res, "init", parentContext.getParams());
-
                 return res;
             } catch (Throwable e) {
                 throw new RuntimeException(e);
