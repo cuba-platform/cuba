@@ -791,3 +791,14 @@ insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, G
   values ('60885987-1b61-4247-94c7-dff348347f94', now(), 0, 'emailer', 'emailer', '2f22cf032e4be87de59e4e8bfd066ed1', 'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true);
 
 ------------------------------------------------------------------------------------------------------------
+
+create table SYS_ENTITY_SNAPSHOT (
+    ID varchar(36),
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    ENTITY_META_CLASS varchar(50),
+    ENTITY_ID varchar(36),
+    VIEW_XML longvarchar,
+    SNAPSHOT_XML longvarchar,
+	primary key (ID)
+);
