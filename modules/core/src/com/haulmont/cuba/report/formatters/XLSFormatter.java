@@ -14,10 +14,7 @@ import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.Orientation;
 import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
-import com.haulmont.cuba.report.formatters.xls.Area;
-import com.haulmont.cuba.report.formatters.xls.AreaAlign;
-import com.haulmont.cuba.report.formatters.xls.Cell;
-import com.haulmont.cuba.report.formatters.xls.XlsFontCache;
+import com.haulmont.cuba.report.formatters.xls.*;
 import org.apache.poi.hssf.model.HSSFFormulaParser;
 import org.apache.poi.hssf.record.EscherAggregate;
 import org.apache.poi.hssf.record.PaletteRecord;
@@ -44,6 +41,7 @@ public class XLSFormatter extends AbstractFormatter {
     private HSSFSheet currentTemplateSheet = null;
 
     private XlsFontCache fontCache = new XlsFontCache();
+    private XlsStyleCache styleCache = new XlsStyleCache();
 
     private int rownum;
     private int colnum;
@@ -386,8 +384,8 @@ public class XLSFormatter extends AbstractFormatter {
      * Clones styles for cells and palette from template workbook
      */
     private void cloneWorkbookStyles() {
-        HSSFCellStyle cellStyle = resultWorkbook.createCellStyle();
-        cellStyle.cloneStyleFrom(templateWorkbook.createCellStyle());
+//        HSSFCellStyle cellStyle = resultWorkbook.createCellStyle();
+//        cellStyle.cloneStyleRelationsFrom(templateWorkbook.createCellStyle());
 
         HSSFPalette customPalette = templateWorkbook.getCustomPalette();
         for (short i = PaletteRecord.FIRST_COLOR_INDEX;
@@ -439,11 +437,16 @@ public class XLSFormatter extends AbstractFormatter {
     private HSSFCellStyle copyCellStyle(HSSFCellStyle templateStyle) {
         HSSFCellStyle resultStyle = resultWorkbook.createCellStyle();
 
-        resultStyle.cloneStyleFrom(templateStyle);
-        HSSFFont font = resultStyle.getFont(resultWorkbook);
-        resultStyle.setFont(fontCache.processFont(font));
+        resultStyle.cloneStyleRelationsFrom(templateStyle);
+        HSSFFont font = fontCache.getFont(templateStyle.getFont(templateWorkbook));
+        if (font != null)
+            resultStyle.setFont(fontCache.processFont(font));
+        else {
+            resultStyle.cloneFontFrom(templateStyle);
+            fontCache.processFont(resultStyle.getFont(resultWorkbook));
+        }
 
-        return resultStyle;
+        return styleCache.processCellStyle(resultStyle);
     }
 
     /**

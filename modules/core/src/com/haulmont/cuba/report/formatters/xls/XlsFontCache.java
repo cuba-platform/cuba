@@ -20,18 +20,16 @@ import java.util.List;
  */
 public class XlsFontCache {
 
-    public List<HSSFFont> fonts = new ArrayList<HSSFFont>();
+    private List<HSSFFont> fonts = new ArrayList<HSSFFont>();
 
     public XlsFontCache() { }
 
-    public HSSFFont processFont(HSSFFont font, HSSFFont templateFont){
+    public HSSFFont getFont(HSSFFont font){
         for (HSSFFont cacheFont : fonts) {
-            if (fontEquals(templateFont, cacheFont))
+            if (fontEquals(cacheFont, font))
                 return cacheFont;
         }
-        fontClone(font, templateFont);
-        fonts.add(font);
-        return font;
+        return null;
     }
 
     public HSSFFont processFont(HSSFFont font){
@@ -55,8 +53,8 @@ public class XlsFontCache {
                 return false;
             if (aFont.getBoldweight() != bFont.getBoldweight())
                 return false;
-            /*if (aFont.getCharSet() != bFont.getCharSet())
-                return false;*/
+            if (aFont.getCharSet() != bFont.getCharSet())
+                return false;
             if (aFont.getColor() != bFont.getColor())
                 return false;
             if (aFont.getFontHeight() != bFont.getFontHeight())
