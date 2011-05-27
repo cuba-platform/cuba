@@ -224,10 +224,26 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
             boolean isInternalChange = false;
 
+            // added or modified
             if (secondValue != null) {
                 diffBranch.push(secondValue);
 
                 // recursion call
+                List<EntityPropertyDiff> propertyDiffs =
+                        getPropertyDiffs(viewProperty.getView(), (Entity) firstValue, (Entity) secondValue, diffBranch);
+
+                diffBranch.pop();
+
+                if (!propertyDiffs.isEmpty()) {
+                    isInternalChange = true;
+                    classPropertyDiff.setPropertyDiffs(propertyDiffs);
+                }
+            }
+
+            // removed or set null
+            if ((secondValue == null) && (firstValue != null)) {
+                diffBranch.push(firstValue);
+
                 List<EntityPropertyDiff> propertyDiffs =
                         getPropertyDiffs(viewProperty.getView(), (Entity) firstValue, (Entity) secondValue, diffBranch);
 
