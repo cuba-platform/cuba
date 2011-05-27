@@ -140,10 +140,14 @@ public class PropertyDatasourceImpl<T extends Entity>
         Entity previousItem = getItem();
         T newItem = (T) map.get(previousItem);
 
+        boolean isModified = ds.isModified();
+
         AbstractInstance parentItem = (AbstractInstance) ds.getItem();
         parentItem.setValue(metaProperty.getName(), newItem, false);
         detachListener(previousItem);
         attachListener(newItem);
+
+        ((DatasourceImplementation)ds).setModified(isModified);
 
         modified = false;
         clearCommitLists();
