@@ -15,6 +15,7 @@ package com.haulmont.cuba.gui.export;
  */
 public enum ExportFormat {
     HTML("text/html", "html"),
+    HTM("text/html", "htm"),
     PDF("application/pdf", "pdf"),
     XLS("application/vnd.ms-excel", "xls"),
     RTF("application/rtf", "rtf"),
@@ -32,11 +33,11 @@ public enum ExportFormat {
         this.fileExt = fileExt;
     }
 
-    public static ExportFormat getByExtension(String extension){
+    public static ExportFormat getByExtension(String extension) {
         ExportFormat format = null;
         ExportFormat[] formats = values();
         int i = 0;
-        while ((i < formats.length) && (format == null)){
+        while ((i < formats.length) && (format == null)) {
             if (formats[i].fileExt.equals(extension))
                 format = formats[i];
             i++;
