@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.NotDetachedCommitContext;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,8 @@ public interface DataService
     DbDialect getDbDialect();
 
     Map<Entity, Entity> commit(CommitContext<Entity> context);
+
+    Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext<Entity> context);
 
     <A extends Entity> A load(LoadContext context);
     <A extends Entity> List<A> loadList(LoadContext context);

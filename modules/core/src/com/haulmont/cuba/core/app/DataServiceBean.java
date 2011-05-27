@@ -16,7 +16,6 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ViewHelper;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -30,8 +29,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service(DataService.NAME)
-public class DataServiceBean implements DataService
-{
+public class DataServiceBean implements DataService {
     private volatile static Boolean storeCacheEnabled;
 
     private Log log = LogFactory.getLog(DataServiceBean.class);
@@ -80,6 +78,55 @@ public class DataServiceBean implements DataService
                 View view = context.getViews().get(entry.getKey());
                 if (view != null) {
                     ViewHelper.fetchInstance(entry.getValue(), view);
+                }
+            }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        return res;
+    }
+
+    public Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext<Entity> context) {
+        if (log.isDebugEnabled())
+            log.debug("commit: commitInstances=" + context.getCommitInstances()
+                    + ", removeInstances=" + context.getRemoveInstances());
+
+        final Map<Entity, Entity> res = new HashMap<Entity, Entity>();
+
+        Transaction tx = Locator.getTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            checkPermissions(context);
+
+            if (!context.isSoftDeletion())
+                em.setSoftDeletion(false);
+
+            // persist new or merge detached
+            Set newInstanceIdSet = new HashSet(context.getNewInstanceIds());
+            for (Entity entity : context.getCommitInstances()) {
+                MetaClass metaClass = MetadataProvider.getSession().getClass(entity.getClass());
+                if (newInstanceIdSet.contains(metaClass.getName() + "-" + entity.getId().toString())) {
+                    em.persist(entity);
+                    res.put(entity, entity);
+                } else {
+                    Entity e = em.merge(entity);
+                    res.put(entity, e);
+                }
+            }
+            // remove
+            for (Entity entity : context.getRemoveInstances()) {
+                Entity e = em.merge(entity);
+                em.remove(e);
+                res.put(entity, e);
+            }
+
+            for (Map.Entry<Entity, Entity> entry : res.entrySet()) {
+                View view = context.getViews().get(entry.getKey());
+                if (view != null) {
+                    ViewHelper.fetchInstance((Instance) entry.getValue(), view);
                 }
             }
 
@@ -140,8 +187,8 @@ public class DataServiceBean implements DataService
         if (log.isDebugEnabled())
             log.debug("loadList: metaClass=" + context.getMetaClass() + ", view=" + context.getView()
                     + ", query=" + (context.getQuery() == null ? null : printQuery(context.getQuery().getQueryString()))
-                    + (context.getQuery().getFirstResult() == 0 ? "" : ", first=" + context.getQuery().getFirstResult())
-                    + (context.getQuery().getMaxResults() == 0 ? "" : ", max=" + context.getQuery().getMaxResults()));
+                    + (context.getQuery() == null || context.getQuery().getFirstResult() == 0 ? "" : ", first=" + context.getQuery().getFirstResult())
+                    + (context.getQuery() == null || context.getQuery().getMaxResults() == 0 ? "" : ", max=" + context.getQuery().getMaxResults()));
 
         final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
 
@@ -184,7 +231,7 @@ public class DataServiceBean implements DataService
         if (ConfigProvider.getConfig(LogConfig.class).getCutLoadListQueries()) {
             str = StringUtils.abbreviate(str.replaceAll("[\\n\\r]", " "), 50);
         }
-        
+
         return str;
     }
 
@@ -233,7 +280,7 @@ public class DataServiceBean implements DataService
                     query.setParameter(entry.getKey(), ((Entity) value).getId());
 
                 } else if (value instanceof EnumClass) {
-                        query.setParameter(entry.getKey(), ((EnumClass) value).getId());
+                    query.setParameter(entry.getKey(), ((EnumClass) value).getId());
 
                 } else if (value instanceof Collection) {
                     List list = new ArrayList(((Collection) value).size());

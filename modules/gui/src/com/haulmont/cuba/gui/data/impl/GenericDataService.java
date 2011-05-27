@@ -9,20 +9,17 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.global.PropertyVisitor;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Instance;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.data.DataService;
+import org.apache.openjpa.util.Proxy;
 
 import java.io.Serializable;
 import java.util.*;
-
-import com.haulmont.cuba.gui.data.DataService;
-import org.apache.openjpa.util.Proxy;
 
 public class GenericDataService implements DataService, Serializable {
 
@@ -101,6 +98,10 @@ public class GenericDataService implements DataService, Serializable {
             }
             throw e;
         }
+    }
+
+    public Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext<Entity> context) {
+        return ServiceLocator.getDataService().commitNotDetached(context);
     }
 
     public <A extends Entity> A load(LoadContext context) {
