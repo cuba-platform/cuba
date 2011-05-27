@@ -13,6 +13,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
@@ -110,7 +111,7 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
             parentItem.setValue(metaProperty.getName(), item);
         }
         setModified(true);
-        ((DatasourceImplementation)ds).modified(ds.getItem());
+        ((DatasourceImplementation) ds).modified(ds.getItem());
     }
 
     public MetaClass getMetaClass() {
@@ -125,6 +126,17 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
     }
 
     public void commited(Map<Entity, Entity> map) {
+        Entity previousItem = getItem();
+        T newItem = (T) map.get(previousItem);
+        boolean isModified = ds.isModified();
+
+        AbstractInstance parentItem = (AbstractInstance) ds.getItem();
+        parentItem.setValue(metaProperty.getName(), newItem, false);
+        detachListener(previousItem);
+        attachListener(newItem);
+
+        ((DatasourceImplementation) ds).setModified(isModified);
+
         modified = false;
         clearCommitLists();
     }
@@ -148,7 +160,7 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
     @Override
     public void modified(T item) {
         super.modified(item);
-        ((DatasourceImplementation)ds).modified(ds.getItem());
+        ((DatasourceImplementation) ds).modified(ds.getItem());
     }
 
     @Override
