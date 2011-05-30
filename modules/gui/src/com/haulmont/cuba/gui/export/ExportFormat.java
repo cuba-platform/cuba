@@ -16,13 +16,20 @@ package com.haulmont.cuba.gui.export;
 public enum ExportFormat {
     HTML("text/html", "html"),
     HTM("text/html", "htm"),
+
     PDF("application/pdf", "pdf"),
     XLS("application/vnd.ms-excel", "xls"),
     RTF("application/rtf", "rtf"),
     DOC("application/doc", "doc"),
     XML("text/xml", "xml"),
-    ZIP("application/zip", "zip"),
     CSV("application/csv", "csv"),
+
+    JPEG("image/jpeg", "jpeg"),
+    JPG("image/jpeg", "jpg"),
+    PNG("image/png", "png"),
+
+    RAR("application/x-rar-compressed", "rar"),
+    ZIP("application/zip", "zip"),
     OCTET_STREAM("application/octet-stream", "");
 
     private String contentType;
@@ -38,7 +45,7 @@ public enum ExportFormat {
         ExportFormat[] formats = values();
         int i = 0;
         while ((i < formats.length) && (format == null)) {
-            if (formats[i].fileExt.equals(extension))
+            if (formats[i].fileExt.equalsIgnoreCase(extension))
                 format = formats[i];
             i++;
         }
