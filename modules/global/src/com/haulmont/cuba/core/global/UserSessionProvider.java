@@ -2,13 +2,8 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 25.03.11 17:54
- *
- * $Id$
  */
-package com.haulmont.cuba.client;
+package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -17,12 +12,17 @@ import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 
+import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Client-side class providing access to the current user session
+ * Provides access to the current user session
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
-public abstract class UserSessionClient {
+public abstract class UserSessionProvider {
 
     /**
      * Current user session
@@ -36,6 +36,10 @@ public abstract class UserSessionClient {
         return us.getSubstitutedUser() != null ? us.getSubstitutedUser().getId() : us.getUser().getId();
     }
 
+    public static Locale getLocale() {
+        return getInstance().__getUserSession().getLocale();
+    }
+
     public static boolean isEditPermitted(MetaProperty metaProperty) {
         MetaClass metaClass = metaProperty.getDomain();
 
@@ -47,7 +51,7 @@ public abstract class UserSessionClient {
 
     protected abstract UserSession __getUserSession();
 
-    private static UserSessionClient getInstance() {
-        return (UserSessionClient) AppContext.getApplicationContext().getBean("cuba_UserSessionClient");
+    private static UserSessionProvider getInstance() {
+        return (UserSessionProvider) AppContext.getApplicationContext().getBean("cuba_UserSessionProvider");
     }
 }

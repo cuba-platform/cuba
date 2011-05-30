@@ -6,8 +6,9 @@
 
 package com.haulmont.cuba.desktop.sys;
 
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.FormatStrings;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SingleSecurityContextHolder;
 import com.haulmont.cuba.gui.AppConfig;
@@ -24,6 +25,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -51,12 +53,33 @@ public class DesktopAppContextLoader {
         AppContext.setSecurityContextHolder(new SingleSecurityContextHolder());
 
         initAppProperties();
-        MessageUtils.setMessagePack(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP));
         initAppContext();
+        initLocalization();
         initServiceLocator();
 
         AppContext.startContext();
         log.info("AppContext initialized");
+    }
+
+    private void initLocalization() {
+        String mp = AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP);
+        MessageUtils.setMessagePack(mp);
+
+        for (Locale locale : ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales().values()) {
+            Datatypes.setFormatStrings(
+                    locale,
+                    new FormatStrings(
+                            MessageProvider.getMessage(mp, "numberDecimalSeparator", locale).charAt(0),
+                            MessageProvider.getMessage(mp, "numberGroupingSeparator", locale).charAt(0),
+                            MessageProvider.getMessage(mp, "integerFormat", locale),
+                            MessageProvider.getMessage(mp, "doubleFormat", locale),
+                            MessageProvider.getMessage(mp, "dateFormat", locale),
+                            MessageProvider.getMessage(mp, "dateTimeFormat", locale),
+                            MessageProvider.getMessage(mp, "trueString", locale),
+                            MessageProvider.getMessage(mp, "falseString", locale)
+                    )
+            );
+        }
     }
 
     private void initAppProperties() {

@@ -9,11 +9,11 @@ package com.haulmont.cuba.gui;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
 import org.apache.commons.lang.StringUtils;
-import com.haulmont.cuba.client.UserSessionClient;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,7 +52,7 @@ public class ScreenHistorySupport {
             }
             ScreenHistoryEntity screenHistoryEntity = EntityFactory.create(ScreenHistoryEntity.class);
             screenHistoryEntity.setCaption(StringUtils.abbreviate(caption, 255));
-            screenHistoryEntity.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+            screenHistoryEntity.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
             screenHistoryEntity.setUrl(makeLink(window));
 
             CommitContext cc = new CommitContext(Collections.singleton(screenHistoryEntity));

@@ -10,8 +10,12 @@
  */
 package com.haulmont.cuba.gui.components.validators;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.IntegerDatatype;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
@@ -48,8 +52,9 @@ public class IntegerValidator implements Field.Validator {
         boolean result;
         if (value instanceof String) {
             try {
-                Number num = ValidationHelper.parseNumber((String) value, MessageUtils.getIntegerFormat());
-                result = checkIntegerOnPositive(num.intValue());
+                Datatype<Integer> datatype = Datatypes.get(IntegerDatatype.NAME);
+                Integer num = datatype.parse((String) value, UserSessionProvider.getLocale());
+                result = checkIntegerOnPositive(num);
             } catch (ParseException e) {
                 result = false;
             }

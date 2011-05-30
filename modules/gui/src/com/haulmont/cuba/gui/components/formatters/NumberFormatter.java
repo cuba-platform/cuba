@@ -10,18 +10,16 @@
  */
 package com.haulmont.cuba.gui.components.formatters;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Formatter;
 import org.dom4j.Element;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class NumberFormatter implements Formatter<Number> {
     private Element element;
@@ -41,33 +39,21 @@ public class NumberFormatter implements Formatter<Number> {
         }
         String pattern = element != null
                 ? element.attributeValue("format") : null;
+
         if (pattern == null) {
-            if (value instanceof Integer ||
-                    value instanceof Short ||
-                    value instanceof Byte ||
-                    value instanceof AtomicInteger ||
-                    value instanceof BigInteger
-                    ) {
-                pattern = MessageUtils.getIntegerFormat();
-            } else if (value instanceof Long || value instanceof AtomicLong) {
-                pattern = MessageUtils.getLongFormat();
-            } else if (value instanceof BigDecimal) {
-                pattern = MessageUtils.getBigDecimalFormat();
-            } else {
-                pattern = MessageUtils.getDoubleFormat();
-            }
+            Datatype datatype = Datatypes.get(value.getClass());
+            if (datatype == null)
+                throw new IllegalArgumentException("No datatype for " + value.getClass());
+
+            return datatype.format(value, UserSessionProvider.getLocale());
         } else {
             if (pattern.startsWith("msg://")) {
                 pattern = MessageProvider.getMessage(
                         AppConfig.getMessagesPack(), pattern.substring(6, pattern.length()));
             }
+            FormatStrings formatStrings = Datatypes.getFormatStrings(UserSessionProvider.getLocale());
+            DecimalFormat format = new DecimalFormat(pattern, formatStrings.getFormatSymbols());
+            return format.format(value);
         }
-
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setDecimalSeparator(MessageUtils.getNumberDecimalSeparator());
-        symbols.setGroupingSeparator(MessageUtils.getNumberGroupingSeparator());
-
-        DecimalFormat format = new DecimalFormat(pattern, symbols);
-        return format.format(value);
     }
 }

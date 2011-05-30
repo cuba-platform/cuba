@@ -19,6 +19,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.UUID;
@@ -29,6 +30,7 @@ import java.util.UUID;
 @Service(UserSessionService.NAME)
 public class UserSessionServiceBean implements UserSessionService
 {
+    @Inject
     private UserSessionManager userSessionManager;
 
     public UserSession getUserSession(UUID sessionId) {

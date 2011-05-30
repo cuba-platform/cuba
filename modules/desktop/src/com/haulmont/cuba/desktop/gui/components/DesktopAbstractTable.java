@@ -9,7 +9,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.client.UserSessionClient;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
@@ -114,7 +114,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     public void setDatasource(final CollectionDatasource datasource) {
-        UserSession userSession = UserSessionClient.getUserSession();
+        UserSession userSession = UserSessionProvider.getUserSession();
         if (!userSession.isEntityOpPermitted(datasource.getMetaClass(), EntityOp.READ)) {
             impl.setVisible(false);
             return;
@@ -226,7 +226,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
         setVisibleColumns(columnsOrder);
 
-//        if (UserSessionClient.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
+//        if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
 //            ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
 //            if (action == null) {
 //                action = new ShowInfoAction();

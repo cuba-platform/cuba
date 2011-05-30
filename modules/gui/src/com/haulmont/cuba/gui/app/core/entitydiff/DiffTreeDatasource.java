@@ -9,7 +9,7 @@ package com.haulmont.cuba.gui.app.core.entitydiff;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.client.UserSessionClient;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.app.EntitySnapshotService;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.global.*;
@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
-import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
@@ -63,7 +62,7 @@ public class DiffTreeDatasource<T extends EntityPropertyDiff> extends AbstractTr
             // check security
             String propName = propertyDiff.getViewProperty().getName();
             MetaClass propMetaClass = MetadataProvider.getSession().getClass(propertyDiff.getMetaClassName());
-            UserSession userSession = UserSessionClient.getUserSession();
+            UserSession userSession = UserSessionProvider.getUserSession();
             if (!userSession.isEntityOpPermitted(propMetaClass, EntityOp.READ))
                 return diffNode;
 

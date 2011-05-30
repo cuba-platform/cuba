@@ -8,8 +8,8 @@ package com.haulmont.cuba.gui.app.security.user.browse;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.EntityFactory;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.client.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.components.*;
@@ -45,8 +45,8 @@ public class UserBrowser extends AbstractLookup {
                 super.itemChanged(ds, prevItem, item);
                 User user = (User) item;
                 if (removeAction != null)
-                    removeAction.setEnabled(!(UserSessionClient.getUserSession().getUser().equals(user) ||
-                            UserSessionClient.getUserSession().getCurrentOrSubstitutedUser().equals(user)));
+                    removeAction.setEnabled(!(UserSessionProvider.getUserSession().getUser().equals(user) ||
+                            UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser().equals(user)));
             }
         });
 

@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.desktop.sys;
 
-import com.haulmont.cuba.client.UserSessionClient;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.security.global.UserSession;
 
@@ -15,7 +15,7 @@ import com.haulmont.cuba.security.global.UserSession;
  *
  * @author krivopustov
  */
-public class DesktopUserSessionClient extends UserSessionClient {
+public class DesktopUserSessionProvider extends UserSessionProvider {
 
     @Override
     protected UserSession __getUserSession() {

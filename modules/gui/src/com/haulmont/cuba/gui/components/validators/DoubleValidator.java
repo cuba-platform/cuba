@@ -10,8 +10,12 @@
  */
 package com.haulmont.cuba.gui.components.validators;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.DoubleDatatype;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
@@ -44,7 +48,8 @@ public class DoubleValidator implements Field.Validator {
         boolean result;
         if (value instanceof String) {
             try {
-                ValidationHelper.parseNumber((String) value, MessageUtils.getDoubleFormat());
+                Datatype<Double> datatype = Datatypes.get(DoubleDatatype.NAME);
+                datatype.parse((String) value, UserSessionProvider.getLocale());
                 result = true;
             } catch (ParseException e) {
                 result = false;

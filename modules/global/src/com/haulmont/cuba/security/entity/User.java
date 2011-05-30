@@ -67,7 +67,7 @@ public class User extends StandardEntity
     @Column(name = "ACTIVE")
     private Boolean active = true;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(/*optional = false,*/ fetch = FetchType.LAZY)
     @JoinColumn(name = "GROUP_ID")
     @OnDeleteInverse(DeletePolicy.DENY)
     private Group group;

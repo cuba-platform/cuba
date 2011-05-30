@@ -10,8 +10,9 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.FormatStrings;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -35,6 +36,7 @@ import javax.servlet.ServletContextListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.Properties;
 
 public class WebAppContextLoader implements ServletContextListener {
@@ -53,8 +55,6 @@ public class WebAppContextLoader implements ServletContextListener {
 
             initAppProperties(sc);
 
-            MessageUtils.setMessagePack(AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP));
-
             File file = new File(AppContext.getProperty("cuba.confDir"));
             if (!file.exists())
                 file.mkdirs();
@@ -63,6 +63,7 @@ public class WebAppContextLoader implements ServletContextListener {
                 file.mkdirs();
 
             initAppContext();
+            initLocalization();
             initServiceLocator();
 
             AppContext.startContext();
@@ -70,6 +71,27 @@ public class WebAppContextLoader implements ServletContextListener {
         } catch (Throwable e) {
             log.error("Error initializing application", e);
             throw new RuntimeException(e);
+        }
+    }
+
+    private void initLocalization() {
+        String mp = AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP);
+        MessageUtils.setMessagePack(mp);
+
+        for (Locale locale : ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales().values()) {
+            Datatypes.setFormatStrings(
+                    locale,
+                    new FormatStrings(
+                            MessageProvider.getMessage(mp, "numberDecimalSeparator", locale).charAt(0),
+                            MessageProvider.getMessage(mp, "numberGroupingSeparator", locale).charAt(0),
+                            MessageProvider.getMessage(mp, "integerFormat", locale),
+                            MessageProvider.getMessage(mp, "doubleFormat", locale),
+                            MessageProvider.getMessage(mp, "dateFormat", locale),
+                            MessageProvider.getMessage(mp, "dateTimeFormat", locale),
+                            MessageProvider.getMessage(mp, "trueString", locale),
+                            MessageProvider.getMessage(mp, "falseString", locale)
+                    )
+            );
         }
     }
 

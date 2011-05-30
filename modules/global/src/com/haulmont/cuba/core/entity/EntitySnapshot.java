@@ -7,14 +7,16 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -81,8 +83,8 @@ public class EntitySnapshot extends BaseUuidEntity {
         if (StringUtils.isNotEmpty(this.createdBy))
            name += this.createdBy + " ";
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat(MessageUtils.getDateTimeFormat());
-        name += dateFormat.format(createTs);
+        Datatype datatype = Datatypes.get(DateTimeDatatype.NAME);
+        name += datatype.format(createTs, UserSessionProvider.getLocale());
 
         return name;
     }

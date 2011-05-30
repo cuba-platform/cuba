@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.client.sys;
 
-import com.haulmont.cuba.client.UserSessionClient;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.sys.AbstractMessageProvider;
 import com.haulmont.cuba.security.global.UserSession;
 
@@ -20,7 +20,7 @@ public class MessageProviderClientImpl extends AbstractMessageProvider {
 
     @Override
     protected Locale getUserLocale() {
-        UserSession userSession = UserSessionClient.getUserSession();
+        UserSession userSession = UserSessionProvider.getUserSession();
         return userSession != null ? userSession.getLocale() : Locale.getDefault();
     }
 }

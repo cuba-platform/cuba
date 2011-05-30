@@ -10,8 +10,10 @@
  */
 package com.haulmont.cuba.gui.components.formatters;
 
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.FormatStrings;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
@@ -38,12 +40,13 @@ public class DateFormatter implements Formatter<Date> {
         String type = element.attributeValue("type");
         if (type != null) {
             Table.Column.FormatterType ftype = Table.Column.FormatterType.valueOf(type);
+            FormatStrings formatStrings = Datatypes.getFormatStrings(UserSessionProvider.getUserSession().getLocale());
             switch (ftype) {
                 case DATE:
-                    format = MessageUtils.getDateFormat();
+                    format = formatStrings.getDateFormat();
                     break;
                 case DATETIME:
-                    format = MessageUtils.getDateTimeFormat();
+                    format = formatStrings.getDateTimeFormat();
                     break;
                 default:
                     throw new RuntimeException("Illegal formatter type value");

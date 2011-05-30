@@ -11,12 +11,8 @@
 package com.haulmont.cuba.web.app.ui.report;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.client.UserSessionClient;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -259,7 +255,7 @@ public class ReportHelper {
 
         DsContext dsContext = window.getDsContext();
         List<Report> reports = dsContext.getDataService().loadList(lContext);
-        reports = applySecurityPolicies(UserSessionClient.getUserSession().getUser(), window.getId(), reports);
+        reports = applySecurityPolicies(UserSessionProvider.getUserSession().getUser(), window.getId(), reports);
         if (reports.size() == 1) {
             Report report = reports.get(0);
             window.getDsContext().getDataService().reload(report, "report.edit");

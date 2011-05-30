@@ -9,7 +9,11 @@
  */
 package com.haulmont.cuba.gui.components.validators;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.LongDatatype;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
 import org.apache.commons.lang.ObjectUtils;
@@ -43,8 +47,9 @@ public class LongValidator implements Field.Validator {
         boolean result;
         if (value instanceof String) {
             try {
-                Number num = ValidationHelper.parseNumber((String) value, MessageUtils.getLongFormat());
-                result = checkPositive(num.longValue());
+                Datatype<Long> datatype = Datatypes.get(LongDatatype.NAME);
+                Long num = datatype.parse((String) value, UserSessionProvider.getLocale());
+                result = checkPositive(num);
             }
             catch (ParseException e) {
                 result = false;

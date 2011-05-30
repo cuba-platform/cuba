@@ -262,8 +262,8 @@ public class XMLConvertor implements Convertor {
                     }
 
                     value = property.getType() == MetaProperty.Type.DATATYPE ?
-                            property.getRange().<Object>asDatatype().parseXml(xmlValue) :
-                            property.getRange().asEnumeration().parseXml(xmlValue);
+                            property.getRange().<Object>asDatatype().parse(xmlValue) :
+                            property.getRange().asEnumeration().parse(xmlValue);
                     setField(bean, fieldName, value);
                     break;
                 case AGGREGATION:
@@ -406,7 +406,7 @@ public class XMLConvertor implements Convertor {
                     if (value == null) {
                         encodeNull(child);
                     } else {
-                        String str = property.getRange().<Object>asDatatype().formatXml(value);
+                        String str = property.getRange().<Object>asDatatype().format(value);
                         encodeBasic(child, str, property.getJavaType());
                     }
                     break;
@@ -418,7 +418,7 @@ public class XMLConvertor implements Convertor {
                     if (value == null) {
                         encodeNull(child);
                     } else {
-                        String str = property.getRange().asEnumeration().formatXml(value);
+                        String str = property.getRange().asEnumeration().format(value);
                         encodeBasic(child, str, property.getJavaType());
                     }
                     break;

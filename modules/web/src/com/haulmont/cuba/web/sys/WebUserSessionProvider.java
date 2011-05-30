@@ -10,11 +10,11 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.cuba.client.UserSessionClient;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 
-public class WebUserSessionClient extends UserSessionClient
+public class WebUserSessionProvider extends UserSessionProvider
 {
     protected UserSession __getUserSession() {
         return App.getInstance().getConnection().getSession();

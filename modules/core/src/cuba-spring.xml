@@ -79,6 +79,10 @@
         <property name="userSessionManager" ref="cuba_UserSessionManager"/>
     </bean>
 
+    <bean id="cuba_UserSessionProvider" class="com.haulmont.cuba.core.sys.UserSessionProviderImpl">
+        <property name="userSessionManager" ref="cuba_UserSessionManager"/>
+    </bean>
+
     <!-- Various beans -->
 
     <bean id="cuba_TimeBetweenQueryMacroHandler"

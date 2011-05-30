@@ -18,7 +18,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.client.UserSessionClient;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
@@ -234,7 +234,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 }
                 case SESSION: {
                     Object value;
-                    UserSession us = UserSessionClient.getUserSession();
+                    UserSession us = UserSessionProvider.getUserSession();
                     value = us.getAttribute(path);
 
                     if (value instanceof String && info.isCaseInsensitive()) {
@@ -336,7 +336,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             }
         }
 
-        UserSession userSession = UserSessionClient.getUserSession();
+        UserSession userSession = UserSessionProvider.getUserSession();
         String sessionPrefix = ParameterInfo.Type.SESSION.getPrefix() + "$";
         templateParams.put(sessionPrefix + "userId", userSession.getCurrentOrSubstitutedUser().getId());
         templateParams.put(sessionPrefix + "userLogin", userSession.getCurrentOrSubstitutedUser().getLoginLowerCase());

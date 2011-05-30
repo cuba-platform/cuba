@@ -20,9 +20,9 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.client.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Field;
@@ -68,8 +68,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
-
-import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 
 public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.Table>
         extends WebAbstractList<T> implements Table {
@@ -390,7 +388,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     public void setDatasource(CollectionDatasource datasource) {
-        UserSession userSession = UserSessionClient.getUserSession();
+        UserSession userSession = UserSessionProvider.getUserSession();
         if (!userSession.isEntityOpPermitted(datasource.getMetaClass(), EntityOp.READ)) {
             component.setVisible(false);
             return;
@@ -496,7 +494,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         setVisibleColumns(columnsOrder);
 
-        if (UserSessionClient.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
+        if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
             if (action == null) {
                 action = new ShowInfoAction();

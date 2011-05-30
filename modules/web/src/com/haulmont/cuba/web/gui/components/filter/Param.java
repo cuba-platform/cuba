@@ -21,18 +21,14 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.ActionsField;
-import com.haulmont.cuba.gui.components.ActionsFieldHelper;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.impl.*;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.WebWindowManager;
-import com.haulmont.cuba.web.gui.components.WebActionsField;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebPickerField;
 import com.vaadin.data.Property;
@@ -43,7 +39,6 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.TemporalType;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Param {
@@ -573,21 +568,11 @@ public class Param {
 
             case DATATYPE:
             case UNARY:
-                if (Date.class.isAssignableFrom(javaClass)) {
-                    SimpleDateFormat df;
-                    if (javaClass.equals(java.sql.Date.class)) {
-                        df = new SimpleDateFormat(MessageUtils.getDateFormat());
-                    } else {
-                        df = new SimpleDateFormat(MessageUtils.getDateTimeFormat());
-                    }
-                    return df.format(v);
-                }
-
-                Datatype datatype = Datatypes.getInstance().get(javaClass);
+                Datatype datatype = Datatypes.get(javaClass);
                 if (datatype == null)
                     throw new UnsupportedOperationException("Unsupported parameter class: " + javaClass);
 
-                return datatype.format(v);
+                return datatype.format(v, UserSessionProvider.getLocale());
 
             default:
                 throw new IllegalStateException("Param type unknown");

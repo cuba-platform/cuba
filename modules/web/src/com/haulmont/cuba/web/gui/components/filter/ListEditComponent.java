@@ -10,10 +10,11 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -29,7 +30,6 @@ import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.text.StrBuilder;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ListEditComponent extends CustomComponent implements com.vaadin.ui.Field {
@@ -530,13 +530,8 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
         }
 
         private String addDate(Date date) {
-            SimpleDateFormat df;
-            if (itemClass.equals(java.sql.Date.class)) {
-                df = new SimpleDateFormat(MessageUtils.getDateFormat());
-            } else {
-                df = new SimpleDateFormat(MessageUtils.getDateTimeFormat());
-            }
-            String str = df.format(date);
+            String str = Datatypes.get(itemClass).format(date, UserSessionProvider.getUserSession().getLocale());
+
             values.put(date, str);
             return str;
         }

@@ -1,32 +1,24 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 24.04.2009 10:00:09
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.impl.BigDecimalDatatype;
-import com.haulmont.chile.core.datatypes.impl.DateDatatype;
-import com.haulmont.chile.core.datatypes.impl.IntegerDatatype;
-import com.haulmont.chile.core.datatypes.impl.LongDatatype;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.entity.annotation.LocalizedValue;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.persistence.TemporalType;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.SimpleDateFormat;
 
 /**
  * Utility class to get localized messages by references defined in XML descriptors
+ *
+ * $Id$
  */
 public class MessageUtils {
 
@@ -39,18 +31,6 @@ public class MessageUtils {
 
     private static String messagePack;
 
-    private static char defaultDecimalSeparator;
-    private static char defaultGroupingSeparator;
-    private static String defaultNumberFormat;
-
-    static {
-        DecimalFormat format = new DecimalFormat();
-        DecimalFormatSymbols symbols = format.getDecimalFormatSymbols();
-        defaultDecimalSeparator = symbols.getDecimalSeparator();
-        defaultGroupingSeparator = symbols.getGroupingSeparator();
-        defaultNumberFormat = format.toPattern();
-    }
-
     public static void setMessagePack(String messagePack) {
         MessageUtils.messagePack = messagePack;
     }
@@ -60,74 +40,6 @@ public class MessageUtils {
      */
     public static String getMessagePack() {
         return messagePack;
-    }
-
-    /**
-     * Returns global date format set for the application in the main message pack
-     */
-    public static String getDateFormat() {
-        return MessageProvider.getMessage(messagePack, "dateFormat");
-    }
-    
-    /**
-     * Returns global date-time format set for the application in the main message pack
-     */
-    public static String getDateTimeFormat() {
-        return MessageProvider.getMessage(messagePack, "dateTimeFormat");
-    }
-
-    /**
-     * Returns global DecimalSeparator char set for the application in the main message pack
-     */
-    public static char getNumberDecimalSeparator() {
-        String s = MessageProvider.getMessage(messagePack, "numberDecimalSeparator");
-        if ("numberDecimalSeparator".equals(s)) {
-            return defaultDecimalSeparator;
-        }
-        return s.charAt(0);
-    }
-
-    /**
-     * Returns global GroupingSeparator char set for the application in the main message pack
-     */
-    public static char getNumberGroupingSeparator() {
-        String s = MessageProvider.getMessage(messagePack, "numberGroupingSeparator");
-        if ("numberGroupingSeparator".equals(s)) {
-            return defaultGroupingSeparator;
-        }
-        return s.charAt(0);
-    }
-
-    public static String getIntegerFormat() {
-        String s = MessageProvider.getMessage(messagePack, "integerFormat");
-        if ("integerFormat".equals(s)) {
-            return defaultNumberFormat;
-        }
-        return s;
-    }
-
-    public static String getLongFormat() {
-        String s = MessageProvider.getMessage(messagePack, "longFormat");
-        if ("longFormat".equals(s)) {
-            return defaultNumberFormat;
-        }
-        return s;
-    }
-
-    public static String getDoubleFormat() {
-        String s = MessageProvider.getMessage(messagePack, "doubleFormat");
-        if ("doubleFormat".equals(s)) {
-            return defaultNumberFormat;
-        }
-        return s;
-    }
-
-    public static String getBigDecimalFormat() {
-        String s = MessageProvider.getMessage(messagePack, "bigDecimalFormat");
-        if ("bigDecimalFormat".equals(s)) {
-            return defaultNumberFormat;
-        }
-        return s;
     }
 
     /**
@@ -266,6 +178,12 @@ public class MessageUtils {
         return null;
     }
 
+    /**
+     * Formats a value according to property type
+     * @param value object to format
+     * @param property metadata
+     * @return formatted value as string, or null if value is null
+     */
     public static String format(Object value, MetaProperty property) {
         if (value == null)
             return null;
@@ -273,38 +191,7 @@ public class MessageUtils {
         Range range = property.getRange();
         if (range.isDatatype()) {
             Datatype datatype = range.asDatatype();
-            if (datatype.getName().equals(DateDatatype.NAME)) {
-                String formatStr;
-                TemporalType tt = (TemporalType) property.getAnnotations().get("temporal");
-                if (TemporalType.DATE.equals(tt)) {
-                    formatStr = MessageUtils.getDateFormat();
-                } else {
-                    formatStr = MessageUtils.getDateTimeFormat();
-                }
-                return new SimpleDateFormat(formatStr).format(value);
-            } else {
-                Class datatypeClass = datatype.getJavaClass();
-                if (Number.class.isAssignableFrom(datatypeClass)) {
-                    String pattern;
-                    if (datatype.getName().equals(IntegerDatatype.NAME)) {
-                        pattern = MessageUtils.getIntegerFormat();
-                    } else if (datatype.getName().equals(BigDecimalDatatype.NAME)) {
-                        pattern = MessageUtils.getBigDecimalFormat();
-                    } else if (datatype.getName().equals(LongDatatype.NAME)) {
-                        pattern = MessageUtils.getLongFormat();
-                    } else {
-                        pattern = MessageUtils.getDoubleFormat();
-                    }
-
-                    DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-                    symbols.setDecimalSeparator(MessageUtils.getNumberDecimalSeparator());
-                    symbols.setGroupingSeparator(MessageUtils.getNumberGroupingSeparator());
-
-                    DecimalFormat format = new DecimalFormat(pattern, symbols);
-                    return format.format(value);
-                }
-                return value.toString();
-            }
+            return datatype.format(value, UserSessionProvider.getLocale());
         } else if (range.isEnum()) {
             String nameKey = value.getClass().getSimpleName() + "." + value.toString();
             return MessageProvider.getMessage(value.getClass(), nameKey);
@@ -314,6 +201,5 @@ public class MessageUtils {
             else
                 return value.toString();
         }
-
     }
 }

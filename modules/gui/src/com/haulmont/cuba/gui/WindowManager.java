@@ -13,7 +13,7 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.client.UserSessionClient;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
@@ -164,7 +164,7 @@ public abstract class WindowManager implements Serializable {
     }
 
     private void checkPermission(WindowInfo windowInfo) {
-        boolean permitted = UserSessionClient.getUserSession().isScreenPermitted(
+        boolean permitted = UserSessionProvider.getUserSession().isScreenPermitted(
                 AppConfig.getInstance().getClientType(),
                 windowInfo.getId()
         );
@@ -616,7 +616,7 @@ public abstract class WindowManager implements Serializable {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected Locale getLocale() {
-        return UserSessionClient.getUserSession().getLocale();
+        return UserSessionProvider.getUserSession().getLocale();
     }
 
     protected Window wrapByCustomClass(Window window, Element element, Map<String, Object> params) {

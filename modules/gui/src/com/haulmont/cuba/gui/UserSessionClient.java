@@ -11,28 +11,29 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.UUID;
 
 /**
- * @deprecated Use {@link com.haulmont.cuba.client.UserSessionClient}
+ * @deprecated Use {@link com.haulmont.cuba.core.global.UserSessionProvider}
  */
 @Deprecated
 public abstract class UserSessionClient
 {
     @Deprecated
     public static UserSession getUserSession() {
-        return com.haulmont.cuba.client.UserSessionClient.getUserSession();
+        return UserSessionProvider.getUserSession();
     }
 
     @Deprecated
     public static UUID currentOrSubstitutedUserId() {
-        return com.haulmont.cuba.client.UserSessionClient.currentOrSubstitutedUserId();
+        return UserSessionProvider.currentOrSubstitutedUserId();
     }
 
     @Deprecated
     public static boolean isEditPermitted(MetaProperty metaProperty) {
-        return com.haulmont.cuba.client.UserSessionClient.isEditPermitted(metaProperty);
+        return UserSessionProvider.isEditPermitted(metaProperty);
     }
 }

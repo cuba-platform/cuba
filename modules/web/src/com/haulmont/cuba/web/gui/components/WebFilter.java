@@ -12,9 +12,8 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.client.UserSessionClient;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
@@ -220,7 +219,7 @@ public class WebFilter
                 actions.addAction(new DeleteAction());
         } else {
             if (filterEntity.getFolder() instanceof SearchFolder) {
-                if ((BooleanUtils.isNotTrue(filterEntity.getIsSet()))&&(com.haulmont.cuba.client.UserSessionClient.getUserSession().getUser().equals(((SearchFolder) filterEntity.getFolder()).getUser())))
+                if ((BooleanUtils.isNotTrue(filterEntity.getIsSet()))&&(UserSessionProvider.getUserSession().getUser().equals(((SearchFolder) filterEntity.getFolder()).getUser())))
                     actions.addAction(new EditAction());
             }
             if (filterEntity.getCode() == null && filterEntity.getFolder() == null)
@@ -296,7 +295,7 @@ public class WebFilter
 
         filterEntity.setComponentId(getComponentPath());
         filterEntity.setName(MessageProvider.getMessage(MESSAGES_PACK, "newFilterName"));
-        filterEntity.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+        filterEntity.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
 //        filterEntity.setXml(
 //                "<filter><and>\n" +
 //                        "<c type=\"PROPERTY\" name=\"login\">u.login like :component$usersFilter.login\n" +
@@ -316,7 +315,7 @@ public class WebFilter
         FilterEntity newFilterEntity = new FilterEntity();
         newFilterEntity.setComponentId(filterEntity.getComponentId());
         newFilterEntity.setName(MessageProvider.getMessage(MESSAGES_PACK, "newFilterName"));
-        newFilterEntity.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+        newFilterEntity.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
         newFilterEntity.setCode(filterEntity.getCode());
         newFilterEntity.setXml(filterEntity.getXml());
         filterEntity = newFilterEntity;
@@ -533,7 +532,7 @@ public class WebFilter
     public void setUseMaxResults(boolean useMaxResults) {
         this.useMaxResults = useMaxResults;
         maxResultsLayout.setVisible(useMaxResults
-                && UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.filter.maxResults"));
+                && UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.maxResults"));
     }
 
     public boolean getUseMaxResults() {
@@ -630,9 +629,9 @@ public class WebFilter
         LoadContext ctx = new LoadContext(FilterEntity.class);
         ctx.setView("app");
 
-        User user = UserSessionClient.getUserSession().getSubstitutedUser();
+        User user = UserSessionProvider.getUserSession().getSubstitutedUser();
         if (user == null)
-            user = UserSessionClient.getUserSession().getUser();
+            user = UserSessionProvider.getUserSession().getUser();
 
         ctx.setQueryString("select f from sec$Filter f " +
                 "where f.componentId = :component and (f.user is null or f.user.id = :userId) order by f.name")
@@ -784,14 +783,14 @@ public class WebFilter
     }
 
     private boolean checkGlobalAppFolderPermission() {
-        return UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_APP_FOLDERS_PERMISSION);
+        return UserSessionProvider.getUserSession().isSpecificPermitted(GLOBAL_APP_FOLDERS_PERMISSION);
     }
 
     private boolean checkGlobalFilterPermission() {
         if (filterEntity == null || filterEntity.getUser() != null)
             return true;
         else
-            return UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION);
+            return UserSessionProvider.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION);
     }
 
     public void add(Component component) {
@@ -922,10 +921,10 @@ public class WebFilter
         folder.setFilterComponentId(filterEntity.getComponentId());
         folder.setFilterXml(newXml);
         if (!isAppFolder) {
-            if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
+            if (UserSessionProvider.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
                 ((SearchFolder) folder).setUser(filterEntity.getUser());
             else
-                ((SearchFolder) folder).setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+                ((SearchFolder) folder).setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
         }
         Presentations presentations;
         if (applyTo != null && applyTo instanceof HasPresentations) {
@@ -942,7 +941,7 @@ public class WebFilter
                 public void run() {
                     AppFolder savedFolder = saveAppFolder((AppFolder) folder);
                     filterEntity.setFolder(savedFolder);
-                    //if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
+                    //if (UserSessionProvider.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
                     //    deleteFilterEntity();
                     select.setItemCaption(filterEntity, getCurrentFilterCaption());
                 }
@@ -952,7 +951,7 @@ public class WebFilter
                 public void run() {
                     SearchFolder savedFolder = saveFolder((SearchFolder) folder);
                     filterEntity.setFolder(savedFolder);
-                    //if (UserSessionClient.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
+                    //if (UserSessionProvider.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION))
                     //    deleteFilterEntity();
                     select.setItemCaption(filterEntity, getCurrentFilterCaption());
 

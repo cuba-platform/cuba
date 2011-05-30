@@ -12,7 +12,7 @@
 
     <bean id="cuba_ConfigProvider" class="com.haulmont.cuba.client.sys.ConfigProviderClientImpl"/>
 
-    <bean id="cuba_UserSessionClient" class="com.haulmont.cuba.desktop.sys.DesktopUserSessionClient"/>
+    <bean id="cuba_UserSessionProvider" class="com.haulmont.cuba.desktop.sys.DesktopUserSessionProvider"/>
 
     <bean id="cuba_MessageProvider" class="com.haulmont.cuba.client.sys.MessageProviderClientImpl"/>
 

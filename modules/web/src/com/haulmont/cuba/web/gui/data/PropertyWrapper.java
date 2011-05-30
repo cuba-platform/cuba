@@ -10,28 +10,18 @@
 package com.haulmont.cuba.web.gui.data;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.impl.BigDecimalDatatype;
-import com.haulmont.chile.core.datatypes.impl.DoubleDatatype;
-import com.haulmont.chile.core.datatypes.impl.IntegerDatatype;
-import com.haulmont.chile.core.datatypes.impl.LongDatatype;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.formatters.NumberFormatter;
-import com.haulmont.cuba.gui.components.validators.ValidationHelper;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.vaadin.data.Property;
 
-import javax.persistence.TemporalType;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class PropertyWrapper extends AbstractPropertyWrapper {
     protected MetaPropertyPath propertyPath;
@@ -96,25 +86,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
             final Object obj;
             if (range.isDatatype() && newValue instanceof String) {
                 try {
-                    String typeName = range.asDatatype().getName();
-                    if (BigDecimalDatatype.NAME.equals(typeName)) {
-                        obj = ValidationHelper.parseNumber((String) newValue, "#.#", true);
-
-                    } else if (DoubleDatatype.NAME.equals(typeName)) {
-                        Number num = ValidationHelper.parseNumber((String) newValue, "#.#");
-                        obj = num.doubleValue();
-
-                    } else if (IntegerDatatype.NAME.equals(typeName)) {
-                        Number num = ValidationHelper.parseNumber((String) newValue, "#");
-                        obj = num.intValue();
-
-                    } else if (LongDatatype.NAME.equals(typeName)) {
-                        Number num = ValidationHelper.parseNumber((String) newValue, "#");
-                        obj = num.longValue();
-
-                    } else {
-                        obj = range.asDatatype().parse((String) newValue);
-                    }
+                    obj = range.asDatatype().parse((String) newValue, UserSessionProvider.getLocale());
                 } catch (ParseException e) {
                     throw new Property.ConversionException(e);
                 }
