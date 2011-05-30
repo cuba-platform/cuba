@@ -102,7 +102,7 @@ public interface WebConfig extends Config
     boolean getGenericFilterChecking();
     
     @Factory(factory = StringListTypeFactory.class)
-    @Default("pdf|htm|html")
+    @Default("htm|html|jpg|png|jpeg|pdf")
     List<String> getViewFileExtensions();
 
     @DefaultBoolean(false)
