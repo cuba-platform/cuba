@@ -11,17 +11,18 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.gui.data.Datasource;
-import org.dom4j.Element;
-import org.apache.commons.lang.ObjectUtils;
-
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.util.*;
-
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.gui.data.Datasource;
+import org.apache.commons.lang.ObjectUtils;
+import org.dom4j.Element;
+
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PropertyCondition extends Condition {
 
@@ -36,7 +37,9 @@ public class PropertyCondition extends Condition {
         CONTAINS("like", false),
         DOES_NOT_CONTAIN("not like", false),
         EMPTY("is null", true),
-        NOT_EMPTY("is not null", true);
+        NOT_EMPTY("is not null", true),
+        STARTS_WITH("like", false),
+        ENDS_WITH("like", false);
 
         private String text;
         private boolean unary;
@@ -64,7 +67,7 @@ public class PropertyCondition extends Condition {
 
         public static EnumSet<Op> availableOps(Class javaClass) {
             if (String.class.equals(javaClass))
-                return EnumSet.of(EQUAL, IN, NOT_EQUAL, CONTAINS, DOES_NOT_CONTAIN, EMPTY, NOT_EMPTY);
+                return EnumSet.of(EQUAL, IN, NOT_EQUAL, CONTAINS, DOES_NOT_CONTAIN, EMPTY, NOT_EMPTY, STARTS_WITH, ENDS_WITH);
 
             else if (Date.class.isAssignableFrom(javaClass)
                     || Number.class.isAssignableFrom(javaClass))
@@ -100,8 +103,11 @@ public class PropertyCondition extends Condition {
             if (!matcher.matches())
                 throw new IllegalStateException("Unable to build condition from: " + text);
         }
-
-        operator = Op.fromString(matcher.group(2));
+        String operatorName = element.attributeValue("operatorType",null);
+        if (operatorName != null)
+            operator = Op.valueOf(operatorName);
+        else
+            operator = Op.fromString(matcher.group(2));
 
         String prop = matcher.group(1);
         entityAlias = prop.substring(0, prop.indexOf('.'));
@@ -142,10 +148,16 @@ public class PropertyCondition extends Condition {
         text = sb.toString();
     }
 
+    public String getOperatorType(){
+        return operator.name();
+    }
+
     @Override
     public void toXml(Element element) {
         super.toXml(element);
         element.addAttribute("type", ConditionType.PROPERTY.name());
+        element.addAttribute("operatorType",getOperatorType());
+
     }
 
     @Override

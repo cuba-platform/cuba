@@ -1201,6 +1201,10 @@ public class WebFilter
                     PropertyCondition.Op op = ((PropertyCondition) condition).getOperator();
                     if (PropertyCondition.Op.CONTAINS.equals(op) || op.equals(PropertyCondition.Op.DOES_NOT_CONTAIN)) {
                         value = wrapValueForLike(value);
+                    } else if (PropertyCondition.Op.STARTS_WITH.equals(op)) {
+                        value = wrapValueForLike(value, false, true);
+                    } else if (PropertyCondition.Op.ENDS_WITH.equals(op)) {
+                        value = wrapValueForLike(value, true, false);
                     }
                 } else if (condition instanceof CustomCondition) {
                     String where = ((CustomCondition) condition).getWhere();
@@ -1217,6 +1221,10 @@ public class WebFilter
 
         private String wrapValueForLike(Object value) {
             return ParametersHelper.CASE_INSENSITIVE_MARKER + "%" + value + "%";
+        }
+
+        private String wrapValueForLike(Object value,boolean before, boolean after) {
+            return ParametersHelper.CASE_INSENSITIVE_MARKER + (before?"%":"") + value + (after?"%":"");
         }
 
         public void setValue(Object value) {
