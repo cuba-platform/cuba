@@ -19,14 +19,18 @@ import org.antlr.runtime.RecognitionException;
  * Factory to get {@link QueryParser} and {@link QueryTransformer} instances
  */
 public class QueryTransformerFactory {
-    private static boolean useAst = false;
+
+    private static boolean useAst = ConfigProvider.getConfig(GlobalConfig.class).getUseAstBasedJpqlTransformer();
+
+    private static volatile DomainModel domainModel;
 
     public static QueryTransformer createTransformer(String query, String targetEntity) {
         if (useAst) {
             try {
-                DomainModelBuilder builder = new DomainModelBuilder();
-                DomainModel domainModel = builder.produce(MetadataHelper.getAllPersistentMetaClasses());
-                //todo кэшировать метамодель - слишком долго строить каждый раз
+                if (domainModel == null) {
+                    DomainModelBuilder builder = new DomainModelBuilder();
+                    domainModel = builder.produce(MetadataHelper.getAllPersistentMetaClasses());
+                }
                 return new QueryTransformerAstBased(domainModel, query, targetEntity);
             } catch (RecognitionException e) {
                 throw new RuntimeException(e);

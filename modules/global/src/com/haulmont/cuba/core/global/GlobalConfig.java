@@ -124,5 +124,9 @@ public interface GlobalConfig extends Config {
     @Property("cuba.screenIdsToSaveHistory")
     @Default("sec$User.edit,sec$Group.edit,sec$Role.edit")
     String getScreenIdsToSaveHistory();
+
+    @Property("cuba.useAstBasedJpqlTransformer")
+    @DefaultBoolean(true)
+    boolean getUseAstBasedJpqlTransformer();
 }
 
