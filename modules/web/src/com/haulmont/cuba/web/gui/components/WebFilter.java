@@ -78,7 +78,7 @@ public class WebFilter
 
     private AbstractLayout paramsLayout;
     private AbstractOrderedLayout editLayout;
-    private AbstractSelect select;
+    private FilterSelect select;
     private WebPopupButton actions;
 
     private Button applyBtn;
@@ -132,6 +132,7 @@ public class WebFilter
         select.setNullSelectionAllowed(true);
         select.setNullSelectionItemId(noFilter);
         select.setImmediate(true);
+        select.setPageLength(20);
         select.addListener(new SelectListener());
         App.getInstance().getWindowManager().setDebugId(select, "genericFilterSelect");
         topLayout.addComponent(select);
