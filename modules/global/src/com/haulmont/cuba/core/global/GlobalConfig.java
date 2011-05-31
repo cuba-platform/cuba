@@ -126,7 +126,7 @@ public interface GlobalConfig extends Config {
     String getScreenIdsToSaveHistory();
 
     @Property("cuba.useAstBasedJpqlTransformer")
-    @DefaultBoolean(true)
+    @DefaultBoolean(false)
     boolean getUseAstBasedJpqlTransformer();
 }
 
