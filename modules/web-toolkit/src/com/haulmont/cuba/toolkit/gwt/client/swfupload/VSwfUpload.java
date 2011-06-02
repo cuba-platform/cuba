@@ -182,10 +182,7 @@ public class VSwfUpload
     }
 
     protected void injectJs() {
-        if (!ResourcesLoader.injectJs(null, client.getAppUri(), "/js/swfupload.js")) {
-            ResourcesLoader.injectJs(null, client.getAppUri(), "/js/swfupload.queue.js");
-            ResourcesLoader.injectJs(null, client.getAppUri(), "/js/swfupload.handlers.js");
-        }
+        ResourcesLoader.injectJs(null, client.getAppUri(), "/js/swfupload.js");
     }
 
     public void refreshServerSide() {
