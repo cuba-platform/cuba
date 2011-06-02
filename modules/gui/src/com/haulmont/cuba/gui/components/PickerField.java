@@ -12,7 +12,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.WindowManager;
 
-public interface PickerField extends Field {
+public interface PickerField extends Field, Component.ActionsHolder {
 
     String NAME = "pickerField";
 
@@ -31,12 +31,10 @@ public interface PickerField extends Field {
     WindowManager.OpenType getLookupScreenOpenType();
     void setLookupScreenOpenType(WindowManager.OpenType lookupScreenOpenType);
 
-    void setPickerButtonCaption(String caption);
-
-    void setPickerButtonIcon(String iconName);
+    void setLookupButtonCaption(String caption);
+    void setLookupButtonIcon(String iconName);
 
     void setClearButtonCaption(String caption);
-
     void setClearButtonIcon(String iconName);
 
     ValueProvider getValueProvider();

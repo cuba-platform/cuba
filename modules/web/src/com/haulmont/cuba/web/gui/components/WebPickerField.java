@@ -23,22 +23,19 @@ import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.vaadin.data.Property;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.BaseTheme;
+import org.apache.commons.lang.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class WebPickerField
         extends
-            WebAbstractField<WebPickerField.PickerFieldComponent>
+            WebAbstractField<com.haulmont.cuba.web.toolkit.ui.PickerField>
         implements
             PickerField, Component.Wrapper
 {
@@ -56,39 +53,97 @@ public class WebPickerField
 
     protected ValueProvider valueProvider;
 
+    protected List<Action> actions = new ArrayList<Action>();
+
+    private String lookupButtonCaption = "";
+    private String lookupButtonIcon = "pickerfield/img/lookup-btn.png";
+    private String clearButtonCaption = "";
+    private String clearButtonIcon = "pickerfield/img/clear-btn.png";
+
     public WebPickerField() {
-        component = new PickerFieldComponent();
-        component.addListener(new Button.ClickListener() {
-            public void buttonClick(Button.ClickEvent event) {
-                if (isEditable()) {
-                    String windowAlias = getLookupScreen();
-                    if (windowAlias == null) {
-                        final MetaClass metaClass = getMetaClass();
-                        windowAlias = metaClass.getName() + ".lookup";
+        component = new com.haulmont.cuba.web.toolkit.ui.PickerField() {
+            @Override
+            public void setReadOnly(boolean readOnly) {
+                super.setReadOnly(readOnly);
+                for (Button button : getButtons()) {
+                    if ((button instanceof PickerButton) && isStandardAction(((PickerButton) button).getAction())) {
+                        button.setVisible(!readOnly);
                     }
-
-                    WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-                    WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-
-                    WindowManager wm = App.getInstance().getWindowManager();
-                    wm.openLookup(
-                            windowInfo,
-                            new Window.Lookup.Handler() {
-                                public void handleLookup(Collection items) {
-                                    if (!items.isEmpty()) {
-                                        final Object item = items.iterator().next();
-                                        __setValue(item);
-                                    }
-                                }
-                            },
-                            lookupScreenOpenType,
-                            valueProvider != null ? valueProvider.getParameters() : Collections.EMPTY_MAP
-                    );
                 }
             }
-        });
+        };
         component.setImmediate(true);
         attachListener(component);
+        initActions();
+    }
+
+    protected void initActions() {
+        addAction(
+                new AbstractAction("lookup") {
+                    @Override
+                    public void actionPerform(Component component) {
+                        if (isEditable()) {
+                            String windowAlias = getLookupScreen();
+                            if (windowAlias == null) {
+                                final MetaClass metaClass = getMetaClass();
+                                windowAlias = metaClass.getName() + ".lookup";
+                            }
+
+                            WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+                            WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
+
+                            WindowManager wm = App.getInstance().getWindowManager();
+                            wm.openLookup(
+                                    windowInfo,
+                                    new Window.Lookup.Handler() {
+                                        public void handleLookup(Collection items) {
+                                            if (!items.isEmpty()) {
+                                                final Object item = items.iterator().next();
+                                                __setValue(item);
+                                            }
+                                        }
+                                    },
+                                    lookupScreenOpenType,
+                                    valueProvider != null ? valueProvider.getParameters() : Collections.EMPTY_MAP
+                            );
+                        }
+                    }
+
+                    @Override
+                    public String getCaption() {
+                        return lookupButtonCaption;
+                    }
+
+                    @Override
+                    public String getIcon() {
+                        return lookupButtonIcon;
+                    }
+                }
+        );
+        addAction(
+                new AbstractAction("clear") {
+                    @Override
+                    public void actionPerform(Component component) {
+                        if (isEditable()) {
+                            __setValue(null);
+                        }
+                    }
+
+                    @Override
+                    public String getCaption() {
+                        return clearButtonCaption;
+                    }
+
+                    @Override
+                    public String getIcon() {
+                        return clearButtonIcon;
+                    }
+                }
+        );
+    }
+
+    private boolean isStandardAction(Action action) {
+        return "lookup".equals(action.getId()) || "clear".equals(action.getId());
     }
 
     private void __setValue(Object newValue) {
@@ -219,20 +274,54 @@ public class WebPickerField
         this.captionProperty = captionProperty;
     }
 
-    public void setPickerButtonCaption(String caption) {
-       component.setPickerButtonCaption(caption);
+    private Button findButton(String actionName) {
+        for (Button button : component.getButtons()) {
+            if (button instanceof PickerButton && actionName.equals(((PickerButton) button).getAction().getId()))
+                return button;
+        }
+        return null;
     }
 
-    public void setPickerButtonIcon(String iconName) {
-        component.setPickerButtonIcon(new ThemeResource(iconName));
+    public void setLookupButtonCaption(String caption) {
+        lookupButtonCaption = caption;
+        Button button = findButton("lookup");
+        if (button != null)
+            button.setCaption(caption);
+    }
+
+    public void setLookupButtonIcon(String iconName) {
+        lookupButtonIcon = iconName;
+        Button button = findButton("lookup");
+        if (button != null) {
+            if (!StringUtils.isBlank(iconName)) {
+                button.setIcon(new ThemeResource(iconName));
+                button.addStyleName(BaseTheme.BUTTON_LINK);
+            } else {
+                button.setIcon(null);
+                button.removeStyleName(BaseTheme.BUTTON_LINK);
+            }
+        }
     }
 
     public void setClearButtonCaption(String caption) {
-        component.setClearButtonCaption(caption);
+        clearButtonCaption = caption;
+        Button button = findButton("clear");
+        if (button != null)
+            button.setCaption(caption);
     }
 
     public void setClearButtonIcon(String iconName) {
-        component.setClearButtonIcon(new ThemeResource(iconName));
+        clearButtonIcon = iconName;
+        Button button = findButton("clear");
+        if (button != null) {
+            if (!StringUtils.isBlank(iconName)) {
+                button.setIcon(new ThemeResource(iconName));
+                button.addStyleName(BaseTheme.BUTTON_LINK);
+            } else {
+                button.setIcon(null);
+                button.removeStyleName(BaseTheme.BUTTON_LINK);
+            }
+        }
     }
 
     public ValueProvider getValueProvider() {
@@ -243,292 +332,58 @@ public class WebPickerField
         this.valueProvider = valueProvider;
     }
 
-    public class PickerFieldComponent extends CustomComponent implements com.vaadin.ui.Field {
+    @Override
+    public void addAction(Action action) {
+        actions.add(action);
+        PickerButton button = new PickerButton(action);
+        component.addButton(button);
+    }
 
-        public static final int DEFAULT_WIDTH = 250;
+    @Override
+    public void removeAction(Action action) {
+        actions.remove(action);
+        for (Button button : component.getButtons()) {
+            if ((button instanceof PickerButton) && ((PickerButton) button).getAction() == action) {
+                component.removeButton(button);
+                break;
+            }
+        }
+    }
 
-        protected com.vaadin.ui.TextField field;
-        protected com.vaadin.ui.Button pickerButton;
-        protected com.vaadin.ui.Button clearButton;
+    @Override
+    public Collection<Action> getActions() {
+        return Collections.unmodifiableList(actions);
+    }
 
-        protected String buttonIcon;
-        protected String clearButtonIcon;
+    @Override
+    public Action getAction(String id) {
+        return null;
+    }
 
-        protected boolean required;
-        protected String requiredError;
+    public class PickerButton extends Button {
 
-        public PickerFieldComponent() {
-            field = new TextField() {
-                @Override
-                public boolean isRequired() {
-                    return PickerFieldComponent.this.required;
-                }
+        private Action action;
 
-                @Override
-                public String getRequiredError() {
-                    return PickerFieldComponent.this.requiredError; 
-                }
-            };
-            field.setReadOnly(true);
-            field.setWidth("100%");
-            field.setNullRepresentation("");
-
-            pickerButton = new Button();
-            pickerButton.addStyleName("pickButton");
-
-            clearButton = new Button("", new Button.ClickListener() {
-                public void buttonClick(Button.ClickEvent event) {
-                    if (isEditable()) {
-                        __setValue(null);
+        public PickerButton(Action action) {
+            this.action = action;
+            setCaption(action.getCaption());
+            String icon = action.getIcon();
+            if (!StringUtils.isBlank(icon)) {
+                setIcon(new ThemeResource(icon));
+                addStyleName(BaseTheme.BUTTON_LINK);
+            }
+            addListener(
+                    new ClickListener() {
+                        @Override
+                        public void buttonClick(ClickEvent event) {
+                            PickerButton.this.action.actionPerform(WebPickerField.this);
+                        }
                     }
-                }
-            });
-            clearButton.addStyleName("clearButton");
-
-            updateIcons();
-
-            final HorizontalLayout container = new HorizontalLayout();
-            container.setWidth("100%");
-
-            container.addComponent(field);
-            container.addComponent(pickerButton);
-            container.addComponent(clearButton);
-            container.setExpandRatio(field, 1);
-
-            setCompositionRoot(container);
-            setStyleName("pickerfield");
-            setWidth(DEFAULT_WIDTH + "px");
+            );
         }
 
-        @Override
-        public void paintContent(PaintTarget target) throws PaintException {
-            paintCommonContent(target);
-            super.paintContent(target);
-        }
-
-        protected void paintCommonContent(PaintTarget target) throws PaintException {
-            // If the field is modified, but not committed, set modified attribute
-            if (isModified()) {
-                target.addAttribute("modified", true);
-            }
-
-            // Adds the required attribute
-            if (!isReadOnly() && isRequired()) {
-                target.addAttribute("required", true);
-            }
-
-            // Hide the error indicator if needed
-            if (isRequired() && getValue() == null && getComponentError() == null
-                    && getErrorMessage() != null) {
-                target.addAttribute("hideErrors", true);
-            }
-        }
-
-        private void updateIcons() {
-            if (isReadOnly()) {
-                setPickerButtonIcon(new ThemeResource("pickerfield/img/lookup-btn-readonly.png"));
-                setClearButtonIcon(new ThemeResource("pickerfield/img/clear-btn-readonly.png"));
-                pickerButton.setVisible(false);
-                clearButton.setVisible(false);
-            } else {
-                setPickerButtonIcon(new ThemeResource("pickerfield/img/lookup-btn.png"));
-                setClearButtonIcon(new ThemeResource("pickerfield/img/clear-btn.png"));
-                pickerButton.setVisible(true);
-                clearButton.setVisible(true);
-            }
-        }
-
-        @Override
-        public void setReadOnly(boolean readOnly) {
-            super.setReadOnly(readOnly);
-            updateIcons();
-        }
-
-        public void addListener(Button.ClickListener listener) {
-            pickerButton.addListener(listener);
-        }
-
-        public boolean isInvalidCommitted() {
-            return field.isInvalidCommitted();
-        }
-
-        public void setInvalidCommitted(boolean isCommitted) {
-            field.setInvalidCommitted(isCommitted);
-        }
-
-        public void commit() throws SourceException, com.vaadin.data.Validator.InvalidValueException {
-            field.commit();
-        }
-
-        public void discard() throws SourceException {
-            field.discard();
-        }
-
-        public boolean isModified() {
-            return field.isModified();
-        }
-
-        public boolean isWriteThrough() {
-            return field.isWriteThrough();
-        }
-
-        public void setWriteThrough(boolean writeTrough) throws SourceException, com.vaadin.data.Validator.InvalidValueException {
-            field.setWriteThrough(writeTrough);
-        }
-
-        public boolean isReadThrough() {
-            return field.isReadThrough();
-        }
-
-        public void setReadThrough(boolean readTrough) throws SourceException {
-            field.setReadThrough(readTrough);
-        }
-
-        public Object getValue() {
-            Property property = getPropertyDataSource();
-            if (property != null) {
-                return property.getValue();
-            }
-            return field.getValue();
-        }
-
-        public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
-            field.setReadOnly(false);
-            field.setValue(newValue);
-            field.setReadOnly(true);
-        }
-
-        public Class getType() {
-            return field.getType();
-        }
-
-        public Property getPropertyDataSource() {
-            return field.getPropertyDataSource();
-        }
-
-        public void setPropertyDataSource(Property newDataSource) {
-            field.setPropertyDataSource(newDataSource);
-        }
-
-        public void addValidator(com.vaadin.data.Validator validator) {
-            field.addValidator(validator);
-        }
-
-        public Collection getValidators() {
-            return field.getValidators();
-        }
-
-        public void removeValidator(com.vaadin.data.Validator validator) {
-            field.removeValidator(validator);
-        }
-
-        public boolean isValid() {
-            return field.isValid();
-        }
-
-        public void validate() throws com.vaadin.data.Validator.InvalidValueException {
-            if (field.getValue() == null) {
-                if (isRequired()) {
-                    throw new com.vaadin.data.Validator.EmptyValueException(requiredError);
-                } else {
-                    return;
-                }
-            }
-            field.validate();
-        }
-
-        public boolean isInvalidAllowed() {
-            return field.isInvalidAllowed();
-        }
-
-        public void setInvalidAllowed(boolean invalidAllowed) throws UnsupportedOperationException {
-            field.setInvalidAllowed(invalidAllowed);
-        }
-
-        public void addListener(ValueChangeListener listener) {
-            field.addListener(listener);
-        }
-
-        public void removeListener(ValueChangeListener listener) {
-            field.removeListener(listener);
-        }
-
-        public void valueChange(Property.ValueChangeEvent event) {
-            field.valueChange(event);
-        }
-
-        public void focus() {
-            field.focus();
-        }
-
-        public int getTabIndex() {
-            return field.getTabIndex();
-        }
-
-        public void setTabIndex(int tabIndex) {
-            field.setTabIndex(tabIndex);
-        }
-
-        public boolean isRequired() {
-            return required;
-        }
-
-        public void setRequired(boolean required) {
-            this.required = required;
-            requestRepaint();
-        }
-
-        public void setRequiredError(String requiredMessage) {
-            this.requiredError = requiredMessage;
-            requestRepaint();
-        }
-
-        public String getRequiredError() {
-            return requiredError;
-        }
-
-        public void setPickerButtonCaption(String caption) {
-            pickerButton.setCaption(caption);
-        }
-
-        public String getPickerButtonCaption() {
-            return pickerButton.getCaption();
-        }
-
-        public void setClearButtonCaption(String caption) {
-            clearButton.setCaption(caption);
-        }
-
-        public String getClearButtonCaption() {
-            return clearButton.getCaption();
-        }
-
-        public void setPickerButtonIcon(Resource icon) {
-            if (icon != null) {
-                pickerButton.setIcon(icon);
-                pickerButton.addStyleName(BaseTheme.BUTTON_LINK);
-            } else {
-                pickerButton.setIcon(null);
-                pickerButton.removeStyleName(BaseTheme.BUTTON_LINK);
-            }
-        }
-
-        public Resource getPickerButtonIcon() {
-            return pickerButton.getIcon();
-        }
-
-        public void setClearButtonIcon(Resource icon) {
-            if (icon != null) {
-                clearButton.setIcon(icon);
-                clearButton.addStyleName(BaseTheme.BUTTON_LINK);
-            } else {
-                clearButton.setIcon(null);
-                clearButton.removeStyleName(BaseTheme.BUTTON_LINK);
-            }
-        }
-
-        public Resource getClearButtonIcon() {
-            return clearButton.getIcon();
+        public Action getAction() {
+            return action;
         }
     }
 }
