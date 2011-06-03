@@ -12,20 +12,20 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.config.WindowConfig;
-import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.BaseTheme;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
@@ -41,113 +41,26 @@ public class WebPickerField
 {
     private static final long serialVersionUID = -938974178359790495L;
     
-    private CaptionMode captionMode = CaptionMode.ITEM;
-    private String captionProperty;
+    protected CaptionMode captionMode = CaptionMode.ITEM;
+    protected String captionProperty;
 
     protected Object value;
 
-    private MetaClass metaClass;
-
-    private String lookupScreen;
-    private WindowManager.OpenType lookupScreenOpenType = WindowManager.OpenType.THIS_TAB;
-
-    protected ValueProvider valueProvider;
+    protected MetaClass metaClass;
 
     protected List<Action> actions = new ArrayList<Action>();
 
-    private String lookupButtonCaption = "";
-    private String lookupButtonIcon = "pickerfield/img/lookup-btn.png";
-    private String clearButtonCaption = "";
-    private String clearButtonIcon = "pickerfield/img/clear-btn.png";
-
     public WebPickerField() {
-        component = new com.haulmont.cuba.web.toolkit.ui.PickerField() {
-            @Override
-            public void setReadOnly(boolean readOnly) {
-                super.setReadOnly(readOnly);
-                for (Button button : getButtons()) {
-                    if ((button instanceof PickerButton) && isStandardAction(((PickerButton) button).getAction())) {
-                        button.setVisible(!readOnly);
-                    }
-                }
-            }
-        };
+        component = new Picker(this);
         component.setImmediate(true);
         attachListener(component);
-        initActions();
+        addLookupAction();
+        addClearAction();
     }
 
-    protected void initActions() {
-        addAction(
-                new AbstractAction("lookup") {
-                    @Override
-                    public void actionPerform(Component component) {
-                        if (isEditable()) {
-                            String windowAlias = getLookupScreen();
-                            if (windowAlias == null) {
-                                final MetaClass metaClass = getMetaClass();
-                                windowAlias = metaClass.getName() + ".lookup";
-                            }
-
-                            WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
-                            WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
-
-                            WindowManager wm = App.getInstance().getWindowManager();
-                            wm.openLookup(
-                                    windowInfo,
-                                    new Window.Lookup.Handler() {
-                                        public void handleLookup(Collection items) {
-                                            if (!items.isEmpty()) {
-                                                final Object item = items.iterator().next();
-                                                __setValue(item);
-                                            }
-                                        }
-                                    },
-                                    lookupScreenOpenType,
-                                    valueProvider != null ? valueProvider.getParameters() : Collections.EMPTY_MAP
-                            );
-                        }
-                    }
-
-                    @Override
-                    public String getCaption() {
-                        return lookupButtonCaption;
-                    }
-
-                    @Override
-                    public String getIcon() {
-                        return lookupButtonIcon;
-                    }
-                }
-        );
-        addAction(
-                new AbstractAction("clear") {
-                    @Override
-                    public void actionPerform(Component component) {
-                        if (isEditable()) {
-                            __setValue(null);
-                        }
-                    }
-
-                    @Override
-                    public String getCaption() {
-                        return clearButtonCaption;
-                    }
-
-                    @Override
-                    public String getIcon() {
-                        return clearButtonIcon;
-                    }
-                }
-        );
-    }
-
-    private boolean isStandardAction(Action action) {
-        return "lookup".equals(action.getId()) || "clear".equals(action.getId());
-    }
-
-    private void __setValue(Object newValue) {
-        setValue(newValue);
+    public WebPickerField(com.haulmont.cuba.web.toolkit.ui.PickerField component) {
+        this.component = component;
+        attachListener(component);
     }
 
     private ItemWrapper createItemWrapper(final Object newValue) {
@@ -179,20 +92,25 @@ public class WebPickerField
         this.metaClass = metaClass;
     }
 
-    public String getLookupScreen() {
-        return lookupScreen;
+    @Override
+    public LookupAction addLookupAction() {
+        LookupAction action = new LookupAction(this);
+        addAction(action);
+        return action;
     }
 
-    public void setLookupScreen(String lookupScreen) {
-        this.lookupScreen = lookupScreen;
+    @Override
+    public ClearAction addClearAction() {
+        ClearAction action = new ClearAction(this);
+        addAction(action);
+        return action;
     }
 
-    public WindowManager.OpenType getLookupScreenOpenType() {
-        return lookupScreenOpenType;
-    }
-
-    public void setLookupScreenOpenType(WindowManager.OpenType lookupScreenOpenType) {
-        this.lookupScreenOpenType = lookupScreenOpenType;
+    @Override
+    public PickerField.OpenAction addOpenAction() {
+        OpenAction action = new OpenAction(this);
+        addAction(action);
+        return action;
     }
 
     @Override
@@ -274,79 +192,23 @@ public class WebPickerField
         this.captionProperty = captionProperty;
     }
 
-    private Button findButton(String actionName) {
-        for (Button button : component.getButtons()) {
-            if (button instanceof PickerButton && actionName.equals(((PickerButton) button).getAction().getId()))
-                return button;
-        }
-        return null;
-    }
-
-    public void setLookupButtonCaption(String caption) {
-        lookupButtonCaption = caption;
-        Button button = findButton("lookup");
-        if (button != null)
-            button.setCaption(caption);
-    }
-
-    public void setLookupButtonIcon(String iconName) {
-        lookupButtonIcon = iconName;
-        Button button = findButton("lookup");
-        if (button != null) {
-            if (!StringUtils.isBlank(iconName)) {
-                button.setIcon(new ThemeResource(iconName));
-                button.addStyleName(BaseTheme.BUTTON_LINK);
-            } else {
-                button.setIcon(null);
-                button.removeStyleName(BaseTheme.BUTTON_LINK);
-            }
-        }
-    }
-
-    public void setClearButtonCaption(String caption) {
-        clearButtonCaption = caption;
-        Button button = findButton("clear");
-        if (button != null)
-            button.setCaption(caption);
-    }
-
-    public void setClearButtonIcon(String iconName) {
-        clearButtonIcon = iconName;
-        Button button = findButton("clear");
-        if (button != null) {
-            if (!StringUtils.isBlank(iconName)) {
-                button.setIcon(new ThemeResource(iconName));
-                button.addStyleName(BaseTheme.BUTTON_LINK);
-            } else {
-                button.setIcon(null);
-                button.removeStyleName(BaseTheme.BUTTON_LINK);
-            }
-        }
-    }
-
-    public ValueProvider getValueProvider() {
-        return valueProvider;
-    }
-
-    public void setValueProvider(ValueProvider valueProvider) {
-        this.valueProvider = valueProvider;
-    }
-
     @Override
     public void addAction(Action action) {
         actions.add(action);
-        PickerButton button = new PickerButton(action);
-        component.addButton(button);
+        PickerButton pButton = new PickerButton();
+        pButton.setAction(action);
+        component.addButton(pButton.<Button>getComponent());
+        // apply Editable after action owner is set
+        if (action instanceof StandardAction)
+            ((StandardAction) action).setEditable(isEditable());
     }
 
     @Override
     public void removeAction(Action action) {
         actions.remove(action);
-        for (Button button : component.getButtons()) {
-            if ((button instanceof PickerButton) && ((PickerButton) button).getAction() == action) {
-                component.removeButton(button);
-                break;
-            }
+        if (action.getOwner() != null && action.getOwner() instanceof WebButton) {
+            Button button = ((WebButton) action.getOwner()).getComponent();
+            component.removeButton(button);
         }
     }
 
@@ -357,33 +219,47 @@ public class WebPickerField
 
     @Override
     public Action getAction(String id) {
+        for (Action action : actions) {
+            if (ObjectUtils.equals(id, action.getId()))
+                return action;
+        }
         return null;
     }
 
-    public class PickerButton extends Button {
+    private static class PickerButton extends WebButton {
 
-        private Action action;
-
-        public PickerButton(Action action) {
-            this.action = action;
-            setCaption(action.getCaption());
-            String icon = action.getIcon();
+        @Override
+        public void setIcon(String icon) {
             if (!StringUtils.isBlank(icon)) {
-                setIcon(new ThemeResource(icon));
-                addStyleName(BaseTheme.BUTTON_LINK);
+                component.setIcon(new ThemeResource(icon));
+                component.addStyleName(BaseTheme.BUTTON_LINK);
+            } else {
+                component.setIcon(null);
             }
-            addListener(
-                    new ClickListener() {
-                        @Override
-                        public void buttonClick(ClickEvent event) {
-                            PickerButton.this.action.actionPerform(WebPickerField.this);
-                        }
-                    }
-            );
+        }
+    }
+
+    public static class Picker extends com.haulmont.cuba.web.toolkit.ui.PickerField {
+
+        private PickerField owner;
+
+        public Picker(PickerField owner) {
+            this.owner = owner;
         }
 
-        public Action getAction() {
-            return action;
+        public Picker(PickerField owner, AbstractField field) {
+            super(field);
+            this.owner = owner;
+        }
+
+        @Override
+        public void setReadOnly(boolean readOnly) {
+            super.setReadOnly(readOnly);
+            for (Action action : owner.getActions()) {
+                if (action instanceof StandardAction) {
+                    ((StandardAction) action).setEditable(!readOnly);
+                }
+            }
         }
     }
 }

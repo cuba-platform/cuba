@@ -17,6 +17,8 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
@@ -396,7 +398,8 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 final WebPickerField picker = new WebPickerField();
                 picker.setWidth(COMPONENT_WIDTH);
                 picker.setMetaClass(metaClass);
-                picker.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
+                PickerField.LookupAction action = (PickerField.LookupAction) picker.getAction(PickerField.LookupAction.NAME);
+                action.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
 
                 picker.addListener(
                         new ValueListener() {

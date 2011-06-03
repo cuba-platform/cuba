@@ -147,8 +147,8 @@
                     <xs:complexType>
                         <xs:group ref="layoutOrComponent"/>
                         <xs:attribute name="expand" type="xs:string" use="optional"/>
-                        <xs:attribute name="expandLayout" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="expandLayout" type="xs:string" use="optional"/>
+                        <xs:attribute name="spacing" type="xs:string" use="optional"/>
                         <xs:attribute name="margin" type="xs:string" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                         <xs:attribute name="width" type="xs:string" use="optional"/>
@@ -628,7 +628,32 @@
                         <xs:attribute name="property" type="xs:string" use="optional"/>
                         <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
                         <xs:attribute name="metaClass" type="xs:string" use="optional"/>
-                        <xs:attribute name="lookupScreen" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="lookupPickerField">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+
+                        <xs:attribute name="editable" type="xs:string" use="optional"/>
+                        <xs:attribute name="enable" type="xs:string" use="optional"/>
+                        <xs:attribute name="required" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="requiredMessage" type="xs:string" use="optional" default="msg://"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
+                        <xs:attribute name="description" type="xs:string" use="optional" default="msg://"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="property" type="xs:string" use="optional"/>
+                        <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
+                        <xs:attribute name="nullName" type="xs:string" use="optional"/>
+                        <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="filterMode" type="filterModeType" use="optional"/>
+                        <xs:attribute name="expandable" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="metaClass" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="optionsGroup">
@@ -754,39 +779,41 @@
                     </xs:complexType>
                 </xs:element>
 
-                <xs:element name="actionsField">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name="button" minOccurs="0" maxOccurs="unbounded" type="buttonType"/>
-                        </xs:sequence>
+                <!-- Deprecated -->
+                <!--<xs:element name="actionsField">-->
+                    <!--<xs:complexType>-->
+                        <!--<xs:sequence>-->
+                            <!--<xs:element name="button" minOccurs="0" maxOccurs="unbounded" type="buttonType"/>-->
+                        <!--</xs:sequence>-->
 
-                        <xs:attribute name="id" type="xs:string" use="required"/>
+                        <!--<xs:attribute name="id" type="xs:string" use="required"/>-->
 
-                        <xs:attribute name="visible" type="xs:string" use="optional"/>
-                        <xs:attribute name="editable" type="xs:string" use="optional"/>
-                        <xs:attribute name="enable" type="xs:string" use="optional"/>
-                        <xs:attribute name="required" type="xs:boolean" use="optional"/>
-                        <xs:attribute name="requiredMessage" type="xs:string" use="optional" default="msg://"/>
-                        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
-                        <xs:attribute name="description" type="xs:string" use="optional" default="msg://"/>
-                        <xs:attribute name="width" type="xs:string" use="optional"/>
-                        <xs:attribute name="height" type="xs:string" use="optional"/>
+                        <!--<xs:attribute name="visible" type="xs:string" use="optional"/>-->
+                        <!--<xs:attribute name="editable" type="xs:string" use="optional"/>-->
+                        <!--<xs:attribute name="enable" type="xs:string" use="optional"/>-->
+                        <!--<xs:attribute name="required" type="xs:boolean" use="optional"/>-->
+                        <!--<xs:attribute name="requiredMessage" type="xs:string" use="optional" default="msg://"/>-->
+                        <!--<xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>-->
+                        <!--<xs:attribute name="description" type="xs:string" use="optional" default="msg://"/>-->
+                        <!--<xs:attribute name="width" type="xs:string" use="optional"/>-->
+                        <!--<xs:attribute name="height" type="xs:string" use="optional"/>-->
 
-                        <xs:attribute name="datasource" type="xs:string" use="optional"/>
-                        <xs:attribute name="property" type="xs:string" use="optional"/>
-                        <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
-                        <xs:attribute name="nullName" type="xs:string" use="optional"/>
-                        <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
-                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
+                        <!--<xs:attribute name="datasource" type="xs:string" use="optional"/>-->
+                        <!--<xs:attribute name="property" type="xs:string" use="optional"/>-->
+                        <!--<xs:attribute name="captionProperty" type="xs:string" use="optional"/>-->
+                        <!--<xs:attribute name="nullName" type="xs:string" use="optional"/>-->
+                        <!--<xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>-->
+                        <!--<xs:attribute name="stylename" type="xs:string" use="optional"/>-->
 
-                        <xs:attribute name="dropdown" type="xs:boolean" use="optional" default="false"/>
-                        <xs:attribute name="lookup" type="xs:boolean" use="optional" default="true"/>
-                        <xs:attribute name="open" type="xs:boolean" use="optional" default="true"/>
+                        <!--<xs:attribute name="dropdown" type="xs:boolean" use="optional" default="false"/>-->
+                        <!--<xs:attribute name="lookup" type="xs:boolean" use="optional" default="true"/>-->
+                        <!--<xs:attribute name="open" type="xs:boolean" use="optional" default="true"/>-->
 
-                        <xs:attribute name="lookupScreen" type="xs:string" use="optional"/>
-                        <xs:attribute name="filterMode" type="filterModeType" use="optional"/>
-                    </xs:complexType>
-                </xs:element>
+                        <!--<xs:attribute name="lookupScreen" type="xs:string" use="optional"/>-->
+                        <!--<xs:attribute name="filterMode" type="filterModeType" use="optional"/>-->
+                    <!--</xs:complexType>-->
+                <!--</xs:element>-->
+
                 <xs:element name="fieldGroup">
                     <xs:complexType>
                         <xs:choice maxOccurs="unbounded">

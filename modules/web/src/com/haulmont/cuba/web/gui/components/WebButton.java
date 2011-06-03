@@ -18,14 +18,18 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.NativeButton;
 import org.apache.commons.lang.StringUtils;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 public class WebButton
     extends
         WebAbstractComponent<com.vaadin.ui.Button>
     implements
         Button, Component.Wrapper
 {
-    private Action action;
-    private String icon;
+    protected Action action;
+    protected String icon;
+
     public static final String ICON_STYLE = "icon";
 
     public WebButton() {
@@ -78,6 +82,21 @@ public class WebButton
         }
 
         action.setOwner(this);
+
+        action.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    @Override
+                    public void propertyChange(PropertyChangeEvent evt) {
+                        if (Action.PROP_ICON.equals(evt.getPropertyName())) {
+                            setIcon(WebButton.this.action.getIcon());
+                        } else if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
+                            setCaption(WebButton.this.action.getCaption());
+                        } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
+                            setEnabled(WebButton.this.action.isEnabled());
+                        }
+                    }
+                }
+        );
     }
 
     public String getIcon() {

@@ -10,6 +10,11 @@
  */
 package com.haulmont.cuba.gui.components;
 
+/**
+ * DEPRECATED! Use {@link LookupPickerField}
+ *
+ */
+@Deprecated
 public interface ActionsField extends LookupField, Component.ActionsHolder{
 
     String NAME = "actionsField";

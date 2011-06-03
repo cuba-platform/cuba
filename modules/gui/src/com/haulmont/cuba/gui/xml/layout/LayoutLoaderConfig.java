@@ -67,6 +67,7 @@ public class LayoutLoaderConfig implements Serializable {
         config.register("timeField", TimeFieldLoader.class);
         config.register("lookupField", LookupFieldLoader.class);
         config.register("pickerField", PickerFieldLoader.class);
+        config.register("lookupPickerField", LookupPickerFieldLoader.class);
         config.register("optionsGroup", OptionsGroupLoader.class);
         config.register("upload", FileUploadFieldLoader.class);
         config.register("multiupload",FileUploadFieldLoader.class);

@@ -9,9 +9,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.vaadin.data.Property;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.TextField;
 
 import java.util.ArrayList;
@@ -28,7 +26,7 @@ public class PickerField extends CustomComponent implements com.vaadin.ui.Field 
 
     public static final int DEFAULT_WIDTH = 250;
 
-    protected com.vaadin.ui.TextField field;
+    protected com.vaadin.ui.AbstractField field;
 
     protected boolean required;
     protected String requiredError;
@@ -37,7 +35,30 @@ public class PickerField extends CustomComponent implements com.vaadin.ui.Field 
     private HorizontalLayout container;
 
     public PickerField() {
-        field = new com.vaadin.ui.TextField() {
+        initTextField();
+        initLayout();
+    }
+
+    public PickerField(com.vaadin.ui.AbstractField field) {
+        this.field = field;
+        initLayout();
+    }
+
+    protected void initLayout() {
+        container = new HorizontalLayout();
+        container.setWidth("100%");
+
+        container.addComponent(field);
+        field.setWidth("100%");
+        container.setExpandRatio(field, 1);
+
+        setCompositionRoot(container);
+        setStyleName("pickerfield");
+        setWidth(DEFAULT_WIDTH + "px");
+    }
+
+    protected void initTextField() {
+        field = new TextField() {
             @Override
             public boolean isRequired() {
                 return PickerField.this.required;
@@ -49,18 +70,7 @@ public class PickerField extends CustomComponent implements com.vaadin.ui.Field 
             }
         };
         field.setReadOnly(true);
-        field.setWidth("100%");
-        field.setNullRepresentation("");
-
-        container = new HorizontalLayout();
-        container.setWidth("100%");
-
-        container.addComponent(field);
-        container.setExpandRatio(field, 1);
-
-        setCompositionRoot(container);
-        setStyleName("pickerfield");
-        setWidth(DEFAULT_WIDTH + "px");
+        ((TextField) field).setNullRepresentation("");
     }
 
     public List<Button> getButtons() {
@@ -77,7 +87,7 @@ public class PickerField extends CustomComponent implements com.vaadin.ui.Field 
         container.removeComponent(button);
     }
 
-    public TextField getTextField() {
+    public AbstractField getField() {
         return field;
     }
 
@@ -150,9 +160,10 @@ public class PickerField extends CustomComponent implements com.vaadin.ui.Field 
     }
 
     public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+        boolean readOnly = field.isReadOnly();
         field.setReadOnly(false);
         field.setValue(newValue);
-        field.setReadOnly(true);
+        field.setReadOnly(readOnly);
     }
 
     public Class getType() {

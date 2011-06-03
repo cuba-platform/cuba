@@ -24,6 +24,8 @@ public class PickerFieldLoader extends AbstractFieldLoader{
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final PickerField component = (PickerField) super.loadComponent(factory, element, parent);
 
+        assignFrame(component);
+
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
             component.setCaptionMode(CaptionMode.PROPERTY);
@@ -35,26 +37,41 @@ public class PickerFieldLoader extends AbstractFieldLoader{
             component.setMetaClass(MetadataProvider.getSession().getClass(metaClass));
         }
 
+        // The code below remains for backward compatibility only!
+
         final String lookupScreen = element.attributeValue("lookupScreen");
         if (!StringUtils.isEmpty(lookupScreen)) {
-            component.setLookupScreen(lookupScreen);
+            PickerField.LookupAction action = (PickerField.LookupAction) component.getAction(PickerField.LookupAction.NAME);
+            if (action != null)
+                action.setLookupScreen(lookupScreen);
         }
 
         String caption = element.attributeValue("lookupCaption");
         if (caption != null) {
-            component.setLookupButtonCaption(loadResourceString(caption));
+            PickerField.LookupAction action = (PickerField.LookupAction) component.getAction(PickerField.LookupAction.NAME);
+            if (action != null)
+                action.setCaption(loadResourceString(caption));
         }
+
         caption = element.attributeValue("clearCaption");
         if (caption != null) {
-            component.setClearButtonCaption(loadResourceString(caption));
+            PickerField.ClearAction action = (PickerField.ClearAction) component.getAction(PickerField.ClearAction.NAME);
+            if (action != null)
+                action.setCaption(loadResourceString(caption));
         }
+
         caption = element.attributeValue("lookupIcon");
         if (caption != null) {
-            component.setLookupButtonIcon(loadResourceString(caption));
+            PickerField.LookupAction action = (PickerField.LookupAction) component.getAction(PickerField.LookupAction.NAME);
+            if (action != null)
+                action.setIcon(loadResourceString(caption));
         }
+
         caption = element.attributeValue("clearIcon");
         if (caption != null) {
-            component.setClearButtonIcon(loadResourceString(caption));
+            PickerField.ClearAction action = (PickerField.ClearAction) component.getAction(PickerField.ClearAction.NAME);
+            if (action != null)
+                action.setIcon(loadResourceString(caption));
         }
 
         return component;
