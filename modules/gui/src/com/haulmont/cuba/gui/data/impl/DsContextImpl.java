@@ -149,15 +149,31 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
 
             fireBeforeCommit(context);
 
-            final Map<Entity, Entity> map = dataservice.commit(context);
+            final Map<Entity, Entity> commitedMap = dataservice.commit(context);
 
-            fireAfterCommit(context, map);
+            fireAfterCommit(context, commitedMap);
 
-            for (Datasource<Entity> datasource : commitData.get(dataservice)) {
-                ((DatasourceImplementation) datasource).commited(map);
-            }
+            notifyAllDsCommited(dataservice, commitedMap);
         } else {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    private void notifyAllDsCommited(DataService dataservice, Map<Entity, Entity> commitedMap) {
+        // Notify all datasources in context
+        Collection<Datasource> datasources = new LinkedList<Datasource>();
+        for (DsContext childDsContext : children) {
+            for (Datasource ds : childDsContext.getAll()) {
+                if (ObjectUtils.equals(ds.getDataService(), dataservice))
+                    datasources.add(ds);
+            }
+        }
+        for (Datasource ds : datasourceMap.values())
+            if (ObjectUtils.equals(ds.getDataService(), dataservice))
+                datasources.add(ds);
+
+        for (Datasource datasource : datasources) {
+            ((DatasourceImplementation) datasource).commited(commitedMap);
         }
     }
 
