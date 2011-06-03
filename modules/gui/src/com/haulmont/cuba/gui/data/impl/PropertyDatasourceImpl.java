@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -137,18 +138,44 @@ public class PropertyDatasourceImpl<T extends Entity>
     }
 
     public void commited(Map<Entity, Entity> map) {
-        Entity previousItem = getItem();
-        T newItem = (T) map.get(previousItem);
+        Instance parentItem = ds.getItem();
 
-        boolean isModified = ds.isModified();
+        // If commitedMap countains previousItem
+        if ((parentItem != null) && map.containsKey(parentItem)) {
+            // Value changed
+            T newItem = (T) map.get(parentItem);
 
-        AbstractInstance parentItem = (AbstractInstance) ds.getItem();
-        parentItem.setValue(metaProperty.getName(), newItem, false);
-        detachListener(previousItem);
-        attachListener(newItem);
+            boolean isModified = ds.isModified();
 
-        ((DatasourceImplementation)ds).setModified(isModified);
+            AbstractInstance parentInstance = (AbstractInstance) ds.getItem();
+            parentInstance.setValue(metaProperty.getName(), newItem, false);
+            detachListener(parentItem);
+            attachListener(newItem);
 
+            ((DatasourceImplementation) ds).setModified(isModified);
+        } else {
+            if (parentItem != null) {
+
+                Entity newParentItem = null;
+                Entity previousParentItem = null;
+
+                // Find previous and new parent items
+                Iterator<Map.Entry<Entity, Entity>> commitIter = map.entrySet().iterator();
+                while (commitIter.hasNext() && (previousParentItem == null) && (newParentItem == null)) {
+                    Map.Entry<Entity, Entity> commitItem = commitIter.next();
+                    if (commitItem.getKey().equals(parentItem)) {
+                        previousParentItem = commitItem.getKey();
+                        newParentItem = commitItem.getValue();
+                    }
+                }
+                if (previousParentItem != null) {
+                    detachListener(getItem(previousParentItem));
+                }
+                if (newParentItem != null) {
+                    attachListener(getItem(newParentItem));
+                }
+            }
+        }
         modified = false;
         clearCommitLists();
     }
