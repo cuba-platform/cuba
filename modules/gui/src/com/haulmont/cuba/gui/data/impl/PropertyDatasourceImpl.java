@@ -14,18 +14,17 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.EntityFactory;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.data.*;
+import org.apache.commons.lang.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-
-import org.apache.commons.lang.ObjectUtils;
 
 public class PropertyDatasourceImpl<T extends Entity>
         extends
@@ -141,13 +140,13 @@ public class PropertyDatasourceImpl<T extends Entity>
         Instance parentItem = ds.getItem();
 
         // If commitedMap countains previousItem
-        if ((parentItem != null) && map.containsKey(parentItem)) {
+        if ((parentItem != null) && map.containsKey(getItem())) {
             // Value changed
-            T newItem = (T) map.get(parentItem);
+            T newItem = (T) map.get(getItem());
 
             boolean isModified = ds.isModified();
 
-            AbstractInstance parentInstance = (AbstractInstance) ds.getItem();
+            AbstractInstance parentInstance = (AbstractInstance) parentItem;
             parentInstance.setValue(metaProperty.getName(), newItem, false);
             detachListener(parentItem);
             attachListener(newItem);
@@ -155,7 +154,6 @@ public class PropertyDatasourceImpl<T extends Entity>
             ((DatasourceImplementation) ds).setModified(isModified);
         } else {
             if (parentItem != null) {
-
                 Entity newParentItem = null;
                 Entity previousParentItem = null;
 
