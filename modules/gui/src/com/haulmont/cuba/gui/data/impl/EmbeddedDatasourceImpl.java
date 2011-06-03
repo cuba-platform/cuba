@@ -24,10 +24,7 @@ import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.gui.data.*;
 import org.apache.commons.lang.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
         extends
@@ -126,6 +123,28 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
     }
 
     public void commited(Map<Entity, Entity> map) {
+        Instance item = ds.getItem();
+
+        Entity newItem = null;
+        Entity previousItem = null;
+
+        if (item != null) {
+            Iterator<Map.Entry<Entity, Entity>> commitIter = map.entrySet().iterator();
+            while (commitIter.hasNext() && (previousItem == null) && (newItem == null)) {
+                Map.Entry<Entity, Entity> commitItem = commitIter.next();
+                if (commitItem.getKey().equals(item)) {
+                    previousItem = commitItem.getKey();
+                    newItem = commitItem.getValue();
+                }
+            }
+            if (previousItem != null) {
+                detachListener(getItem(previousItem));
+            }
+            if (newItem != null) {
+                attachListener(getItem(newItem));
+            }
+        }
+
         modified = false;
         clearCommitLists();
     }
