@@ -758,6 +758,7 @@ create table SYS_CATEGORY(
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
     NAME varchar(255),
+	SPECIAL varchar(50),
 	ENTITY_TYPE varchar(30),
 	IS_DEFAULT boolean,
 	primary key (ID)
@@ -792,8 +793,7 @@ create table SYS_ATTR_VALUE(
     UPDATED_BY varchar(50),
     DELETE_TS timestamp,
     DELETED_BY varchar(50),
-    NAME varchar(255),
-	CATEGORY_ATTR_ID uuid,
+    CATEGORY_ATTR_ID uuid,
 	ENTITY_ID uuid,
 	VALUE varchar(255),
 	ENTITY_VALUE uuid,
