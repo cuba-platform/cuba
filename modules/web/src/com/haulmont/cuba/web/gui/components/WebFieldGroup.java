@@ -202,6 +202,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(id);
                 if (propertyPath != null) {
                     c = fieldGenerator.generateField(ds, propertyId);
+                    assignTypicalAttributes(c);
                     f = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(c);
 
                     if (f.getPropertyDataSource() == null) {
@@ -215,6 +216,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     }
                 } else {
                     c = fieldGenerator.generateField(null, null);
+                    assignTypicalAttributes(c);
                     f = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(c);
                 }
 
@@ -240,6 +242,15 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 return f;
             }
         });
+    }
+
+    private void assignTypicalAttributes(Component c) {
+        if (c instanceof BelongToFrame) {
+            BelongToFrame belongToFrame = (BelongToFrame) c;
+            if (belongToFrame.getFrame() == null) {
+                belongToFrame.setFrame(getFrame());
+            }
+        }
     }
 
     public Datasource getDatasource() {

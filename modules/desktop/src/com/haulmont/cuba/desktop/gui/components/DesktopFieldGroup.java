@@ -299,9 +299,19 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
                 generator = createDefaultGenerator(field);
 
             Component component = generator.generateField(ds, field.getId());
+            assignTypicalAttributes(component);
             JComponent jComponent = DesktopComponentsHelper.unwrap(component);
 
             impl.add(jComponent, new CC().cell(col*2+1, row, 1, 1));
+        }
+    }
+
+    private void assignTypicalAttributes(Component c) {
+        if (c instanceof BelongToFrame) {
+            BelongToFrame belongToFrame = (BelongToFrame) c;
+            if (belongToFrame.getFrame() == null) {
+                belongToFrame.setFrame(getFrame());
+            }
         }
     }
 
