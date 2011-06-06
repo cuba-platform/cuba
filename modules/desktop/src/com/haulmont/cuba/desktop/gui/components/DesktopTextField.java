@@ -190,12 +190,7 @@ public class DesktopTextField extends DesktopAbstractComponent<JTextComponent> i
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
-        try {
-            metaProperty = metaPropertyPath.getMetaProperty();
-        }
-        catch (ArrayIndexOutOfBoundsException e) {
-            throw new RuntimeException("Metaproperty name is possibly wrong: " + property, e);
-        }
+        metaProperty = metaPropertyPath.getMetaProperty();
 
         datasource.addListener(
                 new DsListenerAdapter() {

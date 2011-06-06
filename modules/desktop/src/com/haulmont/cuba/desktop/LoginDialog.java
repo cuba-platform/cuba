@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.desktop;
 
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
@@ -19,6 +21,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * <p>$Id$</p>
@@ -28,9 +31,12 @@ import java.util.Locale;
 public class LoginDialog extends JDialog {
 
     private Connection connection;
+    private Map<String,Locale> locales;
 
     public LoginDialog(Connection connection) {
         this.connection = connection;
+        locales = ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales();
+
         setTitle(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.caption", Locale.getDefault()));
         setContentPane(createContentPane());
         setResizable(false);
@@ -57,6 +63,12 @@ public class LoginDialog extends JDialog {
             passwordField.setText(defaultPassword);
         panel.add(passwordField, "width 150!, wrap");
 
+        panel.add(new JLabel(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.localesSelect", Locale.getDefault())));
+
+        final JComboBox localeCombo = new JComboBox();
+        initLocales(localeCombo);
+        panel.add(localeCombo, "width 150!, wrap");
+
         JButton loginBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.okButton", Locale.getDefault()));
         loginBtn.addActionListener(
                 new ActionListener() {
@@ -64,7 +76,8 @@ public class LoginDialog extends JDialog {
                         try {
                             String name = nameField.getText();
                             String password = passwordField.getText();
-                            connection.login(name, DigestUtils.md5Hex(password), Locale.getDefault());
+                            Locale locale = locales.get((String) localeCombo.getSelectedItem());
+                            connection.login(name, DigestUtils.md5Hex(password), locale);
                             setVisible(false);
                         } catch (LoginException ex) {
                             throw new RuntimeException(ex);
@@ -75,6 +88,20 @@ public class LoginDialog extends JDialog {
         panel.add(loginBtn, "span, align center");
 
         return panel;
+    }
+
+    protected void initLocales(JComboBox localeCombo) {
+        Locale loc = new Locale(Locale.getDefault().getLanguage());
+        String selected = null;
+        for (Map.Entry<String, Locale> entry : locales.entrySet()) {
+            localeCombo.addItem(entry.getKey());
+            if (entry.getValue().getLanguage().equals(loc.getLanguage()))
+                selected = entry.getKey();
+        }
+        if (selected == null)
+            selected = locales.keySet().iterator().next();
+
+        localeCombo.setSelectedItem(selected);
     }
 
 }

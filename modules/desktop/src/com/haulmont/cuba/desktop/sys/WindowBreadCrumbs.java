@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.sys;
 
 import com.haulmont.cuba.gui.components.Window;
+import org.jdesktop.swingx.JXHyperlink;
 
 import java.awt.FlowLayout;
 import java.awt.Color;
@@ -85,7 +86,8 @@ public class WindowBreadCrumbs extends JPanel {
         btn2win.clear();
         for (Iterator<Window> it = windows.iterator(); it.hasNext();) {
             Window window = it.next();
-            JButton button = new JButton(window.getCaption().trim());
+            JButton button = new JXHyperlink();
+            button.setText(window.getCaption().trim());
             button.addActionListener(
                     new ActionListener() {
                         public void actionPerformed(ActionEvent e) {

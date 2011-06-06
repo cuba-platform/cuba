@@ -7,6 +7,8 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
+import com.haulmont.chile.core.datatypes.impl.DateDatatype;
+import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -29,6 +31,8 @@ public class FieldFactory {
                 return createStringField(datasource, property);
             } else if (typeName.equals(BooleanDatatype.NAME)) {
                 return createBooleanField(datasource, property);
+            } else if (typeName.equals(DateDatatype.NAME) || typeName.equals(DateTimeDatatype.NAME)) {
+                return createDateField(datasource, property);
             }
         } else if (mpp.getRange().isClass()) {
             return createEntityField(datasource, property);
@@ -46,6 +50,12 @@ public class FieldFactory {
         DesktopTextField textField = new DesktopTextField();
         textField.setDatasource(datasource, property);
         return textField;
+    }
+
+    private Component createDateField(Datasource datasource, String property) {
+        DesktopDateField dateField = new DesktopDateField();
+        dateField.setDatasource(datasource, property);
+        return dateField;
     }
 
     private Component createEntityField(Datasource datasource, String property) {
