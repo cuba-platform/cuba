@@ -49,6 +49,8 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(RowsCount.NAME, DesktopRowsCount.class);
         classes.put(PopupButton.NAME, DesktopPopupButton.class);
         classes.put(LookupField.NAME, DesktopLookupField.class);
+        classes.put(PickerField.NAME, DesktopPickerField.class);
+        classes.put(LookupPickerField.NAME, DesktopLookupPickerField.class);
         classes.put(Tabsheet.NAME, DesktopTabsheet.class);
     }
 

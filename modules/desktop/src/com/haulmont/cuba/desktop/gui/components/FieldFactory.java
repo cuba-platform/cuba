@@ -30,6 +30,8 @@ public class FieldFactory {
             } else if (typeName.equals(BooleanDatatype.NAME)) {
                 return createBooleanField(datasource, property);
             }
+        } else if (mpp.getRange().isClass()) {
+            return createEntityField(datasource, property);
         }
         return createUnsupportedField(mpp);
     }
@@ -46,9 +48,16 @@ public class FieldFactory {
         return textField;
     }
 
+    private Component createEntityField(Datasource datasource, String property) {
+        DesktopPickerField pickerField = new DesktopPickerField();
+        pickerField.setDatasource(datasource, property);
+        return pickerField;
+    }
+
     private Component createUnsupportedField(MetaPropertyPath mpp) {
         DesktopLabel label = new DesktopLabel();
         label.setValue("TODO: " + mpp.getRange());
         return label;
     }
+
 }
