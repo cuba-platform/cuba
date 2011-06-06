@@ -58,6 +58,7 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
 
     private MetaClass metaClass;
     private String lookupScreen;
+    private WindowManager.OpenType lookupOpenMode = WindowManager.OpenType.THIS_TAB;
 
     private boolean lookup;
 
@@ -90,9 +91,9 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
                     actionsHelper = new ActionsFieldHelper(actionsField, metaClass);
                     if (isLookup()) {
                         if (getLookupScreen() != null) {
-                            actionsHelper.createLookupAction(getLookupScreen());
+                            actionsHelper.createLookupAction(getLookupScreen(), lookupOpenMode, Collections.<String, Object>emptyMap());
                         } else {
-                            actionsHelper.createLookupAction();
+                            actionsHelper.createLookupAction(lookupOpenMode);
                         }
                     }
                 }
@@ -122,6 +123,14 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
 
     public void setCaptionProperty(String captionProperty) {
         this.captionProperty = captionProperty;
+    }
+
+    public WindowManager.OpenType getLookupOpenMode() {
+        return lookupOpenMode;
+    }
+
+    public void setLookupOpenMode(WindowManager.OpenType lookupOpenMode) {
+        this.lookupOpenMode = lookupOpenMode;
     }
 
     public CaptionMode getCaptionMode() {
@@ -392,7 +401,7 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
                                     }
                                 }
                             }
-                        }, WindowManager.OpenType.THIS_TAB, params);
+                        }, lookupOpenMode, params);
                     }
                 });
             }

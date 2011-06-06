@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.LookupField;
@@ -90,6 +91,10 @@ public class TokenListLoader extends AbstractFieldLoader {
                 if (!StringUtils.isEmpty(lookupScreen)) {
                     component.setLookupScreen(lookupScreen);
                 }
+                String openType = lookupElement.attributeValue("openType");
+                if (!StringUtils.isEmpty(openType)) {
+                    component.setLookupOpenMode(WindowManager.OpenType.valueOf(openType));
+                }
             }
         }
 
@@ -118,7 +123,7 @@ public class TokenListLoader extends AbstractFieldLoader {
         if (!StringUtils.isEmpty(simple)) {
             component.setSimple(BooleanUtils.toBoolean(simple));
         }
-        
+
         assignFrame(component);
 
         return component;

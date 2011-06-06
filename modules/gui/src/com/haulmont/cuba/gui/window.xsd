@@ -430,6 +430,14 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="openType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NEW_TAB"/>
+            <xs:enumeration value="THIS_TAB"/>
+            <xs:enumeration value="DIALOG"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="fetchMode">
         <xs:restriction base="xs:string">
             <xs:enumeration value="ALL"/>
@@ -852,6 +860,7 @@
                                     <xs:attribute name="lookupScreen" type="xs:string" use="optional"/>
                                     <xs:attribute name="lookup" type="xs:string" use="optional"/>
                                     <xs:attribute name="filterMode" type="filterModeType" use="optional"/>
+                                    <xs:attribute name="openType" type="openType" use="optional"/>
                                     <xs:attribute name="multiselect" type="xs:string" use="optional"/>
                                 </xs:complexType>
                             </xs:element>

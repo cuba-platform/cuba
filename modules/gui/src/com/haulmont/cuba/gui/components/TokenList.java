@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.Map;
@@ -60,6 +61,9 @@ public interface TokenList extends Component, Component.BelongToFrame,
 
     Position getPosition();
     void setPosition(Position position);
+
+    WindowManager.OpenType getLookupOpenMode();
+    void setLookupOpenMode(WindowManager.OpenType lookupOpenMode);
 
     boolean isInline();
     void setInline(boolean inline);
