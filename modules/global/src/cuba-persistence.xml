@@ -40,6 +40,11 @@
         <class>com.haulmont.cuba.security.entity.Presentation</class>
         <class>com.haulmont.cuba.security.entity.ScreenHistoryEntity</class>
 
+        <class>com.haulmont.cuba.core.entity.CategorizedEntity</class>
+        <class>com.haulmont.cuba.core.entity.Category</class>
+        <class>com.haulmont.cuba.core.entity.CategoryAttribute</class>
+        <class>com.haulmont.cuba.core.entity.CategoryAttributeValue</class>
+
         <class>com.haulmont.cuba.report.HardDeleteEntity</class>
         <class>com.haulmont.cuba.report.DataSet</class>
         <class>com.haulmont.cuba.report.BandDefinition</class>

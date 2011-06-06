@@ -333,6 +333,9 @@ public abstract class DesktopAbstractTable<C extends JTable>
     public void addGeneratedColumn(String columnId, ColumnGenerator generator) {
     }
 
+    public void removeGeneratedColumn(Object id){
+    }
+
     public boolean isEditable() {
         return false;
     }

@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
@@ -27,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.Locale;
 
 public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolkit.ui.TextField>
     extends
@@ -37,6 +39,8 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
     private static Log log = LogFactory.getLog(WebAbstractTextField.class);
 
     private Datatype datatype;
+
+    private Locale locale = UserSessionProvider.getLocale();
 
     protected Formatter formatter;
 
@@ -53,7 +57,7 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
             @Override
             public String format(Object value) {
                 if (datatype != null && value != null) {
-                    return datatype.format(value);
+                    return datatype.format(value,locale);
                 } else if (value != null) {
                     return value.toString();
                 } else {
@@ -65,7 +69,7 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
             public Object parse(String formattedValue) throws Exception {
                 if (datatype != null) {
                     try {
-                        return datatype.parse(formattedValue);
+                        return datatype.parse(formattedValue,locale);
                     } catch (ParseException e) {
                         log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                         return null;
@@ -127,7 +131,7 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
         Object value = super.getValue();
         if (datasource == null && datatype != null && value instanceof String) {
             try {
-                return (T) datatype.parse((String) value);
+                return (T) datatype.parse((String) value, locale);
             } catch (ParseException e) {
                 log.warn("Unable to parse value of component " + getId() + "\n" + e.getMessage());
                 return null;
@@ -140,7 +144,7 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
     @Override
     public void setValue(Object value) {
         if (datasource == null && datatype != null && value != null) {
-            String str = datatype.format(value);
+            String str = datatype.format(value, locale);
             super.setValue(str);
         } else {
             super.setValue(value);

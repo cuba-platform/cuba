@@ -284,7 +284,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 for (final String id : fieldIds) {
                     final Field field = getField(id);
                     final MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(field.getId());
-                    final String clickAction = field.getXmlDescriptor().attributeValue("clickAction");
+                    final Element descriptor = field.getXmlDescriptor();
+                    final String clickAction = (descriptor==null)?(null):(descriptor.attributeValue("clickAction"));
                     if (field.getDatasource() == null && propertyPath != null
                             && StringUtils.isEmpty(clickAction)) {
                         //fieldsMetaProps with attribute "clickAction" will be created manually
@@ -322,8 +323,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             final Field fieldConf = getField(id);
             if (!fieldConf.isCustom()) {
                 com.vaadin.ui.Field field;
-
-                final String clickAction = fieldConf.getXmlDescriptor().attributeValue("clickAction");
+                Element descriptor = fieldConf.getXmlDescriptor();
+                final String clickAction = (descriptor==null)?(null):(descriptor.attributeValue("clickAction"));
                 Datasource fieldDs;
                 if (datasource != null && fieldConf.getDatasource() == null) {
                     if (!StringUtils.isEmpty(clickAction)) {
@@ -792,9 +793,10 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             } else {
                 dsContext = ds.getDsContext();
             }
-
+            Element descriptor = field.getXmlDescriptor();
+            String attrValue = descriptor==null?null:descriptor.attributeValue("optionsDatasource");
             String optDsName = field != null
-                    ? field.getXmlDescriptor().attributeValue("optionsDatasource")
+                    ? attrValue
                     : null;
 
             if (!StringUtils.isBlank(optDsName)) {
@@ -868,9 +870,11 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         protected String fieldType(MetaPropertyPath propertyPath) {
             Field field = fields.get(propertyPath.toString());
             if (field != null) {
-                String fieldType = field.getXmlDescriptor().attributeValue("field");
-                if (!StringUtils.isEmpty(fieldType)) {
-                    return fieldType;
+                if (field.getXmlDescriptor() != null) {
+                    String fieldType = field.getXmlDescriptor().attributeValue("field");
+                    if (!StringUtils.isEmpty(fieldType)) {
+                        return fieldType;
+                    }
                 }
             }
             return null;

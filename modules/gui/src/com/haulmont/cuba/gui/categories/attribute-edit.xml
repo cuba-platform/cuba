@@ -1,0 +1,27 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.categories.AttributeEditor"
+        messagesPack="com.haulmont.cuba.gui.categories"
+        datasource="attributeDs"
+        caption="msg://AttributeEditor.caption">
+    <dsContext>
+        <datasource
+                id="attributeDs"
+                class="com.haulmont.cuba.core.entity.CategoryAttribute"
+                view="_local"
+                >
+        </datasource>
+
+    </dsContext>
+    <layout expand="space">
+        <vbox id="attributeProperties" spacing="true" width="100%">
+        </vbox>
+        <iframe id="buttons" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <hbox id="space"></hbox>
+    </layout>
+</window>

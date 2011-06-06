@@ -9,6 +9,7 @@
         <class>com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute</class>
         <class>com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperation</class>
         <class>com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperationParameter</class>
+        <class>com.haulmont.cuba.core.sys.SetValueEntity</class>
     </metadata-model>
 
     <!--<entityFactory>-->

@@ -61,7 +61,14 @@
 
     <screen id="core$Server.browse"
             template="/com/haulmont/cuba/gui/app/core/server/browse/server-browse.xml"/>
+
     <screen id="core$Server.edit"
             template="/com/haulmont/cuba/gui/app/core/server/edit/server-edit.xml"/>
+
+    <screen id="sys$Category.edit"
+            template="/com/haulmont/cuba/gui/categories/category-edit.xml"/>
+
+    <screen id="sys$CategoryAttribute.edit"
+            template="/com/haulmont/cuba/gui/categories/attribute-edit.xml"/>
 
 </screen-config>

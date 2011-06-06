@@ -204,13 +204,15 @@ public class FieldGroupLoader extends AbstractFieldLoader {
     }
 
     protected void loadValidators(FieldGroup component, FieldGroup.Field field) {
-        final List<Element> validatorElements = field.getXmlDescriptor().elements("validator");
-
-        if (!validatorElements.isEmpty()) {
-            for (Element validatorElement : validatorElements) {
-                final Field.Validator validator = loadValidator(validatorElement);
-                if (validator != null) {
-                    component.addValidator(field, validator);
+        Element descriptor = field.getXmlDescriptor();
+        final List<Element> validatorElements = (descriptor == null) ? null : descriptor.elements("validator");
+        if (validatorElements != null) {
+            if (!validatorElements.isEmpty()) {
+                for (Element validatorElement : validatorElements) {
+                    final Field.Validator validator = loadValidator(validatorElement);
+                    if (validator != null) {
+                        component.addValidator(field, validator);
+                    }
                 }
             }
         } else {
@@ -225,7 +227,9 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 if (metaPropertyPath != null) {
                     MetaProperty metaProperty = metaPropertyPath.getMetaProperty();
                     Field.Validator validator = null;
-                    if (!"timeField".equals(field.getXmlDescriptor().attributeValue("field"))) {
+                    if (descriptor == null) {
+                        validator = getDefaultValidator(metaProperty);
+                    } else if (!"timeField".equals(descriptor.attributeValue("field"))) {
                         validator = getDefaultValidator(metaProperty); //In this case we no need to use validator
                     }
                     if (validator != null) {

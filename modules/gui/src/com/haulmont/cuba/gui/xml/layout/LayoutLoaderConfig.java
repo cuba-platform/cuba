@@ -75,6 +75,7 @@ public class LayoutLoaderConfig implements Serializable {
         config.register("treeTable", TreeTableLoader.class);
         config.register("groupTable", GroupTableLoader.class);
         config.register("iframe", IFrameLoader.class);
+        config.register("runtimeProperties",RuntimePropertiesFrameLoader.class);
         config.register("split", SplitPanelLoader.class);
         config.register("tree", TreeLoader.class);
         config.register("tabsheet", TabsheetLoader.class);
@@ -85,6 +86,7 @@ public class LayoutLoaderConfig implements Serializable {
         config.register("actionsField", ActionsFieldLoader.class);
         config.register("popupButton", PopupButtonLoader.class);
         config.register("fieldGroup", FieldGroupLoader.class);
+        config.register("runtimeFieldGroup", FieldGroupRuntimeLoader.class);
         config.register("tokenList", TokenListLoader.class);
         config.register("widgetsTree", WidgetsTreeLoader.class);
         config.register("twinColumn", TwinColumnLoader.class);

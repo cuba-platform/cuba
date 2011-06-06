@@ -244,6 +244,8 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
     }
 
     protected void initTextField(com.vaadin.ui.TextField field, MetaProperty metaProperty, Element xmlDescriptor) {
+        if (xmlDescriptor==null)
+            return;
         final String cols = xmlDescriptor.attributeValue("cols");
         if (!StringUtils.isEmpty(cols)) {
             field.setColumns(Integer.valueOf(cols));
@@ -271,8 +273,8 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
             }
         }
 
-        final String resolution = xmlDescriptor.attributeValue("resolution");
-        String dateFormat = xmlDescriptor.attributeValue("dateFormat");
+        final String resolution = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("resolution");
+        String dateFormat = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("dateFormat");
 
         if (!StringUtils.isEmpty(resolution)) {
             com.haulmont.cuba.gui.components.DateField.Resolution res = com.haulmont.cuba.gui.components.DateField.Resolution.valueOf(resolution);

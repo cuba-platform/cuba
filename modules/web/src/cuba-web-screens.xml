@@ -87,4 +87,7 @@
     <screen id="sys$SendingMessage.browse"
             template="/com/haulmont/cuba/web/ui/sendingmessage/browse/sending-message-browse.xml"/>
 
+    <screen id="sys$Categories.browse"
+            template="/com/haulmont/cuba/gui/categories/category-browse.xml"/>
+
 </screen-config>

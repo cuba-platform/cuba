@@ -1,0 +1,44 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.categories.CategoryBrowser"
+        messagesPack="com.haulmont.cuba.gui.categories"
+        lookupComponent="categoryTable"
+        caption="msg://categories">
+    <dsContext>
+        <collectionDatasource
+                id="categoriesDs"
+                class="com.haulmont.cuba.core.entity.Category"
+                view="_local">
+         <query>
+             select c from sys$Category c where c.special is null order by c.createTs
+         </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expand="categoryTable" spacing="true">
+        <groupBox id="filterBox" collapsable="true" stylename="edit-area">
+            <caption label="msg://filter"/>
+            <filter id="categoriesFilter" datasource="categoriesDs">
+                <properties include=".*"/>
+            </filter>
+        </groupBox>
+
+        <table id="categoryTable">
+            <buttonsPanel>
+                <button action="categoryTable.create" icon="icons/create.png" caption="msg://categoryTable.create"/>
+                <button action="categoryTable.edit" icon="icons/edit.png" caption="msg://categoryTable.edit"/>
+                <button action="categoryTable.remove" icon="icons/remove.png" caption="msg://categoryTable.remove"/>
+            </buttonsPanel>
+            <columns>
+                <column id="name"/>
+                <column id="entityType"/>
+            </columns>
+            <rows datasource="categoriesDs"/>
+        </table>
+    </layout>
+</window>

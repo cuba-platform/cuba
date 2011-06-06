@@ -36,9 +36,9 @@ public abstract class AbstractDatasource<T extends Entity>
 
     protected List<DatasourceListener> dsListeners = new ArrayList<DatasourceListener>();
 
-    protected Collection<T> itemToCreate = new HashSet<T>();
-    protected Collection<T> itemToUpdate = new HashSet<T>();
-    protected Collection<T> itemToDelete = new HashSet<T>();
+    protected Collection itemToCreate = new HashSet();
+    protected Collection itemToUpdate = new HashSet();
+    protected Collection itemToDelete = new HashSet();
     protected ValueListener listener;
 
     public AbstractDatasource(String id) {
@@ -59,15 +59,15 @@ public abstract class AbstractDatasource<T extends Entity>
         this.modified = modified;
     }
 
-    public Collection<T> getItemsToCreate() {
+    public Collection getItemsToCreate() {
         return Collections.unmodifiableCollection(itemToCreate);
     }
 
-    public Collection<T> getItemsToUpdate() {
+    public Collection getItemsToUpdate() {
         return Collections.unmodifiableCollection(itemToUpdate);
     }
 
-    public Collection<T> getItemsToDelete() {
+    public Collection getItemsToDelete() {
         return Collections.unmodifiableCollection(itemToDelete);
     }
 

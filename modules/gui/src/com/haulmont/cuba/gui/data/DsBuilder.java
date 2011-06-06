@@ -2,6 +2,10 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
+ * Author: Konstantin Krivopustov
+ * Created: 01.10.2010 17:49:04
+ *
+ * $Id$
  */
 package com.haulmont.cuba.gui.data;
 
@@ -382,4 +386,10 @@ public class DsBuilder {
         return datasource;
     }
 
+    public RuntimePropsDatasource buildRuntimePropsDataSource(String mainDsId,String categoriesDs){
+        init();
+        RuntimePropsDatasourceImpl datasource;
+        datasource = new RuntimePropsDatasourceImpl( dsContext, dataService, id, metaClass, viewName,mainDsId,categoriesDs);
+        return datasource;
+    }
 }

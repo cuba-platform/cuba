@@ -1,0 +1,18 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.components.RuntimePropertiesFrame"
+        messagesPack="com.haulmont.cuba.gui">
+    <dsContext>
+
+    </dsContext>
+    <layout width="100%" spacing="true">
+       <!-- <lookupField id="category" datasource="carDs" optionsDatasource="categories" property="category"
+                  captionProperty="name" expandable="false" height="-1px" width="100%"/>-->
+    </layout>
+</window>
+

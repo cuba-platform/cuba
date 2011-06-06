@@ -142,7 +142,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.addGeneratedColumn(id, (com.vaadin.ui.Table.ColumnGenerator) generator);
     }
 
-    protected void removeGeneratedColumn(Object id) {
+    public void removeGeneratedColumn(Object id) {
         component.removeGeneratedColumn(id);
     }
 

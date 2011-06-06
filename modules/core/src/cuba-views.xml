@@ -107,4 +107,16 @@
         <property name="status"/>
     </view>
 
+    <view entity="sys$CategoryAttributeValue" name="categoryAttributeValue" extends="_local">
+        <property name="categoryAttribute" view="_local"/>
+    </view>
+
+    <view entity="sys$Category" name="category.edit" extends="_local">
+        <property name="categoryAttrs" view="_local"/>
+    </view>
+
+    <view entity="sys$Category" name="category.defaultEdit" extends="_minimal">
+        <property name="isDefault"/>
+    </view>
+
 </views>

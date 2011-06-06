@@ -97,6 +97,18 @@
                                         <xs:attribute name="softDeletion" type="xs:boolean" use="optional"/>
                                     </xs:complexType>
                                 </xs:element>
+
+                                <xs:element name="runtimePropsDatasource">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="datasourceClass" minOccurs="0" maxOccurs="1"/>
+                                            <xs:group ref="nestedDatasources"/>
+                                        </xs:sequence>
+                                        <xs:attribute name="id" type="xs:string" use="required"/>
+                                        <xs:attribute name="mainDs" type="xs:string" use="required"/>
+                                    </xs:complexType>
+                                </xs:element>
+
                                 <xs:element name="datasource">
                                     <xs:complexType>
                                         <xs:sequence>
@@ -392,6 +404,20 @@
                     </xs:complexType>
                 </xs:element>
 
+                <xs:element name="runtimeProperties">
+                    <xs:complexType>
+                        <xs:attribute name="id" type="xs:string" use="optional"/>
+                        <xs:attribute name="runtimeDs" type="xs:string" use="required"/>
+                        <xs:attribute name="categoriesDs" type="xs:string" use="required"/>
+                        <xs:attribute name="src" type="xs:string" use="optional"/>
+                        <xs:attribute name="visible" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
+                        <xs:attribute name="align" type="align" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
+
                 <xs:element name="accessControl">
                     <xs:complexType>
                         <xs:sequence>
@@ -636,6 +662,7 @@
                         <xs:attribute name="property" type="xs:string" use="optional"/>
                         <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
                         <xs:attribute name="metaClass" type="xs:string" use="optional"/>
+                        <xs:attribute name="lookupScreen" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="lookupPickerField">

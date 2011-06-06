@@ -2,7 +2,11 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
+ * Author: Dmitry Abramov
+ * Created: 25.12.2008 11:14:58
+ * $Id$
  */
+
 package com.haulmont.cuba.gui.xml.data;
 
 import com.haulmont.bali.util.ReflectionHelper;
@@ -83,6 +87,10 @@ public class DsContextLoader {
         elements = element.elements("groupDatasource");
         for (Element ds : elements) {
             context.register(loadGroupDatasource(ds));
+        }
+        elements = element.elements("runtimePropsDatasource");
+        for (Element ds : elements) {
+            context.register(loadRuntimePropsDataSource(ds));
         }
 
         context.executeLazyTasks();
@@ -256,6 +264,12 @@ public class DsContextLoader {
             final String property = ds.attributeValue("property");
             context.register(loadHierarchicalDatasource(ds, datasource, property));
         }
+
+        elements = element.elements("runtimePropsDatasource");
+        for (Element ds : elements) {
+            context.register(loadRuntimePropsDataSource(element));
+        }
+
     }
 
     private Datasource loadDatasource(Element element, Datasource ds, String property) {
@@ -458,5 +472,37 @@ public class DsContextLoader {
             mode = CollectionDatasource.FetchMode.valueOf(fetchMode);
         }
         return mode;
+    }
+
+    protected RuntimePropsDatasource loadRuntimePropsDataSource(Element element){
+        final String id = element.attributeValue("id");
+        final MetaClass metaClass = loadMetaClass(element);
+
+        final String mainDsId = element.attributeValue("mainDs");
+        final String categories = element.attributeValue("categories");
+
+        if (mainDsId == null) {
+            throw new IllegalStateException("RuntimePropsDs attributes not specified");
+        }
+
+        builder.reset().setMetaClass(metaClass).setId(id);
+
+        final RuntimePropsDatasource datasource;
+
+        final Element datasourceClassElement = element.element("datasourceClass");
+
+        if (datasourceClassElement != null) {
+            final String datasourceClass = datasourceClassElement.getText();
+            if (StringUtils.isEmpty(datasourceClass))
+                throw new IllegalStateException("Datasource class is not specified");
+
+            final Class<RuntimePropsDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
+            datasource = builder.setDsClass(aClass).buildRuntimePropsDataSource(mainDsId,categories);
+        } else {
+            datasource = builder.buildRuntimePropsDataSource(mainDsId,categories);
+        }
+
+        loadDatasources(element, datasource);
+        return datasource;
     }
 }
