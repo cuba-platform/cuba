@@ -33,7 +33,7 @@ create table SYS_CATEGORY_ATTR(
 	DATA_TYPE varchar(20),
 	DEFAULT_VALUE varchar,
 	DEFAULT_ENTITY_VALUE uuid,
-	ENUMERATION varchar(50),
+	ENUMERATION varchar(500),
 	primary key (ID)
 )^
 

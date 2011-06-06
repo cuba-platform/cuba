@@ -6,8 +6,6 @@
 
 package com.haulmont.cuba.core.entity;
 
-import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
-import com.haulmont.cuba.core.global.UuidProvider;
 import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.*;
