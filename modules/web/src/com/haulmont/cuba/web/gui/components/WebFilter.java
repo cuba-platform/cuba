@@ -223,7 +223,7 @@ public class WebFilter
                 if ((BooleanUtils.isNotTrue(filterEntity.getIsSet()))&&(UserSessionProvider.getUserSession().getUser().equals(((SearchFolder) filterEntity.getFolder()).getUser())))
                     actions.addAction(new EditAction());
             }
-            if (filterEntity.getCode() == null && filterEntity.getFolder() == null)
+            if (filterEntity.getCode() == null && filterEntity.getFolder() == null && UserSessionProvider.getUserSession().getUser().equals(filterEntity.getUser()))
                 actions.addAction(new DeleteAction());
         }
 
