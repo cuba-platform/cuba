@@ -172,6 +172,35 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
+    public void getResult_noChangesMade_withLeft_InnerJoinFetch() throws RecognitionException {
+        EntityBuilder builder = new EntityBuilder();
+        Entity personEntity = builder.produceImmediately("Person", "personName");
+
+        builder.startNewEntity("Team");
+        builder.addStringAttribute("name");
+        builder.addStringAttribute("owner");
+        builder.addReferenceAttribute("manager", "Person");
+        Entity teamEntity = builder.produce();
+
+        builder.startNewEntity("Player");
+        builder.addStringAttribute("name");
+        builder.addStringAttribute("nickname");
+        builder.addReferenceAttribute("team", "Team");
+        builder.addReferenceAttribute("agent", "Person");
+        Entity playerEntity = builder.produce();
+
+        DomainModel model = new DomainModel(teamEntity, playerEntity, personEntity);
+
+        QueryTransformerAstBased transformerAstBased = new QueryTransformerAstBased(model, "select p.name from Player p join fetch p.team left join fetch p.agent", "Player");
+        assertEquals("select p.name from Player p join fetch p.team left join fetch p.agent",
+                transformerAstBased.getResult());
+
+        transformerAstBased = new QueryTransformerAstBased(model, "select p.name from Player p left outer join fetch p.team inner join fetch p.agent", "Player");
+        assertEquals("select p.name from Player p left outer join fetch p.team inner join fetch p.agent", 
+                transformerAstBased.getResult());
+    }
+
+    @Test
     public void getResult_noChangesMade_withDistinct() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
         Entity personEntity = builder.produceImmediately("Person", "personName");
@@ -252,6 +281,8 @@ public class QueryTransformerAstBasedTest {
         assertTransformsToSame(model, "select p.nickname from Player p where p.name = :name");
         assertTransformsToSame(model, "select p.nickname from Player p where p.name = :name or p.name = :name2");
         assertTransformsToSame(model, "select p.nickname from Player p where p.name = ?1 or p.name = ?2");
+
+        assertTransformsToSame(model, "select p.nickname from Player p where p.name like :component$playersFilter.name52981");
     }
 
     @Test
@@ -572,6 +603,13 @@ public class QueryTransformerAstBasedTest {
         String res = transformer.getResult();
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = :par and c.createdBy = :par2",
+                res);
+
+        transformer.reset();
+        transformer.addJoinAndWhere("left join h.parent.constraints c", "c.createdBy = :par2");
+        res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h left join h.parent.constraints c where h.group = :par and c.createdBy = :par2",
                 res);
     }
 

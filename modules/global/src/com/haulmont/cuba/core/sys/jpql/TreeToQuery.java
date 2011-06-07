@@ -51,6 +51,9 @@ public class TreeToQuery implements TreeVisitorAction {
                 node.getType() == JPALexer.OR ||
                 node.getType() == JPALexer.DISTINCT && node.childIndex == 0 ||
                 node.getType() == JPALexer.JOIN ||
+                node.getType() == JPALexer.LEFT ||
+                node.getType() == JPALexer.OUTER ||
+                node.getType() == JPALexer.INNER ||
                 node.getType() == JPALexer.FETCH
                 ) {
             sb.appendSpace();

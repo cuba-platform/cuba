@@ -28,6 +28,19 @@ import static junit.framework.Assert.*;
  */
 public class QueryAnalyzerTest {
     @Test
+    public void testTree() throws RecognitionException {
+        DomainModel model = prepareDomainModel();
+
+        QueryTreeTransformer qa = new QueryTreeTransformer();
+        qa.prepare(model, "select f from sec$SearchFolder f " +
+                "left join f.user u " +
+                "left join f.presentation p " +
+                "where (f.user.id = ?1 or f.user is null) " +
+                "order by f.sortOrder, f.name");
+        System.out.println("");
+    }
+
+    @Test
     public void mixinJoinIntoTree() throws RecognitionException {
         DomainModel model = prepareDomainModel();
 
