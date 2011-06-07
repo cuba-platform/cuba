@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.cuba.core.global.MessageProvider;
 import org.dom4j.Element;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -34,7 +35,9 @@ public class PropertyConditionDescriptor extends ConditionDescriptor {
             this.locCaption = MessageUtils.loadString(messagesPack, caption);
         } else {
             this.caption = MessageUtils.getMessageRef(metaClass, name);
-            this.locCaption = MessageUtils.getPropertyCaption(metaClass, name);
+            this.locCaption = MessageProvider.getMessage(metaClass.getJavaClass(), metaClass.getJavaClass().getSimpleName() + "." + name);
+            if (this.locCaption == null || this.locCaption.equals(metaClass.getJavaClass().getSimpleName() + "." + name))
+                this.locCaption = MessageUtils.getPropertyCaption(metaClass, name);
         }
     }
 
