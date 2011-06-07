@@ -775,6 +775,9 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             if (fieldConf != null && fieldConf.getWidth() != null) {
                 field.setWidth(fieldConf.getWidth());
             }
+
+            if (cubaField != null)
+                cubaField.setFrame(getFrame());
         }
 
         @Override

@@ -47,6 +47,8 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         assignXmlDescriptor(component, element);
         loadId(component, element);
 
+        assignFrame(component);
+
         loadVisible(component, element);
 
         final Datasource ds = loadDatasource(element);
@@ -107,8 +109,6 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 }
             }
         });
-
-        assignFrame(component);
 
         return component;
     }
