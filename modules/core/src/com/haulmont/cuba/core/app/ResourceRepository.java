@@ -31,12 +31,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * ResourceRepository MBean implementation.
- * <p>
- * This MBean allows to read and cache external resources placed in files 
- * inside <code>jboss/server/default/conf</code> directory.
+ * DEPRECATED!<br/>
+ * Use {@link com.haulmont.cuba.core.global.ScriptingProvider} to load resources and cache them only when necessary.
  */
 @ManagedBean(ResourceRepositoryAPI.NAME)
+@Deprecated
 public class ResourceRepository implements ResourceRepositoryMBean, ResourceRepositoryAPI
 {
     private Log log = LogFactory.getLog(ResourceRepository.class);

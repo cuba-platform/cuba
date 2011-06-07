@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -81,6 +82,8 @@ public class DesktopLookupField
         );
 
         setFilterMode(FilterMode.CONTAINS);
+
+        DesktopComponentsHelper.adjustSize(impl);
     }
 
     private void updateValue(Wrapper selectedItem) {

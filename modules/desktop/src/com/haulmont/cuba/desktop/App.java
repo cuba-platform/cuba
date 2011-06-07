@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop;
 
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.sys.DesktopAppContextLoader;
@@ -53,6 +54,8 @@ public class App implements ConnectionListener {
 
     private DisabledGlassPane glassPane;
 
+    protected Resources resources;
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -84,6 +87,7 @@ public class App implements ConnectionListener {
             DesktopAppContextLoader contextLoader = new DesktopAppContextLoader(getDefaultAppPropertiesConfig());
             contextLoader.load();
 
+            initResources();
             initUI();
         } catch (Throwable t) {
             log.error("Error initializing application", t);
@@ -172,6 +176,10 @@ public class App implements ConnectionListener {
         }
         if (!found)
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+    }
+
+    protected void initResources() {
+        resources = new Resources(ConfigProvider.getConfig(DesktopConfig.class).getResourceLocations());
     }
 
     protected void initUI() {
@@ -342,5 +350,9 @@ public class App implements ConnectionListener {
 
     public void enable() {
         glassPane.deactivate();
+    }
+
+    public Resources getResources() {
+        return resources;
     }
 }

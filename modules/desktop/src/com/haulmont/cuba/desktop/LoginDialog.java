@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import net.miginfocom.swing.MigLayout;
@@ -70,6 +71,7 @@ public class LoginDialog extends JDialog {
         panel.add(localeCombo, "width 150!, wrap");
 
         JButton loginBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.okButton", Locale.getDefault()));
+        loginBtn.setIcon(App.getInstance().getResources().getIcon("icons/ok.png"));
         loginBtn.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -85,6 +87,7 @@ public class LoginDialog extends JDialog {
                     }
                 }
         );
+        DesktopComponentsHelper.adjustSize(loginBtn);
         panel.add(loginBtn, "span, align center");
 
         return panel;

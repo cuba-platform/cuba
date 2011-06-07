@@ -10,15 +10,10 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface PopupButton extends Button, Component.ActionsHolder {
+public interface PopupButton extends Component.ActionsHolder,
+        Component.HasCaption, Component.BelongToFrame, Component.Expandable, Component.HasIcon {
 
     String NAME = "popupButton";
-
-    void setPopupComponent(Component component);
-
-    void removePopupComponent();
-
-    Component getPopupComponent();
 
     boolean isPopupVisible();
 

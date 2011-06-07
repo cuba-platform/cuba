@@ -19,7 +19,7 @@ import org.dom4j.Element;
 import java.util.Iterator;
 import java.lang.reflect.Constructor;
 
-public class PopupButtonLoader extends ButtonLoader {
+public class PopupButtonLoader extends ComponentLoader {
     protected LayoutLoaderConfig config;
     protected ComponentsFactory factory;
 
@@ -31,13 +31,30 @@ public class PopupButtonLoader extends ButtonLoader {
 
     @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
-        PopupButton component = (PopupButton) super.loadComponent(factory, element, parent);
+        PopupButton component = factory.createComponent(element.getName());
 
-        if (element.elementIterator().hasNext()) {
-            Element popupElement = (Element) element.elementIterator().next();
-            Component popupComponent = getLoader(popupElement.getName()).loadComponent(factory, popupElement, component);
-            component.setPopupComponent(popupComponent);
-        }
+        assignXmlDescriptor(component, element);
+        loadId(component, element);
+        loadVisible(component, element);
+        loadEnable(component, element);
+
+        loadStyleName(component, element);
+
+        loadCaption(component, element);
+        loadDescription(component, element);
+        loadIcon(component, element);
+
+        loadExpandable(component, element);
+
+        loadWidth(component, element);
+
+        assignFrame(component);
+
+//        if (element.elementIterator().hasNext()) {
+//            Element popupElement = (Element) element.elementIterator().next();
+//            Component popupComponent = getLoader(popupElement.getName()).loadComponent(factory, popupElement, component);
+//            component.setPopupComponent(popupComponent);
+//        }
 
         String menuWidth = element.attributeValue("menuWidth");
         if (!StringUtils.isEmpty(menuWidth)) {
@@ -47,26 +64,26 @@ public class PopupButtonLoader extends ButtonLoader {
         return component;
     }
 
-    protected com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) throws IllegalAccessException, InstantiationException {
-        Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
-        if (loaderClass == null) {
-            throw new IllegalStateException(String.format("Unknown component '%s'", name));
-        }
-
-        com.haulmont.cuba.gui.xml.layout.ComponentLoader loader;
-        try {
-            final Constructor<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> constructor =
-                    loaderClass.getConstructor(Context.class, LayoutLoaderConfig.class, ComponentsFactory.class);
-            loader = constructor.newInstance(context, config, factory);
-
-            loader.setLocale(locale);
-            loader.setMessagesPack(messagesPack);
-        } catch (Throwable e) {
-            loader = loaderClass.newInstance();
-            loader.setLocale(locale);
-            loader.setMessagesPack(messagesPack);
-        }
-
-        return loader;
-    }
+//    protected com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) throws IllegalAccessException, InstantiationException {
+//        Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
+//        if (loaderClass == null) {
+//            throw new IllegalStateException(String.format("Unknown component '%s'", name));
+//        }
+//
+//        com.haulmont.cuba.gui.xml.layout.ComponentLoader loader;
+//        try {
+//            final Constructor<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> constructor =
+//                    loaderClass.getConstructor(Context.class, LayoutLoaderConfig.class, ComponentsFactory.class);
+//            loader = constructor.newInstance(context, config, factory);
+//
+//            loader.setLocale(locale);
+//            loader.setMessagesPack(messagesPack);
+//        } catch (Throwable e) {
+//            loader = loaderClass.newInstance();
+//            loader.setLocale(locale);
+//            loader.setMessagesPack(messagesPack);
+//        }
+//
+//        return loader;
+//    }
 }

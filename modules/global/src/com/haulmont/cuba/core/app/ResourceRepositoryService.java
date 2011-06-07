@@ -11,8 +11,10 @@
 package com.haulmont.cuba.core.app;
 
 /**
- * Service interface to ResourceRepository MBean
+ * DEPRECATED!<br/>
+ * Use {@link com.haulmont.cuba.core.global.ScriptingProvider} to load resources and cache them only when necessary.
  */
+@Deprecated
 public interface ResourceRepositoryService
 {
     String NAME = "cuba_ResourceRepositoryService";

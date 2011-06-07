@@ -13,9 +13,10 @@ package com.haulmont.cuba.core.app;
 import java.io.InputStream;
 
 /**
- * API of {@link ResourceRepository} MBean.<br>
- * Reference to this interface must be obtained through {@link ResourceRepositoryMBean#getAPI()} method
+ * DEPRECATED!<br/>
+ * Use {@link com.haulmont.cuba.core.global.ScriptingProvider} to load resources and cache them only when necessary.
  */
+@Deprecated
 public interface ResourceRepositoryAPI
 {
     String NAME = "cuba_ResourceRepository";

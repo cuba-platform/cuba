@@ -6,8 +6,9 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Button;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -22,6 +23,7 @@ import java.awt.event.ActionListener;
 public class DesktopButton extends DesktopAbstractComponent<JButton> implements Button {
 
     private Action action;
+    private String icon;
 
     public DesktopButton() {
         impl = new JButton();
@@ -34,6 +36,7 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
                     }
                 }
         );
+        DesktopComponentsHelper.adjustSize(impl);
     }
 
     public com.haulmont.cuba.gui.components.Action getAction() {
@@ -73,9 +76,14 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     }
 
     public String getIcon() {
-        return null;
+        return icon;
     }
 
     public void setIcon(String icon) {
+        this.icon = icon;
+        if (icon != null)
+            impl.setIcon(App.getInstance().getResources().getIcon(icon));
+        else
+            impl.setIcon(null);
     }
 }

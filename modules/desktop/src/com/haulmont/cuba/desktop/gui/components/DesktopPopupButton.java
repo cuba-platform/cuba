@@ -6,41 +6,80 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.Resources;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.PopupButton;
 
 import javax.swing.*;
-import java.util.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * <p>$Id$</p>
  *
  * @author krivopustov
  */
-// TODO DesktopPopupButton
 public class DesktopPopupButton
-        extends DesktopAbstractComponent<JPanel>
+        extends DesktopAbstractActionOwnerComponent<JButton>
         implements PopupButton
 {
-    private java.util.List<Action> actionOrder = new LinkedList<Action>();
+    private JPopupMenu popup;
+
+    private String icon;
+
+    public static final String DEFAULT_ICON = "/popupbutton/open-popup.png";
+
+    private Resources resources = App.getInstance().getResources();
 
     public DesktopPopupButton() {
-        impl = new JPanel(new java.awt.FlowLayout());
-        impl.setBorder(BorderFactory.createLineBorder(java.awt.Color.gray));
-        impl.add(new JLabel("TODO: popupButton"));
+        popup = new JPopupMenu();
+
+        impl = new JButton();
+        impl.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (popup.isVisible())
+                            popup.setVisible(false);
+                        else
+                            showPopup();
+                    }
+                }
+        );
+        impl.setIcon(resources.getIcon(DEFAULT_ICON));
+        DesktopComponentsHelper.adjustSize(impl);
     }
 
-    @Override
-    public void setPopupComponent(Component component) {
-    }
+    private void showPopup() {
+        popup.removeAll();
+        for (final Action action : actionsOrder) {
+            JMenuItem menuItem = new JMenuItem(action.getCaption());
+            menuItem.addActionListener(
+                    new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            action.actionPerform(DesktopPopupButton.this);
+                        }
+                    }
+            );
+            popup.add(menuItem);
+        }
 
-    @Override
-    public void removePopupComponent() {
-    }
+        int popupHeight = actionsOrder.size() * 25;
 
-    @Override
-    public Component getPopupComponent() {
-        return null;
+        Point pt = new Point();
+        SwingUtilities.convertPointToScreen(pt, impl);
+
+        int y;
+        if (pt.getY() + impl.getHeight() + popupHeight < Toolkit.getDefaultToolkit().getScreenSize().getHeight()) {
+            y = impl.getHeight();
+        } else {
+            y = -popupHeight;
+        }
+
+        popup.show(impl, 0, y);
     }
 
     @Override
@@ -58,7 +97,7 @@ public class DesktopPopupButton
 
     @Override
     public boolean isAutoClose() {
-        return false;
+        return true;
     }
 
     @Override
@@ -66,39 +105,13 @@ public class DesktopPopupButton
     }
 
     @Override
-    public com.haulmont.cuba.gui.components.Action getAction() {
-        return null;
-    }
-
-    @Override
-    public void setAction(Action action) {
-    }
-
-    @Override
-    public void addAction(Action action) {
-    }
-
-    @Override
-    public void removeAction(Action action) {
-    }
-
-    @Override
-    public Collection<Action> getActions() {
-        return Collections.unmodifiableCollection(actionOrder);
-    }
-
-    @Override
-    public Action getAction(String id) {
-        return null;
-    }
-
-    @Override
     public String getCaption() {
-        return null;
+        return impl.getText();
     }
 
     @Override
     public void setCaption(String caption) {
+        impl.setText(caption);
     }
 
     @Override
@@ -112,10 +125,15 @@ public class DesktopPopupButton
 
     @Override
     public String getIcon() {
-        return null;
+        return icon;
     }
 
     @Override
     public void setIcon(String icon) {
+        this.icon = icon;
+        if (icon != null)
+            impl.setIcon(resources.getIcon(icon));
+        else
+            impl.setIcon(resources.getIcon(DEFAULT_ICON));
     }
 }

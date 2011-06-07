@@ -107,6 +107,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
         }
         int width = (int) getImpl().getPreferredSize().getWidth();
         getImpl().setPreferredSize(new Dimension(width, h));
+        getImpl().setMinimumSize(new Dimension(width, h));
     }
 
     public float getWidth() {
@@ -127,6 +128,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
         }
         int height = (int) getImpl().getPreferredSize().getHeight();
         getImpl().setPreferredSize(new Dimension(w, height));
+        getImpl().setMinimumSize(new Dimension(w, height));
     }
 
     public Alignment getAlignment() {

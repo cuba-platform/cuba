@@ -15,9 +15,11 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 
 /**
- * Service facade for {@link com.haulmont.cuba.core.app.ResourceRepository} MBean
+ * DEPRECATED!<br/>
+ * Use {@link com.haulmont.cuba.core.global.ScriptingProvider} to load resources and cache them only when necessary.
  */
 @Service(ResourceRepositoryService.NAME)
+@Deprecated
 public class ResourceRepositoryServiceBean implements ResourceRepositoryService
 {
     @Inject

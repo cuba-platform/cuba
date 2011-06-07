@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.sys.layout;
 
 import net.miginfocom.layout.*;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.Component;
@@ -89,6 +90,13 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
     @Override
     public void expand(Component component, String height, String width) {
         super.expand(component, height, width);
-        layout.setComponentConstraints(component, new CC().grow());
+
+        String cc = "grow";
+        if (!StringUtils.isBlank(height))
+            cc = cc + ", height " + height;
+        if (!StringUtils.isBlank(width))
+            cc = cc + ", width " + width;
+
+        layout.setComponentConstraints(component, cc);
     }
 }

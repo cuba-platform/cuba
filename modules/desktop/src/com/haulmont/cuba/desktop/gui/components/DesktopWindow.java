@@ -9,10 +9,12 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
-import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
-import com.haulmont.cuba.gui.*;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.DialogParams;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
@@ -30,7 +32,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ConcurrentNavigableMap;
 
 /**
  * <p>$Id$</p>
@@ -617,7 +618,7 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
             layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.Y);
             layoutAdapter.setMargin(true);
 
-            panel.add(container, "grow");
+            panel.add(container, "grow, height 100%, width 100%");
 
             JPanel buttonsPanel = new JPanel();
             buttonsPanel.setLayout(
@@ -625,6 +626,7 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
             );
 
             JButton selectBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
+            selectBtn.setIcon(App.getInstance().getResources().getIcon("icons/ok.png"));
             selectBtn.addActionListener(
                     new ActionListener() {
                         @Override
@@ -652,9 +654,11 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
                         }
                     }
             );
+            DesktopComponentsHelper.adjustSize(selectBtn);
             buttonsPanel.add(selectBtn);
 
             JButton cancelBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
+            cancelBtn.setIcon(App.getInstance().getResources().getIcon("icons/cancel.png"));
             cancelBtn.addActionListener(
                     new ActionListener() {
                         @Override
@@ -663,6 +667,7 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
                         }
                     }
             );
+            DesktopComponentsHelper.adjustSize(cancelBtn);
             buttonsPanel.add(cancelBtn);
 
             panel.add(buttonsPanel);

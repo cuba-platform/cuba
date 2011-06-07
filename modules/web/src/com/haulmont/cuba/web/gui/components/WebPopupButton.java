@@ -62,14 +62,6 @@ public class WebPopupButton
         component.setDescription(description);
     }
 
-    public Action getAction() {
-        return null;
-    }
-
-    public void setAction(Action action) {
-
-    }
-
     public String getIcon() {
         return icon;
     }

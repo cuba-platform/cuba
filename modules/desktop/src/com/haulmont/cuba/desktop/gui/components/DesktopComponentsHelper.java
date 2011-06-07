@@ -11,7 +11,9 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * <p>$Id$</p>
@@ -19,6 +21,9 @@ import java.util.*;
  * @author krivopustov
  */
 public class DesktopComponentsHelper {
+
+    public static final int BUTTON_HEIGHT = 30;
+    public static final int FIELD_HEIGHT = 27;
 
     public static JComponent unwrap(Component component) {
         Object comp = component;
@@ -75,5 +80,15 @@ public class DesktopComponentsHelper {
             return JOptionPane.WARNING_MESSAGE;
         else
             return JOptionPane.INFORMATION_MESSAGE;
+    }
+
+    public static void adjustSize(JButton button) {
+        button.setPreferredSize(new Dimension(0, BUTTON_HEIGHT));
+        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, BUTTON_HEIGHT));
+    }
+
+    public static void adjustSize(JComboBox comboBox) {
+        comboBox.setPreferredSize(new Dimension(0, FIELD_HEIGHT));
+        comboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, FIELD_HEIGHT));
     }
 }
