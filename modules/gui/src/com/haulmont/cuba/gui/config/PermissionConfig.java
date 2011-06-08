@@ -269,11 +269,15 @@ public class PermissionConfig {
         List<Target> result = new ArrayList<Target>();
         final String value = entityTarget.getValue();
 
-        result.add(new Target(id + ":create", "create", value + ":create"));
         result.add(new Target(id + ":read", "read", value + ":read"));
-        result.add(new Target(id + ":delete", "delete", value + ":delete"));
 
         Class javaClass = metaClass.getJavaClass();
+
+        if (javaClass.isAnnotationPresent(javax.persistence.Entity.class)) {
+            result.add(new Target(id + ":create", "create", value + ":create"));
+            result.add(new Target(id + ":delete", "delete", value + ":delete"));
+        }
+
         if (Updatable.class.isAssignableFrom(javaClass)) {
             result.add(new Target(id + ":update", "update", value + ":update"));
         }
