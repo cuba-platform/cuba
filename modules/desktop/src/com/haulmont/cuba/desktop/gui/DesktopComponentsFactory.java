@@ -39,6 +39,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(Label.NAME, DesktopLabel.class);
         classes.put(CheckBox.NAME, DesktopCheckBox.class);
         classes.put(TextField.NAME, DesktopTextField.class);
+        classes.put(AutoCompleteTextField.NAME, DesktopAutoCompleteTextField.class);
         classes.put(DateField.NAME, DesktopDateField.class);
         classes.put(Table.NAME, DesktopTable.class);
         classes.put(GroupTable.NAME, DesktopGroupTable.class);
@@ -51,6 +52,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(LookupField.NAME, DesktopLookupField.class);
         classes.put(PickerField.NAME, DesktopPickerField.class);
         classes.put(LookupPickerField.NAME, DesktopLookupPickerField.class);
+        classes.put(OptionsGroup.NAME, DesktopOptionsGroup.class);
         classes.put(Tabsheet.NAME, DesktopTabsheet.class);
         classes.put(WidgetsTree.NAME, DesktopWidgetsTree.class);
     }

@@ -39,8 +39,8 @@ public class SessionAttributeEditor extends AbstractEditor {
                         lookup.setRequired(true);
 
                         Map<String, Object> options = new TreeMap<String, Object>();
-                        Set<String> names = Datatypes.getInstance().getNames();
-                        String mainMessagePack = AppConfig.getInstance().getMessagesPack();
+                        Set<String> names = Datatypes.getNames();
+                        String mainMessagePack = AppConfig.getMessagesPack();
                         for (String name : names) {
                             options.put(MessageProvider.getMessage(mainMessagePack, "Datatype." + name), name);
                         }
@@ -56,7 +56,7 @@ public class SessionAttributeEditor extends AbstractEditor {
     public void commitAndClose() {
         SessionAttribute item = datasource.getItem();
         if (item.getStringValue() != null) {
-            Datatype dt = Datatypes.getInstance().get(item.getDatatype());
+            Datatype dt = Datatypes.get(item.getDatatype());
             try {
                 dt.parse(item.getStringValue());
             } catch (ParseException e) {

@@ -25,9 +25,6 @@ public class OptionsGroupLoader extends AbstractFieldLoader {
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final OptionsGroup component = (OptionsGroup) super.loadComponent(factory, element, parent);
 
-        final String multiselect = element.attributeValue("multiselect");
-        component.setMultiSelect(BooleanUtils.toBoolean(multiselect));
-
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
             component.setCaptionMode(CaptionMode.PROPERTY);
@@ -39,6 +36,9 @@ public class OptionsGroupLoader extends AbstractFieldLoader {
 
     @Override
     protected void loadDatasource(DatasourceComponent component, Element element) {
+        final String multiselect = element.attributeValue("multiselect");
+        ((OptionsGroup) component).setMultiSelect(BooleanUtils.toBoolean(multiselect));
+
         final String datasource = element.attributeValue("optionsDatasource");
         if (!StringUtils.isEmpty(datasource)) {
             final Datasource ds = context.getDsContext().get(datasource);
