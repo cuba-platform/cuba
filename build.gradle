@@ -45,8 +45,12 @@ def dashlayout = [group: 'com.haulmont.thirdparty', name: 'dashlayout', version:
 def popupbutton = [group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '1.0.0']
 def gwtUser = [group: 'com.google.gwt', name: 'gwt-user', version: '2.0.3']
 def gwtDev = [group: 'com.google.gwt', name: 'gwt-dev', version: '2.0.3']
+def groovyArtifact = [group: 'com.haulmont.thirdparty', name: 'groovy', version: '1.7.5.20101124']
+def asm = [group: 'asm', name: 'asm', version: '3.2']
+def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.6.20110527']
 def postgres = [group: 'postgresql', name: 'postgresql', version: '8.3-603.jdbc4']
 def hsqldb = [group: 'hsqldb', name: 'hsqldb', version: '1.8.0.10']
+
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webToolkitModule,
         webModule, desktopModule]) {
@@ -62,7 +66,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
         
         compile(group: 'antlr', name: 'antlr', version: '2.7.7')
         compile(group: 'aopalliance', name: 'aopalliance', version: '1.0')       
-        compile(group: 'asm', name: 'asm', version: '3.2')
+        compile(asm)
         compile(group: 'com.google.guava', name: 'guava', version: 'r07')
         compile(group: 'com.haulmont.thirdparty', name: 'openjpa', version: '1.2.2')
         compile(group: 'commons-cli', name: 'commons-cli', version: '1.2')       
@@ -114,7 +118,7 @@ configure(coreModule) {
         compile(group: 'com.lowagie', name: 'itext', version: '2.1.0')
         compile(group: 'jgroups', name: 'jgroups', version: '2.9.0.GA')       
         compile(group: 'org.apache.commons', name: 'commons-compress', version: '1.1')       
-        compile(group: 'com.haulmont.thirdparty', name: 'poi', version: '3.6.20110527')
+        compile(poi)
         compile(group: 'org.aspectj', name: 'aspectjrt', version: '1.6.6')       
         compile(group: 'org.aspectj', name: 'aspectjweaver', version: '1.6.6')       
         compile(group: 'org.mybatis', name: 'mybatis', version: '3.0.4')
@@ -174,8 +178,9 @@ configure(guiModule) {
     dependencies {
         compile(globalModule)
         compile(clientModule)
-        compile(group: 'org.apache.poi', name: 'poi', version: '3.6')
-        groovy(localGroovy())
+        compile(poi)
+        groovy(groovyArtifact)
+        groovy(asm)
     }
 }
 
