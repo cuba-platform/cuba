@@ -47,6 +47,9 @@ public class ScreenHistorySupport {
             if (frame instanceof Window.Editor) {
                 Instance entity = ((Window.Editor) frame).getItem();
                 if (entity != null) {
+                    if (PersistenceHelper.isNew(entity)) {
+                        return;
+                    }
                     caption = MessageUtils.getEntityCaption(entity.getMetaClass()) + " " + entity.getInstanceName();
                 }
             }
