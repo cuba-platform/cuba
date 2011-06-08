@@ -381,10 +381,6 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     @Override
-    protected void initCompanion(Element companionsElem, AbstractWindow res) {
-    }
-
-    @Override
     public void showNotification(String caption, IFrame.NotificationType type) {
         JOptionPane.showMessageDialog(
                 App.getInstance().getMainFrame(),

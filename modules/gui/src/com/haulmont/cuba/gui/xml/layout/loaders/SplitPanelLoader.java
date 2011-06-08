@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.SplitPanel;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -24,7 +25,7 @@ public class SplitPanelLoader extends ContainerLoader{
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
-        final SplitPanel component = factory.createComponent("split");
+        final SplitPanel component = factory.createComponent(SplitPanel.NAME);
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
@@ -33,6 +34,9 @@ public class SplitPanelLoader extends ContainerLoader{
         loadStyleName(component, element);
 
         final Collection<Component> components = loadSubComponents(component, element, "visible");
+        if (components.size() == 1) {
+            component.add(factory.createComponent(BoxLayout.VBOX));
+        }
         for (Component c : components) {
             c.setWidth("100%");
             c.setHeight("100%");

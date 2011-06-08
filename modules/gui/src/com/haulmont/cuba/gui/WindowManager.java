@@ -647,7 +647,27 @@ public abstract class WindowManager implements Serializable {
         }
     }
 
-    protected abstract void initCompanion(Element companionsElem, AbstractWindow res);
+    protected void initCompanion(Element companionsElem, AbstractWindow window) {
+        Element element = companionsElem.element(AppConfig.getInstance().getClientType().toString().toLowerCase());
+        if (element != null) {
+            String className = element.attributeValue("class");
+            if (!StringUtils.isBlank(className)) {
+                Class aClass = ScriptingProvider.loadClass(className);
+                Object companion;
+                try {
+                    if (AbstractCompanion.class.isAssignableFrom(aClass)) {
+                        Constructor constructor = aClass.getConstructor(new Class[]{AbstractFrame.class});
+                        companion = constructor.newInstance(window);
+                    } else {
+                        companion = aClass.newInstance();
+                        window.setCompanion(companion);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

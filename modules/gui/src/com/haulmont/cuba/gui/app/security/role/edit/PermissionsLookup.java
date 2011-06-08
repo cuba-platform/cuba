@@ -7,7 +7,10 @@
 package com.haulmont.cuba.gui.app.security.role.edit;
 
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Label;
@@ -18,17 +21,21 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import java.util.*;
 
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import org.apache.commons.lang.BooleanUtils;
 
 public class PermissionsLookup extends AbstractLookup {
 
-    protected Tree entityPermissionsTree;
+    protected Tree permissionsTree;
     protected String type;
     @SuppressWarnings({"unchecked"})
     protected LinkedList<PermissionConfig.Target> targets;
     private Companion companion;
 
     public interface Companion {
-        void initEntityPermissionsTree(WidgetsTree entityPermissionsTree, LinkedList<PermissionConfig.Target> targets);
+        void initPermissionsTree(WidgetsTree tree);
+        void initPermissionsTreeComponents(BoxLayout box, Label label, CheckBox checkBox);
     }
 
     public PermissionsLookup(IFrame frame) {
@@ -40,14 +47,14 @@ public class PermissionsLookup extends AbstractLookup {
         super.init(params);
         companion = getCompanion();
 
-        entityPermissionsTree = getComponent("permissions-tree");
+        permissionsTree = getComponent("permissions-tree");
 
         @SuppressWarnings({"unchecked"})
         CollectionDatasource<PermissionConfig.Target, String> entityPermissionsDs =
-                entityPermissionsTree.getDatasource();
+                permissionsTree.getDatasource();
 
         entityPermissionsDs.refresh();
-        entityPermissionsTree.expandTree();
+        permissionsTree.expandTree();
 
         targets = new LinkedList<PermissionConfig.Target>();
 
@@ -62,14 +69,14 @@ public class PermissionsLookup extends AbstractLookup {
         if(checkAll != null)
             checkAll.setAction(new AbstractAction("checkAll"){
                 public void actionPerform(Component component) {
-                    HierarchicalDatasource datasource = (HierarchicalDatasource)entityPermissionsTree.getDatasource();
+                    HierarchicalDatasource datasource = (HierarchicalDatasource) permissionsTree.getDatasource();
                     if(datasource != null){
                         for (String uuid : (Collection<String>) datasource.getItemIds() ){
                             PermissionConfig.Target target = (PermissionConfig.Target)datasource.getItem(uuid);
                             if (!targets.contains(target)&&target.getValue() != null)
                                 targets.add(target);
                         }
-                        entityPermissionsTree.refresh();
+                        permissionsTree.refresh();
                     }
                 }
 
@@ -79,12 +86,12 @@ public class PermissionsLookup extends AbstractLookup {
                 }
             });
 
-        Button removeCheckAll = getComponent("removeCheckAll");
-        if(removeCheckAll != null)
-            removeCheckAll.setAction(new AbstractAction("removeCheckAll"){
+        Button uncheckAll = getComponent("uncheckAll");
+        if(uncheckAll != null)
+            uncheckAll.setAction(new AbstractAction("uncheckAll"){
                 public void actionPerform(Component component) {
                     targets.clear();
-                    entityPermissionsTree.refresh();
+                    permissionsTree.refresh();
                 }
     
                 @Override
@@ -93,8 +100,55 @@ public class PermissionsLookup extends AbstractLookup {
                 }
             });
 
-        if(entityPermissionsTree instanceof WidgetsTree && companion != null) {
-            companion.initEntityPermissionsTree((WidgetsTree) entityPermissionsTree, targets);
+        if(permissionsTree instanceof WidgetsTree) {
+            if (companion != null)
+                companion.initPermissionsTree((WidgetsTree) permissionsTree);
+
+            ((WidgetsTree) permissionsTree).setWidgetBuilder(
+                    new WidgetsTree.WidgetBuilder() {
+                        @Override
+                        public Component build(HierarchicalDatasource datasource, Object itemId, boolean leaf) {
+                            final PermissionConfig.Target target = (PermissionConfig.Target) datasource.getItem(itemId);
+
+                            ComponentsFactory factory = AppConfig.getFactory();
+                            BoxLayout box = factory.createComponent(BoxLayout.HBOX);
+                            box.setMargin(false);
+                            box.setSpacing(false);
+
+                            Label label = factory.createComponent(Label.NAME);
+                            label.setValue(target.getCaption());
+
+                            box.add(label);
+
+                            CheckBox checkBox = null;
+                            if (target.getValue() != null) {
+                                final CheckBox cb = factory.createComponent(CheckBox.NAME);
+                                if (targets.contains(target)) {
+                                    cb.setValue(true);
+                                }
+                                cb.addListener(
+                                        new ValueListener() {
+                                            @Override
+                                            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                                                if (BooleanUtils.isTrue((Boolean) cb.getValue())) {
+                                                    targets.add(target);
+                                                } else {
+                                                    targets.remove(target);
+                                                }
+                                            }
+                                        }
+                                );
+                                box.add(cb);
+                                checkBox = cb;
+                            }
+
+                            if (companion != null)
+                                companion.initPermissionsTreeComponents(box, label, checkBox);
+
+                            return box;
+                        }
+                    }
+            );
         }
 
         Label permissionsType = getComponent("permissionsType");

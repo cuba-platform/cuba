@@ -23,8 +23,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>$Id$</p>
@@ -32,7 +31,7 @@ import java.util.List;
  * @author krivopustov
  */
 public class DesktopPickerField
-    extends DesktopAbstractActionOwnerComponent<Picker>
+    extends DesktopAbstractField<Picker>
     implements PickerField
 {
     protected CaptionMode captionMode = CaptionMode.ITEM;
@@ -45,11 +44,10 @@ public class DesktopPickerField
     protected MetaClass metaClass;
 
     protected Object value;
-    private boolean required;
-    private String requiredMessage;
+
     private boolean editable = true;
 
-    protected List<ValueListener> listeners = new ArrayList<ValueListener>();
+    protected java.util.List<Action> actionsOrder = new LinkedList<Action>();
 
     public DesktopPickerField() {
         impl = new Picker();
@@ -121,21 +119,6 @@ public class DesktopPickerField
     }
 
     @Override
-    public boolean isRequired() {
-        return required;
-    }
-
-    @Override
-    public void setRequired(boolean required) {
-        this.required = required;
-    }
-
-    @Override
-    public void setRequiredMessage(String msg) {
-        requiredMessage = msg;
-    }
-
-    @Override
     public <T> T getValue() {
         if (datasource == null) {
             return (T) value;
@@ -157,36 +140,6 @@ public class DesktopPickerField
             datasource.getItem().setValue(metaProperty.getName(), value);
         }
         updateText(value);
-    }
-
-    @Override
-    public void addListener(ValueListener listener) {
-        if (!listeners.contains(listener))
-            listeners.add(listener);
-    }
-
-    @Override
-    public void removeListener(ValueListener listener) {
-        listeners.remove(listener);
-    }
-
-    protected void fireValueChanged(Object prevValue, Object value) {
-        for (ValueListener listener : listeners) {
-            listener.valueChanged(this, "value", prevValue, value);
-        }
-    }
-
-    @Override
-    public void addValidator(Validator validator) {
-    }
-
-    @Override
-    public void removeValidator(Validator validator) {
-    }
-
-    @Override
-    public boolean isValid() {
-        return true;
     }
 
     @Override
@@ -282,7 +235,7 @@ public class DesktopPickerField
 
     @Override
     public void addAction(Action action) {
-        super.addAction(action);
+        actionsOrder.add(action);
         DesktopButton dButton = new DesktopButton();
         dButton.setAction(action);
         impl.addButton(dButton.getImpl());
@@ -293,10 +246,23 @@ public class DesktopPickerField
 
     @Override
     public void removeAction(Action action) {
-        super.removeAction(action);
+        actionsOrder.remove(action);
         if (action.getOwner() != null && action.getOwner() instanceof DesktopButton) {
             JButton button = ((DesktopButton) action.getOwner()).getImpl();
             impl.removeButton(button);
         }
+    }
+
+    public Collection<Action> getActions() {
+        return Collections.unmodifiableCollection(actionsOrder);
+    }
+
+    public Action getAction(String id) {
+        for (Action action : getActions()) {
+            if (ObjectUtils.equals(action.getId(), id)) {
+                return action;
+            }
+        }
+        return null;
     }
 }

@@ -66,7 +66,7 @@ public class TreeModelAdapter implements TreeModel {
             return null;
         else if (rootItemIds.size() == 1) {
             Object itemId = rootItemIds.iterator().next();
-            return new Node(datasource.getItem(itemId));
+            return new Node(null, datasource.getItem(itemId));
         } else {
             return rootNode;
         }
@@ -81,7 +81,7 @@ public class TreeModelAdapter implements TreeModel {
             childrenIds = datasource.getChildren(((Node) parent).getEntity().getId());
         }
         Object id = Iterables.get(childrenIds, index);
-        return new Node(datasource.getItem(id));
+        return new Node(parent, datasource.getItem(id));
     }
 
     @Override
@@ -153,17 +153,59 @@ public class TreeModelAdapter implements TreeModel {
         return new Node(entity);
     }
 
+    public TreePath getTreePath(Object object) {
+        List<Object> list = new ArrayList<Object>();
+        if (object instanceof Entity) {
+            TreeModelAdapter.Node node = createNode((Entity) object);
+            list.add(node);
+            Entity entity = (Entity) object;
+            while (entity.getValue(datasource.getHierarchyPropertyName()) != null) {
+                entity = entity.getValue(datasource.getHierarchyPropertyName());
+                TreeModelAdapter.Node parentNode = createNode(entity);
+                list.add(0, parentNode);
+                node.setParent(parentNode);
+                node = parentNode;
+            }
+        } else if (object instanceof Node) {
+            list.add(object);
+            Node n = (Node) object;
+            while (n.getParent() != null) {
+                Object parent = n.getParent();
+                list.add(0, parent);
+                if (!(parent instanceof Node))
+                    break;
+                else
+                    n = (Node) parent;
+            }
+        }
+        return new TreePath(list.toArray(new Object[list.size()]));
+    }
+
     public class Node {
         private Entity entity;
+        private Object parent;
 
         public Node(Entity entity) {
+            this(null, entity);
+        }
+
+        public Node(Object parent, Entity entity) {
             if (entity == null)
                 throw new IllegalArgumentException("item must not be null");
+            this.parent = parent;
             this.entity = entity;
         }
 
         public Entity getEntity() {
             return entity;
+        }
+
+        public Object getParent() {
+            return parent;
+        }
+
+        public void setParent(Object parent) {
+            this.parent = parent;
         }
 
         @Override

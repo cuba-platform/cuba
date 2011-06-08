@@ -35,8 +35,8 @@ public class DesktopAbstractActionOwnerComponent<C extends JComponent> extends D
         return Collections.unmodifiableCollection(actionsOrder);
     }
 
-    public com.haulmont.cuba.gui.components.Action getAction(String id) {
-        for (com.haulmont.cuba.gui.components.Action action : getActions()) {
+    public Action getAction(String id) {
+        for (Action action : getActions()) {
             if (ObjectUtils.equals(action.getId(), id)) {
                 return action;
             }

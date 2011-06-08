@@ -27,28 +27,24 @@ import java.awt.event.ActionListener;
  *
  * @author krivopustov
  */
-public class DesktopCheckBox extends DesktopAbstractComponent<JCheckBox> implements CheckBox {
+public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements CheckBox {
 
     private Datasource datasource;
     private MetaProperty metaProperty;
     private MetaPropertyPath metaPropertyPath;
 
     private boolean updatingInstance;
-    private boolean required;
 
     public DesktopCheckBox() {
         impl = new JCheckBox();
-    }
-
-    public boolean isRequired() {
-        return required;
-    }
-
-    public void setRequired(boolean required) {
-        this.required = required;
-    }
-
-    public void setRequiredMessage(String msg) {
+        impl.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        fireValueChanged(!impl.isSelected(), impl.isSelected());
+                    }
+                }
+        );
     }
 
     public <T> T getValue() {
@@ -58,22 +54,6 @@ public class DesktopCheckBox extends DesktopAbstractComponent<JCheckBox> impleme
     public void setValue(Object value) {
         impl.setSelected((Boolean) value);
         updateInstance();
-    }
-
-    public void addListener(ValueListener listener) {
-    }
-
-    public void removeListener(ValueListener listener) {
-    }
-
-    public void addValidator(Validator validator) {
-    }
-
-    public void removeValidator(Validator validator) {
-    }
-
-    public boolean isValid() {
-        return true;
     }
 
     public void validate() throws ValidationException {

@@ -30,8 +30,8 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(Window.Lookup.NAME, DesktopWindow.Lookup.class);
 
         classes.put(IFrame.NAME, DesktopFrame.class);
-        classes.put("hbox", DesktopHBox.class);
-        classes.put("vbox", DesktopVBox.class);
+        classes.put(BoxLayout.HBOX, DesktopHBox.class);
+        classes.put(BoxLayout.VBOX, DesktopVBox.class);
         classes.put(GridLayout.NAME, DesktopGridLayout.class);
         classes.put(SplitPanel.NAME, DesktopSplitPanel.class);
 
@@ -52,6 +52,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(PickerField.NAME, DesktopPickerField.class);
         classes.put(LookupPickerField.NAME, DesktopLookupPickerField.class);
         classes.put(Tabsheet.NAME, DesktopTabsheet.class);
+        classes.put(WidgetsTree.NAME, DesktopWidgetsTree.class);
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {

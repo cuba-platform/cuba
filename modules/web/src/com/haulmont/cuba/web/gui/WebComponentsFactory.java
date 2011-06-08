@@ -34,8 +34,8 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put(Window.Editor.NAME, WebWindow.Editor.class);
         classes.put(Window.Lookup.NAME, WebWindow.Lookup.class);
 
-        classes.put("hbox", WebHBoxLayout.class);
-        classes.put("vbox", WebVBoxLayout.class);
+        classes.put(BoxLayout.HBOX, WebHBoxLayout.class);
+        classes.put(BoxLayout.VBOX, WebVBoxLayout.class);
         classes.put(GridLayout.NAME, WebGridLayout.class);
         classes.put(RuntimePropertyGridLayout.NAME, WebRuntimePropertyGridLayout.class);
         classes.put(ScrollBoxLayout.NAME, WebScrollBoxLayout.class);

@@ -12,7 +12,8 @@
         >
 
     <companions>
-        <web class="com.haulmont.cuba.web.app.ui.security.user.PermissionsLookupCompanion"/>
+        <web class="com.haulmont.cuba.web.app.ui.security.role.PermissionsLookupCompanion"/>
+        <desktop class="com.haulmont.cuba.desktop.app.security.role.PermissionsLookupCompanion"/>
     </companions>
 
     <metadataContext>
@@ -41,7 +42,7 @@
             </split>
             <hbox margin="true" spacing="true">
                 <button id="checkAll" icon="icons/checkAll.png"/>
-                <button id="removeCheckAll" icon="icons/removeCheckAll.png"/>
+                <button id="uncheckAll" icon="icons/uncheckAll.png"/>
             </hbox>
         </vbox>
     </layout>

@@ -19,7 +19,9 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * <p>$Id$</p>
@@ -30,12 +32,12 @@ public class DesktopTree
     extends DesktopAbstractActionOwnerComponent<JTree>
     implements Tree
 {
-    private String hierarchyProperty;
-    private HierarchicalDatasource<Entity<Object>, Object> datasource;
+    protected String hierarchyProperty;
+    protected HierarchicalDatasource<Entity<Object>, Object> datasource;
     private JScrollPane treeView;
     private CaptionMode captionMode = CaptionMode.ITEM;
     private String captionProperty;
-    private TreeModelAdapter model;
+    protected TreeModelAdapter model;
 
     public DesktopTree() {
         impl = new JTree();
@@ -55,7 +57,20 @@ public class DesktopTree
         if (model == null)
             return;
 
-        impl.expandPath(new TreePath(model.getRoot()));
+        if (!model.isLeaf(model.getRoot())) {
+            recursiveExpand(model.getRoot());
+        }
+    }
+
+    private void recursiveExpand(Object node) {
+        impl.expandPath(model.getTreePath(node));
+        for (int i = 0; i < model.getChildCount(node); i++) {
+            Object child = model.getChild(node, i);
+            if (!model.isLeaf(child)) {
+                impl.expandPath(model.getTreePath(child));
+                recursiveExpand(child);
+            }
+        }
     }
 
     @Override
@@ -66,7 +81,7 @@ public class DesktopTree
         if (item == null)
             return;
 
-        impl.expandPath(getTreePath(item));
+        impl.expandPath(model.getTreePath(item));
     }
 
     @Override
@@ -85,7 +100,7 @@ public class DesktopTree
         if (item == null)
             return;
 
-        impl.collapsePath(getTreePath(item));
+        impl.collapsePath(model.getTreePath(item));
     }
 
     @Override
@@ -96,7 +111,7 @@ public class DesktopTree
         if (item == null)
             return false;
 
-        return impl.isExpanded(getTreePath(item));
+        return impl.isExpanded(model.getTreePath(item));
     }
 
     @Override
@@ -177,20 +192,9 @@ public class DesktopTree
         return selected;
     }
 
-    private TreePath getTreePath(Entity item) {
-        List<Object> list = new ArrayList<Object>();
-        list.add(model.createNode(item));
-        Entity entity = item;
-        while (entity.getValue(hierarchyProperty) != null) {
-            entity = entity.getValue(hierarchyProperty);
-            list.add(0, model.createNode(entity));
-        }
-        return new TreePath(list.toArray(new Object[list.size()]));
-    }
-
     @Override
     public void setSelected(Entity item) {
-        TreePath path = getTreePath(item);
+        TreePath path = model.getTreePath(item);
         impl.setSelectionPath(path);
     }
 
@@ -199,7 +203,7 @@ public class DesktopTree
         TreePath[] paths = new TreePath[items.size()];
         int i = 0;
         for (Entity item : items) {
-            paths[i] = getTreePath(item);
+            paths[i] = model.getTreePath(item);
         }
         impl.setSelectionPaths(paths);
     }

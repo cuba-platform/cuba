@@ -11,7 +11,8 @@
     lookupComponent="permissions">
 
     <companions>
-        <web class="com.haulmont.cuba.web.app.ui.security.user.PermissionsLookupCompanion"/>
+        <web class="com.haulmont.cuba.web.app.ui.security.role.PermissionsLookupCompanion"/>
+        <desktop class="com.haulmont.cuba.desktop.app.security.role.PermissionsLookupCompanion"/>
     </companions>
 
     <metadataContext>
