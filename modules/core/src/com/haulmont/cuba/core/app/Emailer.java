@@ -84,7 +84,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
             info.setBody(TemplateHelper.processTemplateFromFile(info.getTemplatePath(), map));
         }
         if (sync) {
-            sendEmail(info.getAddresses(), info.getCaption(), info.getBody(), info.getFrom() != null ? info.getFrom() : config.getFromAddress(), info.getAttachment());
+            sendEmail(info.getAddresses(), info.getCaption(), info.getBody(), info.getFrom() != null ? info.getFrom() : getFromAddress(), info.getAttachment());
         } else {
             sendEmailAsync(info, null, null);
         }
@@ -110,7 +110,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
                 addr = addr.trim();
                 String fromEmail;
                 if (info.getFrom() == null) {
-                    fromEmail = config.getFromAddress();
+                    fromEmail = getFromAddress();
                 } else {
                     fromEmail = info.getFrom();
                 }
@@ -125,7 +125,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
 
     public void sendEmail(String addresses, String caption, String body, EmailAttachment... attachment)
             throws EmailException {
-        sendEmail(addresses, caption, body, config.getFromAddress(), attachment);
+        sendEmail(addresses, caption, body, getFromAddress(), attachment);
     }
 
     public void sendEmail(SendingMessage sendingMessage)
@@ -134,7 +134,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
             String addr = sendingMessage.getAddress().trim();
             String fromEmail;
             if (sendingMessage.getFrom() == null) {
-                fromEmail = config.getFromAddress();
+                fromEmail = getFromAddress();
             } else {
                 fromEmail = sendingMessage.getFrom();
             }
@@ -167,7 +167,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
                 addr = addr.trim();
                 String fromEmail;
                 if (from == null) {
-                    fromEmail = config.getFromAddress();
+                    fromEmail = getFromAddress();
                 } else {
                     fromEmail = from;
                 }
