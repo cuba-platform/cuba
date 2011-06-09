@@ -13,8 +13,8 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.desktop.gui.data.AnyTableModelAdapter;
 import com.haulmont.cuba.desktop.gui.data.RowSorterImpl;
-import com.haulmont.cuba.desktop.gui.data.TableModelAdapter;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.EditAction;
@@ -31,7 +31,6 @@ import org.dom4j.Element;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -50,7 +49,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected MigLayout layout;
     protected JPanel panel;
     protected JPanel topPanel;
-    protected TableModelAdapter tableModel;
+    protected AnyTableModelAdapter tableModel;
     protected CollectionDatasource datasource;
     protected ButtonsPanel buttonsPanel;
     protected RowsCount rowsCount;
@@ -70,6 +69,9 @@ public abstract class DesktopAbstractTable<C extends JTable>
         impl.setFillsViewportHeight(true);
         panel.add(scrollPane, "grow");
 
+        impl.setShowGrid(true);
+        impl.setGridColor(Color.lightGray);
+
         impl.addMouseListener(
                 new MouseAdapter() {
                     @Override
@@ -84,7 +86,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
         );
     }
 
-    protected abstract TableModelAdapter createTableModel(CollectionDatasource datasource);
+    protected abstract void initTableModel(CollectionDatasource datasource);
 
     @Override
     public JComponent getComposition() {
@@ -141,10 +143,10 @@ public abstract class DesktopAbstractTable<C extends JTable>
         properties = this.columns.keySet();
 
         this.datasource = datasource;
-        tableModel = createTableModel(datasource);
-        impl.setModel(tableModel);
-        impl.setRowSorter(new RowSorterImpl(tableModel));
 
+        initTableModel(datasource);
+
+        impl.setRowSorter(new RowSorterImpl(tableModel));
 
         impl.getSelectionModel().addListSelectionListener(
                 new ListSelectionListener() {
@@ -242,7 +244,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected void setVisibleColumns(List<MetaPropertyPath> columnsOrder) {
     }
 
-    protected void createColumns(TableModel tableModel) {
+    protected void createColumns(AnyTableModelAdapter tableModel) {
     }
 
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {

@@ -6,8 +6,10 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.gui.data.AnyTableModelAdapter;
 import com.haulmont.cuba.desktop.gui.data.TableModelAdapter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
@@ -17,15 +19,17 @@ import javax.swing.table.TableModel;
  *
  * @author krivopustov
  */
-public class DesktopTable extends DesktopAbstractTable<JTable> {
+public class DesktopTable extends DesktopAbstractTable<JXTable> {
 
     public DesktopTable() {
-        impl = new JTable();
+        impl = new JXTable();
         initComponent();
+        impl.setColumnControlVisible(true);
     }
 
     @Override
-    protected TableModelAdapter createTableModel(CollectionDatasource datasource) {
-        return new TableModelAdapter(datasource, columnsOrder, true);
+    protected void initTableModel(CollectionDatasource datasource) {
+        tableModel = new TableModelAdapter(datasource, columnsOrder, true);
+        impl.setModel(tableModel);
     }
 }

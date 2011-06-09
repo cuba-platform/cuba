@@ -10,24 +10,25 @@ import com.haulmont.cuba.desktop.gui.data.TableModelAdapter;
 import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
-
-import javax.swing.*;
+import org.jdesktop.swingx.JXTable;
 
 /**
  * <p>$Id$</p>
  *
  * @author krivopustov
  */
-public class DesktopGroupTable extends DesktopAbstractTable<JTable> implements GroupTable {
+public class DesktopGroupTable extends DesktopAbstractTable<JXTable> implements GroupTable {
 
     public DesktopGroupTable() {
-        impl = new JTable();
+        impl = new JXTable();
         initComponent();
+        impl.setColumnControlVisible(true);
     }
 
     @Override
-    protected TableModelAdapter createTableModel(CollectionDatasource datasource) {
-        return new TableModelAdapter(datasource, columnsOrder, true);
+    protected void initTableModel(CollectionDatasource datasource) {
+        tableModel = new TableModelAdapter(datasource, columnsOrder, true);
+        impl.setModel(tableModel);
     }
 
     public void groupBy(Object[] properties) {

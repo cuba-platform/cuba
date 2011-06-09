@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @author krivopustov
  */
-public class TableModelAdapter extends AbstractTableModel {
+public class TableModelAdapter extends AbstractTableModel implements AnyTableModelAdapter {
 
     private static final long serialVersionUID = -3892470031734710618L;
 
@@ -76,11 +76,13 @@ public class TableModelAdapter extends AbstractTableModel {
         properties.addAll(CollectionDsHelper.createProperties(view, metaClass));
     }
 
+    @Override
     public int getRowCount() {
         CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
         return datasource.size();
     }
 
+    @Override
     public int getColumnCount() {
         return properties.size();
     }
@@ -95,6 +97,10 @@ public class TableModelAdapter extends AbstractTableModel {
         Object id = getItemId(rowIndex);
 
         Entity item = datasource.getItem(id);
+        return getValueAt(item, columnIndex);
+    }
+
+    public Object getValueAt(Entity item, int columnIndex) {
         Table.Column column = columns.get(columnIndex);
         if (column.getId() instanceof MetaPropertyPath) {
             String property = column.getId().toString();
@@ -125,11 +131,13 @@ public class TableModelAdapter extends AbstractTableModel {
         return id;
     }
 
+    @Override
     public Entity getItem(int rowIndex) {
         Object itemId = getItemId(rowIndex);
         return datasource.getItem(itemId);
     }
 
+    @Override
     public void sort(List<? extends RowSorter.SortKey> sortKeys) {
         if (!(datasource instanceof CollectionDatasource.Sortable) || sortKeys == null)
             return;

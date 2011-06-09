@@ -186,7 +186,10 @@ public class App implements ConnectionListener {
         frame = new JFrame(getApplicationTitle());
         frame.setName("MainFrame");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        frame.setBounds(100, 100, 800, 600);
+
+        frame.setBounds(0, 0, 1000, 700);
+        frame.setLocationRelativeTo(null);
+
         frame.addWindowListener(
                 new WindowAdapter() {
                     @Override

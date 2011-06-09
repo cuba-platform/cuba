@@ -29,6 +29,7 @@ public class DesktopSplitPanel
 
     public DesktopSplitPanel() {
         impl = new JSplitPane();
+        impl.setResizeWeight(0.5);
     }
 
     @Override

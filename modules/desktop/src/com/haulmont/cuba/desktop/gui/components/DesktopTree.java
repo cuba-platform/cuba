@@ -43,6 +43,7 @@ public class DesktopTree
         impl = new JTree();
         treeView = new JScrollPane(impl);
 
+        impl.setRootVisible(false);
         impl.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         impl.setExpandsSelectedPaths(true);
     }
@@ -148,10 +149,7 @@ public class DesktopTree
         this.datasource = datasource;
         hierarchyProperty = datasource.getHierarchyPropertyName();
 
-        if (!datasource.getState().equals(Datasource.State.VALID)) {
-            datasource.refresh();
-        }
-        model = new TreeModelAdapter(datasource, captionMode, captionProperty);
+        model = new TreeModelAdapter(datasource, captionMode, captionProperty, true);
         impl.setModel(model);
 
         impl.addTreeSelectionListener(new SelectionListener());

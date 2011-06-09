@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 
 import javax.annotation.Nullable;
@@ -34,17 +35,22 @@ public class TreeModelAdapter implements TreeModel {
 
     private HierarchicalDatasource<Entity<Object>, Object> datasource;
 
-    private Object rootNode = MessageProvider.getMessage(AppConfig.getMessagesPack(), "TreeModelAdapter.rootNode");
+    private Object rootNode = "Root";
 
     private List<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
 
     private CaptionMode captionMode;
     private String captionProperty;
 
-    public TreeModelAdapter(HierarchicalDatasource datasource, CaptionMode captionMode, String captionProperty) {
+    private boolean autoRefresh;
+
+    public TreeModelAdapter(HierarchicalDatasource datasource, CaptionMode captionMode, String captionProperty,
+                            boolean autoRefresh)
+    {
         this.datasource = datasource;
         this.captionMode = captionMode;
         this.captionProperty = captionProperty;
+        this.autoRefresh = autoRefresh;
 
         datasource.addListener(
                 new CollectionDsListenerAdapter() {
@@ -61,15 +67,8 @@ public class TreeModelAdapter implements TreeModel {
 
     @Override
     public Object getRoot() {
-        Collection rootItemIds = datasource.getRootItemIds();
-        if (rootItemIds.isEmpty())
-            return null;
-        else if (rootItemIds.size() == 1) {
-            Object itemId = rootItemIds.iterator().next();
-            return new Node(null, datasource.getItem(itemId));
-        } else {
-            return rootNode;
-        }
+        CollectionDsHelper.autoRefreshInvalid(datasource, autoRefresh);
+        return rootNode;
     }
 
     @Override
@@ -153,6 +152,15 @@ public class TreeModelAdapter implements TreeModel {
         return new Node(entity);
     }
 
+    public Entity getEntity(Object object) {
+        if (object instanceof Entity) {
+            return (Entity) object;
+        } else if (object instanceof Node) {
+            return ((Node) object).getEntity();
+        } else
+            return null;
+    }
+
     public TreePath getTreePath(Object object) {
         List<Object> list = new ArrayList<Object>();
         if (object instanceof Entity) {
@@ -177,6 +185,8 @@ public class TreeModelAdapter implements TreeModel {
                 else
                     n = (Node) parent;
             }
+        } else {
+            list.add(object);
         }
         return new TreePath(list.toArray(new Object[list.size()]));
     }

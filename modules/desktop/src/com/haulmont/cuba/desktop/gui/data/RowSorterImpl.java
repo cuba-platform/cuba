@@ -15,17 +15,17 @@ import java.util.List;
  *
  * @author krivopustov
  */
-public class RowSorterImpl extends RowSorter<TableModelAdapter> {
+public class RowSorterImpl extends RowSorter<AnyTableModelAdapter> {
 
-    private TableModelAdapter model;
+    private AnyTableModelAdapter model;
     private SortKey sortKey;
 
-    public RowSorterImpl(TableModelAdapter model) {
+    public RowSorterImpl(AnyTableModelAdapter model) {
         this.model = model;
     }
 
     @Override
-    public TableModelAdapter getModel() {
+    public AnyTableModelAdapter getModel() {
         return model;
     }
 
