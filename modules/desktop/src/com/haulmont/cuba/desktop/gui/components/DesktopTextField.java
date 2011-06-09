@@ -7,10 +7,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UserSessionProvider;
@@ -201,7 +198,7 @@ public class DesktopTextField extends DesktopAbstractComponent<JTextComponent> i
                         if (updatingInstance)
                             return;
                         Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-                        String text = formatValue(value);
+                        String text = formatValue(value, metaProperty);
                         updatingInstance = true;
                         try {
                             getImpl().setText(text);
@@ -215,7 +212,7 @@ public class DesktopTextField extends DesktopAbstractComponent<JTextComponent> i
                         if (updatingInstance)
                             return;
                         if (property.equals(metaPropertyPath.toString())) {
-                            String text = formatValue(value);
+                            String text = formatValue(value, metaProperty);
                             updatingInstance = true;
                             try {
                                 getImpl().setText(text);
@@ -269,16 +266,20 @@ public class DesktopTextField extends DesktopAbstractComponent<JTextComponent> i
         }
     }
 
-    private String formatValue(Object value) {
+    private String formatValue(Object value, MetaProperty metaProperty) {
         String text;
         if (value == null) {
             text = "";
         } else if (formatter == null) {
-            if (value instanceof Instance) {
-                text = InstanceUtils.getInstanceName((Instance) value);
-            } else {
+            Range range = metaProperty.getRange();
+            if (range.isDatatype()) {
+                text = range.asDatatype().format(value, UserSessionProvider.getLocale());
+            } else if (range.isEnum()) {
                 text = value.toString();
-            }
+            } else if (range.isClass()) {
+                text = InstanceUtils.getInstanceName((Instance) value);
+            } else
+                text = value.toString();
         } else {
             text = formatter.format(value);
         }

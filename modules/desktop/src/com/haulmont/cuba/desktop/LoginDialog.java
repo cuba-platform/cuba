@@ -34,10 +34,12 @@ public class LoginDialog extends JDialog {
     private Connection connection;
     private Map<String,Locale> locales;
 
-    public LoginDialog(Connection connection) {
+    public LoginDialog(JFrame owner, Connection connection) {
+        super(owner);
         this.connection = connection;
-        locales = ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales();
+        this.locales = ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales();
 
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setTitle(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.caption", Locale.getDefault()));
         setContentPane(createContentPane());
         setResizable(false);
@@ -81,6 +83,7 @@ public class LoginDialog extends JDialog {
                             Locale locale = locales.get((String) localeCombo.getSelectedItem());
                             connection.login(name, DigestUtils.md5Hex(password), locale);
                             setVisible(false);
+                            App.getInstance().enable();
                         } catch (LoginException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -109,4 +112,8 @@ public class LoginDialog extends JDialog {
         localeCombo.setSelectedItem(selected);
     }
 
+    public void open() {
+        App.getInstance().disable(null);
+        setVisible(true);
+    }
 }

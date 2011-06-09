@@ -110,10 +110,9 @@ public class App implements ConnectionListener {
     }
 
     public void showLoginDialog() {
-        LoginDialog loginDialog = new LoginDialog(connection);
+        LoginDialog loginDialog = new LoginDialog(frame, connection);
         loginDialog.setLocationRelativeTo(frame);
-        loginDialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        loginDialog.setVisible(true);
+        loginDialog.open();
     }
 
     protected String getApplicationTitle() {
