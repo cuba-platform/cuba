@@ -6,10 +6,8 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
-import com.haulmont.chile.core.datatypes.impl.DateDatatype;
-import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
-import com.haulmont.chile.core.datatypes.impl.StringDatatype;
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.Component;
@@ -26,18 +24,27 @@ public class FieldFactory {
         MetaClass metaClass = datasource.getMetaClass();
         MetaPropertyPath mpp = metaClass.getPropertyPath(property);
         if (mpp.getRange().isDatatype()) {
-            String typeName = mpp.getRange().asDatatype().getName();
+            Datatype datatype = mpp.getRange().asDatatype();
+            String typeName = datatype.getName();
             if (typeName.equals(StringDatatype.NAME)) {
                 return createStringField(datasource, property);
             } else if (typeName.equals(BooleanDatatype.NAME)) {
                 return createBooleanField(datasource, property);
             } else if (typeName.equals(DateDatatype.NAME) || typeName.equals(DateTimeDatatype.NAME)) {
                 return createDateField(datasource, property);
+            } else if (datatype instanceof NumberDatatype) {
+                return createNumberField(datasource, property);
             }
         } else if (mpp.getRange().isClass()) {
             return createEntityField(datasource, property);
         }
         return createUnsupportedField(mpp);
+    }
+
+    private Component createNumberField(Datasource datasource, String property) {
+        DesktopTextField textField = new DesktopTextField();
+        textField.setDatasource(datasource, property);
+        return textField;
     }
 
     private Component createBooleanField(Datasource datasource, String property) {

@@ -90,6 +90,8 @@ public class LoginDialog extends JDialog {
         DesktopComponentsHelper.adjustSize(loginBtn);
         panel.add(loginBtn, "span, align center");
 
+        getRootPane().setDefaultButton(loginBtn);
+
         return panel;
     }
 

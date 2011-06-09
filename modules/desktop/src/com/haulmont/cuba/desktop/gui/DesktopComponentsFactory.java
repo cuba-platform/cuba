@@ -55,6 +55,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(OptionsGroup.NAME, DesktopOptionsGroup.class);
         classes.put(Tabsheet.NAME, DesktopTabsheet.class);
         classes.put(WidgetsTree.NAME, DesktopWidgetsTree.class);
+        classes.put(GroupBox.NAME, DesktopGroupBox.class);
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {

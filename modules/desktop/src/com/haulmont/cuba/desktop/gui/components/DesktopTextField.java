@@ -13,6 +13,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.ValidationException;
@@ -25,6 +26,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.text.ParseException;
 
 /**
  * <p>$Id$</p>
@@ -249,7 +251,18 @@ public class DesktopTextField extends DesktopAbstractComponent<JTextComponent> i
 
         updatingInstance = true;
         try {
-            String value = getImpl().getText();
+            String text = getImpl().getText();
+            Object value;
+            if (metaProperty.getRange().isDatatype()) {
+                try {
+                    value = metaProperty.getRange().asDatatype().parse(text, UserSessionProvider.getLocale());
+                } catch (ParseException e) {
+                    log.warn(e);
+                    return;
+                }
+            } else {
+                value = text;
+            }
             InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
         } finally {
             updatingInstance = false;

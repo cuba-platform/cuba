@@ -25,7 +25,6 @@ public class ExcludeAction extends RemoveAction {
 
     public static final String ACTION_ID = "exclude";
 
-    protected List owner;
     protected final boolean confirm;
 
     public ExcludeAction(List owner, boolean autocommit, boolean confirm) {
@@ -38,7 +37,7 @@ public class ExcludeAction extends RemoveAction {
     }
 
     public String getCaption() {
-        final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+        final String messagesPackage = AppConfig.getMessagesPack();
         return MessageProvider.getMessage(messagesPackage, "actions.Exclude");
     }
 

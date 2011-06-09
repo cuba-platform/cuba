@@ -11,6 +11,9 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>$Id$</p>
@@ -20,6 +23,16 @@ import java.awt.event.ActionEvent;
 public class VclTestApp extends JFrame {
 
     public static void main(String[] args) {
+        Set defaults = UIManager.getLookAndFeelDefaults().entrySet();
+        for (Iterator i = defaults.iterator(); i.hasNext();) {
+            Map.Entry entry = (Map.Entry) i.next();
+            System.out.print(entry.getKey() + " = ");
+            System.out.println(entry.getValue());
+        }
+
+        Font font = UIManager.getLookAndFeelDefaults().getFont("Panel.font");
+        System.out.println(font);
+
         SwingUtilities.invokeLater(
                 new Runnable() {
                     @Override

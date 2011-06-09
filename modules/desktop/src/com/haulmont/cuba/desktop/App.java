@@ -109,7 +109,7 @@ public class App implements ConnectionListener {
         return tabsPane;
     }
 
-    protected void showLoginDialog() {
+    public void showLoginDialog() {
         LoginDialog loginDialog = new LoginDialog(connection);
         loginDialog.setLocationRelativeTo(frame);
         loginDialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
