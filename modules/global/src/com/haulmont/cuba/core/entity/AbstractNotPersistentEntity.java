@@ -14,6 +14,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.UuidProvider;
+import com.haulmont.cuba.core.sys.CubaEnhanced;
+import org.apache.commons.lang.ObjectUtils;
 
 import java.util.UUID;
 
@@ -50,6 +52,17 @@ public abstract class AbstractNotPersistentEntity extends AbstractInstance imple
 
     public UUID getId() {
         return uuid;
+    }
+
+    @Override
+    public void setValue(String property, Object obj, boolean checkEquals) {
+        Object oldValue = getValue(property);
+        if ((!checkEquals) || (!ObjectUtils.equals(oldValue, obj))) {
+            getMethodsCache().invokeSetter(this, property, obj);
+            if (!(this instanceof CubaEnhanced)) {
+                propertyChanged(property, oldValue, obj);
+            }
+        }
     }
 
     @Override
