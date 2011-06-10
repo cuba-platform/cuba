@@ -16,15 +16,16 @@ import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
+/**
+ * <p>$Id$</p>
+ *
+ * @author devyatkin
+ */
 
 public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
-
-    private static Log log = LogFactory.getLog(RuntimePropertiesEntity.class);
 
     private MetaClass metaClass;
     private UUID id;
@@ -33,11 +34,11 @@ public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
     private Set<ValueListener> listeners = new LinkedHashSet<ValueListener>();
     private Map<String,CategoryAttributeValue> categoryValues;
 
-    public RuntimePropertiesEntity(MetaClass metaClass,Map<String,Object> variables,Map<String,CategoryAttributeValue> categoryValues){
+    public RuntimePropertiesEntity(MetaClass metaClass, Map<String, Object> variables, Map<String, CategoryAttributeValue> categoryValues) {
         this.metaClass = metaClass;
         this.id = UuidProvider.createUuid();
         this.values = variables;
-        this.categoryValues=categoryValues;
+        this.categoryValues = categoryValues;
     }
 
     public UUID getId() {
@@ -93,9 +94,8 @@ public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
             if (value != null) {
                 if (StandardEntity.class.isAssignableFrom(value.getClass())) {
                     categoryValue.setEntityValue(((StandardEntity) value).getUuid());
-                }
-                else{
-                   categoryValue.setValue(parseValue(value));
+                } else {
+                    categoryValue.setValue(parseValue(value));
                 }
             } else
                 categoryValue.setValue(parseValue(value));

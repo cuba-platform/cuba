@@ -6,9 +6,7 @@
 
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.chile.core.common.*;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.*;
@@ -17,16 +15,17 @@ import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.data.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.dom4j.Element;
 
 import java.text.ParseException;
 import java.util.*;
 
-public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimePropertiesEntity> implements RuntimePropsDatasource<RuntimePropertiesEntity> {
+/**
+ * <p>$Id$</p>
+ *
+ * @author devyatkin
+ */
 
-    private static Log log = LogFactory.getLog(AbstractDatasource.class);
+public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimePropertiesEntity> implements RuntimePropsDatasource<RuntimePropertiesEntity> {
 
     private DsContext dsContext;
     private DataService dataService;
@@ -43,7 +42,7 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
 
 
     public RuntimePropsDatasourceImpl(DsContext dsContext, DataService dataService,
-                                      String id, MetaClass metaClass, String viewName, String mainDsId, String categoriesDs) {
+                                      String id, String viewName, String mainDsId) {
         super(id);
         this.dsContext = dsContext;
         this.dataService = dataService;

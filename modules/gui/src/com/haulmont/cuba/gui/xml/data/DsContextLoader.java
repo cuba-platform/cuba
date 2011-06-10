@@ -479,7 +479,6 @@ public class DsContextLoader {
         final MetaClass metaClass = loadMetaClass(element);
 
         final String mainDsId = element.attributeValue("mainDs");
-        final String categories = element.attributeValue("categories");
 
         if (mainDsId == null) {
             throw new IllegalStateException("RuntimePropsDs attributes not specified");
@@ -497,9 +496,9 @@ public class DsContextLoader {
                 throw new IllegalStateException("Datasource class is not specified");
 
             final Class<RuntimePropsDatasource> aClass = ScriptingProvider.loadClass(datasourceClass);
-            datasource = builder.setDsClass(aClass).buildRuntimePropsDataSource(mainDsId,categories);
+            datasource = builder.setDsClass(aClass).buildRuntimePropsDataSource(mainDsId);
         } else {
-            datasource = builder.buildRuntimePropsDataSource(mainDsId,categories);
+            datasource = builder.buildRuntimePropsDataSource(mainDsId);
         }
 
         loadDatasources(element, datasource);

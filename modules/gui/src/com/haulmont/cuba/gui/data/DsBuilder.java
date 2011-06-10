@@ -386,10 +386,10 @@ public class DsBuilder {
         return datasource;
     }
 
-    public RuntimePropsDatasource buildRuntimePropsDataSource(String mainDsId,String categoriesDs){
+    public RuntimePropsDatasource buildRuntimePropsDataSource(String mainDsId){
         init();
         RuntimePropsDatasourceImpl datasource;
-        datasource = new RuntimePropsDatasourceImpl( dsContext, dataService, id, metaClass, viewName,mainDsId,categoriesDs);
+        datasource = new RuntimePropsDatasourceImpl(dsContext, dataService, id, viewName, mainDsId);
         return datasource;
     }
 }

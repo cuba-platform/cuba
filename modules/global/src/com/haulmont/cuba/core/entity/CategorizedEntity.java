@@ -5,7 +5,6 @@
  */
 package com.haulmont.cuba.core.entity;
 
-import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;

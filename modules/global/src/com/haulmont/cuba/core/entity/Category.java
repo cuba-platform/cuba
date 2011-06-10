@@ -7,6 +7,7 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.Aggregation;
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ import java.util.List;
  */
 @javax.persistence.Entity(name = "sys$Category")
 @Table(name = "SYS_CATEGORY")
+@NamePattern("%s|name")
 public class Category extends StandardEntity {
 
     private static final long serialVersionUID = 7160259865207148541L;
