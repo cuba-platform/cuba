@@ -23,6 +23,12 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 
 import java.util.*;
 
+/**
+ * <p>$Id$</p>
+ *
+ * @author devyatkin
+ */
+
 public class RuntimePropertiesFrame extends AbstractWindow {
 
     private RuntimePropsDatasource rds;

@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
@@ -15,7 +16,9 @@ import javax.persistence.MappedSuperclass;
  * @author devyatkin
  */
 @MappedSuperclass
-public abstract class CategorizedEntity extends StandardEntity {
+public abstract class CategorizedEntity extends BaseUuidEntity {
+
+    private static final long serialVersionUID = -4359158051274491070L;
 
     @ManyToOne
     @JoinColumn(name = "CATEGORY_ID")
