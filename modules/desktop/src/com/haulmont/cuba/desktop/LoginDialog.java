@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.global.LoginException;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -19,8 +20,7 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.Locale;
 import java.util.Map;
 
@@ -39,6 +39,14 @@ public class LoginDialog extends JDialog {
         this.connection = connection;
         this.locales = ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales();
 
+        addWindowListener(
+                new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                        App.getInstance().enable();
+                    }
+                }
+        );
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setTitle(MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.caption", Locale.getDefault()));
         setContentPane(createContentPane());
@@ -77,15 +85,19 @@ public class LoginDialog extends JDialog {
         loginBtn.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
+                        String name = nameField.getText();
+                        String password = passwordField.getText();
+                        Locale locale = locales.get((String) localeCombo.getSelectedItem());
                         try {
-                            String name = nameField.getText();
-                            String password = passwordField.getText();
-                            Locale locale = locales.get((String) localeCombo.getSelectedItem());
                             connection.login(name, DigestUtils.md5Hex(password), locale);
                             setVisible(false);
                             App.getInstance().enable();
                         } catch (LoginException ex) {
-                            throw new RuntimeException(ex);
+                            String caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.loginFailed", locale);
+                            App.getInstance().showNotificationPopup(
+                                    "<b>" + caption + "</b><br/>" + ex.getMessage(),
+                                    IFrame.NotificationType.ERROR
+                            );
                         }
                     }
                 }

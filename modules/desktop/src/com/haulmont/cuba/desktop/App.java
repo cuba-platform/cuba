@@ -9,13 +9,18 @@ package com.haulmont.cuba.desktop;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
+import com.haulmont.cuba.desktop.exception.NoUserSessionHandler;
+import com.haulmont.cuba.desktop.exception.SilentExceptionHandler;
 import com.haulmont.cuba.desktop.sys.DesktopAppContextLoader;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.DisabledGlassPane;
 import com.haulmont.cuba.desktop.sys.MenuBuilder;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.global.LoginException;
+import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.logging.Log;
@@ -56,6 +61,8 @@ public class App implements ConnectionListener {
 
     protected Resources resources;
 
+    protected ExceptionHandlers exceptionHandlers;
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -89,6 +96,7 @@ public class App implements ConnectionListener {
 
             initResources();
             initUI();
+            initExceptionHandling();
         } catch (Throwable t) {
             log.error("Error initializing application", t);
             System.exit(-1);
@@ -318,8 +326,30 @@ public class App implements ConnectionListener {
         return tabsPane;
     }
 
+    protected void initExceptionHandling() {
+        exceptionHandlers = new ExceptionHandlers();
+
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            public void uncaughtException(Thread thread, Throwable throwable) {
+                handleException(thread, throwable);
+            }
+        });
+
+        System.setProperty("sun.awt.exception.handler", "com.haulmont.cuba.desktop.exception.AWTExceptionHandler");
+    }
+
+    public void handleException(Thread thread, Throwable throwable) {
+        log.error("Exception in thread " + thread, throwable);
+        exceptionHandlers.handle(thread, throwable);
+    }
+
     protected void initExceptionHandlers(boolean isConnected) {
-        // TODO
+        if (isConnected) {
+            exceptionHandlers.addHandler(new NoUserSessionHandler()); // must be the first handler
+            exceptionHandlers.addHandler(new SilentExceptionHandler());
+        } else {
+            exceptionHandlers.getHandlers().clear();
+        }
     }
 
     public void connectionStateChanged(Connection connection) throws LoginException {
@@ -356,5 +386,64 @@ public class App implements ConnectionListener {
 
     public Resources getResources() {
         return resources;
+    }
+
+    public void showNotificationPopup(String caption, IFrame.NotificationType type) {
+        JPanel panel = new JPanel(new MigLayout("flowy"));
+        panel.setBorder(BorderFactory.createLineBorder(Color.gray));
+
+        switch (type) {
+            case WARNING:
+                panel.setBackground(Color.yellow);
+                break;
+            case ERROR:
+                panel.setBackground(Color.orange);
+                break;
+            default:
+                panel.setBackground(Color.cyan);
+        }
+
+        FontMetrics fontMetrics = frame.getGraphics().getFontMetrics();
+
+        int height = (int) fontMetrics.getStringBounds(caption, frame.getGraphics()).getHeight();
+        int width = 0;
+        StringBuilder sb = new StringBuilder("<html>");
+        String[] strings = caption.split("(<br>)|(<br/>)");
+        for (String string : strings) {
+            int w = (int) fontMetrics.getStringBounds(string, frame.getGraphics()).getWidth();
+            width = Math.max(width, w);
+            sb.append(string).append("<br/>");
+        }
+        sb.append("</html>");
+
+        JLabel label = new JLabel(sb.toString());
+        panel.add(label);
+
+        int x = frame.getX() + frame.getWidth() - (50 + width);
+        int y = frame.getY() + frame.getHeight() - (50 + ((height + 5) * strings.length));
+
+        PopupFactory factory = PopupFactory.getSharedInstance();
+        final Popup popup = factory.getPopup(frame, panel, x, y);
+        popup.show();
+        final Point location = MouseInfo.getPointerInfo().getLocation();
+        final Timer timer = new Timer(3000, null);
+        timer.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        if (!MouseInfo.getPointerInfo().getLocation().equals(location)) {
+                            popup.hide();
+                            timer.stop();
+                        }
+                    }
+                }
+        );
+        timer.start();
+    }
+
+    public Locale getLocale() {
+        if (getConnection().getSession() == null)
+            return Locale.getDefault();
+        else
+            return getConnection().getSession().getLocale();
     }
 }
