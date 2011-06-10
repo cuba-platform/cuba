@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -26,8 +27,10 @@ import org.dom4j.Element;
 
 import javax.swing.AbstractAction;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
@@ -382,18 +385,62 @@ public class DesktopWindowManager extends WindowManager {
 
     @Override
     public void showNotification(String caption, IFrame.NotificationType type) {
-        JOptionPane.showMessageDialog(
-                App.getInstance().getMainFrame(),
-                caption
+        if (type.equals(IFrame.NotificationType.HUMANIZED) || type.equals(IFrame.NotificationType.TRAY)) {
+            showNotificationPopup(caption, type);
+        } else {
+            JOptionPane.showMessageDialog(
+                    App.getInstance().getMainFrame(),
+                    caption
+            );
+        }
+    }
+
+    private void showNotificationPopup(String caption, IFrame.NotificationType type) {
+        JPanel panel = new JPanel(new MigLayout("flowy"));
+        panel.setBorder(BorderFactory.createLineBorder(Color.yellow));
+        panel.setBackground(Color.yellow);
+
+        JFrame mainFrame = App.getInstance().getMainFrame();
+        FontMetrics fontMetrics = mainFrame.getGraphics().getFontMetrics();
+
+        int height = (int) fontMetrics.getStringBounds(caption, mainFrame.getGraphics()).getHeight();
+        int width = 0;
+        StringBuilder sb = new StringBuilder("<html>");
+        String[] strings = caption.split("(<br>)|(<br/>)");
+        for (String string : strings) {
+            int w = (int) fontMetrics.getStringBounds(string, mainFrame.getGraphics()).getWidth();
+            width = Math.max(width, w);
+            sb.append(string).append("<br/>");
+        }
+        sb.append("</html>");
+
+        JLabel label = new JLabel(sb.toString());
+        panel.add(label);
+
+        int x = mainFrame.getX() + mainFrame.getWidth() - (50 + width);
+        int y = mainFrame.getY() + mainFrame.getHeight() - (50 + ((height + 5) * strings.length));
+
+        PopupFactory factory = PopupFactory.getSharedInstance();
+        final Popup popup = factory.getPopup(mainFrame, panel, x, y);
+        popup.show();
+        final Point location = MouseInfo.getPointerInfo().getLocation();
+        final Timer timer = new Timer(3000, null);
+        timer.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        if (!MouseInfo.getPointerInfo().getLocation().equals(location)) {
+                            popup.hide();
+                            timer.stop();
+                        }
+                    }
+                }
         );
+        timer.start();
     }
 
     @Override
     public void showNotification(String caption, String description, IFrame.NotificationType type) {
-        JOptionPane.showMessageDialog(
-                App.getInstance().getMainFrame(),
-                caption + "\n" + description
-        );
+        showNotification("<b>" + caption + "</b><br/>" + description, type);
     }
 
     @Override

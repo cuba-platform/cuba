@@ -126,7 +126,6 @@ public class DesktopPickerField
             datasource.getItem().getValue(metaProperty.getName());
             return null;
         }
-
     }
 
     @Override

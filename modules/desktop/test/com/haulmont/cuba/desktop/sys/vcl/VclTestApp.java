@@ -9,8 +9,12 @@ package com.haulmont.cuba.desktop.sys.vcl;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -78,6 +82,7 @@ public class VclTestApp extends JFrame {
         JTabbedPane tabbedPane = new JTabbedPane();
         add(tabbedPane, BorderLayout.CENTER);
 
+        tabbedPane.add("Popup", createPopupTab());
         tabbedPane.add("Picker", createPickersTab());
 //        tabbedPane.add("Autocomplete", createAutocompleteTab());
     }
@@ -104,5 +109,58 @@ public class VclTestApp extends JFrame {
         panel.add(picker2, "wrap");
 
         return panel;
+    }
+
+    private JPanel createPopupTab() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new MigLayout());
+
+        JButton start = new JButton("Pick Me for Popup");
+        start.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        showPopup();
+                    }
+                }
+        );
+        panel.add(start);
+
+        return panel;
+    }
+
+    private void showPopup() {
+        JPanel panel = new JPanel(new MigLayout("flowy"));
+        panel.setBorder(BorderFactory.createLineBorder(Color.yellow));
+        panel.setBackground(Color.yellow);
+        String text = "A Message " + new Date();
+        JLabel label = new JLabel("<html>" + text + "<br/>" + text + "</html>");
+
+        panel.add(label);
+
+        FontMetrics fontMetrics = getGraphics().getFontMetrics();
+        double width = fontMetrics.getStringBounds(text, getGraphics()).getWidth();
+
+        int x = getX() + getWidth() - (50 + (int)width);
+        int y = getY() + getHeight() - 100;
+
+        PopupFactory factory = PopupFactory.getSharedInstance();
+        final Popup popup = factory.getPopup(this, panel, x, y);
+        System.out.println("Show popup " + popup);
+        popup.show();
+        final Point location = MouseInfo.getPointerInfo().getLocation();
+        final Timer timer = new Timer(3000, null);
+        timer.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        if (!MouseInfo.getPointerInfo().getLocation().equals(location)) {
+                            System.out.println("Hide popup " + popup);
+                            popup.hide();
+                            timer.stop();
+                        }
+                    }
+                }
+        );
+        timer.start();
     }
 }

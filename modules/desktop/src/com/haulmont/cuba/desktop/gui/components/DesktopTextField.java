@@ -12,11 +12,11 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -30,7 +30,7 @@ import java.text.ParseException;
  *
  * @author krivopustov
  */
-public class DesktopTextField extends DesktopAbstractComponent<JTextComponent> implements TextField {
+public class DesktopTextField extends DesktopAbstractField<JTextComponent> implements TextField {
 
     private TextComponentDocument doc;
     private Datasource datasource;
@@ -139,16 +139,6 @@ public class DesktopTextField extends DesktopAbstractComponent<JTextComponent> i
         this.datatype = datatype;
     }
 
-    public boolean isRequired() {
-        return false;
-    }
-
-    public void setRequired(boolean required) {
-    }
-
-    public void setRequiredMessage(String msg) {
-    }
-
     public <T> T getValue() {
         return (T) getImpl().getText();
     }
@@ -157,23 +147,9 @@ public class DesktopTextField extends DesktopAbstractComponent<JTextComponent> i
         getImpl().setText((String) value);
     }
 
-    public void addListener(ValueListener listener) {
-    }
-
-    public void removeListener(ValueListener listener) {
-    }
-
-    public void addValidator(Validator validator) {
-    }
-
-    public void removeValidator(Validator validator) {
-    }
-
-    public boolean isValid() {
-        return true;
-    }
-
-    public void validate() throws ValidationException {
+    @Override
+    protected boolean isEmpty(Object value) {
+        return StringUtils.isBlank((String) value);
     }
 
     public Datasource getDatasource() {

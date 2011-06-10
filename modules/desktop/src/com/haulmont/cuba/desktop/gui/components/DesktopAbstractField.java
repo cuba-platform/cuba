@@ -7,10 +7,13 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.components.Field;
+import com.haulmont.cuba.gui.components.RequiredValueMissingException;
+import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.ValueListener;
 
 import javax.swing.*;
-import java.util.ArrayList;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -25,6 +28,9 @@ public abstract class DesktopAbstractField<C extends JComponent>
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
 
     protected boolean required;
+    protected String requiredMessage;
+
+    protected Set<Validator> validators = new HashSet<Validator>();
 
     @Override
     public void addListener(ValueListener listener) {
@@ -45,15 +51,41 @@ public abstract class DesktopAbstractField<C extends JComponent>
 
     @Override
     public void addValidator(Validator validator) {
+        validators.add(validator);
     }
 
     @Override
     public void removeValidator(Validator validator) {
+        validators.remove(validator);
     }
 
     @Override
     public boolean isValid() {
-        return true;
+        try {
+            validate();
+            return true;
+        } catch (ValidationException e) {
+            return false;
+        }
+    }
+
+    protected boolean isEmpty(Object value) {
+        return value == null;
+    }
+
+    @Override
+    public void validate() throws ValidationException {
+        Object value = getValue();
+        if (isEmpty(value)) {
+            if (isRequired())
+                throw new RequiredValueMissingException(requiredMessage, this);
+            else
+                return;
+        }
+
+        for (Validator validator : validators) {
+            validator.validate(value);
+        }
     }
 
     public boolean isRequired() {
@@ -62,9 +94,13 @@ public abstract class DesktopAbstractField<C extends JComponent>
 
     public void setRequired(boolean required) {
         this.required = required;
+        if (required)
+            getImpl().setBackground(Color.yellow);
+        else
+            getImpl().setBackground(Color.white);
     }
 
     public void setRequiredMessage(String msg) {
+        requiredMessage = msg;
     }
-
 }

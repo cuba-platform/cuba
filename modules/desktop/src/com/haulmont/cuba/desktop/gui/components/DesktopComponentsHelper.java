@@ -73,6 +73,22 @@ public class DesktopComponentsHelper {
         throw new UnsupportedOperationException();
     }
 
+    public static Collection<Component> getComponents(Component container) {
+        Collection<Component> ownComponents;
+        if (container instanceof Component.Container) {
+            ownComponents = ((Component.Container) container).getOwnComponents();
+        } else if (container instanceof DesktopFieldGroup) {
+            ownComponents = ((DesktopFieldGroup) container).getComponents();
+        } else
+            ownComponents = Collections.emptySet();
+        Set<Component> res = new HashSet<Component>(ownComponents);
+
+        for (Component component : ownComponents) {
+            res.addAll(getComponents(component));
+        }
+
+        return res;
+    }
     public static int convertMessageType(IFrame.MessageType messageType) {
         if (messageType.equals(IFrame.MessageType.CONFIRMATION))
             return JOptionPane.QUESTION_MESSAGE;

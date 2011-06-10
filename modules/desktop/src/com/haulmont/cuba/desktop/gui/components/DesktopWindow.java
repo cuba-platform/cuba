@@ -25,6 +25,9 @@ import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.text.StrBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import javax.swing.*;
@@ -69,6 +72,8 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
 
     protected boolean forceClose;
     protected Runnable doAfterClose;
+
+    private Log log = LogFactory.getLog(DesktopWindow.class);
 
     public DesktopWindow() {
         initLayout();
@@ -499,6 +504,8 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
 
         private static final long serialVersionUID = -7042930104147784581L;
 
+        private Log log = LogFactory.getLog(DesktopWindow.Editor.class);
+
         @Override
         protected WindowDelegate createDelegate() {
             return new EditorWindowDelegate(this, App.getInstance().getWindowManager());
@@ -513,10 +520,23 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         }
 
         public boolean isValid() {
+            Collection<Component> components = ComponentsHelper.getComponents(this);
+            for (Component component : components) {
+                if (component instanceof Field) {
+                    if (!((Field) component).isValid())
+                        return false;
+                }
+            }
             return true;
         }
 
         public void validate() throws ValidationException {
+            Collection<Component> components = DesktopComponentsHelper.getComponents(this);
+            for (Component component : components) {
+                if (component instanceof Field) {
+                    ((Field) component).validate();
+                }
+            }
         }
 
         @Override
@@ -550,6 +570,28 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         }
 
         protected boolean __validate() {
+            List<String> problems = new ArrayList<String>();
+
+            Collection<Component> components = DesktopComponentsHelper.getComponents(this);
+            for (Component component : components) {
+                if (component instanceof Field) {
+                    try {
+                        ((Field) component).validate();
+                    } catch (ValidationException e) {
+                        log.warn("Validation failed", e);
+                        problems.add(e.getMessage());
+                    }
+                }
+            }
+            if (!problems.isEmpty()) {
+                String text = new StrBuilder().appendWithSeparators(problems, "<br/>").toString();
+                showNotification(
+                        MessageProvider.getMessage(AppConfig.getMessagesPack(), "validationFail.caption"),
+                        text,
+                        NotificationType.HUMANIZED
+                );
+                return false;
+            }
             return true;
         }
 

@@ -37,6 +37,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     private Map<String, Field> fields = new LinkedHashMap<String, Field>();
     private Map<Field, Integer> fieldsColumn = new HashMap<Field, Integer>();
+    private Map<Field, Component> fieldComponents = new HashMap<Field, Component>();
     private Map<Integer, List<Field>> columnFields = new HashMap<Integer, List<Field>>();
     private Map<Field, CustomFieldGenerator> generators = new HashMap<Field, CustomFieldGenerator>();
     private FieldFactory fieldFactory = new FieldFactory();
@@ -122,23 +123,40 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     public boolean isRequired(Field field) {
-        return false;
+        Component component = fieldComponents.get(field);
+        return component instanceof com.haulmont.cuba.gui.components.Field && ((com.haulmont.cuba.gui.components.Field) component).isRequired();
     }
 
     public void setRequired(Field field, boolean required, String message) {
+        Component component = fieldComponents.get(field);
+        if (component instanceof com.haulmont.cuba.gui.components.Field) {
+            ((com.haulmont.cuba.gui.components.Field) component).setRequired(required);
+            ((com.haulmont.cuba.gui.components.Field) component).setRequiredMessage(message);
+        }
     }
 
     public boolean isRequired(String fieldId) {
-        return false;
+        Field field = fields.get(fieldId);
+        return field != null && isRequired(field);
     }
 
     public void setRequired(String fieldId, boolean required, String message) {
+        Field field = fields.get(fieldId);
+        if (field != null)
+            setRequired(field, required, message);
     }
 
     public void addValidator(Field field, com.haulmont.cuba.gui.components.Field.Validator validator) {
+        Component component = fieldComponents.get(field);
+        if (component instanceof com.haulmont.cuba.gui.components.Field) {
+            ((com.haulmont.cuba.gui.components.Field) component).addValidator(validator);
+        }
     }
 
     public void addValidator(String fieldId, com.haulmont.cuba.gui.components.Field.Validator validator) {
+        Field field = fields.get(fieldId);
+        if (fieldId != null)
+            addValidator(field, validator);
     }
 
     public boolean isCollapsable() {
@@ -156,45 +174,70 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     public boolean isEditable(Field field) {
-        return false;
+        Component component = fieldComponents.get(field);
+        return component instanceof Editable && ((Editable) component).isEditable();
     }
 
     public void setEditable(Field field, boolean editable) {
+        Component component = fieldComponents.get(field);
+        if (component instanceof Editable) {
+            ((Editable) component).setEditable(editable);
+        }
     }
 
     public boolean isEditable(String fieldId) {
-        return false;
+        Field field = fields.get(fieldId);
+        return field != null && isEditable(field);
     }
 
     public void setEditable(String fieldId, boolean editable) {
+        Field field = fields.get(fieldId);
+        if (field != null)
+            setEditable(field, editable);
     }
 
     public boolean isEnabled(Field field) {
-        return false;
+        Component component = fieldComponents.get(field);
+        return component != null && component.isEnabled();
     }
 
     public void setEnabled(Field field, boolean enabled) {
+        Component component = fieldComponents.get(field);
+        if (component != null)
+            component.setEnabled(enabled);
     }
 
     public boolean isEnabled(String fieldId) {
-        return false;
+        Field field = fields.get(fieldId);
+        return field != null && isEnabled(field);
     }
 
     public void setEnabled(String fieldId, boolean enabled) {
+        Field field = fields.get(fieldId);
+        if (field != null)
+            setEnabled(field, enabled);
     }
 
     public boolean isVisible(Field field) {
-        return false;
+        Component component = fieldComponents.get(field);
+        return component != null && component.isVisible();
     }
 
     public void setVisible(Field field, boolean visible) {
+        Component component = fieldComponents.get(field);
+        if (component != null)
+            component.setVisible(visible);
     }
 
     public boolean isVisible(String fieldId) {
-        return false;
+        Field field = fields.get(fieldId);
+        return field != null && isVisible(field);
     }
 
     public void setVisible(String fieldId, boolean visible) {
+        Field field = fields.get(fieldId);
+        if (field != null)
+            setVisible(field, visible);
     }
 
     public Object getFieldValue(Field field) {
@@ -299,6 +342,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
                 generator = createDefaultGenerator(field);
 
             Component component = generator.generateField(ds, field.getId());
+            fieldComponents.put(field, component);
             assignTypicalAttributes(component);
             JComponent jComponent = DesktopComponentsHelper.unwrap(component);
 
@@ -351,5 +395,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     public boolean saveSettings(Element element) {
         return false;
+    }
+
+    public Collection<Component> getComponents() {
+        return fieldComponents.values();
     }
 }

@@ -15,6 +15,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
@@ -250,7 +251,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 if (metaClass != null) {
                     MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
                     requiredMsg = MessageProvider.formatMessage(
-                            messagesPack,
+                            AppConfig.getMessagesPack(),
                             "validation.required.defaultMsg",
                             MessageUtils.getPropertyCaption(metaProperty)
                     );
