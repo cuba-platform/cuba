@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.core.sys.restapi;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
@@ -133,7 +132,7 @@ public class XMLConvertor implements Convertor {
     public Document process(Entity entity, MetaClass metaclass, String requestURI)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Element root = newDocument(ROOT_ELEMENT_INSTANCE);
-        encodeEntityInstance(entity, root, false, metaclass);
+        encodeEntityInstance(new HashSet<Entity>(), entity, root, false, metaclass);
         Document doc = root.getOwnerDocument();
         decorate(doc, requestURI);
         return doc;
@@ -143,7 +142,7 @@ public class XMLConvertor implements Convertor {
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Element root = newDocument(ROOT_ELEMENT_INSTANCE);
         for (Entity entity : entities) {
-            encodeEntityInstance(entity, root, false, metaClass);
+            encodeEntityInstance(new HashSet(), entity, root, false, metaClass);
         }
         Document doc = root.getOwnerDocument();
         decorate(doc, requestURI);
@@ -158,12 +157,12 @@ public class XMLConvertor implements Convertor {
             Element pair = doc.createElement(PAIR_ELEMENT);
             root.appendChild(pair);
             encodeEntityInstance(
-                    entry.getKey(),
+                    new HashSet(), entry.getKey(),
                     pair, false,
                     getMetaClass(entry.getKey())
             );
             encodeEntityInstance(
-                    entry.getValue(),
+                    new HashSet(), entry.getValue(),
                     pair, false,
                     getMetaClass(entry.getValue())
             );
@@ -360,16 +359,18 @@ public class XMLConvertor implements Convertor {
     /**
      * Encodes the closure of a persistent instance into a XML element.
      *
-     * @param entity    the managed instance to be encoded. Can be null.
+     * @param visited
+     *@param entity    the managed instance to be encoded. Can be null.
      * @param parent    the parent XML element to which the new XML element be added. Must not be null. Must be
-     *                  owned by a document.
+ *                  owned by a document.
      * @param isRef
-     * @param metaClass
-     * @return the new element. The element has been appended as a child to the given parent in this method.
+     * @param metaClass     @return the new element. The element has been appended as a child to the given parent in this method.
      */
-    private Element encodeEntityInstance(final Entity entity, final Element parent,
+    private Element encodeEntityInstance(HashSet<Entity> visited, final Entity entity, final Element parent,
                                          boolean isRef, MetaClass metaClass)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+
+
 
         if (parent == null)
             throw new NullPointerException("No parent specified");
@@ -378,7 +379,13 @@ public class XMLConvertor implements Convertor {
         if (doc == null)
             throw new NullPointerException("No document specified");
 
-        if (entity == null || isRef) {
+        if (entity == null) {
+            return encodeRef(parent, entity);
+        }
+
+        isRef |= !visited.add(entity);
+
+        if (isRef) {
             return encodeRef(parent, entity);
         }
         Element root = doc.createElement(ELEMENT_INSTANCE);
@@ -390,12 +397,12 @@ public class XMLConvertor implements Convertor {
             if (MetadataHelper.isTransient(entity, property.getName()))
                 continue;
 
-            Object value = ((Instance) entity).getValue(property.getName());
+            Object value = entity.getValue(property.getName());
             switch (property.getType()) {
                 case DATATYPE:
                     String nodeType;
                     if (property.getAnnotatedElement().isAnnotationPresent(Id.class)) {
-                        nodeType = ELEMENT_REF;
+                        continue;
                     } else if (property.getAnnotatedElement().isAnnotationPresent(Version.class)) {
                         nodeType = "version";
                     } else {
@@ -411,9 +418,7 @@ public class XMLConvertor implements Convertor {
                     }
                     break;
                 case ENUM:
-                    child = property.getAnnotatedElement().isAnnotationPresent(Id.class) ?
-                            doc.createElement(ELEMENT_REF) :
-                            doc.createElement("enum");
+                    child = doc.createElement("enum");
                     child.setAttribute(ATTR_NAME, property.getName());
                     if (value == null) {
                         encodeNull(child);
@@ -433,9 +438,9 @@ public class XMLConvertor implements Convertor {
                         child.setAttribute(ATTR_NAME, property.getName());
                         child.setAttribute(ATTR_TYPE, typeOfEntityProperty(property));
                         if (isEmbedded) {
-                            encodeEntityInstance((Entity) value, child, false, property.getRange().asClass());
+                            encodeEntityInstance(visited, (Entity) value, child, false, property.getRange().asClass());
                         } else {
-                            encodeEntityInstance((Entity) value, child, true, property.getRange().asClass());
+                            encodeEntityInstance(visited, (Entity) value, child, false, property.getRange().asClass());
                         }
                     } else {
                         child = doc.createElement(getCollectionReferenceTag(property));
@@ -453,7 +458,7 @@ public class XMLConvertor implements Convertor {
                             if (o == null) {
                                 encodeNull(member);
                             } else {
-                                encodeEntityInstance((Entity) o, member, true, property.getRange().asClass());
+                                encodeEntityInstance(visited, (Entity) o, member, true, property.getRange().asClass());
                             }
                         }
                     }
@@ -493,6 +498,7 @@ public class XMLConvertor implements Convertor {
         Element ref = parent.getOwnerDocument().createElement(entity == null ? ELEMENT_NULL_REF : ELEMENT_REF);
         if (entity != null)
             ref.setAttribute(ATTR_ID, ior(entity));
+
         // IMPORTANT: for xml transformer not to omit the closing tag, otherwise dojo is confused
         ref.setTextContent(EMPTY_TEXT);
         parent.appendChild(ref);

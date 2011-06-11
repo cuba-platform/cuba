@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 
+import javax.persistence.MappedSuperclass;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,7 +37,12 @@ public class MetaClassRepresentation {
     }
 
     public String getParent() {
-        return meta.getAncestor() == null ? "" : "Parent is " + asHref(meta.getAncestor());
+        MetaClass ancestor = meta.getAncestor();
+        if (ancestor == null || !ancestor.getName().contains("$") ||
+                ancestor.getJavaClass().isAnnotationPresent(MappedSuperclass.class))
+            return "";
+
+        return "Parent is " + asHref(ancestor);
     }
 
     public String getDescription() {

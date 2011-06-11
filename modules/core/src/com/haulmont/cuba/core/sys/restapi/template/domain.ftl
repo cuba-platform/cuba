@@ -9,6 +9,7 @@
 <html>
 <head>
     <title>Domain model description</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
 </head>
 
 <style>
@@ -47,10 +48,10 @@
 
 <h1>Domain model description</h1>
 
-<�2>Known entities:</�2>
+<h2>Known entities:</h2>
 <ul>
     <#list knownEntities as entity>
-        <li><a href="domain.ftl#${entity.name}">${entity.name}</a>
+        <li><a href="#${entity.name}">${entity.name}</a>
     </#list>
 </ul>
 

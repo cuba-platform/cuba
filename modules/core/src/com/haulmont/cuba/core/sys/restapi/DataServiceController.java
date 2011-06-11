@@ -204,6 +204,9 @@ public class DataServiceController {
             return;
         }
 
+        response.setContentType("text/html");
+        response.setCharacterEncoding("UTF-8");
+        response.setLocale(UserSessionProvider.getLocale());
         PrintWriter writer = response.getWriter();
 
         try {
@@ -237,6 +240,8 @@ public class DataServiceController {
             values.put("knownEntities", classes);
 
             Configuration cfg = new Configuration();
+            cfg.setDefaultEncoding("UTF-8");
+            cfg.setOutputEncoding("UTF-8");
             cfg.setClassForTemplateLoading(DataServiceController.class, "template");
             cfg.setObjectWrapper(new DefaultObjectWrapper());
             Template template = cfg.getTemplate("domain.ftl");
