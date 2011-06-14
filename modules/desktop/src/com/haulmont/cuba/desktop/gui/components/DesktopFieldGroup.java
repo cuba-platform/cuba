@@ -332,7 +332,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
             String caption = field.getCaption();
             if (caption == null) {
-                caption = MessageUtils.getPropertyCaption(ds.getMetaClass(), field.getId());
+                MetaProperty metaProperty = ds.getMetaClass().getProperty(field.getId());
+                if (metaProperty != null)
+                    caption = MessageUtils.getPropertyCaption(metaProperty);
             }
             JLabel label = new JLabel(caption);
             impl.add(label, new CC().cell(col*2, row, 1, 1));
