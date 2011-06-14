@@ -131,7 +131,10 @@ public class DesktopAppContextLoader {
             throw new IllegalStateException("Missing " + SPRING_CONTEXT_CONFIG + " application property");
         }
 
-        ApplicationContext appContext = new ClassPathXmlApplicationContext(configProperty);
+        StrTokenizer tokenizer = new StrTokenizer(configProperty);
+        String[] locations = tokenizer.getTokenArray();
+
+        ApplicationContext appContext = new ClassPathXmlApplicationContext(locations);
         AppContext.setApplicationContext(appContext);
     }
 
