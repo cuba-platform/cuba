@@ -442,9 +442,10 @@ public class WebWindowManager extends WindowManager {
                 getFakeTabs().remove(tab);
                 newTab = tabSheet.getTab(layout);
             } else {
-                newTab = tabSheet.addTab(layout, formatTabCaption(caption, description), null);
+                newTab = tabSheet.addTab(layout);
                 getTabs().put(layout, (WindowBreadCrumbs) components[0]);
             }
+            newTab.setCaption(formatTabCaption(caption, description));
             newTab.setDescription(formatTabDescription(caption, description));
             if (tabSheet instanceof AppWindow.AppTabSheet) {
                 newTab.setClosable(true);
