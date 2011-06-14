@@ -11,9 +11,9 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.core.global.QueryParser;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
 
 public abstract class ConditionDescriptor {
@@ -75,6 +75,10 @@ public abstract class ConditionDescriptor {
 
     public CollectionDatasource getDatasource() {
         return datasource;
+    }
+
+    public Element getElement() {
+        return element;
     }
 
     public abstract Condition createCondition();

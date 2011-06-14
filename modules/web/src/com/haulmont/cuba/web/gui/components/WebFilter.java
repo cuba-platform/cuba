@@ -1208,9 +1208,16 @@ public class WebFilter
                     }
                 } else if (condition instanceof CustomCondition) {
                     String where = ((CustomCondition) condition).getWhere();
+                    CustomCondition.Op op = ((CustomCondition) condition).getOperator();
                     Matcher matcher = LIKE_PATTERN.matcher(where);
                     if (matcher.find()) {
-                        value = wrapValueForLike(value);
+                        if (CustomCondition.Op.STARTS_WITH.equals(op)) {
+                            value = wrapValueForLike(value, false, true);
+                        } else if (CustomCondition.Op.ENDS_WITH.equals(op)) {
+                            value = wrapValueForLike(value, true, false);
+                        } else {
+                            value = wrapValueForLike(value);
+                        }
                     }
                 }
             } else if (value instanceof EnumClass) {

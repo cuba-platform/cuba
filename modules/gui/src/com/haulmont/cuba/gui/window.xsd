@@ -802,6 +802,7 @@
                                     <xs:attribute name="join" type="xs:string" use="optional"/>
                                     <xs:attribute name="paramWhere" type="xs:string" use="optional"/>
                                     <xs:attribute name="paramView" type="xs:string" use="optional"/>
+                                    <xs:attribute name="operatorType" type="operatorType" use="optional"/>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
@@ -1282,4 +1283,11 @@
     <xs:complexType name="companionType">
         <xs:attribute name="class" type="xs:string" use="required"/>
     </xs:complexType>
+
+    <xs:simpleType name="operatorType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="STARTS_WITH" />
+            <xs:enumeration value="ENDS_WITH" />
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

@@ -19,6 +19,13 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class CustomCondition extends Condition {
 
+    public enum Op {
+        STARTS_WITH,
+        ENDS_WITH
+    }
+
+    private Op operator=null;
+
     private String join;
 
     public CustomCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
@@ -32,6 +39,10 @@ public class CustomCondition extends Condition {
         entityAlias = element.attributeValue("entityAlias");
         text = element.getText();
         join = element.attributeValue("join");
+        String operatorName = element.attributeValue("operatorType", null);
+        if (operatorName != null) {
+            operator = Op.valueOf(operatorName);
+        }
     }
 
     public CustomCondition(ConditionDescriptor descriptor, String where, String join, String entityAlias) {
@@ -42,6 +53,10 @@ public class CustomCondition extends Condition {
         this.text = where;
         if (param != null)
             text = text.replace("?", ":" + param.getName());
+        String operatorName = descriptor.getElement().attributeValue("operatorType", null);
+        if (operatorName != null) {
+            operator = Op.valueOf(operatorName);
+        }
     }
 
 
@@ -59,6 +74,9 @@ public class CustomCondition extends Condition {
 
         if (!isBlank(join)) {
             element.addAttribute("join", StringEscapeUtils.escapeXml(join));
+        }
+        if (operator != null) {
+            element.addAttribute("operatorType", operator.name());
         }
     }
 
@@ -81,5 +99,9 @@ public class CustomCondition extends Condition {
 
     public void setWhere(String where) {
         this.text = where;
+    }
+
+    public Op getOperator() {
+        return operator;
     }
 }

@@ -10,15 +10,12 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.core.global.MessageUtils;
 import org.dom4j.Element;
 
 public class CustomConditionDescriptor extends ConditionDescriptor {
-
-    private Element element;
 
     public CustomConditionDescriptor(Element element, 
                                      String messagesPack,
