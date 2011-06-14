@@ -10,5 +10,10 @@
  */
 package com.haulmont.cuba.web.toolkit.ui.charts;
 
-public interface LineChart extends Chart, Chart.HasOrientation {
+public interface LineChart
+        extends
+        CategoryChart,
+        Chart.HasAxisLabels,
+        Chart.HasValueAxisType,
+        Chart.HasOrientation {
 }

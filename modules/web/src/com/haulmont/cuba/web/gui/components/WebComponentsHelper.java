@@ -326,8 +326,47 @@ public class WebComponentsHelper {
     }
 
     public static Chart.Orientation convertChartOrientation(com.haulmont.cuba.gui.components.charts.Chart.Orientation orientation) {
-        return orientation == com.haulmont.cuba.gui.components.charts.Chart.Orientation.VERTICAL
-                ? Chart.Orientation.VERTICAL : Chart.Orientation.HORIZONTAL;
+        switch (orientation) {
+            case VERTICAL:
+                return Chart.Orientation.VERTICAL;
+            case HORIZONTAL:
+                return Chart.Orientation.HORIZONTAL;
+            default:
+                throw new IllegalArgumentException("Unknown chart orientation: " + orientation);
+        }
+    }
+
+    public static com.haulmont.cuba.gui.components.charts.Chart.Orientation convertChartOrientation(Chart.Orientation orientation) {
+        switch (orientation) {
+            case VERTICAL:
+                return com.haulmont.cuba.gui.components.charts.Chart.Orientation.VERTICAL;
+            case HORIZONTAL:
+                return com.haulmont.cuba.gui.components.charts.Chart.Orientation.HORIZONTAL;
+            default:
+                throw new IllegalArgumentException("Unknown chart orientation: " + orientation);
+        }
+    }
+
+    public static Chart.AxisType convertChartAxisType(com.haulmont.cuba.gui.components.charts.Chart.AxisType axisType) {
+        switch (axisType) {
+            case NUMBER:
+                return Chart.AxisType.NUMBER;
+            case DATE:
+                return Chart.AxisType.DATE;
+            default:
+                throw new IllegalArgumentException("Unknown chart axis type: " + axisType);
+        }
+    }
+
+    public static com.haulmont.cuba.gui.components.charts.Chart.AxisType convertChartAxisType(Chart.AxisType axisType) {
+        switch (axisType) {
+            case NUMBER:
+                return com.haulmont.cuba.gui.components.charts.Chart.AxisType.NUMBER;
+            case DATE:
+                return com.haulmont.cuba.gui.components.charts.Chart.AxisType.DATE;
+            default:
+                throw new IllegalArgumentException("Unknown chart axis type: " + axisType);
+        }
     }
 
     public static int convertDateFieldResolution(com.haulmont.cuba.gui.components.DateField.Resolution resolution) {

@@ -44,7 +44,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
     }
 
     @Override
-    protected WebApplicationContext getApplicationContext(HttpSession session) {
+    protected CubaApplicationContext getApplicationContext(HttpSession session) {
         return CubaApplicationContext.getApplicationContext(session);
     }
 
@@ -117,6 +117,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
         RequestType requestType = getRequestType(request);
         if (requestType == RequestType.OTHER && isChartRequest(request)) {
             Application application = null;
+            CubaApplicationContext webApplicationContext = null;
 
             try {
                 application = findApplicationInstance(request, requestType);
@@ -124,17 +125,23 @@ public class CubaApplicationServlet extends ApplicationServlet {
                     return;
                 }
 
-                WebApplicationContext webApplicationContext = getApplicationContext(request.getSession());
+                webApplicationContext = getApplicationContext(request.getSession());
+                webApplicationContext.startTransaction(application, request);
+
                 CommunicationManager applicationManager = webApplicationContext
                         .getApplicationManager(application, this);
 
                 if (applicationManager instanceof CubaCommunicationManager) {
-                    ((CubaCommunicationManager) applicationManager).handleChartRequest(request, response, this);
+                    ((CubaCommunicationManager) applicationManager).handleChartRequest(request, response, (App)application);
                     return;
                 }
 
             } catch (SessionExpiredException e) {
                 handleServiceException(request, response, application, e);
+            } finally {
+                if (webApplicationContext != null && application != null) {
+                    webApplicationContext.endTransaction(application, request);
+                }
             }
         } else if ((requestType == RequestType.FILE_UPLOAD) &&
                 ("POST".equals(request.getMethod())) &&
@@ -158,6 +165,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
                 handleServiceException(request, response, application, e);
             }
         }
+
         super.service(request, response);
     }
 

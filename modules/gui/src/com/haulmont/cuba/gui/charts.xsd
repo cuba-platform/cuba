@@ -6,20 +6,22 @@
         elementFormDefault="qualified"
         attributeFormDefault="unqualified"
         >
+
     <xs:element name="pieChart">
         <xs:complexType>
-            <xs:attributeGroup ref="chartAttributes"/>
-            <xs:attribute name="valueProperty" type="xs:string" use="optional"/>
+            <xs:attributeGroup ref="categoryChart"/>
+            <xs:attribute name="valueProperty" type="xs:string" use="required"/>
             <xs:attribute name="is3D" type="xs:string" use="optional"/>
         </xs:complexType>
     </xs:element>
 
     <xs:element name="barChart">
         <xs:complexType>
-            <xs:sequence minOccurs="0" maxOccurs="unbounded" >
-                <xs:element name="column" type="columnType"/>
+            <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="category" type="categoryType"/>
             </xs:sequence>
-            <xs:attributeGroup ref="chartAttributes"/>
+            <xs:attributeGroup ref="categoryChart"/>
+            <xs:attribute name="valueAxisType" type="axisType" use="optional"/>
             <xs:attribute name="orientation" type="orientationType" use="optional"/>
             <xs:attribute name="is3D" type="xs:string" use="optional"/>
             <xs:attribute name="xLabel" type="xs:string" use="optional" default="msg://"/>
@@ -29,27 +31,60 @@
 
     <xs:element name="lineChart">
         <xs:complexType>
-            <xs:sequence minOccurs="0" maxOccurs="unbounded" >
-                <xs:element name="column" type="columnType"/>
+            <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="category" type="categoryType"/>
             </xs:sequence>
-            <xs:attributeGroup ref="chartAttributes"/>
+            <xs:attributeGroup ref="categoryChart"/>
+            <xs:attribute name="valueAxisType" type="axisType" use="optional"/>
             <xs:attribute name="orientation" type="orientationType" use="optional"/>
             <xs:attribute name="xLabel" type="xs:string" use="optional" default="msg://"/>
             <xs:attribute name="yLabel" type="xs:string" use="optional" default="msg://"/>
         </xs:complexType>
     </xs:element>
 
-    <xs:attributeGroup name="chartAttributes">
+    <xs:element name="xyLineChart">
+        <xs:complexType>
+            <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="row" type="rowType"/>
+            </xs:sequence>
+            <xs:attributeGroup ref="xyChart"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:attributeGroup name="chart">
         <xs:attribute name="id" type="xs:string" use="optional"/>
-        <xs:attribute name="vendor" type="vendorType" default="jfree" use="required"/>
         <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
-        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+        <xs:attribute name="vendor" type="vendorType" default="jfree" use="required"/>
         <xs:attribute name="width" type="xs:string" use="optional"/>
         <xs:attribute name="height" type="xs:string" use="optional"/>
         <xs:attribute name="visible" type="xs:string" use="optional"/>
         <xs:attribute name="legend" type="xs:string" use="optional"/>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="categoryChart">
+        <xs:attributeGroup ref="chart"/>
+        <xs:attribute name="datasource" type="xs:string" use="optional"/>
         <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
     </xs:attributeGroup>
+
+    <xs:attributeGroup name="xyChart">
+        <xs:attributeGroup ref="chart"/>
+        <xs:attribute name="argumentAxisType" type="axisType" use="optional"/>
+        <xs:attribute name="valueAxisType" type="axisType" use="optional"/>
+    </xs:attributeGroup>
+
+    <xs:complexType name="categoryType">
+        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
+        <xs:attribute name="valueProperty" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="rowType">
+        <xs:attribute name="id" type="xs:string" use="optional"/>
+        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
+        <xs:attribute name="datasource" type="xs:string" use="required"/>
+        <xs:attribute name="xProperty" type="xs:string" use="optional"/>
+        <xs:attribute name="yProperty" type="xs:string" use="optional"/>
+    </xs:complexType>
 
     <xs:simpleType name="vendorType">
         <xs:restriction base="xs:string">
@@ -57,10 +92,12 @@
         </xs:restriction>
     </xs:simpleType>
 
-    <xs:complexType name="columnType">
-        <xs:attribute name="id" type="xs:string" use="required"/>
-        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
-    </xs:complexType>
+    <xs:simpleType name="axisType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NUMBER"/>
+            <xs:enumeration value="DATE"/>
+        </xs:restriction>
+    </xs:simpleType>
 
     <xs:simpleType name="orientationType">
         <xs:restriction base="xs:string">

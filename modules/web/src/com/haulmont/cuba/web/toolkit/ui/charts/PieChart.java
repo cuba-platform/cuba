@@ -10,7 +10,11 @@
  */
 package com.haulmont.cuba.web.toolkit.ui.charts;
 
-public interface PieChart extends Chart, Chart.ViewIn3D {
+public interface PieChart
+        extends
+        CategoryChart,
+        Chart.ViewIn3D {
+
     boolean isIgnoreZeroValues();
     void setIgnoreZeroValues(boolean ignoreZeroValues);
 

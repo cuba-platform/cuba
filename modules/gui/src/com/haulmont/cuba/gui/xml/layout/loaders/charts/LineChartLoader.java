@@ -10,13 +10,15 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders.charts;
 
+import com.haulmont.cuba.gui.components.charts.CategoryChart;
 import com.haulmont.cuba.gui.components.charts.Chart;
 import com.haulmont.cuba.gui.components.charts.LineChart;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.charts.PieChart;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.dom4j.Element;
 
-public class LineChartLoader extends AbstractChartLoader {
+public class LineChartLoader extends AbstractCategoryChartLoader {
     private static final long serialVersionUID = -8656847955537637060L;
 
     public LineChartLoader(Context context) {
@@ -24,16 +26,14 @@ public class LineChartLoader extends AbstractChartLoader {
     }
 
     @Override
-    public Chart loadComponent(
-            ComponentsFactory factory,
-            Element element,
-            Component parent
-    ) throws InstantiationException, IllegalAccessException {
+    public LineChart loadComponent(ComponentsFactory factory, Element element, Component parent)
+            throws InstantiationException, IllegalAccessException {
+
         LineChart component = (LineChart) super.loadComponent(factory, element, parent);
 
-        loadAxisLabels(component, element);
         loadOrientation(component, element);
         loadAxisLabels(component, element);
+        loadValueAxisType(component, element);
 
         return component; 
     }

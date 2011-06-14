@@ -6,17 +6,17 @@
 package com.haulmont.cuba.web.gui;
 
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.charts.BarChart;
-import com.haulmont.cuba.gui.components.charts.Chart;
-import com.haulmont.cuba.gui.components.charts.LineChart;
-import com.haulmont.cuba.gui.components.charts.PieChart;
+import com.haulmont.cuba.gui.components.charts.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.*;
+import com.haulmont.cuba.web.gui.components.charts.WebXYChartRow;
 import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreeBarChart;
 import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreeLineChart;
 import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreePieChart;
+import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreeXYLineChart;
+import com.haulmont.cuba.web.toolkit.ui.charts.jfree.JFreeChart;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -79,9 +79,11 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put(RowsCount.NAME, WebRowsCount.class);
 
         //JFree charts
-        classes.put(PieChart.NAME, WebJFreePieChart.class);
-        classes.put(BarChart.NAME, WebJFreeBarChart.class);
-        classes.put(LineChart.NAME, WebJFreeLineChart.class);
+        classes.put(PieChart.NAME + "@" + JFreeChart.VENDOR, WebJFreePieChart.class);
+        classes.put(BarChart.NAME + "@" + JFreeChart.VENDOR, WebJFreeBarChart.class);
+        classes.put(LineChart.NAME + "@" + JFreeChart.VENDOR, WebJFreeLineChart.class);
+        classes.put(XYLineChart.NAME + "@" + JFreeChart.VENDOR, WebJFreeXYLineChart.class);
+        classes.put(XYChartRow.NAME, WebXYChartRow.class);
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {
@@ -107,7 +109,7 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
     }
 
     public <T extends Chart> T createChart(String vendor, String name) {
-        final Class<Chart> chartClass = (Class<Chart>) classes.get(vendor + "@" + name);
+        final Class<Chart> chartClass = (Class<Chart>) classes.get(name + "@" + vendor);
         if (chartClass == null) {
             throw new IllegalStateException(String.format("Can't find chart class for '%s', vendor is %s",
                     name, vendor));

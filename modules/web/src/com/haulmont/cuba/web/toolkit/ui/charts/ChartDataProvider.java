@@ -14,8 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
 
-public interface ChartDataProvider<T extends ChartImplementation>
-        extends Serializable {
+public interface ChartDataProvider<T extends Chart> extends Serializable {
 
     void handleDataRequest(
             HttpServletRequest request,

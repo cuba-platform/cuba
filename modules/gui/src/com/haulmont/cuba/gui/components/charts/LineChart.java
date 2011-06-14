@@ -11,7 +11,12 @@
 package com.haulmont.cuba.gui.components.charts;
 
 /** Line chart component */
-public interface LineChart extends Chart, Chart.HasOrientation {
+public interface LineChart
+        extends
+        CategoryChart,
+        Chart.HasAxisLabels,
+        Chart.HasValueAxisType,
+        Chart.HasOrientation {
 
-    String NAME = "jfree@lineChart";
+    String NAME = "lineChart";
 }

@@ -10,21 +10,35 @@
  */
 package com.haulmont.cuba.web.toolkit.ui.charts.jfree;
 
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.charts.*;
+import com.haulmont.cuba.web.toolkit.ui.charts.BarChart;
+import com.haulmont.cuba.web.toolkit.ui.charts.Chart;
+import com.haulmont.cuba.web.toolkit.ui.charts.LineChart;
+import com.haulmont.cuba.web.toolkit.ui.charts.PieChart;
+import com.haulmont.cuba.web.toolkit.ui.charts.XYChartRow;
+import com.haulmont.cuba.web.toolkit.ui.charts.XYLineChart;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.*;
+import org.jfree.chart.axis.*;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 
 public class JFreeChartDataProvider implements ChartDataProvider<JFreeChart> {
@@ -32,7 +46,7 @@ public class JFreeChartDataProvider implements ChartDataProvider<JFreeChart> {
 
     private Log log = LogFactory.getLog(JFreeChartDataProvider.class);
 
-    public void handleDataRequest(
+    public synchronized void handleDataRequest(
             HttpServletRequest request,
             HttpServletResponse response,
             JFreeChart chart
@@ -45,6 +59,8 @@ public class JFreeChartDataProvider implements ChartDataProvider<JFreeChart> {
             jFreeChart = createBarChart((JFreeBarChart) chart);
         } else if (chart instanceof LineChart) {
             jFreeChart = createLineChart((JFreeLineChart) chart);
+        } else if (chart instanceof XYLineChart) {
+            jFreeChart = createXYLineChart((JFreeXYLineChart) chart);
         } else {
             log.warn(String.format("This data provider doesn't support a chart type for class: %s",
                     chart.getClass()));
@@ -78,11 +94,15 @@ public class JFreeChartDataProvider implements ChartDataProvider<JFreeChart> {
     private org.jfree.chart.JFreeChart createPieChart(JFreePieChart chart) {
         DefaultPieDataset dataset = new DefaultPieDataset();
 
-        Iterator it = chart.getColumnPropertyIds().iterator();
-        Object valuePropertyId = it.next();
+        Object valuePropertyId = chart.getCategoryPropertyIds().iterator().next();
 
         for (final Object itemId : chart.getRowIds()) {
-            dataset.setValue(chart.getRowCaption(itemId), chart.getColumnValue(itemId, valuePropertyId));
+            Number value = getNumberValue(chart.getValue(itemId, valuePropertyId));
+
+            dataset.setValue(
+                    chart.getRowCaption(itemId),
+                    value
+            );
         }
 
         org.jfree.chart.JFreeChart result;
@@ -90,7 +110,7 @@ public class JFreeChartDataProvider implements ChartDataProvider<JFreeChart> {
             result = ChartFactory.createPieChart3D(
                     getChartTitle(chart),
                     dataset,
-                    chart.isLegend(),
+                    chart.getHasLegend(),
                     false,
                     false
             );
@@ -98,7 +118,7 @@ public class JFreeChartDataProvider implements ChartDataProvider<JFreeChart> {
             result = ChartFactory.createPieChart(
                     getChartTitle(chart),
                     dataset,
-                    chart.isLegend(),
+                    chart.getHasLegend(),
                     false,
                     false
             );
@@ -116,11 +136,13 @@ public class JFreeChartDataProvider implements ChartDataProvider<JFreeChart> {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         for (final Object itemId : chart.getRowIds()) {
-            for (Object categoryPropertyId : chart.getColumnPropertyIds()) {
+            for (Object categoryPropertyId : chart.getCategoryPropertyIds()) {
+                Number value = getNumberValue(chart.getValue(itemId, categoryPropertyId));
+
                 dataset.addValue(
-                        chart.getColumnValue(itemId, categoryPropertyId),
-                        chart.getRowCaption(itemId),
-                        chart.getColumnCaption(categoryPropertyId)
+                    value,
+                    chart.getRowCaption(itemId),
+                    chart.getCategoryCaption(categoryPropertyId)
                 );
             }
         }
@@ -129,25 +151,30 @@ public class JFreeChartDataProvider implements ChartDataProvider<JFreeChart> {
         if (chart.is3D()) {
             result = ChartFactory.createBarChart3D(
                     getChartTitle(chart),
-                    chart.getColumnAxisLabel(),
+                    chart.getArgumentAxisLabel(),
                     chart.getValueAxisLabel(),
                     dataset,
                     convertChartOrientation(chart.getOrientation()),
-                    chart.isLegend(),
+                    chart.getHasLegend(),
                     false,
                     false
             );
         } else {
             result = ChartFactory.createBarChart(
                     getChartTitle(chart),
-                    chart.getColumnAxisLabel(),
+                    chart.getArgumentAxisLabel(),
                     chart.getValueAxisLabel(),
                     dataset,
                     convertChartOrientation(chart.getOrientation()),
-                    chart.isLegend(),
+                    chart.getHasLegend(),
                     false,
                     false
             );
+        }
+
+        ValueAxis rangeAxis =  getValueAxis(chart.getValueAxisType(), chart.is3D());
+        if (rangeAxis != null) {
+            result.getCategoryPlot().setRangeAxis(rangeAxis);
         }
 
         return result;
@@ -157,27 +184,107 @@ public class JFreeChartDataProvider implements ChartDataProvider<JFreeChart> {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         for (final Object itemId : chart.getRowIds()) {
-            for (Object categoryPropertyId : chart.getColumnPropertyIds()) {
+            for (Object categoryPropertyId : chart.getCategoryPropertyIds()) {
+                Number value = getNumberValue(chart.getValue(itemId, categoryPropertyId));
+
                 dataset.addValue(
-                        chart.getColumnValue(itemId, categoryPropertyId),
-                        chart.getRowCaption(itemId),
-                        chart.getColumnCaption(categoryPropertyId)
+                    value,
+                    chart.getRowCaption(itemId),
+                    chart.getCategoryCaption(categoryPropertyId)
                 );
             }
         }
 
         org.jfree.chart.JFreeChart result = ChartFactory.createLineChart(
                 getChartTitle(chart),
-                chart.getColumnAxisLabel(),
+                chart.getArgumentAxisLabel(),
                 chart.getValueAxisLabel(),
                 dataset,
                 convertChartOrientation(chart.getOrientation()),
-                chart.isLegend(),
+                chart.getHasLegend(),
                 false,
                 false
         );
 
+        ValueAxis rangeAxis =  getValueAxis(chart.getValueAxisType(), false);
+        if (rangeAxis != null) {
+            result.getCategoryPlot().setRangeAxis(rangeAxis);
+        }
+
         return result;
+    }
+
+    private org.jfree.chart.JFreeChart createXYLineChart(JFreeXYLineChart chart) {
+        final XYSeriesCollection dataset = new XYSeriesCollection();
+
+        for (final XYChartRow row : chart.getRows()) {
+            XYSeries series = new XYSeries(getRowCaption(row));
+
+            for (Object pointItemId : row.getPointIds()) {
+                Number y = getNumberValue(row.getYValue(pointItemId));
+                Number x = getNumberValue(row.getXValue(pointItemId));
+
+                if (x != null) {
+                    series.add(x, y);
+                }
+            }
+
+            dataset.addSeries(series);
+        }
+
+        org.jfree.chart.JFreeChart result = ChartFactory.createXYLineChart(
+                getChartTitle(chart),
+                chart.getArgumentAxisLabel(),
+                chart.getValueAxisLabel(),
+                dataset,
+                convertChartOrientation(chart.getOrientation()),
+                chart.getHasLegend(),
+                false,
+                false
+        );
+
+        ValueAxis rangeAxis =  getValueAxis(chart.getValueAxisType(), false);
+        if (rangeAxis != null) {
+            result.getXYPlot().setRangeAxis(rangeAxis);
+        }
+
+        ValueAxis domainAxis = getValueAxis(chart.getArgumentAxisType(), false);
+        if (domainAxis != null) {
+            result.getXYPlot().setDomainAxis(domainAxis);
+        }
+
+        return result;
+    }
+
+    private ValueAxis getValueAxis(Chart.AxisType axisType, boolean is3D) {
+        switch (axisType) {
+            case NUMBER:
+                if (is3D) {
+                    return new NumberAxis3D();
+                } else {
+                    return new NumberAxis();
+                }
+            case DATE:
+                return new DateAxis();
+            default:
+                return null;
+        }
+    }
+
+    private Number getNumberValue(Object value) {
+        if (value instanceof Number) {
+            return (Number)value;
+        } else if (value instanceof Boolean) {
+            return (Boolean)value ? 1 : 0;
+        } else if (value instanceof Date) {
+            return ((Date)value).getTime();
+        } else {
+            return null;
+        }
+    }
+
+    private String getRowCaption(XYChartRow row) {
+        return row.getCaption() == null ? "" : row.getCaption();
     }
 
     private String getChartTitle(JFreeChart chart) {

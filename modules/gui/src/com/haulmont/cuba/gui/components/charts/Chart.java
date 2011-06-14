@@ -18,52 +18,44 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 public interface Chart extends Component, Component.Wrapper, Component.BelongToFrame,
         Component.HasXmlDescriptor, Component.Expandable, Component.HasCaption {
 
-    /** Returns chart datasource */
-    CollectionDatasource getCollectionDatasource();
-    /** Sets chart datasource */
-    void setCollectionDatasource(CollectionDatasource datasource);
+    boolean getHasLegend();
+    void setHasLegend(boolean hasLegend);
 
-    /** Adds chart column (category) and its caption */
-    void addColumn(MetaPropertyPath propertyId, String caption);
-
-    /** Returns chart row (serie) caption property id */
-    MetaPropertyPath getRowCaptionPropertyId();
-    /** Sets chart row caption property id */
-    void setRowCaptionPropertyId(MetaPropertyPath propertyId);
-
-    /** Returns chart columns axis label */
-    String getColumnAxisLabel();
-    /** Sets chart column axis label */
-    void setColumnAxisLabel(String label);
-
-    /** Returns chart values axis label */
-    String getValueAxisLabel();
-    /** Sets chart values axis label */
-    void setValueAxisLabel(String label);
-
-    /** Returns <code>true</code> if the chart has a legend */
-    boolean isLegend();
-    /** Sets chart legend state*/
-    void setLegend(boolean needLegend);
-
-    /** Chart component that can be displayed in 3D */
-    interface ViewIn3D {
-        /** Indicates that chart displays in 3D */
-        boolean is3D();
-        /** Sets chart 3D state */
-        void set3D(boolean b);
-    }
-
-    /** Chart component that has horizontal or vertical orientation */
-    interface HasOrientation {
-        /** Returns chart orientation */
-        Orientation getOrientation();
-        /** Sets chart orientation */
-        void setOrientation(Orientation orientation);
+    enum AxisType {
+        NUMBER,
+        DATE
     }
 
     enum Orientation {
         VERTICAL,
         HORIZONTAL
+    }
+
+    interface HasAxisLabels {
+        String getArgumentAxisLabel();
+        void setArgumentAxisLabel(String label);
+
+        String getValueAxisLabel();
+        void setValueAxisLabel(String label);
+    }
+
+    interface HasValueAxisType {
+        AxisType getValueAxisType();
+        void setValueAxisType(AxisType axisType);
+    }
+
+    interface HasArgumentAxisType {
+        AxisType getArgumentAxisType();
+        void setArgumentAxisType(AxisType axisType);
+    }
+
+    interface HasOrientation {
+        Orientation getOrientation();
+        void setOrientation(Orientation orientation);
+    }
+
+    interface ViewIn3D {
+        boolean is3D();
+        void set3D(boolean b);
     }
 }

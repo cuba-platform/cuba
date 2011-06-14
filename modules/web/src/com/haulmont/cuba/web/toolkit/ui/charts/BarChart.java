@@ -10,5 +10,11 @@
  */
 package com.haulmont.cuba.web.toolkit.ui.charts;
 
-public interface BarChart extends Chart, Chart.ViewIn3D, Chart.HasOrientation {
+public interface BarChart
+        extends
+        CategoryChart,
+        Chart.HasAxisLabels,
+        Chart.HasValueAxisType,
+        Chart.ViewIn3D,
+        Chart.HasOrientation {
 }

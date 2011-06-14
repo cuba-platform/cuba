@@ -18,10 +18,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
-import com.haulmont.cuba.web.toolkit.ui.charts.ChartDataProvider;
-import com.haulmont.cuba.web.toolkit.ui.charts.ChartDataProviderFactory;
-import com.haulmont.cuba.web.toolkit.ui.charts.ChartException;
-import com.haulmont.cuba.web.toolkit.ui.charts.ChartImplementation;
+import com.haulmont.cuba.web.toolkit.ui.charts.*;
 import com.vaadin.Application;
 import com.vaadin.external.org.apache.commons.fileupload.*;
 import com.vaadin.terminal.PaintException;
@@ -425,24 +422,46 @@ public class CubaCommunicationManager extends CommunicationManager {
     public void handleChartRequest(
             HttpServletRequest request,
             HttpServletResponse response,
-            CubaApplicationServlet applicationServlet
-    ) {
-        String chartId = request.getParameter("id");
-        if (chartId == null) {
-            return;
-        }
-        Paintable chart = idPaintableMap.get(chartId);
-        if (chart != null) {
-            String vendor = ((ChartImplementation) chart).getVendor();
-            ChartDataProvider dataProvider = ChartDataProviderFactory.getDataProvider(vendor);
-            try {
-                dataProvider.handleDataRequest(request, response, (ChartImplementation) chart);
-            } catch (ChartException e) {
-                log.error("Unable to handle data request", e);
+            App app) {
+        try {
+            if (request.getSession() == null) {
+                accessDenied(response);
+                return;
             }
-        } else {
-            System.err.println(String.format("Warning: non-existent chart component, VAR_PID=%s",
-                    chartId));
+
+            String chartId = request.getParameter("id");
+            if (chartId == null) {
+                badRequest(response);
+                return;
+            }
+
+            UserSession userSession = app.getConnection().getSession();
+            if (userSession == null) {
+                internalError(response);
+                return;
+            }
+
+            Chart chart = (Chart)idPaintableMap.get(chartId);
+            if (chart == null) {
+                log.warn(String.format("Non-existent chart component, VAR_PID=%s", chartId));
+                internalError(response);
+                return;
+            }
+
+            WebSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
+
+            String vendor = chart.getVendor();
+            ChartDataProvider dataProvider = ChartDataProviderFactory.getDataProvider(vendor);
+
+            dataProvider.handleDataRequest(request, response, chart);
+
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch(ChartException e) {
+            log.error("Unable to handle data request: ", e);
+            internalError(response);
+        } catch (Exception e) {
+            log.error("Unexpected error: ", e);
+            internalError(response);
         }
     }
 

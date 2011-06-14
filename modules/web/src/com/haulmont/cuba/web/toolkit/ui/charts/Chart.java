@@ -10,48 +10,16 @@
  */
 package com.haulmont.cuba.web.toolkit.ui.charts;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 
-import java.io.Serializable;
-import java.util.Collection;
+import com.vaadin.data.Container;
+import com.vaadin.ui.Component;
 
-public interface Chart extends Serializable {
+public interface Chart extends Component {
 
-    String getCaption();
-    void setCaption(String caption);
+    String getVendor();
 
-    void addColumnProperty(Object propertyId, Class<?> classType);
-
-    Collection<?> getColumnPropertyIds();
-
-    String getColumnCaption(Object propertyId);
-    void setColumnCaption(Object propertyId, String caption);
-
-    Property getColumnProperty(Object itemId, Object propertyId);
-
-    Number getColumnValue(Object itemId, Object columnPropertyId);
-
-    Object addRow(String caption);
-    Object addRow(Object itemId, String caption);
-    Object addRow(Object[] values, Object itemId, String caption);
-
-    Collection<?> getRowIds();
-
-    Object getRowCaptionPropertyId();
-    void setRowCaptionPropertyId(Object rowCaptionPropertyId);
-
-    String getRowCaption(Object itemId);
-    Item getRow(Object itemId);
-
-    String getColumnAxisLabel();
-    void setColumnAxisLabel(String label);
-
-    String getValueAxisLabel();
-    void setValueAxisLabel(String label);
-
-    boolean isLegend();
-    void setLegend(boolean needLegend);
+    boolean getHasLegend();
+    void setHasLegend(boolean hasLegend);
 
     int getChartWidth();
     void setChartWidth(int chartWidth);
@@ -59,9 +27,32 @@ public interface Chart extends Serializable {
     int getChartHeight();
     void setChartHeight(int chartHeight);
 
+    enum AxisType {
+        NUMBER,
+        DATE
+    }
+
     enum Orientation {
         VERTICAL,
         HORIZONTAL
+    }
+
+    interface HasAxisLabels {
+        String getArgumentAxisLabel();
+        void setArgumentAxisLabel(String label);
+
+        String getValueAxisLabel();
+        void setValueAxisLabel(String label);
+    }
+
+    interface HasValueAxisType {
+        AxisType getValueAxisType();
+        void setValueAxisType(AxisType axisType);
+    }
+
+    interface HasArgumentAxisType {
+        AxisType getArgumentAxisType();
+        void setArgumentAxisType(AxisType axisType);
     }
 
     interface HasOrientation {
@@ -71,6 +62,6 @@ public interface Chart extends Serializable {
 
     interface ViewIn3D {
         boolean is3D();
-        void set3D(boolean b);
+        void set3D(boolean is3D);
     }
 }

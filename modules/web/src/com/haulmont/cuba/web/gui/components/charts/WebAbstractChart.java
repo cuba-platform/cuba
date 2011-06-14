@@ -10,127 +10,23 @@
  */
 package com.haulmont.cuba.web.gui.components.charts;
 
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.gui.components.charts.Chart;
-import com.haulmont.cuba.gui.data.ChartColumnInfo;
-import com.haulmont.cuba.gui.data.ChartDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.components.WebAbstractComponent;
-import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
-import com.haulmont.cuba.web.gui.data.DsManager;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.charts.ChartComponent;
-
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
 
 public abstract class WebAbstractChart<T extends ChartComponent>
         extends WebAbstractComponent<T>
-        implements Chart
-{
-    private CollectionDatasource datasource;
+        implements Chart {
 
-    protected DsManager dsManager;
+    private static final long serialVersionUID = 7222268861924207093L;
 
-    protected Map<MetaPropertyPath, String> columns = new LinkedHashMap<MetaPropertyPath, String>();
-
-    public void addColumn(MetaPropertyPath propertyId, String caption) {
-        columns.put(propertyId, caption);
+    public boolean getHasLegend() {
+        return component.getHasLegend();
     }
 
-    public CollectionDatasource getCollectionDatasource() {
-        return datasource;
-    }
-
-    public void setCollectionDatasource(CollectionDatasource datasource) {
-        if (datasource instanceof ChartDatasource) {
-            final ChartDatasource chartDatasource = (ChartDatasource) datasource;
-
-            chartDatasource.refresh();
-
-            final Collection<ChartColumnInfo> columns = chartDatasource.getColumns();
-            for (final ChartColumnInfo column : columns) {
-                component.addColumnProperty(column.getProperty(), column.getType());
-                component.setColumnCaption(column.getProperty(), column.getCaption());
-            }
-
-            final Collection<Object> rowIds = chartDatasource.getRowIds();
-            for (Object rowId : rowIds) {
-                component.addRow(rowId, chartDatasource.getRowCaption(rowId));
-                for (final ChartColumnInfo column : columns) {
-                    component.getColumnProperty(rowId, column.getProperty())
-                            .setValue(chartDatasource.getColumnValue(rowId, column));
-                }
-            }
-
-        } else {
-            Collection<MetaPropertyPath> props;
-            if (columns.isEmpty()) {
-                props = null;
-            } else {
-                props = new LinkedHashSet<MetaPropertyPath>(columns.keySet());
-            }
-
-            if (props == null) {
-                throw new IllegalStateException("Properties cannot be NULL");
-            }
-
-            if (getRowCaptionPropertyId() != null) {
-                props.add(getRowCaptionPropertyId());
-            }
-
-            this.datasource = datasource;
-            this.dsManager = new DsManager(datasource, this);
-
-            CollectionDsWrapper dsWrapper = createContainerDatasource(datasource, props, dsManager);
-
-            component.setContainerDataSource(dsWrapper);
-
-            for (final Map.Entry<MetaPropertyPath, String> entry : columns.entrySet()) {
-                component.setColumnCaption(entry.getKey(), entry.getValue());
-            }
-        }
-    }
-
-    protected CollectionDsWrapper createContainerDatasource(
-            CollectionDatasource datasource,
-            Collection<MetaPropertyPath> props,
-            DsManager dsManager
-    ) {
-        return new CollectionDsWrapper(datasource, props, true, this.dsManager);
-    }
-
-    public MetaPropertyPath getRowCaptionPropertyId() {
-        return (MetaPropertyPath) component.getRowCaptionPropertyId();
-    }
-
-    public void setRowCaptionPropertyId(MetaPropertyPath propertyId) {
-        component.setRowCaptionPropertyId(propertyId);
-    }
-
-    public String getColumnAxisLabel() {
-        return component.getColumnAxisLabel();
-    }
-
-    public void setColumnAxisLabel(String label) {
-        component.setColumnAxisLabel(label);
-    }
-
-    public String getValueAxisLabel() {
-        return component.getValueAxisLabel();
-    }
-
-    public void setValueAxisLabel(String label) {
-        component.setValueAxisLabel(label);
-    }
-
-    public boolean isLegend() {
-        return component.isLegend();
-    }
-
-    public void setLegend(boolean needLegend) {
-        component.setLegend(needLegend);
+    public void setHasLegend(boolean needLegend) {
+        component.setHasLegend(needLegend);
     }
 
     public String getCaption() {

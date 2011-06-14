@@ -10,24 +10,58 @@
  */
 package com.haulmont.cuba.web.toolkit.ui.charts.jfree;
 
+import com.haulmont.cuba.toolkit.gwt.client.charts.jfree.JFreeChartRenderer;
 import com.haulmont.cuba.web.toolkit.ui.charts.BarChart;
+import com.haulmont.cuba.web.toolkit.ui.charts.Chart;
 import com.vaadin.data.Container;
+import com.vaadin.ui.ClientWidget;
 
-public class JFreeBarChart extends JFreeChart implements BarChart {
+public class JFreeBarChart extends JFreeCategoryChart implements BarChart {
     private static final long serialVersionUID = 2496407681381514463L;
 
-    public JFreeBarChart() {
+    private String argumentAxisLabel;
+    private String valueAxisLabel;
+    private AxisType valueAxisType = AxisType.NUMBER;
+    private Orientation orientation = Orientation.VERTICAL;
+    private boolean is3D = false;
+
+    public String getArgumentAxisLabel() {
+        return argumentAxisLabel;
     }
 
-    public JFreeBarChart(String caption) {
-        super(caption);
+    public void setArgumentAxisLabel(String columnAxisLabel) {
+        this.argumentAxisLabel = columnAxisLabel;
     }
 
-    public JFreeBarChart(String caption, Container datasource) {
-        super(caption, datasource);
+    public String getValueAxisLabel() {
+        return valueAxisLabel;
     }
 
-    public JFreeBarChart(Container datasource) {
-        super(datasource);
+    public void setValueAxisLabel(String valueAxisLabel) {
+        this.valueAxisLabel = valueAxisLabel;
+    }
+
+    public AxisType getValueAxisType() {
+        return valueAxisType;
+    }
+
+    public void setValueAxisType(AxisType valueAxisType) {
+        this.valueAxisType = valueAxisType;
+    }
+
+    public boolean is3D() {
+        return is3D;
+    }
+
+    public void set3D(boolean is3D) {
+        this.is3D = is3D;
+    }
+
+    public Orientation getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(Orientation orientation) {
+        this.orientation = orientation;
     }
 }

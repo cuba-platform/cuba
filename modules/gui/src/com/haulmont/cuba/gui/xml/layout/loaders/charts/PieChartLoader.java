@@ -10,17 +10,18 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders.charts;
 
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.gui.components.charts.CategoryChart;
 import com.haulmont.cuba.gui.components.charts.Chart;
 import com.haulmont.cuba.gui.components.charts.PieChart;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.data.ChartDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-public class PieChartLoader extends AbstractChartLoader {
+public class PieChartLoader extends AbstractCategoryChartLoader {
     private static final long serialVersionUID = -8559322020967118466L;
 
     public PieChartLoader(Context context) {
@@ -28,11 +29,9 @@ public class PieChartLoader extends AbstractChartLoader {
     }
 
     @Override
-    public Chart loadComponent(
-            ComponentsFactory factory,
-            Element element,
-            Component parent
-    ) throws InstantiationException, IllegalAccessException {
+    public PieChart loadComponent(ComponentsFactory factory, Element element, Component parent)
+            throws InstantiationException, IllegalAccessException {
+
         PieChart component = (PieChart) super.loadComponent(factory, element, parent);
 
         load3D(component, element);
@@ -41,7 +40,7 @@ public class PieChartLoader extends AbstractChartLoader {
     }
 
     @Override
-    protected void loadDatasource(Chart component, Element element) {
+    protected void loadDatasource(CategoryChart component, Element element) {
         String datasource = element.attributeValue("datasource");
         if (!StringUtils.isEmpty(datasource)) {
             CollectionDatasource ds = context.getDsContext().get(datasource);
@@ -49,29 +48,27 @@ public class PieChartLoader extends AbstractChartLoader {
                 throw new IllegalStateException("Cannot find data source by name: " + datasource);
             }
 
-            if (!(ds instanceof ChartDatasource)) {
-                String valueProperty = element.attributeValue("valueProperty");
-                if (StringUtils.isEmpty(valueProperty)) {
-                    throw new IllegalAccessError("PieChart must contains non-empty 'valueProperty' attribute");
-                }
+            String valueProperty = element.attributeValue("valueProperty");
+            if (StringUtils.isEmpty(valueProperty)) {
+                throw new IllegalAccessError("PieChart must contains non-empty 'valueProperty' attribute");
+            }
 
-                MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(valueProperty);
-                if (propertyPath == null) {
+            MetaProperty property = ds.getMetaClass().getProperty(valueProperty);
+            if (property == null) {
+                throw new IllegalStateException(String.format("Property '%s' not found in entity '%s'",
+                        valueProperty, ds.getMetaClass().getName()));
+            }
+
+            component.addCategory(property, null);
+
+            String captionPropertyString = element.attributeValue("captionProperty");
+            if (!StringUtils.isEmpty(captionPropertyString)) {
+                MetaProperty captionProperty = ds.getMetaClass().getProperty(captionPropertyString);
+                if (captionProperty == null) {
                     throw new IllegalStateException(String.format("Property '%s' not found in entity '%s'",
-                            valueProperty, ds.getMetaClass().getName()));
+                            captionProperty, ds.getMetaClass().getName()));
                 }
-
-                component.addColumn(propertyPath, null);
-
-                String captionProperty = element.attributeValue("captionProperty");
-                if (!StringUtils.isEmpty(captionProperty)) {
-                    MetaPropertyPath captionPropertyPath = ds.getMetaClass().getPropertyPath(captionProperty);
-                    if (captionPropertyPath == null) {
-                        throw new IllegalStateException(String.format("Property '%s' not found in entity '%s'",
-                                captionProperty, ds.getMetaClass().getName()));
-                    }
-                    component.setRowCaptionPropertyId(captionPropertyPath);
-                }
+                component.setRowCaptionProperty(captionProperty);
             }
 
             component.setCollectionDatasource(ds);

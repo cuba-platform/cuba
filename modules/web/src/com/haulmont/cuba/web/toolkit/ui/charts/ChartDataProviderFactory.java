@@ -11,6 +11,7 @@
 package com.haulmont.cuba.web.toolkit.ui.charts;
 
 
+import com.haulmont.cuba.web.toolkit.ui.charts.jfree.JFreeChart;
 import com.haulmont.cuba.web.toolkit.ui.charts.jfree.JFreeChartDataProvider;
 
 import java.util.HashMap;
@@ -18,33 +19,17 @@ import java.util.Map;
 
 public abstract class ChartDataProviderFactory {
 
-    private static Map<String, ChartDataProvider> providers;
-
-    private static Map<String, ChartDataProvider> customProviders;
+    private static Map<String, ChartDataProvider> providers = new HashMap<String, ChartDataProvider>();
 
     static {
-        providers = new HashMap<String, ChartDataProvider>();
-        providers.put("jfree", new JFreeChartDataProvider());
+        providers.put(JFreeChart.VENDOR, new JFreeChartDataProvider());
     }
 
     public static void register(String chartVendor, ChartDataProvider dataProvider) {
-        if (customProviders == null) {
-            customProviders = new HashMap<String, ChartDataProvider>();
-        }
-        customProviders.put(chartVendor, dataProvider);
+        providers.put(chartVendor, dataProvider);
     }
 
     public static ChartDataProvider getDataProvider(String chartVendor) {
-        ChartDataProvider dataProvider = null;
-        if (customProviders != null) {
-            dataProvider = customProviders.get(chartVendor);
-        }
-        if (dataProvider == null) {
-            dataProvider = providers.get(chartVendor);
-        }
-        return dataProvider;
-    }
-
-    protected ChartDataProviderFactory() {
+        return providers.get(chartVendor);
     }
 }

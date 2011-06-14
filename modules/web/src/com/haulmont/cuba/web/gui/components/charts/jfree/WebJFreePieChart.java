@@ -11,10 +11,12 @@
 package com.haulmont.cuba.web.gui.components.charts.jfree;
 
 import com.haulmont.cuba.gui.components.charts.PieChart;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.charts.WebAbstractCategoryChart;
 import com.haulmont.cuba.web.gui.components.charts.WebAbstractChart;
 import com.haulmont.cuba.web.toolkit.ui.charts.jfree.JFreePieChart;
 
-public class WebJFreePieChart extends WebAbstractChart<JFreePieChart> implements PieChart {
+public class WebJFreePieChart extends WebAbstractCategoryChart<JFreePieChart> implements PieChart {
     private static final long serialVersionUID = 2148678991758077072L;
 
     public WebJFreePieChart() {

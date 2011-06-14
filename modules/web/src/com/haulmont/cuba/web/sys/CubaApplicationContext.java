@@ -22,7 +22,7 @@ public class CubaApplicationContext extends WebApplicationContext {
     protected CubaApplicationContext() {
     }
 
-    static public WebApplicationContext getApplicationContext(HttpSession session) {
+    static public CubaApplicationContext getApplicationContext(HttpSession session) {
         CubaApplicationContext cx = (CubaApplicationContext) session
                 .getAttribute(WebApplicationContext.class.getName());
         if (cx == null) {
@@ -39,5 +39,15 @@ public class CubaApplicationContext extends WebApplicationContext {
     protected CommunicationManager createCommunicationManager(Application application,
             AbstractApplicationServlet applicationServlet) {
         return new CubaCommunicationManager(application);
+    }
+
+    @Override
+    protected void startTransaction(Application application, Object request) {
+        super.startTransaction(application, request);
+    }
+
+    @Override
+    protected void endTransaction(Application application, Object request) {
+        super.endTransaction(application, request);
     }
 }

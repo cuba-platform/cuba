@@ -11,18 +11,17 @@
 package com.haulmont.cuba.web.gui.components.charts.jfree;
 
 import com.haulmont.cuba.gui.components.charts.BarChart;
+import com.haulmont.cuba.gui.components.charts.Chart;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.charts.WebAbstractCategoryChart;
 import com.haulmont.cuba.web.gui.components.charts.WebAbstractChart;
 import com.haulmont.cuba.web.toolkit.ui.charts.jfree.JFreeBarChart;
 
-public class WebJFreeBarChart extends WebAbstractChart<JFreeBarChart> implements BarChart {
+public class WebJFreeBarChart extends WebAbstractCategoryChart<JFreeBarChart> implements BarChart {
     private static final long serialVersionUID = -1225096992495156855L;
-
-    private Orientation orientation;
 
     public WebJFreeBarChart() {
         component = new JFreeBarChart();
-        setOrientation(Orientation.VERTICAL);
     }
 
     public boolean is3D() {
@@ -34,11 +33,34 @@ public class WebJFreeBarChart extends WebAbstractChart<JFreeBarChart> implements
     }
 
     public Orientation getOrientation() {
-        return orientation;
+        return WebComponentsHelper.convertChartOrientation(component.getOrientation());
     }
 
     public void setOrientation(Orientation orientation) {
-        this.orientation = orientation;
         component.setOrientation(WebComponentsHelper.convertChartOrientation(orientation));
+    }
+
+    public String getArgumentAxisLabel() {
+        return component.getArgumentAxisLabel();
+    }
+
+    public void setArgumentAxisLabel(String label) {
+        component.setArgumentAxisLabel(label);
+    }
+
+    public String getValueAxisLabel() {
+        return component.getValueAxisLabel();
+    }
+
+    public void setValueAxisLabel(String label) {
+        component.setValueAxisLabel(label);
+    }
+
+    public AxisType getValueAxisType() {
+        return WebComponentsHelper.convertChartAxisType(component.getValueAxisType());
+    }
+
+    public void setValueAxisType(AxisType axisType) {
+        component.setValueAxisType(WebComponentsHelper.convertChartAxisType(axisType));
     }
 }

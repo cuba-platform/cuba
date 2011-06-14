@@ -12,29 +12,8 @@ package com.haulmont.cuba.web.toolkit.ui.charts.jfree;
 
 import com.haulmont.cuba.toolkit.gwt.client.charts.jfree.JFreeChartRenderer;
 import com.haulmont.cuba.web.toolkit.ui.charts.Chart;
-import com.haulmont.cuba.web.toolkit.ui.charts.ChartComponent;
-import com.haulmont.cuba.web.toolkit.ui.charts.ChartImplementation;
-import com.vaadin.data.Container;
 import com.vaadin.ui.ClientWidget;
 
-@ClientWidget(JFreeChartRenderer.class)
-public abstract class JFreeChart extends ChartComponent implements ChartImplementation, Chart {
-    protected JFreeChart() {
-    }
-
-    protected JFreeChart(String caption) {
-        super(caption);
-    }
-
-    protected JFreeChart(String caption, Container datasource) {
-        super(caption, datasource);
-    }
-
-    protected JFreeChart(Container datasource) {
-        super(datasource);
-    }
-
-    public String getVendor() {
-        return "jfree";
-    }
+public interface JFreeChart extends Chart {
+    public static final String VENDOR = "jfree";
 }
