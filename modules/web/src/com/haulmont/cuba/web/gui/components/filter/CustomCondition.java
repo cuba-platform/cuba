@@ -46,14 +46,19 @@ public class CustomCondition extends Condition {
     }
 
     public CustomCondition(ConditionDescriptor descriptor, String where, String join, String entityAlias) {
-        super(descriptor);
+         super(descriptor);
         this.entityAlias = entityAlias;
 
         this.join = join;
         this.text = where;
         if (param != null)
             text = text.replace("?", ":" + param.getName());
-        String operatorName = descriptor.getElement().attributeValue("operatorType", null);
+        String operatorName;
+        if (descriptor.getElement() == null) {
+            operatorName = null;
+        } else {
+            operatorName = descriptor.getElement().attributeValue("operatorType", null);
+        }
         if (operatorName != null) {
             operator = Op.valueOf(operatorName);
         }
