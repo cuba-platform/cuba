@@ -17,7 +17,6 @@
 
     <layout>
         <vbox id="histotyPane" expand="historyTable" margin="true" spacing="true">
-            <!--button id="copy"/-->
             <table id="historyTable" editable="false" sortable="true" multiselect="true">
                 <columns>
                     <column id="caption" caption="msg://cardHistoryBrowse.name"/>
