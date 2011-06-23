@@ -95,10 +95,10 @@ public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
                 if (StandardEntity.class.isAssignableFrom(value.getClass())) {
                     categoryValue.setEntityValue(((StandardEntity) value).getUuid());
                 } else {
-                    categoryValue.setValue(parseValue(value));
+                    setValue(categoryValue, value);
                 }
             } else
-                categoryValue.setValue(parseValue(value));
+                setValue(categoryValue, value);
 
             for (ValueListener listener : listeners) {
                 listener.propertyChanged(this, name, oldValue, value);
@@ -115,11 +115,11 @@ public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
         if (!ObjectUtils.equals(oldValue, value)) {
             values.put(propertyPath, value);
             changed.put(propertyPath, value);
-            CategoryAttributeValue categoryValue = categoryValues.get(propertyPath);
+            CategoryAttributeValue attrValue = categoryValues.get(propertyPath);
             if (Entity.class.isAssignableFrom(value.getClass())) {
-                categoryValue.setEntityValue(((StandardEntity) value).getUuid());
+                attrValue.setEntityValue(((StandardEntity) value).getUuid());
             } else
-                categoryValue.setValue(parseValue(value));
+                setValue(attrValue,value);
 
             for (ValueListener listener : listeners) {
                 listener.propertyChanged(this, propertyPath, oldValue, value);
@@ -132,32 +132,19 @@ public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
     }
 
 
-    private String parseValue(Object value) {
-
-        if (value == null) {
-            return null;
+    private void setValue(CategoryAttributeValue attrValue, Object value) {
+        if (value instanceof Integer) {
+            attrValue.setIntValue((Integer) value);
+        } else if (value instanceof Double) {
+            attrValue.setDoubleValue((Double) value);
+        } else if (value instanceof Boolean) {
+            attrValue.setBooleanValue((Boolean) value);
+        } else if (value instanceof Date) {
+            attrValue.setDateValue((Date) value);
+        } else if (value instanceof String) {
+            attrValue.setStringValue((String) value);
+        } else if (value instanceof SetValueEntity) {
+            attrValue.setStringValue(((SetValueEntity) value).getValue());
         }
-        if (String.class.equals(value.getClass())) {
-            return (String) value;
-        }
-        if (Integer.class.equals(value.getClass())) {
-            return Datatypes.get(Integer.class).format((Integer) value);
-        }
-        if (Double.class.equals(value.getClass())) {
-            return Datatypes.get(Double.class).format((Double) value);
-        }
-        if (Boolean.class.equals(value.getClass())) {
-            return Datatypes.get(Boolean.class).format((Boolean) value);
-        }
-        if (Date.class.equals(value.getClass())) {
-            return Datatypes.get(Date.class).format((Date) value);
-        }
-        if (SetValueEntity.class.equals(value.getClass())) {
-            return ((SetValueEntity) value).getValue();
-        }
-
-        return null;
-
     }
-
 }

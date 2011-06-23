@@ -48,6 +48,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     private Class itemClass;
     private MetaClass metaClass;
     private CollectionDatasource collectionDatasource;
+    private List<String> runtimeEnum;
 
     private List listValue;
     private Map<Object, String> values = new LinkedHashMap<Object, String>();
@@ -120,6 +121,11 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     public ListEditComponent(MetaClass metaClass) {
         this(metaClass.getJavaClass());
         this.metaClass = metaClass;
+    }
+
+    public ListEditComponent(List<String> values) {
+        this(String.class);
+        this.runtimeEnum = values;
     }
 
     @Override
@@ -415,6 +421,22 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
                 field = picker.getComponent();
 
+            } else if (runtimeEnum != null) {
+                final WebLookupField lookup = new WebLookupField();
+                lookup.setWidth(COMPONENT_WIDTH);
+                lookup.setOptionsList(runtimeEnum);
+
+                lookup.addListener(new ValueListener() {
+                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                        if (value != null) {
+                            String str = addRuntimeEnumValue((String) value);
+                            addItemLayout(value, str);
+                            lookup.setValue(null);
+                        }
+                    }
+                });
+
+                field = lookup.getComponent();
             } else if (itemClass.isEnum()) {
                 Map<String, Object> options = new HashMap<String, Object>();
                 for (Object obj : itemClass.getEnumConstants()) {
@@ -492,6 +514,11 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             contentLayout.addComponent(bottomLayout);
 
             setContent(contentLayout);
+        }
+
+        private String addRuntimeEnumValue(String value) {
+            values.put(value, value);
+            return value;
         }
 
         private String addEnumValue(Enum en) {

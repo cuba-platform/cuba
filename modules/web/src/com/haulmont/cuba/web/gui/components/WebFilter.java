@@ -808,10 +808,20 @@ public class WebFilter
         for (Condition condition : list) {
             if (condition.getParam() != null) {
                 String paramName = condition.getParam().getName();
+                String paramName2 = "";
+
+                if (condition instanceof RuntimePropCondition) {
+                    paramName2 = ((RuntimePropCondition) condition).getCategoryAttributeParam().getName();
+                }
                 String componentName = paramName.substring(paramName.lastIndexOf('.') + 1);
                 if (id.equals(componentName)) {
-                    ParamWrapper wrapper = new ParamWrapper(condition);
+                    ParamWrapper wrapper = new ParamWrapper(condition, condition.getParam());
                     return (T) wrapper;
+                }
+                String componentName2 = paramName2.substring(paramName.lastIndexOf('.') + 1);
+                if (id.equals(componentName2)) {
+                    ParamWrapper w = new ParamWrapper(condition, ((RuntimePropCondition) condition).getCategoryAttributeParam());
+                    return (T) w;
                 }
             }
         }
@@ -1185,13 +1195,15 @@ public class WebFilter
     private static class ParamWrapper implements HasValue {
 
         private final Condition condition;
+        private final Param param;
 
-        private ParamWrapper(Condition condition) {
+        private ParamWrapper(Condition condition, Param param) {
             this.condition = condition;
+            this.param = param;
         }
 
         public <T> T getValue() {
-            Object value = condition.getParam().getValue();
+            Object value = param.getValue();
             if (value instanceof String
                     && !StringUtils.isEmpty((String) value)
                     && !((String) value).contains("%")
@@ -1208,12 +1220,12 @@ public class WebFilter
                     }
                 } else if (condition instanceof CustomCondition) {
                     String where = ((CustomCondition) condition).getWhere();
-                    CustomCondition.Op op = ((CustomCondition) condition).getOperator();
+                    PropertyCondition.Op op = ((CustomCondition) condition).getOperator();
                     Matcher matcher = LIKE_PATTERN.matcher(where);
                     if (matcher.find()) {
-                        if (CustomCondition.Op.STARTS_WITH.equals(op)) {
+                        if (PropertyCondition.Op.STARTS_WITH.equals(op)) {
                             value = wrapValueForLike(value, false, true);
-                        } else if (CustomCondition.Op.ENDS_WITH.equals(op)) {
+                        } else if (PropertyCondition.Op.ENDS_WITH.equals(op)) {
                             value = wrapValueForLike(value, true, false);
                         } else {
                             value = wrapValueForLike(value);
@@ -1238,11 +1250,11 @@ public class WebFilter
         }
 
         public void addListener(ValueListener listener) {
-            condition.getParam().addListener(listener);
+            param.addListener(listener);
         }
 
         public void removeListener(ValueListener listener) {
-            condition.getParam().removeListener(listener);
+            param.removeListener(listener);
         }
 
         public boolean isEditable() {
@@ -1253,7 +1265,7 @@ public class WebFilter
         }
 
         public String getId() {
-            return condition.getName();
+            return param.getName();
         }
 
         public void setId(String id) {

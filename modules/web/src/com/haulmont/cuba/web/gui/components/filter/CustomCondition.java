@@ -14,17 +14,14 @@ import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.dom4j.Element;
+import org.omg.CORBA.PUBLIC_MEMBER;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class CustomCondition extends Condition {
 
-    public enum Op {
-        STARTS_WITH,
-        ENDS_WITH
-    }
 
-    private Op operator=null;
+    private PropertyCondition.Op operator=null;
 
     private String join;
 
@@ -41,12 +38,12 @@ public class CustomCondition extends Condition {
         join = element.attributeValue("join");
         String operatorName = element.attributeValue("operatorType", null);
         if (operatorName != null) {
-            operator = Op.valueOf(operatorName);
+            operator = PropertyCondition.Op.valueOf(operatorName);
         }
     }
 
     public CustomCondition(ConditionDescriptor descriptor, String where, String join, String entityAlias) {
-         super(descriptor);
+        super(descriptor);
         this.entityAlias = entityAlias;
 
         this.join = join;
@@ -54,13 +51,9 @@ public class CustomCondition extends Condition {
         if (param != null)
             text = text.replace("?", ":" + param.getName());
         String operatorName;
-        if (descriptor.getElement() == null) {
-            operatorName = null;
-        } else {
-            operatorName = descriptor.getElement().attributeValue("operatorType", null);
-        }
+        operatorName = descriptor.getOperatorType();
         if (operatorName != null) {
-            operator = Op.valueOf(operatorName);
+            operator = PropertyCondition.Op.valueOf(operatorName);
         }
     }
 
@@ -106,7 +99,11 @@ public class CustomCondition extends Condition {
         this.text = where;
     }
 
-    public Op getOperator() {
+    public PropertyCondition.Op getOperator() {
         return operator;
+    }
+
+    public void setOperator(PropertyCondition.Op operator) {
+        this.operator = operator;
     }
 }

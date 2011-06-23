@@ -99,15 +99,22 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
                 attrValue = new CategoryAttributeValue();
                 attrValue.setCategoryAttribute(attribute);
                 attrValue.setEntityId(entity.getId());
-                attrValue.setValue(attribute.getDefaultValue());
+                attrValue.setStringValue(attribute.getDefaultString());
+                attrValue.setIntValue(attribute.getDefaultInt());
+                attrValue.setDoubleValue(attribute.getDefaultDouble());
+                attrValue.setBooleanValue(attribute.getDefaultBoolean());
+                attrValue.setDateValue(attribute.getDefaultDate());
                 attrValue.setEntityValue(attribute.getDefaultEntityId());
             }
             categoryValues.put(attribute.getName(), attrValue);
             Object value = parseValue(attribute, attrValue);
             variables.put(attribute.getName(), value);
-            RuntimePropertiesMetaProperty property = new RuntimePropertiesMetaProperty(this.metaClass, attribute.getName(), getAttributeClass(attribute));
+            RuntimePropertiesMetaProperty property = new RuntimePropertiesMetaProperty(
+                    this.metaClass,
+                    attribute.getName(),
+                    RuntimePropertiesHelper.getAttributeClass(attribute));
             ((RuntimePropertiesMetaClass) this.metaClass).addProperty(property);
-            if (getAttributeClass(attribute).equals(SetValueEntity.class)) {
+            if (RuntimePropertiesHelper.getAttributeClass(attribute).equals(SetValueEntity.class)) {
                 createOptionsDatasource(attribute, (SetValueEntity) value);
             }
         }
@@ -156,10 +163,7 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
 
         ((DatasourceImpl) datasource).valid();
         ((DsContextImplementation) getDsContext()).register(datasource);
-
-
     }
-
 
     private List<SetValueEntity> getOptions(CategoryAttribute attribute, SetValueEntity attributeValue) {
         String enumeration = attribute.getEnumeration();
@@ -175,7 +179,6 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
             }
         }
         return options;
-
     }
 
     private CategoryAttributeValue getValue(CategoryAttribute attribute, List<CategoryAttributeValue> entityValues) {
@@ -199,73 +202,51 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
                 return parseEntity(dataType, entityId);
             }
         } else {
-            String stringValue;
 
-            if (attrValue != null) {
-                stringValue = attrValue.getValue();
-            } else {
-                stringValue = attribute.getDefaultValue();
-            }
-
-            try {
-                switch (PropertyType.valueOf(dataType)) {
-                    case STRING:
-                        return stringValue;
-                    case INTEGER:
-                        return Datatypes.get(Integer.class).parse(stringValue);
-                    case DOUBLE:
-                        return Datatypes.get(Double.class).parse(stringValue);
-                    case BOOLEAN:
-                        return Datatypes.get(Boolean.class).parse(stringValue);
-                    case DATE:
-                        return Datatypes.get(Date.class).parse(stringValue);
-                    case ENUMERATION:
-                        if (stringValue == null)
-                            return null;
-                        else
-                            return new SetValueEntity(stringValue);
-                }
-            } catch (ParseException e) {
-                throw new RuntimeException("can't parse value " + stringValue + " to type " + dataType, e);
-            }
-        }
-        return attrValue.getValue();
-    }
-
-    private Class getAttributeClass(CategoryAttribute attribute) {
-
-        if (BooleanUtils.isTrue(attribute.getIsEntity())) {
-            try {
-                return Class.forName(attribute.getDataType());
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("can't load class " + attribute.getDataType(), e);
-            }
-
-        } else {
-            String dataType = attribute.getDataType();
             switch (PropertyType.valueOf(dataType)) {
                 case STRING:
-                    return String.class;
+                    if (attrValue != null)
+                        return attrValue.getStringValue();
+                    else return attribute.getDefaultString();
                 case INTEGER:
-                    return Integer.class;
+                    if (attrValue != null)
+                        return attrValue.getIntValue();
+                    else return attribute.getDefaultInt();
                 case DOUBLE:
-                    return Double.class;
+                    if (attrValue != null)
+                        return attrValue.getDoubleValue();
+                    else
+                        return attribute.getDefaultDouble();
                 case BOOLEAN:
-                    return Boolean.class;
+                    if (attrValue != null)
+                        return attrValue.getBooleanValue();
+                    else
+                        return attribute.getDefaultBoolean();
                 case DATE:
-                    return Date.class;
+                    if (attrValue != null)
+                        return attrValue.getDateValue();
+                    else
+                        return attribute.getDefaultDate();
                 case ENUMERATION:
-                    return SetValueEntity.class;
 
+                    if (attrValue != null)
+                        return new SetValueEntity(attrValue.getStringValue());
+                    else {
+                        String eValue = attribute.getDefaultString();
+                        if (eValue != null)
+                            return new SetValueEntity(eValue);
+                        else
+                            return null;
+                    }
             }
 
         }
-        return String.class;
+        return attrValue.getStringValue();
     }
 
     private Entity parseEntity(String entityType, UUID uuid) {
 
-        Entity entity = null;
+        Entity entity;
         try {
             Class clazz = Class.forName(entityType);
             LoadContext entitiesContext = new LoadContext(clazz);

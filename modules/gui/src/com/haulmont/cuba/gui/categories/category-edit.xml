@@ -34,7 +34,12 @@
             <columns>
                 <column id="name"/>
                 <column id="dataType"/>
-                <column id="defaultValue"/>
+                <column id="defaultString"/>
+                <column id="defaultInt"/>
+                <column id="defaultDouble"/>
+                <column id="defaultBoolean"/>
+                <column id="defaultDate"/>
+                <column id="defaultEntityId"/>
             </columns>
             <rows datasource="attributesDs"/>
         </table>

@@ -12,7 +12,9 @@ package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.data.Datasource;
+import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -21,6 +23,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public abstract class Condition {
 
@@ -37,12 +40,14 @@ public abstract class Condition {
     protected boolean unary;
     protected boolean inExpr;
     protected Class javaClass;
+    protected Class paramClass;
     protected Param param;
     protected String entityAlias;
     protected boolean hidden;
     protected String entityParamWhere;
     protected String entityParamView;
     protected Datasource datasource;
+    protected UUID categoryAttrId;
 
     protected List<Listener> listeners = new ArrayList<Listener>();
 
@@ -67,10 +72,21 @@ public abstract class Condition {
             javaClass = ScriptingProvider.loadClass(aclass);
 
         List<Element> paramElements = Dom4j.elements(element, "param");
+        //todo support more than one parameter
         if (!paramElements.isEmpty()) {
             Element paramElem = paramElements.iterator().next();
+
+            if (BooleanUtils.toBoolean(paramElem.attributeValue("hidden", "false"), "true", "false")) {
+                paramElem = paramElements.iterator().next();
+            }
             String paramName = paramElem.attributeValue("name");
 
+            if (!isBlank(paramElem.attributeValue("javaClass"))) {
+                paramClass = ScriptingProvider.loadClass(paramElem.attributeValue("javaClass"));
+                if (SetValueEntity.class.isAssignableFrom(paramClass)) {
+                    categoryAttrId = UUID.fromString(paramElem.attributeValue("categoryAttrId"));
+                }
+            }
             if (unary) {
                 param = new Param(paramName, null, null, null, null, false);
             } else {
@@ -95,7 +111,10 @@ public abstract class Condition {
     }
 
     protected Param createParam(String paramName) {
-        return new Param(paramName, javaClass, entityParamWhere, entityParamView, datasource, inExpr);
+        if (categoryAttrId != null) {
+            return new Param(paramName, paramClass, entityParamWhere, entityParamView, datasource, inExpr, categoryAttrId);
+        } else
+            return new Param(paramName, paramClass == null ? javaClass : paramClass, entityParamWhere, entityParamView, datasource, inExpr);
     }
 
     public void addListener(Listener listener) {
@@ -183,11 +202,7 @@ public abstract class Condition {
             element.addAttribute("hidden", "true");
 
         if (param != null) {
-            Element paramElem = element.addElement("param");
-            paramElem.addAttribute("name", param.getName());
-
-            paramElem.setText(param.formatValue());
-
+            param.toXml(element);
             if (entityParamWhere != null)
                 element.addAttribute("paramWhere", entityParamWhere);
             if (entityParamView != null)

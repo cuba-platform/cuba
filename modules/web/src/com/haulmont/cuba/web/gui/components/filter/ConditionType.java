@@ -12,5 +12,6 @@ package com.haulmont.cuba.web.gui.components.filter;
 
 public enum ConditionType {
     PROPERTY,
-    CUSTOM
+    CUSTOM,
+    RUNTIME_PROPERTY
 }

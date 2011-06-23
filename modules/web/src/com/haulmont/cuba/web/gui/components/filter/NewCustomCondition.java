@@ -22,4 +22,9 @@ public class NewCustomCondition extends CustomCondition {
         locCaption = MessageProvider.getMessage(getClass(), "newCustomCondition");
     }
 
+    @Override
+    public OperationEditor createOperationEditor() {
+        return new CustomOperationEditor(this);
+    }
+
 }

@@ -17,8 +17,10 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
+import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -36,6 +38,7 @@ import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import javax.persistence.TemporalType;
 import java.text.ParseException;
@@ -46,6 +49,7 @@ public class Param {
     public enum Type {
         ENTITY,
         ENUM,
+        RUNTIME_ENUM,
         DATATYPE,
         UNARY
     }
@@ -61,11 +65,18 @@ public class Param {
     private Datasource datasource;
     private MetaProperty property;
     private boolean inExpr;
+    private List<String> runtimeEnum;
+    private UUID categoryAttrId;
 
     private List<ValueListener> listeners = new ArrayList<ValueListener>();
 
     public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, boolean inExpr) {
         this(name, javaClass, entityWhere, entityView, datasource, null, inExpr);
+    }
+
+    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, boolean inExpr, UUID categoryAttrId) {
+        this(name, javaClass, entityWhere, entityView, datasource, null, inExpr);
+        this.categoryAttrId = categoryAttrId;
     }
 
     public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
@@ -74,8 +85,9 @@ public class Param {
         this.name = name;
         if (javaClass != null) {
             this.javaClass = javaClass;
-
-            if (Entity.class.isAssignableFrom(javaClass)) {
+            if (SetValueEntity.class.isAssignableFrom(javaClass)) {
+                type = Type.RUNTIME_ENUM;
+            } else if (Entity.class.isAssignableFrom(javaClass)) {
                 type = Type.ENTITY;
             } else if (Enum.class.isAssignableFrom(javaClass)) {
                 type = Type.ENUM;
@@ -148,6 +160,10 @@ public class Param {
                 value = Enum.valueOf(javaClass, text);
                 break;
 
+            case RUNTIME_ENUM:
+                value = text;
+                break;
+
             case DATATYPE:
             case UNARY:
                 Datatype datatype = Datatypes.getInstance().get(javaClass);
@@ -202,6 +218,8 @@ public class Param {
 
             case ENUM:
                 return ((Enum) v).name();
+            case RUNTIME_ENUM:
+                return (String) v;
 
             case DATATYPE:
             case UNARY:
@@ -231,6 +249,9 @@ public class Param {
                 break;
             case ENUM:
                 component = createEnumLookup();
+                break;
+            case RUNTIME_ENUM:
+                component = createRuntimeEnumLookup();
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported param type: " + type);
@@ -297,8 +318,19 @@ public class Param {
                 setValue(value);
             }
         });
-
-        field.setValue(value);
+        if (value instanceof List) {
+            StringBuilder stringValue = new StringBuilder();
+            boolean firstPart = true;
+            for (String val : (List<String>) value) {
+                if (firstPart)
+                    firstPart = false;
+                else
+                    stringValue.append(',');
+                stringValue.append(val);
+            }
+            field.setValue(stringValue.toString());
+        } else
+            field.setValue(value);
         return field;
     }
 
@@ -566,6 +598,9 @@ public class Param {
             case ENUM:
                 return MessageProvider.getMessage((Enum) v);
 
+            case RUNTIME_ENUM:
+                return (String) v;
+
             case DATATYPE:
             case UNARY:
                 Datatype datatype = Datatypes.get(javaClass);
@@ -576,6 +611,42 @@ public class Param {
 
             default:
                 throw new IllegalStateException("Param type unknown");
+        }
+    }
+
+    private Component createRuntimeEnumLookup() {
+        DataService dataService = ServiceLocator.lookup(DataService.NAME);
+        LoadContext context = new LoadContext(CategoryAttribute.class);
+        LoadContext.Query q = context.setQueryString("select a from sys$CategoryAttribute a where a.id = :id");
+        context.setView("_local");
+        q.addParameter("id", categoryAttrId);
+        CategoryAttribute categoryAttribute = dataService.load(context);
+
+        runtimeEnum = new LinkedList<String>();
+        String enumerationString = categoryAttribute.getEnumeration();
+        String[] array = StringUtils.split(enumerationString, ',');
+        for (String s : array) {
+            runtimeEnum.add(s);
+        }
+
+        if (inExpr) {
+            final ListEditComponent component = new ListEditComponent(runtimeEnum);
+            initListEdit(component);
+            return component;
+
+        } else {
+            WebLookupField lookup = new WebLookupField();
+            lookup.setOptionsList(runtimeEnum);
+
+            lookup.addListener(new ValueListener() {
+                public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                    setValue(value);
+                }
+            });
+
+            lookup.setValue(value);
+
+            return lookup.getComponent();
         }
     }
 
@@ -604,6 +675,16 @@ public class Param {
 
             return lookup.getComponent();
         }
+    }
+
+    public void toXml(Element element) {
+        Element paramElem = element.addElement("param");
+        paramElem.addAttribute("name", getName());
+        paramElem.addAttribute("javaClass", getJavaClass().getName());
+        if (SetValueEntity.class.isAssignableFrom(javaClass) && runtimeEnum != null) {
+            paramElem.addAttribute("categoryAttrId", categoryAttrId.toString());
+        }
+        paramElem.setText(formatValue());
     }
 
     public void addListener(ValueListener listener) {

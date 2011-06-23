@@ -777,7 +777,11 @@ create table SYS_CATEGORY_ATTR(
 	CATEGORY_ID uuid,
 	IS_ENTITY boolean,
 	DATA_TYPE varchar(20),
-	DEFAULT_VALUE varchar,
+	DEFAULT_STRING varchar,
+	DEFAULT_INT integer,
+	DEFAULT_DOUBLE real,
+	DEFAULT_DATE date,
+	DEFAULT_BOOLEAN boolean,
 	DEFAULT_ENTITY_VALUE uuid,
 	ENUMERATION varchar(500),
 	primary key (ID)
@@ -796,7 +800,11 @@ create table SYS_ATTR_VALUE(
     DELETED_BY varchar(50),
     CATEGORY_ATTR_ID uuid,
 	ENTITY_ID uuid,
-	VALUE varchar(255),
+	STRING_VALUE varchar,
+	INTEGER_VALUE integer,
+	DOUBLE_VALUE real,
+	DATE_VALUE date,
+	BOOLEAN_VALUE boolean,
 	ENTITY_VALUE uuid,
 	primary key (ID)
 )^

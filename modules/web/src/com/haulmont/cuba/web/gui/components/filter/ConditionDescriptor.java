@@ -77,8 +77,10 @@ public abstract class ConditionDescriptor {
         return datasource;
     }
 
-    public Element getElement() {
-        return element;
+    public String getOperatorType() {
+        if (element != null)
+            return element.attributeValue("operatorType", null);
+        else return null;
     }
 
     public abstract Condition createCondition();

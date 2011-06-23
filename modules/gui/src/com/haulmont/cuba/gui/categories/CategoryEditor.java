@@ -18,7 +18,6 @@ import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
@@ -65,7 +64,7 @@ public class CategoryEditor extends AbstractEditor {
         category = (Category) getItem();
         generateEntityTypeField();
         initDataTypeColumn();
-        initDefaultValueColumn();
+        initDefaultValueColumns();
         initCb();
     }
 
@@ -90,21 +89,20 @@ public class CategoryEditor extends AbstractEditor {
                 } else {
                     labelContent = getMessage(attribute.getDataType());
                 }
-                //dataTypeLabel.setCaption(labelContent);
 
                 dataTypeLabel.setValue(labelContent);
                 return dataTypeLabel;
             }
         });
     }
-    public void initDefaultValueColumn(){
 
-        MetaPropertyPath defaultValue = table.getDatasource().getMetaClass().getPropertyPath("defaultValue");
-        table.removeGeneratedColumn(defaultValue);
-        table.addGeneratedColumn(defaultValue.toString(), new Table.ColumnGenerator() {
+    public void initDefaultValueColumns() {
+        MetaPropertyPath defaultString = table.getDatasource().getMetaClass().getPropertyPath("defaultEntityId");
+        table.removeGeneratedColumn(defaultString);
+        table.addGeneratedColumn(defaultString.toString(), new Table.ColumnGenerator() {
             public Component generateCell(Table table, Object itemId) {
                 Label defaultValueLabel = factory.createComponent(Label.NAME);
-                String labelContent;
+                String labelContent = "";
                 CategoryAttribute attribute = (CategoryAttribute) table.getDatasource().getItem(itemId);
                 if (BooleanUtils.isTrue(attribute.getIsEntity())) {
                     try {
@@ -121,12 +119,6 @@ public class CategoryEditor extends AbstractEditor {
                     } catch (ClassNotFoundException ex) {
                         labelContent = "entityNotFound";
                     }
-                } else if (RuntimePropsDatasource.PropertyType.BOOLEAN.equals(RuntimePropsDatasource.PropertyType.valueOf(attribute.getDataType()))
-                        && (attribute.getDefaultValue() != null)) {
-                    labelContent = getMessage(attribute.getDefaultValue());
-
-                } else {
-                    labelContent = attribute.getDefaultValue();
                 }
                 defaultValueLabel.setValue(labelContent);
                 return defaultValueLabel;

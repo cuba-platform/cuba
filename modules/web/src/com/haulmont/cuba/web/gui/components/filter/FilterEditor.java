@@ -13,8 +13,10 @@ package com.haulmont.cuba.web.gui.components.filter;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -278,12 +280,17 @@ public class FilterEditor {
             addSelect.setItemCaption(descriptor, descriptor.getLocCaption());
         }
 
-        if (UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
+        if (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
             ConditionCreator conditionCreator = new ConditionCreator(filterComponentName, datasource);
             addSelect.addItem(conditionCreator);
             addSelect.setItemCaption(conditionCreator, conditionCreator.getLocCaption());
         }
 
+        if (CategorizedEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
+            RuntimePropConditionCreator runtimePropCreator = new RuntimePropConditionCreator(filterComponentName, datasource);
+            addSelect.addItem(runtimePropCreator);
+            addSelect.setItemCaption(runtimePropCreator, runtimePropCreator.getLocCaption());
+        }
         addSelect.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
                 if (addSelect.getValue() != null) {

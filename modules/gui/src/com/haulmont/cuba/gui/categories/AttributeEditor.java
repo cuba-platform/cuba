@@ -7,7 +7,6 @@
 package com.haulmont.cuba.gui.categories;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.DataService;
@@ -30,7 +29,6 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
 
-import java.text.ParseException;
 import java.util.*;
 import java.util.List;
 
@@ -85,8 +83,7 @@ public class AttributeEditor extends AbstractEditor {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 if (prevValue != null) {
-                    attribute.setDefaultValue(null);
-                    attribute.setDefaultEntityId(null);
+                    clearValue(attribute);
                 }
                 if (RuntimePropsDatasource.PropertyType.ENTITY.equals(value)) {
                     attribute.setIsEntity(true);
@@ -111,90 +108,86 @@ public class AttributeEditor extends AbstractEditor {
 
         boolean hasValue = (attribute.getDefaultValue() == null || !setValue) ? (false) : (true);
         clearComponents();
-        try {
-            if (RuntimePropsDatasource.PropertyType.STRING.equals(dataType)) {
-                TextField textField = factory.createComponent(TextField.NAME);
-                textField.setId("defaultValue");
-                textField.setCaption(getMessage("defaultValue"));
-                textField.setDatatype(Datatypes.get(String.class));
+        if (RuntimePropsDatasource.PropertyType.STRING.equals(dataType)) {
+            TextField textField = factory.createComponent(TextField.NAME);
+            textField.setId("defaultValue");
+            textField.setCaption(getMessage("defaultValue"));
+            textField.setDatatype(Datatypes.get(String.class));
 
-                textField.addListener(new ValueListener() {
-                    @Override
-                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        attribute.setDefaultValue((String) value);
-                    }
-                });
-                if (hasValue)
-                    textField.setValue(attribute.getDefaultValue());
-                fieldsContainer.add(textField);
-            }
+            textField.addListener(new ValueListener() {
+                @Override
+                public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                    attribute.setDefaultString((String) value);
+                }
+            });
+            if (hasValue)
+                textField.setValue(attribute.getDefaultString());
+            fieldsContainer.add(textField);
+        }
 
-            if (RuntimePropsDatasource.PropertyType.DATE.equals(dataType)) {
-                DateField dateField = factory.createComponent(DateField.NAME);
-                dateField.setId("defaultValue");
-                dateField.setCaption(getMessage("defaultValue"));
-                if (hasValue)
-                    dateField.setValue(Datatypes.get(Date.class).parse(attribute.getDefaultValue()));
-                fieldsContainer.add(dateField);
-                dateField.addValidator(new DateValidator(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "validation.invalidDate")));
-                dateField.addListener(new ValueListener() {
-                    @Override
-                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        attribute.setDefaultValue(Datatypes.get(Date.class).format((Date) value));
-                    }
-                });
-            } else if (RuntimePropsDatasource.PropertyType.INTEGER.equals(dataType)) {
-                TextField textField = factory.createComponent(TextField.NAME);
-                textField.setId("defaultValue");
-                textField.setCaption(getMessage("defaultValue"));
-                textField.addValidator(new IntegerValidator(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
-                        "validation.invalidNumber")));
-                textField.setDatatype(Datatypes.get(Integer.class));
+        if (RuntimePropsDatasource.PropertyType.DATE.equals(dataType)) {
+            DateField dateField = factory.createComponent(DateField.NAME);
+            dateField.setId("defaultValue");
+            dateField.setCaption(getMessage("defaultValue"));
+            fieldsContainer.add(dateField);
+            dateField.addValidator(new DateValidator(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "validation.invalidDate")));
+            dateField.addListener(new ValueListener() {
+                @Override
+                public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                    attribute.setDefaultDate((Date) value);
+                }
+            });
+            if (hasValue)
+                dateField.setValue(attribute.getDefaultDate());
+        } else if (RuntimePropsDatasource.PropertyType.INTEGER.equals(dataType)) {
+            TextField textField = factory.createComponent(TextField.NAME);
+            textField.setId("defaultValue");
+            textField.setCaption(getMessage("defaultValue"));
+            textField.addValidator(new IntegerValidator(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                    "validation.invalidNumber")));
+            textField.setDatatype(Datatypes.get(Integer.class));
 
-                textField.addListener(new ValueListener() {
-                    @Override
-                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        attribute.setDefaultValue(Datatypes.get(Integer.class).format((Integer) value));
-                    }
-                });
-                if (hasValue)
-                    textField.setValue(Datatypes.get(Integer.class).parse(attribute.getDefaultValue()));
-                fieldsContainer.add(textField);
-            } else if (RuntimePropsDatasource.PropertyType.DOUBLE.equals(dataType)) {
-                TextField textField = factory.createComponent(TextField.NAME);
-                textField.setId("defaultValue");
-                textField.setCaption(getMessage("defaultValue"));
-                textField.setDatatype(Datatypes.get(Double.class));
-                textField.addValidator(new DoubleValidator(
-                        MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
-                                "validation.invalidNumber")));
-                textField.addListener(new ValueListener() {
-                    @Override
-                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        attribute.setDefaultValue(Datatypes.get(Double.class).format((Double) value));
-                    }
-                });
+            textField.addListener(new ValueListener() {
+                @Override
+                public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                    attribute.setDefaultInt((Integer) value);
+                }
+            });
+            if (hasValue)
+                textField.setValue(attribute.getDefaultInt());
+            fieldsContainer.add(textField);
+        } else if (RuntimePropsDatasource.PropertyType.DOUBLE.equals(dataType)) {
+            TextField textField = factory.createComponent(TextField.NAME);
+            textField.setId("defaultValue");
+            textField.setCaption(getMessage("defaultValue"));
+            textField.setDatatype(Datatypes.get(Double.class));
+            textField.addValidator(new DoubleValidator(
+                    MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                            "validation.invalidNumber")));
+            textField.addListener(new ValueListener() {
+                @Override
+                public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                    attribute.setDefaultDouble((Double) value);
+                }
+            });
 
-                if (hasValue)
-                    textField.setValue(Datatypes.get(Double.class).parse(attribute.getDefaultValue()));
-                fieldsContainer.add(textField);
-            } else if (RuntimePropsDatasource.PropertyType.BOOLEAN.equals(dataType)) {
-                CheckBox checkBox = factory.createComponent(CheckBox.NAME);
-                checkBox.setId("defaultValue");
-                checkBox.setCaption(getMessage("defaultValue"));
-                checkBox.addListener(new ValueListener() {
-                    @Override
-                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        attribute.setDefaultValue(Datatypes.get(Boolean.class).format((Boolean) value));
-                    }
-                });
+            if (hasValue)
+                textField.setValue(attribute.getDefaultDouble());
+            fieldsContainer.add(textField);
+        } else if (RuntimePropsDatasource.PropertyType.BOOLEAN.equals(dataType)) {
+            CheckBox checkBox = factory.createComponent(CheckBox.NAME);
+            checkBox.setId("defaultValue");
+            checkBox.setCaption(getMessage("defaultValue"));
+            checkBox.addListener(new ValueListener() {
+                @Override
+                public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                    attribute.setDefaultBoolean((Boolean) value);
+                }
+            });
 
-                if (hasValue)
-                    checkBox.setValue(Datatypes.get(Boolean.class).parse(attribute.getDefaultValue()));
-                fieldsContainer.add(checkBox);
-            }
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
+            if (hasValue)
+                checkBox.setValue(attribute.getDefaultBoolean());
+            fieldsContainer.add(checkBox);
         }
     }
 
@@ -224,7 +217,7 @@ public class AttributeEditor extends AbstractEditor {
         defaultValueField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                attribute.setDefaultValue((String) value);
+                attribute.setDefaultString((String) value);
             }
         });
         defaultValueField.setValue(attribute.getDefaultValue());
@@ -238,6 +231,7 @@ public class AttributeEditor extends AbstractEditor {
         LookupField entityTypeField = factory.createComponent(LookupField.NAME);
         entityTypeField.setId("entityType");
         entityTypeField.setCaption(getMessage("entityType"));
+        entityTypeField.setRequired(true);
         Map<String, Object> options = new HashMap<String, Object>();
         MetaClass entityType = null;
         for (MetaClass metaClass : MetadataHelper.getAllPersistentMetaClasses()) {
@@ -258,7 +252,6 @@ public class AttributeEditor extends AbstractEditor {
         entityTypeField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                fillEntities(entityField, ((MetaClass) value).getJavaClass());
                 attribute.setDataType(((MetaClass) value).getJavaClass().getName());
                 fillEntities(entityField, ((MetaClass) value).getJavaClass());
             }
@@ -274,7 +267,7 @@ public class AttributeEditor extends AbstractEditor {
         entitiesContext.setView("_minimal");
         List<BaseUuidEntity> list = dataService.loadList(entitiesContext);
         for (BaseUuidEntity entity : list) {
-            entitiesMap.put(InstanceUtils.getInstanceName((Instance) entity), entity);
+            entitiesMap.put(InstanceUtils.getInstanceName(entity), entity);
         }
         entityField.setOptionsMap(entitiesMap);
 
@@ -286,7 +279,6 @@ public class AttributeEditor extends AbstractEditor {
 
             BaseUuidEntity entity = dataService.load(entityContext);
             if (entity != null) {
-                String entityName = InstanceUtils.getInstanceName((Instance) entity);
                 entityField.setValue(entity);
             } else {
                 entityField.setValue(null);
@@ -297,6 +289,8 @@ public class AttributeEditor extends AbstractEditor {
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 if (value != null)
                     attribute.setDefaultEntityId(((BaseUuidEntity) value).getId());
+                else
+                    attribute.setDefaultEntityId(null);
             }
         });
     }
@@ -313,11 +307,10 @@ public class AttributeEditor extends AbstractEditor {
                 RuntimePropsDatasource.PropertyType type = RuntimePropsDatasource.PropertyType.valueOf(attribute.getDataType());
                 dataTypeField.setValue(type);
             }
-
         }
     }
 
-    protected void clearComponents() {
+    private void clearComponents() {
         Component component = fieldsContainer.getComponent("defaultValue");
         if (component != null)
             fieldsContainer.remove(component);
@@ -334,4 +327,13 @@ public class AttributeEditor extends AbstractEditor {
         }
     }
 
+    private void clearValue(CategoryAttribute attribute) {
+        attribute.setDefaultString(null);
+        attribute.setDefaultInt(null);
+        attribute.setDefaultDouble(null);
+        attribute.setDefaultBoolean(null);
+        attribute.setDefaultDate(null);
+        attribute.setDefaultEntityId(null);
+        attribute.setEnumeration(null);
+    }
 }

@@ -9,6 +9,7 @@ package com.haulmont.cuba.core.entity;
 import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -27,8 +28,20 @@ public class CategoryAttributeValue extends StandardEntity {
     private CategoryAttribute categoryAttribute;
 
 
-    @Column(name = "VALUE", length = 255)
-    private String value;
+    @Column(name = "STRING_VALUE")
+    private String stringValue;
+
+    @Column(name = "INTEGER_VALUE")
+    private Integer intValue;
+
+    @Column(name = "DOUBLE_VALUE")
+    private Double doubleValue;
+
+    @Column(name = "BOOLEAN_VALUE")
+    private Boolean booleanValue;
+
+    @Column(name = "DATE_VALUE")
+    private Date dateValue;
 
     @Column(name = "ENTITY_ID")
     @Persistent
@@ -48,15 +61,6 @@ public class CategoryAttributeValue extends StandardEntity {
         return categoryAttribute;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-
     public UUID getEntityId() {
         return entityId;
     }
@@ -72,4 +76,45 @@ public class CategoryAttributeValue extends StandardEntity {
     public void setEntityValue(UUID entityValue) {
         this.entityValue = entityValue;
     }
+
+    public String getStringValue() {
+        return stringValue;
+    }
+
+    public void setStringValue(String stringValue) {
+        this.stringValue = stringValue;
+    }
+
+    public Integer getIntValue() {
+        return intValue;
+    }
+
+    public void setIntValue(Integer intValue) {
+        this.intValue = intValue;
+    }
+
+    public Double getDoubleValue() {
+        return doubleValue;
+    }
+
+    public void setDoubleValue(Double doubleValue) {
+        this.doubleValue = doubleValue;
+    }
+
+    public Boolean getBooleanValue() {
+        return booleanValue;
+    }
+
+    public void setBooleanValue(Boolean booleanValue) {
+        this.booleanValue = booleanValue;
+    }
+
+    public Date getDateValue() {
+        return dateValue;
+    }
+
+    public void setDateValue(Date dateValue) {
+        this.dateValue = dateValue;
+    }
+
 }

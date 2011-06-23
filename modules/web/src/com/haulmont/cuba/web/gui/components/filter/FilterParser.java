@@ -69,6 +69,8 @@ public class FilterParser {
                     condition = new PropertyCondition(element, messagesPack, filterComponentName, datasource);
                 else if (ConditionType.CUSTOM.name().equals(type))
                     condition = new CustomCondition(element, messagesPack, filterComponentName, datasource);
+                else if (ConditionType.RUNTIME_PROPERTY.name().equals(type))
+                    condition = new RuntimePropCondition(element, messagesPack, filterComponentName, datasource);
                 else
                     throw new IllegalStateException("Unknown condition type: " + type + " in " + xml);
 
