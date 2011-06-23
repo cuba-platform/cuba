@@ -20,15 +20,16 @@
                 <properties include=".*"/>
             </filter>
         </vbox>
-        <buttonsPanel>
-            <button action="files.refresh" icon="icons/refresh.png"/>
-            <button action="files.create" icon="icons/create.png"/>
-            <button action="files.edit" icon="icons/edit.png"/>
-            <button action="files.remove" icon="icons/remove.png"/>
-            <button action="files.excel" icon="icons/excel.png"/>
-            <button id="multiupload" icon="icons/copy.png"/>
-        </buttonsPanel>
         <table id="files" editable="false">
+            <buttonsPanel>
+                <button action="files.refresh" icon="icons/refresh.png"/>
+                <button action="files.create" icon="icons/create.png"/>
+                <button action="files.edit" icon="icons/edit.png"/>
+                <button action="files.remove" icon="icons/remove.png"/>
+                <button action="files.excel" icon="icons/excel.png"/>
+                <button id="multiupload" icon="icons/copy.png"/>
+            </buttonsPanel>
+            <rowsCount/>
             <columns>
                 <column id="name" caption="msg://name"/>
                 <column id="extension" caption="msg://extension"/>
