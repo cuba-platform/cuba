@@ -183,7 +183,15 @@ public class XLSFormatter extends AbstractFormatter {
                 if (templateCell.getRowIndex() != currentRowNum) { //create new row
                     resultRow = resultSheet.createRow(rownum + rowsAddedByHorizontalBand);
                     rowsAddedByHorizontalBand += 1;
-                    resultRow.setHeight(templateCell.getRow().getHeight());
+
+                    if (templateCell.getCellStyle().getParentStyle() !=null
+                            && templateCell.getCellStyle().getParentStyle().getUserStyleName()!=null
+                            && templateCell.getCellStyle().getParentStyle().getUserStyleName().equals("styleWithoutHeight")
+                            ) {
+                        //resultRow.setHeight(templateCell.getRow().getHeight());
+                    } else {
+                        resultRow.setHeight(templateCell.getRow().getHeight());
+                    }
                     resultRows.add(resultRow);
 
                     currentRowNum = templateCell.getRowIndex();
@@ -222,7 +230,6 @@ public class XLSFormatter extends AbstractFormatter {
      * @param band          - band to write
      * @param templateSheet - template sheet
      * @param resultSheet   - result sheet
-     * @return number of inserted rows
      */
     private void writeVerticalBand(Band band, HSSFSheet templateSheet, HSSFSheet resultSheet) {
         String rangeName = band.getName();
