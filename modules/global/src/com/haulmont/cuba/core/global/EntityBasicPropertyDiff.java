@@ -7,6 +7,7 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.annotations.MetaClass;
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.MetaProperty;
 
 /**
@@ -18,8 +19,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 public class EntityBasicPropertyDiff extends EntityPropertyDiff {
 
     private static final long serialVersionUID = -1532265990429557046L;
-
-    private static final int CAPTION_CHAR_COUNT = 30;
 
     private Object beforeValue;
 
@@ -57,16 +56,27 @@ public class EntityBasicPropertyDiff extends EntityPropertyDiff {
 
     @Override
     public String getBeforeString() {
-        if (beforeValue != null)
+        if (beforeValue != null) {
+            if (beforeValue instanceof EnumClass)
+                return getEnumItemName(beforeValue);
             return String.valueOf(beforeValue);
+        }
         return super.getBeforeString();
     }
 
     @Override
     public String getAfterString() {
-        if (afterValue != null)
+        if (afterValue != null) {
+            if (afterValue instanceof EnumClass)
+                return getEnumItemName(afterValue);
             return String.valueOf(afterValue);
+        }
         return super.getAfterString();
+    }
+
+    private String getEnumItemName(Object enumItem) {
+        String nameKey = enumItem.getClass().getSimpleName() + "." + enumItem.toString();
+        return MessageProvider.getMessage(enumItem.getClass(), nameKey);
     }
 
     @Override

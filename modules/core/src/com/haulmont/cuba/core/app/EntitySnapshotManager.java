@@ -7,17 +7,18 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.bali.datastruct.Pair;
-import com.haulmont.chile.core.model.*;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.EntitySnapshot;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
 import org.apache.commons.lang.ObjectUtils;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
@@ -177,6 +178,14 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
             }
         }
 
+        Comparator<EntityPropertyDiff> comparator = new Comparator<EntityPropertyDiff>() {
+            @Override
+            public int compare(EntityPropertyDiff o1, EntityPropertyDiff o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        };
+        Collections.sort(propertyDiffs, comparator);
+
         return propertyDiffs;
     }
 
@@ -217,48 +226,61 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         EntityPropertyDiff propertyDiff = null;
         // check exist value in diff branch
         if (!diffBranch.contains(secondValue)) {
-            // link
-            boolean isLinkChange = !ObjectUtils.equals(firstValue, secondValue);
-            EntityClassPropertyDiff classPropertyDiff = new EntityClassPropertyDiff(firstValue, secondValue,
-                    viewProperty, metaProperty, isLinkChange);
 
-            boolean isInternalChange = false;
-
-            // added or modified
             if (secondValue != null) {
-                diffBranch.push(secondValue);
-
-                // recursion call
-                List<EntityPropertyDiff> propertyDiffs =
-                        getPropertyDiffs(viewProperty.getView(), (Entity) firstValue, (Entity) secondValue, diffBranch);
-
-                diffBranch.pop();
-
-                if (!propertyDiffs.isEmpty()) {
-                    isInternalChange = true;
-                    classPropertyDiff.setPropertyDiffs(propertyDiffs);
+                // added or modified
+                propertyDiff = generateClassDiffFor(secondValue, firstValue, secondValue,
+                        viewProperty, metaProperty, diffBranch);
+            } else {
+                if (firstValue != null) {
+                    // removed or set null
+                    propertyDiff = generateClassDiffFor(firstValue, firstValue, secondValue,
+                            viewProperty, metaProperty, diffBranch);
                 }
             }
-
-            // removed or set null
-            if ((secondValue == null) && (firstValue != null)) {
-                diffBranch.push(firstValue);
-
-                List<EntityPropertyDiff> propertyDiffs =
-                        getPropertyDiffs(viewProperty.getView(), (Entity) firstValue, (Entity) secondValue, diffBranch);
-
-                diffBranch.pop();
-
-                if (!propertyDiffs.isEmpty()) {
-                    isInternalChange = true;
-                    classPropertyDiff.setPropertyDiffs(propertyDiffs);
-                }
-            }
-
-            if (isInternalChange || isLinkChange)
-                propertyDiff = classPropertyDiff;
         }
         return propertyDiff;
+    }
+
+    /**
+     * Generate class difference for selected not null object
+     *
+     * @param diffObject   Object
+     * @param firstValue   First value
+     * @param secondValue  Second value
+     * @param viewProperty View property
+     * @param metaProperty Meta property
+     * @param diffBranch   Diff branch
+     * @return Property difference
+     */
+    private EntityPropertyDiff generateClassDiffFor(Object diffObject,
+                                                    @Nullable Object firstValue, @Nullable Object secondValue,
+                                                    ViewProperty viewProperty, MetaProperty metaProperty,
+                                                    Stack<Object> diffBranch) {
+        // link
+        boolean isLinkChange = !ObjectUtils.equals(firstValue, secondValue);
+        EntityClassPropertyDiff classPropertyDiff = new EntityClassPropertyDiff(firstValue, secondValue,
+                viewProperty, metaProperty, isLinkChange);
+
+        boolean isInternalChange = false;
+        diffBranch.push(diffObject);
+
+        List<EntityPropertyDiff> propertyDiffs =
+                getPropertyDiffs(viewProperty.getView(), (Entity) firstValue, (Entity) secondValue, diffBranch);
+
+        diffBranch.pop();
+
+        if (!propertyDiffs.isEmpty()) {
+            isInternalChange = true;
+            classPropertyDiff.setPropertyDiffs(propertyDiffs);
+        }
+
+        isLinkChange = !(diffObject instanceof EmbeddableEntity) && isLinkChange;
+
+        if (isInternalChange || isLinkChange)
+            return classPropertyDiff;
+        else
+            return null;
     }
 
     private EntityPropertyDiff getCollectionDiff(Object firstValue, Object secondValue,
@@ -299,8 +321,8 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
             for (Entity entity : addedEntities) {
                 EntityPropertyDiff addedDiff = getClassDiff(null, entity, viewProperty, metaProperty, diffBranch);
                 if (addedDiff != null) {
-                    addedDiff.setName(InstanceUtils.getInstanceName((Instance) entity));
-                    ((EntityClassPropertyDiff) addedDiff).setItemState(EntityPropertyDiff.ItemState.Added);
+                    addedDiff.setName(InstanceUtils.getInstanceName(entity));
+                    addedDiff.setItemState(EntityPropertyDiff.ItemState.Added);
                     diff.getAddedEntities().add(addedDiff);
                 }
             }
@@ -309,8 +331,8 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
                 EntityPropertyDiff modifiedDiff = getClassDiff(entityPair.getFirst(), entityPair.getSecond(),
                         viewProperty, metaProperty, diffBranch);
                 if (modifiedDiff != null) {
-                    modifiedDiff.setName(InstanceUtils.getInstanceName((Instance) entityPair.getSecond()));
-                    ((EntityClassPropertyDiff) modifiedDiff).setItemState(EntityPropertyDiff.ItemState.Modified);
+                    modifiedDiff.setName(InstanceUtils.getInstanceName(entityPair.getSecond()));
+                    modifiedDiff.setItemState(EntityPropertyDiff.ItemState.Modified);
                     diff.getModifiedEntities().add(modifiedDiff);
                 }
             }
@@ -318,8 +340,8 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
             for (Entity entity : removedEntities) {
                 EntityPropertyDiff removedDiff = getClassDiff(entity, null, viewProperty, metaProperty, diffBranch);
                 if (removedDiff != null) {
-                    removedDiff.setName(InstanceUtils.getInstanceName((Instance) entity));
-                    ((EntityClassPropertyDiff) removedDiff).setItemState(EntityPropertyDiff.ItemState.Removed);
+                    removedDiff.setName(InstanceUtils.getInstanceName(entity));
+                    removedDiff.setItemState(EntityPropertyDiff.ItemState.Removed);
                     diff.getRemovedEntities().add(removedDiff);
                 }
             }
@@ -364,7 +386,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     }
 
     private Object getPropertyValue(Entity entity, MetaPropertyPath propertyPath) {
-        return ((Instance) entity).getValue(propertyPath.toString());
+        return entity.getValue(propertyPath.toString());
     }
 
     private View intersectViews(View first, View second) {

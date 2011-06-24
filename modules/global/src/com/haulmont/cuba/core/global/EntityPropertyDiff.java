@@ -21,6 +21,8 @@ import java.io.Serializable;
 @MetaClass(name = "core$EntityPropertyDiff")
 public abstract class EntityPropertyDiff extends AbstractNotPersistentEntity implements Serializable {
 
+    protected static final int CAPTION_CHAR_COUNT = 30;
+
     public enum ItemState {
         Normal,
         Modified,

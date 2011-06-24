@@ -110,6 +110,22 @@ public class EntityClassPropertyDiff extends EntityPropertyDiff {
     }
 
     @Override
+    public String getBeforeCaption() {
+        String value = getBeforeString();
+        if (value.length() > CAPTION_CHAR_COUNT)
+            return value.substring(0, CAPTION_CHAR_COUNT) + "...";
+        return super.getBeforeCaption();
+    }
+
+    @Override
+    public String getAfterCaption() {
+        String value = getAfterString();
+        if (value.length() > CAPTION_CHAR_COUNT)
+            return value.substring(0, CAPTION_CHAR_COUNT) + "...";
+        return super.getAfterCaption();
+    }
+
+    @Override
     public boolean itemStateVisible() {
         return itemState != ItemState.Normal;
     }
