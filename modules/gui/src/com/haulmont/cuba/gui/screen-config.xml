@@ -71,4 +71,7 @@
     <screen id="sys$CategoryAttribute.edit"
             template="/com/haulmont/cuba/gui/categories/attribute-edit.xml"/>
 
+    <screen id="core$EntitySnapshot.view"
+            template="/com/haulmont/cuba/gui/app/core/entitydiff/diff-view.xml"/>
+
 </screen-config>
