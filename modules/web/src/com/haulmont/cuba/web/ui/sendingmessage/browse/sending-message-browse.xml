@@ -16,7 +16,7 @@
     <layout expand="table">
         <split id="split" orientation="horizontal" pos="70" >
             <vbox expand="table">
-                <iframe id="filter" src="cuba/client/web/ui/sendingmessage/browse/sending-message-browse-filter.xml"/>
+                <iframe id="filter" src="/com/haulmont/cuba/web/ui/sendingmessage/browse/sending-message-browse-filter.xml"/>
                 <table id="table">
                     <columns>
                         <column id="address" />
