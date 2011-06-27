@@ -10,7 +10,6 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.data.util.AggregationContainerOrderedWrapper;
 import com.vaadin.data.Container;
