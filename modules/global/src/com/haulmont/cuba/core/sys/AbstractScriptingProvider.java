@@ -88,7 +88,7 @@ public abstract class AbstractScriptingProvider extends ScriptingProvider {
                 if (gse == null) {
                     final String[] rootPath = getScriptEngineRootPath();
                     try {
-                        gse = new GroovyScriptEngine(rootPath);
+                        gse = new GroovyScriptEngine(rootPath, JavaClassLoader.getInstance());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
