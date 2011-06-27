@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
+import com.haulmont.cuba.core.config.defaults.DefaultInteger;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
@@ -60,6 +61,14 @@ public interface ServerConfig extends Config {
      */
     @Property("cuba.reporting.openoffice.path")
     String getOpenOfficePath();
+
+    @Property("cuba.reporting.openoffice.ports")
+    @DefaultString("8100|8101|8102|8103")
+    String getOpenOfficePorts();
+
+    @Property("cuba.reporting.openoffice.docFormatterTimeout")
+    @DefaultInteger(20)
+    Integer getDocFormatterTimeout();
 
     /*
      * Set it to true if you're using openoffice reporting formatter on a *nix server without X server running

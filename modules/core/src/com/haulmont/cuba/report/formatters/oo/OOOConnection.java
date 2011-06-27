@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.report.formatters.oo;
 
+import com.haulmont.cuba.core.Locator;
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.frame.XDesktop;
 import com.sun.star.frame.XDispatchHelper;
@@ -22,11 +23,13 @@ import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.*;
 
 public class OOOConnection {
     private XComponentContext xComponentContext;
+    private Integer port;
     private BootstrapSocketConnector bsc;
 
-    public OOOConnection(XComponentContext xComponentContext, BootstrapSocketConnector bsc) {
+    public OOOConnection(XComponentContext xComponentContext, BootstrapSocketConnector bsc, Integer port) {
         this.xComponentContext = xComponentContext;
         this.bsc = bsc;
+        this.port = port;
     }
 
     public XMultiComponentFactory getXMultiComponentFactory() {
@@ -54,9 +57,14 @@ public class OOOConnection {
     }
 
     public void close() {
-        if (bsc != null) {
-            bsc.disconnect();
-            bsc = null;
-        }
+        ((OOOConnector) Locator.lookup(OOOConnector.NAME)).closeConnection(this);
+    }
+
+    public Integer getPort() {
+        return port;
+    }
+
+    public BootstrapSocketConnector getBsc() {
+        return bsc;
     }
 }

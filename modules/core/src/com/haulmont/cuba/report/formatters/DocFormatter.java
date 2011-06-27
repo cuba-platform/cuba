@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.report.formatters;
 
+import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.report.Band;
@@ -42,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
 import static com.haulmont.cuba.report.formatters.oo.ODTHelper.*;
@@ -92,36 +95,53 @@ public class DocFormatter extends AbstractFormatter {
     private void connectToOffice() {
         String openOfficePath = ConfigProvider.getConfig(ServerConfig.class).getOpenOfficePath();
         try {
-            connection = OOOConnector.createConnection(openOfficePath);
+            connection = ((OOOConnector) Locator.lookup(OOOConnector.NAME)).createConnection(openOfficePath);
         } catch (Exception ex) {
             throw new FailedToConnectToOpenOfficeException("Please check OpenOffice path: " + openOfficePath);
         }
     }
 
-    public void createDocument(Band rootBand, ReportOutputType outputType, OutputStream outputStream) {
+    public void createDocument(Band rootBand, final ReportOutputType outputType, final OutputStream outputStream) {
 
         if (templateFile == null)
-            throw new NullPointerException();
+            throw new NullPointerException("Template file can't be null");
 
         this.rootBand = rootBand;
         try {
-            XInputStream xis = getXInputStream(templateFile);
-            XComponentLoader xComponentLoader = connection.createXComponentLoader();
-            xComponent = loadXComponent(xComponentLoader, xis);
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    try {
+                        XInputStream xis = getXInputStream(templateFile);
+                        XComponentLoader xComponentLoader = connection.createXComponentLoader();
+                        xComponent = loadXComponent(xComponentLoader, xis);
 
-            officeComponent = new OfficeComponent(connection, xComponentLoader, xComponent);
+                        officeComponent = new OfficeComponent(connection, xComponentLoader, xComponent);
 
-            // Lock clipboard
-            synchronized (ClipBoardHelper.class) {
-                // Handling tables
-                fillTables();
+                        // Lock clipboard
+                        synchronized (ClipBoardHelper.class) {
+                            // Handling tables
+                            fillTables();
+                        }
+                        // Handling text
+                        replaceAllAliasesInDocument();
+                        // Saving document to output stream and closing
+                        saveAndClose(xComponent, outputType, outputStream);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            };
+
+            Future future = ((OOOConnector) Locator.lookup(OOOConnector.NAME)).getExecutor().submit(runnable);
+            future.get(ConfigProvider.getConfig(ServerConfig.class).getDocFormatterTimeout(), TimeUnit.SECONDS);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                connection.close();
+            } catch (Exception e) {
+                //close silently
             }
-            // Handling text
-            replaceAllAliasesInDocument();
-            // Saving document to output stream and closing
-            saveAndClose(xComponent, outputType, outputStream);
-        } catch (java.lang.Exception ex) {
-            throw new java.lang.RuntimeException(ex);
         }
     }
 
@@ -136,8 +156,6 @@ public class DocFormatter extends AbstractFormatter {
         }
         saveXComponent(xComponent, ooos, filterName);
         closeXComponent(xComponent);
-
-        officeComponent.getOfficeConnection().close();
     }
 
     private void fillTables() throws com.sun.star.uno.Exception {
