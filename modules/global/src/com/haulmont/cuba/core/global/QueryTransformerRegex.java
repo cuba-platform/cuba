@@ -274,13 +274,30 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         if (StringUtils.isBlank(alias))
             error("No alias for target entity " + targetEntity + " found");
 
-        String orderBy = alias + "." + property + (desc ? " desc" : "");
+        int dotPos = property.lastIndexOf(".");
+        if (dotPos > -1) {
+            String path = property.substring(0, dotPos);
+            String joinedAlias = alias + "_" + path.replace(".", "_");
+            if (buffer.indexOf(" " + joinedAlias) == -1) {
+                String join = "left join " + alias + "." + path + " " + joinedAlias;
+                addJoinAsIs(join);
+            }
 
-        Matcher matcher = ORDER_BY_PATTERN.matcher(buffer);
-        if (matcher.find()) {
-            buffer.replace(matcher.end(), buffer.length(), " " + orderBy);
+            String orderBy = joinedAlias + "." + property.substring(dotPos + 1) + (desc ? " desc" : "");
+            Matcher matcher = ORDER_BY_PATTERN.matcher(buffer);
+            if (matcher.find()) {
+                buffer.replace(matcher.end(), buffer.length(), " " + orderBy);
+            } else {
+                buffer.append(" order by ").append(orderBy);
+            }
         } else {
-            buffer.append(" order by ").append(orderBy);
+            String orderBy = alias + "." + property + (desc ? " desc" : "");
+            Matcher matcher = ORDER_BY_PATTERN.matcher(buffer);
+            if (matcher.find()) {
+                buffer.replace(matcher.end(), buffer.length(), " " + orderBy);
+            } else {
+                buffer.append(" order by ").append(orderBy);
+            }
         }
     }
 

@@ -158,5 +158,39 @@ public class QueryTransformerRegexTest extends TestCase
                 "select c from sec$GroupHierarchy h join h.parent.constraints c where h.group = ?1 " +
                         "group by c.level having c.level > 0 order by h.group desc",
                 res);
+
+
+    }
+
+    public void testOrderByAssociatedProperty() {
+        // first level of association
+        QueryTransformerRegex transformer = new QueryTransformerRegex(
+                "select c from ref$Car c where c.deleteTs is null",
+                "ref$Car");
+        transformer.replaceOrderBy("model.numberOfSeats", false);
+        String res = transformer.getResult();
+        assertEquals(
+                "select c from ref$Car c left join c.model c_model where c.deleteTs is null order by c_model.numberOfSeats",
+                res);
+        transformer.replaceOrderBy("model.numberOfSeats", true);
+        res = transformer.getResult();
+        assertEquals(
+                "select c from ref$Car c left join c.model c_model where c.deleteTs is null order by c_model.numberOfSeats desc",
+                res);
+
+        // second level of association
+        transformer = new QueryTransformerRegex(
+                "select c from ref$Car c where c.deleteTs is null",
+                "ref$Car");
+        transformer.replaceOrderBy("model.manufacturer.name", false);
+        res = transformer.getResult();
+        assertEquals(
+                "select c from ref$Car c left join c.model.manufacturer c_model_manufacturer where c.deleteTs is null order by c_model_manufacturer.name",
+                res);
+        transformer.replaceOrderBy("model.manufacturer.name", true);
+        res = transformer.getResult();
+        assertEquals(
+                "select c from ref$Car c left join c.model.manufacturer c_model_manufacturer where c.deleteTs is null order by c_model_manufacturer.name desc",
+                res);
     }
 }
