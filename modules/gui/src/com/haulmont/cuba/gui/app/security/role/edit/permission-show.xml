@@ -16,7 +16,6 @@
     <layout height="50%">
         <vbox expand="permissionsMessage" spacing="true">
             <textField id="permissionsMessage" rows="10"/>
-            <button id="ok" caption="actions.Ok" icon="icons/ok.png"/>
         </vbox>
     </layout>
 </window>

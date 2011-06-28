@@ -16,7 +16,6 @@ import java.util.Map;
 public class PermissionShow extends AbstractWindow{
 
     private TextField permissionsMessage;
-    private Button ok;
 
     public PermissionShow(IFrame frame) {
         super(frame);
@@ -26,12 +25,6 @@ public class PermissionShow extends AbstractWindow{
     protected void init(Map<String, Object> params) {
         super.init(params);
         setHeight("400px");
-        ok = getComponent("ok");
-        ok.setAction(new AbstractAction("ok"){
-            public void actionPerform(Component component) {
-                close("close");
-            }
-        });
         String message = (String)params.get("message");
         permissionsMessage = getComponent("permissionsMessage");
         if(message != null)
