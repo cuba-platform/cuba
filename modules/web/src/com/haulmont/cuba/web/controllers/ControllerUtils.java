@@ -12,8 +12,13 @@ package com.haulmont.cuba.web.controllers;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.App;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.UUID;
 
 public abstract class ControllerUtils {
     
@@ -51,5 +56,28 @@ public abstract class ControllerUtils {
             path = path.substring(getContollerPrefix().length());
         }
         return path;
+    }
+
+    public static UserSession getUserSession(HttpServletRequest req) {
+        UserSession userSession = (UserSession) req.getSession().getAttribute(App.USER_SESSION_ATTR);
+        if (userSession != null) {
+            return userSession;
+        } else {
+            String s = req.getParameter("s");
+            if (s != null) {
+                try {
+                    UUID id = UUID.fromString(s);
+                    LoginService service = ServiceLocator.lookup(LoginService.NAME);
+                    UserSession session = service.getSession(id);
+                    if (session != null) {
+                        req.getSession().setAttribute(App.USER_SESSION_ATTR, session);
+                        return session;
+                    }
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+            return null;
+        }
     }
 }
