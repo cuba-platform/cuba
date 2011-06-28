@@ -7,6 +7,7 @@
 package com.haulmont.cuba.core.app.cache;
 
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -76,6 +77,9 @@ public class ObjectsCache implements ObjectsCacheInstance {
             log.error("Not set name for ObjectsCache instance");
             return;
         }
+
+        if (!AppContext.isStarted())
+            return;
 
         if (loader != null) {
 
