@@ -23,6 +23,9 @@ public class WebRowsCount
 {
     private CollectionDatasource datasource;
     private boolean refreshing;
+    private State state;
+    private int start;
+    private int size;
 
     private enum State {
         FIRST_COMPLETE,     // "63 rows"
@@ -82,12 +85,7 @@ public class WebRowsCount
         CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
         int newStart = ds.getFirstResult() - ds.getMaxResults();
         ds.setFirstResult(newStart < 0 ? 0 : newStart);
-        refreshing = true;
-        try {
-            ds.refresh();
-        } finally {
-            refreshing = false;
-        }
+        refreshDatasource(ds);
     }
 
     private void onNextClick() {
@@ -95,8 +93,20 @@ public class WebRowsCount
             return;
 
         CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
+        int firstResult = ds.getFirstResult();
         ds.setFirstResult(ds.getFirstResult() + ds.getMaxResults());
+        refreshDatasource(ds);
 
+        if (state.equals(State.LAST) && size == 0) {
+            ds.setFirstResult(firstResult);
+            int maxResults = ds.getMaxResults();
+            ds.setMaxResults(maxResults + 1);
+            refreshDatasource(ds);
+            ds.setMaxResults(maxResults);
+        }
+    }
+
+    private void refreshDatasource(CollectionDatasource.SupportsPaging ds) {
         refreshing = true;
         try {
             ds.refresh();
@@ -118,10 +128,9 @@ public class WebRowsCount
             return;
 
         String msgKey;
-        int size = datasource.size();
-        int start = 0;
+        size = datasource.size();
+        start = 0;
 
-        State state;
         if (datasource instanceof CollectionDatasource.SupportsPaging) {
             CollectionDatasource.SupportsPaging ds = (CollectionDatasource.SupportsPaging) datasource;
             if ((size == 0 || size < ds.getMaxResults()) && ds.getFirstResult() == 0) {
