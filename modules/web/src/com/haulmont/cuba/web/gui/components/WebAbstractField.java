@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -163,6 +164,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
                         validate(value);
                         return true;
                     } catch (InvalidValueException e) {
+                        getFrame().showNotification(e.getMessage(), IFrame.NotificationType.HUMANIZED);
                         return false;
                     }
                 }

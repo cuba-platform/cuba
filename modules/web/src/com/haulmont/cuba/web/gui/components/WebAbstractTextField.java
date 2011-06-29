@@ -46,6 +46,7 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
 
     public WebAbstractTextField() {
         this.component = createTextFieldImpl();
+        this.component.setValidationVisible(false);
 
         final Property p = new AbstractPropertyWrapper() {
             public Class<?> getType() {
