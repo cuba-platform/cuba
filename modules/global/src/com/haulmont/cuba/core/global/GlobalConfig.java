@@ -98,14 +98,6 @@ public interface GlobalConfig extends Config {
     boolean isGroovyClassLoaderEnabled();
 
     /**
-     * User session expiration timeout in seconds.
-     * Not the same as HTTP session timeout, but should have the same value.
-     */
-    @Property("cuba.userSessionExpirationTimeoutSec")
-    @DefaultInt(1800)
-    int getUserSessionExpirationTimeoutSec();
-
-    /**
      * Password to use LoginService.loginTrusted() method
      */
     @Property("cuba.trustedClientPassword")
@@ -116,7 +108,9 @@ public interface GlobalConfig extends Config {
     @DefaultBoolean(true)
     boolean getCollectionDatasourceDbSortEnabled();
 
-    /** Used to show alternative locales on user login */
+    /**
+     * Used to show alternative locales on user login
+     */
     @Factory(factory = AvailableLocalesFactory.class)
     @Default("English|en;Russian|ru")
     Map<String, Locale> getAvailableLocales();

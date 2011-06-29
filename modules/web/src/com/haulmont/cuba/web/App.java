@@ -15,9 +15,10 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.exception.*;
-import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.sys.LinkHandler;
@@ -41,7 +42,6 @@ import javax.servlet.http.HttpSession;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -87,10 +87,7 @@ public abstract class App extends Application
 
     protected LinkHandler linkHandler;
 
-    protected Map<Window, WindowTimers> windowTimers = new HashMap<Window, WindowTimers>();
-    protected Map<Timer, Window> timerWindow = new HashMap<Timer, Window>();
-
-    private boolean stopTimers = false;
+    protected AppTimers timers;
 
     protected transient Map<Object, Long> requestStartTimes = new WeakHashMap<Object, Long>();
 
@@ -106,11 +103,14 @@ public abstract class App extends Application
 
     protected String clientAddress;
 
+    protected WebConfig webConfig;
+
     static {
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
     }
 
     protected App() {
+        webConfig = ConfigProvider.getConfig(WebConfig.class);
         appLog = new AppLog();
         connection = createConnection();
         windowManager = createWindowManager();
@@ -121,6 +121,7 @@ public abstract class App extends Application
             }
         };
         cookies.setCookiesEnabled(true);
+        timers = new AppTimers(this);
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -133,7 +134,7 @@ public abstract class App extends Application
         this.response = response;
         cookies.updateCookies(request);
         if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
-            String paramName = ConfigProvider.getConfig(WebConfig.class).getTestModeParamName();
+            String paramName = webConfig.getTestModeParamName();
             testModeRequest = (paramName == null || request.getParameter(paramName) != null); 
         }
     }
@@ -215,6 +216,11 @@ public abstract class App extends Application
      */
     protected AppWindow createAppWindow() {
         AppWindow appWindow = new AppWindow(connection);
+
+        Timer timer = createSessionPingTimer(true);
+        if (timer != null)
+            timers.add(timer, appWindow);
+
         return appWindow;
     }
 
@@ -300,13 +306,9 @@ public abstract class App extends Application
     public void transactionStart(Application application, Object transactionData) {
         HttpServletRequest request = (HttpServletRequest) transactionData;
 
-        String xForwardedFor = request.getHeader("X_FORWARDED_FOR");
-        if (!StringUtils.isBlank(xForwardedFor)) {
-            String[] strings = xForwardedFor.split(",");
-            clientAddress = strings[strings.length-1].trim();
-        } else {
-            clientAddress = request.getRemoteAddr();
-        }
+        request.getSession().setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
+
+        setClientAddress(request);
 
         if (log.isTraceEnabled()) {
             log.trace("requestStart: [@" + Integer.toHexString(System.identityHashCode(request)) + "] " +
@@ -314,6 +316,7 @@ public abstract class App extends Application
                     (request.getUserPrincipal() != null ? " [" + request.getUserPrincipal() + "]" : "") +
                     " from " + clientAddress);
         }
+
         if (application == App.this) {
             currentApp.set((App) application);
         }
@@ -348,6 +351,16 @@ public abstract class App extends Application
         }
 
         processExternalLink(request, requestURI);
+    }
+
+    protected void setClientAddress(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X_FORWARDED_FOR");
+        if (!StringUtils.isBlank(xForwardedFor)) {
+            String[] strings = xForwardedFor.split(",");
+            clientAddress = strings[strings.length-1].trim();
+        } else {
+            clientAddress = request.getRemoteAddr();
+        }
     }
 
     public static boolean auxillaryUrl(String uri) {
@@ -412,8 +425,7 @@ public abstract class App extends Application
         Long start = requestStartTimes.remove(transactionData);
         if (start != null) {
             long t = System.currentTimeMillis() - start;
-            WebConfig config = ConfigProvider.getConfig(WebConfig.class);
-            if (t > (config.getLogLongRequestsThresholdSec() * 1000)) {
+            if (t > (webConfig.getLogLongRequestsThresholdSec() * 1000)) {
                 log.warn(String.format("Too long request processing [%d ms]: ip=%s, url=%s",
                         t, ((HttpServletRequest)transactionData).getRemoteAddr(), ((HttpServletRequest)transactionData).getRequestURI()));
             }
@@ -435,12 +447,21 @@ public abstract class App extends Application
         }
     }
 
+    Window getCurrentWindow() {
+        String name = currentWindowName.get();
+        return (name == null ? getMainWindow() : getWindow(name));
+    }
+
+    public AppTimers getTimers() {
+        return timers;
+    }
+
     /**
      * Adds a timer on the application level
      * @param timer new timer
      */
-    public void addTimer(final Timer timer) {
-        addTimer(timer, null, getCurrentWindow());
+    public void addTimer(Timer timer) {
+        timers.add(timer);
     }
 
     /**
@@ -449,121 +470,29 @@ public abstract class App extends Application
      * @param owner component that owns a timer
      */
     public void addTimer(final Timer timer, com.haulmont.cuba.gui.components.Window owner) {
-        addTimer(timer, owner, getCurrentWindow());
+        timers.add(timer, owner);
     }
 
-    /**
-     * Do not use this method in application code
-     */
-    public void addTimer(final Timer timer, Window mainWindow) {
-        addTimer(timer, null, mainWindow);
-    }
-
-    /**
-     * Do not use this method in application code
-     */
-    public void addTimer(final Timer timer, com.haulmont.cuba.gui.components.Window owner, Window mainWindow) {
-        WindowTimers wt = windowTimers.get(mainWindow);
-        if (wt == null) {
-            wt = new WindowTimers();
-            windowTimers.put(mainWindow, wt);
-        }
-
-        if (wt.timers.add(timer))
-        {
-            timerWindow.put(timer, mainWindow);
-
+    protected Timer createSessionPingTimer(final boolean connected) {
+        int sessionExpirationTimeout = webConfig.getHttpSessionExpirationTimeoutSec();
+        int sessionPingPeriod = sessionExpirationTimeout / 3;
+        if (sessionPingPeriod > 0) {
+            Timer timer = new Timer(sessionPingPeriod * 1000, true);
             timer.addListener(new Timer.Listener() {
                 public void onTimer(Timer timer) {
+                    if (connected) {
+                        UserSessionService service = ServiceLocator.lookup(UserSessionService.NAME);
+                        service.pingSession();
+                    }
+                    log.debug("Ping session");
                 }
 
                 public void onStopTimer(Timer timer) {
-                    Window window = timerWindow.remove(timer);
-                    if (window != null)
-                    {
-                        WindowTimers wt = windowTimers.get(window);
-                        if (wt != null) {
-                            wt.timers.remove(timer);
-                            if (timer instanceof WebTimer) {
-                                wt.idTimers.remove(((WebTimer) timer).getId());
-                            }
-                        }
-                    }
                 }
             });
-            if (timer instanceof WebTimer) {
-                final WebTimer webTimer = (WebTimer) timer;
-                if (owner != null) {
-                    owner.addListener(new com.haulmont.cuba.gui.components.Window.CloseListener() {
-                        public void windowClosed(String actionId) {
-                            timer.stopTimer();
-                        }
-                    });
-                }
-                if (webTimer.getId() != null) {
-                    wt.idTimers.put(webTimer.getId(), webTimer);
-                }
-            }
+            return timer;
         }
-    }
-
-    protected void stopTimers() {
-        Set<Timer> timers = new HashSet<Timer>(timerWindow.keySet());
-        for (final Timer timer : timers) {
-            if (timer != null && !timer.isStopped()) {
-                timer.stopTimer();
-            }
-        }
-        stopTimers = true;
-    }
-
-    /**
-     * Returns a timer by id
-     * @param id timer id
-     * @return timer or <code>null</code>
-     */
-    public Timer getTimer(String id) {
-        Window currentWindow = getCurrentWindow();
-        WindowTimers wt = windowTimers.get(currentWindow);
-        if (wt != null) {
-            return wt.idTimers.get(id);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Do not use this method in application code
-     * @param currentWindow current window
-     * @return collection of timers that applied for the current window
-     */
-    public Collection<Timer> getAppTimers(Window currentWindow) {
-        if (stopTimers) {
-            try {
-                return Collections.unmodifiableSet(timerWindow.keySet());
-            } finally {
-                stopTimers = false;
-            }
-        } else {
-            WindowTimers wt = windowTimers.get(currentWindow);
-            if (wt != null) {
-                return Collections.unmodifiableSet(wt.timers);
-            } else {
-                return Collections.emptySet();
-            }
-        }
-    }
-
-    protected static class WindowTimers implements Serializable {
-        private static final long serialVersionUID = 2038659815683284376L;
-        
-        protected Map<String, Timer> idTimers = new HashMap<String, Timer>();
-        protected Set<Timer> timers = new HashSet<Timer>();
-    }
-
-    private Window getCurrentWindow() {
-        String name = currentWindowName.get();
-        return (name == null ? getMainWindow() : getWindow(name));
+        return null;
     }
 
     public AppCookies getCookies() {

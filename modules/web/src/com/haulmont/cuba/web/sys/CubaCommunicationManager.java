@@ -74,7 +74,7 @@ public class CubaCommunicationManager extends CommunicationManager {
 
         final JsonPaintTarget paintTarget = new JsonPaintTarget(this, writer, false);
 
-        final Set<Timer> timers = new HashSet<Timer>(application.getAppTimers(window));
+        final Set<Timer> timers = new HashSet<Timer>(application.getTimers().getAll(window));
         for (final Timer timer : timers) {
             if (repaintAll || timer != null && timer.isDirty()) {
                 String timerId;

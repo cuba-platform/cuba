@@ -160,7 +160,7 @@ public class FoldersPane extends VerticalLayout {
                 int period = ConfigProvider.getConfig(WebConfig.class).getAppFoldersRefreshPeriodSec() * 1000;
                 timer = new Timer(period, true);
                 timer.addListener(createAppFolderUpdater());
-                App.getInstance().addTimer(timer, parentAppWindow);
+                App.getInstance().getTimers().add(timer, parentAppWindow);
             }
 
             Component searchFoldersPane = createSearchFoldersPane();

@@ -63,7 +63,7 @@ public class CASProtectedApp extends App implements ConnectionListener {
         if (connection.isConnected()) {
             log.debug("Creating AppWindow");
 
-            stopTimers();
+            getTimers().stopAll();
 
             for (Object win : new ArrayList(getWindows())) {
                 removeWindow((Window) win);

@@ -40,6 +40,14 @@ public interface WebConfig extends Config
     /** Default user password to place into login dialog */
     String getLoginDialogDefaultPassword();
 
+    /**
+     * HTTP session expiration timeout in seconds.<br/>
+     * Should be equals or less than middleware user session timeout (cuba.userSessionExpirationTimeoutSec)
+     */
+    @Property("cuba.httpSessionExpirationTimeoutSec")
+    @DefaultInt(1800)
+    int getHttpSessionExpirationTimeoutSec();
+
     /** Use ActiveDirectory authentication */
     @DefaultBoolean(false)
     boolean getUseActiveDirectory();

@@ -333,7 +333,7 @@ public class WebWindow
     }
 
     public Timer getTimer(String id) {
-        return (Timer) App.getInstance().getTimer(id);
+        return (Timer) App.getInstance().getTimers().getTimer(id);
     }
 
     public Settings getSettings() {

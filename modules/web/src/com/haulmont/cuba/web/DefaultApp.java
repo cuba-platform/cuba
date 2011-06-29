@@ -10,11 +10,11 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.service.ApplicationContext;
 import com.vaadin.ui.Window;
 import org.apache.commons.logging.Log;
@@ -43,6 +43,11 @@ public class DefaultApp extends App implements ConnectionListener {
      */
     protected LoginWindow createLoginWindow() {
         LoginWindow window = new LoginWindow(this, connection);
+
+        Timer timer = createSessionPingTimer(false);
+        if (timer != null)
+            timers.add(timer, window);
+
         return window;
     }
 
@@ -94,7 +99,7 @@ public class DefaultApp extends App implements ConnectionListener {
         if (connection.isConnected()) {
             log.debug("Creating AppWindow");
 
-            stopTimers();
+            getTimers().stopAll();
 
             for (Object win : new ArrayList(getWindows())) {
                 removeWindow((Window) win);
@@ -120,7 +125,7 @@ public class DefaultApp extends App implements ConnectionListener {
             log.debug("Closing all windows");
             getWindowManager().closeAll();
 
-            stopTimers();
+            getTimers().stopAll();
 
             for (Object win : new ArrayList(getWindows())) {
                 removeWindow((Window) win);
