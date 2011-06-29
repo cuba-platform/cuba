@@ -49,6 +49,15 @@ public class ViewHelper
         }
     }
 
+    public static void addView(FetchPlan fetchPlan, View view) {
+        if (fetchPlan == null)
+            throw new IllegalArgumentException("FetchPlan is null");
+        if (view == null)
+            throw new IllegalArgumentException("View is null");
+
+        processView(view, fetchPlan);
+    }
+
     private static void processView(View view, FetchPlan fetchPlan) {
         if (view.isIncludeSystemProperties()) {
             includeSystemProperties(view, fetchPlan);

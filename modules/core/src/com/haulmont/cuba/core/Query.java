@@ -109,8 +109,16 @@ public interface Query
 
     /**
      * Set View for this Query instance
-     * @param view
+     * @param view view instance. May be null, in this case eager fetching will be performed according to JPA mappings.
      * @return the same query instance
      */
     Query setView(View view);
+
+    /**
+     * Adds View for this Query instance.<br/>
+     * Eager fetching will be performed for fields specified in all added views.
+     * @param view view instance - must not be null
+     * @return the same query instance
+     */
+    Query addView(View view);
 }

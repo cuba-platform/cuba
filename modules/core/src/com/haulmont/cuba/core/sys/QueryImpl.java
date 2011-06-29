@@ -178,6 +178,11 @@ public class QueryImpl implements Query
         return this;
     }
 
+    public Query addView(View view) {
+        ViewHelper.addView(getQuery().getFetchPlan(), view);
+        return this;
+    }
+
     public String getQueryString() {
         return queryString;
     }

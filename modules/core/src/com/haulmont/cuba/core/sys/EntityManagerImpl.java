@@ -148,6 +148,10 @@ public class EntityManagerImpl implements EntityManager
         ViewHelper.setView(delegate.getFetchPlan(), view);
     }
 
+    public void addView(View view) {
+        ViewHelper.addView(delegate.getFetchPlan(), view);
+    }
+
     public void flush() {
         delegate.flush();
     }

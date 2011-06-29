@@ -127,4 +127,67 @@ public class PersistenceTest extends CubaTestCase
             tx.end();
         }
     }
+
+    public void testLoadByCombinedView() throws Exception {
+        User user;
+        Transaction tx = Locator.createTransaction();
+        try {
+            // load by single view
+
+            EntityManager em = PersistenceProvider.getEntityManager();
+
+            em.setView(
+                    new View(User.class, false)
+                            .addProperty("login")
+            );
+            user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
+
+            assertTrue(PersistenceProvider.isLoaded(user, "login"));
+            assertFalse(PersistenceProvider.isLoaded(user, "name"));
+
+            tx.commitRetaining();
+
+            // load by combined view
+
+            em = PersistenceProvider.getEntityManager();
+
+            em.setView(
+                    new View(User.class, false)
+                            .addProperty("login")
+            );
+            em.addView(
+                    new View(User.class, false)
+                            .addProperty("name")
+            );
+            user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
+
+            assertTrue(PersistenceProvider.isLoaded(user, "login"));
+            assertTrue(PersistenceProvider.isLoaded(user, "name"));
+
+            tx.commitRetaining();
+
+            // load by complex combined view
+
+            em = PersistenceProvider.getEntityManager();
+
+            em.setView(
+                    new View(User.class, false)
+                            .addProperty("login")
+            );
+            em.addView(
+                    new View(User.class, false)
+                            .addProperty("group", new View(Group.class).addProperty("name"))
+            );
+            user = em.find(User.class, UUID.fromString("60885987-1b61-4247-94c7-dff348347f93"));
+
+            assertTrue(PersistenceProvider.isLoaded(user, "login"));
+            assertFalse(PersistenceProvider.isLoaded(user, "name"));
+            assertTrue(PersistenceProvider.isLoaded(user, "group"));
+            assertTrue(PersistenceProvider.isLoaded(user.getGroup(), "name"));
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+    }
 }

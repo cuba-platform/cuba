@@ -108,9 +108,16 @@ public interface EntityManager
 
     /**
      * Set View for this EntityManager instance
-     * @param view
+     * @param view view instance. May be null, in this case eager fetching will be performed according to JPA mappings.
      */
     void setView(View view);
+
+    /**
+     * Adds View for this EntityManager instance.<br/>
+     * Eager fetching will be performed for fields specified in all added views.
+     * @param view view instance - must not be null
+     */
+    void addView(View view);
 
     /**
      * Synchronize the persistence context to the underlying database.
