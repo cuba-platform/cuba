@@ -15,6 +15,7 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.ViewHelper;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
 import org.apache.commons.lang.ObjectUtils;
@@ -118,7 +119,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
         View diffView;
         if (firstView != null)
-            diffView = intersectViews(firstView, secondView);
+            diffView = ViewHelper.intersectViews(firstView, secondView);
         else
             diffView = secondView;
 
@@ -387,24 +388,5 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     private Object getPropertyValue(Entity entity, MetaPropertyPath propertyPath) {
         return entity.getValue(propertyPath.toString());
-    }
-
-    private View intersectViews(View first, View second) {
-        View resultView = new View(first.getEntityClass());
-
-        Collection<ViewProperty> firstProps = first.getProperties();
-
-        for (ViewProperty firstProperty : firstProps) {
-            if (second.containsProperty(firstProperty.getName())) {
-                View resultPropView = null;
-                ViewProperty secondProperty = second.getProperty(firstProperty.getName());
-                if (firstProperty.getView() != null) {
-                    resultPropView = intersectViews(firstProperty.getView(), secondProperty.getView());
-                }
-                resultView.addProperty(firstProperty.getName(), resultPropView);
-            }
-        }
-
-        return resultView;
     }
 }

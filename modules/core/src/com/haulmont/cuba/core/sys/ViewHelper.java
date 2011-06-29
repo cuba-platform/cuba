@@ -58,6 +58,30 @@ public class ViewHelper
         processView(view, fetchPlan);
     }
 
+    public static View intersectViews(View first, View second) {
+        if (first == null)
+            throw new IllegalArgumentException("View is null");
+        if (second == null)
+            throw new IllegalArgumentException("View is null");
+
+        View resultView = new View(first.getEntityClass());
+
+        Collection<ViewProperty> firstProps = first.getProperties();
+
+        for (ViewProperty firstProperty : firstProps) {
+            if (second.containsProperty(firstProperty.getName())) {
+                View resultPropView = null;
+                ViewProperty secondProperty = second.getProperty(firstProperty.getName());
+                if (firstProperty.getView() != null) {
+                    resultPropView = intersectViews(firstProperty.getView(), secondProperty.getView());
+                }
+                resultView.addProperty(firstProperty.getName(), resultPropView);
+            }
+        }
+
+        return resultView;
+    }
+
     private static void processView(View view, FetchPlan fetchPlan) {
         if (view.isIncludeSystemProperties()) {
             includeSystemProperties(view, fetchPlan);
