@@ -562,14 +562,14 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         }
 
         public boolean commit(boolean validate) {
-            if (validate && !__validate())
+            if (validate && !((Window.Editor)getWrapper()).validateOnCommit())
                 return false;
 
             ((EditorWindowDelegate) delegate).commit();
             return true;
         }
 
-        protected boolean __validate() {
+        public boolean validateOnCommit() {
             List<String> problems = new ArrayList<String>();
 
             Collection<Component> components = DesktopComponentsHelper.getComponents(this);

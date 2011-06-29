@@ -60,6 +60,14 @@ public class AbstractEditor extends AbstractWindow implements Window.Editor {
         }
     }
 
+    public boolean validateOnCommit() {
+        if (frame instanceof Window.Editor) {
+            return ((Editor) frame).validateOnCommit();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     public boolean commit() {
         if (frame instanceof Window.Editor) {
             return ((Editor) frame).commit();

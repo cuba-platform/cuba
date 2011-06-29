@@ -704,7 +704,7 @@ public class WebWindow
         }
 
         public boolean commit(boolean validate) {
-            if (validate && !__validate())
+            if (validate && !((Window.Editor)getWrapper()).validateOnCommit())
                 return false;
 
             ((EditorWindowDelegate) delegate).commit();
@@ -721,7 +721,7 @@ public class WebWindow
             return ((EditorWindowDelegate) delegate).isLocked();
         }
 
-        protected boolean __validate() {
+        public boolean validateOnCommit() {
             final Map<Exception, com.vaadin.ui.Field> problems =
                     new HashMap<Exception, com.vaadin.ui.Field>();
 
