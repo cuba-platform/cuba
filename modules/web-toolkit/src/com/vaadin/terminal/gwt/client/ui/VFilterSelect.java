@@ -103,6 +103,8 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
         private int topPosition;
 
+        private boolean finishDraw = true;
+
         SuggestionPopup() {
             super(true, false, true);
             menu = new SuggestionMenu();
@@ -169,6 +171,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                     "width", "");
 
             setPopupPositionAndShow(this);
+            finishDraw = true;
         }
 
         private void setNextButtonActive(boolean b) {
@@ -251,6 +254,12 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             } else if (DOM.compare(target, down)
                     || DOM.compare(target, DOM.getChild(down, 0))) {
                 filterOptions(currentPage + 1, lastFilter);
+            } else if (event.getTypeInt() == Event.ONMOUSEWHEEL && finishDraw) {
+                if (event.getMouseWheelVelocityY() > 0) {
+                    if (hasNextPage()) { finishDraw = false; filterOptions(currentPage + 1, lastFilter); }
+                } else {
+                    if (hasPrevPage()) { finishDraw = false; filterOptions(currentPage - 1, lastFilter); }
+                }
             }
             tb.setFocus(true);
         }
@@ -636,6 +645,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         tb.addBlurHandler(this);
         popupOpener.setStyleName(CLASSNAME + "-wrap");
         popupOpener.addClickHandler(this);
+        suggestionPopup.sinkEvents(Event.ONMOUSEWHEEL);
     }
 
     public HandlerRegistration addFocusHandler(FocusHandler handler) {
@@ -648,6 +658,10 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         } else {
             return false;
         }
+    }
+
+    public boolean hasPrevPage() {
+        return currentPage - 1 >= 0;
     }
 
     public void filterOptions(int page) {
