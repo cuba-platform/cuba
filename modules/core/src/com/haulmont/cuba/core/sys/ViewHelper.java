@@ -72,10 +72,11 @@ public class ViewHelper
             if (second.containsProperty(firstProperty.getName())) {
                 View resultPropView = null;
                 ViewProperty secondProperty = second.getProperty(firstProperty.getName());
-                if (firstProperty.getView() != null) {
+                if ((firstProperty.getView() != null) && (secondProperty.getView() != null)) {
                     resultPropView = intersectViews(firstProperty.getView(), secondProperty.getView());
                 }
-                resultView.addProperty(firstProperty.getName(), resultPropView);
+                if (resultPropView != null)
+                    resultView.addProperty(firstProperty.getName(), resultPropView);
             }
         }
 
