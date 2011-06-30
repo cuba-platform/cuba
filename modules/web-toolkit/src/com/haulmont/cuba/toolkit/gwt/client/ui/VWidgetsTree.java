@@ -155,6 +155,9 @@ public class VWidgetsTree extends VTree implements Container {
 
         @Override
         protected void setState(boolean state, boolean notifyServer) {
+            if (state) {
+                childrenLoaded = false;
+            }
             super.setState(state, notifyServer);
             if (state) {
                 nodeCaptionDiv.addClassName("expanded");
