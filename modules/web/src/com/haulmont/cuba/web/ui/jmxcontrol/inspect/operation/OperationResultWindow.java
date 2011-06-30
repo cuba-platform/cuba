@@ -29,6 +29,10 @@ public class OperationResultWindow extends AbstractWindow {
     protected void init(Map<String, Object> params) {
         super.init(params);
 
+        getDialogParams().setResizable(true);
+        getDialogParams().setWidth(800);
+        getDialogParams().setHeight(600);
+
         Throwable ex = (Throwable) params.get("param$exception");
         Object result = params.get("param$result");
 

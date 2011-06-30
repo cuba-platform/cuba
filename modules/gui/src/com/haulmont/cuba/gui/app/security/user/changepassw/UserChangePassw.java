@@ -5,12 +5,12 @@
  */
 package com.haulmont.cuba.gui.app.security.user.changepassw;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.security.app.SecurityConfig;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -41,7 +41,7 @@ public class UserChangePassw extends AbstractEditor
         if (StringUtils.isBlank(passw) || StringUtils.isBlank(confPassw)) {
             showNotification(getMessage("emptyPassword"), NotificationType.WARNING);
         } else if (ObjectUtils.equals(passw, confPassw)) {
-            SecurityConfig passwordPolicyConfig = ConfigProvider.getConfig(SecurityConfig.class);
+            ClientConfig passwordPolicyConfig = ConfigProvider.getConfig(ClientConfig.class);
             if (passwordPolicyConfig.getPasswordPolicyEnabled()) {
                 String regExp = passwordPolicyConfig.getPasswordPolicyRegExp();
                 if (passw.matches(regExp)) {

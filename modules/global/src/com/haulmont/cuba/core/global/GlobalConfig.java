@@ -36,12 +36,6 @@ public interface GlobalConfig extends Config {
     String getWebContextName();
 
     /**
-     * List of entitys' id which can restore into the restore screen
-     */
-    @Property("cuba.restoreScreenEntityIds")
-    String getRestoreEntityId();
-
-    /**
      * Config directory. Root of all not deployable application configuration and logic.
      * Does not end with "/"
      */
@@ -70,20 +64,6 @@ public interface GlobalConfig extends Config {
     String getDataDir();
 
     /**
-     * Support e-mail. All feedback mails will be sent on this address.
-     */
-    @Property("cuba.supportEmail")
-    @DefaultString("cubasupport@haulmont.com")
-    String getSupportEmail();
-
-    /**
-     * System ID. Use for identification. (Support emails)
-     */
-    @Property("cuba.systemId")
-    @DefaultString("CUBA")
-    String getSystemID();
-
-    /**
      * Used to support automatic testing
      */
     @Property("cuba.testMode")
@@ -98,26 +78,11 @@ public interface GlobalConfig extends Config {
     boolean isGroovyClassLoaderEnabled();
 
     /**
-     * Password to use LoginService.loginTrusted() method
-     */
-    @Property("cuba.trustedClientPassword")
-    @DefaultString("")
-    String getTrustedClientPassword();
-
-    @Property("cuba.collectionDatasourceDbSortEnabled")
-    @DefaultBoolean(true)
-    boolean getCollectionDatasourceDbSortEnabled();
-
-    /**
      * Used to show alternative locales on user login
      */
     @Factory(factory = AvailableLocalesFactory.class)
     @Default("English|en;Russian|ru")
     Map<String, Locale> getAvailableLocales();
-
-    @Property("cuba.screenIdsToSaveHistory")
-    @Default("sec$User.edit,sec$Group.edit,sec$Role.edit")
-    String getScreenIdsToSaveHistory();
 
     @Property("cuba.useAstBasedJpqlTransformer")
     @DefaultBoolean(false)

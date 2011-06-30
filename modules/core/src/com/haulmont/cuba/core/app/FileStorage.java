@@ -41,7 +41,7 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
     }
 
     public String getStoragePath() {
-        String storagePath = ConfigProvider.getConfig(FileStorageConfig.class).getFileStorageDir();
+        String storagePath = ConfigProvider.getConfig(ServerConfig.class).getFileStorageDir();
         if (StringUtils.isBlank(storagePath)) {
             String dataDir = ConfigProvider.getConfig(GlobalConfig.class).getDataDir();
             storagePath = dataDir + "/filestorage/";
@@ -159,7 +159,7 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
     }
 
     private File getStorageDir(Date createDate) {
-        String storageDir = ConfigProvider.getConfig(FileStorageConfig.class).getFileStorageDir();
+        String storageDir = ConfigProvider.getConfig(ServerConfig.class).getFileStorageDir();
         if (StringUtils.isBlank(storageDir)) {
             String dataDir = ConfigProvider.getConfig(GlobalConfig.class).getDataDir();
             storageDir = dataDir + "/filestorage/";

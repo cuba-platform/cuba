@@ -11,10 +11,7 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.config.*;
-import com.haulmont.cuba.core.config.defaults.Default;
-import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
-import com.haulmont.cuba.core.config.defaults.DefaultInt;
-import com.haulmont.cuba.core.config.defaults.DefaultInteger;
+import com.haulmont.cuba.core.config.defaults.*;
 import com.haulmont.cuba.core.config.type.Factory;
 import com.haulmont.cuba.core.config.type.StringListTypeFactory;
 
@@ -33,6 +30,13 @@ public interface WebConfig extends Config
     @Property("cuba.useLocalServiceInvocation")
     @DefaultBoolean(true)
     boolean getUseLocalServiceInvocation();
+
+    /**
+     * Password to use LoginService.loginTrusted() method
+     */
+    @Property("cuba.trustedClientPassword")
+    @DefaultString("")
+    String getTrustedClientPassword();
 
     /** Default user login to place into login dialog */
     String getLoginDialogDefaultUser();
@@ -138,4 +142,24 @@ public interface WebConfig extends Config
     @Property("cuba.web.testModeParamName")
     @Default("jmeter")
     String getTestModeParamName();
+
+    /**
+     * List of entitys' id which can restore into the restore screen
+     */
+    @Property("cuba.restoreScreenEntityIds")
+    String getRestoreEntityId();
+
+    /**
+     * Support e-mail. All feedback mails will be sent on this address.
+     */
+    @Property("cuba.supportEmail")
+    @DefaultString("cubasupport@haulmont.com")
+    String getSupportEmail();
+
+    /**
+     * System ID. Use for identification. (Support emails)
+     */
+    @Property("cuba.systemId")
+    @DefaultString("CUBA")
+    String getSystemID();
 }

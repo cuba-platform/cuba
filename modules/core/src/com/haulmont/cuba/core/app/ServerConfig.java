@@ -34,6 +34,13 @@ public interface ServerConfig extends Config {
     String getUserSessionProviderUrl();
 
     /**
+     * Password to use LoginService.loginTrusted() method
+     */
+    @Property("cuba.trustedClientPassword")
+    @DefaultString("")
+    String getTrustedClientPassword();
+
+    /**
      * User session expiration timeout in seconds.
      * Not the same as HTTP session timeout, but should have the same value.
      */
@@ -77,4 +84,10 @@ public interface ServerConfig extends Config {
     @DefaultBoolean(false)
     boolean getDisplayDeviceUnavailable();
 
+    @Property("cuba.fileStorageDir")
+    String getFileStorageDir();
+
+    @Property("cuba.log.cutLoadListQueries")
+    @DefaultBoolean(false)
+    boolean getCutLoadListQueries();
 }

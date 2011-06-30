@@ -7,6 +7,7 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.global.UserSessionProvider;
@@ -30,7 +31,7 @@ public class ScreenHistorySupport {
     private List<String> screenIds;
 
     public ScreenHistorySupport() {
-        GlobalConfig config = ConfigProvider.getConfig(GlobalConfig.class);
+        ClientConfig config = ConfigProvider.getConfig(ClientConfig.class);
         String property = config.getScreenIdsToSaveHistory();
         if (property != null && StringUtils.isNotBlank(property))
             screenIds = Arrays.asList(StringUtils.split(property, ','));

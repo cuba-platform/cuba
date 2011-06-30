@@ -28,6 +28,27 @@
         <constructor-arg index="0" ref="cuba_ConfigProvider"/>
     </bean>
 
+    <bean id="cuba_web_Configuration" class="com.haulmont.cuba.web.jmx.Configuration"/>
+
+    <!-- MBeans registration -->
+
+    <bean id="cuba_web_MBeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
+        <property name="beans">
+            <map>
+                <entry key="${cuba.webContextName}.cuba:service=Configuration" value-ref="cuba_web_Configuration"/>
+            </map>
+        </property>
+        <property name="assembler">
+            <bean class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
+                <property name="interfaceMappings">
+                    <map>
+                        <entry key="cuba_PersistenceManager" value="com.haulmont.cuba.web.jmx.ConfigurationMBean"/>
+                    </map>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
     <!-- Remote stubs -->
 
     <bean id="cuba_proxyCreator" class="com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator">

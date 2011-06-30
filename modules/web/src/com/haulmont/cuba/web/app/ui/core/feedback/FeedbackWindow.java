@@ -17,7 +17,9 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.AppWindow;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.gui.WebWindow;
 import org.apache.commons.lang.StringUtils;
@@ -74,22 +76,32 @@ public class FeedbackWindow extends AbstractWindow {
         }
         if (result) {
             try {
+                WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
                 EmailService emailService = ServiceLocator.lookup(EmailService.NAME);
                 String infoHeader = "";
                 infoHeader += (MessageProvider.getMessage(getClass(),  "supportEmail") + ".\n");
-                infoHeader += (MessageProvider.getMessage(getClass(),  "systemID") + ": " + (ConfigProvider.getConfig(GlobalConfig.class).getSystemID() == null ? "none" : ConfigProvider.getConfig(GlobalConfig.class).getSystemID()) + "\n");
-                infoHeader += (MessageProvider.getMessage(getClass(),  "userLogin") + ": " + (UserSessionClient.getUserSession().getUser().getLogin() == null ? "none" : UserSessionClient.getUserSession().getUser().getLogin()) + "\n");
-                infoHeader += (MessageProvider.getMessage(getClass(),  "userEmail") + ": " + (UserSessionClient.getUserSession().getUser().getEmail() == null ? "none" : UserSessionClient.getUserSession().getUser().getEmail()) + "\n");
-                infoHeader += (MessageProvider.getMessage(getClass(),  "userFirstName") + ": " + (UserSessionClient.getUserSession().getUser().getFirstName() == null ? "none" : UserSessionClient.getUserSession().getUser().getFirstName()) + "\n");
-                infoHeader += (MessageProvider.getMessage(getClass(),  "userMiddleName") + ": " + (UserSessionClient.getUserSession().getUser().getMiddleName() == null ? "none" : UserSessionClient.getUserSession().getUser().getMiddleName()) + "\n");
-                infoHeader += (MessageProvider.getMessage(getClass(),  "userLastName") + ": " + (UserSessionClient.getUserSession().getUser().getLastName() == null ? "none" : UserSessionClient.getUserSession().getUser().getLastName()) + "\n");
-                infoHeader += (MessageProvider.getMessage(getClass(),  "timestamp") + ": " + (Datatypes.getInstance().get(Date.class).format(TimeProvider.currentTimestamp())) + "\n");
-                infoHeader += (MessageProvider.getMessage(getClass(),  "reason") + ": " + (otherReason.equals((String) ((LookupField) getComponent("reason")).getValue()) ? (String) ((TextField) getComponent("reasonFreeText")).getValue() : (String) ((LookupField) getComponent("reason")).getValue()) + "\n");
+                infoHeader += (MessageProvider.getMessage(getClass(),  "systemID") + ": " + (webConfig.getSystemID() == null ? "none" : webConfig.getSystemID()) + "\n");
+                User user = UserSessionProvider.getUserSession().getUser();
+                infoHeader += (MessageProvider.getMessage(getClass(),  "userLogin") + ": " + (user.getLogin() == null ? "none" : user.getLogin()) + "\n");
+                infoHeader += (MessageProvider.getMessage(getClass(),  "userEmail") + ": " + (user.getEmail() == null ? "none" : user.getEmail()) + "\n");
+                infoHeader += (MessageProvider.getMessage(getClass(),  "userFirstName") + ": " + (user.getFirstName() == null ? "none" : user.getFirstName()) + "\n");
+                infoHeader += (MessageProvider.getMessage(getClass(),  "userMiddleName") + ": " + (user.getMiddleName() == null ? "none" : user.getMiddleName()) + "\n");
+                infoHeader += (MessageProvider.getMessage(getClass(),  "userLastName") + ": " + (user.getLastName() == null ? "none" : user.getLastName()) + "\n");
+                infoHeader += (MessageProvider.getMessage(getClass(),  "timestamp") + ": " + (Datatypes.get(Date.class).format(TimeProvider.currentTimestamp())) + "\n");
+                infoHeader += (MessageProvider.getMessage(getClass(),  "reason") + ": "
+                        + (otherReason.equals(((LookupField) getComponent("reason")).getValue())
+                                ? (String) ((TextField) getComponent("reasonFreeText")).getValue()
+                                : (String) ((LookupField) getComponent("reason")).getValue()) + "\n");
                 infoHeader += (MessageProvider.getMessage(getClass(),  "mailBody") + ": \n");
                 infoHeader += ((String) ((TextField) getComponent("mainBody")).getValue());
                 EmailInfo emailInfo = new EmailInfo(
-                        ConfigProvider.getConfig(GlobalConfig.class).getSupportEmail(),
-                        "[Feedback Form][" + ConfigProvider.getConfig(GlobalConfig.class).getSystemID() + "][" + UserSessionClient.getUserSession().getUser().getLogin() + "][" + Datatypes.getInstance().get(Date.class).format(TimeProvider.currentTimestamp()) + "] " + (otherReason.equals((String) ((LookupField) getComponent("reason")).getValue()) ? (String) ((TextField) getComponent("reasonFreeText")).getValue() : (String) ((LookupField) getComponent("reason")).getValue()),
+                        webConfig.getSupportEmail(),
+                        "[Feedback Form][" + webConfig.getSystemID() + "]["
+                                + user.getLogin() + "]["
+                                + Datatypes.get(Date.class).format(TimeProvider.currentTimestamp()) + "] "
+                                + (otherReason.equals(((LookupField) getComponent("reason")).getValue())
+                                    ? (String) ((TextField) getComponent("reasonFreeText")).getValue()
+                                    : (String) ((LookupField) getComponent("reason")).getValue()),
                         null,
                         null,
                         null,

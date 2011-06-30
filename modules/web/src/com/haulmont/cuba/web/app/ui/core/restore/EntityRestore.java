@@ -15,21 +15,20 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebFilter;
 import com.haulmont.cuba.web.gui.components.WebTable;
 import com.haulmont.cuba.web.gui.components.WebVBoxLayout;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class EntityRestore extends AbstractWindow{
 
@@ -146,8 +145,7 @@ public class EntityRestore extends AbstractWindow{
         });
         primaryFilter.setVisible(false);
         tablePanel = getComponent("table-panel");
-        GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
-        String restoreEntitys = globalConfig.getRestoreEntityId();
+        String restoreEntitys = ConfigProvider.getConfig(WebConfig.class).getRestoreEntityId();
         Map<String,Object> options = new java.util.TreeMap<String,Object>();
         if (restoreEntitys == null || StringUtils.isBlank(restoreEntitys)) {
             for (MetaClass metaClass : MetadataProvider.getSession().getClasses()) {

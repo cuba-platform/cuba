@@ -6,11 +6,11 @@
 package com.haulmont.cuba.gui.app.security.user.edit;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionsLookup;
 import com.haulmont.cuba.gui.app.security.user.NameBuilderListener;
@@ -21,7 +21,6 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.security.app.SecurityConfig;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
@@ -81,7 +80,7 @@ public class UserEditor extends AbstractEditor {
                     }
 
                     public void afterCommit(CommitContext<Entity> context, Map<Entity, Entity> result) {
-                        UserSession us = UserSessionClient.getUserSession();
+                        UserSession us = UserSessionProvider.getUserSession();
                         for (Map.Entry<Entity, Entity> entry : result.entrySet()) {
                             if (entry.getKey().equals(us.getUser())) {
                                 us.setUser((User) entry.getValue());
@@ -101,7 +100,7 @@ public class UserEditor extends AbstractEditor {
         if (PersistenceHelper.isNew(item)) {
             addDefaultRoles();
 
-            languageLookup.setValue(UserSessionClient.getUserSession().getLocale().getLanguage());
+            languageLookup.setValue(UserSessionProvider.getUserSession().getLocale().getLanguage());
         }
     }
 
@@ -250,7 +249,7 @@ public class UserEditor extends AbstractEditor {
                 return false;
             } else {
                 if (ObjectUtils.equals(passw, confPassw)) {
-                    SecurityConfig passwordPolicyConfig = ConfigProvider.getConfig(SecurityConfig.class);
+                    ClientConfig passwordPolicyConfig = ConfigProvider.getConfig(ClientConfig.class);
                     if (passwordPolicyConfig.getPasswordPolicyEnabled()) {
                         String regExp = passwordPolicyConfig.getPasswordPolicyRegExp();
                         if (passw.matches(regExp)) {

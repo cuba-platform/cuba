@@ -13,6 +13,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.AggregationInfo;
@@ -61,7 +62,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     protected int firstResult;
 
-    protected boolean sortOnDb = ConfigProvider.getConfig(GlobalConfig.class).getCollectionDatasourceDbSortEnabled();
+    protected boolean sortOnDb = ConfigProvider.getConfig(ClientConfig.class).getCollectionDatasourceDbSortEnabled();
 
     /**
      * This constructor is invoked by DsContextLoader, so inheritors must contain a constructor

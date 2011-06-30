@@ -13,7 +13,6 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
@@ -113,7 +112,7 @@ public class LoginWorkerBean implements LoginWorker
     }
 
     public UserSession loginTrusted(String login, String password, Locale locale) throws LoginException {
-        String trustedClientPassword = ConfigProvider.getConfig(GlobalConfig.class).getTrustedClientPassword();
+        String trustedClientPassword = ConfigProvider.getConfig(ServerConfig.class).getTrustedClientPassword();
         if (StringUtils.isBlank(trustedClientPassword) || !trustedClientPassword.equals(password))
             throw new LoginException(
                     String.format(MessageProvider.getMessage(getClass(), "LoginException.InvalidLoginOrPassword", locale), login)

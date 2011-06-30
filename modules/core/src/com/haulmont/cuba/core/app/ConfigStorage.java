@@ -12,11 +12,15 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.Config;
+import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,11 +44,11 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
         return this;
     }
 
-    public String printProperties() {
-        return printProperties(null);
+    public String printDbProperties() {
+        return printDbProperties(null);
     }
 
-    public String printProperties(String prefix) {
+    public String printDbProperties(String prefix) {
         Transaction tx = Locator.createTransaction();
         try {
             login();
@@ -55,7 +59,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
                     (prefix == null ? "" : "where c.name like ?1"));
             Query query = em.createQuery(s);
             if (prefix != null) {
-                query.setParameter(1, prefix);
+                query.setParameter(1, prefix + "%");
             }
             List<Config> list = query.getResultList();
             for (Config config : list) {
@@ -71,11 +75,11 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
         }
     }
 
-    public String getProperty(String name) {
+    public String getDbProperty(String name) {
         try {
             login();
             String value = getConfigProperty(name);
-            return value;
+            return name + "=" + value;
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
         } finally {
@@ -83,11 +87,11 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
         }
     }
 
-    public String setProperty(String name, String value) {
+    public String setDbProperty(String name, String value) {
         try {
             login();
             setConfigProperty(name, value);
-            return "Done";
+            return "Property " + name + " set to " + value;
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
         } finally {
@@ -95,7 +99,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
         }
     }
 
-    public String removeProperty(String name) {
+    public String removeDbProperty(String name) {
         Transaction tx = Locator.createTransaction();
         try {
             login();
@@ -105,7 +109,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
             query.executeUpdate();
             tx.commit();
             cache.remove(name);
-            return "Done";
+            return "Property " + name + " removed";
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
         } finally {
@@ -116,6 +120,30 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
 
     public void clearCache() {
         cache.clear();
+    }
+
+    public String printAppProperties() {
+        return printAppProperties(null);
+    }
+
+    public String printAppProperties(String prefix) {
+        List<String> list = new ArrayList<String>();
+        for (String name : AppContext.getPropertyNames()) {
+            if (prefix == null || name.startsWith(prefix)) {
+                list.add(name + "=" + AppContext.getProperty(name));
+            }
+        }
+        Collections.sort(list);
+        return new StrBuilder().appendWithSeparators(list, "\n").toString();
+    }
+
+    public String getAppProperty(String name) {
+        return name + "=" + AppContext.getProperty(name);
+    }
+
+    public String setAppProperty(String name, String value) {
+        AppContext.setProperty(name, value);
+        return "Property " + name + " set to " + value;
     }
 
     public String getConfigProperty(String name) {

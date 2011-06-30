@@ -10,15 +10,14 @@
 
     </dsContext>
 
-    <layout expand="table-panel" expandLayout="space">
-        <scrollbox id="scrollbox" height="350px">
-            <vbox spacing="true" id="container">
+    <layout expand="content">
+        <vbox id="content">
+            <scrollbox id="scrollbox">
+                <vbox spacing="true" id="container">
 
-            </vbox>
-        </scrollbox>
+                </vbox>
+            </scrollbox>
+        </vbox>
         <button id="close" icon="icons/ok.png"/>
-        <hbox id="space">
-
-        </hbox>
     </layout>
 </window>
