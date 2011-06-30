@@ -61,5 +61,10 @@ public class NoUserSessionHandler extends AbstractExceptionHandler<NoUserSession
         public String getCaption() {
             return MessageProvider.getMessage(getClass(), "actions.Ok", locale);
         }
+
+        @Override
+        public String getIcon() {
+            return "icons/ok.png";
+        }
     }
 }
