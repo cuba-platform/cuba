@@ -10,13 +10,25 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.FieldSetElement;
+import com.google.gwt.dom.client.LegendElement;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.VPanel;
 
+/**
+ * VGroupBox
+ * <br/>
+ * [Need rewrite]
+ */
 public class VGroupBox extends VPanel {
 
     public static final String CLASSNAME = "group-box";
@@ -24,26 +36,25 @@ public class VGroupBox extends VPanel {
     private int contentNodeBorderPaddingsHor = -1;
     private int contentNodeBorderPaddingsVer = -1;
 
-    protected Element expander;
-
     protected boolean expanded;
     protected boolean collapsable;
 
     protected Element descriptionNode;
+    protected Element expander;
 
-    protected Element fieldset;
-    protected Element legend;
+    protected FieldSetElement fieldset;
+    protected DivElement legend;
+
+    public VGroupBox() {
+    }
 
     @Override
     protected void constructDOM() {
-        fieldset = DOM.createFieldSet();
-        legend = DOM.createLegend();
-        captionNode = DOM.createDiv();
+//        DivElement captionWrap = Document.get().createDivElement();
+        legend = Document.get().createDivElement();
+        fieldset = Document.get().createFieldSetElement();
         expander = DOM.createDiv();
-        captionText = DOM.createSpan();
         descriptionNode = DOM.createDiv();
-        bottomDecoration = DOM.createDiv();
-        contentNode = DOM.createDiv();
 
         captionNode.setClassName(CLASSNAME + "-caption");
         descriptionNode.setClassName(CLASSNAME + "-description");
@@ -65,7 +76,6 @@ public class VGroupBox extends VPanel {
 
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
         DOM.sinkEvents(contentNode, Event.ONSCROLL);
-
         DOM.sinkEvents(expander, Event.ONCLICK);
 
         contentNode.getStyle().setProperty("position", "relative");
@@ -99,7 +109,7 @@ public class VGroupBox extends VPanel {
 
     @Override
     public void updateFromUIDL(UIDL uidl) {
-        super.updateFromUIDL(uidl);
+        super.updateFromUIDL((UIDL) uidl);
 
         if (!uidl.hasAttribute("caption") || uidl.getStringAttribute("caption").equals("")) {
             addStyleDependentName("nocaption");

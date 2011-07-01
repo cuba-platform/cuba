@@ -16,6 +16,7 @@ import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.haulmont.cuba.toolkit.gwt.client.Properties;
 import com.haulmont.cuba.toolkit.gwt.client.ResourcesLoader;
@@ -27,6 +28,8 @@ import com.vaadin.terminal.gwt.client.UIDL;
 public class VSwfUpload
         extends FormPanel
         implements Paintable {
+
+    private static final boolean DEBUG_MODE = false;
 
     public static final String CLASSNAME = "v-multiupload";
 
@@ -86,7 +89,7 @@ public class VSwfUpload
 
         injectJs();
 
-        String actionString;
+        final String actionString;
         if (uidl.hasAttribute("action")) {
             String action = uidl.getStringAttribute("action");
             actionString = "".equals(action) ? "#" : action;
@@ -110,13 +113,14 @@ public class VSwfUpload
         SwfUploadAPI.onReady(new Runnable() {
             public void run() {
                 initSwfUploadObjects();
-                String uri = client.getAppUri();
+                String appUri = client.getAppUri();
+                appUri = appUri + (appUri.endsWith("/") ? "" : "/");
 
                 Options opts = Options.create();
                 // Flash resource url
-                opts.set("flash_url", uri + (uri.endsWith("/") ? "" : "/") + "VAADIN/resources/flash/" + "swfupload.swf");
+                opts.set("flash_url", appUri + "VAADIN/resources/flash/" + "swfupload.swf");
                 // Resource url
-                opts.set("upload_url", ";jsessionid=" + client.getConfiguration().getSessionId()
+                opts.set("upload_url", appUri + ";jsessionid=" + client.getConfiguration().getSessionId()
                         + "?pid=" + controlPid + "&multiupload=true");
 
                 // Set file parameters
@@ -132,10 +136,11 @@ public class VSwfUpload
                 opts.set("custom_settings", customOpts);
 
                 // Set debug mode
-                opts.set("debug", false);
-                uri = client.getThemeUri();
+                opts.set("debug", DEBUG_MODE);
+                String themeUri = client.getThemeUri();
+                themeUri = themeUri + (themeUri.endsWith("/") ? "" : "/");
                 // Appearance properties
-                String imageUrl = uri + (uri.endsWith("/") ? "" : "/") + "multiupload/images/button.png";
+                String imageUrl = themeUri + "multiupload/images/button.png";
                 opts.set("button_image_url", imageUrl);
 
                 opts.set("button_width", width);

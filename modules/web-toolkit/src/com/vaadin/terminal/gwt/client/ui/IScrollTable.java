@@ -134,6 +134,24 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
         purgeUnregistryBag();
     }
 
+    protected void focusRowFromBody() {
+        if (selectedRowKeys.size() == 1) {
+            // try to focus a row currently selected and in viewport
+            String selectedRowKey = selectedRowKeys.iterator().next();
+            if (selectedRowKey != null) {
+                IScrollTableBody.IScrollTableRow renderedRow = (IScrollTableBody.IScrollTableRow) getRenderedRowByKey(selectedRowKey);
+                if (renderedRow == null || !renderedRow.isInViewPort()) {
+                    setRowFocus(getBody().getRowByRowIndex(firstRowInViewPort));
+                } else {
+                    setRowFocus(renderedRow);
+                }
+            }
+        } else {
+            // multiselect mode
+            setRowFocus(getBody().getRowByRowIndex(firstRowInViewPort));
+        }
+    }
+
     protected IScrollTableBody createBody() {
         return new IScrollTableBody();
     }
@@ -201,14 +219,6 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
         }
 
         initializedAndAttached = true;
-    }
-
-    protected String pressUp(String rowKey) {
-        return getBody().aboveRow(rowKey);
-    }
-
-    protected String pressDown(String rowKey) {
-        return getBody().bellowRow(rowKey);
     }
 
     /**
@@ -802,7 +812,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             return firstRendered;
         }
 
-        public String aboveRow(String rowKey) {
+/*        public String aboveRow(String rowKey) {
             IScrollTableRow row = (IScrollTableRow) getRenderedRowByKey(rowKey);
             int index = rowRealIndex(row);
             if (index > 0) {
@@ -822,9 +832,9 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             } else {
                 return null;
             }
-        }
+        }*/
 
-        public String bellowRow(String rowKey) {
+/*        public String bellowRow(String rowKey) {
             IScrollTableRow row = (IScrollTableRow) getRenderedRowByKey(rowKey);
             int index = rowRealIndex(row);
             if (index > -1 && index < totalRows - 1) {
@@ -852,7 +862,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             } else {
                 return null;
             }
-        }
+        }*/
 
         protected int rowRealIndex(IScrollTableRow row) {
             if (row == null) return -1;
@@ -875,6 +885,25 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
 
             public IScrollTableRow(UIDL uidl, char[] aligns) {
                 super(uidl, aligns);
+            }
+
+            /**
+             * Detects whether row is visible in tables viewport.
+             *
+             * @return
+             */
+            public boolean isInViewPort() {
+                int absoluteTop = getAbsoluteTop();
+                int scrollPosition = bodyContainer.getScrollPosition();
+                if (absoluteTop < scrollPosition) {
+                    return false;
+                }
+                int maxVisible = scrollPosition
+                        + bodyContainer.getOffsetHeight() - getOffsetHeight();
+                if (absoluteTop > maxVisible) {
+                    return false;
+                }
+                return true;
             }
         }
     }
@@ -905,4 +934,135 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
         return (IScrollTableBody) super.getBody();
     }
 
+    protected boolean handleNavigationPageDownKey( boolean ctrl, boolean shift ) {
+        if (isSelectable()) {
+            /*
+             * If selectable we plagiate MSW behaviour: first scroll to the
+             * end of current view. If at the end, scroll down one page
+             * length and keep the selected row in the bottom part of
+             * visible area.
+             */
+            if (!isFocusAtTheEndOfTable()) {
+                ITableBody.ITableRow lastVisibleRowInViewPort = getBody()
+                        .getRowByRowIndex(firstRowInViewPort
+                                + getFullyVisibleRowCount() - 1);
+                if (lastVisibleRowInViewPort != null
+                        && lastVisibleRowInViewPort != focusedRow) {
+                    // focused row is not at the end of the table, move
+                    // focus and select the last visible row
+                    setRowFocus(lastVisibleRowInViewPort);
+                    selectFocusedRow(ctrl, shift);
+                    sendSelectedRows();
+                } else {
+                    int indexOfToBeFocused = focusedRow.getIndex()
+                            + getFullyVisibleRowCount();
+                    if (indexOfToBeFocused >= totalRows) {
+                        indexOfToBeFocused = totalRows - 1;
+                    }
+                    ITableBody.ITableRow toBeFocusedRow = getBody()
+                            .getRowByRowIndex(indexOfToBeFocused);
+
+                    if (toBeFocusedRow != null) {
+                        /*
+                         * if the next focused row is rendered
+                         */
+                        setRowFocus(toBeFocusedRow);
+                        selectFocusedRow(ctrl, shift);
+                        // TODO needs scrollintoview ?
+                        sendSelectedRows();
+                    } else {
+                        // scroll down by pixels and return, to wait for
+                        // new rows, then select the last item in the
+                        // viewport
+                        selectLastItemInNextRender = true;
+                        multiselectPending = shift;
+                        scrollByPagelenght(1);
+                    }
+                }
+            }
+        } else {
+            /* No selections, go page down by scrolling */
+            scrollByPagelenght(1);
+        }
+        return true;
+    }
+
+    @Override
+    protected boolean handleNavigationPageUpKey(boolean ctrl, boolean shift) {
+        if (isSelectable()) {
+            /*
+             * If selectable we plagiate MSW behaviour: first scroll to the
+             * end of current view. If at the end, scroll down one page
+             * length and keep the selected row in the bottom part of
+             * visible area.
+             */
+            if (!isFocusAtTheBeginningOfTable()) {
+                ITableBody.ITableRow firstVisibleRowInViewPort = getBody()
+                        .getRowByRowIndex(firstRowInViewPort);
+                if (firstVisibleRowInViewPort != null
+                        && firstVisibleRowInViewPort != focusedRow) {
+                    // focus is not at the beginning of the table, move
+                    // focus and select the first visible row
+                    setRowFocus(firstVisibleRowInViewPort);
+                    selectFocusedRow(ctrl, shift);
+                    sendSelectedRows();
+                } else {
+                    int indexOfToBeFocused = focusedRow.getIndex()
+                            - getFullyVisibleRowCount();
+                    if (indexOfToBeFocused < 0) {
+                        indexOfToBeFocused = 0;
+                    }
+                    ITableBody.ITableRow toBeFocusedRow = getBody()
+                            .getRowByRowIndex(indexOfToBeFocused);
+
+                    if (toBeFocusedRow != null) { // if the next focused row
+                                                  // is rendered
+                        setRowFocus(toBeFocusedRow);
+                        selectFocusedRow(ctrl, shift);
+                        // TODO needs scrollintoview ?
+                        sendSelectedRows();
+                    } else {
+                        // unless waiting for the next rowset already
+                        // scroll down by pixels and return, to wait for
+                        // new rows, then select the last item in the
+                        // viewport
+                        selectFirstItemInNextRender = true;
+                        multiselectPending = shift;
+                        scrollByPagelenght(-1);
+                    }
+                }
+            }
+        } else {
+            /* No selections, go page up by scrolling */
+            scrollByPagelenght(-1);
+        }
+
+        return true;
+
+    }
+
+    @Override
+    protected boolean handleNavigationEndKey(boolean ctrl, boolean shift) {
+        bodyContainer.setScrollPosition(getBody().getOffsetHeight());
+        if (isSelectable()) {
+            final int lastRendered = getBody().getLastRendered();
+            if (lastRendered + 1 == totalRows) {
+                ITableBody.ITableRow rowByRowIndex = tBody
+                        .getRowByRowIndex(lastRendered);
+                if (focusedRow != rowByRowIndex) {
+                    setRowFocus(rowByRowIndex);
+                    selectFocusedRow(ctrl, shift);
+                    sendSelectedRows();
+                }
+            } else {
+                if (ctrl) {
+                    focusLastItemInNextRender = true;
+                } else {
+                    selectLastItemInNextRender = true;
+                    multiselectPending = shift;
+                }
+            }
+        }
+        return true;
+    }
 }

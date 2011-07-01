@@ -10,10 +10,13 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.app.FileUploadService;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.FileUploadField;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.ui.Upload;
 import org.apache.commons.lang.StringUtils;
 
@@ -29,6 +32,7 @@ public class WebFileUploadField
         FileUploadField {
 
     private static final int BUFFER_SIZE = 64 * 1024;
+    private static final int BYTES_IN_MEGABYTE = 1048576;
 
     protected FileUploadService uploadService;
 
@@ -68,6 +72,14 @@ public class WebFileUploadField
 
         component.addListener(new Upload.StartedListener() {
             public void uploadStarted(Upload.StartedEvent event) {
+                final Integer maxUploadSizeMb = ConfigProvider.getConfig(WebConfig.class).getMaxUploadSizeMb();
+                final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
+                if (event.getContentLength() > maxSize) {
+                    component.interruptUpload();
+                    String warningMsg = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "upload.fileTooBig.message");
+                    getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
+                }
+
                 bytes = null;
                 final Listener.Event e = new Listener.Event(event.getFilename());
                 for (Listener listener : listeners) {

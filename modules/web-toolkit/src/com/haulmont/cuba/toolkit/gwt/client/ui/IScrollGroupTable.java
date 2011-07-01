@@ -566,7 +566,7 @@ public class IScrollGroupTable extends IScrollTable {
                 switch (DOM.eventGetType(event)) {
                     case Event.ONCLICK:
                         if (BrowserInfo.get().getWebkitVersion() > 0 && DOM.getElementPropertyBoolean(targetElement, "__cell")) {
-                            focusPanel.setFocus(true);
+                            bodyContainer.setFocus(true);
                         }
                         handleClickEvent(event);
                         handleRowClick(event);

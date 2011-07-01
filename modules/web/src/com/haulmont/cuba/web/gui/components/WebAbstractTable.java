@@ -452,11 +452,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 }
 
                 if (column.isCollapsed() && component.isColumnCollapsingAllowed()) {
-                    try {
-                        component.setColumnCollapsed(column.getId(), true);
-                    } catch (IllegalAccessException e) {
+//                    try {
+                    component.setColumnCollapsed(column.getId(), true);
+                    /*} catch (IllegalAccessException e) {
                         // do nothing
-                    }
+                    }*/
                 }
 
                 if (column.getAggregation() != null && isAggregatable()) {
@@ -592,11 +592,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
                         String visible = colElem.attributeValue("visible");
                         if (visible != null)
-                            try {
-                                component.setColumnCollapsed(column, !Boolean.valueOf(visible));
-                            } catch (IllegalAccessException e) {
+//                            try {
+                            component.setColumnCollapsed(column, !Boolean.valueOf(visible));
+                            /*} catch (IllegalAccessException e) {
                                 // ignore
-                            }
+                            }*/
                         break;
                     }
                 }
@@ -609,11 +609,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             }
             // if the table contains only one column, always show it
             if (newColumns.size() == 1) {
-                try {
-                    component.setColumnCollapsed(newColumns.get(0), false);
-                } catch (IllegalAccessException e) {
+//                try {
+                component.setColumnCollapsed(newColumns.get(0), false);
+                /*} catch (IllegalAccessException e) {
                     //
-                }
+                }*/
             }
 
             component.setVisibleColumns(newColumns.toArray());

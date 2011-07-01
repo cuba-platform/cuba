@@ -1,24 +1,16 @@
-/* 
- * Copyright 2010 IT Mill Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+/*
+@ITMillApache2LicenseForJavaFiles@
  */
 
 package com.vaadin.terminal.gwt.client.ui;
 
+import java.util.Set;
+
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.DomEvent.Type;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
@@ -26,11 +18,24 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
+import com.vaadin.terminal.gwt.client.Container;
+import com.vaadin.terminal.gwt.client.Focusable;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.RenderInformation;
+import com.vaadin.terminal.gwt.client.RenderSpace;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.ui.ShortcutActionHandler.ShortcutActionHandlerOwner;
 
-import java.util.Set;
-
-public class VPanel extends SimplePanel implements Container {
+/**
+ * VPanel
+ * <br/>
+ * [Compatible with Vaadin 6.6]
+ */
+public class VPanel extends SimplePanel implements Container,
+        ShortcutActionHandlerOwner, Focusable {
 
     public static final String CLICK_EVENT_IDENTIFIER = "click";
     public static final String CLASSNAME = "v-panel";
@@ -39,15 +44,15 @@ public class VPanel extends SimplePanel implements Container {
 
     protected String id;
 
-    protected Element captionNode;
+    protected final Element captionNode = DOM.createDiv();
 
-    protected Element captionText;
+    protected final Element captionText = DOM.createSpan();
 
     protected Icon icon;
 
-    protected Element bottomDecoration;
+    protected final Element bottomDecoration = DOM.createDiv();
 
-    protected Element contentNode;
+    protected final Element contentNode = DOM.createDiv();
 
     protected Element errorIndicatorElement;
 
@@ -90,6 +95,7 @@ public class VPanel extends SimplePanel implements Container {
             return addDomHandler(handler, type);
         }
     };
+    private TouchScrollDelegate touchScrollDelegate;
 
     public VPanel() {
         super();
@@ -98,12 +104,6 @@ public class VPanel extends SimplePanel implements Container {
 
     protected void constructDOM() {
         DivElement captionWrap = Document.get().createDivElement();
-
-        captionNode = DOM.createDiv();
-        captionText = DOM.createSpan();
-        bottomDecoration = DOM.createDiv();
-        contentNode = DOM.createDiv();
-
         captionWrap.appendChild(captionNode);
         captionNode.appendChild(captionText);
 
@@ -113,13 +113,51 @@ public class VPanel extends SimplePanel implements Container {
         bottomDecoration.setClassName(CLASSNAME + "-deco");
 
         getElement().appendChild(captionWrap);
+
+        /*
+         * Make contentNode focusable only by using the setFocus() method. This
+         * behaviour can be changed by invoking setTabIndex() in the serverside
+         * implementation
+         */
+        contentNode.setTabIndex(-1);
+
         getElement().appendChild(contentNode);
+
         getElement().appendChild(bottomDecoration);
         setStyleName(CLASSNAME);
         DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
-        DOM.sinkEvents(contentNode, Event.ONSCROLL);
+        DOM.sinkEvents(contentNode, Event.ONSCROLL | Event.TOUCHEVENTS);
         contentNode.getStyle().setProperty("position", "relative");
         getElement().getStyle().setProperty("overflow", "hidden");
+        addHandler(new TouchStartHandler() {
+            public void onTouchStart(TouchStartEvent event) {
+                getTouchScrollDelegate().onTouchStart(event);
+            }
+        }, TouchStartEvent.getType());
+    }
+
+    /**
+     * Sets the keyboard focus on the Panel
+     * 
+     * @param focus
+     *            Should the panel have focus or not.
+     */
+    public void setFocus(boolean focus) {
+        if (focus) {
+            getContainerElement().focus();
+        } else {
+            getContainerElement().blur();
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.vaadin.terminal.gwt.client.Focusable#focus()
+     */
+    public void focus() {
+        setFocus(true);
+
     }
 
     @Override
@@ -140,7 +178,6 @@ public class VPanel extends SimplePanel implements Container {
         if (!uidl.hasAttribute("cached")) {
             renderDOM(uidl);
         }
-
         // Ensure correct implementation
         if (client.updateComponent(this, uidl, false)) {
             rendering = false;
@@ -153,12 +190,20 @@ public class VPanel extends SimplePanel implements Container {
         // scrollTop
         runHacks(false);
 
+        // And apply tab index
+        if (uidl.hasVariable("tabindex")) {
+            contentNode.setTabIndex(uidl.getIntVariable("tabindex"));
+        }
+
         rendering = false;
 
     }
 
     protected void updateFromUIDL(UIDL uidl) {
         clickEventHandler.handleEventHandlerRegistration(client);
+
+//        this.client = client;
+        id = uidl.getId();
 
         setIconUri(uidl, client);
 
@@ -417,11 +462,19 @@ public class VPanel extends SimplePanel implements Container {
         }
     }
 
+    protected TouchScrollDelegate getTouchScrollDelegate() {
+        if (touchScrollDelegate == null) {
+            touchScrollDelegate = new TouchScrollDelegate(contentNode);
+        }
+        return touchScrollDelegate;
+
+    }
+
     @Override
     public void setHeight(String height) {
         this.height = height;
         super.setHeight(height);
-        if (height != null && height != "") {
+        if (height != null && !"".equals(height)) {
             final int targetHeight = getOffsetHeight();
             int containerHeight = targetHeight
                     - captionNode.getParentElement().getOffsetHeight()
@@ -430,14 +483,53 @@ public class VPanel extends SimplePanel implements Container {
             if (containerHeight < 0) {
                 containerHeight = 0;
             }
-            DOM.setStyleAttribute(contentNode, "height", containerHeight
-                    + "px");
+            DOM.setStyleAttribute(contentNode, "height", containerHeight + "px");
         } else {
             DOM.setStyleAttribute(contentNode, "height", "");
         }
         if (!rendering) {
             runHacks(true);
         }
+    }
+
+    protected int getCaptionMarginLeft() {
+        if (isAttached()) {
+            if (captionMarginLeft < 0) {
+                detectContainerBorders();
+            }
+            return captionMarginLeft;
+        }
+        return 0;
+    }
+
+    protected int getContentMarginLeft() {
+        if (isAttached()) {
+            if (contentMarginLeft < 0) {
+                detectContainerBorders();
+            }
+            return contentMarginLeft;
+        }
+        return 0;
+    }
+
+    protected int getCaptionPaddingHorizontal() {
+        if (isAttached()) {
+            if (captionPaddingHorizontal < 0) {
+                detectContainerBorders();
+            }
+            return captionPaddingHorizontal;
+        }
+        return 0;
+    }
+
+    protected int getContainerBorderHeight() {
+        if (isAttached()) {
+            if (borderPaddingVertical < 0) {
+                detectContainerBorders();
+            }
+            return borderPaddingVertical;
+        }
+        return 0;
     }
 
     @Override
@@ -466,46 +558,6 @@ public class VPanel extends SimplePanel implements Container {
                 Util.updateRelativeChildrenAndSendSizeUpdateEvent(client, this);
             }
         }
-    }
-
-    private int getCaptionMarginLeft() {
-        if (isAttached()) {
-            if (captionMarginLeft < 0) {
-                detectContainerBorders();
-            }
-            return captionMarginLeft;
-        }
-        return 0;
-    }
-
-    private int getContentMarginLeft() {
-        if (isAttached()) {
-            if (contentMarginLeft < 0) {
-                detectContainerBorders();
-            }
-            return contentMarginLeft;
-        }
-        return 0;
-    }
-
-    protected int getCaptionPaddingHorizontal() {
-        if (isAttached()) {
-            if (captionPaddingHorizontal < 0) {
-                detectContainerBorders();
-            }
-            return captionPaddingHorizontal;
-        }
-        return 0;
-    }
-
-    protected int getContainerBorderHeight() {
-        if (isAttached()) {
-            if (borderPaddingVertical < 0) {
-                detectContainerBorders();
-            }
-            return borderPaddingVertical;
-        }
-        return 0;
     }
 
     protected int getContainerBorderWidth() {
@@ -592,6 +644,10 @@ public class VPanel extends SimplePanel implements Container {
     protected void onAttach() {
         super.onAttach();
         detectContainerBorders();
+    }
+
+    public ShortcutActionHandler getShortcutActionHandler() {
+        return shortcutHandler;
     }
 
 }

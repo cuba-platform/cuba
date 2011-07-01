@@ -10,5 +10,6 @@
 
     <entry-point class="com.haulmont.cuba.toolkit.gwt.client.WidgetSet" />
 
+    <!--<set-property name="user.agent" value="gecko1_8"/>-->
     <!--<set-property name="user.agent" value="safari" />-->
 </module>

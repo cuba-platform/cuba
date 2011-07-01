@@ -16,6 +16,9 @@ import com.vaadin.terminal.gwt.client.ui.VGridLayout;
 import com.vaadin.terminal.gwt.client.ui.layout.CellBasedLayout;
 import com.vaadin.terminal.gwt.client.ui.layout.ChildComponentContainer;
 
+/**
+ * VFieldGroupLayout
+ */
 public class VFieldGroupLayout extends VGridLayout {
 
     private boolean verticalCaption = false;

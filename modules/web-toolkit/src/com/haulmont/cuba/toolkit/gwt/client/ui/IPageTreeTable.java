@@ -335,7 +335,7 @@ public class IPageTreeTable extends IPageTable {
                 switch (DOM.eventGetType(event)) {
                     case Event.ONCLICK:
                         if (BrowserInfo.get().getWebkitVersion() > 0 && DOM.getElementPropertyBoolean(targetElement, "__cell")) {
-                            focusPanel.setFocus(true);
+                            bodyContainer.setFocus(true);
                         }
 
                         handleClickEvent(event);

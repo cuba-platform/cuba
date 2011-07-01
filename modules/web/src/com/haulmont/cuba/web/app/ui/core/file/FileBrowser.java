@@ -14,8 +14,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.ExcelAction;
-import com.haulmont.cuba.gui.components.actions.RefreshAction;
+import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
@@ -37,7 +36,9 @@ public class FileBrowser extends AbstractWindow {
         super.init(params);
         final Table filesTable = getComponent("files");
         final CollectionDatasource filesDs = filesTable.getDatasource();
-        ComponentsHelper.createActions(filesTable);
+        filesTable.addAction(new CreateAction(filesTable, WindowManager.OpenType.DIALOG));
+        filesTable.addAction(new EditAction(filesTable, WindowManager.OpenType.DIALOG));
+        filesTable.addAction(new RemoveAction(filesTable));
         filesTable.addAction(new RefreshAction(filesTable));
         filesTable.addAction(new ExcelAction(filesTable, new WebExportDisplay()));
 
@@ -48,7 +49,7 @@ public class FileBrowser extends AbstractWindow {
                 Map<String, Object> params = Collections.<String, Object>emptyMap();
 
                 final Window window = frame.openEditor("multiupload", null,
-                        WindowManager.OpenType.THIS_TAB,
+                        WindowManager.OpenType.DIALOG,
                         params, null);
 
                 window.addListener(new Window.CloseListener() {

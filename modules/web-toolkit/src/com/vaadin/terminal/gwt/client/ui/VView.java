@@ -1,5 +1,17 @@
 /*
-@ITMillApache2LicenseForJavaFiles@
+ * Copyright 2010 IT Mill Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package com.vaadin.terminal.gwt.client.ui;
@@ -10,15 +22,24 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.event.dom.client.DomEvent.Type;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.user.client.*;
+import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.impl.FocusImpl;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.Container;
@@ -27,12 +48,16 @@ import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.RenderSpace;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.VConsole;
+import com.vaadin.terminal.gwt.client.ui.ShortcutActionHandler.ShortcutActionHandlerOwner;
 
 /**
- *
+ * VView
+ * <br/>
+ * [Compatible with Vaadin 6.6]
  */
 public class VView extends SimplePanel implements Container, ResizeHandler,
-        Window.ClosingHandler {
+        Window.ClosingHandler, ShortcutActionHandlerOwner, Focusable {
 
     private static final String CLASSNAME = "v-view";
 
@@ -72,51 +97,69 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
 
     private boolean immediate;
 
+    private boolean resizeLazy = false;
+
+    public static final String RESIZE_LAZY = "rL";
     /**
      * Reference to the parent frame/iframe. Null if there is no parent (i)frame
      * or if the application and parent frame are in different domains.
      */
     private Element parentFrame;
 
-    static final FocusImpl impl = FocusImpl.getFocusImplForPanel();
+    private ClickEventHandler clickEventHandler = new ClickEventHandler(this,
+            VPanel.CLICK_EVENT_IDENTIFIER) {
 
-    public VView(String elementId) {
-        super(impl.createFocusable());
+        @Override
+        protected <H extends EventHandler> HandlerRegistration registerHandler(
+                H handler, Type<H> type) {
+            return addDomHandler(handler, type);
+        }
+    };
+
+    private VLazyExecutor delayedResizeExecutor = new VLazyExecutor(200,
+            new ScheduledCommand() {
+                public void execute() {
+                    windowSizeMaybeChanged(getOffsetWidth(), getOffsetHeight());
+                }
+
+            });
+
+    public VView() {
+        super();
         setStyleName(CLASSNAME);
 
-        DOM.sinkEvents(getElement(), Event.ONKEYDOWN | Event.ONSCROLL);
+        // Allow focusing the view by using the focus() method, the view
+        // should not be in the document focus flow
+        getElement().setTabIndex(-1);
+    }
 
-        // iview is focused when created so element needs tabIndex
-        // 1 due 0 is at the end of natural tabbing order
-        DOM.setElementProperty(getElement(), "tabIndex", "1");
-
-        RootPanel root = RootPanel.get(elementId);
-        root.add(this);
-        root.removeStyleName("v-app-loading");
-
-        BrowserInfo browser = BrowserInfo.get();
-
-        // set focus to iview element by default to listen possible keyboard
-        // shortcuts
-        if (browser.isOpera() || browser.isSafari()
-                && browser.getWebkitVersion() < 526) {
-            // old webkits don't support focusing div elements
-            Element fElem = DOM.createInputCheck();
-            DOM.setStyleAttribute(fElem, "margin", "0");
-            DOM.setStyleAttribute(fElem, "padding", "0");
-            DOM.setStyleAttribute(fElem, "border", "0");
-            DOM.setStyleAttribute(fElem, "outline", "0");
-            DOM.setStyleAttribute(fElem, "width", "1px");
-            DOM.setStyleAttribute(fElem, "height", "1px");
-            DOM.setStyleAttribute(fElem, "position", "absolute");
-            DOM.setStyleAttribute(fElem, "opacity", "0.1");
-            DOM.appendChild(getElement(), fElem);
-            Util.focus(fElem);
-        } else {
-            Util.focus(getElement());
+    /**
+     * Called when the window might have been resized.
+     * 
+     * @param newWidth
+     *            The new width of the window
+     * @param newHeight
+     *            The new height of the window
+     */
+    protected void windowSizeMaybeChanged(int newWidth, int newHeight) {
+        boolean changed = false;
+        if (width != newWidth) {
+            width = newWidth;
+            changed = true;
+            VConsole.log("New window width: " + width);
         }
+        if (height != newHeight) {
+            height = newHeight;
+            changed = true;
+            VConsole.log("New window height: " + height);
+        }
+        if (changed) {
+            VConsole.log("Running layout functions due to window resize");
+            connection.runDescendentsLayout(VView.this);
+            Util.runWebkitOverflowAutoFix(getElement());
 
-        parentFrame = getParentFrame();
+            sendClientResized();
+        }
     }
 
     public String getTheme() {
@@ -133,7 +176,7 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
 
     /**
      * Evaluate the given script in the browser document.
-     *
+     * 
      * @param script
      *            Script to be executed.
      */
@@ -150,7 +193,7 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
      * Returns true if the body is NOT generated, i.e if someone else has made
      * the page that we're running in. Otherwise we're in charge of the whole
      * page.
-     *
+     * 
      * @return true if we're running embedded
      */
     public boolean isEmbedded() {
@@ -166,7 +209,7 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
         connection = client;
 
         immediate = uidl.hasAttribute("immediate");
-
+        resizeLazy = uidl.hasAttribute(RESIZE_LAZY);
         String newTheme = uidl.getStringAttribute("theme");
         if (theme != null && !newTheme.equals(theme)) {
             // Complete page refresh is needed due css can affect layout
@@ -184,6 +227,8 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
             client.setWindowName(uidl.getStringAttribute("name"));
         }
 
+        clickEventHandler.handleEventHandlerRegistration(client);
+
         if (!isEmbedded()) {
             // only change window title if we're in charge of the whole page
             com.google.gwt.user.client.Window.setTitle(uidl
@@ -198,13 +243,14 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
         while (childIndex < uidl.getChildCount()
                 && "open".equals(uidl.getChildUIDL(childIndex).getTag())) {
             final UIDL open = uidl.getChildUIDL(childIndex);
-            final String url = open.getStringAttribute("src");
+            final String url = client.translateVaadinUri(open
+                    .getStringAttribute("src"));
             final String target = open.getStringAttribute("name");
             if (target == null) {
                 // source will be opened to this browser window, but we may have
                 // to finish rendering this window in case this is a download
                 // (and window stays open).
-                DeferredCommand.addCommand(new Command() {
+                Scheduler.get().scheduleDeferred(new Command() {
                     public void execute() {
                         goTo(url);
                     }
@@ -286,7 +332,7 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
                 String script = childUidl.getStringAttribute("script");
                 eval(script);
             } else if (tag == "notifications") {
-                for (final Iterator it = childUidl.getChildIterator(); it
+                for (final Iterator<?> it = childUidl.getChildIterator(); it
                         .hasNext();) {
                     final UIDL notification = (UIDL) it.next();
                     String html = "";
@@ -308,8 +354,7 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
                     }
 
                     final String style = notification.hasAttribute("style") ? notification
-                            .getStringAttribute("style")
-                            : null;
+                            .getStringAttribute("style") : null;
                     final int position = notification
                             .getIntAttribute("position");
                     final int delay = notification.getIntAttribute("delay");
@@ -401,7 +446,7 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
 
         if (uidl.hasAttribute("focused")) {
             // set focused component when render phase is finished
-            DeferredCommand.addCommand(new Command() {
+            Scheduler.get().scheduleDeferred(new Command() {
                 public void execute() {
                     final Paintable toBeFocused = uidl.getPaintableAttribute(
                             "focused", connection);
@@ -417,8 +462,7 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
                     } else if (toBeFocused instanceof Focusable) {
                         ((Focusable) toBeFocused).focus();
                     } else {
-                        ApplicationConnection.getConsole().log(
-                                "Could not focus component");
+                        VConsole.log("Could not focus component");
                     }
                 }
             });
@@ -431,7 +475,7 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
             Window.addResizeHandler(this);
         }
 
-        onResize(Window.getClientWidth(), Window.getClientHeight());
+        onResize();
 
         // finally set scroll position from UIDL
         if (uidl.hasVariable("scrollTop")) {
@@ -450,7 +494,27 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
             Util.runWebkitOverflowAutoFix(getElement());
         }
 
+        scrollIntoView(uidl);
+
         rendering = false;
+    }
+
+    /**
+     * Tries to scroll paintable referenced from given UIDL snippet to be
+     * visible.
+     * 
+     * @param uidl
+     */
+    void scrollIntoView(final UIDL uidl) {
+        if (uidl.hasAttribute("scrollTo")) {
+            Scheduler.get().scheduleDeferred(new Command() {
+                public void execute() {
+                    final Paintable paintable = uidl.getPaintableAttribute(
+                            "scrollTo", connection);
+                    ((Widget) paintable).getElement().scrollIntoView();
+                }
+            });
+        }
     }
 
     @Override
@@ -483,68 +547,41 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.google.gwt.event.logical.shared.ResizeHandler#onResize(com.google
+     * .gwt.event.logical.shared.ResizeEvent)
+     */
     public void onResize(ResizeEvent event) {
-        onResize(event.getWidth(), event.getHeight());
+        onResize();
     }
 
-    public void onResize(int wwidth, int wheight) {
-        if (BrowserInfo.get().isIE()) {
-            /*
-             * IE will give us some false resized events due bugs with
-             * scrollbars. Postponing layout phase to see if size was really
-             * changed.
-             */
-            if (resizeTimer == null) {
-                resizeTimer = new Timer() {
-                    @Override
-                    public void run() {
-                        boolean changed = false;
-                        if (width != getOffsetWidth()) {
-                            width = getOffsetWidth();
-                            changed = true;
-                            ApplicationConnection.getConsole().log(
-                                    "window w" + width);
-                        }
-                        if (height != getOffsetHeight()) {
-                            height = getOffsetHeight();
-                            changed = true;
-                            ApplicationConnection.getConsole().log(
-                                    "window h" + height);
-                        }
-                        if (changed) {
-                            ApplicationConnection
-                                    .getConsole()
-                                    .log(
-                                            "Running layout functions due window resize");
-                            connection.runDescendentsLayout(VView.this);
+    /**
+     * Called when a resize event is received.
+     */
+    private void onResize() {
+        /*
+         * IE (pre IE9 at least) will give us some false resize events due to
+         * problems with scrollbars. Firefox 3 might also produce some extra
+         * events. We postpone both the re-layouting and the server side event
+         * for a while to deal with these issues.
+         * 
+         * We may also postpone these events to avoid slowness when resizing the
+         * browser window. Constantly recalculating the layout causes the resize
+         * operation to be really slow with complex layouts.
+         */
+        boolean lazy = resizeLazy
+                || (BrowserInfo.get().isIE() && BrowserInfo.get()
+                        .getIEVersion() <= 8) || BrowserInfo.get().isFF3();
 
-                            sendClientResized();
-                        }
-                    }
-                };
-            } else {
-                resizeTimer.cancel();
-            }
-            resizeTimer.schedule(200);
+        if (lazy) {
+            delayedResizeExecutor.trigger();
         } else {
-            if (wwidth == width && wheight == height) {
-                // No point in doing resize operations if window size has not
-                // changed
-                return;
-            }
-
-            width = Window.getClientWidth();
-            height = Window.getClientHeight();
-
-            ApplicationConnection.getConsole().log(
-                    "Running layout functions due window resize");
-
-            connection.runDescendentsLayout(this);
-            Util.runWebkitOverflowAutoFix(getElement());
-
-            sendClientResized();
+            windowSizeMaybeChanged(Window.getClientWidth(),
+                    Window.getClientHeight());
         }
-
     }
 
     /**
@@ -563,6 +600,10 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
     public void onWindowClosing(Window.ClosingEvent event) {
         // Change focus on this window in order to ensure that all state is
         // collected from textfields
+        // TODO this is a naive hack, that only works with text fields and may
+        // cause some odd issues. Should be replaced with a decent solution, see
+        // also related BeforeShortcutActionListener interface. Same interface
+        // might be usable here.
         VTextField.flushChangesFromFocusedTextField();
 
         // Send the closing state to server
@@ -706,7 +747,7 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
     /**
      * Return an iterator for current subwindows. This method is meant for
      * testing purposes only.
-     *
+     * 
      * @return
      */
     public ArrayList<VWindow> getSubWindowList() {
@@ -715,6 +756,44 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
             windows.add(widget);
         }
         return windows;
+    }
+
+    public void init(String rootPanelId,
+            ApplicationConnection applicationConnection) {
+        DOM.sinkEvents(getElement(), Event.ONKEYDOWN | Event.ONSCROLL);
+
+        // iview is focused when created so element needs tabIndex
+        // 1 due 0 is at the end of natural tabbing order
+        DOM.setElementProperty(getElement(), "tabIndex", "1");
+
+        RootPanel root = RootPanel.get(rootPanelId);
+
+        // Remove the v-app-loading or any splash screen added inside the div by
+        // the user
+        root.getElement().setInnerHTML("");
+        // For backwards compatibility with static index pages only.
+        // No longer added by AbstractApplicationServlet/Portlet
+        root.removeStyleName("v-app-loading");
+
+        root.add(this);
+
+        if (applicationConnection.getConfiguration().isStandalone()) {
+            // set focus to iview element by default to listen possible keyboard
+            // shortcuts. For embedded applications this is unacceptable as we
+            // don't want to steal focus from the main page nor we don't want
+            // side-effects from focusing (scrollIntoView).
+            getElement().focus();
+        }
+
+        parentFrame = getParentFrame();
+    }
+
+    public ShortcutActionHandler getShortcutActionHandler() {
+        return actionHandler;
+    }
+
+    public void focus() {
+        getElement().focus();
     }
 
 }

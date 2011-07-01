@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.app.FileUploadService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
@@ -75,6 +76,17 @@ public class MultiUploader extends AbstractEditor {
             @Override
             public void fileUploadStart(String fileName) {
                 okBtn.setEnabled(false);
+            }
+
+            @Override
+            public void errorNotify(String fileName, String message, int errorCode) {
+                if (errorCode == FileMultiUploadField.FILE_EXCEEDS_SIZE_LIMIT) {
+                    String locMessage = MessageProvider.getMessage(getClass(), "fileExceedsSizeLimit") + ":" + fileName;
+                    MultiUploader.this.showNotification(locMessage, NotificationType.WARNING);
+                } else {
+                    String locMessage = MessageProvider.getMessage(getClass(), "fileUploadError") + ":" + fileName;
+                    MultiUploader.this.showNotification(locMessage, NotificationType.ERROR);
+                }
             }
         });
     }

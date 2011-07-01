@@ -10,29 +10,36 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
-import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.*;
-import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.RenderInformation;
 import com.vaadin.terminal.gwt.client.ui.*;
+import com.vaadin.terminal.gwt.client.ui.VGridLayout;
+import com.vaadin.terminal.gwt.client.ui.VFilterSelect;
+import com.vaadin.terminal.gwt.client.ui.dd.VDragAndDropManager;
+import com.vaadin.terminal.gwt.client.ui.dd.VDragEvent;
+import com.vaadin.terminal.gwt.client.ui.dd.VTransferable;
 import org.vaadin.hene.popupbutton.widgetset.client.ui.VPopupButton;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
-public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt.client.ui.Table, KeyDownHandler,
-        KeyUpHandler, ScrollHandler {
+public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt.client.ui.Table, ScrollHandler, FocusHandler, BlurHandler {
     public static final String CLASSNAME = "v-table";
     public static final String CLASSNAME_SELECTION_FOCUS = CLASSNAME + "-focus";
 
     public static final char ALIGN_CENTER = 'c';
     public static final char ALIGN_LEFT = 'b';
     public static final char ALIGN_RIGHT = 'e';
+    private static final int CHARCODE_SPACE = 32;
     protected int pageLength = 15;
 
     protected boolean showRowHeaders = false;
@@ -52,8 +59,96 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected final TableHead tHead;
 
-    protected final FocusPanel focusPanel = new FocusPanel();
-    protected final ScrollPanel bodyContainer = new ScrollPanel();
+    protected final FocusableScrollPanel bodyContainer = new FocusableScrollPanel(); // [6.6]
+
+    //[6.6]
+    private KeyPressHandler navKeyPressHandler = new KeyPressHandler() {
+        public void onKeyPress(KeyPressEvent keyPressEvent) {
+            // This is used for Firefox only, since Firefox auto-repeat
+            // works correctly only if we use a key press handler, other
+            // browsers handle it correctly when using a key down handler
+            if (!BrowserInfo.get().isGecko()) {
+                return;
+            }
+
+            NativeEvent event = keyPressEvent.getNativeEvent();
+            if (!enabled) {
+                // Cancel default keyboard events on a disabled Table
+                // (prevents scrolling)
+                event.preventDefault();
+            } else if (hasFocus) {
+                // Key code in Firefox/onKeyPress is present only for
+                // special keys, otherwise 0 is returned
+                int keyCode = event.getKeyCode();
+                if (keyCode == 0 && event.getCharCode() == ' ') {
+                    // Provide a keyCode for space to be compatible with
+                    // FireFox keypress event
+                    keyCode = CHARCODE_SPACE;
+                }
+
+                if (handleNavigation(keyCode,
+                        event.getCtrlKey() || event.getMetaKey(),
+                        event.getShiftKey())) {
+                    event.preventDefault();
+                }
+
+                startScrollingVelocityTimer();
+            }
+        }
+
+    };
+
+    private KeyUpHandler navKeyUpHandler = new KeyUpHandler() {
+
+        public void onKeyUp(KeyUpEvent keyUpEvent) {
+            NativeEvent event = keyUpEvent.getNativeEvent();
+            int keyCode = event.getKeyCode();
+
+            if (!isFocusable()) {
+                cancelScrollingVelocityTimer();
+            } else if (isNavigationKey(keyCode)) {
+                if (keyCode == getNavigationDownKey()
+                        || keyCode == getNavigationUpKey()) {
+                    /*
+                     * in multiselect mode the server may still have value from
+                     * previous page. Clear it unless doing multiselection or
+                     * just moving focus.
+                     */
+                    if (!event.getShiftKey() && !event.getCtrlKey()) {
+                        instructServerToForgotPreviousSelections();
+                    }
+                    sendSelectedRows();
+                }
+                cancelScrollingVelocityTimer();
+                navKeyDown = false;
+            }
+        }
+    };
+
+    private KeyDownHandler navKeyDownHandler = new KeyDownHandler() {
+
+        public void onKeyDown(KeyDownEvent keyDownEvent) {
+            NativeEvent event = keyDownEvent.getNativeEvent();
+            // This is not used for Firefox
+            if (BrowserInfo.get().isGecko()) {
+                return;
+            }
+
+            if (!enabled) {
+                // Cancel default keyboard events on a disabled Table
+                // (prevents scrolling)
+                event.preventDefault();
+            } else if (hasFocus) {
+                if (handleNavigation(event.getKeyCode(), event.getCtrlKey()
+                        || event.getMetaKey(), event.getShiftKey())) {
+                    navKeyDown = true;
+                    event.preventDefault();
+                }
+
+                startScrollingVelocityTimer();
+            }
+        }
+    };
 
     protected int totalRows;
 
@@ -110,12 +205,25 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     //Key down navigation
     protected boolean navigation = true;
     protected String selectedKey;
-    protected int scrollPos = 0;
     protected int focusWidgetIndex = -1;
+    private boolean hasFocus = false;
+    private int dragmode;
+
+    private int scrollLeft;
+    private int scrollTop;
+    private boolean navKeyDown;
+    protected boolean multiselectPending;
 
     protected boolean textSelectionEnabled;
 
     protected Map<String, RenderInformation.Size> stylePaddingBorders = new HashMap<String, RenderInformation.Size>();
+
+    /*
+     * The speed (in pixels) which the scrolling scrolls vertically/horizontally
+     */
+    private int scrollingVelocity = 10;
+
+    private Timer scrollingVelocityTimer = null;
 
     /**
      * Represents a select range of rows
@@ -127,6 +235,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         /**
          * Constuctor.
          */
+        @SuppressWarnings({"JavaDoc"})
         public SelectionRange(ITableBody.ITableRow row1, ITableBody.ITableRow row2) {
             ITableBody.ITableRow endRow;
             if (row2.isBefore(row1)) {
@@ -190,6 +299,14 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     private final HashSet<SelectionRange> selectedRowRanges = new HashSet<SelectionRange>();
 
     /*
+     * These are used when jumping between pages when pressing Home and End
+     */
+    protected boolean selectLastItemInNextRender = false;
+    protected boolean selectFirstItemInNextRender = false;
+    protected boolean focusFirstItemInNextRender = false;
+    protected boolean focusLastItemInNextRender = false;
+
+    /*
      * The currently focused row
      */
     protected ITableBody.ITableRow focusedRow;
@@ -199,9 +316,10 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
      */
     private ITableBody.ITableRow selectionRangeStart;
 
+    private static final int MULTISELECT_MODE_DEFAULT = 0;
     private int multiselectmode;
 
-    private static final int MULTISELECT_MODE_DEFAULT = 0;
+    private TouchScrollDelegate touchScrollDelegate;
 
     /*
      * Flag for notifying when the selection has changed and should be sent to
@@ -212,48 +330,49 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     protected Table() {
         tHead = createHead();
         bodyContainer.setStyleName(CLASSNAME + "-body");
+        bodyContainer.addFocusHandler(this);
+        bodyContainer.addBlurHandler(this);
+        bodyContainer.addScrollHandler(this);
+
+        /*
+         * Firefox auto-repeat works correctly only if we use a key press
+         * handler, other browsers handle it correctly when using a key down
+         * handler
+         */
+        if (BrowserInfo.get().isGecko()) {
+            bodyContainer.addKeyPressHandler(navKeyPressHandler);
+        } else {
+            bodyContainer.addKeyDownHandler(navKeyDownHandler);
+        }
+        bodyContainer.addKeyUpHandler(navKeyUpHandler);
+
+        bodyContainer.sinkEvents(Event.TOUCHEVENTS);
+        bodyContainer.addDomHandler(new TouchStartHandler() {
+            public void onTouchStart(TouchStartEvent event) {
+                getTouchScrollDelegate().onTouchStart(event);
+            }
+        }, TouchStartEvent.getType());
+
+        bodyContainer.sinkEvents(Event.ONCONTEXTMENU);
+
+        bodyContainer.addDomHandler(new ContextMenuHandler() {
+            public void onContextMenu(ContextMenuEvent event) {
+                //handleBodyContextMenu(event); //todo [6.6]
+            }
+        }, ContextMenuEvent.getType());
+
         setStyleName(CLASSNAME);
         add(tHead);
-        add(focusPanel);
-        bodyContainer.addScrollHandler(this);
-        focusPanel.add(bodyContainer);
-        focusPanel.addKeyDownHandler(this);
-        focusPanel.addKeyUpHandler(this);
-        DOM.setElementProperty(focusPanel.getElement(), "className", CLASSNAME + "-focuspanel");
+        add(bodyContainer);
     }
 
-    public void onKeyDown(KeyDownEvent event) {
-        if (navigation && (event.getNativeKeyCode() == KeyCodes.KEY_UP || event.getNativeKeyCode() == KeyCodes.KEY_DOWN)) {
-            ApplicationConnection.getConsole().log("Key Down event processing");
-            if (selectedKey == null) {
-                deselectAll();
-                ITableBody.ITableRow row = (ITableBody.ITableRow) tBody.renderedRows.get(0);
-                if (!row.isSelected()) {
-                    toggleSelection(row.getKey());
-                }
-            } else {
-                String key;
-                if (event.getNativeKeyCode() == KeyCodes.KEY_UP) {
-                    if ((key = pressUp(selectedKey)) != null) {
-                        deselectAll();
-                        toggleSelection(key);
-                    }
-                } else {
-                    if ((key = pressDown(selectedKey)) != null) {
-                        deselectAll();
-                        toggleSelection(key);
-                    }
-                }
-            }
-            scrollPos = bodyContainer.getScrollPosition();
+    protected TouchScrollDelegate getTouchScrollDelegate() {
+        if (touchScrollDelegate == null) {
+            touchScrollDelegate = new TouchScrollDelegate(
+                    bodyContainer.getElement());
         }
-    }
+        return touchScrollDelegate;
 
-    public void onKeyUp(KeyUpEvent event) {
-        if (navigation && (event.getNativeKeyCode() == KeyCodes.KEY_UP || event.getNativeKeyCode() == KeyCodes.KEY_DOWN)) {
-            ApplicationConnection.getConsole().log("Key Up event processing");
-            bodyContainer.setScrollPosition(scrollPos);
-        }
     }
 
     public void onScroll(ScrollEvent event) {
@@ -263,10 +382,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             aggregationRow.setHorizontalScrollPosition(scrollLeft);
         }
     }
-
-    protected abstract String pressUp(String rowKey);
-
-    protected abstract String pressDown(String rowKey);
 
     protected abstract ITableBody createBody();
 
@@ -394,7 +509,20 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 updateAggregationRow(c);
             }
         }
+
+        dragmode = uidl.hasAttribute("dragmode") ? uidl
+        .getIntAttribute("dragmode") : 0;
+        if (BrowserInfo.get().isIE()) {
+            if (dragmode > 0) {
+                getElement().setPropertyJSO("onselectstart",
+                        getPreventTextSelectionIEHack());
+            } else {
+                getElement().setPropertyJSO("onselectstart", null);
+            }
+        }
     }
+
+    protected abstract void focusRowFromBody();
 
     protected abstract void updateBody(UIDL uidl);
 
@@ -431,6 +559,37 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected boolean isSelectable() {
         return selectMode > com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE;
+    }
+
+    /**
+     * Selects a row where the current selection head is
+     *
+     * @param ctrlSelect
+     *            Is the selection a ctrl+selection
+     * @param shiftSelect
+     *            Is the selection a shift+selection
+     */
+    protected void selectFocusedRow(boolean ctrlSelect, boolean shiftSelect) {
+        if (focusedRow != null) {
+            // Arrows moves the selection and clears previous selections
+            if (isSelectable() && !ctrlSelect && !shiftSelect) {
+                deselectAll();
+                focusedRow.processRowSelection();
+                selectionRangeStart = focusedRow;
+            }
+
+            // Ctrl+arrows moves selection head
+            else if (isSelectable() && ctrlSelect && !shiftSelect) {
+                selectionRangeStart = focusedRow;
+                // No selection, only selection head is moved
+            }
+
+            // Shift+arrows selection selects a range
+            else if (selectMode == SELECT_MODE_MULTI && !ctrlSelect
+                    && shiftSelect) {
+                focusedRow.toggleShiftSelection(shiftSelect);
+            }
+        }
     }
 
     /**
@@ -484,6 +643,175 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     }
 
+    /**
+     * Moves the focus one step down
+     *
+     * @return Returns true if succeeded
+     */
+    private boolean moveFocusDown() {
+        return moveFocusDown(0);
+    }
+
+    /**
+     * Moves the focus down by 1+offset rows
+     *
+     * @return Returns true if succeeded, else false if the selection could not
+     *         be move downwards
+     */
+    private boolean moveFocusDown(int offset) {
+        if (isSelectable()) {
+            if (focusedRow == null && bodyContainer.iterator().hasNext()) {
+                // FIXME should focus first visible from top, not first rendered
+                // ??
+                return setRowFocus((ITableBody.ITableRow) bodyContainer.iterator()
+                        .next());
+            } else {
+                ITableBody.ITableRow next = getNextRow(focusedRow, offset);
+                if (next != null) {
+                    return setRowFocus(next);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Moves the selection one step up
+     *
+     * @return Returns true if succeeded
+     */
+    private boolean moveFocusUp() {
+        return moveFocusUp(0);
+    }
+
+    /**
+     * Moves the focus row upwards
+     *
+     * @return Returns true if succeeded, else false if the selection could not
+     *         be move upwards
+     *
+     */
+    private boolean moveFocusUp(int offset) {
+        if (isSelectable()) {
+            if (focusedRow == null && bodyContainer.iterator().hasNext()) {
+                // FIXME logic is exactly the same as in moveFocusDown, should
+                // be the opposite??
+                return setRowFocus((ITableBody.ITableRow) bodyContainer.iterator()
+                        .next());
+            } else {
+                ITableBody.ITableRow prev = getPreviousRow(focusedRow, offset);
+                if (prev != null) {
+                    return setRowFocus(prev);
+                } else {
+                    VConsole.log("no previous available");
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Get the key that moves the selection head upwards. By default it is the
+     * up arrow key but by overriding this you can change the key to whatever
+     * you want.
+     *
+     * @return The keycode of the key
+     */
+    protected int getNavigationUpKey() {
+        return KeyCodes.KEY_UP;
+    }
+
+    /**
+     * Get the key that moves the selection head downwards. By default it is the
+     * down arrow key but by overriding this you can change the key to whatever
+     * you want.
+     *
+     * @return The keycode of the key
+     */
+    protected int getNavigationDownKey() {
+        return KeyCodes.KEY_DOWN;
+    }
+
+    /**
+     * Get the key that scrolls to the left in the table. By default it is the
+     * left arrow key but by overriding this you can change the key to whatever
+     * you want.
+     *
+     * @return The keycode of the key
+     */
+    protected int getNavigationLeftKey() {
+        return KeyCodes.KEY_LEFT;
+    }
+
+    /**
+     * Get the key that scroll to the right on the table. By default it is the
+     * right arrow key but by overriding this you can change the key to whatever
+     * you want.
+     *
+     * @return The keycode of the key
+     */
+    protected int getNavigationRightKey() {
+        return KeyCodes.KEY_RIGHT;
+    }
+
+    /**
+     * Get the key that selects an item in the table. By default it is the space
+     * bar key but by overriding this you can change the key to whatever you
+     * want.
+     *
+     * @return
+     */
+    protected int getNavigationSelectKey() {
+        return CHARCODE_SPACE;
+    }
+
+    /**
+     * Get the key the moves the selection one page up in the table. By default
+     * this is the Page Up key but by overriding this you can change the key to
+     * whatever you want.
+     *
+     * @return
+     */
+    protected int getNavigationPageUpKey() {
+        return KeyCodes.KEY_PAGEUP;
+    }
+
+    /**
+     * Get the key the moves the selection one page down in the table. By
+     * default this is the Page Down key but by overriding this you can change
+     * the key to whatever you want.
+     *
+     * @return
+     */
+    protected int getNavigationPageDownKey() {
+        return KeyCodes.KEY_PAGEDOWN;
+    }
+
+    /**
+     * Get the key the moves the selection to the beginning of the table. By
+     * default this is the Home key but by overriding this you can change the
+     * key to whatever you want.
+     *
+     * @return
+     */
+    protected int getNavigationStartKey() {
+        return KeyCodes.KEY_HOME;
+    }
+
+    /**
+     * Get the key the moves the selection to the end of the table. By default
+     * this is the End key but by overriding this you can change the key to
+     * whatever you want.
+     *
+     * @return
+     */
+    protected int getNavigationEndKey() {
+        return KeyCodes.KEY_END;
+    }
+
     protected ITableBody.ITableRow getRenderedRowByKey(String key) {
         final Iterator it = tBody.iterator();
         ITableBody.ITableRow r;
@@ -493,6 +821,58 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 return r;
             }
         }
+        return null;
+    }
+
+    /**
+     * Returns the next row to the given row
+     *
+     * @param row
+     *            The row to calculate from
+     *
+     * @return The next row or null if no row exists
+     */
+    private ITableBody.ITableRow getNextRow(ITableBody.ITableRow row, int offset) {
+        final Iterator<Widget> it = tBody.iterator();
+        ITableBody.ITableRow r = null;
+        while (it.hasNext()) {
+            r = (ITableBody.ITableRow) it.next();
+            if (r == row) {
+                r = null;
+                while (offset >= 0 && it.hasNext()) {
+                    r = (ITableBody.ITableRow) it.next();
+                    offset--;
+                }
+                return r;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the previous row from the given row
+     *
+     * @param row
+     *            The row to calculate from
+     * @return The previous row or null if no row exists
+     */
+    private ITableBody.ITableRow getPreviousRow(ITableBody.ITableRow row, int offset) {
+        final Iterator<Widget> it = tBody.iterator();
+        final Iterator<Widget> offsetIt = tBody.iterator();
+        ITableBody.ITableRow r = null;
+        ITableBody.ITableRow prev = null;
+        while (it.hasNext()) {
+            r = (ITableBody.ITableRow) it.next();
+            if (offset < 0) {
+                prev = (ITableBody.ITableRow) offsetIt.next();
+            }
+            if (r == row) {
+                return prev;
+            }
+            offset--;
+        }
+
         return null;
     }
 
@@ -514,7 +894,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     protected void updateAggregationRow(UIDL uidl) {
         if (aggregationRow == null) {
             aggregationRow = createAggregationRow(uidl);
-            insert(aggregationRow, getWidgetIndex(focusPanel));
+            insert(aggregationRow, getWidgetIndex(bodyContainer));
         }
         aggregationRow.updateFromUIDL(uidl);
     }
@@ -1022,7 +1402,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         protected void handleCaptionEvent(Event event) {
             switch (DOM.eventGetType(event)) {
                 case Event.ONMOUSEDOWN:
-                    ApplicationConnection.getConsole().log(
+                    VConsole.log(
                             "HeaderCaption: mouse down");
                     if (columnReordering) {
                         dragging = true;
@@ -1030,20 +1410,17 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         colIndex = getColIndexByKey(cid);
                         DOM.setCapture(getElement());
                         headerX = tHead.getAbsoluteLeft();
-                        ApplicationConnection
-                                .getConsole()
-                                .log(
-                                        "HeaderCaption: Caption set to capture mouse events");
+                        VConsole.log(
+                                "HeaderCaption: Caption set to capture mouse events");
                         DOM.eventPreventDefault(event); // prevent selecting text
                     }
                     break;
                 case Event.ONMOUSEUP:
-                    ApplicationConnection.getConsole()
-                            .log("HeaderCaption: mouseUP");
+                    VConsole.log("HeaderCaption: mouseUP");
                     if (columnReordering) {
                         dragging = false;
                         DOM.releaseCapture(getElement());
-                        ApplicationConnection.getConsole().log(
+                        VConsole.log(
                                 "HeaderCaption: Stopped column reordering");
                         if (moved) {
                             hideFloatingCopy();
@@ -1079,7 +1456,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                     break;
                 case Event.ONMOUSEMOVE:
                     if (dragging) {
-                        ApplicationConnection.getConsole().log(
+                        VConsole.log(
                                 "HeaderCaption: Dragging column, optimal index...");
                         if (!moved) {
                             createFloatingCopy();
@@ -1110,7 +1487,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         tHead.focusSlot(closestSlot);
 
                         updateFloatingCopysPosition(DOM.eventGetClientX(event), -1);
-                        ApplicationConnection.getConsole().log("" + closestSlot);
+                        VConsole.log("" + closestSlot);
                     }
                     break;
                 default:
@@ -1821,8 +2198,24 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             }
         }
 
+        /**
+         * Ensure the component has a focus.
+         *
+         * TODO the current implementation simply always calls focus for the
+         * component. In case the Table at some point implements focus/blur
+         * listeners, this method needs to be evolved to conditionally call
+         * focus only if not currently focused.
+         */
+        protected void ensureFocus() {
+            if (!hasFocus) {
+                bodyContainer.setFocus(true);
+            }
+        }
+
         public class ITableRow extends Panel implements ActionOwner,
                 Container {
+            private static final int TOUCHSCROLL_TIMEOUT = 70;
+            private static final int DRAGMODE_MULTIROW = 2;
             protected Vector childWidgets = new Vector();
             private boolean selected = false;
             private final int rowKey;
@@ -1832,15 +2225,23 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
             protected Map widgetColumns = null;
 
+            private boolean mDown;
+            private final TableRowElement rowElement;
             private int index;
+            private Event touchStart;
+            private static final int TOUCH_CONTEXT_MENU_TIMEOUT = 500;
+            private Timer contextTouchTimeout;
+            private int touchStartY;
+            private int touchStartX;
 
             protected ITableRow() {
-                rowKey = 0;
+                this(0);
             }
 
             protected ITableRow(int rowKey) {
                 this.rowKey = rowKey;
-                setElement(DOM.createElement("tr"));
+                rowElement = Document.get().createTRElement();
+                setElement(rowElement);
                 DOM.sinkEvents(getElement(), Event.ONCLICK | Event.ONDBLCLICK
                         | Event.ONCONTEXTMENU | Event.ONMOUSEDOWN);
             }
@@ -2044,7 +2445,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                     ((HasFocusHandlers) w).addFocusHandler(new FocusHandler() {
                         public void onFocus(FocusEvent event) {
                             Table.this.focusWidgetIndex = childWidgets.indexOf(w);
-                            ApplicationConnection.getConsole().log("onFocus: Focus widget index: " + Table.this.focusWidgetIndex);
+                            VConsole.log("onFocus: Focus widget index: " + Table.this.focusWidgetIndex);
                         }
                     });
                 }
@@ -2113,9 +2514,11 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             @Override
             public void onBrowserEvent(Event event) {
                 final Element targetElement = DOM.eventGetTarget(event);
+                final int type = event.getTypeInt();
+                final Element targetTdOrTr = getEventTargetTdOrTr(event);
                 if (Tools.isCheckbox(targetElement) || Tools.isRadio(targetElement))
                     return;
-
+                boolean targetCellOrRowFound = targetTdOrTr != null;
                 switch (DOM.eventGetType(event)) {
                     case Event.ONCLICK:
                         handleClickEvent(event);
@@ -2183,13 +2586,114 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         if (BrowserInfo.get().getWebkitVersion() > 0
                                 && childWidgets.isEmpty()
                                 && DOM.getElementPropertyBoolean(targetElement, "__cell")) {
-                            focusPanel.setFocus(true);
-                            ApplicationConnection.getConsole().log("Chrome: setted focus to panel");
+                            bodyContainer.setFocus(true);
+                            VConsole.log("Chrome: setted focus to panel");
                         }
 
                         break;
+                    case Event.ONTOUCHEND:
+                    case Event.ONTOUCHCANCEL:
+                        if (touchStart != null) {
+                            /*
+                             * Touch has not been handled as neither context or
+                             * drag start, handle it as a click.
+                             */
+                            Util.simulateClickFromTouchEvent(touchStart, this);
+                            touchStart = null;
+                        }
+                        if (contextTouchTimeout != null) {
+                            contextTouchTimeout.cancel();
+                        }
+                        break;
+                    case Event.ONTOUCHMOVE:
+                        if (isSignificantMove(event)) {
+                            /*
+                             * TODO figure out scroll delegate don't eat events
+                             * if row is selected. Null check for active
+                             * delegate is as a workaround.
+                             */
+                            if (dragmode != 0
+                                    && touchStart != null
+                                    && (TouchScrollDelegate
+                                            .getActiveScrollDelegate() == null)) {
+                                startRowDrag(touchStart, type, targetTdOrTr);
+                            }
+                            if (contextTouchTimeout != null) {
+                                contextTouchTimeout.cancel();
+                            }
+                            /*
+                             * Avoid clicks and drags by clearing touch start
+                             * flag.
+                             */
+                            touchStart = null;
+                        }
+
+                        break;
+                    case Event.ONTOUCHSTART:
+                        touchStart = event;
+                        Touch touch = event.getChangedTouches().get(0);
+                        // save position to fields, touches in events are same
+                        // isntance during the operation.
+                        touchStartX = touch.getClientX();
+                        touchStartY = touch.getClientY();
+                        /*
+                         * Prevent simulated mouse events.
+                         */
+                        touchStart.preventDefault();
+                        if (dragmode != 0 || actionKeys != null) {
+                            new Timer() {
+                                @Override
+                                public void run() {
+                                    TouchScrollDelegate activeScrollDelegate = TouchScrollDelegate
+                                            .getActiveScrollDelegate();
+                                    if (activeScrollDelegate != null
+                                            && !activeScrollDelegate.isMoved()) {
+                                        /*
+                                         * scrolling hasn't started. Cancel
+                                         * scrolling and let row handle this as
+                                         * drag start or context menu.
+                                         */
+                                        activeScrollDelegate.stopScrolling();
+                                    } else {
+                                        /*
+                                         * Scrolled or scrolling, clear touch
+                                         * start to indicate that row shouldn't
+                                         * handle touch move/end events.
+                                         */
+                                        touchStart = null;
+                                    }
+                                }
+                            }.schedule(TOUCHSCROLL_TIMEOUT);
+
+                            if (contextTouchTimeout == null
+                                    && actionKeys != null) {
+                                contextTouchTimeout = new Timer() {
+                                    @Override
+                                    public void run() {
+                                        if (touchStart != null) {
+                                            showContextMenu(touchStart);
+                                            touchStart = null;
+                                        }
+                                    }
+                                };
+                            }
+                            contextTouchTimeout.cancel();
+                            contextTouchTimeout
+                                    .schedule(TOUCH_CONTEXT_MENU_TIMEOUT);
+                        }
+                        break;
                     case Event.ONDBLCLICK:
                         handleClickEvent(event);
+                        break;
+                    case Event.ONMOUSEDOWN:
+                        if (targetCellOrRowFound){
+                            ensureFocus();
+                        }
+                        break;
+                    case Event.ONMOUSEUP:
+                        if (targetCellOrRowFound) {
+                            mDown = false;
+                        }
                         break;
                     case Event.ONCONTEXTMENU:
                         if (selectMode > com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE) {
@@ -2245,6 +2749,130 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 }
             }
 
+            private boolean isSignificantMove(Event event) {
+                if (touchStart == null) {
+                    // no touch start
+                    return false;
+                }
+                /*
+                 * TODO calculate based on real distance instead of separate
+                 * axis checks
+                 */
+                Touch touch = event.getChangedTouches().get(0);
+                if (Math.abs(touch.getClientX() - touchStartX) > TouchScrollDelegate.SIGNIFICANT_MOVE_THRESHOLD) {
+                    return true;
+                }
+                if (Math.abs(touch.getClientY() - touchStartY) > TouchScrollDelegate.SIGNIFICANT_MOVE_THRESHOLD) {
+                    return true;
+                }
+                return false;
+            }
+
+            protected void startRowDrag(Event event, final int type,
+                    Element targetTdOrTr) {
+                mDown = true;
+                VTransferable transferable = new VTransferable();
+                transferable.setDragSource(Table.this);
+                transferable.setData("itemId", "" + rowKey);
+                NodeList<TableCellElement> cells = rowElement.getCells();
+                for (int i = 0; i < cells.getLength(); i++) {
+                    if (cells.getItem(i).isOrHasChild(targetTdOrTr)) {
+                        HeaderCell headerCell = tHead.getHeaderCell(i);
+                        transferable.setData("propertyId", headerCell.cid);
+                        break;
+                    }
+                }
+
+                VDragEvent ev = VDragAndDropManager.get().startDrag(
+                        transferable, event, true);
+                if (dragmode == DRAGMODE_MULTIROW
+                        && selectMode == SELECT_MODE_MULTI
+                        && selectedRowKeys.contains("" + rowKey)) {
+                    ev.createDragImage(
+                            (Element) getBody().tBody.cast(), true);
+                    Element dragImage = ev.getDragImage();
+                    int i = 0;
+                    for (Iterator<Widget> iterator = getBody().iterator(); iterator
+                            .hasNext();) {
+                        ITableRow next = (ITableRow) iterator
+                                .next();
+                        Element child = (Element) dragImage.getChild(i++);
+                        if (!selectedRowKeys.contains("" + next.rowKey)) {
+                            child.getStyle().setVisibility(Style.Visibility.HIDDEN);
+                        }
+                    }
+                } else {
+                    ev.createDragImage(getElement(), true);
+                }
+                if (type == Event.ONMOUSEDOWN) {
+                    event.preventDefault();
+                }
+                event.stopPropagation();
+            }
+
+
+
+            /**
+             * Finds the TD that the event interacts with. Returns null if the
+             * target of the event should not be handled. If the event target is
+             * the row directly this method returns the TR element instead of
+             * the TD.
+             *
+             * @param event
+             * @return TD or TR element that the event targets (the actual event
+             *         target is this element or a child of it)
+             */
+            private Element getEventTargetTdOrTr(Event event) {
+                Element targetTdOrTr = null;
+
+                final Element eventTarget = DOM.eventGetTarget(event);
+                final Element eventTargetParent = DOM.getParent(eventTarget);
+                final Element eventTargetGrandParent = DOM
+                        .getParent(eventTargetParent);
+
+                final Element thisTrElement = getElement();
+
+                if (eventTarget == thisTrElement) {
+                    // This was a click on the TR element
+                    targetTdOrTr = eventTarget;
+                    // rowTarget = true;
+                } else if (thisTrElement == eventTargetParent) {
+                    // Target parent is the TR, so the actual target is the TD
+                    targetTdOrTr = eventTarget;
+                } else if (thisTrElement == eventTargetGrandParent) {
+                    // Target grand parent is the TR, so the parent is the TD
+                    targetTdOrTr = eventTargetParent;
+                } else {
+                    /*
+                     * This is a workaround to make Labels, read only TextFields
+                     * and Embedded in a Table clickable (see #2688). It is
+                     * really not a fix as it does not work with a custom read
+                     * only components (not extending VLabel/VEmbedded).
+                     */
+                    Widget widget = Util.findWidget(eventTarget, null);
+                    if (widget != this) {
+                        while (widget != null && widget.getParent() != this) {
+                            widget = widget.getParent();
+                        }
+                        if (widget != null) {
+                            // widget is now the closest widget to this row
+                            if (widget instanceof VLabel
+                                    || widget instanceof VEmbedded
+                                    || (widget instanceof VTextField && ((VTextField) widget)
+                                            .isReadOnly())) {
+                                Element tdElement = eventTargetParent;
+                                while (DOM.getParent(tdElement) != thisTrElement) {
+                                    tdElement = DOM.getParent(tdElement);
+                                }
+                                targetTdOrTr = tdElement;
+                            }
+                        }
+                    }
+                }
+
+                return targetTdOrTr;
+            }
+
             public void showContextMenu(Event event) {
                 if (enabled && actionKeys != null && actionKeys.length > 0) {
                     int left = event.getClientX();
@@ -2278,7 +2906,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         if (w instanceof com.vaadin.terminal.gwt.client.Focusable) {
                             ((com.vaadin.terminal.gwt.client.Focusable) w).focus();
                         }
-                        ApplicationConnection.getConsole().log("onSelect: Focus widget index: " + focusWidgetIndex);
+                        VConsole.log("onSelect: Focus widget index: " + focusWidgetIndex);
                     }
 
                     addStyleName("v-selected");
@@ -2499,13 +3127,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
      */
     private void instructServerToForgotPreviousSelections() {
         client.updateVariable(paintableId, "clearSelections", true, false);
-    }
-
-    public void toggleSelection(String rowKey) {
-        final ITableBody.ITableRow row = getRenderedRowByKey(rowKey);
-        if (row != null) {
-            row.processRowSelection();
-        }
     }
 
     @Override
@@ -2815,7 +3436,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
      * @param row The row to where the selection head should move
      * @return Returns true if focus was moved successfully, else false
      */
-    private boolean setRowFocus(ITableBody.ITableRow row) {
+    protected boolean setRowFocus(@Nullable ITableBody.ITableRow row) {
 
         if (selectMode == SELECT_MODE_NONE) {
             return false;
@@ -2922,11 +3543,263 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             while ((container = Util.getLayout(w)) != null) {
                 w = (Widget) container;
                 if (w instanceof VTabsheet) {
-                    ApplicationConnection.getConsole().log("Run overflow auto fix");
-                    ((VTabsheet) w).runWebkitOverflowAutoFix();
+//                    VConsole.log("Run overflow auto fix");
+//                    ((VTabsheet) w).runWebkitOverflowAutoFix();
                     break;
                 }
             }
         }
     }
+
+    /**
+     * Handles the keyboard events handled by the table
+     * @param keycode The keyboard event received
+     * @param ctrl Whether ctrl pressed or not
+     * @param shift Whether shift pressed or not
+     * @return true iff the navigation event was handled
+     */
+    protected boolean handleNavigation(int keycode, boolean ctrl, boolean shift) {
+        if (keycode == KeyCodes.KEY_TAB || keycode == KeyCodes.KEY_SHIFT) {
+            // Do not handle tab key
+            return false;
+        }
+
+        // Down navigation
+        if (selectMode == SELECT_MODE_NONE && keycode == getNavigationDownKey()) {
+            bodyContainer.setScrollPosition(bodyContainer
+                    .getScrollPosition() + scrollingVelocity);
+            return true;
+        } else if (keycode == getNavigationDownKey()) {
+            if (selectMode == SELECT_MODE_MULTI && moveFocusDown()) {
+                selectFocusedRow(ctrl, shift);
+
+            } else if (selectMode == SELECT_MODE_SINGLE && !shift
+                    && moveFocusDown()) {
+                selectFocusedRow(ctrl, shift);
+            }
+            return true;
+        }
+
+        // Up navigation
+        if (selectMode == SELECT_MODE_NONE && keycode == getNavigationUpKey()) {
+            bodyContainer.setScrollPosition(bodyContainer
+                    .getScrollPosition() - scrollingVelocity);
+            return true;
+        } else if (keycode == getNavigationUpKey()) {
+            if (selectMode == SELECT_MODE_MULTI && moveFocusUp()) {
+                selectFocusedRow(ctrl, shift);
+            } else if (selectMode == SELECT_MODE_SINGLE && !shift
+                    && moveFocusUp()) {
+                selectFocusedRow(ctrl, shift);
+            }
+            return true;
+        }
+
+        if (keycode == getNavigationLeftKey()) {
+            // Left navigation
+            bodyContainer.setHorizontalScrollPosition(bodyContainer
+                    .getHorizontalScrollPosition() - scrollingVelocity);
+            return true;
+
+        } else if (keycode == getNavigationRightKey()) {
+            // Right navigation
+            bodyContainer.setHorizontalScrollPosition(bodyContainer
+                    .getHorizontalScrollPosition() + scrollingVelocity);
+            return true;
+        }
+
+        // Select navigation
+        if (isSelectable() && keycode == getNavigationSelectKey()) {
+            if (selectMode == SELECT_MODE_SINGLE) {
+                boolean wasSelected = focusedRow.isSelected();
+                deselectAll();
+                if (!wasSelected || nullSelectionDisallowed) {
+                    focusedRow.toggleSelection();
+                }
+            } else {
+                focusedRow.toggleSelection();
+                removeRowFromUnsentSelectionRanges(focusedRow);
+            }
+
+            sendSelectedRows();
+            return true;
+        }
+
+        // Page Down navigation
+        if (keycode == getNavigationPageDownKey()) {
+            return handleNavigationPageDownKey(ctrl, shift);
+        }
+
+        // Page Up navigation
+        if (keycode == getNavigationPageUpKey()) {
+            return handleNavigationPageUpKey(ctrl, shift);
+        }
+
+        // Goto start navigation
+        if (keycode == getNavigationStartKey()) {
+            bodyContainer.setScrollPosition(0);
+            if (isSelectable()) {
+                if (focusedRow != null && focusedRow.getIndex() == 0) {
+                    return false;
+                } else {
+                    ITableBody.ITableRow rowByRowIndex = (ITableBody.ITableRow) tBody
+                            .iterator().next();
+                    if (rowByRowIndex.getIndex() == 0) {
+                        setRowFocus(rowByRowIndex);
+                        selectFocusedRow(ctrl, shift);
+                        sendSelectedRows();
+                    } else {
+                        // first row of table will come in next row fetch
+                        if (ctrl) {
+                            focusFirstItemInNextRender = true;
+                        } else {
+                            selectFirstItemInNextRender = true;
+                            multiselectPending = shift;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Goto end navigation
+        if (keycode == getNavigationEndKey()) {
+            return handleNavigationEndKey(ctrl, shift);
+        }
+
+        return false;
+    }
+
+    protected abstract boolean handleNavigationPageDownKey( boolean ctrl, boolean shift );
+
+    protected abstract boolean handleNavigationPageUpKey( boolean ctrl, boolean shift );
+
+    protected abstract boolean handleNavigationEndKey( boolean ctrl, boolean shift );
+
+    protected boolean isFocusAtTheBeginningOfTable() {
+        return focusedRow.getIndex() == 0;
+    }
+
+    protected boolean isFocusAtTheEndOfTable() {
+        return focusedRow.getIndex() + 1 >= totalRows;
+    }
+
+    protected int getFullyVisibleRowCount() {
+        return (int) (bodyContainer.getOffsetHeight() / tBody
+                .getRowHeight());
+    }
+
+    protected void scrollByPagelenght(int i) {
+        int pixels = i
+                * (int) (getFullyVisibleRowCount() * tBody.getRowHeight());
+        int newPixels = bodyContainer.getScrollPosition() + pixels;
+        if (newPixels < 0) {
+            newPixels = 0;
+        } // else if too high, NOP (all know browsers accept illegally big
+          // values here)
+        bodyContainer.setScrollPosition(newPixels);
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.google.gwt.event.dom.client.FocusHandler#onFocus(com.google.gwt.event
+     * .dom.client.FocusEvent)
+     */
+    public void onFocus(FocusEvent event) {
+        if (isFocusable()) {
+            hasFocus = true;
+
+            // Focus a row if no row is in focus
+            if (focusedRow == null) {
+                focusRowFromBody();
+            } else {
+                setRowFocus(focusedRow);
+            }
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.google.gwt.event.dom.client.BlurHandler#onBlur(com.google.gwt.event
+     * .dom.client.BlurEvent)
+     */
+    public void onBlur(BlurEvent event) {
+        hasFocus = false;
+        navKeyDown = false;
+
+        if (isFocusable()) {
+            // Unfocus any row
+            setRowFocus(null);
+        }
+    }
+
+     /**
+     * Can the Table be focused?
+     *
+     * @return True if the table can be focused, else false
+     */
+    public boolean isFocusable() {
+        if (tBody != null && enabled) {
+            boolean hasVerticalScrollbars = tBody.getOffsetHeight() > bodyContainer
+                    .getOffsetHeight();
+            boolean hasHorizontalScrollbars = tBody.getOffsetWidth() > bodyContainer
+                    .getOffsetWidth();
+            return !(!hasHorizontalScrollbars && !hasVerticalScrollbars && selectMode == SELECT_MODE_NONE);
+        }
+
+        return false;
+    }
+
+    public void startScrollingVelocityTimer() {
+        if (scrollingVelocityTimer == null) {
+            scrollingVelocityTimer = new com.google.gwt.user.client.Timer() {
+                @Override
+                public void run() {
+                    scrollingVelocity++;
+                }
+            };
+            scrollingVelocityTimer.scheduleRepeating(100);
+        }
+    }
+
+    public void cancelScrollingVelocityTimer() {
+        if (scrollingVelocityTimer != null) {
+            // Remove velocityTimer if it exists and the Table is disabled
+            scrollingVelocityTimer.cancel();
+            scrollingVelocityTimer = null;
+            scrollingVelocity = 10;
+        }
+    }
+
+    /**
+     *
+     * @param keyCode Key code
+     * @return true if the given keyCode is used by the table for navigation
+     */
+    private boolean isNavigationKey(int keyCode) {
+        return keyCode == getNavigationUpKey()
+                || keyCode == getNavigationLeftKey()
+                || keyCode == getNavigationRightKey()
+                || keyCode == getNavigationDownKey()
+                || keyCode == getNavigationPageUpKey()
+                || keyCode == getNavigationPageDownKey()
+                || keyCode == getNavigationEndKey()
+                || keyCode == getNavigationStartKey();
+    }
+
+    /**
+     * Add this to the element mouse down event by using element.setPropertyJSO
+     * ("onselectstart",applyDisableTextSelectionIEHack()); Remove it then again
+     * when the mouse is depressed in the mouse up event.
+     *
+     * @return Returns the JSO preventing text selection
+     */
+    private static native JavaScriptObject getPreventTextSelectionIEHack()
+    /*-{
+            return function(){ return false; };
+    }-*/;
 }

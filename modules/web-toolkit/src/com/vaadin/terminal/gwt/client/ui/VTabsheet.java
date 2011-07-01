@@ -1,12 +1,12 @@
 /*
  * Copyright 2010 IT Mill Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -16,6 +16,12 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.TableCellElement;
@@ -25,13 +31,21 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.RenderInformation;
+import com.vaadin.terminal.gwt.client.RenderSpace;
+import com.vaadin.terminal.gwt.client.TooltipInfo;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.VCaption;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
+/**
+ * VTabsheet
+ * <br/>
+ * [Compatible with Vaadin 6.6]
+ */
 public class VTabsheet extends VTabsheetBase {
 
     private class TabSheetCaption extends VCaption implements ActionOwner {
@@ -79,6 +93,8 @@ public class VTabsheet extends VTabsheetBase {
             client.handleTooltipEvent(event, VTabsheet.this, getElement());
             if (closable && event.getTypeInt() == Event.ONCLICK
                     && event.getEventTarget().cast() == closeButton) {
+//                final String tabKey = tabKeys.get(tb.getTabIndex(this))
+//                        .toString();
                 if (isEnabled()) {
                     client.updateVariable(id, "close", getTabKey(), true);
                     event.stopPropagation();
@@ -101,6 +117,7 @@ public class VTabsheet extends VTabsheetBase {
                 }
                 updateTabScroller();
             }
+            client.handleTooltipEvent(event, VTabsheet.this, getElement());
         }
 
         private void showContextMenu(Event event) {
@@ -118,8 +135,7 @@ public class VTabsheet extends VTabsheetBase {
         }
 
         private String getTabKey() {
-            return tabKeys.get(tb.getTabIndex(this))
-                        .toString();
+            return tabKeys.get(tb.getTabIndex(this));
         }
 
         @Override
@@ -208,6 +224,7 @@ public class VTabsheet extends VTabsheetBase {
             }
             return width;
         }
+
     }
 
     class TabsheetAction extends TreeAction {
@@ -293,6 +310,10 @@ public class VTabsheet extends VTabsheetBase {
                         false);
             }
             oldSelected = newSelected;
+
+            // The selected tab might need more (or less) space
+            updateCaptionSize(index);
+            updateCaptionSize(activeTabIndex);
         }
 
         public void removeTab(int i) {
@@ -405,11 +426,12 @@ public class VTabsheet extends VTabsheetBase {
             addStyleDependentName("loading");
             // run updating variables in deferred command to bypass some FF
             // optimization issues
-            DeferredCommand.addCommand(new Command() {
+            Scheduler.get().scheduleDeferred(new Command() {
                 public void execute() {
                     previousVisibleWidget = tp.getWidget(tp.getVisibleWidget());
-                    DOM.setStyleAttribute(DOM.getParent(previousVisibleWidget
-                            .getElement()), "visibility", "hidden");
+                    DOM.setStyleAttribute(
+                            DOM.getParent(previousVisibleWidget.getElement()),
+                            "visibility", "hidden");
                     client.updateVariable(id, "selected", tabKeys.get(tabIndex)
                             .toString(), true);
                 }
@@ -454,9 +476,7 @@ public class VTabsheet extends VTabsheetBase {
 
         addStyleDependentName("loading"); // Indicate initial progress
         tb.setStyleName(CLASSNAME + "-tabs");
-        DOM
-                .setElementProperty(contentNode, "className", CLASSNAME
-                        + "-content");
+        DOM.setElementProperty(contentNode, "className", CLASSNAME + "-content");
         DOM.setElementProperty(deco, "className", CLASSNAME + "-deco");
 
         add(tb, tabs);
@@ -688,13 +708,19 @@ public class VTabsheet extends VTabsheetBase {
         String overflow = style.getProperty("overflow");
         style.setProperty("overflow", "hidden");
         style.setPropertyPx("width", tabsWidth);
-        Style wrapperstyle = tp.getWidget(tp.getVisibleWidget()).getElement()
-                .getParentElement().getStyle();
-        wrapperstyle.setPropertyPx("width", tabsWidth);
+
+        boolean hasTabs = tp.getWidgetCount() > 0;
+
+        Style wrapperstyle = null;
+        if (hasTabs) {
+            wrapperstyle = tp.getWidget(tp.getVisibleWidget()).getElement()
+                    .getParentElement().getStyle();
+            wrapperstyle.setPropertyPx("width", tabsWidth);
+        }
         // Get content width from actual widget
 
         int contentWidth = 0;
-        if (tp.getWidgetCount() > 0) {
+        if (hasTabs) {
             contentWidth = tp.getWidget(tp.getVisibleWidget()).getOffsetWidth();
         }
         style.setProperty("overflow", overflow);
@@ -708,7 +734,9 @@ public class VTabsheet extends VTabsheetBase {
 
         tabs.getStyle().setPropertyPx("width", outerWidth);
         style.setPropertyPx("width", tabsWidth);
-        wrapperstyle.setPropertyPx("width", tabsWidth);
+        if (hasTabs) {
+            wrapperstyle.setPropertyPx("width", tabsWidth);
+        }
 
         contentNode.getStyle().setPropertyPx("width", tabsWidth);
         super.setWidth(outerWidth + "px");
@@ -834,8 +862,9 @@ public class VTabsheet extends VTabsheetBase {
         updateOpenTabSize();
         VTabsheet.this.removeStyleDependentName("loading");
         if (previousVisibleWidget != null) {
-            DOM.setStyleAttribute(DOM.getParent(previousVisibleWidget
-                    .getElement()), "visibility", "");
+            DOM.setStyleAttribute(
+                    DOM.getParent(previousVisibleWidget.getElement()),
+                    "visibility", "");
             previousVisibleWidget = null;
         }
     }
@@ -956,7 +985,7 @@ public class VTabsheet extends VTabsheetBase {
         }
 
         // Make sure scrollerIndex is valid
-        if (scrollerIndex > tb.getTabCount()) {
+        if (scrollerIndex < 0 || scrollerIndex > tb.getTabCount()) {
             scrollerIndex = getNextVisibleTab(-1);
         } else if (tb.getTabCount() > 0 && tb.getTab(scrollerIndex).isHidden()) {
             scrollerIndex = getNextVisibleTab(scrollerIndex);
@@ -987,7 +1016,7 @@ public class VTabsheet extends VTabsheetBase {
              */
             final Style style = scroller.getStyle();
             style.setProperty("whiteSpace", "normal");
-            DeferredCommand.addCommand(new Command() {
+            Scheduler.get().scheduleDeferred(new Command() {
                 public void execute() {
                     style.setProperty("whiteSpace", "");
                 }
@@ -1125,5 +1154,4 @@ public class VTabsheet extends VTabsheetBase {
     public void runWebkitOverflowAutoFix() {
         tp.runWebkitOverflowAutoFix();
     }
-
 }

@@ -601,4 +601,23 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
         return s == null || "".equals(s);
     }
 
+    @Override
+    protected boolean handleNavigationEndKey(boolean ctrl, boolean shift) {
+        return false;
+    }
+
+    @Override
+    protected boolean handleNavigationPageUpKey(boolean ctrl, boolean shift) {
+        return false;
+    }
+
+    @Override
+    protected boolean handleNavigationPageDownKey(boolean ctrl, boolean shift) {
+        return false;
+    }
+
+    @Override
+    protected void focusRowFromBody() {
+        //todo implement
+    }
 }

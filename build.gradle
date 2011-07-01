@@ -40,17 +40,18 @@ def webModule = project(':cuba-web')
 def desktopModule = project(':cuba-desktop')
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
-def vaadin = [group: 'com.haulmont.thirdparty', name: 'vaadin', version: '6.3.1.81']
+def vaadin = [group: 'com.haulmont.thirdparty', name: 'vaadin', version: '6.6.1.89']
 def dashlayout = [group: 'com.haulmont.thirdparty', name: 'dashlayout', version: '0.1.5']
 def popupbutton = [group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '1.0.0']
-def gwtUser = [group: 'com.google.gwt', name: 'gwt-user', version: '2.0.3']
-def gwtDev = [group: 'com.google.gwt', name: 'gwt-dev', version: '2.0.3']
+def gwtUser = [group: 'com.google.gwt', name: 'gwt-user', version: '2.3.0']
+def gwtDev = [group: 'com.google.gwt', name: 'gwt-dev', version: '2.3.0']
+def gwtServlets = [group: 'com.google.gwt', name: 'gwt-servlet', version: '2.3.0']
+def validationApi = [group: 'javax.validation', name: 'validation-api', version: '1.0.0.GA']
 def groovyArtifact = [group: 'com.haulmont.thirdparty', name: 'groovy', version: '1.7.5.20101124']
 def asm = [group: 'asm', name: 'asm', version: '3.2']
 def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.6.20110527']
 def postgres = [group: 'postgresql', name: 'postgresql', version: '8.3-603.jdbc4']
 def hsqldb = [group: 'hsqldb', name: 'hsqldb', version: '1.8.0.10']
-
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webToolkitModule,
         webModule, desktopModule]) {
@@ -193,6 +194,8 @@ configure(webToolkitModule) {
 
         provided(gwtUser)
         provided(gwtDev)
+        provided(gwtServlets)
+        provided(validationApi)
     }
 
     jar {
@@ -203,6 +206,10 @@ configure(webToolkitModule) {
 }
 
 configure(webModule) {
+    configurations {
+        gwtBuilding
+    }
+
     dependencies {
         compile(sharedLibModule)
         compile(globalModule)
@@ -221,7 +228,11 @@ configure(webModule) {
         provided(webToolkitModule)
         provided(gwtUser)
         provided(gwtDev)
+        provided(gwtServlets)
+        provided(validationApi)
         provided(servletApi)
+        
+        gwtBuilding(validationApi + [classifier: 'sources'])
     }
 
     jar {
@@ -250,10 +261,14 @@ configure(webModule) {
     task buildGwt(dependsOn: buildThemes) << {
         File widgetsetsDir = new File(webOutDir, "VAADIN/widgetsets")
         File webToolkitSrcDir = new File(webToolkitModule.projectDir, 'src')
+        
+        def gwtBuildingArtifacts = configurations.gwtBuilding.resolvedConfiguration.getResolvedArtifacts()
+        File validationSrcDir = gwtBuildingArtifacts.find { a-> a.name == 'validation-api' }.file
+
         if (!widgetsetsDir.exists()) {
             javaexec {
                 main = 'com.google.gwt.dev.Compiler'
-                classpath(webToolkitSrcDir, webToolkitModule.sourceSets.main.classesDir, sourceSets.main.compileClasspath, sourceSets.main.classesDir)
+                classpath(validationSrcDir, webToolkitSrcDir, webToolkitModule.sourceSets.main.classesDir, sourceSets.main.compileClasspath, sourceSets.main.classesDir)
                 args('-war', widgetsetsDir.absolutePath, '-style', 'OBF', 'com.haulmont.cuba.toolkit.gwt.WidgetSet')
                 jvmArgs('-Xmx512m', '-Xss8m', '-XX:MaxPermSize=256m', '-Djava.awt.headless=true')
             }

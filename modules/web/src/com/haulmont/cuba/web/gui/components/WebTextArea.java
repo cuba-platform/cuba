@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TextArea;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.RichTextArea;
 
 public class WebTextArea
@@ -28,35 +29,45 @@ public class WebTextArea
     }
 
     public int getRows() {
-        return component.getRows();
+//        return component.getRows();
+//        TODO UI
+        return 1;
     }
 
     public void setRows(int rows) {
-        component.setRows(rows);
+//        component.setRows(rows);
+//        TODO UI
     }
 
     public int getColumns() {
-        return component.getColumns();
+//        TODO UI
+//        return component.getColumns();
+        return 20;
     }
 
     public void setColumns(int columns) {
-        component.setColumns(columns);
+//        TODO UI
+//        component.setColumns(columns);
     }
 
     public int getMaxLength() {
-        return component.getMaxLength();
+//        TODO UI
+//        return component.getMaxLength();
+        return 400;
     }
 
     public void setMaxLength(int value) {
-        component.setMaxLength(value);
+//        TODO UI
+//        component.setMaxLength(value);
     }
 
     @Override
     public void setDatasource(Datasource datasource, String property) {
         super.setDatasource(datasource, property);
         Integer len = (Integer) metaProperty.getAnnotations().get("length");
-        if (len != null) {
-            component.setMaxLength(len);
-        }
+//        TODO UI
+//        if (len != null) {
+//            component.setMaxLength(len);
+//        }
     }
 }

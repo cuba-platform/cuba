@@ -1,7 +1,18 @@
 /*
-@ITMillApache2LicenseForJavaFiles@
+ * Copyright 2010 IT Mill Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
-
 package com.vaadin.terminal.gwt.client;
 
 import java.util.*;
@@ -10,6 +21,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayString;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -17,19 +29,16 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.impl.HTTPRequestImpl;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.toolkit.gwt.client.HasIndicator;
-import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
-import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.haulmont.cuba.toolkit.gwt.client.ui.IScrollablePanel;
 import com.vaadin.terminal.gwt.client.RenderInformation.FloatSize;
 import com.vaadin.terminal.gwt.client.RenderInformation.Size;
@@ -87,18 +96,16 @@ public class ApplicationConnection {
     public static final String ATTRIBUTE_ERROR = "error";
 
     // will hold the UIDL security key (for XSS protection) once received
-    private String uidl_security_key = "init";
+    private String uidlSecurityKey = "init";
 
     private final HashMap<String, String> resourcesMap = new HashMap<String, String>();
-
-    private static Console console;
 
     private final ArrayList<String> pendingVariables = new ArrayList<String>();
 
     private final ComponentDetailMap idToPaintableDetail = ComponentDetailMap
             .create();
 
-    private final WidgetSet widgetSet;
+    private WidgetSet widgetSet;
 
     private VContextMenu contextMenu = null;
 
@@ -109,12 +116,12 @@ public class ApplicationConnection {
 
     private final VView view;
 
-    private boolean applicationRunning = false;
+    protected boolean applicationRunning = false;
 
     private int activeRequests = 0;
 
     /** Parameters for this application connection loaded from the web-page */
-    private final ApplicationConfiguration configuration;
+    private ApplicationConfiguration configuration;
 
     /** List of pending variable change bursts that must be submitted in order */
     private final ArrayList<ArrayList<String>> pendingVariableBursts = new ArrayList<ArrayList<String>>();
@@ -136,22 +143,72 @@ public class ApplicationConnection {
 
     private Set<Paintable> zeroHeightComponents = null;
 
+    private Set<String> unregistryBag = new HashSet<String>();
+
+    class ApplicationTimer extends Timer {
+        private String id;
+        private boolean repeat;
+        private int delay;
+
+        ApplicationTimer(String id, boolean repeat, int delay) {
+            this.id = id;
+            this.repeat = repeat;
+            this.delay = delay;
+        }
+
+        void startTimer() {
+            if (repeat) {
+                scheduleRepeating(delay);
+            } else {
+                schedule(delay);
+            }
+        }
+
+        public void run() {
+            updateVariable(id, "timer", "", true);
+        }
+
+        public boolean isRepeat() {
+            return repeat;
+        }
+
+        public void setRepeat(boolean repeat) {
+            this.repeat = repeat;
+        }
+
+        public int getDelay() {
+            return delay;
+        }
+
+        public void setDelay(int delay) {
+            this.delay = delay;
+       }
+    }
 
     private Map<String, ApplicationTimer> applicationTimers = new HashMap<String, ApplicationTimer>();
     private List<ApplicationTimer> timersToRun = new LinkedList<ApplicationTimer>();
-
     private Set<HasIndicator> indicators = new HashSet<HasIndicator>();
 
-    public ApplicationConnection(WidgetSet widgetSet,
-            ApplicationConfiguration cnf) {
+    public ApplicationConnection() {
+        view = GWT.create(VView.class);
+    }
+
+    public void init(WidgetSet widgetSet, ApplicationConfiguration cnf) {
+        VConsole.log("Starting application " + cnf.getRootPanelId());
+
+        VConsole.log("Vaadin application servlet version: "
+                + cnf.getServletVersion());
+        VConsole.log("Application version: " + cnf.getApplicationVersion());
+
+        if (!cnf.getServletVersion().equals(ApplicationConfiguration.VERSION)) {
+            VConsole.error("Warning: your widget set seems to be built with a different "
+                    + "version than the one used on server. Unexpected "
+                    + "behavior may occur.");
+        }
+
         this.widgetSet = widgetSet;
         configuration = cnf;
         windowName = configuration.getInitialWindowName();
-        if (isDebugMode()) {
-            console = new VDebugConsole(this, cnf, !isQuietDebugMode());
-        } else {
-            console = new NullConsole();
-        }
 
         ComponentLocator componentLocator = new ComponentLocator(this);
 
@@ -163,9 +220,9 @@ public class ApplicationConnection {
 
         initializeClientHooks();
 
-        view = new VView(cnf.getRootPanelId());
-        showLoadingIndicator();
+        view.init(cnf.getRootPanelId(), this);
 
+        showLoadingIndicator();
     }
 
     /**
@@ -174,9 +231,11 @@ public class ApplicationConnection {
      * called once this application has started (first response received) or
      * failed to start. This ensures that the applications are started in order,
      * to avoid session-id problems.
+     *
+     * @return
      */
-    void start() {
-        makeUidlRequest("", true, false, false);
+    public void start() {
+        repaintAll();
     }
 
     private native void initializeTestbenchHooks(
@@ -185,7 +244,8 @@ public class ApplicationConnection {
         var ap = this;
         var client = {};
         client.isActive = function() {
-            return ap.@com.vaadin.terminal.gwt.client.ApplicationConnection::hasActiveRequest()() || ap.@com.vaadin.terminal.gwt.client.ApplicationConnection::isLoadingIndicatorVisible()();
+            return ap.@com.vaadin.terminal.gwt.client.ApplicationConnection::hasActiveRequest()() ||
+                    ap.@com.vaadin.terminal.gwt.client.ApplicationConnection::isLoadingIndicatorVisible()();
         }
         var vi = ap.@com.vaadin.terminal.gwt.client.ApplicationConnection::getVersionInfo()();
         if (vi) {
@@ -211,7 +271,6 @@ public class ApplicationConnection {
     /**
      * Helper for tt initialization
      */
-    @SuppressWarnings("unused")
     private JavaScriptObject getVersionInfo() {
         return configuration.getVersionInfoJSObject();
     }
@@ -241,27 +300,27 @@ public class ApplicationConnection {
      */
     private native void initializeClientHooks()
     /*-{
-        var app = this;
-        var oldSync;
-        if($wnd.vaadin.forceSync) {
-            oldSync = $wnd.vaadin.forceSync;
-        }
-        $wnd.vaadin.forceSync = function() {
-            if(oldSync) {
-                oldSync();
-            }
-            app.@com.vaadin.terminal.gwt.client.ApplicationConnection::sendPendingVariableChanges()();
-        }
-        var oldForceLayout;
-        if($wnd.vaadin.forceLayout) {
-            oldForceLayout = $wnd.vaadin.forceLayout;
-        }
-        $wnd.vaadin.forceLayout = function() {
-            if(oldForceLayout) {
-                oldForceLayout();
-            }
-            app.@com.vaadin.terminal.gwt.client.ApplicationConnection::forceLayout()();
-        }
+    	var app = this;
+    	var oldSync;
+    	if ($wnd.vaadin.forceSync) {
+    		oldSync = $wnd.vaadin.forceSync;
+    	}
+    	$wnd.vaadin.forceSync = function() {
+    		if (oldSync) {
+    			oldSync();
+    		}
+    		app.@com.vaadin.terminal.gwt.client.ApplicationConnection::sendPendingVariableChanges()();
+    	}
+    	var oldForceLayout;
+    	if ($wnd.vaadin.forceLayout) {
+    		oldForceLayout = $wnd.vaadin.forceLayout;
+    	}
+    	$wnd.vaadin.forceLayout = function() {
+    		if (oldForceLayout) {
+    			oldForceLayout();
+    		}
+    		app.@com.vaadin.terminal.gwt.client.ApplicationConnection::forceLayout()();
+    	}
     }-*/;
 
     /**
@@ -272,50 +331,43 @@ public class ApplicationConnection {
      */
     private static native void runPostRequestHooks(String appId)
     /*-{
-        if($wnd.vaadin.postRequestHooks) {
-            for(var hook in $wnd.vaadin.postRequestHooks) {
-                if(typeof($wnd.vaadin.postRequestHooks[hook]) == "function") {
-                    try {
-                        $wnd.vaadin.postRequestHooks[hook](appId);
-                    } catch(e) {}
-                }
-            }
-        }
+    	if ($wnd.vaadin.postRequestHooks) {
+    		for ( var hook in $wnd.vaadin.postRequestHooks) {
+    			if (typeof ($wnd.vaadin.postRequestHooks[hook]) == "function") {
+    				try {
+    					$wnd.vaadin.postRequestHooks[hook](appId);
+    				} catch (e) {
+    				}
+    			}
+    		}
+    	}
     }-*/;
 
     /**
      * Get the active Console for writing debug messages. May return an actual
      * logging console, or the NullConsole if debugging is not turned on.
      *
+     * @deprecated Developers should use {@link VConsole} since 6.4.5
+     *
      * @return the active Console
      */
+    @Deprecated
     public static Console getConsole() {
-        return console;
+        return VConsole.getImplementation();
     }
 
     /**
      * Checks if client side is in debug mode. Practically this is invoked by
      * adding ?debug parameter to URI.
      *
+     * @deprecated use ApplicationConfiguration isDebugMode instead.
+     *
      * @return true if client side is currently been debugged
      */
-    public native static boolean isDebugMode()
-    /*-{
-        if($wnd.vaadin.debug) {
-            var parameters = $wnd.location.search;
-            var re = /debug[^\/]*$/;
-            return re.test(parameters);
-        } else {
-            return false;
-        }
-    }-*/;
-
-    private native static boolean isQuietDebugMode()
-    /*-{
-        var uri = $wnd.location;
-        var re = /debug=q[^\/]*$/;
-        return re.test(uri);
-    }-*/;
+    @Deprecated
+    public static boolean isDebugMode() {
+        return ApplicationConfiguration.isDebugMode();
+    }
 
     /**
      * Gets the application base URI. Using this other than as the download
@@ -325,7 +377,7 @@ public class ApplicationConnection {
      */
     public String getAppUri() {
         return configuration.getApplicationUri();
-    }
+    };
 
     /**
      * Indicates whether or not there are currently active UIDL requests. Used
@@ -337,206 +389,322 @@ public class ApplicationConnection {
         return (activeRequests > 0);
     }
 
-    private void makeUidlRequest(final String requestData,
-            final boolean repaintAll, final boolean forceSync,
-            final boolean analyzeLayouts) {
+    private String getRepaintAllParameters() {
+        // collect some client side data that will be sent to server on
+        // initial uidl request
+        int clientHeight = Window.getClientHeight();
+        int clientWidth = Window.getClientWidth();
+        com.google.gwt.dom.client.Element pe = view.getElement()
+                .getParentElement();
+        int offsetHeight = pe.getOffsetHeight();
+        int offsetWidth = pe.getOffsetWidth();
+        int screenWidth = BrowserInfo.get().getScreenWidth();
+        int screenHeight = BrowserInfo.get().getScreenHeight();
+        int tzOffset = BrowserInfo.get().getTimezoneOffset();
+        int rtzOffset = BrowserInfo.get().getRawTimezoneOffset();
+        int dstDiff = BrowserInfo.get().getDSTSavings();
+        boolean dstInEffect = BrowserInfo.get().isDSTInEffect();
+        long curDate = BrowserInfo.get().getCurrentDate().getTime();
+        String widgetsetVersion = ApplicationConfiguration.VERSION;
+
+        String token = History.getToken();
+
+        // TODO figure out how client and view size could be used better on
+        // server. screen size can be accessed via Browser object, but other
+        // values currently only via transaction listener.
+        String parameters = "repaintAll=1&" + "sh=" + screenHeight + "&sw="
+                + screenWidth + "&cw=" + clientWidth + "&ch=" + clientHeight
+                + "&vw=" + offsetWidth + "&vh=" + offsetHeight + "&fr=" + token
+                + "&tzo=" + tzOffset + "&rtzo=" + rtzOffset + "&dstd="
+                + dstDiff + "&dston=" + dstInEffect + "&curdate=" + curDate
+                + "&wsver=" + widgetsetVersion;
+        return parameters;
+    }
+
+    protected void repaintAll() {
+        String repainAllParameters = getRepaintAllParameters();
+        makeUidlRequest("", repainAllParameters, false);
+    }
+
+    /**
+     * Requests an analyze of layouts, to find inconsistencies. Exclusively used
+     * for debugging during development.
+     */
+    public void analyzeLayouts() {
+        String params = getRepaintAllParameters() + "&analyzeLayouts=1";
+        makeUidlRequest("", params, false);
+    }
+
+    /**
+     * Makes an UIDL request to the server.
+     *
+     * @param requestData
+     *            Data that is passed to the server.
+     * @param extraParams
+     *            Parameters that are added as GET parameters to the url.
+     *            Contains key=value pairs joined by & characters or is empty if
+     *            no parameters should be added. Should not start with any
+     *            special character.
+     * @param forceSync
+     *            true if the request should be synchronous, false otherwise
+     */
+    protected void makeUidlRequest(final String requestData,
+            final String extraParams, final boolean forceSync) {
         startRequest();
-
         // Security: double cookie submission pattern
-        final String rd = uidl_security_key + VAR_BURST_SEPARATOR + requestData;
-
-        console.log("Making UIDL Request with params: " + rd);
+        final String payload = uidlSecurityKey + VAR_BURST_SEPARATOR
+                + requestData;
+        VConsole.log("Making UIDL Request with params: " + payload);
         String uri;
         if (configuration.usePortletURLs()) {
             uri = configuration.getPortletUidlURLBase();
         } else {
-            uri = getAppUri() + "UIDL" + configuration.getPathInfo();
+            uri = getAppUri() + "UIDL";
         }
-        if (repaintAll) {
-            // collect some client side data that will be sent to server on
-            // initial uidl request
-            int clientHeight = Window.getClientHeight();
-            int clientWidth = Window.getClientWidth();
-            com.google.gwt.dom.client.Element pe = view.getElement()
-                    .getParentElement();
-            int offsetHeight = pe.getOffsetHeight();
-            int offsetWidth = pe.getOffsetWidth();
-            int screenWidth = BrowserInfo.get().getScreenWidth();
-            int screenHeight = BrowserInfo.get().getScreenHeight();
 
-            String token = History.getToken();
-
-            // TODO figure out how client and view size could be used better on
-            // server. screen size can be accessed via Browser object, but other
-            // values currently only via transaction listener.
-            if (configuration.usePortletURLs()) {
-                uri += "&";
-            } else {
-                uri += "?";
-            }
-            uri += "repaintAll=1&" + "sh=" + screenHeight + "&sw="
-                    + screenWidth + "&cw=" + clientWidth + "&ch="
-                    + clientHeight + "&vw=" + offsetWidth + "&vh="
-                    + offsetHeight + "&fr=" + token;
-            if (analyzeLayouts) {
-                uri += "&analyzeLayouts=1";
-            }
+        if (extraParams != null && extraParams.length() > 0) {
+            uri = addGetParameters(uri, extraParams);
         }
         if (windowName != null && windowName.length() > 0) {
-            uri += (repaintAll || configuration.usePortletURLs() ? "&" : "?")
-                    + "windowName=" + windowName;
+            uri = addGetParameters(uri, "windowName=" + windowName);
         }
 
-        if (!forceSync) {
-            final RequestBuilder rb = new RequestBuilder(RequestBuilder.POST,
-                    uri);
-            // TODO enable timeout
-            // rb.setTimeoutMillis(timeoutMillis);
-            rb.setHeader("Content-Type", "text/plain;charset=utf-8");
-            try {
-                rb.sendRequest(rd, new RequestCallback() {
-                    public void onError(Request request, Throwable exception) {
-                        showCommunicationError(exception.getMessage());
+        doUidlRequest(uri, payload, forceSync);
+    }
+
+    /**
+     * Sends an asynchronous or synchronous UIDL request to the server using the
+     * given URI.
+     *
+     * @param uri
+     *            The URI to use for the request. May includes GET parameters
+     * @param payload
+     *            The contents of the request to send
+     * @param synchronous
+     *            true if the request should be synchronous, false otherwise
+     */
+    protected void doUidlRequest(final String uri, final String payload,
+            final boolean synchronous) {
+        if (!synchronous) {
+            RequestCallback requestCallback = new RequestCallback() {
+                public void onError(Request request, Throwable exception) {
+                    showCommunicationError(exception.getMessage());
+                    endRequest();
+                    if (!applicationRunning) {
+                        // start failed, let's try to start the next app
+                        ApplicationConfiguration.startNextApplication();
+                    }
+                }
+
+                public void onResponseReceived(Request request,
+                        Response response) {
+                    VConsole.log("Server visit took "
+                            + String.valueOf((new Date()).getTime()
+                                    - requestStartTime.getTime()) + "ms");
+
+                    int statusCode = response.getStatusCode();
+
+                    switch (statusCode) {
+                    case 0:
+                        showCommunicationError("Invalid status code 0 (server down?)");
                         endRequest();
-                        if (!applicationRunning) {
-                            // start failed, let's try to start the next app
-                            ApplicationConfiguration.startNextApplication();
-                        }
-                    }
+                        return;
 
-                    public void onResponseReceived(Request request,
-                            Response response) {
-                        console.log("Server visit took "
-                                + String.valueOf((new Date()).getTime()
-                                        - requestStartTime.getTime()) + "ms");
+                    case 401:
+                        /*
+                         * Authorization has failed. Could be that the session
+                         * has timed out and the container is redirecting to a
+                         * login page.
+                         */
+                        showAuthenticationError("");
+                        endRequest();
+                        return;
 
-                        int statusCode = response.getStatusCode();
-                        if ((statusCode / 100) == 4) {
-                            // Handle all 4xx errors the same way as (they are
-                            // all permanent errors)
-                            showCommunicationError("UIDL could not be read from server. Check servlets mappings. Error code: "
-                                    + statusCode);
-                            endRequest();
-                            return;
-                        }
-                        switch (statusCode) {
-                        case 0:
-                            showCommunicationError("Invalid status code 0 (server down?)");
-                            endRequest();
-                            return;
-                        case 503:
-                            // We'll assume msec instead of the usual seconds
-                            int delay = Integer.parseInt(response
-                                    .getHeader("Retry-After"));
-                            console.log("503, retrying in " + delay + "msec");
-                            (new Timer() {
-                                @Override
-                                public void run() {
-                                    activeRequests--;
-                                    makeUidlRequest(requestData, repaintAll,
-                                            forceSync, analyzeLayouts);
-                                }
-                            }).schedule(delay);
-                            return;
-
-                        }
-
-                        if (applicationRunning) {
-                            handleReceivedJSONMessage(response);
-                        } else {
-                            applicationRunning = true;
-                            handleWhenCSSLoaded(response);
-                            ApplicationConfiguration.startNextApplication();
-                        }
-                    }
-
-                    int cssWaits = 0;
-                    static final int MAX_CSS_WAITS = 20;
-
-                    private void handleWhenCSSLoaded(final Response response) {
-                        int heightOfLoadElement = DOM.getElementPropertyInt(
-                                loadElement, "offsetHeight");
-                        if (heightOfLoadElement == 0
-                                && cssWaits < MAX_CSS_WAITS) {
-                            (new Timer() {
-                                @Override
-                                public void run() {
-                                    handleWhenCSSLoaded(response);
-                                }
-                            }).schedule(50);
-                            console
-                                    .log("Assuming CSS loading is not complete, "
-                                            + "postponing render phase. "
-                                            + "(.v-loading-indicator height == 0)");
-                            cssWaits++;
-                        } else {
-                            handleReceivedJSONMessage(response);
-                            if (cssWaits >= MAX_CSS_WAITS) {
-                                console
-                                        .error("CSS files may have not loaded properly.");
+                    case 503:
+                        // We'll assume msec instead of the usual seconds
+                        int delay = Integer.parseInt(response
+                                .getHeader("Retry-After"));
+                        VConsole.log("503, retrying in " + delay + "msec");
+                        (new Timer() {
+                            @Override
+                            public void run() {
+                                activeRequests--;
+                                doUidlRequest(uri, payload, synchronous);
                             }
-                        }
+                        }).schedule(delay);
+                        return;
+
                     }
 
-                });
+                    if ((statusCode / 100) == 4) {
+                        // Handle all 4xx errors the same way as (they are
+                        // all permanent errors)
+                        showCommunicationError("UIDL could not be read from server. Check servlets mappings. Error code: "
+                                + statusCode);
+                        endRequest();
+                        return;
+                    }
 
-            } catch (final RequestException e) {
-                ClientExceptionHandler.displayError(e);
+                    final Date start = new Date();
+                    // for(;;);[realjson]
+                    final String jsonText = response.getText().substring(9,
+                            response.getText().length() - 1);
+                    final ValueMap json;
+                    try {
+                        json = parseJSONResponse(jsonText);
+                    } catch (final Exception e) {
+                        endRequest();
+                        showCommunicationError(e.getMessage()
+                                + " - Original JSON-text:" + jsonText);
+                        return;
+                    }
+
+                    VConsole.log("JSON parsing took "
+                            + (new Date().getTime() - start.getTime()) + "ms");
+                    if (applicationRunning) {
+                        handleReceivedJSONMessage(start, jsonText, json);
+                    } else {
+                        applicationRunning = true;
+                        handleWhenCSSLoaded(jsonText, json);
+                        ApplicationConfiguration.startNextApplication();
+                    }
+                }
+
+            };
+            try {
+                doAsyncUIDLRequest(uri, payload, requestCallback);
+            } catch (RequestException e) {
+                VConsole.error(e);
                 endRequest();
             }
         } else {
-            // Synchronized call, discarded response
+            // Synchronized call, discarded response (leaving the page)
+            SynchronousXHR syncXHR = (SynchronousXHR) SynchronousXHR.create();
+            syncXHR.synchronousPost(uri + "&" + PARAM_UNLOADBURST + "=1",
+                    payload);
+            /*
+             * Although we are in theory leaving the page, the page may still
+             * stay open. End request properly here too. See #3289
+             */
+            endRequest();
+        }
 
-            syncSendForce(((HTTPRequestImpl) GWT.create(HTTPRequestImpl.class))
-                    .createXmlHTTPRequest(), uri + "&" + PARAM_UNLOADBURST
-                    + "=1", rd);
+    }
+
+    /**
+     * Sends an asynchronous UIDL request to the server using the given URI.
+     *
+     * @param uri
+     *            The URI to use for the request. May includes GET parameters
+     * @param payload
+     *            The contents of the request to send
+     * @param requestCallback
+     *            The handler for the response
+     * @throws RequestException
+     *             if the request could not be sent
+     */
+    protected void doAsyncUIDLRequest(String uri, String payload,
+            RequestCallback requestCallback) throws RequestException {
+        RequestBuilder rb = new RequestBuilder(RequestBuilder.POST, uri);
+        // TODO enable timeout
+        // rb.setTimeoutMillis(timeoutMillis);
+        rb.setHeader("Content-Type", "text/plain;charset=utf-8");
+        rb.setRequestData(payload);
+        rb.setCallback(requestCallback);
+
+        rb.send();
+    }
+
+    int cssWaits = 0;
+    static final int MAX_CSS_WAITS = 20;
+
+    protected void handleWhenCSSLoaded(final String jsonText,
+            final ValueMap json) {
+        int heightOfLoadElement = DOM.getElementPropertyInt(loadElement,
+                "offsetHeight");
+        if (heightOfLoadElement == 0 && cssWaits < MAX_CSS_WAITS) {
+            (new Timer() {
+                @Override
+                public void run() {
+                    handleWhenCSSLoaded(jsonText, json);
+                }
+            }).schedule(50);
+            VConsole.log("Assuming CSS loading is not complete, "
+                    + "postponing render phase. "
+                    + "(.v-loading-indicator height == 0)");
+            cssWaits++;
+        } else {
+            handleReceivedJSONMessage(new Date(), jsonText, json);
+            if (cssWaits >= MAX_CSS_WAITS) {
+                VConsole.error("CSS files may have not loaded properly.");
+            }
         }
     }
 
     /**
-     * Shows the communication error notification. The 'details' only go to the
-     * console for now.
+     * Shows the communication error notification.
      *
      * @param details
      *            Optional details for debugging.
      */
-    private void showCommunicationError(String details) {
-        console.error("Communication error: " + details);
-        String html = "";
-        if (configuration.getCommunicationErrorCaption() != null) {
-            html += "<h1>" + configuration.getCommunicationErrorCaption()
-                    + "</h1>";
+    protected void showCommunicationError(String details) {
+        VConsole.error("Communication error: " + details);
+        showError(details, configuration.getCommunicationErrorCaption(),
+                configuration.getCommunicationErrorMessage(),
+                configuration.getCommunicationErrorUrl());
+    }
+
+    /**
+     * Shows the authentication error notification.
+     *
+     * @param details
+     *            Optional details for debugging.
+     */
+    protected void showAuthenticationError(String details) {
+        VConsole.error("Authentication error: " + details);
+        showError(details, configuration.getAuthorizationErrorCaption(),
+                configuration.getAuthorizationErrorMessage(),
+                configuration.getAuthorizationErrorUrl());
+    }
+
+    /**
+     * Shows the error notification.
+     *
+     * @param details
+     *            Optional details for debugging.
+     */
+    private void showError(String details, String caption, String message,
+            String url) {
+
+        StringBuilder html = new StringBuilder();
+        if (caption != null) {
+            html.append("<h1>");
+            html.append(caption);
+            html.append("</h1>");
         }
-        if (configuration.getCommunicationErrorMessage() != null) {
-            html += "<p>" + configuration.getCommunicationErrorMessage()
-                    + "</p>";
+        if (message != null) {
+            html.append("<p>");
+            html.append(message);
+            html.append("</p>");
         }
+
         if (html.length() > 0) {
+
+            // Add error description
+            html.append("<br/><p><I style=\"font-size:0.7em\">");
+            html.append(details);
+            html.append("</I></p>");
+
             VNotification n = new VNotification(1000 * 60 * 45);
-            n.addEventListener(new NotificationRedirect(configuration
-                    .getCommunicationErrorUrl()));
-            n
-                    .show(html, VNotification.CENTERED_TOP,
-                            VNotification.STYLE_SYSTEM);
+            n.addEventListener(new NotificationRedirect(url));
+            n.show(html.toString(), VNotification.CENTERED_TOP,
+                    VNotification.STYLE_SYSTEM);
         } else {
-            redirect(configuration.getCommunicationErrorUrl());
+            redirect(url);
         }
     }
 
-    private native void syncSendForce(JavaScriptObject xmlHttpRequest,
-            String uri, String requestData)
-    /*-{
-        try {
-            xmlHttpRequest.open("POST", uri, false);
-            xmlHttpRequest.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
-            xmlHttpRequest.send(requestData);
-        } catch (e) {
-           // No errors are managed as this is synchronous forceful send that can just fail
-        }
-        this.@com.vaadin.terminal.gwt.client.ApplicationConnection::endRequest()();
-    }-*/;
-
-    private void startRequest() {
+    protected void startRequest() {
         activeRequests++;
         requestStartTime = new Date();
         // show initial throbber
@@ -560,14 +728,14 @@ public class ApplicationConnection {
         loadTimer.schedule(300);
     }
 
-    private void endRequest() {
+    protected void endRequest() {
         if (applicationRunning) {
             checkForPendingVariableBursts();
             runPostRequestHooks(configuration.getRootPanelId());
         }
         activeRequests--;
         // deferring to avoid flickering
-        DeferredCommand.addCommand(new Command() {
+        Scheduler.get().scheduleDeferred(new Command() {
             public void execute() {
                 if (activeRequests == 0) {
                     hideLoadingIndicator();
@@ -610,8 +778,7 @@ public class ApplicationConnection {
                 variableBurst.remove(i - 1);
                 variableBurst.remove(i - 1);
                 i -= 2;
-                ApplicationConnection.getConsole().log(
-                        "Removed variable from removed component: " + id);
+                VConsole.log("Removed variable from removed component: " + id);
             }
         }
     }
@@ -622,7 +789,7 @@ public class ApplicationConnection {
             loadElement = DOM.createDiv();
             DOM.setStyleAttribute(loadElement, "position", "absolute");
             DOM.appendChild(view.getElement(), loadElement);
-            ApplicationConnection.getConsole().log("inserting load indicator");
+            VConsole.log("inserting load indicator");
         }
         DOM.setElementProperty(loadElement, "className", "v-loading-indicator");
         DOM.setStyleAttribute(loadElement, "display", "block");
@@ -672,6 +839,27 @@ public class ApplicationConnection {
     }
 
     /**
+     * Checks if deferred commands are (potentially) still being executed as a
+     * result of an update from the server. Returns true if a deferred command
+     * might still be executing, false otherwise. This will not work correctly
+     * if a deferred command is added in another deferred command.
+     * <p>
+     * Used by the native "client.isActive" function.
+     * </p>
+     *
+     * @return true if deferred commands are (potentially) being executed, false
+     *         otherwise
+     */
+    private boolean isExecutingDeferredCommands() {
+        Scheduler s = Scheduler.get();
+        if (s instanceof VSchedulerImpl) {
+            return ((VSchedulerImpl) s).hasWorkQueued();
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Determines whether or not the loading indicator is showing.
      *
      * @return true if the loading indicator is visible
@@ -696,29 +884,18 @@ public class ApplicationConnection {
         }
     }-*/;
 
-    private void handleReceivedJSONMessage(Response response) {
-        final Date start = new Date();
-        String jsonText = response.getText();
-        // for(;;);[realjson]
-        jsonText = jsonText.substring(9, jsonText.length() - 1);
-        ValueMap json;
-        try {
-            json = parseJSONResponse(jsonText);
-        } catch (final Exception e) {
-            endRequest();
-            showCommunicationError(e.getMessage() + " - Original JSON-text:");
-            console.log(jsonText);
-            return;
-        }
+    private void handleReceivedJSONMessage(Date start, String jsonText,
+            ValueMap json) {
+        handleUIDLMessage(start, jsonText, json);
+    }
 
-        ApplicationConnection.getConsole().log(
-                "JSON parsing took " + (new Date().getTime() - start.getTime())
-                        + "ms");
+    protected void handleUIDLMessage(final Date start, final String jsonText,
+            final ValueMap json) {
         // Handle redirect
         if (json.containsKey("redirect")) {
             final ValueMap redirectMap = json.getValueMap("redirect");
             String url = redirectMap.getString("url");
-            console.log("redirecting to " + url + ", top: " +
+            VConsole.log("redirecting to " + url + ", top: " +
                     String.valueOf(redirectMap.containsKey("top") && redirectMap.getBoolean("top")));
             redirect(url, redirectMap.containsKey("top") && redirectMap.getBoolean("top"));
             return;
@@ -726,19 +903,23 @@ public class ApplicationConnection {
 
         // Get security key
         if (json.containsKey(UIDL_SECURITY_TOKEN_ID)) {
-            uidl_security_key = json.getString(UIDL_SECURITY_TOKEN_ID);
+            uidlSecurityKey = json.getString(UIDL_SECURITY_TOKEN_ID);
         }
 
         if (json.containsKey("resources")) {
             final ValueMap resources = json.getValueMap("resources");
             if (resources.getKeyArray().length() > 0) {
                 handleJSONMessageEx(resources, start, jsonText, json, 0);
-            } else {
-                handleJSONMessage(start, jsonText, json);
             }
-        } else {
-            handleJSONMessage(start, jsonText, json);
         }
+
+        if (json.containsKey("typeMappings")) {
+            configuration.addComponentMappings(
+                    json.getValueMap("typeMappings"), widgetSet);
+        }
+
+        Command c = new LoadingCommand(json, start, jsonText);
+        ApplicationConfiguration.runWhenWidgetsLoaded(c);
     }
 
     private void handleJSONMessageEx(final ValueMap resources, final Date start, final String jsonText,
@@ -761,18 +942,16 @@ public class ApplicationConnection {
                         if (resourceKeyIndex < keyArray.length() - 1) {
                             handleJSONMessageEx(resources, start, jsonText, json,
                                     resourceKeyIndex + 1);
-                        } else {
-                            handleJSONMessage(start, jsonText, json);
                         }
 
                     } else {
-                        console.error("Resource loading error. Status code: "
+                        VConsole.error("Resource loading error. Status code: "
                                 + response.getStatusCode());
                     }
                 }
 
                 public void onError(Request request, Throwable exception) {
-                    console.error("Resource loading error");
+                    VConsole.error("Resource loading error");
                     if (exception != null) {
                         ClientExceptionHandler.displayError(exception);
                     }
@@ -783,219 +962,215 @@ public class ApplicationConnection {
         }
     }
 
-    private void handleJSONMessage(Date start, String jsonText, ValueMap json) {
-        if (json.containsKey("typeMappings")) {
-            configuration.addComponentMappings(
-                    json.getValueMap("typeMappings"), widgetSet);
+    private class LoadingCommand implements Command{
+        private ValueMap json;
+        private Date start;
+        private String jsonText;
+
+        private LoadingCommand(ValueMap json, Date start, String jsonText) {
+            this.json = json;
+            this.start = start;
+            this.jsonText = jsonText;
         }
 
-        if (json.containsKey("locales")) {
-            // Store locale data
-            JsArray<ValueMap> valueMapArray = json
-                    .getJSValueMapArray("locales");
-            LocaleService.addLocales(valueMapArray);
-        }
+        public void execute() {
 
-        ValueMap meta = null;
-        if (json.containsKey("meta")) {
-            meta = json.getValueMap("meta");
-            if (meta.containsKey("repaintAll")) {
-                view.clear();
-                idToPaintableDetail.clear();
-                if (meta.containsKey("invalidLayouts")) {
-                    validatingLayouts = true;
-                    zeroWidthComponents = new HashSet<Paintable>();
-                    zeroHeightComponents = new HashSet<Paintable>();
+                if (json.containsKey("locales")) {
+                    // Store locale data
+                    JsArray<ValueMap> valueMapArray = json
+                            .getJSValueMapArray("locales");
+                    LocaleService.addLocales(valueMapArray);
                 }
-            }
-            if (meta.containsKey("timedRedirect")) {
-                final ValueMap timedRedirect = meta
-                        .getValueMap("timedRedirect");
-                redirectTimer = new Timer() {
-                    @Override
-                    public void run() {
-                        redirect(timedRedirect.getString("url"));
+
+                boolean repaintAll = false;
+                ValueMap meta = null;
+                if (json.containsKey("meta")) {
+                    meta = json.getValueMap("meta");
+                    if (meta.containsKey("repaintAll")) {
+                        repaintAll = true;
+                        view.clear();
+                        idToPaintableDetail.clear();
+                        if (meta.containsKey("invalidLayouts")) {
+                            validatingLayouts = true;
+                            zeroWidthComponents = new HashSet<Paintable>();
+                            zeroHeightComponents = new HashSet<Paintable>();
+                        }
                     }
-                };
-                sessionExpirationInterval = timedRedirect.getInt("interval");
-            }
-        }
-
-        if (redirectTimer != null) {
-            redirectTimer.schedule(1000 * sessionExpirationInterval);
-        }
-
-        // Process changes
-        JsArray<ValueMap> changes = json.getJSValueMapArray("changes");
-
-        ArrayList<Paintable> updatedWidgets = new ArrayList<Paintable>();
-        relativeSizeChanges.clear();
-        componentCaptionSizeChanges.clear();
-
-        int length = changes.length();
-        for (int i = 0; i < length; i++) {
-            try {
-                final UIDL change = changes.get(i).cast();
-                try {
-                    console.dirUIDL(change);
-                } catch (final Exception e) {
-                    ClientExceptionHandler.displayError(e);
-                    // TODO: dir doesn't work in any browser although it should
-                    // work (works in hosted mode)
-                    // it partially did at some part but now broken.
+                    if (meta.containsKey("timedRedirect")) {
+                        final ValueMap timedRedirect = meta
+                                .getValueMap("timedRedirect");
+                        redirectTimer = new Timer() {
+                            @Override
+                            public void run() {
+                                redirect(timedRedirect.getString("url"));
+                            }
+                        };
+                        sessionExpirationInterval = timedRedirect
+                                .getInt("interval");
+                    }
                 }
-                final UIDL uidl = change.getChildUIDL(0);
-                // TODO optimize
-                final Paintable paintable = getPaintable(uidl.getId());
-                if (paintable != null) {
-                    paintable.updateFromUIDL(uidl, this);
 
-                    if (paintable instanceof TextSelectionManager) {
-                        Tools.textSelectionEnable(((Widget) paintable).getElement(),
-                                ((TextSelectionManager) paintable).allowTextSelection());
-                    }
+                if (redirectTimer != null) {
+                    redirectTimer.schedule(1000 * sessionExpirationInterval);
+                }
 
-                    // paintable may have changed during render to another
-                    // implementation, use the new one for updated widgets map
-                    updatedWidgets.add(idToPaintableDetail.get(uidl.getId())
-                            .getComponent());
-                } else {
-                    if (!uidl.getTag().equals(
-                            configuration.getEncodedWindowTag())) {
-                        ClientExceptionHandler
-                                .displayError("Received update for "
+                // Process changes
+                JsArray<ValueMap> changes = json.getJSValueMapArray("changes");
+
+                ArrayList<Paintable> updatedWidgets = new ArrayList<Paintable>();
+                relativeSizeChanges.clear();
+                componentCaptionSizeChanges.clear();
+
+                int length = changes.length();
+                for (int i = 0; i < length; i++) {
+                    try {
+                        final UIDL change = changes.get(i).cast();
+                        VConsole.dirUIDL(change, configuration);
+                        final UIDL uidl = change.getChildUIDL(0);
+                        // TODO optimize
+                        final Paintable paintable = getPaintable(uidl.getId());
+                        if (paintable != null) {
+                            paintable.updateFromUIDL(uidl,
+                                    ApplicationConnection.this);
+                            // paintable may have changed during render to
+                            // another
+                            // implementation, use the new one for updated
+                            // widgets map
+                            updatedWidgets.add(idToPaintableDetail.get(
+                                    uidl.getId()).getComponent());
+                        } else {
+                            if (!uidl.getTag().equals(
+                                    configuration.getEncodedWindowTag())) {
+                                VConsole.error("Received update for "
                                         + uidl.getTag()
                                         + ", but there is no such paintable ("
                                         + uidl.getId() + ") rendered.");
-                    } else {
-                        view.updateFromUIDL(uidl, this);
-                    }
-                }
-            } catch (final Throwable e) {
-                ClientExceptionHandler.displayError(e);
-            }
-        }
+                            } else {
+                                String pid = uidl.getId();
+                                if (!idToPaintableDetail.containsKey(pid)) {
+                                    registerPaintable(pid, view);
+                                }
+                                // VView does not call updateComponent so we
+                                // register any event listeners here
+                                ComponentDetail cd = idToPaintableDetail
+                                        .get(pid);
+                                cd.registerEventListenersFromUIDL(uidl);
 
-        if (json.containsKey("dd")) {
-            // response contains data for drag and drop service
-            VDragAndDropManager.get().handleServerResponse(
-                    json.getValueMap("dd"));
-        }
-
-        // Check which widgets' size has been updated
-        Set<Paintable> sizeUpdatedWidgets = new HashSet<Paintable>();
-
-        updatedWidgets.addAll(relativeSizeChanges);
-        sizeUpdatedWidgets.addAll(componentCaptionSizeChanges);
-
-        for (Paintable paintable : updatedWidgets) {
-            ComponentDetail detail = idToPaintableDetail.get(getPid(paintable));
-            Widget widget = (Widget) paintable;
-            Size oldSize = detail.getOffsetSize();
-            Size newSize = new Size(widget.getOffsetWidth(), widget
-                    .getOffsetHeight());
-
-            if (oldSize == null || !oldSize.equals(newSize)) {
-                sizeUpdatedWidgets.add(paintable);
-                detail.setOffsetSize(newSize);
-            }
-
-        }
-
-        Util.componentSizeUpdated(sizeUpdatedWidgets);
-
-        //This is a hack that helps resize VTree component
-        for (Paintable paintable : sizeUpdatedWidgets) {
-            if (paintable instanceof VTree) {
-                Container container = Util.getLayout((Widget) paintable);
-                if (container != null && ((Widget) container).getParent() instanceof IScrollablePanel) {
-                    runDescendentsLayout((HasWidgets) ((Widget) container).getParent());
-                }
-            }
-        }
-
-        handleTimers(json);
-
-        if (meta != null) {
-            if (meta.containsKey("appError")) {
-                ValueMap error = meta.getValueMap("appError");
-                String html = "";
-                if (error.containsKey("caption")
-                        && error.getString("caption") != null) {
-                    html += "<h1>" + error.getAsString("caption") + "</h1>";
-                }
-                if (error.containsKey("message")
-                        && error.getString("message") != null) {
-                    html += "<p>" + error.getAsString("message") + "</p>";
-                }
-                String url = null;
-                if (error.containsKey("url")) {
-                    url = error.getString("url");
-                }
-
-                if (html.length() != 0) {
-                    /* 45 min */
-                    VNotification n = new VNotification(1000 * 60 * 45);
-                    n.addEventListener(new NotificationRedirect(url));
-                    n.show(html, VNotification.CENTERED_TOP,
-                            VNotification.STYLE_SYSTEM);
-                } else {
-                    redirect(url);
-                }
-                applicationRunning = false;
-            }
-            if (validatingLayouts) {
-                getConsole().printLayoutProblems(meta, this,
-                        zeroHeightComponents, zeroWidthComponents);
-                zeroHeightComponents = null;
-                zeroWidthComponents = null;
-                validatingLayouts = false;
-
-            }
-        }
-
-        final long prosessingTime = (new Date().getTime()) - start.getTime();
-        console.log(" Processing time was " + String.valueOf(prosessingTime)
-                + "ms for " + jsonText.length() + " characters of JSON");
-        console.log("Referenced paintables: " + idToPaintableDetail.size());
-
-        endRequest();
-    }
-
-    private void handleTimers(ValueMap json) {
-        if (json.containsKey("timers")) {
-            final JsArray<ValueMap> timers = json.getJSValueMapArray("timers");
-            if (timers.length() > 0) {
-                for (int i = 0; i < timers.length(); i++) {
-                    final UIDL timerUidl = timers.get(i).cast();
-                    ApplicationTimer timer;
-                    if ((timer = applicationTimers.get(timerUidl.getId())) != null) {
-                        timer.cancel();
-                        if (timerUidl.getBooleanAttribute("stopped")) {
-                            applicationTimers.remove(timerUidl.getId());
-                        } else {
-                            timer.setRepeat(timerUidl.getBooleanAttribute("repeat"));
-                            timer.setDelay(timerUidl.getIntAttribute("delay"));
-
-                            timersToRun.add(timer);
+                                // Finally allow VView to update itself
+                                view.updateFromUIDL(uidl,
+                                        ApplicationConnection.this);
+                            }
                         }
-                    } else if (!timerUidl.getBooleanAttribute("stopped")) {
-                        timer = new ApplicationTimer(timerUidl.getId(), timerUidl.getBooleanAttribute("repeat"),
-                                timerUidl.getIntAttribute("delay"));
-                        applicationTimers.put(timerUidl.getId(), timer);
-
-                        timersToRun.add(timer);
+                    } catch (final Throwable e) {
+                        VConsole.error(e);
                     }
                 }
 
-                if (!timersToRun.isEmpty()) {
-                    for (final ApplicationTimer timer : timersToRun) {
-                        timer.startTimer();
-                    }
-                    timersToRun.clear();
+                if (json.containsKey("dd")) {
+                    // response contains data for drag and drop service
+                    VDragAndDropManager.get().handleServerResponse(
+                            json.getValueMap("dd"));
                 }
+
+                // Check which widgets' size has been updated
+                Set<Paintable> sizeUpdatedWidgets = new HashSet<Paintable>();
+
+                updatedWidgets.addAll(relativeSizeChanges);
+                sizeUpdatedWidgets.addAll(componentCaptionSizeChanges);
+
+                for (Paintable paintable : updatedWidgets) {
+                    ComponentDetail detail = idToPaintableDetail
+                            .get(getPid(paintable));
+                    Widget widget = (Widget) paintable;
+                    Size oldSize = detail.getOffsetSize();
+                    Size newSize = new Size(widget.getOffsetWidth(),
+                            widget.getOffsetHeight());
+
+                    if (oldSize == null || !oldSize.equals(newSize)) {
+                        sizeUpdatedWidgets.add(paintable);
+                        detail.setOffsetSize(newSize);
+                    }
+
+                }
+
+                Util.componentSizeUpdated(sizeUpdatedWidgets);
+
+                //This is a hack that helps resize VTree component
+                for (Paintable paintable : sizeUpdatedWidgets) {
+                    if (paintable instanceof VTree) {
+                        Container container = Util.getLayout((Widget) paintable);
+                        if (container != null && ((Widget) container).getParent() instanceof IScrollablePanel) {
+                            runDescendentsLayout((HasWidgets) ((Widget) container).getParent());
+                        }
+                    }
+                }
+
+                handleTimers(json);
+
+                if (meta != null) {
+                    if (meta.containsKey("appError")) {
+                        ValueMap error = meta.getValueMap("appError");
+                        String html = "";
+                        if (error.containsKey("caption")
+                                && error.getString("caption") != null) {
+                            html += "<h1>" + error.getAsString("caption")
+                                    + "</h1>";
+                        }
+                        if (error.containsKey("message")
+                                && error.getString("message") != null) {
+                            html += "<p>" + error.getAsString("message")
+                                    + "</p>";
+                        }
+                        String url = null;
+                        if (error.containsKey("url")) {
+                            url = error.getString("url");
+                        }
+
+                        if (html.length() != 0) {
+                            /* 45 min */
+                            VNotification n = new VNotification(1000 * 60 * 45);
+                            n.addEventListener(new NotificationRedirect(url));
+                            n.show(html, VNotification.CENTERED_TOP,
+                                    VNotification.STYLE_SYSTEM);
+                        } else {
+                            redirect(url);
+                        }
+                        applicationRunning = false;
+                    }
+                    if (validatingLayouts) {
+                        VConsole.printLayoutProblems(meta,
+                                ApplicationConnection.this,
+                                zeroHeightComponents, zeroWidthComponents);
+                        zeroHeightComponents = null;
+                        zeroWidthComponents = null;
+                        validatingLayouts = false;
+
+                    }
+                }
+
+                if (repaintAll) {
+                    /*
+                     * idToPaintableDetail is already cleanded at the start of
+                     * the changeset handling, bypass cleanup.
+                     */
+                    unregistryBag.clear();
+                } else {
+                    purgeUnregistryBag();
+                }
+
+                // TODO build profiling for widget impl loading time
+
+                final long prosessingTime = (new Date().getTime())
+                        - start.getTime();
+                VConsole.log(" Processing time was "
+                        + String.valueOf(prosessingTime) + "ms for "
+                        + jsonText.length() + " characters of JSON");
+                VConsole.log("Referenced paintables: "
+                        + idToPaintableDetail.size());
+
+                endRequest();
+
             }
-        }
     }
 
     /**
@@ -1038,7 +1213,7 @@ public class ApplicationConnection {
 
     private native void setPid(Element el, String pid)
     /*-{
-        el.tkPid = pid;
+    	el.tkPid = pid;
     }-*/;
 
     /**
@@ -1068,7 +1243,7 @@ public class ApplicationConnection {
      */
     public native String getPid(Element el)
     /*-{
-        return el.tkPid;
+    	return el.tkPid;
     }-*/;
 
     /**
@@ -1085,22 +1260,70 @@ public class ApplicationConnection {
 
     /**
      * Unregisters the given paintable; always use after removing a paintable.
-     * Does not actually remove the paintable from the DOM.
+     * This method does not remove the paintable from the DOM, but marks the
+     * paintable so that ApplicationConnection may clean up its references to
+     * it. Removing the widget from DOM is component containers responsibility.
      *
      * @param p
      *            the paintable to remove
      */
     public void unregisterPaintable(Paintable p) {
+
+        // add to unregistry que
+
         if (p == null) {
-            ApplicationConnection.getConsole().error(
-                    "WARN: Trying to unregister null paintable");
+            VConsole.error("WARN: Trying to unregister null paintable");
             return;
         }
         String id = getPid(p);
-        idToPaintableDetail.remove(id);
-        if (p instanceof HasWidgets) {
-            unregisterChildPaintables((HasWidgets) p);
+        if (id == null) {
+            /*
+             * Uncomment the following to debug unregistring components. No
+             * paintables with null id should end here. At least one exception
+             * is our VScrollTableRow, that is hacked to fake it self as a
+             * Paintable to build support for sizing easier.
+             */
+            // if (!(p instanceof VScrollTableRow)) {
+            // VConsole.log("Trying to unregister Paintable not created by Application Connection.");
+            // }
+            if (p instanceof HasWidgets) {
+                unregisterChildPaintables((HasWidgets) p);
+            }
+        } else {
+            unregistryBag.add(id);
+            if (p instanceof HasWidgets) {
+                unregisterChildPaintables((HasWidgets) p);
+            }
         }
+    }
+
+    private void purgeUnregistryBag() {
+        for (String id : unregistryBag) {
+            ComponentDetail componentDetail = idToPaintableDetail.get(id);
+            if (componentDetail == null) {
+                /*
+                 * this should never happen, but it does :-( See e.g.
+                 * com.vaadin.tests.components.accordion.RemoveTabs (with test
+                 * script)
+                 */
+                VConsole.error("ApplicationConnetion tried to unregister component (id="
+                        + id
+                        + ") that is never registered (or already unregistered)");
+                continue;
+            }
+            // check if can be cleaned
+            Widget component = (Widget) componentDetail.getComponent();
+            if (!component.isAttached()) {
+                // clean reference from ac to paintable
+                idToPaintableDetail.remove(id);
+            }
+            /*
+             * else NOP : same component has been reattached to another parent
+             * or replaced by another component implementation.
+             */
+        }
+
+        unregistryBag.clear();
     }
 
     /**
@@ -1202,6 +1425,9 @@ public class ApplicationConnection {
         final StringBuffer req = new StringBuffer();
 
         while (!pendingVariables.isEmpty()) {
+            if (ApplicationConfiguration.isDebugMode()) {
+                Util.logVariableBurst(this, pendingVariables);
+            }
             for (int i = 0; i < pendingVariables.size(); i++) {
                 if (i > 0) {
                     if (i % 2 == 0) {
@@ -1221,7 +1447,11 @@ public class ApplicationConnection {
                 req.append(VAR_BURST_SEPARATOR);
             }
         }
-        makeUidlRequest(req.toString(), false, forceSync, false);
+        makeUidlRequest(req.toString(), "", forceSync);
+    }
+
+    private void makeUidlRequest(String string) {
+        makeUidlRequest(string, "", false);
     }
 
     /**
@@ -1502,7 +1732,7 @@ public class ApplicationConnection {
      *            the id of the paintable that owns the variable
      * @param variableName
      *            the name of the variable
-     * @param values
+     * @param newValue
      *            the new value to be sent
      * @param immediate
      *            true if the update is to be sent as soon as possible
@@ -1579,19 +1809,17 @@ public class ApplicationConnection {
             boolean manageCaption) {
         String pid = getPid(component.getElement());
         if (pid == null) {
-            getConsole().error(
-                    "Trying to update an unregistered component: "
-                            + Util.getSimpleName(component));
+            VConsole.error("Trying to update an unregistered component: "
+                    + Util.getSimpleName(component));
             return true;
         }
 
         ComponentDetail componentDetail = idToPaintableDetail.get(pid);
 
         if (componentDetail == null) {
-            getConsole().error(
-                    "ComponentDetail not found for "
-                            + Util.getSimpleName(component) + " with PID "
-                            + pid + ". This should not happen.");
+            VConsole.error("ComponentDetail not found for "
+                    + Util.getSimpleName(component) + " with PID " + pid
+                    + ". This should not happen.");
             return true;
         }
 
@@ -1621,6 +1849,11 @@ public class ApplicationConnection {
             }
         }
 
+        if (configuration.useDebugIdInDOM() && uidl.getId().startsWith("PID_S")) {
+            DOM.setElementProperty(component.getElement(), "id", uidl.getId()
+                    .substring(5));
+        }
+
         if (component.getParent() != null && component.getParent() instanceof ChildComponentContainer) {
             component.getParent().setVisible(visible);
             final Container parentContainer = Util.getLayout(component);
@@ -1640,25 +1873,33 @@ public class ApplicationConnection {
 
         // Switch to correct implementation if needed
         if (!widgetSet.isCorrectImplementation(component, uidl, configuration)) {
-            final Container parent = Util.getLayout(component);
-            if (parent != null) {
-                final Widget w = (Widget) widgetSet.createWidget(uidl,
-                        configuration);
-                parent.replaceChildComponent(component, w);
-                unregisterPaintable((Paintable) component);
-                registerPaintable(uidl.getId(), (Paintable) w);
-                ((Paintable) w).updateFromUIDL(uidl, this);
-                return true;
+            final Widget w = (Widget) widgetSet.createWidget(uidl,
+                    configuration);
+            // deferred binding check TODO change isCorrectImplementation to use
+            // stored detected class, making this innecessary
+            if (w.getClass() != component.getClass()) {
+                final Container parent = Util.getLayout(component);
+                if (parent != null) {
+                    parent.replaceChildComponent(component, w);
+                    unregisterPaintable((Paintable) component);
+                    registerPaintable(uidl.getId(), (Paintable) w);
+                    ((Paintable) w).updateFromUIDL(uidl, this);
+                    return true;
+                }
             }
         }
 
         boolean enabled = !uidl.getBooleanAttribute("disabled");
+        if (uidl.hasAttribute("tabindex") && component instanceof Focusable) {
+            ((Focusable) component).setTabIndex(uidl
+                    .getIntAttribute("tabindex"));
+        }
+        /*
+         * Disabled state may affect (override) tabindex so the order must be
+         * first setting tabindex, then enabled state.
+         */
         if (component instanceof FocusWidget) {
             FocusWidget fw = (FocusWidget) component;
-            if (uidl.hasAttribute("tabindex")) {
-                fw.setTabIndex(uidl.getIntAttribute("tabindex"));
-            }
-            // Disabled state may affect tabindex
             fw.setEnabled(enabled);
         }
 
@@ -1865,7 +2106,7 @@ public class ApplicationConnection {
     /**
      * Converts relative sizes into pixel sizes.
      *
-     * @param cd component details
+     * @param child
      * @return true if the child has a relative size
      */
     private boolean handleComponentRelativeSize(ComponentDetail cd) {
@@ -1889,8 +2130,8 @@ public class ApplicationConnection {
         // Parent-less components (like sub-windows) are relative to browser
         // window.
         if (parent == null) {
-            renderSpace = new RenderSpace(Window.getClientWidth(), Window
-                    .getClientHeight());
+            renderSpace = new RenderSpace(Window.getClientWidth(),
+                    Window.getClientHeight());
         } else {
             renderSpace = parent.getAllocatedSpace(widget);
         }
@@ -1926,31 +2167,21 @@ public class ApplicationConnection {
                 }
 
                 if (debugSizes) {
-                    getConsole()
-                            .log(
-                                    "Widget "
-                                            + Util.getSimpleName(widget)
-                                            + "/"
-                                            + getPid(widget.getElement())
-                                            + " relative height "
-                                            + relativeSize.getHeight()
-                                            + "% of "
-                                            + renderSpace.getHeight()
-                                            + "px (reported by "
+                    VConsole.log("Widget " + Util.getSimpleName(widget) + "/"
+                            + getPid(widget.getElement()) + " relative height "
+                            + relativeSize.getHeight() + "% of "
+                            + renderSpace.getHeight() + "px (reported by "
 
-                                            + Util.getSimpleName(parent)
-                                            + "/"
-                                            + (parent == null ? "?" : parent
-                                                    .hashCode()) + ") : "
-                                            + height + "px");
+                            + Util.getSimpleName(parent) + "/"
+                            + (parent == null ? "?" : parent.hashCode())
+                            + ") : " + height + "px");
                 }
                 widget.setHeight(height + "px");
             } else {
                 widget.setHeight(relativeSize.getHeight() + "%");
-                ApplicationConnection.getConsole().error(
-                        Util.getLayout(widget).getClass().getName()
-                                + " did not produce allocatedSpace for "
-                                + widget.getClass().getName());
+                VConsole.error(Util.getLayout(widget).getClass().getName()
+                        + " did not produce allocatedSpace for "
+                        + widget.getClass().getName());
             }
         }
 
@@ -1985,24 +2216,20 @@ public class ApplicationConnection {
                 }
 
                 if (debugSizes) {
-                    getConsole().log(
-                            "Widget " + Util.getSimpleName(widget) + "/"
-                                    + getPid(widget.getElement())
-                                    + " relative width "
-                                    + relativeSize.getWidth() + "% of "
-                                    + renderSpace.getWidth()
-                                    + "px (reported by "
-                                    + Util.getSimpleName(parent) + "/"
-                                    + (parent == null ? "?" : getPid(parent))
-                                    + ") : " + width + "px");
+                    VConsole.log("Widget " + Util.getSimpleName(widget) + "/"
+                            + getPid(widget.getElement()) + " relative width "
+                            + relativeSize.getWidth() + "% of "
+                            + renderSpace.getWidth() + "px (reported by "
+                            + Util.getSimpleName(parent) + "/"
+                            + (parent == null ? "?" : getPid(parent)) + ") : "
+                            + width + "px");
                 }
                 widget.setWidth(width + "px");
             } else {
                 widget.setWidth(relativeSize.getWidth() + "%");
-                ApplicationConnection.getConsole().error(
-                        Util.getLayout(widget).getClass().getName()
-                                + " did not produce allocatedSpace for "
-                                + widget.getClass().getName());
+                VConsole.error(Util.getLayout(widget).getClass().getName()
+                        + " did not produce allocatedSpace for "
+                        + widget.getClass().getName());
             }
         }
 
@@ -2115,13 +2342,15 @@ public class ApplicationConnection {
         if (uidlUri.startsWith("theme://")) {
             final String themeUri = configuration.getThemeUri();
             if (themeUri == null) {
-                console
-                        .error("Theme not set: ThemeResource will not be found. ("
-                                + uidlUri + ")");
+                VConsole.error("Theme not set: ThemeResource will not be found. ("
+                        + uidlUri + ")");
             }
-            String params = configuration.getThemeReleaseTimestamp() != null ? 
+            String params = configuration.getThemeReleaseTimestamp() != null ?
                     "?" + configuration.getThemeReleaseTimestamp() : "";
             uidlUri = themeUri + uidlUri.substring(7) + params;
+        }
+        if (uidlUri.startsWith("app://")) {
+            uidlUri = getAppUri() + uidlUri.substring(6);
         }
         return uidlUri;
     }
@@ -2219,11 +2448,11 @@ public class ApplicationConnection {
     public void addPngFix(Element el) {
         BrowserInfo b = BrowserInfo.get();
         if (b.isIE6()) {
-            Util.addPngFix(el, getThemeUri() + "/../runo/common/img/blank.gif");
+            Util.addPngFix(el);
         }
     }
 
-    /*
+    /**
      * Helper to run layout functions triggered by child components with a
      * decent interval.
      */
@@ -2241,8 +2470,7 @@ public class ApplicationConnection {
 
         @Override
         public void run() {
-            getConsole().log(
-                    "Running re-layout of " + view.getClass().getName());
+            VConsole.log("Running re-layout of " + view.getClass().getName());
             runDescendentsLayout(view);
             isPending = false;
         }
@@ -2258,16 +2486,60 @@ public class ApplicationConnection {
 
     private String windowName = null;
 
+    private void handleTimers(ValueMap json) {
+        if (json.containsKey("timers")) {
+            final JsArray<ValueMap> timers = json.getJSValueMapArray("timers");
+            if (timers.length() > 0) {
+                for (int i = 0; i < timers.length(); i++) {
+                    final UIDL timerUidl = timers.get(i).cast();
+                    ApplicationTimer timer;
+                    if ((timer = applicationTimers.get(timerUidl.getId())) != null) {
+                        timer.cancel();
+                        if (timerUidl.getBooleanAttribute("stopped")) {
+                            applicationTimers.remove(timerUidl.getId());
+                        } else {
+                            timer.setRepeat(timerUidl.getBooleanAttribute("repeat"));
+                            timer.setDelay(timerUidl.getIntAttribute("delay"));
+
+                            timersToRun.add(timer);
+                        }
+                    } else if (!timerUidl.getBooleanAttribute("stopped")) {
+                        timer = new ApplicationTimer(timerUidl.getId(), timerUidl.getBooleanAttribute("repeat"),
+                                timerUidl.getIntAttribute("delay"));
+                        applicationTimers.put(timerUidl.getId(), timer);
+
+                        timersToRun.add(timer);
+                    }
+                }
+
+                if (!timersToRun.isEmpty()) {
+                    for (final ApplicationTimer timer : timersToRun) {
+                        timer.startTimer();
+                    }
+                    timersToRun.clear();
+                }
+            }
+        }
+    }
+
     /**
      * Reset the name of the current browser-window. This should reflect the
      * window-name used in the server, but might be different from the
      * window-object target-name on client.
      *
-     * @param newName
+     * @param stringAttribute
      *            New name for the window.
      */
     public void setWindowName(String newName) {
         windowName = newName;
+    }
+
+    protected String getWindowName() {
+        return windowName;
+    }
+
+    protected String getUidlSecurityKey() {
+        return uidlSecurityKey;
     }
 
     /**
@@ -2279,14 +2551,6 @@ public class ApplicationConnection {
      */
     public void captionSizeUpdated(Paintable component) {
         componentCaptionSizeChanges.add(component);
-    }
-
-    /**
-     * Requests an analyze of layouts, to find inconsistensies. Exclusively used
-     * for debugging during develpoment.
-     */
-    public void analyzeLayouts() {
-        makeUidlRequest("", true, false, true);
     }
 
     /**
@@ -2327,47 +2591,6 @@ public class ApplicationConnection {
         componentDetail.putAdditionalTooltip(key, tooltip);
     }
 
-    class ApplicationTimer extends Timer {
-
-        private String id;
-        private boolean repeat;
-        private int delay;
-
-        ApplicationTimer(String id, boolean repeat, int delay) {
-            this.id = id;
-            this.repeat = repeat;
-            this.delay = delay;
-        }
-
-        void startTimer() {
-            if (repeat) {
-                scheduleRepeating(delay);
-            } else {
-                schedule(delay);
-            }
-        }
-
-        public void run() {
-            updateVariable(id, "timer", "", true);
-        }
-
-        public boolean isRepeat() {
-            return repeat;
-        }
-
-        public void setRepeat(boolean repeat) {
-            this.repeat = repeat;
-        }
-
-        public int getDelay() {
-            return delay;
-        }
-
-        public void setDelay(int delay) {
-            this.delay = delay;
-        }
-    }
-
     /**
      * Gets the {@link ApplicationConfiguration} for the current application.
      *
@@ -2392,6 +2615,47 @@ public class ApplicationConnection {
     public boolean hasEventListeners(Paintable paintable, String eventIdentifier) {
         return idToPaintableDetail.get(getPid(paintable)).hasEventListeners(
                 eventIdentifier);
+    }
+
+    /**
+     * Adds the get parameters to the uri and returns the new uri that contains
+     * the parameters.
+     *
+     * @param uri
+     *            The uri to which the parameters should be added.
+     * @param extraParams
+     *            One or more parameters in the format "a=b" or "c=d&e=f". An
+     *            empty string is allowed but will not modify the url.
+     * @return The modified URI with the get parameters in extraParams added.
+     */
+    public static String addGetParameters(String uri, String extraParams) {
+        if (extraParams == null || extraParams.length() == 0) {
+            return uri;
+        }
+        // RFC 3986: The query component is indicated by the first question
+        // mark ("?") character and terminated by a number sign ("#") character
+        // or by the end of the URI.
+        String fragment = null;
+        int hashPosition = uri.indexOf('#');
+        if (hashPosition != -1) {
+            // Fragment including "#"
+            fragment = uri.substring(hashPosition);
+            // The full uri before the fragment
+            uri = uri.substring(0, hashPosition);
+        }
+
+        if (uri.contains("?")) {
+            uri += "&";
+        } else {
+            uri += "?";
+        }
+        uri += extraParams;
+
+        if (fragment != null) {
+            uri += fragment;
+        }
+
+        return uri;
     }
 
 }

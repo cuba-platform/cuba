@@ -1,12 +1,12 @@
 /* 
  * Copyright 2010 IT Mill Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -16,21 +16,37 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.FormElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
-import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
+import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.Hidden;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.VConsole;
+import com.vaadin.terminal.gwt.client.VTooltip;
 
-public class VUpload extends FormPanel implements Paintable,
-        SubmitCompleteHandler, SubmitHandler {
+/**
+ * 
+ * Note, we are not using GWT FormPanel as we want to listen submitcomplete
+ * events even though the upload component is already detached.
+ * <br/>
+ * [Compatible with Vaadin 6.6]
+ */
+public class VUpload extends FormPanel implements Paintable {
 
     private final class MyFileUpload extends FileUpload {
         @Override
@@ -62,6 +78,9 @@ public class VUpload extends FormPanel implements Paintable,
 
     Panel panel = new FlowPanel();
 
+    UploadIFrameOnloadStrategy onloadstrategy = GWT
+            .create(UploadIFrameOnloadStrategy.class);
+
     ApplicationConnection client;
 
     private String paintableId;
@@ -91,10 +110,18 @@ public class VUpload extends FormPanel implements Paintable,
 
     private Hidden maxfilesize = new Hidden();
 
+    private FormElement element;
+
+    private com.google.gwt.dom.client.Element synthesizedFrame;
+
+    private int nextUploadId;
+
     public VUpload() {
-        super();
-        setEncoding(FormPanel.ENCODING_MULTIPART);
-        setMethod(FormPanel.METHOD_POST);
+        super(com.google.gwt.dom.client.Document.get().createFormElement());
+
+        element = getElement().cast();
+        setEncoding(getElement(), FormPanel.ENCODING_MULTIPART);
+        element.setMethod(FormPanel.METHOD_POST);
 
         setWidget(panel);
         panel.add(maxfilesize);
@@ -112,14 +139,36 @@ public class VUpload extends FormPanel implements Paintable,
         });
         panel.add(submitButton);
 
-        addSubmitCompleteHandler(this);
-        addSubmitHandler(this);
-
         setStyleName(CLASSNAME);
+
+        sinkEvents(VTooltip.TOOLTIP_EVENTS);
     }
+
+    @Override
+    public void onBrowserEvent(Event event) {
+        if ((event.getTypeInt() & VTooltip.TOOLTIP_EVENTS) > 0) {
+            client.handleTooltipEvent(event, this);
+        }
+        super.onBrowserEvent(event);
+    }
+
+    private static native void setEncoding(Element form, String encoding)
+    /*-{
+      form.enctype = encoding;
+      // For IE6
+      form.encoding = encoding;
+    }-*/;
 
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         if (client.updateComponent(this, uidl, true)) {
+            return;
+        }
+        if (uidl.hasAttribute("notStarted")) {
+            t.schedule(400);
+            return;
+        }
+        if (uidl.hasAttribute("forceSubmit")) {
+            element.submit();
             return;
         }
         setImmediate(uidl.getBooleanAttribute("immediate"));
@@ -131,7 +180,16 @@ public class VUpload extends FormPanel implements Paintable,
         } else {
             setAction(client.getAppUri());
         }
-        submitButton.setText(uidl.getStringAttribute("buttoncaption"));
+        nextUploadId = uidl.getIntAttribute("nextid");
+        final String action = client.translateVaadinUri(uidl
+                .getStringVariable("action"));
+        element.setAction(action);
+        if (uidl.hasAttribute("buttoncaption")) {
+            submitButton.setText(uidl.getStringAttribute("buttoncaption"));
+            submitButton.setVisible(true);
+        } else {
+            submitButton.setVisible(false);
+        }
         if(uidl.hasAttribute("buttonwidth"))
             submitButton.setWidth(uidl.getStringAttribute("buttonwidth"));
         fu.setName(paintableId + "_file");
@@ -141,6 +199,7 @@ public class VUpload extends FormPanel implements Paintable,
         } else if (!uidl.getBooleanAttribute("state")) {
             // Enable the button only if an upload is not in progress
             enableUpload();
+            ensureTargetFrame();
         }
     }
 
@@ -179,6 +238,15 @@ public class VUpload extends FormPanel implements Paintable,
         submitButton.setEnabled(true);
         fu.getElement().setPropertyBoolean("disabled", false);
         enabled = true;
+        if (submitted) {
+            /*
+             * An old request is still in progress (most likely cancelled),
+             * ditching that target frame to make it possible to send a new
+             * file. A new target frame is created later."
+             */
+            cleanTargetFrame();
+            submitted = false;
+        }
     }
 
     /**
@@ -198,36 +266,49 @@ public class VUpload extends FormPanel implements Paintable,
         }
     }
 
-    public void onSubmitComplete(SubmitCompleteEvent event) {
-        if (client != null) {
-            if (t != null) {
-                t.cancel();
+    /**
+     * Called by JSNI (hooked via {@link #onloadstrategy})
+     */
+    private void onSubmitComplete() {
+        /* Needs to be run dereferred to avoid various browser issues. */
+        Scheduler.get().scheduleDeferred(new Command() {
+            public void execute() {
+                if (submitted) {
+                    if (client != null) {
+                        if (t != null) {
+                            t.cancel();
+                        }
+                        VConsole.log("VUpload:Submit complete");
+                        client.sendPendingVariableChanges();
+                    }
+
+                    rebuildPanel();
+
+                    submitted = false;
+                    enableUpload();
+                    if (!isAttached()) {
+                        /*
+                         * Upload is complete when upload is already abandoned.
+                         */
+                        cleanTargetFrame();
+                    }
+                }
             }
-            ApplicationConnection.getConsole().log("Submit complete");
-            client.sendPendingVariableChanges();
-        }
-
-        rebuildPanel();
-
-        submitted = false;
-        enableUpload();
+        });
     }
 
-    public void onSubmit(SubmitEvent event) {
+    public void submit() {
         if (fu.getFilename().length() == 0 || submitted || !enabled) {
-            event.cancel();
-            ApplicationConnection
-                    .getConsole()
-                    .log(
-                            "Submit cancelled (disabled, no file or already submitted)");
+            VConsole.log("Submit cancelled (disabled, no file or already submitted)");
             return;
         }
         // flush possibly pending variable changes, so they will be handled
         // before upload
         client.sendPendingVariableChanges();
 
+        element.submit();
         submitted = true;
-        ApplicationConnection.getConsole().log("Submitted form");
+        VConsole.log("Submitted form");
 
         disableUpload();
 
@@ -238,10 +319,60 @@ public class VUpload extends FormPanel implements Paintable,
         t = new Timer() {
             @Override
             public void run() {
-                client.sendPendingVariableChanges();
+                VConsole.log("Visiting server to see if upload started event changed UI.");
+                client.updateVariable(paintableId, "pollForStart",
+                        nextUploadId, true);
             }
         };
         t.schedule(800);
+    }
+
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        if (client != null) {
+            ensureTargetFrame();
+        }
+    }
+
+    private void ensureTargetFrame() {
+        if (synthesizedFrame == null) {
+            // Attach a hidden IFrame to the form. This is the target iframe to
+            // which
+            // the form will be submitted. We have to create the iframe using
+            // innerHTML,
+            // because setting an iframe's 'name' property dynamically doesn't
+            // work on
+            // most browsers.
+            DivElement dummy = Document.get().createDivElement();
+            dummy.setInnerHTML("<iframe src=\"javascript:''\" name='"
+                    + getFrameName()
+                    + "' style='position:absolute;width:0;height:0;border:0'>");
+            synthesizedFrame = dummy.getFirstChildElement();
+            Document.get().getBody().appendChild(synthesizedFrame);
+            element.setTarget(getFrameName());
+            onloadstrategy.hookEvents(synthesizedFrame, this);
+        }
+    }
+
+    private String getFrameName() {
+        return paintableId + "_TGT_FRAME";
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        if (!submitted) {
+            cleanTargetFrame();
+        }
+    }
+
+    private void cleanTargetFrame() {
+        if (synthesizedFrame != null) {
+            Document.get().getBody().removeChild(synthesizedFrame);
+            onloadstrategy.unHookEvents(synthesizedFrame);
+            synthesizedFrame = null;
+        }
     }
 
 }

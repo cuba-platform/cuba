@@ -1,18 +1,39 @@
 /*
-@ITMillApache2LicenseForJavaFiles@
+ * Copyright 2010 IT Mill Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package com.vaadin.terminal.gwt.client.ui;
 
 import java.util.Set;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.dom.client.DomEvent.Type;
+import com.google.gwt.event.dom.client.TouchCancelEvent;
+import com.google.gwt.event.dom.client.TouchCancelHandler;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ComplexPanel;
@@ -26,9 +47,13 @@ import com.vaadin.terminal.gwt.client.RenderInformation;
 import com.vaadin.terminal.gwt.client.RenderSpace;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.VConsole;
 
 public class VSplitPanel extends ComplexPanel implements Container,
         ContainerResizedListener {
+
+    private boolean enabled = false;
+
     public static final String CLASSNAME = "v-splitpanel";
 
     public static final String SPLITTER_CLICK_EVENT_IDENTIFIER = "sp_click";
@@ -56,7 +81,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
             if (splitter.isOrHasChild(target)) {
                 super.onContextMenu(event);
             }
-        }
+        };
 
         @Override
         protected void fireClick(NativeEvent event) {
@@ -65,6 +90,12 @@ public class VSplitPanel extends ComplexPanel implements Container,
                 super.fireClick(event);
             }
         }
+
+        @Override
+        protected Element getRelativeToElement() {
+            return null;
+        }
+
     };
 
     public static final int ORIENTATION_HORIZONTAL = 0;
@@ -101,6 +132,8 @@ public class VSplitPanel extends ComplexPanel implements Container,
 
     private boolean locked = false;
 
+    private boolean positionReversed = false;
+
     private String[] componentStyleNames;
 
     private Element draggingCurtain;
@@ -125,6 +158,12 @@ public class VSplitPanel extends ComplexPanel implements Container,
     /* The current position of the split handle in either percentages or pixels */
     private String position;
 
+    protected Element scrolledContainer;
+
+    protected int origScrollTop;
+
+    private TouchScrollDelegate touchScrollDelegate;
+
     public VSplitPanel() {
         this(ORIENTATION_HORIZONTAL);
     }
@@ -146,7 +185,48 @@ public class VSplitPanel extends ComplexPanel implements Container,
         setHeight(MIN_SIZE + "px");
         constructDom();
         setOrientation(orientation);
-        DOM.sinkEvents(getElement(), (Event.MOUSEEVENTS));
+        sinkEvents(Event.MOUSEEVENTS);
+
+        addDomHandler(new TouchCancelHandler() {
+            public void onTouchCancel(TouchCancelEvent event) {
+                // TODO When does this actually happen??
+                VConsole.log("TOUCH CANCEL");
+            }
+        }, TouchCancelEvent.getType());
+        addDomHandler(new TouchStartHandler() {
+            public void onTouchStart(TouchStartEvent event) {
+                Node target = event.getTouches().get(0).getTarget().cast();
+                if (splitter.isOrHasChild(target)) {
+                    onMouseDown(Event.as(event.getNativeEvent()));
+                } else {
+                    getTouchScrollDelegate().onTouchStart(event);
+                }
+            }
+
+        }, TouchStartEvent.getType());
+        addDomHandler(new TouchMoveHandler() {
+            public void onTouchMove(TouchMoveEvent event) {
+                if (resizing) {
+                    onMouseMove(Event.as(event.getNativeEvent()));
+                }
+            }
+        }, TouchMoveEvent.getType());
+        addDomHandler(new TouchEndHandler() {
+            public void onTouchEnd(TouchEndEvent event) {
+                if (resizing) {
+                    onMouseUp(Event.as(event.getNativeEvent()));
+                }
+            }
+        }, TouchEndEvent.getType());
+
+    }
+
+    private TouchScrollDelegate getTouchScrollDelegate() {
+        if (touchScrollDelegate == null) {
+            touchScrollDelegate = new TouchScrollDelegate(firstContainer,
+                    secondContainer);
+        }
+        return touchScrollDelegate;
     }
 
     protected void constructDom() {
@@ -210,6 +290,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
             rendering = false;
             return;
         }
+        setEnabled(!uidl.getBooleanAttribute("disabled"));
 
         clickEventHandler.handleEventHandlerRegistration(client);
         if (uidl.hasAttribute("style")) {
@@ -219,6 +300,8 @@ public class VSplitPanel extends ComplexPanel implements Container,
         }
 
         setLocked(uidl.getBooleanAttribute("locked"));
+
+        setPositionReversed(uidl.getBooleanAttribute("reversed"));
 
         setStylenames();
 
@@ -248,7 +331,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
 
         if (BrowserInfo.get().isIE7()) {
             // Part III of IE7 hack
-            DeferredCommand.addCommand(new Command() {
+            Scheduler.get().scheduleDeferred(new Command() {
                 public void execute() {
                     iLayout();
                 }
@@ -263,11 +346,38 @@ public class VSplitPanel extends ComplexPanel implements Container,
 
     }
 
+    @Override
+    public boolean remove(Widget w) {
+        boolean removed = super.remove(w);
+        if (removed) {
+            if (firstChild == w) {
+                firstChild = null;
+            } else {
+                secondChild = null;
+            }
+        }
+        return removed;
+    }
+
     private void setLocked(boolean newValue) {
         if (locked != newValue) {
             locked = newValue;
             splitterSize = -1;
             setStylenames();
+        }
+    }
+
+    private void setPositionReversed(boolean reversed) {
+        if (positionReversed != reversed) {
+            if (orientation == ORIENTATION_HORIZONTAL) {
+                DOM.setStyleAttribute(splitter, "right", "");
+                DOM.setStyleAttribute(splitter, "left", "");
+            } else if (orientation == ORIENTATION_VERTICAL) {
+                DOM.setStyleAttribute(splitter, "top", "");
+                DOM.setStyleAttribute(splitter, "bottom", "");
+            }
+
+            positionReversed = reversed;
         }
     }
 
@@ -285,9 +395,17 @@ public class VSplitPanel extends ComplexPanel implements Container,
         }
 
         if (orientation == ORIENTATION_HORIZONTAL) {
-            DOM.setStyleAttribute(splitter, "left", pos);
+            if (positionReversed) {
+                DOM.setStyleAttribute(splitter, "right", pos);
+            } else {
+                DOM.setStyleAttribute(splitter, "left", pos);
+            }
         } else {
-            DOM.setStyleAttribute(splitter, "top", pos);
+            if (positionReversed) {
+                DOM.setStyleAttribute(splitter, "bottom", pos);
+            } else {
+                DOM.setStyleAttribute(splitter, "top", pos);
+            }
         }
 
         iLayout();
@@ -296,7 +414,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
 
     /*
      * Calculates absolutely positioned container places/sizes (non-Javadoc)
-     *
+     * 
      * @see com.vaadin.terminal.gwt.client.NeedsLayout#layout()
      */
     public void iLayout() {
@@ -315,8 +433,8 @@ public class VSplitPanel extends ComplexPanel implements Container,
             pixelPosition = DOM.getElementPropertyInt(splitter, "offsetLeft");
 
             // reposition splitter in case it is out of box
-            if (pixelPosition > 0
-                    && pixelPosition + getSplitterSize() > wholeSize) {
+            if ((pixelPosition > 0 && pixelPosition + getSplitterSize() > wholeSize)
+                    || (positionReversed && pixelPosition < 0)) {
                 pixelPosition = wholeSize - getSplitterSize();
                 if (pixelPosition < 0) {
                     pixelPosition = 0;
@@ -325,9 +443,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
                 return;
             }
 
-            DOM
-                    .setStyleAttribute(firstContainer, "width", pixelPosition
-                            + "px");
+            DOM.setStyleAttribute(firstContainer, "width", pixelPosition + "px");
             int secondContainerWidth = (wholeSize - pixelPosition - getSplitterSize());
             if (secondContainerWidth < 0) {
                 secondContainerWidth = 0;
@@ -349,8 +465,8 @@ public class VSplitPanel extends ComplexPanel implements Container,
             pixelPosition = DOM.getElementPropertyInt(splitter, "offsetTop");
 
             // reposition splitter in case it is out of box
-            if (pixelPosition > 0
-                    && pixelPosition + getSplitterSize() > wholeSize) {
+            if ((pixelPosition > 0 && pixelPosition + getSplitterSize() > wholeSize)
+                    || (positionReversed && pixelPosition < 0)) {
                 pixelPosition = wholeSize - getSplitterSize();
                 if (pixelPosition < 0) {
                     pixelPosition = 0;
@@ -405,11 +521,13 @@ public class VSplitPanel extends ComplexPanel implements Container,
     public void onBrowserEvent(Event event) {
         switch (DOM.eventGetType(event)) {
         case Event.ONMOUSEMOVE:
+            // case Event.ONTOUCHMOVE:
             if (resizing) {
                 onMouseMove(event);
             }
             break;
         case Event.ONMOUSEDOWN:
+            // case Event.ONTOUCHSTART:
             onMouseDown(event);
             break;
         case Event.ONMOUSEOUT:
@@ -421,6 +539,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
             }
             break;
         case Event.ONMOUSEUP:
+            // case Event.ONTOUCHEND:
             if (resizing) {
                 onMouseUp(event);
             }
@@ -430,7 +549,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
             break;
         }
         // Only fire click event listeners if the splitter isn't moved
-        if (!resized) {
+        if (Util.isTouchEvent(event) || !resized) {
             super.onBrowserEvent(event);
         } else if (DOM.eventGetType(event) == Event.ONMOUSEUP) {
             // Reset the resized flag after a mouseup has occured so the next
@@ -440,31 +559,31 @@ public class VSplitPanel extends ComplexPanel implements Container,
     }
 
     public void onMouseDown(Event event) {
-        if (locked) {
+        if (locked || !isEnabled()) {
             return;
         }
-        final Element trg = DOM.eventGetTarget(event);
+        final Element trg = event.getEventTarget().cast();
         if (trg == splitter || trg == DOM.getChild(splitter, 0)) {
             resizing = true;
             DOM.setCapture(getElement());
             origX = DOM.getElementPropertyInt(splitter, "offsetLeft");
             origY = DOM.getElementPropertyInt(splitter, "offsetTop");
-            origMouseX = DOM.eventGetClientX(event);
-            origMouseY = DOM.eventGetClientY(event);
-            DOM.eventCancelBubble(event, true);
-            DOM.eventPreventDefault(event);
+            origMouseX = Util.getTouchOrMouseClientX(event);
+            origMouseY = Util.getTouchOrMouseClientY(event);
+            event.stopPropagation();
+            event.preventDefault();
         }
     }
 
     public void onMouseMove(Event event) {
         switch (orientation) {
         case ORIENTATION_HORIZONTAL:
-            final int x = DOM.eventGetClientX(event);
+            final int x = Util.getTouchOrMouseClientX(event);
             onHorizontalMouseMove(x);
             break;
         case ORIENTATION_VERTICAL:
         default:
-            final int y = DOM.eventGetClientY(event);
+            final int y = Util.getTouchOrMouseClientY(event);
             onVerticalMouseMove(y);
             break;
         }
@@ -486,16 +605,30 @@ public class VSplitPanel extends ComplexPanel implements Container,
             if (newX + getSplitterSize() >= getOffsetWidth()) {
                 pos = getOffsetWidth();
             }
-            position = pos / getOffsetWidth() * 100 + "%";
+            // Reversed position
+            if (positionReversed) {
+                pos = getOffsetWidth() - pos;
+            }
+            position = (pos / getOffsetWidth() * 100) + "%";
         } else {
-            position = newX + "px";
+            // Reversed position
+            if (positionReversed) {
+                position = (getOffsetWidth() - newX - getSplitterSize()) + "px";
+            } else {
+                position = newX + "px";
+            }
         }
-
-        setSplitPosition(newX + "px");
 
         if (origX != newX) {
             resized = true;
         }
+
+        // Reversed position
+        if (positionReversed) {
+            newX = getOffsetWidth() - newX - getSplitterSize();
+        }
+
+        setSplitPosition(newX + "px");
     }
 
     private void onVerticalMouseMove(int y) {
@@ -514,23 +647,40 @@ public class VSplitPanel extends ComplexPanel implements Container,
             if (newY + getSplitterSize() >= getOffsetHeight()) {
                 pos = getOffsetHeight();
             }
+            // Reversed position
+            if (positionReversed) {
+                pos = getOffsetHeight() - pos - getSplitterSize();
+            }
             position = pos / getOffsetHeight() * 100 + "%";
         } else {
-            position = newY + "px";
+            // Reversed position
+            if (positionReversed) {
+                position = (getOffsetHeight() - newY - getSplitterSize())
+                        + "px";
+            } else {
+                position = newY + "px";
+            }
         }
-
-        setSplitPosition(newY + "px");
 
         if (origY != newY) {
             resized = true;
         }
+
+        // Reversed position
+        if (positionReversed) {
+            newY = getOffsetHeight() - newY - getSplitterSize();
+        }
+
+        setSplitPosition(newY + "px");
     }
 
     public void onMouseUp(Event event) {
         DOM.releaseCapture(getElement());
         hideDraggingCurtain();
         resizing = false;
-        onMouseMove(event);
+        if (!Util.isTouchEvent(event)) {
+            onMouseMove(event);
+        }
         updateSplitPositionToServer();
     }
 
@@ -558,7 +708,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
 
     /**
      * A dragging curtain is required in Gecko and Webkit.
-     *
+     * 
      * @return true if the browser requires a dragging curtain
      */
     private boolean isDraggingCurtainRequired() {
@@ -714,5 +864,13 @@ public class VSplitPanel extends ComplexPanel implements Container,
         DOM.setElementProperty(splitter, "className", splitterStyle);
         DOM.setElementProperty(firstContainer, "className", firstStyle);
         DOM.setElementProperty(secondContainer, "className", secondStyle);
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 }

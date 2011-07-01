@@ -368,8 +368,8 @@ public class IScrollablePanel
             while ((container = Util.getLayout(w)) != null) {
                 w = (Widget) container;
                 if (w instanceof VTabsheet) {
-                    ApplicationConnection.getConsole().log("Run overflow auto fix");
-                    ((VTabsheet) w).runWebkitOverflowAutoFix();
+//                    ApplicationConnection.getConsole().log("Run overflow auto fix");
+//                    ((VTabsheet) w).runWebkitOverflowAutoFix();
                     break;
                 }
             }

@@ -40,17 +40,22 @@ public class WebLookupField
         this.component = new FilterSelect() {
             @Override
             public void setPropertyDataSource(Property newDataSource) {
-                super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
-                    public Object getValue() {
-                        final Object o = itemProperty.getValue();
-                        return getKeyFromValue(o);
-                    }
 
-                    public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
-                        final Object v = getValueFromKey(newValue);
-                        itemProperty.setValue(v);
-                    }
-                });
+                if (newDataSource == null) {
+                    super.setPropertyDataSource(null);
+                } else {
+                    super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
+                        public Object getValue() {
+                            final Object o = itemProperty.getValue();
+                            return getKeyFromValue(o);
+                        }
+
+                        public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+                            final Object v = getValueFromKey(newValue);
+                            itemProperty.setValue(v);
+                        }
+                    });
+                }
             }
         };
         attachListener(component);

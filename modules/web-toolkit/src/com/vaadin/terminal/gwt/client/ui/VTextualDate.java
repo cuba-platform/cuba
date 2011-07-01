@@ -1,19 +1,34 @@
-/*
-@ITMillApache2LicenseForJavaFiles@
+/* 
+ * Copyright 2010 IT Mill Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package com.vaadin.terminal.gwt.client.ui;
 
 import java.util.Date;
 
-import com.google.gwt.event.dom.client.*;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.TextBox;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.BrowserInfo;
-import com.vaadin.terminal.gwt.client.ClientExceptionHandler;
 import com.vaadin.terminal.gwt.client.ContainerResizedListener;
 import com.vaadin.terminal.gwt.client.EventId;
 import com.vaadin.terminal.gwt.client.Focusable;
@@ -21,26 +36,38 @@ import com.vaadin.terminal.gwt.client.LocaleNotLoadedException;
 import com.vaadin.terminal.gwt.client.LocaleService;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.VConsole;
 
+/**
+ * VTextualDate
+ * <br/>
+ * [Compatible with Vaadin 6.6]
+ */
 public class VTextualDate extends VDateField implements Paintable, Field,
-        ChangeHandler, ContainerResizedListener, Focusable, HasFocusHandlers {
+        ChangeHandler, ContainerResizedListener, Focusable, SubPartAware {
 
     private static final String PARSE_ERROR_CLASSNAME = CLASSNAME
             + "-parseerror";
 
-    protected final TextBox text;
+    private final TextBox text;
 
     private String formatStr;
 
-    protected String width;
+    private String width;
 
-    protected boolean needLayout;
+    private boolean needLayout;
 
     protected int fieldExtraWidth = -1;
 
     private boolean lenient;
 
+    private static final String CLASSNAME_PROMPT = "prompt";
+    private static final String ATTR_INPUTPROMPT = "prompt";
+    private String inputPrompt = "";
+    private boolean prompting = false;
+
     public VTextualDate() {
+
         super();
         text = new TextBox();
         // use normal textfield styles as a basis
@@ -52,10 +79,15 @@ public class VTextualDate extends VDateField implements Paintable, Field,
             public void onFocus(FocusEvent event) {
                 text.addStyleName(VTextField.CLASSNAME + "-"
                         + VTextField.CLASSNAME_FOCUS);
-                if (client != null
-                        && client.hasEventListeners(VTextualDate.this,
+                if (prompting) {
+                    text.setText("");
+                    setPrompting(false);
+                }
+                if (getClient() != null
+                        && getClient().hasEventListeners(VTextualDate.this,
                                 EventId.FOCUS)) {
-                    client.updateVariable(id, EventId.FOCUS, "", true);
+                    getClient()
+                            .updateVariable(getId(), EventId.FOCUS, "", true);
                 }
             }
         });
@@ -63,18 +95,20 @@ public class VTextualDate extends VDateField implements Paintable, Field,
             public void onBlur(BlurEvent event) {
                 text.removeStyleName(VTextField.CLASSNAME + "-"
                         + VTextField.CLASSNAME_FOCUS);
-                if (client != null
-                        && client.hasEventListeners(VTextualDate.this,
+                String value = getText();
+                setPrompting(inputPrompt != null
+                        && (value == null || "".equals(value)));
+                if (prompting) {
+                    text.setText(readonly ? "" : inputPrompt);
+                }
+                if (getClient() != null
+                        && getClient().hasEventListeners(VTextualDate.this,
                                 EventId.BLUR)) {
-                    client.updateVariable(id, EventId.BLUR, "", true);
+                    getClient().updateVariable(getId(), EventId.BLUR, "", true);
                 }
             }
         });
         add(text);
-    }
-
-    public HandlerRegistration addFocusHandler(FocusHandler handler) {
-        return text.addFocusHandler(handler);
     }
 
     @Override
@@ -89,6 +123,8 @@ public class VTextualDate extends VDateField implements Paintable, Field,
         if (uidl.hasAttribute("format")) {
             formatStr = uidl.getStringAttribute("format");
         }
+
+        inputPrompt = uidl.getStringAttribute(ATTR_INPUTPROMPT);
 
         lenient = !uidl.getBooleanAttribute("strict");
 
@@ -116,8 +152,8 @@ public class VTextualDate extends VDateField implements Paintable, Field,
                     String frmString = LocaleService
                             .getDateFormat(currentLocale);
                     frmString = cleanFormat(frmString);
-                    String delim = LocaleService
-                            .getClockDelimiter(currentLocale);
+                    // String delim = LocaleService
+                    // .getClockDelimiter(currentLocale);
 
                     if (currentResolution >= RESOLUTION_HOUR) {
                         if (dts.isTwelveHourClock()) {
@@ -142,7 +178,9 @@ public class VTextualDate extends VDateField implements Paintable, Field,
 
                     formatStr = frmString;
                 } catch (LocaleNotLoadedException e) {
-                    ClientExceptionHandler.displayError(e);
+                    // TODO should die instead? Can the component survive
+                    // without format string?
+                    VConsole.error(e);
                 }
             }
         }
@@ -150,21 +188,26 @@ public class VTextualDate extends VDateField implements Paintable, Field,
     }
 
     /**
-     *
+     * Updates the text field according to the current date (provided by
+     * {@link #getDate()}). Takes care of updating text, enabling and disabling
+     * the field, setting/removing readonly status and updating readonly styles.
+     * 
+     * TODO: Split part of this into a method that only updates the text as this
+     * is what usually is needed except for updateFromUIDL.
      */
     protected void buildDate() {
         removeStyleName(PARSE_ERROR_CLASSNAME);
         // Create the initial text for the textfield
         String dateText;
-        if (date != null) {
-            dateText = DateTimeFormat.getFormat(getFormatString()).format(date);
-        } else if (dateString != null) {
-            dateText = dateString;
+        Date currentDate = getDate();
+        if (currentDate != null) {
+            dateText = getDateTimeService().formatDate(currentDate,
+                    getFormatString());
         } else {
             dateText = "";
         }
 
-        text.setText(dateText);
+        setText(dateText);
         text.setEnabled(enabled);
         text.setReadOnly(readonly);
 
@@ -176,79 +219,109 @@ public class VTextualDate extends VDateField implements Paintable, Field,
 
     }
 
+    protected void setPrompting(boolean prompting) {
+        this.prompting = prompting;
+        if (prompting) {
+            addStyleDependentName(CLASSNAME_PROMPT);
+        } else {
+            removeStyleDependentName(CLASSNAME_PROMPT);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
     public void onChange(ChangeEvent event) {
         if (!text.getText().equals("")) {
             try {
-                DateTimeFormat format = DateTimeFormat
-                        .getFormat(getFormatString());
+                String enteredDate = text.getText();
+
+                setDate(getDateTimeService().parseDate(enteredDate,
+                        getFormatString(), lenient));
+
                 if (lenient) {
-                    date = format.parse(text.getText());
-                    if (date != null) {
-                        // if date value was leniently parsed, normalize text
-                        // presentation
-                        text.setValue(DateTimeFormat.getFormat(
-                                getFormatString()).format(date), false);
-                    }
-                } else {
-                    date = format.parseStrict(text.getText());
+                    // If date value was leniently parsed, normalize text
+                    // presentation.
+                    // FIXME: Add a description/example here of when this is
+                    // needed
+                    text.setValue(
+                            getDateTimeService().formatDate(getDate(),
+                                    getFormatString()), false);
                 }
 
-                long stamp = date.getTime();
-                if (stamp == 0) {
-                    // If date parsing fails in firefox the stamp will be 0
-                    date = null;
-                }
+                // remove possibly added invalid value indication
+                removeStyleName(PARSE_ERROR_CLASSNAME);
             } catch (final Exception e) {
-                date = null;
+                VConsole.log(e);
+
+                addStyleName(PARSE_ERROR_CLASSNAME);
+                // this is a hack that may eventually be removed
+                getClient().updateVariable(getId(), "lastInvalidDateString",
+                        text.getText(), false);
+                setDate(null);
             }
         } else {
-            date = null;
+            setDate(null);
+            // remove possibly added invalid value indication
+            removeStyleName(PARSE_ERROR_CLASSNAME);
         }
+        // always send the date string
+        getClient()
+                .updateVariable(getId(), "dateString", text.getText(), false);
 
-        if (date != null) {
-            showingDate = new Date(date.getTime());
-
-            // Update variables
-            // (only the smallest defining resolution needs to be
-            // immediate)
-            client.updateVariable(id, "year", date.getYear() + 1900,
-                    currentResolution == VDateField.RESOLUTION_YEAR
+        // Update variables
+        // (only the smallest defining resolution needs to be
+        // immediate)
+        Date currentDate = getDate();
+        getClient().updateVariable(getId(), "year",
+                currentDate != null ? currentDate.getYear() + 1900 : -1,
+                currentResolution == VDateField.RESOLUTION_YEAR && immediate);
+        if (currentResolution >= VDateField.RESOLUTION_MONTH) {
+            getClient().updateVariable(
+                    getId(),
+                    "month",
+                    currentDate != null ? currentDate.getMonth() + 1 : -1,
+                    currentResolution == VDateField.RESOLUTION_MONTH
                             && immediate);
-            if (currentResolution >= VDateField.RESOLUTION_MONTH) {
-                client.updateVariable(id, "month",
-                        date.getMonth() + 1,
-                        currentResolution == VDateField.RESOLUTION_MONTH
-                                && immediate);
-            }
-            if (currentResolution >= VDateField.RESOLUTION_DAY) {
-                client
-                        .updateVariable(id, "day", date.getDate(),
-                                currentResolution == VDateField.RESOLUTION_DAY
-                                        && immediate);
-            }
-            if (currentResolution >= VDateField.RESOLUTION_HOUR) {
-                client.updateVariable(id, "hour", date.getHours(),
-                        currentResolution == VDateField.RESOLUTION_HOUR
-                                && immediate);
-            }
-            if (currentResolution >= VDateField.RESOLUTION_MIN) {
-                client.updateVariable(id, "min", date.getMinutes(),
-                        currentResolution == VDateField.RESOLUTION_MIN
-                                && immediate);
-            }
-            if (currentResolution >= VDateField.RESOLUTION_SEC) {
-                client.updateVariable(id, "sec", date.getSeconds(),
-                        currentResolution == VDateField.RESOLUTION_SEC
-                                && immediate);
-            }
-            if (currentResolution == VDateField.RESOLUTION_MSEC) {
-                client.updateVariable(id, "msec", getMilliseconds(), immediate);
-            }
-
-        } else {
-            showingDate = new Date();
-            client.updateVariable(id, "dateString", text.getText(), immediate);
         }
+        if (currentResolution >= VDateField.RESOLUTION_DAY) {
+            getClient()
+                    .updateVariable(
+                            getId(),
+                            "day",
+                            currentDate != null ? currentDate.getDate() : -1,
+                            currentResolution == VDateField.RESOLUTION_DAY
+                                    && immediate);
+        }
+        if (currentResolution >= VDateField.RESOLUTION_HOUR) {
+            getClient().updateVariable(
+                    getId(),
+                    "hour",
+                    currentDate != null ? currentDate.getHours() : -1,
+                    currentResolution == VDateField.RESOLUTION_HOUR
+                            && immediate);
+        }
+        if (currentResolution >= VDateField.RESOLUTION_MIN) {
+            getClient()
+                    .updateVariable(
+                            getId(),
+                            "min",
+                            currentDate != null ? currentDate.getMinutes() : -1,
+                            currentResolution == VDateField.RESOLUTION_MIN
+                                    && immediate);
+        }
+        if (currentResolution >= VDateField.RESOLUTION_SEC) {
+            getClient()
+                    .updateVariable(
+                            getId(),
+                            "sec",
+                            currentDate != null ? currentDate.getSeconds() : -1,
+                            currentResolution == VDateField.RESOLUTION_SEC
+                                    && immediate);
+        }
+        if (currentResolution == VDateField.RESOLUTION_MSEC) {
+            getClient().updateVariable(getId(), "msec",
+                    currentDate != null ? getMilliseconds() : -1, immediate);
+        }
+
     }
 
     private String cleanFormat(String format) {
@@ -293,7 +366,9 @@ public class VTextualDate extends VDateField implements Paintable, Field,
             width = newWidth;
             super.setWidth(width);
             iLayout();
-            needLayout = false;
+            if (newWidth.indexOf("%") < 0) {
+                needLayout = false;
+            }
         } else {
             if ("".equals(newWidth) && width != null && !"".equals(width)) {
                 if (BrowserInfo.get().isIE6()) {
@@ -311,7 +386,7 @@ public class VTextualDate extends VDateField implements Paintable, Field,
 
     /**
      * Returns pixels in x-axis reserved for other than textfield content.
-     *
+     * 
      * @return extra width in pixels
      */
     protected int getFieldExtraWidth() {
@@ -334,11 +409,53 @@ public class VTextualDate extends VDateField implements Paintable, Field,
 
     public void iLayout() {
         if (needLayout) {
-            text.setWidth((getOffsetWidth() - getFieldExtraWidth()) + "px");
+            int textFieldWidth = getOffsetWidth() - getFieldExtraWidth();
+            if (textFieldWidth < 0) {
+                // Field can never be smaller than 0 (causes exception in IE)
+                textFieldWidth = 0;
+            }
+            text.setWidth(textFieldWidth + "px");
         }
     }
 
     public void focus() {
         text.setFocus(true);
     }
+
+    protected String getText() {
+        if (prompting) {
+            return "";
+        }
+        return text.getText();
+    }
+
+    protected void setText(String text) {
+        if (inputPrompt != null && (text == null || "".equals(text))) {
+            text = readonly ? "" : inputPrompt;
+            setPrompting(true);
+        } else {
+            setPrompting(false);
+        }
+
+        this.text.setText(text);
+    }
+
+    private final String TEXTFIELD_ID = "field";
+
+    public Element getSubPartElement(String subPart) {
+        if (subPart.equals(TEXTFIELD_ID)) {
+            return text.getElement();
+        }
+
+        return null;
+    }
+
+    public String getSubPartName(Element subElement) {
+        if (text.getElement().isOrHasChild(subElement)) {
+            return TEXTFIELD_ID;
+        }
+
+        return null;
+    }
+
 }

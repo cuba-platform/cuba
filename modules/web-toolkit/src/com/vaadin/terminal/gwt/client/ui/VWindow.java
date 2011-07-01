@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2010 IT Mill Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -16,24 +16,57 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
-import com.google.gwt.event.dom.client.ScrollEvent;
-import com.google.gwt.event.dom.client.ScrollHandler;
-import com.google.gwt.user.client.*;
-import com.google.gwt.user.client.ui.*;
-import com.vaadin.terminal.gwt.client.*;
-
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
+
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.DomEvent.Type;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.ScrollEvent;
+import com.google.gwt.event.dom.client.ScrollHandler;
+import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Frame;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
+import com.vaadin.terminal.gwt.client.Container;
+import com.vaadin.terminal.gwt.client.EventId;
+import com.vaadin.terminal.gwt.client.Focusable;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.RenderSpace;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.VDebugConsole;
+import com.vaadin.terminal.gwt.client.ui.ShortcutActionHandler.BeforeShortcutActionListener;
+import com.vaadin.terminal.gwt.client.ui.ShortcutActionHandler.ShortcutActionHandlerOwner;
 
 /**
  * "Sub window" component.
  *
- * TODO update position / scroll position / size to client
- *
  * @author IT Mill Ltd
+ * <br/>
+ * [Compatible with Vaadin 6.6]
  */
-public class VWindow extends VOverlay implements Container, ScrollHandler {
+public class VWindow extends VOverlay implements Container,
+        ShortcutActionHandlerOwner, ScrollHandler, KeyDownHandler,
+        FocusHandler, BlurHandler, BeforeShortcutActionListener, Focusable {
 
     /**
      * Minimum allowed height of a window. This refers to the content area, not
@@ -48,6 +81,8 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
     private static final int MIN_CONTENT_AREA_WIDTH = 150;
 
     private static ArrayList<VWindow> windowOrder = new ArrayList<VWindow>();
+
+    private static boolean orderingDefered;
 
     public static final String CLASSNAME = "v-window";
 
@@ -78,7 +113,7 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
 
     private Element resizeBox;
 
-    private final ScrollPanel contentPanel = new ScrollPanel();
+    private final FocusableScrollPanel contentPanel = new FocusableScrollPanel();
 
     private boolean dragging;
 
@@ -116,6 +151,8 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
 
     private boolean draggable = true;
 
+    private boolean resizeLazy = false;
+
     private Element modalityCurtain;
     private Element draggingCurtain;
 
@@ -144,6 +181,28 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
 
     private Element wrapper, wrapper2;
 
+    private ClickEventHandler clickEventHandler = new ClickEventHandler(this,
+            VPanel.CLICK_EVENT_IDENTIFIER) {
+
+        @Override
+        protected <H extends EventHandler> HandlerRegistration registerHandler(
+                H handler, Type<H> type) {
+            return addDomHandler(handler, type);
+        }
+    };
+
+    private boolean visibilityChangesDisabled;
+
+    private int bringToFrontSequence = -1;
+
+    private VLazyExecutor delayedContentsSizeUpdater = new VLazyExecutor(200,
+            new ScheduledCommand() {
+
+                public void execute() {
+                    updateContentsSize();
+                }
+            });
+
     public VWindow() {
         super(false, false, true); // no autohide, not modal, shadow
         // Different style of shadow for windows
@@ -156,12 +215,12 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
         setPopupPosition(order * STACKING_OFFSET_PIXELS, order
                 * STACKING_OFFSET_PIXELS);
         contentPanel.addScrollHandler(this);
-
-        // make it focusable, but last in focus chain
-//        DOM.setElementProperty(contentPanel.getElement(), "tabIndex", "0");
+        contentPanel.addKeyDownHandler(this);
+        contentPanel.addFocusHandler(this);
+        contentPanel.addBlurHandler(this);
     }
 
-    private void bringToFront() {
+    public void bringToFront() {
         int curIndex = windowOrder.indexOf(this);
         if (curIndex + 1 < windowOrder.size()) {
             windowOrder.remove(this);
@@ -173,7 +232,7 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
     }
 
     /**
-     * Returns true if window is the topmost window
+     * Returns true if this window is the topmost VWindow
      *
      * @return
      */
@@ -181,7 +240,7 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
         return windowOrder.get(windowOrder.size() - 1).equals(this);
     }
 
-    public void setWindowOrder(int order) {
+    private void setWindowOrder(int order) {
         setZIndex(order + Z_INDEX);
     }
 
@@ -189,8 +248,16 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
     protected void setZIndex(int zIndex) {
         super.setZIndex(zIndex);
         if (vaadinModality) {
-            DOM.setStyleAttribute(modalityCurtain, "zIndex", "" + zIndex);
+            DOM.setStyleAttribute(getModalityCurtain(), "zIndex", "" + zIndex);
         }
+    }
+
+    protected Element getModalityCurtain() {
+        if (modalityCurtain == null) {
+            modalityCurtain = DOM.createDiv();
+            modalityCurtain.setClassName(CLASSNAME + "-modalitycurtain");
+        }
+        return modalityCurtain;
     }
 
     protected void constructDOM() {
@@ -205,24 +272,16 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
         footer = DOM.createDiv();
         DOM.setElementProperty(footer, "className", CLASSNAME + "-footer");
         resizeBox = DOM.createDiv();
-        DOM
-                .setElementProperty(resizeBox, "className", CLASSNAME
-                        + "-resizebox");
+        DOM.setElementProperty(resizeBox, "className", CLASSNAME + "-resizebox");
         closeBox = DOM.createDiv();
         DOM.setElementProperty(closeBox, "className", CLASSNAME + "-closebox");
         DOM.appendChild(footer, resizeBox);
-
-        DOM.sinkEvents(getElement(), Event.ONLOSECAPTURE);
-        DOM.sinkEvents(closeBox, Event.ONCLICK);
-        DOM.sinkEvents(contents, Event.ONCLICK);
 
         wrapper = DOM.createDiv();
         DOM.setElementProperty(wrapper, "className", CLASSNAME + "-wrap");
 
         wrapper2 = DOM.createDiv();
         DOM.setElementProperty(wrapper2, "className", CLASSNAME + "-wrap2");
-
-        DOM.sinkEvents(wrapper, Event.ONKEYDOWN);
 
         DOM.appendChild(wrapper2, closeBox);
         DOM.appendChild(wrapper2, header);
@@ -232,7 +291,8 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
         DOM.appendChild(wrapper, wrapper2);
         DOM.appendChild(super.getContainerElement(), wrapper);
 
-        sinkEvents(Event.MOUSEEVENTS);
+        sinkEvents(Event.MOUSEEVENTS | Event.TOUCHEVENTS | Event.ONCLICK
+                | Event.ONLOSECAPTURE);
 
         setWidget(contentPanel);
 
@@ -256,18 +316,29 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
                 setVaadinModality(!vaadinModality);
             }
             if (!isAttached()) {
+                setVisible(false); // hide until possible centering
                 show();
             }
             if (uidl.getBooleanAttribute("resizable") != resizable) {
                 setResizable(!resizable);
             }
+            resizeLazy = uidl.hasAttribute(VView.RESIZE_LAZY);
 
             setDraggable(!uidl.hasAttribute("fixedposition"));
+
+            // Caption must be set before required header size is measured. If
+            // the caption attribute is missing the caption should be cleared.
+            setCaption(uidl.getStringAttribute("caption"),
+                    uidl.getStringAttribute("icon"));
         }
 
+        visibilityChangesDisabled = true;
         if (client.updateComponent(this, uidl, false)) {
             return;
         }
+        visibilityChangesDisabled = false;
+
+        clickEventHandler.handleEventHandlerRegistration(client);
 
         immediate = uidl.hasAttribute("immediate");
 
@@ -284,11 +355,6 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
                 positiony = 0;
             }
             setPopupPosition(positionx, positiony);
-        }
-
-        if (uidl.hasAttribute("caption")) {
-            setCaption(uidl.getStringAttribute("caption"), uidl
-                    .getStringAttribute("icon"));
         }
 
         boolean showingUrl = false;
@@ -380,7 +446,7 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
                     shortcutHandler.updateActionMap(childUidl);
                 } else if (childUidl.getTag().equals("notifications")) {
                     // TODO needed? move ->
-                    for (final Iterator it = childUidl.getChildIterator(); it
+                    for (final Iterator<?> it = childUidl.getChildIterator(); it
                             .hasNext();) {
                         final UIDL notification = (UIDL) it.next();
                         String html = "";
@@ -404,8 +470,7 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
                         }
 
                         final String style = notification.hasAttribute("style") ? notification
-                                .getStringAttribute("style")
-                                : null;
+                                .getStringAttribute("style") : null;
                         final int position = notification
                                 .getIntAttribute("position");
                         final int delay = notification.getIntAttribute("delay");
@@ -432,8 +497,8 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
             // don't try to center the window anymore
             centered = false;
         }
-
         updateShadowSizeAndPosition();
+        setVisible(true);
 
         boolean sizeReduced = false;
         // ensure window is not larger than browser window
@@ -455,7 +520,7 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
              */
 
             int h = contents.getOffsetHeight() + getExtraHeight();
-            int w = contents.getOffsetWidth();
+            int w = getElement().getOffsetWidth();
 
             client.updateVariable(id, "height", h, false);
             client.updateVariable(id, "width", w, true);
@@ -469,6 +534,78 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
 
         Util.runWebkitOverflowAutoFix(contentPanel.getElement());
 
+        client.getView().scrollIntoView(uidl);
+
+        if (uidl.hasAttribute("bringToFront")) {
+            /*
+             * Focus as a side-efect. Will be overridden by
+             * ApplicationConnection if another component was focused by the
+             * server side.
+             */
+            contentPanel.focus();
+            bringToFrontSequence = uidl.getIntAttribute("bringToFront");
+            deferOrdering();
+        }
+    }
+
+    /**
+     * Calling this method will defer ordering algorithm, to order windows based
+     * on servers bringToFront and modality instructions. Non changed windows
+     * will be left intact.
+     */
+    private static void deferOrdering() {
+        if (!orderingDefered) {
+            orderingDefered = true;
+            Scheduler.get().scheduleFinally(new Command() {
+                public void execute() {
+                    doServerSideOrdering();
+                }
+            });
+        }
+    }
+
+    private static void doServerSideOrdering() {
+        orderingDefered = false;
+        VWindow[] array = windowOrder.toArray(new VWindow[windowOrder.size()]);
+        Arrays.sort(array, new Comparator<VWindow>() {
+            public int compare(VWindow o1, VWindow o2) {
+                /*
+                 * Order by modality, then by bringtofront sequence.
+                 */
+
+                if (o1.vaadinModality && !o2.vaadinModality) {
+                    return 1;
+                } else if (!o1.vaadinModality && o2.vaadinModality) {
+                    return -1;
+                } else if (o1.bringToFrontSequence > o2.bringToFrontSequence) {
+                    return 1;
+                } else if (o1.bringToFrontSequence < o2.bringToFrontSequence) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+        for (int i = 0; i < array.length; i++) {
+            VWindow w = array[i];
+            if (w.bringToFrontSequence != -1 || w.vaadinModality) {
+                w.bringToFront();
+                w.bringToFrontSequence = -1;
+            }
+        }
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        /*
+         * Visibility with VWindow works differently than with other Paintables
+         * in Vaadin. Invisible VWindows are not attached to DOM at all. Flag is
+         * used to avoid visibility call from
+         * ApplicationConnection.updateComponent();
+         */
+        if (!visibilityChangesDisabled) {
+            super.setVisible(visible);
+        }
     }
 
     private void setDraggable(boolean draggable) {
@@ -533,13 +670,6 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
         return contentAreaToRootDifference;
     }
 
-    private int getContentAreaBorderPadding() {
-        if (contentAreaBorderPadding < 0) {
-            measure();
-        }
-        return contentAreaBorderPadding;
-    }
-
     private void measure() {
         if (!isAttached()) {
             return;
@@ -602,7 +732,7 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
     /** Disable overflow auto with FF3 to fix #1837. */
     private void fixFF3OverflowBug() {
         if (BrowserInfo.get().isFF3()) {
-            DeferredCommand.addCommand(new Command() {
+            Scheduler.get().scheduleDeferred(new Command() {
                 public void execute() {
                     DOM.setStyleAttribute(getElement(), "overflow", "");
                 }
@@ -621,7 +751,7 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
     private void setFF2CaretFixEnabled(boolean enable) {
         if (BrowserInfo.get().isFF2()) {
             if (enable) {
-                DeferredCommand.addCommand(new Command() {
+                Scheduler.get().scheduleDeferred(new Command() {
                     public void execute() {
                         DOM.setStyleAttribute(getElement(), "overflow", "auto");
                     }
@@ -643,20 +773,10 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
     private void setVaadinModality(boolean modality) {
         vaadinModality = modality;
         if (vaadinModality) {
-            modalityCurtain = DOM.createDiv();
-            DOM.setElementProperty(modalityCurtain, "className", CLASSNAME
-                    + "-modalitycurtain");
             if (isAttached()) {
                 showModalityCurtain();
-                bringToFront();
-            } else {
-                DeferredCommand.addCommand(new Command() {
-                    public void execute() {
-                        // vaadinModality window must on top of others
-                        bringToFront();
-                    }
-                });
             }
+            deferOrdering();
         } else {
             if (modalityCurtain != null) {
                 if (isAttached()) {
@@ -669,15 +789,21 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
 
     private void showModalityCurtain() {
         if (BrowserInfo.get().isFF2()) {
-            DOM.setStyleAttribute(modalityCurtain, "height", DOM
-                    .getElementPropertyInt(RootPanel.getBodyElement(),
-                            "offsetHeight")
-                    + "px");
-            DOM.setStyleAttribute(modalityCurtain, "position", "absolute");
+            DOM.setStyleAttribute(
+                    getModalityCurtain(),
+                    "height",
+                    DOM.getElementPropertyInt(RootPanel.getBodyElement(),
+                            "offsetHeight") + "px");
+            DOM.setStyleAttribute(getModalityCurtain(), "position", "absolute");
         }
-        DOM.setStyleAttribute(modalityCurtain, "zIndex", ""
-                + (windowOrder.indexOf(this) + Z_INDEX));
-        DOM.appendChild(RootPanel.getBodyElement(), modalityCurtain);
+        DOM.setStyleAttribute(getModalityCurtain(), "zIndex",
+                "" + (windowOrder.indexOf(this) + Z_INDEX));
+        if (isShowing()) {
+            RootPanel.getBodyElement().insertBefore(getModalityCurtain(),
+                    getElement());
+        } else {
+            DOM.appendChild(RootPanel.getBodyElement(), getModalityCurtain());
+        }
     }
 
     private void hideModalityCurtain() {
@@ -769,44 +895,51 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
 
     @Override
     public void onBrowserEvent(final Event event) {
-        if (event != null) {
-            final int type = event.getTypeInt();
+        boolean bubble = true;
 
-            if (type == Event.ONKEYDOWN && shortcutHandler != null) {
-                shortcutHandler.handleKeyboardEvent(event);
-                return;
-            }
+        final int type = event.getTypeInt();
 
-            final Element target = DOM.eventGetTarget(event);
+        final Element target = DOM.eventGetTarget(event);
 
+        if (client != null && header.isOrHasChild(target)) {
             // Handle window caption tooltips
-            if (client != null && DOM.isOrHasChild(header, target)) {
-                client.handleTooltipEvent(event, this);
-            }
+            client.handleTooltipEvent(event, this);
+        }
 
-            if (resizing || resizeBox == target) {
-                onResizeEvent(event);
-                event.cancelBubble(true);
-            } else if (target == closeBox) {
-                if (type == Event.ONCLICK && isClosable()) {
-                    onCloseClick();
-                    event.cancelBubble(true);
-                }
-            } else if (dragging || !DOM.isOrHasChild(contents, target)) {
-                onDragEvent(event);
-                event.cancelBubble(true);
-
-            } else if (type == Event.ONCLICK) {
-                // clicked inside window, ensure to be on top
-                if (!isActive()) {
-                    bringToFront();
-                }
+        if (resizing || resizeBox == target) {
+            onResizeEvent(event);
+            bubble = false;
+        } else if (isClosable() && target == closeBox) {
+            if (type == Event.ONCLICK) {
+                onCloseClick();
             }
-
-            if (type == Event.ONMOUSEDOWN
-                    && !DOM.isOrHasChild(contentPanel.getElement(), target)) {
-                Util.focus(contentPanel.getElement());
+            bubble = false;
+        } else if (dragging || !contents.isOrHasChild(target)) {
+            onDragEvent(event);
+            bubble = false;
+        } else if (type == Event.ONCLICK) {
+            // clicked inside window, ensure to be on top
+            if (!isActive()) {
+                bringToFront();
             }
+        }
+
+        /*
+         * If clicking on other than the content, move focus to the window.
+         * After that this windows e.g. gets all keyboard shortcuts.
+         */
+        if (type == Event.ONMOUSEDOWN
+                && !contentPanel.getElement().isOrHasChild(target)
+                && target != closeBox) {
+            contentPanel.focus();
+        }
+
+        if (!bubble) {
+            event.stopPropagation();
+        } else {
+            // Super.onBrowserEvent takes care of Handlers added by the
+            // ClickEventHandler
+            super.onBrowserEvent(event);
         }
     }
 
@@ -818,6 +951,7 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
         if (resizable) {
             switch (event.getTypeInt()) {
             case Event.ONMOUSEDOWN:
+            case Event.ONTOUCHSTART:
                 if (!isActive()) {
                     bringToFront();
                 }
@@ -826,29 +960,27 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
                     DOM.setStyleAttribute(resizeBox, "visibility", "hidden");
                 }
                 resizing = true;
-                startX = event.getScreenX();
-                startY = event.getScreenY();
+                startX = Util.getTouchOrMouseClientX(event);
+                startY = Util.getTouchOrMouseClientY(event);
                 origW = getElement().getOffsetWidth();
                 origH = getElement().getOffsetHeight();
                 DOM.setCapture(getElement());
                 event.preventDefault();
                 break;
             case Event.ONMOUSEUP:
-                showDraggingCurtain(false);
-                if (BrowserInfo.get().isIE()) {
-                    DOM.setStyleAttribute(resizeBox, "visibility", "");
-                }
-                resizing = false;
-                DOM.releaseCapture(getElement());
+            case Event.ONTOUCHEND:
                 setSize(event, true);
-                break;
+            case Event.ONTOUCHCANCEL:
+                DOM.releaseCapture(getElement());
             case Event.ONLOSECAPTURE:
                 showDraggingCurtain(false);
                 if (BrowserInfo.get().isIE()) {
                     DOM.setStyleAttribute(resizeBox, "visibility", "");
                 }
                 resizing = false;
+                break;
             case Event.ONMOUSEMOVE:
+            case Event.ONTOUCHMOVE:
                 if (resizing) {
                     centered = false;
                     setSize(event, false);
@@ -863,6 +995,8 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
     }
 
     /**
+     * TODO check if we need to support this with touch based devices.
+     *
      * Checks if the cursor was inside the browser content area when the event
      * happened.
      *
@@ -893,12 +1027,12 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
             return;
         }
 
-        int w = event.getScreenX() - startX + origW;
+        int w = Util.getTouchOrMouseClientX(event) - startX + origW;
         if (w < MIN_CONTENT_AREA_WIDTH + getContentAreaToRootDifference()) {
             w = MIN_CONTENT_AREA_WIDTH + getContentAreaToRootDifference();
         }
 
-        int h = event.getScreenY() - startY + origH;
+        int h = Util.getTouchOrMouseClientY(event) - startY + origH;
         if (h < MIN_CONTENT_AREA_HEIGHT + getExtraHeight()) {
             h = MIN_CONTENT_AREA_HEIGHT + getExtraHeight();
         }
@@ -912,6 +1046,16 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
             client.updateVariable(id, "height", h, immediate);
         }
 
+        if (updateVariables || !resizeLazy) {
+            // Resize has finished or is not lazy
+            updateContentsSize();
+        } else {
+            // Lazy resize - wait for a while before re-rendering contents
+            delayedContentsSizeUpdater.trigger();
+        }
+    }
+
+    private void updateContentsSize() {
         // Update child widget dimensions
         if (client != null) {
             client.handleComponentRelativeSize((Widget) layout);
@@ -945,8 +1089,8 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
                 rootPixelWidth = getElement().getOffsetWidth();
                 width = rootPixelWidth + "px";
             } else {
-                rootPixelWidth = Integer.parseInt(width.substring(0, width
-                        .indexOf("px")));
+                rootPixelWidth = Integer.parseInt(width.substring(0,
+                        width.indexOf("px")));
             }
 
             // "width" now contains the new width in pixels
@@ -1021,45 +1165,63 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
 
     private void onDragEvent(Event event) {
         switch (DOM.eventGetType(event)) {
+        case Event.ONTOUCHSTART:
+            if (event.getTouches().length() > 1) {
+                return;
+            }
         case Event.ONMOUSEDOWN:
             if (!isActive()) {
                 bringToFront();
             }
-            if (draggable) {
-                showDraggingCurtain(true);
-                dragging = true;
-                startX = DOM.eventGetScreenX(event);
-                startY = DOM.eventGetScreenY(event);
-                origX = DOM.getAbsoluteLeft(getElement());
-                origY = DOM.getAbsoluteTop(getElement());
-                DOM.setCapture(getElement());
-                DOM.eventPreventDefault(event);
-            }
+            beginMovingWindow(event);
             break;
         case Event.ONMOUSEUP:
-            dragging = false;
-            showDraggingCurtain(false);
-            DOM.releaseCapture(getElement());
-            break;
+        case Event.ONTOUCHEND:
+        case Event.ONTOUCHCANCEL:
         case Event.ONLOSECAPTURE:
-            showDraggingCurtain(false);
-            dragging = false;
+            stopMovingWindow();
             break;
         case Event.ONMOUSEMOVE:
-            if (dragging) {
-                centered = false;
-                if (cursorInsideBrowserContentArea(event)) {
-                    // Only drag while cursor is inside the browser client area
-                    final int x = DOM.eventGetScreenX(event) - startX + origX;
-                    final int y = DOM.eventGetScreenY(event) - startY + origY;
-                    setPopupPosition(x, y);
-                }
-                DOM.eventPreventDefault(event);
-            }
+        case Event.ONTOUCHMOVE:
+            moveWindow(event);
             break;
         default:
             break;
         }
+    }
+
+    private void moveWindow(Event event) {
+        if (dragging) {
+            centered = false;
+            if (cursorInsideBrowserContentArea(event)) {
+                // Only drag while cursor is inside the browser client area
+                final int x = Util.getTouchOrMouseClientX(event) - startX
+                        + origX;
+                final int y = Util.getTouchOrMouseClientY(event) - startY
+                        + origY;
+                setPopupPosition(x, y);
+            }
+            DOM.eventPreventDefault(event);
+        }
+    }
+
+    private void beginMovingWindow(Event event) {
+        if (draggable) {
+            showDraggingCurtain(true);
+            dragging = true;
+            startX = Util.getTouchOrMouseClientX(event);
+            startY = Util.getTouchOrMouseClientY(event);
+            origX = DOM.getAbsoluteLeft(getElement());
+            origY = DOM.getAbsoluteTop(getElement());
+            DOM.setCapture(getElement());
+            DOM.eventPreventDefault(event);
+        }
+    }
+
+    private void stopMovingWindow() {
+        dragging = false;
+        showDraggingCurtain(false);
+        DOM.releaseCapture(getElement());
     }
 
     @Override
@@ -1072,7 +1234,7 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
             return false;
         } else if (vaadinModality) {
             // return false when modal and outside window
-            final Element target = event.getTarget().cast();
+            final Element target = event.getEventTarget().cast();
             if (DOM.getCaptureElement() != null) {
                 // Allow events when capture is set
                 return true;
@@ -1081,20 +1243,19 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
             if (!DOM.isOrHasChild(getElement(), target)) {
                 // not within the modal window, but let's see if it's in the
                 // debug window
-                Console console = ApplicationConnection.getConsole();
-                return console instanceof VDebugConsole
-                        && DOM.isOrHasChild(((VDebugConsole) console)
-                        .getElement(), target);
+                Widget w = Util.findWidget(target, null);
+                while (w != null) {
+                    if (w instanceof VDebugConsole) {
+                        return true; // allow debug-window clicks
+                    } else if (w instanceof Paintable) {
+                        return false;
+                    }
+                    w = w.getParent();
+                }
+                return false;
             }
         }
         return true;
-    }
-
-    public void onScroll(ScrollEvent event) {
-        Widget source = (Widget) event.getSource();
-        com.google.gwt.dom.client.Element elem = source.getElement();
-        client.updateVariable(id, "scrollTop", elem.getScrollTop(), false);
-        client.updateVariable(id, "scrollLeft", elem.getScrollLeft(), false);
     }
 
     @Override
@@ -1145,6 +1306,46 @@ public class VWindow extends VOverlay implements Container, ScrollHandler {
 
     public void updateCaption(Paintable component, UIDL uidl) {
         // NOP, window has own caption, layout captio not rendered
+    }
+
+    public ShortcutActionHandler getShortcutActionHandler() {
+        return shortcutHandler;
+    }
+
+    public void onScroll(ScrollEvent event) {
+        client.updateVariable(id, "scrollTop",
+                contentPanel.getScrollPosition(), false);
+        client.updateVariable(id, "scrollLeft",
+                contentPanel.getHorizontalScrollPosition(), false);
+    }
+
+    public void onKeyDown(KeyDownEvent event) {
+        if (shortcutHandler != null) {
+            shortcutHandler
+                    .handleKeyboardEvent(Event.as(event.getNativeEvent()));
+            return;
+        }
+    }
+
+    public void onBlur(BlurEvent event) {
+        if (client.hasEventListeners(this, EventId.BLUR)) {
+            client.updateVariable(id, EventId.BLUR, "", true);
+        }
+    }
+
+    public void onFocus(FocusEvent event) {
+        if (client.hasEventListeners(this, EventId.FOCUS)) {
+            client.updateVariable(id, EventId.FOCUS, "", true);
+        }
+    }
+
+    public void onBeforeShortcutAction(Event e) {
+        // NOP, nothing to update just avoid workaround ( causes excess
+        // blur/focus )
+    }
+
+    public void focus() {
+        contentPanel.focus();
     }
 
 }

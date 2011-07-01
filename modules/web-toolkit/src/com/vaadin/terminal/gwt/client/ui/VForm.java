@@ -1,12 +1,12 @@
 /* 
  * Copyright 2010 IT Mill Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -16,6 +16,8 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
+import java.util.Set;
+
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -24,10 +26,22 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
+import com.vaadin.terminal.gwt.client.Container;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.RenderInformation;
+import com.vaadin.terminal.gwt.client.RenderSpace;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.VConsole;
+import com.vaadin.terminal.gwt.client.VErrorMessage;
 
-import java.util.Set;
-
+/**
+ * VForm
+ * <br/>
+ * [Compatible with Vaadin 6.6]
+ */
 public class VForm extends ComplexPanel implements Container, KeyDownHandler {
 
     protected String id;
@@ -54,7 +68,7 @@ public class VForm extends ComplexPanel implements Container, KeyDownHandler {
 
     protected Container footer;
 
-    protected  ApplicationConnection client;
+    protected ApplicationConnection client;
 
     private RenderInformation renderInformation = new RenderInformation();
 
@@ -217,14 +231,12 @@ public class VForm extends ComplexPanel implements Container, KeyDownHandler {
         renderInformation.updateSize(getElement());
 
         renderInformation.setContentAreaHeight(renderInformation
-                .getRenderedSize().getHeight()
-                - getSpaceConsumedVertically());
+                .getRenderedSize().getHeight() - getSpaceConsumedVertically());
         if (BrowserInfo.get().isIE6()) {
             getElement().getStyle().setProperty("overflow", "hidden");
         }
         renderInformation.setContentAreaWidth(renderInformation
-                .getRenderedSize().getWidth()
-                - borderPaddingHorizontal);
+                .getRenderedSize().getWidth() - borderPaddingHorizontal);
     }
 
     public RenderSpace getAllocatedSpace(Widget child) {
@@ -234,8 +246,7 @@ public class VForm extends ComplexPanel implements Container, KeyDownHandler {
             return new RenderSpace(renderInformation.getContentAreaSize()
                     .getWidth(), 0);
         } else {
-            ApplicationConnection.getConsole().error(
-                    "Invalid child requested RenderSpace information");
+            VConsole.error("Invalid child requested RenderSpace information");
             return null;
         }
     }

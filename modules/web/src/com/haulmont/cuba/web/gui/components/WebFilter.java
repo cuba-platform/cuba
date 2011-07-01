@@ -491,7 +491,7 @@ public class WebFilter
                     //
                 }
                 if (defaultId != null) {
-                    Collection<FilterEntity> filters = select.getItemIds();
+                    Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
                     for (FilterEntity filter : filters) {
                         if (defaultId.equals(filter.getId())) {
                             filter.setIsDefault(true);
@@ -717,7 +717,7 @@ public class WebFilter
 
             public void buttonClick(Button.ClickEvent event) {
                 if (BooleanUtils.isTrue(filterEntity.getIsDefault())) {
-                    Collection<FilterEntity> filters = select.getItemIds();
+                    Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
                     for (FilterEntity filter : filters) {
                         if (!filter.equals(filterEntity))
                             filter.setIsDefault(false);
@@ -866,7 +866,7 @@ public class WebFilter
 
         UUID defaultId = null;
         Boolean applyDefault = false;
-        Collection<FilterEntity> filters = select.getItemIds();
+        Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
         for (FilterEntity filter : filters) {
             if (isTrue(filter.getIsDefault())) {
                 defaultId = filter.getId();

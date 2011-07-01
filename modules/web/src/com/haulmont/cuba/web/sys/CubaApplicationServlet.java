@@ -20,6 +20,7 @@ import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.*;
 import com.vaadin.ui.Window;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.time.DateFormatUtils;
 
 import javax.servlet.ServletException;
@@ -63,54 +64,60 @@ public class CubaApplicationServlet extends ApplicationServlet {
             testSessionSerialization(request.getSession());
         }
 
-        String[] parts = requestURI.split("/");
-        boolean needRedirect = parts.length > 0 && !App.auxillaryUrl(requestURI) &&
+        // TODO Trouble with multiple window
+/*
+        String[] uriParts = requestURI.split("/");
+        boolean needRedirect = uriParts.length > 0 && !App.auxillaryUrl(requestURI) &&
                 (request.getParameter("multiupload") == null);
 
         String action = null;
 
         if (needRedirect) {
-            String lastPart = parts[parts.length - 1];
+            String lastPart = uriParts[uriParts.length - 1];
             action = App.ACTION_NAMES.contains(lastPart) ? lastPart : null;
             needRedirect = contextName.equals(lastPart) || action != null;
-            if (needRedirect) {
-                for (String part : parts) {
-                    Matcher m = App.WIN_PATTERN.matcher(part);
-                    if (m.matches()) {
-                        needRedirect = false;
-                        break;
-                    }
-                }
+            int i = 0;
+            while ((i < uriParts.length) && needRedirect) {
+                Matcher m = App.WIN_PATTERN.matcher(uriParts[i]);
+                if (m.matches())
+                    needRedirect = false;
+                i++;
             }
         }
 
         if (needRedirect) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < parts.length; i++) {
-                sb.append(parts[i]);
-                if (parts[i].equals(contextName)) {
-                    sb.append("/").append(App.generateWebWindowName());
-                    break;
-                }
-                if (i < parts.length - 1)
-                    sb.append("/");
-            }
-            if (action != null) {
-                request.getSession().setAttribute(App.LAST_REQUEST_ACTION_ATTR, action);
-            }
-            if (request.getParameterNames().hasMoreElements()) {
-                Map<String, String> params = new HashMap<String, String>();
-                Enumeration parameterNames = request.getParameterNames();
-                while (parameterNames.hasMoreElements()) {
-                    String name = (String) parameterNames.nextElement();
-                    params.put(name, request.getParameter(name));
-                }
-                request.getSession().setAttribute(App.LAST_REQUEST_PARAMS_ATTR, params);
-            }
-            response.sendRedirect(sb.toString());
-        } else {
+            redirectToApp(request, response, contextName, uriParts, action);
+        } else {*/
             doService(request, response);
+//        }
+    }
+
+    private void redirectToApp(HttpServletRequest request, HttpServletResponse response,
+                               String contextName, String[] uriParts, String action) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < uriParts.length; i++) {
+            String windowName = App.generateWebWindowName();
+            sb.append(uriParts[i]);
+            if (uriParts[i].equals(contextName)) {
+                sb.append("/").append(windowName);
+                break;
+            }
+            if (i < uriParts.length - 1)
+                sb.append("/");
         }
+        if (action != null) {
+            request.getSession().setAttribute(App.LAST_REQUEST_ACTION_ATTR, action);
+        }
+        if (request.getParameterNames().hasMoreElements()) {
+            Map<String, String> params = new HashMap<String, String>();
+            Enumeration parameterNames = request.getParameterNames();
+            while (parameterNames.hasMoreElements()) {
+                String name = (String) parameterNames.nextElement();
+                params.put(name, request.getParameter(name));
+            }
+            request.getSession().setAttribute(App.LAST_REQUEST_PARAMS_ATTR, params);
+        }
+        response.sendRedirect(sb.toString());
     }
 
     private void doService(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -167,6 +174,17 @@ public class CubaApplicationServlet extends ApplicationServlet {
         }
 
         super.service(request, response);
+    }
+
+    @Override
+    protected RequestType getRequestType(HttpServletRequest request) {
+        if (isMultiUpload(request))
+            return RequestType.FILE_UPLOAD;
+        return super.getRequestType(request);
+    }
+
+    private boolean isMultiUpload(HttpServletRequest request) {
+        return ServletFileUpload.isMultipartContent(request);
     }
 
     private boolean isChartRequest(HttpServletRequest request) {
@@ -408,7 +426,12 @@ public class CubaApplicationServlet extends ApplicationServlet {
     protected Application getNewApplication(HttpServletRequest request) throws ServletException {
         try {
             // Creates a new application instance
-            final Application application = getApplicationClass().newInstance();
+            final Application application;
+            try {
+                application = getApplicationClass().newInstance();
+            } catch (ClassNotFoundException e) {
+                throw new ServletException(e);
+            }
 
             // Handles requested cookies
             ((App) application).getCookies().updateCookies(request);

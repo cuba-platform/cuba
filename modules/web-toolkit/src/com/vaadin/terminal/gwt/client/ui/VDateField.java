@@ -1,5 +1,17 @@
-/*
-@ITMillApache2LicenseForJavaFiles@
+/* 
+ * Copyright 2010 IT Mill Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package com.vaadin.terminal.gwt.client.ui;
@@ -9,30 +21,35 @@ import java.util.Date;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.ClientExceptionHandler;
 import com.vaadin.terminal.gwt.client.DateTimeService;
 import com.vaadin.terminal.gwt.client.LocaleNotLoadedException;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.VConsole;
 import com.vaadin.terminal.gwt.client.VTooltip;
 
+/**
+ * VDateField
+ * <br/>
+ * [Compatible with Vaadin 6.6]
+ */
 public class VDateField extends FlowPanel implements Paintable, Field {
 
     public static final String CLASSNAME = "v-datefield";
 
-    protected String id;
+    private String id;
 
-    protected ApplicationConnection client;
+    private ApplicationConnection client;
 
     protected boolean immediate;
 
-    public static final int RESOLUTION_YEAR = 0;
-    public static final int RESOLUTION_MONTH = 1;
-    public static final int RESOLUTION_DAY = 2;
-    public static final int RESOLUTION_HOUR = 3;
-    public static final int RESOLUTION_MIN = 4;
-    public static final int RESOLUTION_SEC = 5;
-    public static final int RESOLUTION_MSEC = 6;
+    public static final int RESOLUTION_YEAR = 1;
+    public static final int RESOLUTION_MONTH = 2;
+    public static final int RESOLUTION_DAY = 4;
+    public static final int RESOLUTION_HOUR = 8;
+    public static final int RESOLUTION_MIN = 16;
+    public static final int RESOLUTION_SEC = 32;
+    public static final int RESOLUTION_MSEC = 64;
 
     public static final String WEEK_NUMBERS = "wn";
 
@@ -58,13 +75,10 @@ public class VDateField extends FlowPanel implements Paintable, Field {
     protected boolean enabled;
 
     /**
-     * The date that is selected in the date field.
+     * The date that is selected in the date field. Null if an invalid date is
+     * specified.
      */
-    protected Date date = null;
-    // e.g when paging a calendar, before actually selecting
-    protected Date showingDate = new Date();
-
-    protected String dateString = null;
+    private Date date = null;
 
     protected DateTimeService dts;
 
@@ -105,10 +119,9 @@ public class VDateField extends FlowPanel implements Paintable, Field {
                 currentLocale = locale;
             } catch (final LocaleNotLoadedException e) {
                 currentLocale = dts.getLocale();
-                ClientExceptionHandler.displayError(
-                        "Tried to use an unloaded locale \"" + locale
-                                + "\". Using default locale (" + currentLocale
-                                + ").", e);
+                VConsole.error("Tried to use an unloaded locale \"" + locale
+                        + "\". Using default locale (" + currentLocale + ").");
+                VConsole.error(e);
             }
         }
 
@@ -155,16 +168,11 @@ public class VDateField extends FlowPanel implements Paintable, Field {
 
         // Construct new date for this datefield (only if not null)
         if (year > -1) {
-            date = new Date((long) getTime(year, month, day, hour, min, sec,
-                    msec));
-            showingDate.setTime(date.getTime());
+            setCurrentDate(new Date((long) getTime(year, month, day, hour, min,
+                    sec, msec)));
         } else {
-            date = null;
-            showingDate = new Date();
+            setCurrentDate(null);
         }
-
-        dateString = uidl.getStringVariable("dateString");
-
     }
 
     /*
@@ -192,19 +200,11 @@ public class VDateField extends FlowPanel implements Paintable, Field {
     }-*/;
 
     public int getMilliseconds() {
-        return (int) (date.getTime() - date.getTime() / 1000 * 1000);
+        return DateTimeService.getMilliseconds(date);
     }
 
     public void setMilliseconds(int ms) {
-        date.setTime(date.getTime() / 1000 * 1000 + ms);
-    }
-
-    public int getShowingMilliseconds() {
-        return (int) (showingDate.getTime() - showingDate.getTime() / 1000 * 1000);
-    }
-
-    public void setShowingMilliseconds(int ms) {
-        showingDate.setTime(showingDate.getTime() / 1000 * 1000 + ms);
+        DateTimeService.setMilliseconds(date, ms);
     }
 
     public int getCurrentResolution() {
@@ -229,14 +229,6 @@ public class VDateField extends FlowPanel implements Paintable, Field {
 
     public void setCurrentDate(Date date) {
         this.date = date;
-    }
-
-    public Date getShowingDate() {
-        return showingDate;
-    }
-
-    public void setShowingDate(Date date) {
-        showingDate = date;
     }
 
     public boolean isImmediate() {
@@ -267,11 +259,36 @@ public class VDateField extends FlowPanel implements Paintable, Field {
      * Returns whether ISO 8601 week numbers should be shown in the date
      * selector or not. ISO 8601 defines that a week always starts with a Monday
      * so the week numbers are only shown if this is the case.
-     *
+     * 
      * @return true if week number should be shown, false otherwise
      */
     public boolean isShowISOWeekNumbers() {
         return showISOWeekNumbers;
     }
 
+    /**
+     * Returns a copy of the current date. Modifying the returned date will not
+     * modify the value of this VDateField. Use {@link #setDate(Date)} to change
+     * the current date.
+     * 
+     * @return A copy of the current date
+     */
+    protected Date getDate() {
+        Date current = getCurrentDate();
+        if (current == null) {
+            return null;
+        } else {
+            return (Date) getCurrentDate().clone();
+        }
+    }
+
+    /**
+     * Sets the current date for this VDateField.
+     * 
+     * @param date
+     *            The new date to use
+     */
+    protected void setDate(Date date) {
+        this.date = date;
+    }
 }

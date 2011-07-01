@@ -416,7 +416,7 @@ public class IScrollTreeTable
                     case Event.ONCLICK:
                         if (groupCell != null && DOM.eventGetTarget(event) == groupCell) {
                             if (BrowserInfo.get().getWebkitVersion() > 0) {
-                                focusPanel.setFocus(true);
+                                bodyContainer.setFocus(true);
                             }
                             handleClickEvent(event);
                             handleRowClick(event);

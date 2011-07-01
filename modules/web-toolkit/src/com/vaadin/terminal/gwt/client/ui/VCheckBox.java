@@ -1,12 +1,12 @@
 /*
  * Copyright 2010 IT Mill Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -20,13 +20,31 @@ import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
-import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
+import com.vaadin.terminal.gwt.client.EventHelper;
+import com.vaadin.terminal.gwt.client.EventId;
+import com.vaadin.terminal.gwt.client.MouseEventDetails;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.VTooltip;
 
+/**
+ * VCheckBox
+ * <br/>
+ * [Compatible with Vaadin 6.6]
+ */
 public class VCheckBox extends com.google.gwt.user.client.ui.CheckBox implements
         Paintable, Field, FocusHandler, BlurHandler {
 
@@ -42,8 +60,6 @@ public class VCheckBox extends com.google.gwt.user.client.ui.CheckBox implements
 
     private Icon icon;
 
-    private boolean isBlockMode = false;
-
     private HandlerRegistration focusHandlerRegistration;
     private HandlerRegistration blurHandlerRegistration;
 
@@ -52,9 +68,15 @@ public class VCheckBox extends com.google.gwt.user.client.ui.CheckBox implements
         addClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
-                if (id == null || client == null) {
+                if (id == null || client == null || !isEnabled()) {
                     return;
                 }
+
+                // Add mouse details
+                MouseEventDetails details = new MouseEventDetails(
+                        event.getNativeEvent(), getElement());
+                client.updateVariable(id, "mousedetails", details.serialize(),
+                        false);
                 client.updateVariable(id, "state", getValue(), immediate);
             }
 
@@ -82,7 +104,8 @@ public class VCheckBox extends com.google.gwt.user.client.ui.CheckBox implements
 
         focusHandlerRegistration = EventHelper.updateFocusHandler(this, client,
                 focusHandlerRegistration);
-        blurHandlerRegistration = EventHelper.updateBlurHandler(this, client, blurHandlerRegistration);
+        blurHandlerRegistration = EventHelper.updateBlurHandler(this, client,
+                blurHandlerRegistration);
 
         if (uidl.hasAttribute("error")) {
             if (errorIndicatorElement == null) {
@@ -93,6 +116,8 @@ public class VCheckBox extends com.google.gwt.user.client.ui.CheckBox implements
                 DOM.appendChild(getElement(), errorIndicatorElement);
                 DOM.sinkEvents(errorIndicatorElement, VTooltip.TOOLTIP_EVENTS
                         | Event.ONCLICK);
+            } else {
+                DOM.setStyleAttribute(errorIndicatorElement, "display", "");
             }
         } else if (errorIndicatorElement != null) {
             DOM.setStyleAttribute(errorIndicatorElement, "display", "none");
@@ -171,24 +196,12 @@ public class VCheckBox extends com.google.gwt.user.client.ui.CheckBox implements
 
     @Override
     public void setWidth(String width) {
-        setBlockMode();
         super.setWidth(width);
     }
 
     @Override
     public void setHeight(String height) {
-        setBlockMode();
         super.setHeight(height);
-    }
-
-    /**
-     * makes container element (span) to be block element to enable sizing.
-     */
-    private void setBlockMode() {
-        if (!isBlockMode) {
-            DOM.setStyleAttribute(getElement(), "display", "block");
-            isBlockMode = true;
-        }
     }
 
     public void onFocus(FocusEvent arg0) {

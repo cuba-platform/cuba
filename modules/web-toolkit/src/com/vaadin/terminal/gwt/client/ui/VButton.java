@@ -19,19 +19,43 @@ package com.vaadin.terminal.gwt.client.ui;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Accessibility;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
+import com.vaadin.terminal.gwt.client.EventHelper;
+import com.vaadin.terminal.gwt.client.EventId;
+import com.vaadin.terminal.gwt.client.MouseEventDetails;
+import com.vaadin.terminal.gwt.client.Paintable;
+import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.VTooltip;
 
+/**
+ * VButton
+ * <br/>
+ * [Compatible with Vaadin 6.6]
+ */
 public class VButton extends FocusWidget implements Paintable, ClickHandler,
         FocusHandler, BlurHandler {
 
     public static final String CLASSNAME = "v-button";
     private static final String CLASSNAME_PRESSED = "v-pressed";
+
+    // mouse movement is checked before synthesizing click event on mouseout
+    protected static int MOVE_THRESHOLD = 3;
+    protected int mousedownX = 0;
+    protected int mousedownY = 0;
 
     protected String id;
 
@@ -79,6 +103,8 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
 
     private HandlerRegistration focusHandlerRegistration;
     private HandlerRegistration blurHandlerRegistration;
+
+    private int clickShortcut = 0;
 
     public VButton() {
         super(DOM.createDiv());
@@ -150,6 +176,10 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
                 icon = null;
             }
         }
+
+        if (uidl.hasAttribute("keycode")) {
+            clickShortcut = uidl.getIntAttribute("keycode");
+        }
     }
 
     public void setText(String text) {
@@ -197,6 +227,11 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
             break;
         case Event.ONMOUSEDOWN:
             if (event.getButton() == Event.BUTTON_LEFT) {
+                // save mouse position to detect movement before synthesizing
+                // event later
+                mousedownX = event.getClientX();
+                mousedownY = event.getClientY();
+
                 disallowNextClick = true;
                 clickPending = true;
                 setFocus(true);
@@ -233,7 +268,9 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
             Element to = event.getRelatedTarget();
             if (getElement().isOrHasChild(DOM.eventGetTarget(event))
                     && (to == null || !getElement().isOrHasChild(to))) {
-                if (clickPending) {
+                if (clickPending
+                        && Math.abs(mousedownX - event.getClientX()) < MOVE_THRESHOLD
+                        && Math.abs(mousedownY - event.getClientY()) < MOVE_THRESHOLD) {
                     onClick();
                     break;
                 }
@@ -270,24 +307,39 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
         // Synthesize clicks based on keyboard events AFTER the normal key
         // handling.
         if ((event.getTypeInt() & Event.KEYEVENTS) != 0) {
-            char keyCode = (char) DOM.eventGetKeyCode(event);
             switch (type) {
             case Event.ONKEYDOWN:
-                if (keyCode == ' ') {
+                if (event.getKeyCode() == 32 /* space */) {
                     isFocusing = true;
                     event.preventDefault();
                 }
                 break;
             case Event.ONKEYUP:
-                if (isFocusing && keyCode == ' ') {
+                if (isFocusing && event.getKeyCode() == 32 /* space */) {
                     isFocusing = false;
-                    onClick();
+
+                    /*
+                     * If click shortcut is space then the shortcut handler will
+                     * take care of the click.
+                     */
+                    if (clickShortcut != 32 /* space */) {
+                        onClick();
+                    }
+
                     event.preventDefault();
                 }
                 break;
             case Event.ONKEYPRESS:
-                if (keyCode == '\n' || keyCode == '\r') {
-                    onClick();
+                if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
+
+                    /*
+                     * If click shortcut is enter then the shortcut handler will
+                     * take care of the click.
+                     */
+                    if (clickShortcut != KeyCodes.KEY_ENTER) {
+                        onClick();
+                    }
+
                     event.preventDefault();
                 }
                 break;
@@ -319,7 +371,12 @@ public class VButton extends FocusWidget implements Paintable, ClickHandler,
         if (BrowserInfo.get().isSafari()) {
             VButton.this.setFocus(true);
         }
-        client.updateVariable(id, "state", true, true);
+        client.updateVariable(id, "state", true, false);
+
+        // Add mouse details
+        MouseEventDetails details = new MouseEventDetails(
+                event.getNativeEvent(), getElement());
+        client.updateVariable(id, "mousedetails", details.serialize(), true);
 
         clickPending = false;
     }

@@ -356,7 +356,7 @@ public class FoldersPane extends VerticalLayout {
         if (appFoldersTree == null)
             return;
 
-        List<AppFolder> folders = new ArrayList<AppFolder>(appFoldersTree.getItemIds());
+        List<AppFolder> folders = new ArrayList(appFoldersTree.getItemIds());
         FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
         service.reloadAppFolders(folders);
         for (AppFolder folder : folders) {
@@ -545,7 +545,7 @@ public class FoldersPane extends VerticalLayout {
         if (searchFoldersTree == null)
             return Collections.emptyList();
         else {
-            List result = new ArrayList<SearchFolder>(searchFoldersTree.getItemIds());
+            List result = new ArrayList(searchFoldersTree.getItemIds());
             result.remove(searchFoldersRoot);
             return result;
         }
@@ -553,6 +553,7 @@ public class FoldersPane extends VerticalLayout {
 
     protected class FolderClickListener implements ItemClickEvent.ItemClickListener {
         public FolderClickListener() {
+
         }
 
         public void itemClick(ItemClickEvent event) {

@@ -10,7 +10,7 @@
             <datasourceClass>com.haulmont.cuba.web.app.ui.core.file.MultiuploadsDatasource</datasourceClass>
         </collectionDatasource>
     </dsContext>
-    <#assign width = 360>
+    <#assign width = 560>
     <#assign height = 300>
     <layout expand="windowActions">
         <vbox id="vBox" margin="true" spacing="true" stylename="edit-area">
@@ -19,7 +19,7 @@
                 <button action="uploadsTable.remove" icon="icons/remove.png"/>
             </hbox>
 
-            <table id="uploadsTable" editable="true" width="${width}" height="${height}">
+            <table id="uploadsTable" editable="true" height="${height}" width="${width}">
                 <columns>
                     <column id="name" caption="msg://name" editable="true" width="170"
                             required="true" requiredMessage="msg://notNullFileNames"/>

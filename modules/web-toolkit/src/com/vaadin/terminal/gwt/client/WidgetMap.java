@@ -20,16 +20,19 @@ import com.haulmont.cuba.toolkit.gwt.client.ui.VerticalMenuBar;
 import com.haulmont.cuba.toolkit.gwt.client.utils.VScriptHost;
 import com.vaadin.terminal.gwt.client.ui.*;
 
+import java.util.HashMap;
+
 public abstract class WidgetMap {
+    protected static HashMap<Class, WidgetInstantiator> instmap = new HashMap<Class, WidgetInstantiator>();
 
     public Paintable instantiate(Class<? extends Paintable> classType) {
-        /*
-         * Yes, this (including the generated) may look very odd code, but due
+
+         /* Yes, this (including the generated) may look very odd code, but due
          * the nature of GWT, we cannot do this with reflect. Luckily this is
          * mostly written by WidgetSetGenerator, here are just some hacks. Extra
          * instantiation code is needed if client side widget has no "native"
-         * counterpart on client side.
-         */
+         * counterpart on client side.*/
+
         if (VSplitPanelVertical.class == classType) {
             return new VSplitPanelVertical();
         } else if (VTextArea.class == classType) {
@@ -47,10 +50,18 @@ public abstract class WidgetMap {
         } else if (VScriptHost.class == classType) {
             return new VScriptHost();
         } else {
-            return null; // let generated type handle this
+            return instantiateInternal(classType); // let generated type handle this
         }
     }
 
     public abstract Class<? extends Paintable> getImplementationByServerSideClassName(
             String fullyqualifiedName);
+
+    private Paintable instantiateInternal(Class<? extends Paintable> classType) {
+        return instmap.get(classType).get();
+    }
+
+    public abstract Class<? extends Paintable>[] getDeferredLoadedWidgets();
+
+    public abstract void ensureInstantiator(Class<? extends Paintable> classType);
 }

@@ -161,6 +161,13 @@ public class WebOptionsGroup
             }
 
             setOptionsList(newOptionList);
+
+            if (!selectedOptionList.isEmpty()) {
+                if (isMultiSelect())
+                    setValue(selectedOptionList);
+                else
+                    setValue(selectedOptionList.get(0));
+            }
 //            setValue(selectedOptionList);  todo: [degtyarjov] was commented to provide some functionality on control screen 
         }
     }

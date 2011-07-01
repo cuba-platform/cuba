@@ -12,9 +12,14 @@ package com.haulmont.cuba.toolkit.gwt.client.ui;
 
 import com.vaadin.terminal.gwt.client.ui.VMenuBar;
 
+/**
+ * VerticalMenuBar
+ * <br/>
+ * [Compatible with Vaadin 6.6]
+ */
 public class VerticalMenuBar extends VMenuBar {
     public VerticalMenuBar() {
-        super(true);
+        super(true, null);
         setStyleName(CLASSNAME);
     }
 }
