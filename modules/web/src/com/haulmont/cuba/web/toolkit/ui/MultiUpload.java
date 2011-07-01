@@ -10,11 +10,11 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.core.app.FileUploadService;
 import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.ValueProvider;
 import com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload;
+import com.haulmont.cuba.web.jmx.FileUploadingAPI;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
@@ -98,8 +98,8 @@ public class MultiUpload extends AbstractComponent {
         for (FileUploadStartListener listener : fileStartListeners)
             listener.fileUploadStart(fileName);
         // Uploading from stream
-        FileUploadService uploader = ServiceLocator.lookup(FileUploadService.NAME);
-        UUID uuid = uploader.saveFile(itemStream.openStream(), new FileUploadService.UploadProgressListener() {
+        FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+        UUID uuid = fileUploading.saveFile(itemStream.openStream(), new FileUploadingAPI.UploadProgressListener() {
 
             public void progressChanged(UUID fileId, int receivedBytes) {
                 for (FileProgressListener listener : fileProgressListeners)

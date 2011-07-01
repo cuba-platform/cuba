@@ -125,6 +125,23 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         }
     }
 
+    public OutputStream openFileOutputStream(FileDescriptor fileDescr) throws FileStorageException {
+        checkNotNull(fileDescr, "No file descriptor");
+        checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
+
+        File dir = getStorageDir(fileDescr.getCreateDate());
+
+        File file = new File(dir, fileDescr.getFileName());
+        if (file.exists())
+            throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
+
+        try {
+            return FileUtils.openOutputStream(file);
+        } catch (IOException e) {
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath(), e);
+        }
+    }
+
     public byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException {
         InputStream inputStream = openFileInputStream(fileDescr);
         try {

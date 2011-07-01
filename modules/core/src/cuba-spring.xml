@@ -114,12 +114,10 @@
                        value-ref="cuba_PersistenceManager"/>
                 <entry key="${cuba.webContextName}.cuba:service=ConfigStorage" value-ref="cuba_ConfigStorage"/>
                 <entry key="${cuba.webContextName}.cuba:service=DataCache" value-ref="cuba_DataCache"/>
-                <entry key="${cuba.webContextName}.cuba:service=ResourceRepository"
-                       value-ref="cuba_ResourceRepository"/>
+                <entry key="${cuba.webContextName}.cuba:service=ResourceRepository" value-ref="cuba_ResourceRepository"/>
                 <entry key="${cuba.webContextName}.cuba:service=UserSessions" value-ref="cuba_UserSessions"/>
                 <entry key="${cuba.webContextName}.cuba:service=UniqueNumbers" value-ref="cuba_UniqueNumbers"/>
                 <entry key="${cuba.webContextName}.cuba:service=Emailer" value-ref="cuba_Emailer"/>
-                <entry key="${cuba.webContextName}.cuba:service=FileUploading" value-ref="cuba_FileUploading"/>
                 <entry key="${cuba.webContextName}.cuba:service=EntityLog" value-ref="cuba_EntityLog"/>
                 <entry key="${cuba.webContextName}.cuba:service=FileStorage" value-ref="cuba_FileStorage"/>
                 <entry key="${cuba.webContextName}.cuba:service=LockManager" value-ref="cuba_LockManager"/>
@@ -138,14 +136,12 @@
                                value="com.haulmont.cuba.core.app.PersistenceManagerMBean"/>
                         <entry key="cuba_ConfigStorage" value="com.haulmont.cuba.core.app.ConfigStorageMBean"/>
                         <entry key="cuba_DataCache" value="com.haulmont.cuba.core.app.DataCacheMBean"/>
-                        <entry key="cuba_ResourceRepository"
-                               value="com.haulmont.cuba.core.app.ResourceRepositoryMBean"/>
+                        <entry key="cuba_ResourceRepository" value="com.haulmont.cuba.core.app.ResourceRepositoryMBean"/>
                         <entry key="cuba_UserSessions" value="com.haulmont.cuba.security.app.UserSessionsMBean"/>
                         <entry key="cuba_UniqueNumbers" value="com.haulmont.cuba.core.app.UniqueNumbersMBean"/>
                         <entry key="cuba_Emailer" value="com.haulmont.cuba.core.app.EmailerMBean"/>
                         <entry key="cuba_EntityLog" value="com.haulmont.cuba.security.app.EntityLogMBean"/>
                         <entry key="cuba_FileStorage" value="com.haulmont.cuba.core.app.FileStorageMBean"/>
-                        <entry key="cuba_FileUploading" value="com.haulmont.cuba.core.app.FileUploadingMBean"/>
                         <entry key="cuba_LockManager" value="com.haulmont.cuba.core.app.LockManagerMBean"/>
                         <entry key="cuba_CachingFacade" value="com.haulmont.cuba.core.app.CachingFacadeMBean"/>
                         <entry key="cuba_ClusterManager" value="com.haulmont.cuba.core.app.ClusterManagerMBean"/>
@@ -158,63 +154,6 @@
         </property>
     </bean>
 
-    <!-- Old-style MBeans access support -->
-
-    <bean id="haulmont_cuba_service_PersistenceConfig" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
-        <property name="objectName" value="${cuba.webContextName}.cuba:service=PersistenceConfig"/>
-        <property name="proxyInterface" value="com.haulmont.cuba.core.app.PersistenceManagerMBean"/>
-    </bean>
-
-    <bean id="haulmont_cuba_service_ConfigStorage" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
-        <property name="objectName" value="${cuba.webContextName}.cuba:service=ConfigStorage"/>
-        <property name="proxyInterface" value="com.haulmont.cuba.core.app.ConfigStorageMBean"/>
-    </bean>
-
-    <bean id="haulmont_cuba_service_DataCache" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
-        <property name="objectName" value="${cuba.webContextName}.cuba:service=DataCache"/>
-        <property name="proxyInterface" value="com.haulmont.cuba.core.app.DataCacheMBean"/>
-    </bean>
-
-    <bean id="haulmont_cuba_service_ResourceRepository" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
-        <property name="objectName" value="${cuba.webContextName}.cuba:service=ResourceRepository"/>
-        <property name="proxyInterface" value="com.haulmont.cuba.core.app.ResourceRepositoryMBean"/>
-    </bean>
-
-    <bean id="haulmont_cuba_service_UserSessions" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
-        <property name="objectName" value="${cuba.webContextName}.cuba:service=UserSessions"/>
-        <property name="proxyInterface" value="com.haulmont.cuba.security.app.UserSessionsMBean"/>
-    </bean>
-
-    <bean id="haulmont_cuba_service_UniqueNumbers" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
-        <property name="objectName" value="${cuba.webContextName}.cuba:service=UniqueNumbers"/>
-        <property name="proxyInterface" value="com.haulmont.cuba.core.app.UniqueNumbersMBean"/>
-    </bean>
-
-    <bean id="haulmont_cuba_service_Emailer" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
-        <property name="objectName" value="${cuba.webContextName}.cuba:service=Emailer"/>
-        <property name="proxyInterface" value="com.haulmont.cuba.core.app.EmailerMBean"/>
-    </bean>
-
-    <bean id="haulmont_cuba_service_FileUploading" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
-        <property name="objectName" value="${cuba.webContextName}.cuba:service=FileUploading"/>
-        <property name="proxyInterface" value="com.haulmont.cuba.core.app.FileUploadingMBean"/>
-    </bean>
-
-    <bean id="haulmont_cuba_service_EntityLog" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
-        <property name="objectName" value="${cuba.webContextName}.cuba:service=EntityLog"/>
-        <property name="proxyInterface" value="com.haulmont.cuba.security.app.EntityLogMBean"/>
-    </bean>
-
-    <bean id="haulmont_cuba_service_FileStorage" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
-        <property name="objectName" value="${cuba.webContextName}.cuba:service=FileStorage"/>
-        <property name="proxyInterface" value="com.haulmont.cuba.core.app.FileStorageMBean"/>
-    </bean>
-
-    <bean id="haulmont_cuba_service_EmailManager" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
-        <property name="objectName" value="${cuba.webContextName}.cuba:service=EmailManager"/>
-        <property name="proxyInterface" value="com.haulmont.cuba.core.app.EmailManagerMBean"/>
-    </bean>
-
     <!-- Scheduling setup -->
 
     <bean id="scheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
@@ -225,7 +164,7 @@
     <task:scheduled-tasks scheduler="scheduler">
         <task:scheduled ref="cuba_Heartbeat" method="beat" fixed-rate="1000"/>
         <task:scheduled ref="cuba_LockManager" method="expireLocks" fixed-rate="60000"/>
-        <task:scheduled ref="cuba_CachingFacade" method="clearStorageTempDirectory" cron="0 0 0 * * 2,4,6"/>
+        <!--<task:scheduled ref="cuba_CachingFacade" method="clearStorageTempDirectory" cron="0 0 0 * * 2,4,6"/>-->
         <!--<task:scheduled ref="cuba_ScreenHistory" method="cleanup" fixed-delay="60000"/>-->
         <!--<task:scheduled ref="cuba_EmailManager" method="queueEmailsToSend" cron="${cuba.email.async.schedulerCron}"/>-->
     </task:scheduled-tasks>

@@ -10,16 +10,15 @@
  */
 package com.haulmont.cuba.web.app.ui.core.file;
 
-import com.haulmont.cuba.core.app.FileStorageService;
-import com.haulmont.cuba.core.app.FileUploadService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.web.jmx.FileUploadingAPI;
 
 import java.util.*;
 import java.util.List;
@@ -61,10 +60,10 @@ public class MultiUploader extends AbstractEditor {
             public void queueUploadComplete() {
                 needSave = true;
                 okBtn.setEnabled(true);
-                FileUploadService uploader = ServiceLocator.lookup(FileUploadService.NAME);
+                FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
                 Map<UUID, String> uploads = uploadField.getUploadsMap();
                 for (Map.Entry<UUID, String> upload : uploads.entrySet()) {
-                    FileDescriptor fDesc = uploader.getFileDescriptor(upload.getKey(), upload.getValue());
+                    FileDescriptor fDesc = fileUploading.getFileDescriptor(upload.getKey(), upload.getValue());
 
                     descriptors.put(fDesc, upload.getKey());
                     filesDs.addItem(fDesc);
@@ -111,10 +110,10 @@ public class MultiUploader extends AbstractEditor {
     @Override
     public boolean close(String actionId) {
         if (!COMMIT_ACTION_ID.equals(actionId)) {
-            FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
+            FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
             for (Map.Entry<FileDescriptor, UUID> upload : descriptors.entrySet()) {
                 try {
-                    uploadService.deleteFile(upload.getValue());
+                    fileUploading.deleteFile(upload.getValue());
                 } catch (FileStorageException e) {
                     throw new RuntimeException(e);
                 }
@@ -124,16 +123,13 @@ public class MultiUploader extends AbstractEditor {
     }
 
     private void saveFile() {
-        FileUploadService uploader = ServiceLocator.lookup(FileUploadService.NAME);
-        FileStorageService fss = ServiceLocator.lookup(FileStorageService.NAME);
+        FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
         try {
             // Relocate the file from temporary storage to permanent
             Collection ids = filesDs.getItemIds();
             for (Object id : ids) {
                 FileDescriptor fDesc = (FileDescriptor) filesDs.getItem(id);
-                UUID fileId = descriptors.get(fDesc);
-                fss.putFile(fDesc, uploader.getFile(fileId));
-                uploader.deleteFile(fileId);
+                fileUploading.putFileIntoStorage(descriptors.get(fDesc), fDesc);
                 files.add(fDesc);
             }
         } catch (FileStorageException e) {

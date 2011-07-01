@@ -9,14 +9,14 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.cuba.core.app.FileUploadService;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.jmx.FileUploadingAPI;
 import com.haulmont.cuba.web.toolkit.ui.Upload;
 import org.apache.commons.lang.StringUtils;
 
@@ -34,7 +34,7 @@ public class WebFileUploadField
     private static final int BUFFER_SIZE = 64 * 1024;
     private static final int BYTES_IN_MEGABYTE = 1048576;
 
-    protected FileUploadService uploadService;
+    protected FileUploadingAPI fileUploading;
 
     protected String fileName;
     protected byte[] bytes;
@@ -47,7 +47,7 @@ public class WebFileUploadField
     private List<Listener> listeners = new ArrayList<Listener>();
 
     public WebFileUploadField() {
-        uploadService = ServiceLocator.lookup(FileUploadService.NAME);
+        fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
         String caption = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "Upload");
         component = new Upload(
                 /* Fixes caption rendering.
@@ -57,8 +57,8 @@ public class WebFileUploadField
                     public OutputStream receiveUpload(String filename, String MIMEType) {
                         fileName = filename;
                         try {
-                            tempFileId = uploadService.createEmptyFile();
-                            File tmpFile = uploadService.getFile(tempFileId);
+                            tempFileId = fileUploading.createEmptyFile();
+                            File tmpFile = fileUploading.getFile(tempFileId);
                             outputStream = new FileOutputStream(tmpFile);
                         } catch (Exception e) {
                             throw new RuntimeException(e);
@@ -114,7 +114,7 @@ public class WebFileUploadField
                 try {
                     // close and remove temp file
                     outputStream.close();
-                    uploadService.deleteFile(tempFileId);
+                    fileUploading.deleteFile(tempFileId);
                     tempFileId = null;
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -188,7 +188,7 @@ public class WebFileUploadField
         if (bytes == null) {
             try {
                 if (fileId != null) {
-                    File file = uploadService.getFile(fileId);
+                    File file = fileUploading.getFile(fileId);
                     FileInputStream fileInputStream = new FileInputStream(file);
                     ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
                     readFileToBytes(fileInputStream, byteOutput);

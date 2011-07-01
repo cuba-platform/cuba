@@ -43,7 +43,6 @@
                 <entry key="cuba_LockService" value="com.haulmont.cuba.core.app.LockService"/>
                 <entry key="cuba_JmxControlService" value="com.haulmont.cuba.jmxcontrol.app.JmxControlService"/>
                 <entry key="cuba_UserSessionService" value="com.haulmont.cuba.security.app.UserSessionService"/>
-                <entry key="cuba_FileUploadService" value="com.haulmont.cuba.core.app.FileUploadService"/>
                 <entry key="cuba_FoldersService" value="com.haulmont.cuba.core.app.FoldersService"/>
                 <entry key="cuba_EmailService" value="com.haulmont.cuba.core.app.EmailService"/>
                 <entry key="cuba_EntitySnapshotService" value="com.haulmont.cuba.core.app.EntitySnapshotService"/>

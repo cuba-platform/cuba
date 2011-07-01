@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.FileStorageException;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.UUID;
 import java.util.Date;
 
@@ -27,6 +28,8 @@ public interface FileStorageAPI {
     void removeFile(FileDescriptor fileDescr) throws FileStorageException;    
 
     InputStream openFileInputStream(FileDescriptor fileDescr) throws FileStorageException;
+
+    OutputStream openFileOutputStream(FileDescriptor fileDescr) throws FileStorageException;
 
     byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException;
 

@@ -12,10 +12,14 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrBuilder;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 @javax.persistence.Entity(name = "core$FileDescriptor")
 @Table(name = "SYS_FILE")
@@ -23,6 +27,7 @@ import java.util.Date;
 public class FileDescriptor extends StandardEntity {
 
     private static final long serialVersionUID = 564683944299730504L;
+    public static final String DATE_FMT = "yyyy-MM-dd";
 
     @Column(name = "NAME", length = 500)
     private String name;
@@ -80,5 +85,28 @@ public class FileDescriptor extends StandardEntity {
 
     public String getFileName() {
         return id.toString() + "." + getExtension();
+    }
+
+    public String toUrlParam() {
+        return new StrBuilder()
+                .append(id).append(",")
+                .append(extension).append(",")
+                .append(new SimpleDateFormat(DATE_FMT).format(createDate))
+                .toString();
+    }
+
+    public static FileDescriptor fromUrlParam(String urlParam) {
+        String[] parts = urlParam.split(",");
+        if (parts.length != 3)
+            throw new IllegalArgumentException("Invalid FileDescriptor format");
+        FileDescriptor fd = new FileDescriptor();
+        fd.setId(UUID.fromString(parts[0]));
+        fd.setExtension(parts[1]);
+        try {
+            fd.setCreateDate(new SimpleDateFormat(DATE_FMT).parse(parts[2]));
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Invalid FileDescriptor format", e);
+        }
+        return fd;
     }
 }

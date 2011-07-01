@@ -8,25 +8,28 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.core.app;
+package com.haulmont.cuba.web.jmx;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.web.WebConfig;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 
-import javax.annotation.ManagedBean;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-@ManagedBean(FileUploadingApi.NAME)
-public class FileUploading extends ManagementBean implements FileUploadingApi, FileUploadingMBean {
+public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     private Map<UUID, File> tempFiles = new ConcurrentHashMap<UUID, File>();
 
@@ -35,6 +38,10 @@ public class FileUploading extends ManagementBean implements FileUploadingApi, F
      * Default: 64 KB
      */
     private static final int BUFFER_SIZE = 64 * 1024;
+
+    private Log log = LogFactory.getLog(getClass());
+
+    private static final String CORE_FILE_UPLOAD_CONTEXT = "/remoting/upload";
 
     public UUID saveFile(byte[] data) throws FileStorageException {
         checkNotNull(data, "No file content");
@@ -70,7 +77,7 @@ public class FileUploading extends ManagementBean implements FileUploadingApi, F
         return uuid;
     }
 
-    public UUID saveFile(InputStream stream, FileUploadService.UploadProgressListener listener)
+    public UUID saveFile(InputStream stream, UploadProgressListener listener)
             throws FileStorageException {
         if (stream == null)
             throw new NullPointerException("Null input stream for save file");
@@ -204,6 +211,51 @@ public class FileUploading extends ManagementBean implements FileUploadingApi, F
         }
         if (forDelete != null)
             tempFiles.remove(forDelete);
+    }
+
+    public void putFileIntoStorage(UUID fileId, FileDescriptor fileDescr) throws FileStorageException {
+        File file = getFile(fileId);
+
+        String connectionUrl = ConfigProvider.getConfig(WebConfig.class).getConnectionUrl()
+                + CORE_FILE_UPLOAD_CONTEXT
+                + "?s=" + UserSessionProvider.getUserSession().getId()
+                + "&f=" + fileDescr.toUrlParam();
+
+        HttpPost method = new HttpPost(connectionUrl);
+        method.setEntity(new FileEntity(file, "application/octet-stream"));
+        HttpClient client = new DefaultHttpClient();
+        try {
+            HttpResponse response = client.execute(method);
+            if (response.getStatusLine().getStatusCode() != 200) {
+                log.error("Unable to upload file to " + connectionUrl + "\n" + response.getStatusLine());
+                throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getName());
+            }
+        } catch (IOException e) {
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getName(), e);
+        }
+        deleteFile(fileId);
+    }
+
+    public void clearTempDirectory() {
+        try {
+            GlobalConfig config = ConfigProvider.getConfig(GlobalConfig.class);
+            File dir = new File(config.getTempDir());
+            File[] files = dir.listFiles();
+            Date currentDate = TimeProvider.currentTimestamp();
+            for (File file : files) {
+                Date fileDate = new Date(file.lastModified());
+                Calendar calendar = new GregorianCalendar();
+                calendar.setTime(fileDate);
+                calendar.add(Calendar.DAY_OF_YEAR, 2);
+                if (currentDate.compareTo(calendar.getTime()) > 0) {
+                    deleteFileLink(file.getAbsolutePath());
+                    if (!file.delete())
+                        throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath());
+                }
+            }
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+        }
     }
 
     public String showTempFiles() {

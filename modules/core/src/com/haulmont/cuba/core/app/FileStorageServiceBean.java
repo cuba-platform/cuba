@@ -34,9 +34,4 @@ public class FileStorageServiceBean implements FileStorageService {
         FileStorageAPI mbean = Locator.lookup(FileStorageAPI.NAME);
         return mbean.loadFile(fileDescr);
     }
-
-    public void putFile(FileDescriptor fileDescr, File file) throws FileStorageException {
-        FileStorageAPI mbean = Locator.lookup(FileStorageAPI.NAME);
-        mbean.putFile(fileDescr, file);    
-    }
 }

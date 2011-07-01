@@ -2,8 +2,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd"
         >
 
     <bean class="com.haulmont.cuba.core.sys.CubaPropertyPlaceholderConfigurer"/>
@@ -30,19 +32,23 @@
 
     <bean id="cuba_web_Configuration" class="com.haulmont.cuba.web.jmx.Configuration"/>
 
+    <bean id="cuba_web_FileUploading" class="com.haulmont.cuba.web.jmx.FileUploading"/>
+
     <!-- MBeans registration -->
 
     <bean id="cuba_web_MBeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
         <property name="beans">
             <map>
                 <entry key="${cuba.webContextName}.cuba:service=Configuration" value-ref="cuba_web_Configuration"/>
+                <entry key="${cuba.webContextName}.cuba:service=FileUploading" value-ref="cuba_web_FileUploading"/>
             </map>
         </property>
         <property name="assembler">
             <bean class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
                 <property name="interfaceMappings">
                     <map>
-                        <entry key="cuba_PersistenceManager" value="com.haulmont.cuba.web.jmx.ConfigurationMBean"/>
+                        <entry key="cuba_web_Configuration" value="com.haulmont.cuba.web.jmx.ConfigurationMBean"/>
+                        <entry key="cuba_web_FileUploading" value="com.haulmont.cuba.web.jmx.FileUploadingMBean"/>
                     </map>
                 </property>
             </bean>
@@ -64,7 +70,6 @@
                 <entry key="cuba_LockService" value="com.haulmont.cuba.core.app.LockService"/>
                 <entry key="cuba_JmxControlService" value="com.haulmont.cuba.jmxcontrol.app.JmxControlService"/>
                 <entry key="cuba_UserSessionService" value="com.haulmont.cuba.security.app.UserSessionService"/>
-                <entry key="cuba_FileUploadService" value="com.haulmont.cuba.core.app.FileUploadService"/>
                 <entry key="cuba_FoldersService" value="com.haulmont.cuba.core.app.FoldersService"/>
                 <entry key="cuba_EmailService" value="com.haulmont.cuba.core.app.EmailService"/>
                 <entry key="cuba_FileStorageService" value="com.haulmont.cuba.core.app.FileStorageService"/>
@@ -75,5 +80,16 @@
             </map>
         </property>
     </bean>
+
+    <!-- Scheduling setup -->
+
+    <bean id="scheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+        <property name="daemon" value="true"/>
+        <property name="poolSize" value="10"/>
+    </bean>
+
+    <task:scheduled-tasks scheduler="scheduler">
+        <task:scheduled ref="cuba_web_FileUploading" method="clearTempDirectory" cron="0 0 0 * * 2,4,6"/>
+    </task:scheduled-tasks>
 
 </beans>

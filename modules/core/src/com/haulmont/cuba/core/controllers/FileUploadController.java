@@ -3,14 +3,12 @@
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
+
 package com.haulmont.cuba.core.controllers;
 
-import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.FileTypesHelper;
-import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.sys.ServerSecurityUtils;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
@@ -22,17 +20,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.inject.Inject;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.UUID;
 
+/**
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 @Controller
-public class FileDownloadController {
+public class FileUploadController {
 
-    private static Log log = LogFactory.getLog(FileDownloadController.class);
+    private Log log = LogFactory.getLog(FileUploadController.class);
 
     @Inject
     private UserSessionManager userSessionManager;
@@ -40,46 +43,42 @@ public class FileDownloadController {
     @Inject
     private FileStorageAPI fileStorage;
 
-    @Inject
-    private DataService dataService;
-
-    @RequestMapping(value = "/download", method = RequestMethod.GET)
-    public void download(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public void upload(HttpServletRequest request, HttpServletResponse response) throws IOException {
         UserSession userSession = getSession(request, response);
         if (userSession == null)
             return;
 
         ServerSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
         try {
+            InputStream is = request.getInputStream();
+            if (is == null) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+
             FileDescriptor fd = getFileDescriptor(request, response);
             if (fd == null)
                 return;
 
-            response.setHeader("Cache-Control", "no-cache");
-            response.setHeader("Pragma", "no-cache");
-            response.setDateHeader("Expires", 0);
-            response.setHeader("Content-Type", FileTypesHelper.DEFAULT_MIME_TYPE);
-
-            InputStream is = null;
-            ServletOutputStream os = null;
+            OutputStream os = null;
             try {
-                is = fileStorage.openFileInputStream(fd);
-                os = response.getOutputStream();
+                os = fileStorage.openFileOutputStream(fd);
                 IOUtils.copy(is, os);
                 os.flush();
             } catch (FileStorageException e) {
-                log.error("Unable to download file", e);
+                log.error("Unable to upload file", e);
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             } finally {
-                IOUtils.closeQuietly(is);
                 IOUtils.closeQuietly(os);
+                IOUtils.closeQuietly(is);
             }
         } finally {
             ServerSecurityUtils.clearSecurityAssociation();
         }
     }
 
-    protected UserSession getSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private UserSession getSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
         UUID sessionId;
         try {
             sessionId = UUID.fromString(request.getParameter("s"));
@@ -95,17 +94,14 @@ public class FileDownloadController {
     }
 
     private FileDescriptor getFileDescriptor(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        UUID fileId;
+        FileDescriptor fd;
         try {
-            fileId = UUID.fromString(request.getParameter("f"));
+            fd = FileDescriptor.fromUrlParam(request.getParameter("f"));
         } catch (Exception e) {
-            log.error("Error parsing fileId from URL param", e);
+            log.error("Error parsing FileDescriptor from URL param", e);
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
-        FileDescriptor fileDescriptor = dataService.load(new LoadContext(FileDescriptor.class).setId(fileId));
-        if (fileDescriptor == null)
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-        return fileDescriptor;
+        return fd;
     }
 }

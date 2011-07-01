@@ -6,25 +6,23 @@
 
 package com.haulmont.cuba.web.ui.report.template.edit;
 
-import com.haulmont.cuba.core.app.FileStorageService;
-import com.haulmont.cuba.core.app.FileUploadService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.report.ReportTemplate;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
+import com.haulmont.cuba.web.jmx.FileUploadingAPI;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * <p>$Id$</p>
@@ -98,17 +96,17 @@ public class TemplateEditor extends BasicEditor {
             }
 
             public void uploadSucceeded(Event event) {
-                FileUploadService uploadService = ServiceLocator.lookup(FileUploadService.NAME);
+                FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
 
                 templateDescriptor = new com.haulmont.cuba.core.entity.FileDescriptor();
                 templateDescriptor.setName(uploadTemplate.getFileName());
                 templateDescriptor.setExtension(FileDownloadHelper.getFileExt(uploadTemplate.getFileName()));
 
-                File file = uploadService.getFile(uploadTemplate.getFileId());
+                File file = fileUploading.getFile(uploadTemplate.getFileId());
                 templateDescriptor.setSize((int) file.length());
 
                 templateDescriptor.setCreateDate(TimeProvider.currentTimestamp());
-                saveFile(uploadService, uploadTemplate);
+                saveFile(fileUploading, uploadTemplate);
                 templatePath.setCaption(templateDescriptor.getName());
 
                 if (template.getTemplateFileDescriptor() != null)
@@ -139,13 +137,9 @@ public class TemplateEditor extends BasicEditor {
         });
     }
 
-    private void saveFile(FileUploadService uploadService, FileUploadField uploadTemplate) {
-        FileStorageService fss = ServiceLocator.lookup(FileStorageService.NAME);
+    private void saveFile(FileUploadingAPI fileUploading, FileUploadField uploadTemplate) {
         try {
-            UUID fileId = uploadTemplate.getFileId();
-            File file = uploadService.getFile(fileId);
-            fss.putFile(templateDescriptor, file);
-            uploadService.deleteFile(fileId);
+            fileUploading.putFileIntoStorage(uploadTemplate.getFileId(), templateDescriptor);
         } catch (FileStorageException e) {
             throw new RuntimeException(e);
         }
