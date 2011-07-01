@@ -10,7 +10,7 @@
     padding: 0 0 0 2px;
 }
 
-.v-datefield-wrap {
+.v-datefield-button {
 	font-size: 13px;
 	height: 22px;
     margin: 0;
@@ -19,6 +19,11 @@
 	background: transparent url(img/open-button1.png) no-repeat right 0;
 	vertical-align: top;
 	cursor: pointer;
+}
+
+.v-datefield-button-readonly {
+    display: none;
+    visibility: hidden;
 }
 
 .v-datefield-popup {
@@ -213,11 +218,11 @@
 /* IE specific styles */
 
 /* IE somehow loses generic i-disabled alpha. See #1960 */
-* html .v-disabled .v-datefield-wrap,
+* html .v-disabled .v-datefield-button,
 * html .v-disabled .v-datefield-textfield {
 	filter: alpha(opacity=30);
 }
-*+ html .v-disabled .v-datefield-wrap,
+*+ html .v-disabled .v-datefield-button,
 *+ html .v-disabled .v-datefield-textfield {
 	filter: alpha(opacity=30);
 }
