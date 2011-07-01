@@ -217,6 +217,7 @@ configure(webModule) {
         compile(guiModule)
         compile(group: 'com.haulmont.thirdparty', name: 'jespa', version: '1.0.7')
         compile(group: 'commons-fileupload', name: 'commons-fileupload', version: '1.2.2')
+        compile(group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.0.1')
         compile(group: 'org.jasig.cas', name: 'cas-client-core', version: '3.1.10')
         compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.0.5.RELEASE')
         compile(vaadin)
