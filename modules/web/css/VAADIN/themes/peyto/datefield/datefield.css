@@ -13,8 +13,8 @@
 .v-datefield-button {
 	font-size: 12px;
 	height: 24px;
+    width: 24px;
     margin: 0;
-	padding: 0 18px 0 0;
 	border: none;
 	background: transparent url(img/open-button1.png) no-repeat right 0;
 	vertical-align: top;
