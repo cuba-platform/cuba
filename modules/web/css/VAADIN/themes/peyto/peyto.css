@@ -1,4 +1,10 @@
 /*
+ * Focus outline
+ */
+
+*:focus {outline: 1px dotted #4D7AB2;}
+
+/*
  * Menu bar
  */
 
