@@ -50,8 +50,6 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
 
     protected String id;
 
-    protected Window wrapper;
-
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
     protected Collection<Component> ownComponents = new HashSet<Component>();
 
@@ -480,7 +478,7 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     }
 
     public Window getWrapper() {
-        return wrapper;
+        return delegate.getWrapper();
     }
 
     protected boolean onClose(String actionId) {
