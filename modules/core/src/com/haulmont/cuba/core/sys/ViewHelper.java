@@ -75,8 +75,7 @@ public class ViewHelper
                 if ((firstProperty.getView() != null) && (secondProperty.getView() != null)) {
                     resultPropView = intersectViews(firstProperty.getView(), secondProperty.getView());
                 }
-                if (resultPropView != null)
-                    resultView.addProperty(firstProperty.getName(), resultPropView);
+                resultView.addProperty(firstProperty.getName(), resultPropView);
             }
         }
 
