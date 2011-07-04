@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.controllers;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FileTypesHelper;
@@ -112,7 +113,7 @@ public class FileDownloadController {
     }
 
     private InputStream openInputStream(UserSession userSession, UUID fileId) throws IOException {
-        String connectionUrl = ConfigProvider.getConfig(WebConfig.class).getConnectionUrl();
+        String connectionUrl = ConfigProvider.getConfig(ClientConfig.class).getConnectionUrl();
         URL url = new URL(connectionUrl + CORE_FILE_DOWNLOAD_CONTEXT + "?s=" + userSession.getId() + "&f=" + fileId.toString());
         return url.openStream();
     }

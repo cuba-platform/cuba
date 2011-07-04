@@ -15,8 +15,8 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.jmx.FileUploadingAPI;
 import com.haulmont.cuba.web.toolkit.ui.Upload;
 import org.apache.commons.lang.StringUtils;
 

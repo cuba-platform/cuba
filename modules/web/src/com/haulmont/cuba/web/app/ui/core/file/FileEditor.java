@@ -18,8 +18,8 @@ import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
-import com.haulmont.cuba.web.jmx.FileUploadingAPI;
 
 import java.io.File;
 import java.util.Map;

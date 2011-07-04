@@ -32,7 +32,7 @@
 
     <bean id="cuba_web_Configuration" class="com.haulmont.cuba.web.jmx.Configuration"/>
 
-    <bean id="cuba_web_FileUploading" class="com.haulmont.cuba.web.jmx.FileUploading"/>
+    <bean id="cuba_FileUploading" class="com.haulmont.cuba.gui.upload.FileUploading"/>
 
     <!-- MBeans registration -->
 
@@ -40,7 +40,7 @@
         <property name="beans">
             <map>
                 <entry key="${cuba.webContextName}.cuba:service=Configuration" value-ref="cuba_web_Configuration"/>
-                <entry key="${cuba.webContextName}.cuba:service=FileUploading" value-ref="cuba_web_FileUploading"/>
+                <entry key="${cuba.webContextName}.cuba:service=FileUploading" value-ref="cuba_FileUploading"/>
             </map>
         </property>
         <property name="assembler">
@@ -48,7 +48,7 @@
                 <property name="interfaceMappings">
                     <map>
                         <entry key="cuba_web_Configuration" value="com.haulmont.cuba.web.jmx.ConfigurationMBean"/>
-                        <entry key="cuba_web_FileUploading" value="com.haulmont.cuba.web.jmx.FileUploadingMBean"/>
+                        <entry key="cuba_FileUploading" value="com.haulmont.cuba.gui.upload.FileUploadingMBean"/>
                     </map>
                 </property>
             </bean>
@@ -89,7 +89,7 @@
     </bean>
 
     <task:scheduled-tasks scheduler="scheduler">
-        <task:scheduled ref="cuba_web_FileUploading" method="clearTempDirectory" cron="0 0 0 * * 2,4,6"/>
+        <task:scheduled ref="cuba_FileUploading" method="clearTempDirectory" cron="0 0 0 * * 2,4,6"/>
     </task:scheduled-tasks>
 
 </beans>

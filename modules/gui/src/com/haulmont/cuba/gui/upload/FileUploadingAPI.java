@@ -2,13 +2,8 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Artamonov Yuryi
- * Created: 04.02.11 15:26
- *
- * $Id$
  */
-package com.haulmont.cuba.web.jmx;
+package com.haulmont.cuba.gui.upload;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
@@ -20,7 +15,7 @@ import java.util.UUID;
 
 public interface FileUploadingAPI {
 
-    String NAME = "cuba_web_FileUploading";
+    String NAME = "cuba_FileUploading";
 
     interface UploadProgressListener {
         void progressChanged(UUID fileId, int receivedBytes);

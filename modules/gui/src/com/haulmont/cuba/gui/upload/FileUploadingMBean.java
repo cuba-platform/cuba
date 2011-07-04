@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.web.jmx;
+package com.haulmont.cuba.gui.upload;
 
 /**
  * Management interface of the {@link FileUploading} MBean.<br>

@@ -18,7 +18,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.jmx.FileUploadingAPI;
+import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 
 import java.util.*;
 import java.util.List;

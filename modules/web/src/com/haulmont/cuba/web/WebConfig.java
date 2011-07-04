@@ -24,9 +24,6 @@ import java.util.List;
 @Prefix("cuba.web.")
 public interface WebConfig extends Config
 {
-    @Property("cuba.connectionUrl")
-    String getConnectionUrl();
-
     @Property("cuba.useLocalServiceInvocation")
     @DefaultBoolean(true)
     boolean getUseLocalServiceInvocation();

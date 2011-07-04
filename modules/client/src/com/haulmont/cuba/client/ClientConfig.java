@@ -22,6 +22,9 @@ import com.haulmont.cuba.core.config.defaults.DefaultString;
 @Source(type = SourceType.APP)
 public interface ClientConfig extends Config {
 
+    @Property("cuba.connectionUrl")
+    String getConnectionUrl();
+
     @Property("cuba.collectionDatasourceDbSortEnabled")
     @DefaultBoolean(true)
     boolean getCollectionDatasourceDbSortEnabled();

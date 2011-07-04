@@ -8,11 +8,11 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.web.jmx;
+package com.haulmont.cuba.gui.upload;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.web.WebConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
@@ -93,7 +93,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             boolean failed = false;
             try {
                 byte buffer[] = new byte[BUFFER_SIZE];
-                int bytesRead = 0;
+                int bytesRead;
                 int totalBytes = 0;
                 while ((bytesRead = stream.read(buffer)) > 0) {
                     fileOutput.write(buffer, 0, bytesRead);
@@ -215,8 +215,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     public void putFileIntoStorage(UUID fileId, FileDescriptor fileDescr) throws FileStorageException {
         File file = getFile(fileId);
-
-        String connectionUrl = ConfigProvider.getConfig(WebConfig.class).getConnectionUrl()
+        String connectionUrl = ConfigProvider.getConfig(ClientConfig.class).getConnectionUrl()
                 + CORE_FILE_UPLOAD_CONTEXT
                 + "?s=" + UserSessionProvider.getUserSession().getId()
                 + "&f=" + fileDescr.toUrlParam();
