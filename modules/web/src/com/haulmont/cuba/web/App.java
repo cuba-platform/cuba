@@ -135,7 +135,7 @@ public abstract class App extends Application
         cookies.updateCookies(request);
         if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
             String paramName = webConfig.getTestModeParamName();
-            testModeRequest = (paramName == null || request.getParameter(paramName) != null); 
+            testModeRequest = (paramName == null || request.getParameter(paramName) != null);
         }
     }
 
@@ -330,15 +330,16 @@ public abstract class App extends Application
         }
 
         String requestURI = request.getRequestURI();
+        String windowName = request.getParameter("windowName");
 
-        setupCurrentWindowName(requestURI);
+        setupCurrentWindowName(requestURI, windowName);
 
         String action = (String) request.getSession().getAttribute(LAST_REQUEST_ACTION_ATTR);
 
         if (!connection.isConnected() &&
                 !(("login".equals(action)) || auxillaryUrl(requestURI))) {
             if (loginOnStart(request))
-                setupCurrentWindowName(requestURI);
+                setupCurrentWindowName(requestURI, windowName);
         }
 
         if (connection.isConnected()) {
@@ -367,9 +368,12 @@ public abstract class App extends Application
         return uri.contains("/UIDL/") || uri.contains("/APP/") || uri.contains("/VAADIN/");
     }
 
-    private void setupCurrentWindowName(String requestURI) {
+    private void setupCurrentWindowName(String requestURI, String windowName) {
         //noinspection deprecation
-        currentWindowName.set(getMainWindow() == null ? null : getMainWindow().getName());
+        if (StringUtils.isEmpty(windowName))
+            currentWindowName.set(getMainWindow() == null ? null : getMainWindow().getName());
+        else
+            currentWindowName.set(windowName);
 
         String[] parts = requestURI.split("/");
         boolean contextFound = false;

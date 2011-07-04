@@ -64,8 +64,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
             testSessionSerialization(request.getSession());
         }
 
-        // TODO Trouble with multiple window
-/*
+        // Code for multiple windows support
         String[] uriParts = requestURI.split("/");
         boolean needRedirect = uriParts.length > 0 && !App.auxillaryUrl(requestURI) &&
                 (request.getParameter("multiupload") == null);
@@ -87,9 +86,9 @@ public class CubaApplicationServlet extends ApplicationServlet {
 
         if (needRedirect) {
             redirectToApp(request, response, contextName, uriParts, action);
-        } else {*/
+        } else {
             doService(request, response);
-//        }
+        }
     }
 
     private void redirectToApp(HttpServletRequest request, HttpServletResponse response,

@@ -51,6 +51,19 @@ public class DefaultApp extends App implements ConnectionListener {
         return window;
     }
 
+    /**
+     * Get or create new LoginWindow
+     * @return LoginWindow
+     */
+    private LoginWindow getLoginWindow() {
+        for (Window win : getWindows()) {
+            if (win instanceof LoginWindow)
+                return (LoginWindow) win;
+        }
+
+        return createLoginWindow();
+    }
+
     public void init() {
         log.debug("Initializing application");
 
@@ -84,8 +97,11 @@ public class DefaultApp extends App implements ConnectionListener {
 
                 return appWindow;
             } else {
-                final Window loginWindow = createLoginWindow();
+                final Window loginWindow = getLoginWindow();
+                removeWindow(loginWindow);
+
                 loginWindow.setName(name);
+
                 addWindow(loginWindow);
 
                 return loginWindow;
