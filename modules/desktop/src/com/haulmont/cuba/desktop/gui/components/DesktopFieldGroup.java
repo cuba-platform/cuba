@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageUtils;
@@ -13,13 +14,17 @@ import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FieldGroup;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsContext;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.util.*;
 
 /**
@@ -38,9 +43,10 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     private Map<String, Field> fields = new LinkedHashMap<String, Field>();
     private Map<Field, Integer> fieldsColumn = new HashMap<Field, Integer>();
     private Map<Field, Component> fieldComponents = new HashMap<Field, Component>();
+    private Map<Field, JLabel> fieldLabels = new HashMap<Field, JLabel>();
     private Map<Integer, List<Field>> columnFields = new HashMap<Integer, List<Field>>();
     private Map<Field, CustomFieldGenerator> generators = new HashMap<Field, CustomFieldGenerator>();
-    private FieldFactory fieldFactory = new FieldFactory();
+    private AbstractFieldFactory fieldFactory = new FieldFactory();
 
     public DesktopFieldGroup() {
         LC lc = new LC();
@@ -241,23 +247,44 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     public Object getFieldValue(Field field) {
+        Component component = fieldComponents.get(field);
+        if (component instanceof HasValue) {
+            return ((HasValue) component).getValue();
+        }
         return null;
     }
 
     public void setFieldValue(Field field, Object value) {
+        Component component = fieldComponents.get(field);
+        if (component instanceof HasValue) {
+            ((HasValue) component).setValue(value);
+        }
     }
 
     public Object getFieldValue(String fieldId) {
-        return null;
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        return getFieldValue(field);
     }
 
     public void setFieldValue(String fieldId, Object value) {
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+        setFieldValue(field, value);
     }
 
     @Override
     public void setFieldCaption(String fieldId, String caption) {
-        // todo
-        throw new UnsupportedOperationException();
+        Field field = getField(fieldId);
+        if (field == null)
+            throw new IllegalArgumentException(String.format("Field '%s' doesn't exist", fieldId));
+
+        JLabel label = fieldLabels.get(field);
+        if (label == null)
+            throw new IllegalStateException(String.format("Label for field '%s' not found", fieldId));
+        label.setText(caption);
     }
 
     public void setCaptionAlignment(FieldCaptionAlignment captionAlignment) {
@@ -338,6 +365,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             }
             JLabel label = new JLabel(caption);
             impl.add(label, new CC().cell(col*2, row, 1, 1));
+            fieldLabels.put(field, label);
 
             CustomFieldGenerator generator = generators.get(field);
             if (generator == null)
@@ -383,6 +411,17 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     public void setCaption(String caption) {
         this.caption = caption;
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(caption);
+        titledBorder.setTitleJustification(TitledBorder.LEFT);
+        titledBorder.setTitlePosition(TitledBorder.TOP);
+        titledBorder.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(java.awt.Color.gray),
+                        BorderFactory.createEmptyBorder(0,5,5,5)
+                )
+        );
+        titledBorder.setTitleFont(UIManager.getLookAndFeelDefaults().getFont("Panel.font"));
+        impl.setBorder(titledBorder);
     }
 
     public String getDescription() {
@@ -401,5 +440,35 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     public Collection<Component> getComponents() {
         return fieldComponents.values();
+    }
+
+    protected class FieldFactory extends AbstractFieldFactory {
+
+        @Override
+        protected CollectionDatasource getOptionsDatasource(Datasource datasource, String property) {
+            final Field field = fields.get(property);
+
+            DsContext dsContext;
+            if (datasource == null) {
+                if (field.getDatasource() == null) {
+                    throw new IllegalStateException("FieldGroup datasource is null");
+                }
+                dsContext = field.getDatasource().getDsContext();
+            } else {
+                dsContext = datasource.getDsContext();
+            }
+            Element descriptor = field.getXmlDescriptor();
+            String optDsName = descriptor == null ? null : descriptor.attributeValue("optionsDatasource");
+
+            if (!StringUtils.isBlank(optDsName)) {
+                CollectionDatasource optDs = dsContext.get(optDsName);
+                if (optDs == null) {
+                    throw new IllegalStateException("Options datasource not found: " + optDsName);
+                }
+                return optDs;
+            } else {
+                return null;
+            }
+        }
     }
 }

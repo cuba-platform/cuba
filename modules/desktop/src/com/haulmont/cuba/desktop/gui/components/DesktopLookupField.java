@@ -81,6 +81,10 @@ public class DesktopLookupField
 
         items.clear();
 
+        if (!isRequired()) {
+            items.add(new ObjectWrapper(null));
+        }
+
         if (optionsDatasource != null) {
             if (!optionsDatasource.getState().equals(Datasource.State.VALID)) {
                 optionsDatasource.refresh();

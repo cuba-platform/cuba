@@ -797,10 +797,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 dsContext = ds.getDsContext();
             }
             Element descriptor = field.getXmlDescriptor();
-            String attrValue = descriptor==null?null:descriptor.attributeValue("optionsDatasource");
-            String optDsName = field != null
-                    ? attrValue
-                    : null;
+            String optDsName = descriptor == null ? null : descriptor.attributeValue("optionsDatasource");
 
             if (!StringUtils.isBlank(optDsName)) {
                 CollectionDatasource optDs = dsContext.get(optDsName);
@@ -809,22 +806,6 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 }
                 return optDs;
             } else {
-/*
-                CollectionDatasource optDs = optionsDatasources.get(metaClass);
-                if (optDs != null) return optDs;
-
-                final DataService dataservice = ds.getDataService();
-
-                final String id = metaClass.getName();
-                final String viewName = null; //metaClass.getName() + ".lookup";
-
-                optDs = new CollectionDatasourceImpl(dsContext, dataservice, id, metaClass, viewName);
-                optDs.refresh();
-
-                optionsDatasources.put(metaClass, optDs);
-
-                return optDs;
-*/
                 return null;
             }
         }

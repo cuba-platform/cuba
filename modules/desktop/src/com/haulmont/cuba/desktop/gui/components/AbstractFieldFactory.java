@@ -7,18 +7,26 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * <p>$Id$</p>
  *
  * @author krivopustov
  */
-public class FieldFactory {
+public abstract class AbstractFieldFactory {
 
     public Component createField(Datasource datasource, String property) {
         MetaClass metaClass = datasource.getMetaClass();
@@ -37,6 +45,8 @@ public class FieldFactory {
             }
         } else if (mpp.getRange().isClass()) {
             return createEntityField(datasource, property);
+        } else if (mpp.getRange().isEnum()) {
+            return createEnumField(datasource, property, mpp.getMetaProperty());
         }
         return createUnsupportedField(mpp);
     }
@@ -66,9 +76,31 @@ public class FieldFactory {
     }
 
     private Component createEntityField(Datasource datasource, String property) {
-        DesktopPickerField pickerField = new DesktopPickerField();
+        PickerField pickerField;
+
+        CollectionDatasource optionsDatasource = getOptionsDatasource(datasource, property);
+        if (optionsDatasource == null) {
+            pickerField = new DesktopPickerField();
+        } else {
+            pickerField = new DesktopLookupPickerField();
+            ((DesktopLookupPickerField) pickerField).setOptionsDatasource(optionsDatasource);
+        }
         pickerField.setDatasource(datasource, property);
         return pickerField;
+    }
+
+    private Component createEnumField(Datasource datasource, String property, MetaProperty metaProperty) {
+        Map<String, Object> options = new TreeMap<String, Object>();
+        Enumeration<Enum> enumeration = metaProperty.getRange().asEnumeration();
+        for (Enum value : enumeration.getValues()) {
+            String caption = MessageProvider.getMessage(value);
+            options.put(caption, value);
+        }
+
+        DesktopLookupField lookupField = new DesktopLookupField();
+        lookupField.setOptionsMap(options);
+        lookupField.setDatasource(datasource, property);
+        return lookupField;
     }
 
     private Component createUnsupportedField(MetaPropertyPath mpp) {
@@ -77,4 +109,5 @@ public class FieldFactory {
         return label;
     }
 
+    protected abstract CollectionDatasource getOptionsDatasource(Datasource datasource, String property);
 }
