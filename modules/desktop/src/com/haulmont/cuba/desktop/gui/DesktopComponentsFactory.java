@@ -11,7 +11,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.charts.Chart;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +53,9 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(PickerField.NAME, DesktopPickerField.class);
         classes.put(LookupPickerField.NAME, DesktopLookupPickerField.class);
         classes.put(OptionsGroup.NAME, DesktopOptionsGroup.class);
+        classes.put(FileUploadField.NAME, DesktopFileUploadField.class);
         classes.put(Tabsheet.NAME, DesktopTabsheet.class);
+        classes.put(Embedded.NAME, DesktopEmbedded.class);
         classes.put(WidgetsTree.NAME, DesktopWidgetsTree.class);
         classes.put(GroupBox.NAME, DesktopGroupBox.class);
     }
