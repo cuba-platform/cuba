@@ -10,12 +10,10 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.WrappedFrame;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
@@ -30,9 +28,11 @@ import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.List;
 
 public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
@@ -124,6 +124,12 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                     aClass = ReflectionHelper.getClass(screenClass);
                 res = ((WrappedFrame) frame).wrapBy(aClass);
 
+                if (res instanceof AbstractFrame) {
+                    Element companionsElem = element.element("companions");
+                    if (companionsElem != null) {
+                        initCompanion(companionsElem, (AbstractFrame) res);
+                    }
+                }
                 parentContext.addPostInitTask(new FrameLoaderPostInitTask(res, params, true));
 
                 return res;
@@ -133,6 +139,28 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         } else {
             parentContext.addPostInitTask(new FrameLoaderPostInitTask(res, params, false));
             return res;
+        }
+    }
+
+    protected void initCompanion(Element companionsElem, AbstractFrame frame) {
+        Element element = companionsElem.element(AppConfig.getInstance().getClientType().toString().toLowerCase());
+        if (element != null) {
+            String className = element.attributeValue("class");
+            if (!StringUtils.isBlank(className)) {
+                Class aClass = ScriptingProvider.loadClass(className);
+                Object companion;
+                try {
+                    if (AbstractCompanion.class.isAssignableFrom(aClass)) {
+                        Constructor constructor = aClass.getConstructor(new Class[]{AbstractFrame.class});
+                        companion = constructor.newInstance(frame);
+                    } else {
+                        companion = aClass.newInstance();
+                        frame.setCompanion(companion);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 
