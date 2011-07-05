@@ -12,6 +12,9 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.entity.EntityOp;
 import org.w3c.dom.*;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -360,17 +363,19 @@ public class XMLConvertor implements Convertor {
      * Encodes the closure of a persistent instance into a XML element.
      *
      * @param visited
-     *@param entity    the managed instance to be encoded. Can be null.
+     * @param entity    the managed instance to be encoded. Can be null.
      * @param parent    the parent XML element to which the new XML element be added. Must not be null. Must be
- *                  owned by a document.
+     *                  owned by a document.
      * @param isRef
-     * @param metaClass     @return the new element. The element has been appended as a child to the given parent in this method.
+     * @param metaClass @return the new element. The element has been appended as a child to the given parent in this method.
      */
     private Element encodeEntityInstance(HashSet<Entity> visited, final Entity entity, final Element parent,
                                          boolean isRef, MetaClass metaClass)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
 
-
+        if (!UserSessionProvider.getUserSession().isEntityOpPermitted(metaClass, EntityOp.READ)) {
+            return null;
+        }
 
         if (parent == null)
             throw new NullPointerException("No parent specified");
@@ -396,6 +401,11 @@ public class XMLConvertor implements Convertor {
             Element child;
             if (MetadataHelper.isTransient(entity, property.getName()))
                 continue;
+
+            if (!(UserSessionProvider.getUserSession().isEntityAttrPermitted(metaClass, property.getName(), EntityAttrAccess.VIEW) ||
+                    UserSessionProvider.getUserSession().isEntityAttrPermitted(metaClass, property.getName(), EntityAttrAccess.MODIFY))) {
+                continue;
+            }
 
             Object value = entity.getValue(property.getName());
             switch (property.getType()) {

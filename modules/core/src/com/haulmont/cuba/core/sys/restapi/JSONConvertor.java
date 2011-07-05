@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.core.sys.restapi;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
@@ -14,6 +13,9 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.entity.EntityOp;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -227,6 +229,10 @@ public class JSONConvertor implements Convertor {
             return null;
         }
 
+        if (!UserSessionProvider.getUserSession().isEntityOpPermitted(metaClass, EntityOp.READ)) {
+            return null;
+        }
+
         boolean ref = !visited.add(entity);
 
         MyJSONObject root = new MyJSONObject(idof(entity), ref);
@@ -240,7 +246,12 @@ public class JSONConvertor implements Convertor {
             if (MetadataHelper.isTransient(entity, property.getName()))
                 continue;
 
-            Object value = ((Instance) entity).getValue(property.getName());
+            if (!(UserSessionProvider.getUserSession().isEntityAttrPermitted(metaClass, property.getName(), EntityAttrAccess.VIEW) ||
+                    UserSessionProvider.getUserSession().isEntityAttrPermitted(metaClass, property.getName(), EntityAttrAccess.MODIFY))) {
+                continue;
+            }
+
+            Object value = entity.getValue(property.getName());
             if (property.getAnnotatedElement().isAnnotationPresent(Id.class)) {
                 //skipping: we encoded it before
                 continue;
