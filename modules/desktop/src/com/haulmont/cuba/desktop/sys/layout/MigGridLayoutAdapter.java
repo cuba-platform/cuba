@@ -23,6 +23,10 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
     protected MigLayout layout;
     protected JComponent container;
 
+    // for mindless add(component), add(component), add(component)
+    // calling with automatic extending, like it can be done in vaadin
+    protected int cursorX, cursorY;
+
     public MigGridLayoutAdapter(JComponent container) {
         this(new MigLayout(), container);
     }
@@ -60,10 +64,25 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
         int spanY = row2 - row;
         CC cc = new CC().cell(col, row, spanX, spanY);
         container.add(component, cc);
+
+        cursorX = col2 + 1;
+        cursorY = row2;
+        if (cursorX >= colCount) {
+            cursorX = 0;          // new row
+            cursorY++;
+        }
     }
 
     @Override
     public void add(Component component) {
-        container.add(component);
+        int col = cursorX++;
+        int row = cursorY;
+        if (cursorX >= colCount) {
+            cursorX = 0;          // new row
+            cursorY++;
+        }
+
+        CC cc = new CC().cell(col, row, 1, 1);
+        container.add(component, cc);
     }
 }
