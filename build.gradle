@@ -147,7 +147,7 @@ configure(coreModule) {
 
     assembleDbScripts << {
         copy {
-            from new File(rootProject.projectDir, 'db')
+            from new File(projectDir, 'db')
             into "$buildDir/db/10-cuba"
         }
     }
@@ -338,18 +338,18 @@ dependencies {
 
 def dbName = 'cubadb'
 def File dbDataDir = file('data')
-def File dbSqlDir = file('db/init/sql')
+def File dbSqlDir = file('modules/core/db/init/sql')
 def dbClasspath = configurations.jdbc.fileCollection{ true }.asPath
 
 task startDb(description: 'Starts local HSQLDB server') << {
     dbDataDir.mkdirs()
     if ('linux'.equalsIgnoreCase(System.getProperty('os.name'))) {
         ant.exec(dir: dbDataDir.absolutePath, executable: '/bin/sh', spawn: true) {
-            arg(line: "$projectDir/db/run-hsqldb.sh $dbClasspath $dbName")
+            arg(line: "$projectDir/modules/core/db/run-hsqldb.sh $dbClasspath $dbName")
         }
     } else {
         ant.exec(dir: dbDataDir.absolutePath, executable: 'cmd.exe', spawn: true) {
-            arg(line: "/c start $projectDir/db/run-hsqldb.bat $dbClasspath $dbName")
+            arg(line: "/c start $projectDir/modules/core/db/run-hsqldb.bat $dbClasspath $dbName")
         }
     }
 }
