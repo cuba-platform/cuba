@@ -32,6 +32,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(BoxLayout.HBOX, DesktopHBox.class);
         classes.put(BoxLayout.VBOX, DesktopVBox.class);
         classes.put(GridLayout.NAME, DesktopGridLayout.class);
+        classes.put(ScrollBoxLayout.NAME, DesktopScrollBoxLayout.class);
         classes.put(SplitPanel.NAME, DesktopSplitPanel.class);
 
         classes.put(Button.NAME, DesktopButton.class);
