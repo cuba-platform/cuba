@@ -58,7 +58,7 @@ public class ResourceWindow extends Window {
         boolean isFirefox = false;
         ApplicationContext appContext = App.getInstance().getContext();
         if (appContext instanceof WebApplicationContext) {
-            isFirefox = ((WebApplicationContext)appContext).getBrowser().isFirefox();
+            isFirefox = ((WebApplicationContext) appContext).getBrowser().isFirefox();
         }
 
         String[] strings = resourceName.split("[/\\\\]");
@@ -76,25 +76,25 @@ public class ResourceWindow extends Window {
         contentType += ";charset=\"UTF-8\"";
 
         try {
-            fileName = URLEncoder.encode(fileName, "UTF-8");
+            fileName = URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
         DownloadStream downloadStream = new CloseableDownloadStream(dataProvider, contentType, fileName);
 
-        if (isFirefox)    {
-            // Firefox
-            if (isAttachment)
-                downloadStream.setParameter("Content-Disposition", "attachment; filename*=UTF-8''" + fileName + ";");
-            else
-                downloadStream.setParameter("Content-Disposition", "inline; filename*=UTF-8''" + fileName + ";");
-        } else {
-            // Other browsers
-            if (isAttachment)
-                downloadStream.setParameter("Content-Disposition", "attachment; filename=\"" + fileName + "\";");
-            else
-                downloadStream.setParameter("Content-Disposition", "inline; filename=\"" + fileName + "\";");
-        }
+        String fileNameParam;
+        if (isFirefox)
+            fileNameParam = "filename*=UTF-8''" + fileName + ";";
+        else
+            fileNameParam = "filename=\"" + fileName + "\";";
+
+        String contentDisposition;
+        if (isAttachment)
+            contentDisposition = "attachment; " + fileNameParam;
+        else
+            contentDisposition = "inline; " + fileNameParam;
+
+        downloadStream.setParameter("Content-Disposition", contentDisposition);
 
         return downloadStream;
     }
