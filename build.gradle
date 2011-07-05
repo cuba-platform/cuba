@@ -117,7 +117,10 @@ configure(coreModule) {
         compile(group: 'com.haulmont.thirdparty', name: 'xstream', version: '1.3.1.20100706')
         compile(group: 'com.haulmont.thirdparty', name: 'core-renderer', version: 'R8')
         runtime(group: 'xpp3', name: 'xpp3_min', version: '1.1.4c')
-        compile(group: 'com.lowagie', name: 'itext', version: '2.1.0')
+        compile(group: 'com.lowagie', name: 'itext', version: '2.1.0') {
+            exclude(group: 'bouncycastle', module: 'bcmail-jdk14')
+            exclude(group: 'bouncycastle', module: 'bcprov-jdk14')
+        }
         compile(group: 'jgroups', name: 'jgroups', version: '2.9.0.GA')       
         compile(group: 'org.apache.commons', name: 'commons-compress', version: '1.1')       
         compile(poi)
