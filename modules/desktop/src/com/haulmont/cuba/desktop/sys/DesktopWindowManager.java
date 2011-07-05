@@ -13,24 +13,19 @@ import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.ScreenHistorySupport;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Element;
 
-import javax.swing.AbstractAction;
 import javax.swing.*;
-import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
@@ -305,6 +300,25 @@ public class DesktopWindowManager extends WindowManager {
 
     @Override
     protected void showFrame(Component parent, IFrame frame) {
+        // the same as web window manager does
+        if (parent instanceof Component.Container) {
+            Component.Container container = (Component.Container) parent;
+            for (Component c : container.getComponents()) {
+                if (c instanceof Component.Disposable) {
+                    Component.Disposable disposable =
+                            (Component.Disposable) c;
+                    if (!disposable.isDisposed()) {
+                        disposable.dispose();
+                    }
+                }
+                container.remove(c);
+            }
+            container.add(frame);
+        } else {
+            throw new IllegalStateException(
+                    "Parent component must be com.haulmont.cuba.gui.components.Component.Container"
+            );
+        }
     }
 
     @Override

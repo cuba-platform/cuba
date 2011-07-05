@@ -143,6 +143,9 @@ public class DesktopTabsheet
     @Override
     public Tab getTab() {
         JComponent component = (JComponent) impl.getSelectedComponent();
+        if (component == null) {
+            return null; // nothing selected
+        }
         for (TabImpl tabImpl : tabs.values()) {
             if (DesktopComponentsHelper.getComposition(tabImpl.getComponent()).equals(component))
                 return tabImpl;
