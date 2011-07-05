@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
+import com.haulmont.cuba.core.config.defaults.DefaultInteger;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 
 /**
@@ -24,6 +25,10 @@ public interface ClientConfig extends Config {
 
     @Property("cuba.connectionUrl")
     String getConnectionUrl();
+
+    @Property("cuba.client.maxUploadSizeMb")
+    @DefaultInteger(20)
+    Integer getMaxUploadSizeMb();
 
     @Property("cuba.collectionDatasourceDbSortEnabled")
     @DefaultBoolean(true)

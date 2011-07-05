@@ -2,12 +2,8 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Artamonov Yuryi
- * Created: 04.02.11 15:07
- *
- * $Id$
  */
+
 package com.haulmont.cuba.gui.upload;
 
 import com.haulmont.cuba.client.ClientConfig;
@@ -29,6 +25,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * <p>$Id$</p>
+ *
+ * @author artamonov
+ */
 public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     private Map<UUID, File> tempFiles = new ConcurrentHashMap<UUID, File>();
@@ -132,7 +133,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         } catch (FileStorageException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath());
         }
         return uuid;
     }

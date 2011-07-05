@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
@@ -305,7 +306,7 @@ public class CubaCommunicationManager extends CommunicationManager {
                         internalError(response);
                         return;
                     }
-                    final Integer maxUploadSizeMb = ConfigProvider.getConfig(WebConfig.class).getMaxUploadSizeMb();
+                    final Integer maxUploadSizeMb = ConfigProvider.getConfig(ClientConfig.class).getMaxUploadSizeMb();
 
                     WebSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
 

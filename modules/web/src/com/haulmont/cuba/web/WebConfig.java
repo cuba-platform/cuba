@@ -120,9 +120,6 @@ public interface WebConfig extends Config
     @DefaultInt(200)
     int getFoldersPaneDefaultWidth();
 
-    @DefaultInteger(20)
-    Integer getMaxUploadSizeMb();
-
     String getResourcesRoot();
 
     /**

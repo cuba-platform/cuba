@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -18,6 +19,7 @@ import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.ui.Upload;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
@@ -72,18 +74,18 @@ public class WebFileUploadField
 
         component.addListener(new Upload.StartedListener() {
             public void uploadStarted(Upload.StartedEvent event) {
-                final Integer maxUploadSizeMb = ConfigProvider.getConfig(WebConfig.class).getMaxUploadSizeMb();
+                final Integer maxUploadSizeMb = ConfigProvider.getConfig(ClientConfig.class).getMaxUploadSizeMb();
                 final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
                 if (event.getContentLength() > maxSize) {
                     component.interruptUpload();
-                    String warningMsg = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "upload.fileTooBig.message");
+                    String warningMsg = MessageProvider.getMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message");
                     getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
-                }
-
-                bytes = null;
-                final Listener.Event e = new Listener.Event(event.getFilename());
-                for (Listener listener : listeners) {
-                    listener.uploadStarted(e);
+                } else {
+                    bytes = null;
+                    final Listener.Event e = new Listener.Event(event.getFilename());
+                    for (Listener listener : listeners) {
+                        listener.uploadStarted(e);
+                    }
                 }
             }
         });
@@ -132,7 +134,7 @@ public class WebFileUploadField
                 }
             }
         });
-        component.setButtonCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+        component.setButtonCaption(MessageProvider.getMessage(AppConfig.getMessagesPack(),
                 "upload.submit"));
     }
 
@@ -166,22 +168,11 @@ public class WebFileUploadField
         listeners.remove(listener);
     }
 
-    private void readFileToBytes(FileInputStream fileInput, ByteArrayOutputStream byteOutput)
-            throws IOException {
-        int readedBytes;
-        byte[] buffer = new byte[BUFFER_SIZE];
-        do {
-            readedBytes = fileInput.read(buffer);
-            byteOutput.write(buffer, 0, readedBytes);
-        }
-        while (readedBytes == BUFFER_SIZE);
-    }
-
     /**
      * Get content bytes for uploaded file
      *
      * @return Bytes for uploaded file
-     * @deprecated Please use {@link WebFileUploadField#getFileId()} method and {@link FileUploadService}
+     * @deprecated Please use {@link WebFileUploadField#getFileId()} method and {@link FileUploadingAPI}
      */
     @Deprecated
     public byte[] getBytes() {
@@ -191,7 +182,7 @@ public class WebFileUploadField
                     File file = fileUploading.getFile(fileId);
                     FileInputStream fileInputStream = new FileInputStream(file);
                     ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-                    readFileToBytes(fileInputStream, byteOutput);
+                    IOUtils.copy(fileInputStream, byteOutput);
                     bytes = byteOutput.toByteArray();
                 }
             } catch (Exception e) {
@@ -227,7 +218,7 @@ public class WebFileUploadField
     }
 
     /**
-     * Get id for uploaded file in {@link FileUploadService}
+     * Get id for uploaded file in {@link FileUploadingAPI}
      *
      * @return File Id
      */

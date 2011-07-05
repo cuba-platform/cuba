@@ -6,9 +6,26 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.FileStorageException;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileUploadField;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.upload.FileUploadingAPI;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -16,77 +33,188 @@ import java.util.UUID;
  *
  * @author Alexander Budarov
  */
-public class DesktopFileUploadField extends DesktopAbstractComponent<JPanel> implements FileUploadField {
+public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> implements FileUploadField {
+
+    private static final int BYTES_IN_MEGABYTE = 1048576;
+
+    protected FileUploadingAPI fileUploading;
+
+    protected boolean isUploadingState = false;
+    protected String fileName;
+    protected byte[] bytes;
+
+    protected String description;
+
+    protected UUID fileId;
+
+    protected FileOutputStream outputStream;
+    protected UUID tempFileId;
+
+    private List<Listener> listeners = new ArrayList<Listener>();
 
     public DesktopFileUploadField() {
-        impl = new JPanel(new java.awt.FlowLayout());
-        impl.setBorder(BorderFactory.createLineBorder(java.awt.Color.gray));
-        impl.add(new JLabel("TODO: file upload"));
-        // todo stub
+        fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+
+        final JFileChooser fileChooser = new JFileChooser();
+        String caption = MessageProvider.getMessage(getClass(), "selectFile");
+        impl = new JButton();
+        impl.setAction(new AbstractAction(caption) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (fileChooser.showOpenDialog(impl) == JFileChooser.APPROVE_OPTION) {
+                    uploadFile(fileChooser.getSelectedFile());
+                }
+            }
+        });
+    }
+
+    private void uploadFile(File file) {
+        final Integer maxUploadSizeMb = ConfigProvider.getConfig(ClientConfig.class).getMaxUploadSizeMb();
+        final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
+
+        if (file.length() > maxSize) {
+            String warningMsg = MessageProvider.getMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message");
+            getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
+        } else {
+            boolean succcess = true;
+            try {
+                isUploadingState = true;
+
+                fileName = file.getAbsolutePath();
+                notifyListenersStart(file);
+
+                tempFileId = fileUploading.createEmptyFile();
+
+                File tmpFile = fileUploading.getFile(tempFileId);
+                FileUtils.copyFile(file, tmpFile);
+
+                fileId = tempFileId;
+
+                isUploadingState = false;
+            } catch (Exception ex) {
+                succcess = false;
+                try {
+                    fileUploading.deleteFile(tempFileId);
+                    tempFileId = null;
+                } catch (FileStorageException e) {
+                    throw new RuntimeException(ex);
+                }
+                notifyListenersFail(file);
+            } finally {
+                notifyListenersFinish(file);
+            }
+            if (succcess) {
+                notifyListenersSuccess(file);
+            }
+        }
+    }
+
+    private void notifyListenersSuccess(File file) {
+        final Listener.Event e = new Listener.Event(file.getName());
+        for (Listener listener : listeners) {
+            listener.uploadSucceeded(e);
+        }
+    }
+
+    private void notifyListenersFail(File file) {
+        final Listener.Event failedEvent = new Listener.Event(file.getName());
+        for (Listener listener : listeners) {
+            listener.uploadFailed(failedEvent);
+        }
+    }
+
+    private void notifyListenersFinish(File file) {
+        final Listener.Event finishedEvent = new Listener.Event(file.getName());
+        for (Listener listener : listeners) {
+            listener.uploadFinished(finishedEvent);
+        }
+    }
+
+    private void notifyListenersStart(File file) {
+        final Listener.Event startedEvent = new Listener.Event(file.getName());
+        for (Listener listener : listeners) {
+            listener.uploadStarted(startedEvent);
+        }
     }
 
     @Override
     public String getFilePath() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return fileName;
     }
 
     @Override
     public String getFileName() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        String[] strings = fileName.split("[/\\\\]");
+        return strings[strings.length - 1];
     }
 
     @Override
     public boolean isUploading() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return isUploadingState;
     }
 
     @Override
     public byte[] getBytes() {
-        return new byte[0];  //To change body of implemented methods use File | Settings | File Templates.
+        if (bytes == null) {
+            try {
+                if (fileId != null) {
+                    File file = fileUploading.getFile(fileId);
+                    FileInputStream fileInputStream = new FileInputStream(file);
+                    ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+                    IOUtils.copy(fileInputStream, byteOutput);
+                    bytes = byteOutput.toByteArray();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return bytes;
     }
 
     @Override
     public UUID getFileId() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return fileId;
     }
 
     @Override
     public long getBytesRead() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return 0;
     }
 
     @Override
     public void release() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        outputStream = null;
+        bytes = null;
     }
 
     @Override
     public void addListener(Listener listener) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        if (!listeners.contains(listener)) listeners.add(listener);
     }
 
     @Override
     public void removeListener(Listener listener) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        listeners.remove(listener);
     }
 
     @Override
     public String getCaption() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return impl.getText();
     }
 
     @Override
     public void setCaption(String caption) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        impl.setText(caption);
     }
 
     @Override
     public String getDescription() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return description;
     }
 
     @Override
     public void setDescription(String description) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.description = description;
     }
 }

@@ -10,13 +10,13 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.ValueProvider;
 import com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
 import com.vaadin.ui.ClientWidget;
 
@@ -46,11 +46,12 @@ public class WebFileMultiUploadField extends
     };
 
     public WebFileMultiUploadField() {
-        String caption = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "Upload");
+        String caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "Upload");
         MultiUpload uploader = new MultiUpload(caption);
 
         componentParams.getParameters().put("caption", "");
-        componentParams.getParameters().put("fileSizeLimit", ConfigProvider.getConfig(WebConfig.class).getMaxUploadSizeMb().toString() + " MB");
+        componentParams.getParameters().put("fileSizeLimit",
+                ConfigProvider.getConfig(ClientConfig.class).getMaxUploadSizeMb().toString() + " MB");
 
         uploader.setValueProvider(componentParams);
         uploader.setWidth("90px");
@@ -90,7 +91,7 @@ public class WebFileMultiUploadField extends
             // On upload error
             public void errorNotify(String fileName, String message, int errorCode) {
                 for (UploadListener listener : listeners)
-                    listener.errorNotify(fileName, message, errorCode);    
+                    listener.errorNotify(fileName, message, errorCode);
             }
         });
 

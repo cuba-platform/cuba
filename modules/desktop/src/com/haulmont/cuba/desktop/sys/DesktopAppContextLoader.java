@@ -8,12 +8,15 @@ package com.haulmont.cuba.desktop.sys;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SingleSecurityContextHolder;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
@@ -23,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
@@ -56,9 +60,24 @@ public class DesktopAppContextLoader {
         initAppContext();
         initLocalization();
         initServiceLocator();
+        initEnvironment();
 
         AppContext.startContext();
         log.info("AppContext initialized");
+    }
+
+    private void initEnvironment() {
+        String tempPath = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
+        File tempDir = new File(tempPath);
+        if (!tempDir.exists()) {
+            try {
+                boolean result = tempDir.mkdirs();
+                if (!result)
+                    throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, tempPath);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
     private void initLocalization() {
