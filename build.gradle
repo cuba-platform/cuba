@@ -370,6 +370,7 @@ task startDb(description: 'Starts local HSQLDB server') << {
             arg(line: "/c start $projectDir/modules/core/db/run-hsqldb.bat $dbClasspath $dbName")
         }
     }
+    Thread.sleep(1000)
 }
 
 task stopDb(description: 'Stops local HSQLDB server') << {
