@@ -141,9 +141,18 @@ configure(coreModule) {
 
         jdbc(postgres)
         jdbc(hsqldb)
+
+        testRuntime(servletApi)
+        testRuntime(hsqldb)
+    }
+
+    test {
+        scanForTestClasses = false
+        includes = ['**/*Test.class']
     }
 
     task testsJar(dependsOn: testClasses, type: Jar) {
+        from sourceSets.main.classesDir
         from sourceSets.test.classesDir
         classifier = 'tests'
     }
@@ -187,6 +196,12 @@ configure(guiModule) {
         compile(group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.0.1')
         groovy(groovyArtifact)
         groovy(asm)
+    }
+    
+    test {
+        scanForTestClasses = false
+        includes = ['**/*Test.class']
+        excludes = ['**/QueryFilterTest.class'] // until we implement client testing infrastructure
     }
 }
 
@@ -354,6 +369,21 @@ task startDb(description: 'Starts local HSQLDB server') << {
         ant.exec(dir: dbDataDir.absolutePath, executable: 'cmd.exe', spawn: true) {
             arg(line: "/c start $projectDir/modules/core/db/run-hsqldb.bat $dbClasspath $dbName")
         }
+    }
+}
+
+task stopDb(description: 'Stops local HSQLDB server') << {
+    try {
+        ant.sql(classpath: dbClasspath, delimiter: ";",
+                driver: 'org.hsqldb.jdbcDriver',
+                url: "jdbc:hsqldb:hsql://localhost/$dbName",
+                userid: 'sa', password: '',
+                autocommit: true,
+                'shutdown'
+        )
+        Thread.sleep(1000)
+    } catch (Exception e) {
+        logger.warn(">>> error stopping local HSQLDB server: $e")
     }
 }
 
