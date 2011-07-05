@@ -18,7 +18,6 @@ import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.sys.WebSecurityUtils;
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
@@ -45,8 +44,6 @@ import java.util.UUID;
 
 @Controller
 public class FileDownloadController {
-
-    private static final String CORE_FILE_DOWNLOAD_CONTEXT = "/remoting/download";
 
     private static Log log = LogFactory.getLog(FileDownloadController.class);
 
@@ -113,11 +110,14 @@ public class FileDownloadController {
     }
 
     private InputStream openInputStream(UserSession userSession, UUID fileId) throws IOException {
-        String connectionUrl = ConfigProvider.getConfig(ClientConfig.class).getConnectionUrl();
-        URL url = new URL(connectionUrl + CORE_FILE_DOWNLOAD_CONTEXT + "?s=" + userSession.getId() + "&f=" + fileId.toString());
+        ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
+
+        String connectionUrl = clientConfig.getConnectionUrl();
+        String fileDownloadContext = clientConfig.getFileDownloadContext();
+
+        URL url = new URL(connectionUrl + fileDownloadContext + "?s=" + userSession.getId() + "&f=" + fileId.toString());
         return url.openStream();
     }
-
 
     protected UserSession getSession(HttpServletRequest request, HttpServletResponse response) {
         App app = getExistingApplication(request, response);

@@ -26,6 +26,9 @@ public interface ClientConfig extends Config {
     @Property("cuba.connectionUrl")
     String getConnectionUrl();
 
+    @Property("cuba.fileDownloadContext")
+    String getFileDownloadContext();
+
     @Property("cuba.client.maxUploadSizeMb")
     @DefaultInteger(20)
     Integer getMaxUploadSizeMb();

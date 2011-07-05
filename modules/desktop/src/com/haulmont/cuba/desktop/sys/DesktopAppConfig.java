@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.sys;
 
 import com.haulmont.cuba.desktop.gui.DesktopComponentsFactory;
+import com.haulmont.cuba.desktop.gui.components.DesktopExportDisplay;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -22,7 +23,7 @@ public class DesktopAppConfig extends AppConfig {
 
     @Override
     protected ExportDisplay __createExportDisplay() {
-        return null;
+        return new DesktopExportDisplay();
     }
 
     @Override

@@ -6,14 +6,14 @@
 
 package com.haulmont.cuba.gui.export;
 
-import com.haulmont.cuba.core.app.FileStorageService;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 /**
  * Data provider for FileDescriptor
@@ -31,11 +31,16 @@ public class FileDataProvider implements ExportDataProvider {
     }
 
     public InputStream provide() {
-        FileStorageService storageService = ServiceLocator.lookup(FileStorageService.NAME);
+        String fileDownloadContext = ConfigProvider.getConfig(ClientConfig.class).getFileDownloadContext();
         try {
-            inputStream = new ByteArrayInputStream(storageService.loadFile(fileDescriptor));
-        } catch (FileStorageException e) {
-            throw new RuntimeException(e);
+            // TODO How about not saved fileDescriptors ?
+            String connectionUrl = ConfigProvider.getConfig(ClientConfig.class).getConnectionUrl();
+            URL url = new URL(connectionUrl + fileDownloadContext +
+                    "?s=" + UserSessionProvider.getUserSession().getId() +
+                    "&f=" + fileDescriptor.getId().toString());
+            inputStream = url.openStream();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
         return inputStream;
     }
