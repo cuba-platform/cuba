@@ -185,7 +185,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     @Override
     public <T> T getValue() {
         ValueWrapper selectedItem = (ValueWrapper) getSelectedItem();
-        return (T) selectedItem.getValue();
+        return selectedItem != null ? (T) selectedItem.getValue() : null;
     }
 
     @Override
