@@ -95,7 +95,12 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
 
     @Override
     public Entity getItem(int rowIndex) {
-        return tableDelegate.getItem(rowIndex);
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getRowIndex(Entity entity) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -129,5 +134,9 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
 
     public TreePath getTreePath(Object object) {
         return treeDelegate.getTreePath(object);
+    }
+
+    public Entity getEntity(Object object) {
+        return treeDelegate.getEntity(object);
     }
 }

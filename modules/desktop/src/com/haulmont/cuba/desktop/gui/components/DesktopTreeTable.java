@@ -13,7 +13,12 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import org.jdesktop.swingx.JXTreeTable;
 
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * <p>$Id$</p>
@@ -41,6 +46,19 @@ public class DesktopTreeTable
                 true
         );
         impl.setTreeTableModel(((TreeTableModelAdapter) tableModel));
+    }
+
+    @Override
+    protected void initSelectionListener(final CollectionDatasource datasource) {
+        impl.getTreeSelectionModel().addTreeSelectionListener(
+                new TreeSelectionListener() {
+                    @Override
+                    public void valueChanged(TreeSelectionEvent e) {
+                        Entity entity = getSingleSelected();
+                        datasource.setItem(entity);
+                    }
+                }
+        );
     }
 
     @Override
@@ -122,5 +140,33 @@ public class DesktopTreeTable
             return false;
 
         return impl.isExpanded(((TreeTableModelAdapter) tableModel).getTreePath(item));
+    }
+
+    @Override
+    public Set getSelected() {
+        Set selected = new HashSet();
+        TreePath[] selectionPaths = impl.getTreeSelectionModel().getSelectionPaths();
+        if (selectionPaths != null) {
+            for (TreePath path : selectionPaths) {
+                Entity entity = ((TreeTableModelAdapter) tableModel).getEntity(path.getLastPathComponent());
+                if (entity != null)
+                    selected.add(entity);
+            }
+        }
+        return selected;
+    }
+
+    @Override
+    public void setSelected(Entity item) {
+        TreePath treePath = ((TreeTableModelAdapter) tableModel).getTreePath(item);
+        impl.getTreeSelectionModel().setSelectionPath(treePath);
+    }
+
+    @Override
+    public void setSelected(Collection<Entity> items) {
+        for (Entity item : items) {
+            TreePath treePath = ((TreeTableModelAdapter) tableModel).getTreePath(item);
+            impl.getTreeSelectionModel().addSelectionPath(treePath);
+        }
     }
 }

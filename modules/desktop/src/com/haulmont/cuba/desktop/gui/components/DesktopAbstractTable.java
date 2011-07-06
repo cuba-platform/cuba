@@ -173,23 +173,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
         impl.setRowSorter(new RowSorterImpl(tableModel));
 
-        impl.getSelectionModel().addListSelectionListener(
-                new ListSelectionListener() {
-                    public void valueChanged(ListSelectionEvent e) {
-                        if (e.getValueIsAdjusting())
-                            return;
-
-                        int idx = impl.getSelectionModel().getMaxSelectionIndex();
-                        if (idx > -1) {
-                            int modelIdx = impl.convertRowIndexToModel(idx);
-                            Entity item = tableModel.getItem(modelIdx);
-                            datasource.setItem(item);
-                        } else {
-                            datasource.setItem(null);
-                        }
-                    }
-                }
-        );
+        initSelectionListener(datasource);
 
         List<MetaPropertyPath> editableColumns = null;
         if (isEditable()) {
@@ -271,6 +255,20 @@ public abstract class DesktopAbstractTable<C extends JTable>
 //
 //        if (rowsCount != null)
 //            rowsCount.setDatasource(datasource);
+    }
+
+    protected void initSelectionListener(final CollectionDatasource datasource) {
+        impl.getSelectionModel().addListSelectionListener(
+                new ListSelectionListener() {
+                    public void valueChanged(ListSelectionEvent e) {
+                        if (e.getValueIsAdjusting())
+                            return;
+
+                        Entity entity = getSingleSelected();
+                        datasource.setItem(entity);
+                    }
+                }
+        );
     }
 
     protected void setVisibleColumns(List<MetaPropertyPath> columnsOrder) {
@@ -424,15 +422,19 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     public boolean isMultiSelect() {
-        return false;
+        return impl.getSelectionModel().getSelectionMode() != ListSelectionModel.SINGLE_SELECTION;
     }
 
     public void setMultiSelect(boolean multiselect) {
+        if (multiselect)
+            impl.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        else
+            impl.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
     public <T extends Entity> T getSingleSelected() {
         Set selected = getSelected();
-        return !selected.isEmpty() ? (T) selected.iterator().next() : null;
+        return selected.isEmpty() ? null : (T) selected.iterator().next();
     }
 
     public Set getSelected() {
@@ -447,9 +449,15 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     public void setSelected(Entity item) {
+        int rowIndex = impl.convertRowIndexToView(tableModel.getRowIndex(item));
+        impl.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
     }
 
     public void setSelected(Collection<Entity> items) {
+        for (Entity item : items) {
+            int rowIndex = impl.convertRowIndexToView(tableModel.getRowIndex(item));
+            impl.getSelectionModel().addSelectionInterval(rowIndex, rowIndex);
+        }
     }
 
     public CollectionDatasource getDatasource() {

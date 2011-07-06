@@ -167,13 +167,8 @@ public class DesktopTree
 
     @Override
     public <T extends Entity> T getSingleSelected() {
-        TreePath[] selectionPaths = impl.getSelectionPaths();
-        if (selectionPaths != null && selectionPaths.length > 0) {
-            Object sel = selectionPaths[0].getLastPathComponent();
-            if (sel instanceof TreeModelAdapter.Node)
-                return (T) ((TreeModelAdapter.Node) sel).getEntity();
-        }
-        return null;
+        Set selected = getSelected();
+        return selected.isEmpty() ? null : (T) selected.iterator().next();
     }
 
     @Override
@@ -182,9 +177,9 @@ public class DesktopTree
         TreePath[] selectionPaths = impl.getSelectionPaths();
         if (selectionPaths != null) {
             for (TreePath selectionPath : selectionPaths) {
-                Object sel = selectionPath.getLastPathComponent();
-                if (sel instanceof TreeModelAdapter.Node)
-                    selected.add(((TreeModelAdapter.Node) sel).getEntity());
+                Entity entity = model.getEntity(selectionPath.getLastPathComponent());
+                if (entity != null)
+                    selected.add(entity);
             }
         }
         return selected;

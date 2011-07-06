@@ -22,4 +22,6 @@ public interface AnyTableModelAdapter extends TableModel {
     void sort(List<? extends RowSorter.SortKey> sortKeys);
 
     Entity getItem(int rowIndex);
+
+    int getRowIndex(Entity entity);
 }
