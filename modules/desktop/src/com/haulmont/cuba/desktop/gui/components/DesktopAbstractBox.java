@@ -49,6 +49,8 @@ public abstract class DesktopAbstractBox
     public void remove(Component component) {
         JComponent composition = DesktopComponentsHelper.getComposition(component);
         impl.remove(composition);
+        impl.revalidate();
+        impl.repaint();
 
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
