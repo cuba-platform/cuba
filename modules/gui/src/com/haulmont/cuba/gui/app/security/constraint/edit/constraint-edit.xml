@@ -12,7 +12,7 @@
 
     <metadataContext>
         <view class="com.haulmont.cuba.security.entity.Constraint" name="edit">
-            <property name="entityName"/>                                          x
+            <property name="entityName"/>
             <property name="joinClause"/>
             <property name="whereClause"/>
         </view>
@@ -25,29 +25,20 @@
     <layout expand="windowActions">
         <vbox margin="true">
             <grid id="grid" margin="true" spacing="true" expandable="false" stylename="edit-area">
-                <columns>
-                    <column flex="1"/>
-                    <column flex="1"/>
-                </columns>
+                <columns count="2"/>
                 <rows>
                     <row>
-                        <vbox align="MIDDLE_RIGHT">
-                            <label value="msg://entityName"/>
-                        </vbox>
+                        <label value="msg://entityName"/>
                         <textField id="entityName" datasource="constraint" property="entityName"
                                    width="500px"/>
                     </row>
                     <row>
-                        <vbox align="MIDDLE_RIGHT">
-                            <label value="msg://joinClause"/>
-                        </vbox>
+                        <label value="msg://joinClause"/>
                         <autoCompleteTextField id="joinClause" datasource="constraint" property="joinClause"
                                    width="500px" rows="3"/>
                     </row>
                     <row>
-                        <vbox align="MIDDLE_RIGHT">
-                            <label value="msg://whereClause"/>
-                        </vbox>
+                        <label value="msg://whereClause"/>
                         <autoCompleteTextField id="whereClause" datasource="constraint" property="whereClause"
                                    width="500px" rows="3"/>
                     </row>

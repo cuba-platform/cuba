@@ -558,6 +558,33 @@
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
+                <xs:element name="autoCompleteTextField">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="validator" minOccurs="0" maxOccurs="unbounded" type="validatorType"/>
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:string" use="required"/>
+
+                        <xs:attribute name="visible" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="editable" type="xs:string" use="optional"/>
+                        <xs:attribute name="enable" type="xs:string" use="optional"/>
+                        <xs:attribute name="required" type="xs:boolean" use="optional"/>
+                        <xs:attribute name="requiredMessage" type="xs:string" use="optional" default="msg://"/>
+                        <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
+                        <xs:attribute name="description" type="xs:string" use="optional" default="msg://"/>
+                        <xs:attribute name="width" type="xs:string" use="optional"/>
+                        <xs:attribute name="height" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="maxLength" type="xs:int" use="optional"/>
+                        <xs:attribute name="cols" type="xs:int" use="optional"/>
+                        <xs:attribute name="rows" type="xs:int" use="optional"/>
+
+                        <xs:attribute name="datasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="property" type="xs:string" use="optional"/>
+
+                        <xs:attribute name="stylename" type="xs:string" use="optional"/>
+                    </xs:complexType>
+                </xs:element>
                 <xs:element name="textArea">
                     <xs:complexType>
                         <xs:attribute name="id" type="xs:string" use="required"/>

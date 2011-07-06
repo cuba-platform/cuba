@@ -27,15 +27,7 @@ import java.util.Set;
 public class VclTestApp extends JFrame {
 
     public static void main(String[] args) {
-        Set defaults = UIManager.getLookAndFeelDefaults().entrySet();
-        for (Iterator i = defaults.iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry) i.next();
-            System.out.print(entry.getKey() + " = ");
-            System.out.println(entry.getValue());
-        }
-
-        Font font = UIManager.getLookAndFeelDefaults().getFont("Panel.font");
-        System.out.println(font);
+        //printUIDefaults();
 
         SwingUtilities.invokeLater(
                 new Runnable() {
@@ -48,6 +40,18 @@ public class VclTestApp extends JFrame {
                     }
                 }
         );
+    }
+
+    private static void printUIDefaults() {
+        Set defaults = UIManager.getLookAndFeelDefaults().entrySet();
+        for (Iterator i = defaults.iterator(); i.hasNext();) {
+            Map.Entry entry = (Map.Entry) i.next();
+            System.out.print(entry.getKey() + " = ");
+            System.out.println(entry.getValue());
+        }
+
+        Font font = UIManager.getLookAndFeelDefaults().getFont("Panel.font");
+        System.out.println(font);
     }
 
     public VclTestApp() throws HeadlessException {
@@ -82,9 +86,33 @@ public class VclTestApp extends JFrame {
         JTabbedPane tabbedPane = new JTabbedPane();
         add(tabbedPane, BorderLayout.CENTER);
 
+        tabbedPane.add("TextArea", createTextAreaTab());
         tabbedPane.add("Popup", createPopupTab());
         tabbedPane.add("Picker", createPickersTab());
 //        tabbedPane.add("Autocomplete", createAutocompleteTab());
+    }
+
+    private Component createTextAreaTab() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new MigLayout("flowy, fill", "[]", "[min!][fill]"));
+//        panel.setLayout(new BorderLayout());
+
+        JTextArea textArea = new JTextArea();
+        textArea.setRows(3);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+
+        int height = (int) textArea.getPreferredSize().getHeight();
+        textArea.setMinimumSize(new Dimension(150, height));
+
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setMinimumSize(new Dimension(0, height));
+        scrollPane.setPreferredSize(new Dimension(150, height));
+
+        panel.add(scrollPane);
+        panel.add(new JButton("button"), "grow");
+
+        return panel;
     }
 
     private JPanel createPickersTab() {

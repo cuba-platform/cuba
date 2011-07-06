@@ -12,7 +12,6 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -48,6 +47,8 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
 
     private boolean updatingInstance;
 
+    private JComponent composition;
+
     public DesktopTextField() {
         doc = new TextComponentDocument();
         doc.setMaxLength(maxLength);
@@ -57,14 +58,29 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         if (impl == null) {
             if (rows > 1) {
                 impl = new JTextArea();
+                ((JTextArea) impl).setRows(rows);
+                ((JTextArea) impl).setLineWrap(true);
+                ((JTextArea) impl).setWrapStyleWord(true);
+
+                int height = (int) impl.getPreferredSize().getHeight();
+                impl.setMinimumSize(new Dimension(0, height));
+
+                composition = new JScrollPane(impl);
+                composition.setPreferredSize(new Dimension(150, height));
+                composition.setMinimumSize(new Dimension(0, height));
+
+                doc.putProperty("filterNewlines", false);
+
             } else {
                 if (secret)
                     impl = new JPasswordField();
                 else
                     impl = new JTextField();
+                int height = (int) impl.getPreferredSize().getHeight();
+                impl.setPreferredSize(new Dimension(150, height));
+                composition = impl;
             }
-            int height = (int) impl.getPreferredSize().getHeight();
-            impl.setPreferredSize(new Dimension(150, height));
+
             impl.setEditable(editable);
             impl.setDocument(doc);
         }
@@ -301,6 +317,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
 
     @Override
     public JComponent getComposition() {
-        return getImpl();
+        getImpl();
+        return composition;
     }
 }
