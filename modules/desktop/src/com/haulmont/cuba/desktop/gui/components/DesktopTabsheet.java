@@ -33,7 +33,7 @@ public class DesktopTabsheet
 {
     protected Map<Component, String> components = new HashMap<Component, String>();
 
-    protected Map<String, TabImpl> tabs = new HashMap<String, TabImpl>();
+    protected List<TabImpl> tabs = new ArrayList<TabImpl>();
 
     protected Set<LazyTabInfo> lazyTabs = new HashSet<LazyTabInfo>();
 
@@ -60,7 +60,7 @@ public class DesktopTabsheet
 
     @Override
     public <T extends Component> T getOwnComponent(String id) {
-        for (TabImpl tab : tabs.values()) {
+        for (TabImpl tab : tabs) {
             if (tab.getComponent() instanceof Container) {
                 Component component = DesktopComponentsHelper.getComponent((Container) tab.getComponent(), id);
                 if (component != null)
@@ -89,12 +89,12 @@ public class DesktopTabsheet
     public Tab addTab(String name, Component component) {
         TabImpl tab = new TabImpl(name, component);
 
-        tabs.put(name, tab);
+        tabs.add(tab);
         components.put(component, name);
 
-        JComponent tabComponent = DesktopComponentsHelper.getComposition(component);
+        JComponent comp = DesktopComponentsHelper.getComposition(component);
 
-        impl.addTab("", tabComponent);
+        impl.addTab("", comp);
 
         return tab;
     }
@@ -105,12 +105,12 @@ public class DesktopTabsheet
 
         TabImpl tab = new TabImpl(name, tabContent);
 
-        tabs.put(name, tab);
+        tabs.add(tab);
         components.put(tabContent, name);
 
-        final JComponent tabComponent = DesktopComponentsHelper.getComposition(tabContent);
+        final JComponent comp = DesktopComponentsHelper.getComposition(tabContent);
 
-        impl.addTab("", tabComponent);
+        impl.addTab("", comp);
         lazyTabs.add(new LazyTabInfo(tabContent, descriptor, loader));
 
         if (!initLazyTabListenerAdded) {
@@ -132,12 +132,22 @@ public class DesktopTabsheet
 
     @Override
     public void removeTab(String name) {
-        TabImpl tab = tabs.get(name);
-        if (tab == null)
-            throw new IllegalStateException(String.format("Can't find tab '%s'", name));
-
+        TabImpl tab = getTabImpl(name);
         components.remove(tab.getComponent());
         impl.remove(DesktopComponentsHelper.getComposition(tab.getComponent()));
+    }
+
+    private TabImpl getTabImpl(String name) {
+        TabImpl tab = null;
+        for (TabImpl t : tabs) {
+            if (t.getName().equals(name)) {
+                tab = t;
+                break;
+            }
+        }
+        if (tab == null)
+            throw new IllegalStateException(String.format("Can't find tab '%s'", name));
+        return tab;
     }
 
     @Override
@@ -146,11 +156,11 @@ public class DesktopTabsheet
         if (component == null) {
             return null; // nothing selected
         }
-        for (TabImpl tabImpl : tabs.values()) {
+        for (TabImpl tabImpl : tabs) {
             if (DesktopComponentsHelper.getComposition(tabImpl.getComponent()).equals(component))
                 return tabImpl;
         }
-        return tabs.values().iterator().next();
+        return tabs.get(0);
     }
 
     @Override
@@ -161,21 +171,18 @@ public class DesktopTabsheet
 
     @Override
     public void setTab(String name) {
-        TabImpl tab = tabs.get(name);
-        if (tab == null)
-            throw new IllegalStateException(String.format("Can't find tab '%s'", name));
-
+        TabImpl tab = getTabImpl(name);
         impl.setSelectedComponent(DesktopComponentsHelper.getComposition(tab.getComponent()));
     }
 
     @Override
     public Tab getTab(String name) {
-        return tabs.get(name);
+        return getTabImpl(name);
     }
 
     @Override
     public Collection<Tab> getTabs() {
-        return (Collection)tabs.values();
+        return Collections.<Tab>unmodifiableCollection(tabs);
     }
 
     @Override
@@ -260,10 +267,31 @@ public class DesktopTabsheet
         }
     }
 
+    private void updateTabVisibility(TabImpl tab) {
+        // find insert/remove index by visibility of existing tabs
+        int idx = 0;
+        for (TabImpl t : tabs) {
+            if (t.equals(tab))
+                break;
+            if (t.isVisible())
+                idx++;
+        }
+
+        if (tab.isVisible()) {
+            JComponent comp = DesktopComponentsHelper.getComposition(tab.getComponent());
+            impl.insertTab(tab.getCaption(), null, comp, null, idx);
+        } else {
+            impl.removeTabAt(idx);
+        }
+    }
+
     protected class TabImpl implements Tabsheet.Tab {
 
         private String name;
         private Component component;
+        private String caption;
+        private boolean enabled = true;
+        private boolean visible = true;
 
         public TabImpl(String name, Component component) {
             this.name = name;
@@ -282,32 +310,37 @@ public class DesktopTabsheet
 
         @Override
         public String getCaption() {
-            return DesktopTabsheet.this.impl.getTitleAt(getTabIndex());
+            return caption;
         }
 
         @Override
         public void setCaption(String caption) {
+            this.caption = caption;
             DesktopTabsheet.this.impl.setTitleAt(getTabIndex(), caption);
         }
 
         @Override
         public boolean isEnabled() {
-            return DesktopTabsheet.this.impl.isEnabledAt(getTabIndex());
+            return enabled;
         }
 
         @Override
         public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
             DesktopTabsheet.this.impl.setEnabledAt(getTabIndex(), enabled);
         }
 
         @Override
         public boolean isVisible() {
-            return true;
+            return visible;
         }
 
         @Override
         public void setVisible(boolean visible) {
-            // TODO TabImpl.visible
+            if (visible != this.visible) {
+                this.visible = visible;
+                DesktopTabsheet.this.updateTabVisibility(this);
+            }
         }
 
         public Component getComponent() {
@@ -317,6 +350,11 @@ public class DesktopTabsheet
         private int getTabIndex() {
             JComponent jComponent = DesktopComponentsHelper.getComposition(component);
             return DesktopTabsheet.this.impl.indexOfComponent(jComponent);
+        }
+
+        @Override
+        public String toString() {
+            return name;
         }
     }
 
