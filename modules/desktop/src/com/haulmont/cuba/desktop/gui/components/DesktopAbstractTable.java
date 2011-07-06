@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.AnyTableModelAdapter;
 import com.haulmont.cuba.desktop.gui.data.RowSorterImpl;
 import com.haulmont.cuba.gui.components.Action;
@@ -32,6 +33,8 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
@@ -80,6 +83,28 @@ public abstract class DesktopAbstractTable<C extends JTable>
                             Action action = getAction(EditAction.ACTION_ID);
                             if (action != null)
                                 action.actionPerform(DesktopAbstractTable.this);
+                        }
+                    }
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        showPopup(e);
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        showPopup(e);
+                    }
+
+                    private void showPopup(MouseEvent e) {
+                        if (e.isPopupTrigger()) {
+                            // select row
+                            Point p = e.getPoint();
+                            int rowNumber = impl.convertRowIndexToModel(impl.rowAtPoint(p));
+                            ListSelectionModel model = impl.getSelectionModel();
+                            model.setSelectionInterval(rowNumber, rowNumber);
+                            // show popup menu
+                            createPopupMenu().show(e.getComponent(), e.getX(), e.getY());
                         }
                     }
                 }
@@ -432,5 +457,27 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
     public void refresh() {
         datasource.refresh();
+    }
+
+    protected JPopupMenu createPopupMenu() {
+        JPopupMenu popup = new JPopupMenu();
+        JMenuItem menuItem;
+        for (final Action action : actionsOrder) {
+            menuItem = new JMenuItem(action.getCaption());
+            if (action.getIcon() != null) {
+                menuItem.setIcon(App.getInstance().getResources().getIcon(action.getIcon()));
+            }
+            menuItem.setEnabled(action.isEnabled());
+            menuItem.addActionListener(
+                    new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            action.actionPerform(DesktopAbstractTable.this);
+                        }
+                    }
+            );
+            popup.add(menuItem);
+        }
+        return popup;
     }
 }
