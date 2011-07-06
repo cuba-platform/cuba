@@ -200,7 +200,7 @@ public class UserEditor extends AbstractEditor {
                         for (Object item : items) {
                             if (item == null) continue;
                             PermissionConfig.Target target = (PermissionConfig.Target)item;
-                            Integer permissionValue =  uss.getPermissionValue(userDs.getItem(), permissionType, target.getValue());
+                            Integer permissionValue =  uss.getPermissionValue(userDs.getItem(), permissionType, target.getPermissionValue());
                             String permissionStringValue = "";
                             if (permissionType == PermissionType.ENTITY_ATTR) {
                                 if (permissionValue == null) permissionValue = 2;
@@ -209,7 +209,7 @@ public class UserEditor extends AbstractEditor {
                                 if (permissionValue == null) permissionValue = 1;
                                 permissionStringValue = (permissionValue == 1) ? "ALLOW" : "DENY";
                             }
-                            sb.append(getMessage("permissionOn") +" "+ target.getValue()+" ("+target.getCaption()+")"+ " - ")
+                            sb.append(getMessage("permissionOn") +" "+ target.getPermissionValue()+" ("+target.getCaption()+")"+ " - ")
                                     .append(getMessage(permissionStringValue)).append("\n");
                         }
                         if (sb.length() == 0) {

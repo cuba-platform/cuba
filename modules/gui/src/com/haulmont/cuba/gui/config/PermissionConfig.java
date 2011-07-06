@@ -1,19 +1,22 @@
 /*
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
-   * Haulmont Technology proprietary and confidential.
-   * Use is subject to license terms.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
 
-   * Author: Konstantin Krivopustov
-   * Created: 12.03.2009 15:51:46
-   *
-   * $Id$
-   */
+ * Author: Konstantin Krivopustov
+ * Created: 12.03.2009 15:51:46
+ *
+ * $Id$
+ */
 package com.haulmont.cuba.gui.config;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.chile.core.annotations.*;
 import com.haulmont.chile.core.model.*;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Updatable;
@@ -48,21 +51,31 @@ public class PermissionConfig {
     @com.haulmont.chile.core.annotations.MetaClass(name = "sec$Target")
     public static class Target
             extends AbstractInstance
-            implements Entity<String>
-    {
+            implements Entity<String> {
+
         @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
         private String id;
+
         @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
         private String caption;
+
         @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
-        private String value;
+        private String permissionValue;
 
-        private UUID uuid = UUID.randomUUID();
+        @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+        private PermissionVariant permissionVariant = PermissionVariant.NOTSET;
 
-        public Target(String id, String caption, String value) {
+        private UUID uuid = UuidProvider.createUuid();
+
+        public Target(String id, String caption, String permissionValue) {
+            this(id, caption, permissionValue, PermissionVariant.NOTSET);
+        }
+
+        public Target(String id, String caption, String permissionValue, PermissionVariant permissionVariant) {
             this.caption = caption;
             this.id = id;
-            this.value = value;
+            this.permissionValue = permissionValue;
+            this.permissionVariant = permissionVariant;
         }
 
         public String getId() {
@@ -73,8 +86,8 @@ public class PermissionConfig {
             return caption;
         }
 
-        public String getValue() {
-            return value;
+        public String getPermissionValue() {
+            return permissionValue;
         }
 
         public String toString() {
@@ -88,6 +101,15 @@ public class PermissionConfig {
         public MetaClass getMetaClass() {
             return MetadataProvider.getSession().getClass(getClass());
         }
+
+        public PermissionVariant getPermissionVariant() {
+            return permissionVariant;
+        }
+
+        public void setPermissionVariant(PermissionVariant permissionVariant) {
+            this.permissionVariant = permissionVariant;
+        }
+
     }
 
     private ClientType clientType;
@@ -113,7 +135,9 @@ public class PermissionConfig {
     }
 
     private void compileScreens() {
-        Node<Target> root = new Node<Target>(new Target("menu", getMessage("permissionConfig.screenRoot"), null));
+        Node<Target> root = new Node<Target>(
+                new Target("menu", getMessage("permissionConfig.screenRoot"), null)
+        );
         screens = new Tree<Target>(root);
 
         final MenuConfig config = AppConfig.getInstance().getMenuConfig();
@@ -154,14 +178,14 @@ public class PermissionConfig {
         List<MetaModel> modelList = new ArrayList<MetaModel>(session.getModels());
         Collections.sort(modelList, new MetadataObjectAlphabetComparator());
 
-        for (MetaModel model: modelList) {
+        for (MetaModel model : modelList) {
             Node<Target> modelNode = new Node<Target>(new Target("model:" + model.getName(), model.getName(), null));
             root.addChild(modelNode);
 
             List<MetaClass> classList = new ArrayList<MetaClass>(model.getClasses());
             Collections.sort(classList, new MetadataObjectAlphabetComparator());
 
-            for (MetaClass metaClass: classList) {
+            for (MetaClass metaClass : classList) {
                 String name = metaClass.getName();
                 if (name.contains("$")) {
                     String caption = name + " (" + MessageUtils.getEntityCaption(metaClass) + ")";
@@ -264,10 +288,10 @@ public class PermissionConfig {
         if (!id.startsWith("entity:")) return Collections.emptyList();
 
         MetaClass metaClass = MetadataProvider.getSession().getClass(id.substring("entity:".length()));
-        if (metaClass == null)  return Collections.emptyList();
+        if (metaClass == null) return Collections.emptyList();
 
         List<Target> result = new ArrayList<Target>();
-        final String value = entityTarget.getValue();
+        final String value = entityTarget.getPermissionValue();
 
         result.add(new Target(id + ":read", "read", value + ":read"));
 
@@ -295,9 +319,9 @@ public class PermissionConfig {
         if (!id.startsWith("entity:")) return Collections.emptyList();
 
         MetaClass metaClass = MetadataProvider.getSession().getClass(id.substring("entity:".length()));
-        if (metaClass == null)  return Collections.emptyList();
+        if (metaClass == null) return Collections.emptyList();
 
-        final String value = entityTarget.getValue();
+        final String value = entityTarget.getPermissionValue();
 
         List<MetaProperty> propertyList = new ArrayList<MetaProperty>(metaClass.getProperties());
         Collections.sort(propertyList, new MetadataObjectAlphabetComparator());

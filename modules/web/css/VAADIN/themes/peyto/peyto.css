@@ -340,7 +340,7 @@
     padding-left: 20px;
 }
 
-/* Markers for TreeTable component */
+/* EntityDiff : Markers for TreeTable component */
 
 .v-table-cell-content-categoryItem,
 .v-collapsed .v-table-cell-content-categoryItem .v-table-float,
@@ -391,6 +391,52 @@
 .v-expanded .v-table-cell-content-modifiedItem,
 .v-collapsed .v-table-cell-content-chainItem,
 .v-expanded .v-table-cell-content-chainItem
+{
+     background: transparent;
+     padding-left: 0;
+}
+
+/* Security: PermissionVariats markers */
+
+.v-table-cell-content-serviceItem,
+.v-collapsed .v-table-cell-content-serviceItem .v-table-float,
+.v-expanded .v-table-cell-content-serviceItem .v-table-float {
+     background: transparent url(icons/tag.png) 0 center no-repeat;
+     padding-left: 19px;
+}
+
+.v-table-cell-content-allowedItem,
+.v-collapsed .v-table-cell-content-allowedItem .v-table-float,
+.v-expanded .v-table-cell-content-allowedItem .v-table-float {
+     background: transparent url(icons/tag-green.png) 0 center no-repeat;
+     color: green !important;
+     padding-left: 19px;
+}
+
+.v-table-cell-content-disallowedItem,
+.v-collapsed .v-table-cell-content-disallowedItem .v-table-float,
+.v-expanded .v-table-cell-content-disallowedItem .v-table-float {
+     background: transparent url(icons/tag-red.png) 0 center no-repeat;
+     color: red !important;
+     padding-left: 19px;
+}
+
+.v-table-cell-content-notsetItem,
+.v-collapsed .v-table-cell-content-notsetItem .v-table-float,
+.v-expanded .v-table-cell-content-notsetItem .v-table-float {
+     background: transparent url(icons/tag-gray.png) 0 center no-repeat;
+     color: gray !important;
+     padding-left: 19px;
+}
+
+.v-collapsed .v-table-cell-content-serviceItem,
+.v-expanded .v-table-cell-content-serviceItem,
+.v-collapsed .v-table-cell-content-notsetItem,
+.v-expanded .v-table-cell-content-notsetItem,
+.v-collapsed .v-table-cell-content-disallowedItem,
+.v-expanded .v-table-cell-content-disallowedItem,
+.v-collapsed .v-table-cell-content-allowedItem,
+.v-expanded .v-table-cell-content-allowedItem
 {
      background: transparent;
      padding-left: 0;

@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.AppConfig;
@@ -14,8 +15,11 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.PermissionConfig;
+import com.haulmont.cuba.gui.config.PermissionVariant;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.security.ScreenPermissionTreeDatasource;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
@@ -32,21 +36,42 @@ public class RoleEditor extends AbstractEditor {
     private PopupButton propertyPermissionsGrant;
     private PopupButton specificPermissionsGrant;
 
+    private CollectionDatasource<Permission, UUID> screenPermissionsGrants;
+    private TreeTable screenPermissionsTree;
+    private ScreenPermissionTreeDatasource screensPermissionDs;
+    private java.util.List<PermissionVariant> variantList;
+
     public RoleEditor(IFrame frame) {
         super(frame);
     }
 
     @Override
+    public void setItem(Entity item) {
+        super.setItem(item);
+
+        screenPermissionsGrants.refresh();
+        screensPermissionDs.setPermissionDs(screenPermissionsGrants);
+        screenPermissionsTree.refresh();
+    }
+
+    @Override
     protected void init(Map<String, Object> params) {
-        initPermissionControls(
-                "sec$Target.screenPermissions.lookup",
-                "screen-permissions",
-                PermissionType.SCREEN);
-        table = getComponent("screen-permissions");
+
+        screenPermissionsGrants = getDsContext().get("screen-permissions");
+        screenPermissionsTree = getComponent("screen-permissions-tree");
+
+        String lookupAction = "sec$Target.screenPermissions.lookup";
+
+        Action allowAction = new OpenPermissionAction("allow", lookupAction, "screen-permissions",
+                PermissionType.SCREEN, PermissionValue.ALLOW.name(), PermissionValue.ALLOW.getValue());
+
+        Action denyAction = new OpenPermissionAction("deny", lookupAction, "screen-permissions",
+                PermissionType.SCREEN, PermissionValue.DENY.name(), PermissionValue.DENY.getValue());
+
         screenPermissionsGrant = getComponent("screen-permissions-grant");
-        screenPermissionsGrant.addAction(table.getAction("allow"));
-        screenPermissionsGrant.addAction(table.getAction("deny"));
-        if(!PersistenceHelper.isNew((Role)params.get("item"))){
+        screenPermissionsGrant.addAction(allowAction);
+        screenPermissionsGrant.addAction(denyAction);
+        if(!PersistenceHelper.isNew(params.get("item"))){
             getComponent("name").setEnabled(false);
         }
         Tabsheet tabsheet = getComponent("permissions-types");
@@ -89,6 +114,96 @@ public class RoleEditor extends AbstractEditor {
                 }
             }
         });
+
+        initScreenPermissionTree();
+    }
+
+    private void initScreenPermissionTree() {
+        variantList = Arrays.asList(
+                PermissionVariant.ALLOWED,
+                PermissionVariant.DISALLOWED,
+                PermissionVariant.NOTSET);
+
+        screensPermissionDs = getDsContext().get("screen-permissions-tree-ds");
+
+        screenPermissionsTree.setStyleProvider(new ScreensTreeStyleProvider());
+
+        final ValueListener<LookupField> permissionChangeListener = new ValueListener<LookupField>() {
+            @Override
+            public void valueChanged(LookupField source, String property, Object prevValue, Object value) {
+                if (value != null) {
+                    markItemPermission((PermissionVariant) value);
+                }
+            }
+        };
+
+        screenPermissionsTree.addGeneratedColumn("permissionVariant", new Table.ColumnGenerator() {
+            @Override
+            public Component generateCell(Table table,final Object itemId) {
+                LookupField lookupField = AppConfig.getFactory().createComponent(LookupField.NAME);
+                lookupField.setWidth("300px");
+                lookupField.setOptionsList(variantList);
+                lookupField.setRequired(true);
+
+                PermissionConfig.Target target = (PermissionConfig.Target) screensPermissionDs.getItem(itemId);
+                lookupField.setValue(target.getPermissionVariant());
+                lookupField.addListener(permissionChangeListener);
+                return lookupField;
+            }
+        });
+
+        screenPermissionsTree.addAction(new AbstractAction("actions.Allow") {
+            @Override
+            public void actionPerform(Component component) {
+                markItemPermission(PermissionVariant.ALLOWED);
+            }
+        });
+        screenPermissionsTree.addAction(new AbstractAction("actions.Disallow") {
+            @Override
+            public void actionPerform(Component component) {
+                markItemPermission(PermissionVariant.DISALLOWED);
+            }
+        });
+        screenPermissionsTree.addAction(new AbstractAction("actions.DropRule") {
+            @Override
+            public void actionPerform(Component component) {
+                markItemPermission(PermissionVariant.NOTSET);
+            }
+        });
+    }
+
+    private void markItemPermission(PermissionVariant permissionVariant) {
+        PermissionConfig.Target target = screenPermissionsTree.getSingleSelected();
+        if (target != null) {
+            int value = 0;
+            target.setPermissionVariant(permissionVariant);
+            if (permissionVariant != PermissionVariant.NOTSET) {
+                // Create permission
+                switch (permissionVariant) {
+                    case ALLOWED:
+                        value = PermissionValue.ALLOW.getValue();
+                        break;
+
+                    case DISALLOWED:
+                        value = PermissionValue.DENY.getValue();
+                        break;
+                }
+                createPermissionItem("screen-permissions", target, PermissionType.SCREEN, value);
+            } else {
+                // Remove permission
+                Permission permission = null;
+                for (UUID id : screenPermissionsGrants.getItemIds()) {
+                    Permission p = screenPermissionsGrants.getItem(id);
+                    if (ObjectUtils.equals(p.getTarget(), target.getPermissionValue())) {
+                        permission = p;
+                        break;
+                    }
+                }
+                if (permission != null)
+                    screenPermissionsGrants.removeItem(permission);
+            }
+            screenPermissionsTree.refresh();
+        }
     }
 
     private void hideMenuPopupButton(){
@@ -201,7 +316,7 @@ public class RoleEditor extends AbstractEditor {
         Permission permission = null;
         for (UUID id : permissionIds) {
             Permission p = ds.getItem(id);
-            if (ObjectUtils.equals(p.getTarget(), target.getValue())) {
+            if (ObjectUtils.equals(p.getTarget(), target.getPermissionValue())) {
                 permission = p;
                 break;
             }
@@ -213,7 +328,7 @@ public class RoleEditor extends AbstractEditor {
 
             final Permission newPermission = new Permission();
             newPermission.setRole(roleDs.getItem());
-            newPermission.setTarget(target.getValue());
+            newPermission.setTarget(target.getPermissionValue());
             newPermission.setType(type);
             newPermission.setValue(value);
 
@@ -248,6 +363,8 @@ public class RoleEditor extends AbstractEditor {
                     for (PermissionConfig.Target target : targets) {
                         createPermissionItem(permissionsStorage, target, permissionType, value);
                     }
+                    if (permissionType == PermissionType.SCREEN)
+                        screenPermissionsTree.refresh();
                 }
             });
             permissionsLookup.addListener(new CloseListener() {

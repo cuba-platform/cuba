@@ -56,6 +56,14 @@
                 >
             <query>select p from sec$Permission p where p.role.id = :ds$role and p.type = 40</query>
         </collectionDatasource>
+
+        <collectionDatasource
+                id="screen-permissions-tree-ds"
+                class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
+                view="_local"
+                >
+            <datasourceClass>com.haulmont.cuba.gui.security.ScreenPermissionTreeDatasource</datasourceClass>
+        </collectionDatasource>
     </dsContext>
 
     <#assign width = 200>
@@ -65,7 +73,7 @@
         <vbox id="main" spacing="true" expand="permissions-types">
             <hbox spacing="true" margin="true" width="100%" expand="descrBox"
                   stylename="edit-area">
-                <grid  spacing="true">
+                <grid spacing="true">
                     <columns>
                         <column/>
                         <column/>
@@ -75,7 +83,7 @@
                         <row>
                             <label value="msg://name"/>
                             <textField id="name" datasource="role" property="name" width="${width}" required="true"
-                                    requiredMessage="msg://nameMsg"/>
+                                       requiredMessage="msg://nameMsg"/>
                         </row>
                         <row>
                             <label value="msg://locName"/>
@@ -84,7 +92,7 @@
                     </rows>
                 </grid>
 
-                <grid  spacing="true">
+                <grid spacing="true">
                     <columns>
                         <column/>
                         <column/>
@@ -110,26 +118,42 @@
 
             <tabsheet id="permissions-types">
                 <tab id="screen-permissions-tab" caption="msg://screen-permissions">
-                    <vbox expand="screen-permissions" margin="true" spacing="true">
+                    <vbox expand="screen-permissions-tree" margin="true" spacing="true">
                         <buttonsPanel>
-                            <popupButton id="screen-permissions-grant" icon="icons/add.png" caption="msg://permissions.grant"
+                            <popupButton id="screen-permissions-grant" icon="icons/add.png"
+                                     caption="msg://permissions.grant"
+                                     width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
+                        </buttonsPanel>
+                        <!--<buttonsPanel>
+                            <popupButton id="screen-permissions-grant" icon="icons/add.png"
+                                         caption="msg://permissions.grant"
                                          width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
                             <button id="screen-permissions-remove" action="screen-permissions.remove"
                                     caption="msg://permissions.remove" icon="icons/remove.png"/>
-                        </buttonsPanel>
-                        <table id="screen-permissions">
+                        </buttonsPanel>-->
+
+                        <treeTable id="screen-permissions-tree">
+                            <columns>
+                                <column id="caption" caption="msg://target"/>
+                                <column id="permissionVariant" caption="msg://value"/>
+                            </columns>
+                            <rows datasource="screen-permissions-tree-ds"/>
+                        </treeTable>
+
+                        <!--<table id="screen-permissions">
                             <columns>
                                 <column id="target" caption="msg://target"/>
                                 <column id="value" caption="msg://value"/>
                             </columns>
                             <rows datasource="screen-permissions"/>
-                        </table>
+                        </table>-->
                     </vbox>
                 </tab>
                 <tab id="entity-permissions-tab" caption="msg://entity-permissions" lazy="true">
                     <vbox expand="entity-permissions" margin="true" spacing="true">
                         <buttonsPanel>
-                            <popupButton id="entity-permissions-grant" icon="icons/add.png" caption="msg://permissions.grant"
+                            <popupButton id="entity-permissions-grant" icon="icons/add.png"
+                                         caption="msg://permissions.grant"
                                          width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
                             <button id="entity-permissions-remove" action="entity-permissions.remove"
                                     caption="msg://permissions.remove" icon="icons/remove.png"/>
@@ -146,7 +170,8 @@
                 <tab id="property-permissions-tab" caption="msg://property-permissions" lazy="true">
                     <vbox expand="property-permissions" margin="true" spacing="true">
                         <buttonsPanel>
-                            <popupButton id="property-permissions-grant" icon="icons/add.png" caption="msg://permissions.grant"
+                            <popupButton id="property-permissions-grant" icon="icons/add.png"
+                                         caption="msg://permissions.grant"
                                          width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
                             <button id="property-permissions-remove" action="property-permissions.remove"
                                     caption="msg://permissions.remove" icon="icons/remove.png"/>
@@ -163,7 +188,8 @@
                 <tab id="specific-permissions-tab" caption="msg://specific-permissions" lazy="true">
                     <vbox expand="specific-permissions" margin="true" spacing="true">
                         <buttonsPanel>
-                            <popupButton id="specific-permissions-grant" icon="icons/add.png" caption="msg://permissions.grant"
+                            <popupButton id="specific-permissions-grant" icon="icons/add.png"
+                                         caption="msg://permissions.grant"
                                          width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
                             <button id="specific-permissions-remove" action="specific-permissions.remove"
                                     caption="msg://permissions.remove" icon="icons/remove.png"/>

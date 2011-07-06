@@ -73,7 +73,7 @@ public class PermissionsLookup extends AbstractLookup {
                     if(datasource != null){
                         for (String uuid : (Collection<String>) datasource.getItemIds() ){
                             PermissionConfig.Target target = (PermissionConfig.Target)datasource.getItem(uuid);
-                            if (!targets.contains(target)&&target.getValue() != null)
+                            if (!targets.contains(target)&&target.getPermissionValue() != null)
                                 targets.add(target);
                         }
                         permissionsTree.refresh();
@@ -121,7 +121,7 @@ public class PermissionsLookup extends AbstractLookup {
                             box.add(label);
 
                             CheckBox checkBox = null;
-                            if (target.getValue() != null) {
+                            if (target.getPermissionValue() != null) {
                                 final CheckBox cb = factory.createComponent(CheckBox.NAME);
                                 if (targets.contains(target)) {
                                     cb.setValue(true);
