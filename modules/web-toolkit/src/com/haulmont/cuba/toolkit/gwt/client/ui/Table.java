@@ -2242,8 +2242,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 this.rowKey = rowKey;
                 rowElement = Document.get().createTRElement();
                 setElement(rowElement);
-                DOM.sinkEvents(getElement(), Event.ONCLICK | Event.ONDBLCLICK
-                        | Event.ONCONTEXTMENU | Event.ONMOUSEDOWN);
+                DOM.sinkEvents(getElement(), Event.ONMOUSEDOWN | Event.ONMOUSEUP | Event.ONCLICK
+                        | Event.TOUCHEVENTS | Event.ONDBLCLICK
+                        | Event.ONCONTEXTMENU);
             }
 
             public ITableRow(UIDL uidl, char[] aligns) {
@@ -2822,7 +2823,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
              * @return TD or TR element that the event targets (the actual event
              *         target is this element or a child of it)
              */
-            private Element getEventTargetTdOrTr(Event event) {
+            protected Element getEventTargetTdOrTr(Event event) {
                 Element targetTdOrTr = null;
 
                 final Element eventTarget = DOM.eventGetTarget(event);
