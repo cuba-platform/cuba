@@ -151,10 +151,17 @@ public abstract class DesktopAbstractTable<C extends JTable>
         impl.getSelectionModel().addListSelectionListener(
                 new ListSelectionListener() {
                     public void valueChanged(ListSelectionEvent e) {
-                        int idx = e.getFirstIndex();
-                        int modelIdx = impl.convertRowIndexToModel(idx);
-                        Entity item = tableModel.getItem(modelIdx);
-                        datasource.setItem(item);
+                        if (e.getValueIsAdjusting())
+                            return;
+
+                        int idx = impl.getSelectionModel().getMaxSelectionIndex();
+                        if (idx > -1) {
+                            int modelIdx = impl.convertRowIndexToModel(idx);
+                            Entity item = tableModel.getItem(modelIdx);
+                            datasource.setItem(item);
+                        } else {
+                            datasource.setItem(null);
+                        }
                     }
                 }
         );
