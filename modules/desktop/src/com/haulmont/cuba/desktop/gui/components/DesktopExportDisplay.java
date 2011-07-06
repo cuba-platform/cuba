@@ -13,14 +13,13 @@ import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.export.FileDataProvider;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -48,21 +47,7 @@ public class DesktopExportDisplay implements ExportDisplay {
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (result == JOptionPane.YES_OPTION) {
             if (fileChooser.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
-                File destinationFile = fileChooser.getSelectedFile();
-                try {
-                    if (!destinationFile.exists())
-                        destinationFile.createNewFile();
-
-                    InputStream fileInput = dataProvider.provide();
-                    FileOutputStream outputStream = new FileOutputStream(destinationFile);
-                    // TODO artamonov Need progress window
-                    IOUtils.copy(fileInput, outputStream);
-
-                    IOUtils.closeQuietly(fileInput);
-                    IOUtils.closeQuietly(outputStream);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+                saveFile(dataProvider, fileChooser.getSelectedFile());
             }
         }
     }
@@ -83,6 +68,31 @@ public class DesktopExportDisplay implements ExportDisplay {
 
     public void show(FileDescriptor fileDescriptor, ExportFormat format) {
         show(new FileDataProvider(fileDescriptor), fileDescriptor.getName(), format);
+    }
+
+    private void saveFile(ExportDataProvider dataProvider, File destinationFile) {
+        try {
+            if (!destinationFile.exists()) {
+                boolean crateResult = destinationFile.createNewFile();
+                if (!crateResult)
+                    throw new IOException("Couldn't create file");
+            }
+
+            try {
+                InputStream fileInput = dataProvider.provide();
+                FileOutputStream outputStream = new FileOutputStream(destinationFile);
+
+                // TODO Need progress window
+                IOUtils.copy(fileInput, outputStream);
+
+                IOUtils.closeQuietly(fileInput);
+                IOUtils.closeQuietly(outputStream);
+            } finally {
+                dataProvider.close();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String getFileExt(String fileName) {

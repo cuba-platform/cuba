@@ -25,15 +25,21 @@ public class FileDataProvider implements ExportDataProvider {
 
     private FileDescriptor fileDescriptor;
     private InputStream inputStream;
+    private boolean closed = false;
 
     public FileDataProvider(FileDescriptor fileDescriptor) {
         this.fileDescriptor = fileDescriptor;
     }
 
     public InputStream provide() {
+        if (closed)
+            throw new IllegalStateException("DataProvider is closed");
+
+        if (fileDescriptor == null)
+            throw new IllegalArgumentException("Null file descriptor");
+
         String fileDownloadContext = ConfigProvider.getConfig(ClientConfig.class).getFileDownloadContext();
         try {
-            // TODO How about not saved fileDescriptors ?
             String connectionUrl = ConfigProvider.getConfig(ClientConfig.class).getConnectionUrl();
             URL url = new URL(connectionUrl + fileDownloadContext +
                     "?s=" + UserSessionProvider.getUserSession().getId() +
@@ -47,12 +53,15 @@ public class FileDataProvider implements ExportDataProvider {
 
     public void close() {
         if (inputStream != null) {
+            closed = true;
             try {
                 inputStream.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            } finally {
+                inputStream = null;
+                fileDescriptor = null;
             }
-            inputStream = null;
         } else
             throw new RuntimeException("DataProvider is closed");
     }

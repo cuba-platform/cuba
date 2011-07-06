@@ -31,6 +31,14 @@ public interface FileStorageAPI {
 
     OutputStream openFileOutputStream(FileDescriptor fileDescr) throws FileStorageException;
 
+    /**
+     * Get bytes for file descriptor
+     * @deprecated Please use FileDataProvider
+     * @param fileDescr FileDescriptor
+     * @return ByteArray
+     * @throws FileStorageException Exception from file storage
+     */
+    @Deprecated
     byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException;
 
     /**

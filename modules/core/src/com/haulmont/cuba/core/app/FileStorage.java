@@ -142,6 +142,14 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         }
     }
 
+    /**
+     * Get bytes for file descriptor
+     * @deprecated Please use FileDataProvider
+     * @param fileDescr FileDescriptor
+     * @return ByteArray
+     * @throws FileStorageException Exception from file storage
+     */
+    @Deprecated
     public byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException {
         InputStream inputStream = openFileInputStream(fileDescr);
         try {

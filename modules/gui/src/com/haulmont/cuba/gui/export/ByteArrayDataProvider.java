@@ -15,7 +15,7 @@ import java.io.InputStream;
 
 public class ByteArrayDataProvider implements ExportDataProvider {
 
-    private boolean closed;
+    private boolean closed = false;
     private byte[] data;
 
     public ByteArrayDataProvider(byte[] data) {
@@ -24,13 +24,13 @@ public class ByteArrayDataProvider implements ExportDataProvider {
 
     public InputStream provide() {
         if (closed)
-            throw new RuntimeException("DataProvider is closed");
+            throw new IllegalStateException("DataProvider is closed");
 
         return new ByteArrayInputStream(data);
     }
 
     public void close() {
-        data = null;
         closed = true;
+        data = null;
     }
 }
