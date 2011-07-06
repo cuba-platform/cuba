@@ -34,7 +34,7 @@ public abstract class DesktopAbstractBox
 
     public void add(Component component) {
         JComponent composition = DesktopComponentsHelper.getComposition(component);
-        impl.add(composition);
+        impl.add(composition, layoutAdapter.getConstraints(component));
 //        setComponentAlignment(itmillComponent, WebComponentsHelper.convertAlignment(component.getAlignment()));
 
         if (component.getId() != null) {

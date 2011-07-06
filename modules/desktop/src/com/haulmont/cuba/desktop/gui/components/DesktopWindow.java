@@ -9,6 +9,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.AppConfig;
@@ -17,8 +18,10 @@ import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Timer;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.WindowContext;
@@ -31,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
@@ -337,7 +341,8 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     }
 
     public void add(Component component) {
-        getContainer().add(DesktopComponentsHelper.getComposition(component));
+        JComponent composition = DesktopComponentsHelper.getComposition(component);
+        getContainer().add(composition, layoutAdapter.getConstraints(component));
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
             registerComponent(component);
@@ -434,6 +439,22 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     }
 
     public void setHeight(String height) {
+        int w = getContainer().getWidth();
+
+        ComponentSize h = ComponentSize.parse(height);
+        if (h.inPixels()) {
+            Dimension dimension = new Dimension(w, (int) h.value);
+            getContainer().setMinimumSize(dimension);
+            getContainer().setPreferredSize(dimension);
+        }
+        else if (h.inPercents()) {
+            // TODO determine height of main frame, and multiply by percents
+            // such method is used in permission-show.xml
+            int hValue = 400;
+            Dimension dimension = new Dimension(w, hValue);
+            getContainer().setMinimumSize(dimension);
+            getContainer().setPreferredSize(dimension);
+        }
     }
 
     public float getWidth() {

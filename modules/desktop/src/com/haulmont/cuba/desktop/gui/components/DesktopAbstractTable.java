@@ -9,10 +9,10 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.AnyTableModelAdapter;
 import com.haulmont.cuba.desktop.gui.data.RowSorterImpl;
@@ -431,7 +431,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     public <T extends Entity> T getSingleSelected() {
-        return null;
+        Set selected = getSelected();
+        return !selected.isEmpty() ? (T) selected.iterator().next() : null;
     }
 
     public Set getSelected() {

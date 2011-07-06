@@ -23,10 +23,6 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
     protected MigLayout layout;
     protected JComponent container;
 
-    // for mindless add(component), add(component), add(component)
-    // calling with automatic extending, like it can be done in vaadin
-    protected int cursorX, cursorY;
-
     public MigGridLayoutAdapter(JComponent container) {
         this(new MigLayout(), container);
     }
@@ -45,6 +41,7 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
     @Override
     protected void update() {
         LC lc = new LC();
+        lc.setWrapAfter(getColumns());
 
         lc.setInsets(MigLayoutHelper.makeInsets(margins));
 
@@ -59,30 +56,18 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
     }
 
     @Override
-    public void add(Component component, int col, int row, int col2, int row2) {
-        int spanX = col2 - col;
-        int spanY = row2 - row;
-        CC cc = new CC().cell(col, row, spanX, spanY);
-        container.add(component, cc);
-
-        cursorX = col2 + 1;
-        cursorY = row2;
-        if (cursorX >= colCount) {
-            cursorX = 0;          // new row
-            cursorY++;
-        }
+    public CC getConstraints(com.haulmont.cuba.gui.components.Component component) {
+        return MigLayoutConstraints.getSizeConstraints(component);
     }
 
     @Override
-    public void add(Component component) {
-        int col = cursorX++;
-        int row = cursorY;
-        if (cursorX >= colCount) {
-            cursorX = 0;          // new row
-            cursorY++;
-        }
+    public CC getConstraints(com.haulmont.cuba.gui.components.Component component, int col, int row, int col2, int row2) {
+        int spanX = col2 - col;
+        int spanY = row2 - row;
 
-        CC cc = new CC().cell(col, row, 1, 1);
-        container.add(component, cc);
+        CC constraints = MigLayoutConstraints.getSizeConstraints(component);
+        constraints.cell(col, row, spanX, spanY);
+
+        return constraints;
     }
 }

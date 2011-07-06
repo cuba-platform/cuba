@@ -6,13 +6,14 @@
 
 package com.haulmont.cuba.desktop.sys.layout;
 
-import net.miginfocom.layout.*;
+import net.miginfocom.layout.AC;
+import net.miginfocom.layout.CC;
+import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
-import java.awt.Component;
-import java.awt.LayoutManager;
+import java.awt.*;
 
 /**
  * <p>$Id$</p>
@@ -91,12 +92,21 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
     public void expand(Component component, String height, String width) {
         super.expand(component, height, width);
 
-        String cc = "grow";
-        if (!StringUtils.isBlank(height))
-            cc = cc + ", height " + height;
-        if (!StringUtils.isBlank(width))
-            cc = cc + ", width " + width;
+        // if not specified here, it means that full expand
+        // while for other components it means own size
+        if (StringUtils.isEmpty(width)) {
+            width = "100%";
+        }
+        if (StringUtils.isEmpty(height)) {
+            height = "100%";
+        }
+        CC constraints = MigLayoutConstraints.getSizeConstraints(width, height, true);
+        layout.setComponentConstraints(component, constraints);
+    }
 
-        layout.setComponentConstraints(component, cc);
+    @Override
+    public CC getConstraints(com.haulmont.cuba.gui.components.Component component) {
+        CC constraints = MigLayoutConstraints.getSizeConstraints(component);
+        return constraints;
     }
 }

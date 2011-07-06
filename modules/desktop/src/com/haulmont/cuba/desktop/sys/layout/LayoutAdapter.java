@@ -51,4 +51,12 @@ public abstract class LayoutAdapter
         spacing = enabled;
         update();
     }
+
+    /*
+     * Get a constraints for java.awt.Container.add(java.awt.Component, Object constraints) method
+     */
+    public Object getConstraints(com.haulmont.cuba.gui.components.Component component) {
+        return null;
+    }
+
 }

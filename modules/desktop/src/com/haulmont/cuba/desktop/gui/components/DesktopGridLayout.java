@@ -7,7 +7,6 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.sys.layout.GridLayoutAdapter;
-import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
@@ -53,9 +52,8 @@ public class DesktopGridLayout
     }
 
     public void add(Component component, int col, int row, int col2, int row2) {
-        final JComponent jComponent = DesktopComponentsHelper.getComposition(component);
-
-        layoutAdapter.add(jComponent, col, row, col2, row2);
+        final JComponent composition = DesktopComponentsHelper.getComposition(component);
+        impl.add(composition, layoutAdapter.getConstraints(component, col, row, col2, row2));
         //setComponentAlignment(itmillComponent, WebComponentsHelper.convertAlignment(component.getAlignment()));
 
         if (component.getId() != null) {
@@ -84,9 +82,8 @@ public class DesktopGridLayout
     }
 
     public void add(Component component) {
-        final JComponent jComponent = DesktopComponentsHelper.getComposition(component);
-
-        layoutAdapter.add(jComponent);
+        final JComponent composition = DesktopComponentsHelper.getComposition(component);
+        impl.add(composition, layoutAdapter.getConstraints(component));
         //setComponentAlignment(itmillComponent, WebComponentsHelper.convertAlignment(component.getAlignment()));
 
         if (component.getId() != null) {

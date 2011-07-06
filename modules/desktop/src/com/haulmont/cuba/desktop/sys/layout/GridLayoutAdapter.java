@@ -55,7 +55,6 @@ public abstract class GridLayoutAdapter extends LayoutAdapter {
         update();
     }
 
-    public abstract void add(Component component, int col, int row, int col2, int row2);
-
-    public abstract void add(Component component);
+    public abstract Object getConstraints(
+            com.haulmont.cuba.gui.components.Component component, int col, int row, int col2, int row2);
 }

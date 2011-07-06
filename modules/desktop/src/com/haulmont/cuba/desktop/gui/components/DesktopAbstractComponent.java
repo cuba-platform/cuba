@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import org.apache.commons.logging.Log;
@@ -13,7 +14,6 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import javax.swing.*;
-import java.awt.*;
 
 /**
  * <p>$Id$</p>
@@ -30,6 +30,8 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     protected IFrame frame;
     protected Element xmlDescriptor;
     protected boolean expandable = true;
+
+    protected ComponentSize widthSize, heightSize;
 
     protected Log log = LogFactory.getLog(getClass());
 
@@ -90,45 +92,29 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     }
 
     public float getHeight() {
-        return getImpl().getHeight();
+        return heightSize != null ? heightSize.value : 0.0f;
     }
 
     public int getHeightUnits() {
-        return 0;
+        return heightSize != null ? heightSize.unit : 0;
     }
 
     public void setHeight(String height) {
-        Integer h;
-        try {
-            h = Integer.valueOf(height);
-        } catch (NumberFormatException e) {
-            log.trace("Unable to parse height value: " + height);
-            return;
-        }
-        int width = (int) getImpl().getPreferredSize().getWidth();
-        getImpl().setPreferredSize(new Dimension(width, h));
-        getImpl().setMinimumSize(new Dimension(width, h));
+        heightSize = ComponentSize.parse(height);
+        // todo update if already added to container
     }
 
     public float getWidth() {
-        return getImpl().getWidth();
+        return widthSize != null ? widthSize.value : 0.0f;
     }
 
     public int getWidthUnits() {
-        return 0;
+        return widthSize != null ? widthSize.unit : 0;
     }
 
     public void setWidth(String width) {
-        Integer w;
-        try {
-            w = Integer.valueOf(width);
-        } catch (NumberFormatException e) {
-            log.trace("Unable to parse width value: " + width);
-            return;
-        }
-        int height = (int) getImpl().getPreferredSize().getHeight();
-        getImpl().setPreferredSize(new Dimension(w, height));
-        getImpl().setMinimumSize(new Dimension(w, height));
+        widthSize = ComponentSize.parse(width);
+        // todo update if already added to container
     }
 
     public Alignment getAlignment() {
