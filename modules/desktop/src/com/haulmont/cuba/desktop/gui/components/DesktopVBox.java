@@ -13,9 +13,19 @@ import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
  *
  * @author krivopustov
  */
-public class DesktopVBox extends DesktopAbstractBox {
+public class DesktopVBox extends DesktopAbstractBox implements AutoExpanding {
 
     public DesktopVBox() {
         layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.Y);
+    }
+
+    @Override
+    public boolean expandsWidth() {
+        return true;
+    }
+
+    @Override
+    public boolean expandsHeight() {
+        return false;
     }
 }

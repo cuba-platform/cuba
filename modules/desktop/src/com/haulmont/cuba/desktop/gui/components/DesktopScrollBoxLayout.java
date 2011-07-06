@@ -20,7 +20,7 @@ import java.util.Collections;
  *
  * @author Alexander Budarov
  */
-public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane> implements ScrollBoxLayout {
+public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane> implements ScrollBoxLayout, AutoExpanding {
 
     private Component component;
 
@@ -75,5 +75,15 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
     @Override
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
+    }
+
+    @Override
+    public boolean expandsWidth() {
+        return true;
+    }
+
+    @Override
+    public boolean expandsHeight() {
+        return true;
     }
 }

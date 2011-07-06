@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.sys.layout;
 
+import com.haulmont.cuba.desktop.gui.components.AutoExpanding;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.gui.components.Component;
 import net.miginfocom.layout.CC;
@@ -27,12 +28,20 @@ public class MigLayoutConstraints {
         int heightValue = (int) h.value;
         int heightUnits = h.unit;
 
-        return getSizeConstraints(expandable, widthValue, widthUnits, heightValue, heightUnits);
+        return getSizeConstraints(widthValue, widthUnits, expandable, heightValue, heightUnits, expandable);
     }
 
     public static CC getSizeConstraints(Component component) {
-        boolean expandable = component instanceof Component.Expandable
-                && ((Component.Expandable) component).isExpandable();
+        boolean expandX = false;
+        boolean expandY = false;
+        if (component instanceof AutoExpanding) {
+            boolean expandable = component instanceof Component.Expandable
+                    && ((Component.Expandable) component).isExpandable();
+
+            AutoExpanding autoExpanding = (AutoExpanding) component;
+            expandX = expandable && autoExpanding.expandsWidth();
+            expandY = expandable && autoExpanding.expandsHeight();
+        }
 
         int width = (int) component.getWidth();
         int widthUnits = component.getWidthUnits();
@@ -40,16 +49,16 @@ public class MigLayoutConstraints {
         int height = (int) component.getHeight();
         int heightUnits = component.getHeightUnits();
 
-        return getSizeConstraints(expandable, width, widthUnits, height, heightUnits);
+        return getSizeConstraints(width, widthUnits, expandX, height, heightUnits, expandY);
     }
 
-    private static CC getSizeConstraints(boolean expandable, int width, int widthUnits, int height, int heightUnits) {
+    private static CC getSizeConstraints(int width, int widthUnits, boolean expandX, int height, int heightUnits, boolean expandY) {
         CC cc = new CC();
 
         if (width == -1) { // own size
             cc.growX(0);
         }
-        else if (expandable && widthUnits == Component.UNITS_PERCENTAGE) {
+        else if (widthUnits == Component.UNITS_PERCENTAGE) {
             cc.growX();
             cc.width(width + "%");
         }
@@ -58,8 +67,10 @@ public class MigLayoutConstraints {
             cc.width(width + "!");  // min, pref, max size as specified
         }
         else {
-            if (expandable) {  // todo uncertain about it
+            if (expandX) {
                 cc.growX();
+                cc.growPrioX(99); // lower grow priority
+                cc.width("100%"); // preffered size to full container
             }
             else {
                 cc.growX(0);
@@ -69,7 +80,7 @@ public class MigLayoutConstraints {
         if (height == -1) { // own size
             cc.growY(0.0f);
         }
-        else if (expandable && heightUnits == Component.UNITS_PERCENTAGE) {
+        else if (heightUnits == Component.UNITS_PERCENTAGE) {
             cc.growY();
             cc.height(height + "%");
         }
@@ -78,8 +89,10 @@ public class MigLayoutConstraints {
             cc.height(height + "!"); // min, pref, max size as specified
         }
         else {
-            if (expandable) {  // todo uncertain about it
+            if (expandY) {
                 cc.growY();
+                cc.growPrioY(99); // lower grow priority
+                cc.height("100%"); // preffered size to full container
             }
             else {
                 cc.growY(0.0f);

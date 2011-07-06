@@ -20,8 +20,10 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.WindowContext;
 
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>$Id$</p>
@@ -193,5 +195,15 @@ public class DesktopFrame
             } else
                 return null;
         }
+    }
+
+    @Override
+    public boolean expandsWidth() {
+        return false;
+    }
+
+    @Override
+    public boolean expandsHeight() {
+        return false;
     }
 }

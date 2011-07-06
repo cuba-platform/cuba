@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageUtils;
@@ -32,7 +31,7 @@ import java.util.*;
  *
  * @author krivopustov
  */
-public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implements FieldGroup {
+public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implements FieldGroup, AutoExpanding {
 
     private MigLayout layout;
     private Datasource datasource;
@@ -440,6 +439,16 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     public Collection<Component> getComponents() {
         return fieldComponents.values();
+    }
+
+    @Override
+    public boolean expandsWidth() {
+        return true;
+    }
+
+    @Override
+    public boolean expandsHeight() {
+        return false;
     }
 
     protected class FieldFactory extends AbstractFieldFactory {
