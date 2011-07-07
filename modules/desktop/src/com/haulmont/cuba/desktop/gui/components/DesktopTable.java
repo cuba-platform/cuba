@@ -25,6 +25,8 @@ public class DesktopTable extends DesktopAbstractTable<JXTable> {
         impl = new JXTable();
         initComponent();
         impl.setColumnControlVisible(true);
+
+        tableSettings = new SwingXTableSettings(impl, columnsOrder);
     }
 
     @Override

@@ -8,8 +8,8 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.SplitPanel;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.swing.*;
@@ -44,11 +44,6 @@ public class DesktopSplitPanel
 
     @Override
     public void setSplitPosition(int pos) {
-        setSplitPosition(pos, 0);
-    }
-
-    @Override
-    public void setSplitPosition(int pos, int unit) {
         if (pos < 0 || pos > 100)
             throw new IllegalArgumentException("Split position must be between 0 and 100");
         impl.setResizeWeight(pos / 100.0);
@@ -113,10 +108,25 @@ public class DesktopSplitPanel
 
     @Override
     public void applySettings(Element element) {
+        Element e = element.element("position");
+        if (e != null) {
+            String value = e.attributeValue("value");
+            if (!StringUtils.isBlank(value)) {
+                impl.setDividerLocation(Integer.valueOf(value));
+            }
+        }
     }
 
     @Override
     public boolean saveSettings(Element element) {
-        return false;
+        int location = impl.getLastDividerLocation();
+        if (location < 0)
+            return false; // most probably user didn't change the divider location
+
+        Element e = element.element("position");
+        if (e == null)
+            e = element.addElement("position");
+        e.addAttribute("value", String.valueOf(location));
+        return true;
     }
 }

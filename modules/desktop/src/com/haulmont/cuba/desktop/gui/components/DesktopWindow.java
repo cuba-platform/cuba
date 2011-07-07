@@ -111,9 +111,11 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     }
 
     public void applySettings(Settings settings) {
+        delegate.applySettings(settings);
     }
 
     public void saveSettings() {
+        delegate.saveSettings();
     }
 
     @Override
@@ -122,7 +124,7 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     }
 
     public Settings getSettings() {
-        return null;
+        return delegate.getSettings();
     }
 
     public boolean close(final String actionId) {

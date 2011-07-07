@@ -32,6 +32,7 @@ import org.dom4j.Element;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -59,6 +60,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected Map<MetaPropertyPath, Column> columns = new HashMap<MetaPropertyPath, Column>();
     protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
     protected boolean sortable = true;
+    protected TableSettings tableSettings;
 
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
@@ -171,6 +173,14 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
         initTableModel(datasource);
 
+        Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
+        int i = 0;
+        while (columnEnumeration.hasMoreElements()) {
+            TableColumn tableColumn = columnEnumeration.nextElement();
+            Column column = columnsOrder.get(i++);
+            tableColumn.setIdentifier(column);
+        }
+
         impl.setRowSorter(new RowSorterImpl(tableModel));
 
         initSelectionListener(datasource);
@@ -219,8 +229,6 @@ public abstract class DesktopAbstractTable<C extends JTable>
         if (editableColumns != null && !editableColumns.isEmpty()) {
             setEditableColumns(editableColumns);
         }
-
-        createColumns(tableModel);
 
         List<MetaPropertyPath> columnsOrder = new ArrayList<MetaPropertyPath>();
         for (Table.Column column : this.columnsOrder) {
@@ -272,9 +280,6 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     protected void setVisibleColumns(List<MetaPropertyPath> columnsOrder) {
-    }
-
-    protected void createColumns(AnyTableModelAdapter tableModel) {
     }
 
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
@@ -415,10 +420,11 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     public void applySettings(Element element) {
+        tableSettings.apply(element, isSortable());
     }
 
     public boolean saveSettings(Element element) {
-        return false;
+        return tableSettings.saveSettings(element);
     }
 
     public boolean isMultiSelect() {

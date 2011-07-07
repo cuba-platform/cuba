@@ -36,6 +36,8 @@ public class DesktopTreeTable
         impl.setRootVisible(false);
         impl.setColumnControlVisible(true);
         initComponent();
+
+        tableSettings = new SwingXTableSettings(impl, columnsOrder);
     }
 
     @Override

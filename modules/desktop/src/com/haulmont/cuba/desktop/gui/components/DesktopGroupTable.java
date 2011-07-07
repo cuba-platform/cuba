@@ -23,6 +23,8 @@ public class DesktopGroupTable extends DesktopAbstractTable<JXTable> implements 
         impl = new JXTable();
         initComponent();
         impl.setColumnControlVisible(true);
+
+        tableSettings = new SwingXTableSettings(impl, columnsOrder);
     }
 
     @Override

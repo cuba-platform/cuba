@@ -53,7 +53,7 @@ public class SplitPanelLoader extends ContainerLoader{
 
         final String pos = element.attributeValue("pos");
         if (!StringUtils.isEmpty(pos)) {
-            component.setSplitPosition(Integer.valueOf(pos), Component.UNITS_PERCENTAGE);
+            component.setSplitPosition(Integer.valueOf(pos));
         }
 
         loadExpandable(component, element);

@@ -12,10 +12,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
 import com.haulmont.cuba.desktop.exception.NoUserSessionHandler;
 import com.haulmont.cuba.desktop.exception.SilentExceptionHandler;
-import com.haulmont.cuba.desktop.sys.DesktopAppContextLoader;
-import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
-import com.haulmont.cuba.desktop.sys.DisabledGlassPane;
-import com.haulmont.cuba.desktop.sys.MenuBuilder;
+import com.haulmont.cuba.desktop.sys.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -194,9 +191,6 @@ public class App implements ConnectionListener {
         frame.setName("MainFrame");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
-        frame.setBounds(0, 0, 1000, 700);
-        frame.setLocationRelativeTo(null);
-
         frame.addWindowListener(
                 new WindowAdapter() {
                     @Override
@@ -211,6 +205,12 @@ public class App implements ConnectionListener {
         rootPane.setGlassPane(glassPane);
 
         frame.setContentPane(createStartContentPane());
+
+        createMainWindowProperties().load();
+    }
+
+    protected MainWindowProperties createMainWindowProperties() {
+        return new MainWindowProperties(frame);
     }
 
     protected void initConnection() {
@@ -219,6 +219,7 @@ public class App implements ConnectionListener {
     }
 
     protected void exit() {
+        createMainWindowProperties().save();
         AppContext.stopContext();
         System.exit(0);
     }

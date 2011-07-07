@@ -42,7 +42,6 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -79,8 +78,6 @@ public class WebWindow
     private String description;
 
     private List<CloseListener> listeners = new ArrayList<CloseListener>();
-
-    private Settings settings;
 
     private boolean forceClose;
 
@@ -306,26 +303,7 @@ public class WebWindow
     }
 
     public void applySettings(Settings settings) {
-        this.settings = settings;
-        ComponentsHelper.walkComponents(
-                this,
-                new ComponentVisitor() {
-                    public void visit(Component component, String name) {
-                        if (component instanceof HasSettings) {
-                            log.trace("Applying settings for : " + name + " : " + component);
-                            Element e = WebWindow.this.settings.get(name);
-                            ((HasSettings) component).applySettings(e);
-                            if (component instanceof HasPresentations && e.attributeValue("presentation") != null) {
-                                final String def = e.attributeValue("presentation");
-                                if (!StringUtils.isEmpty(def)) {
-                                    UUID defaultId = UUID.fromString(def);
-                                    ((HasPresentations) component).applyPresentationAsDefault(defaultId);
-                                }
-                            }
-                        }
-                    }
-                }
-        );
+        delegate.applySettings(settings);
     }
 
     public void addTimer(Timer timer) {
@@ -337,7 +315,7 @@ public class WebWindow
     }
 
     public Settings getSettings() {
-        return settings;
+        return delegate.getSettings();
     }
 
     public Element getXmlDescriptor() {
@@ -553,32 +531,7 @@ public class WebWindow
     }
 
     public void saveSettings() {
-        ComponentsHelper.walkComponents(
-                this,
-                new ComponentVisitor() {
-                    public void visit(Component component, String name) {
-                        if (component instanceof HasSettings && WebWindow.this.settings != null) {
-                            log.trace("Saving settings for : " + name + " : " + component);
-                            Element e = WebWindow.this.settings.get(name);
-                            boolean modified = ((HasSettings) component).saveSettings(e);
-                            if (component instanceof HasPresentations && ((HasPresentations) component).isUsePresentations()) {
-                                Object def = ((HasPresentations) component).getDefaultPresentationId();
-                                if (def != null) {
-                                    e.addAttribute("presentation", def.toString());
-                                }
-                                ((HasPresentations) component).getPresentations().commit();
-                            }
-                            WebWindow.this.settings.setModified(modified);
-                        }
-                        if (component instanceof Disposable) {
-                            ((Disposable) component).dispose();
-                        }
-                    }
-                }
-        );
-        if (settings != null) {
-            settings.commit();
-        }
+        delegate.saveSettings();
     }
 
     public String getCaption() {

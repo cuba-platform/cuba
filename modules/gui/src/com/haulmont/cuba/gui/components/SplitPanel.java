@@ -20,7 +20,6 @@ public interface SplitPanel extends Component.Container, Component.Expandable, C
     void setOrientation(int orientation);
 
     void setSplitPosition(int pos);
-    void setSplitPosition(int pos, int unit);
 
     void setLocked(boolean locked);
     boolean isLocked();
