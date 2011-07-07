@@ -6,8 +6,13 @@
 
 package com.haulmont.cuba.desktop.sys.layout;
 
+import com.haulmont.cuba.desktop.gui.components.AutoExpanding;
+import com.haulmont.cuba.desktop.gui.data.ComponentSize;
+import com.haulmont.cuba.gui.components.Component;
+import net.miginfocom.layout.CC;
 import net.miginfocom.layout.PlatformDefaults;
 import net.miginfocom.layout.UnitValue;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * <p>$Id$</p>
@@ -23,4 +28,135 @@ public class MigLayoutHelper {
         }
         return unitValues;
     }
+
+    public static CC getExpandConstraints(String width, String height) {
+        // if not specified, it means that full expand
+        // while for other components it means own size
+        if (StringUtils.isEmpty(width)) {
+            width = "100%";
+        }
+        if (StringUtils.isEmpty(height)) {
+            height = "100%";
+        }
+
+        ComponentSize w = ComponentSize.parse(width);
+        ComponentSize h = ComponentSize.parse(height);
+
+        int widthValue = (int) w.value;
+        int widthUnits = w.unit;
+
+        int heightValue = (int) h.value;
+        int heightUnits = h.unit;
+
+        return getSizeConstraints(widthValue, widthUnits, true, heightValue, heightUnits, true);
+    }
+
+    public static CC getConstraints(Component component) {
+        boolean expandX = false;
+        boolean expandY = false;
+        if (component instanceof AutoExpanding) {
+            boolean expandable = component instanceof Component.Expandable
+                    && ((Component.Expandable) component).isExpandable();
+
+            AutoExpanding autoExpanding = (AutoExpanding) component;
+            expandX = expandable && autoExpanding.expandsWidth();
+            expandY = expandable && autoExpanding.expandsHeight();
+        }
+
+        int width = (int) component.getWidth();
+        int widthUnits = component.getWidthUnits();
+
+        int height = (int) component.getHeight();
+        int heightUnits = component.getHeightUnits();
+
+        CC cc = getSizeConstraints(width, widthUnits, expandX, height, heightUnits, expandY);
+        applyAlignment(cc, component.getAlignment());
+        return cc;
+    }
+
+    private static void applyAlignment(CC cc, Component.Alignment align) {
+        if (align == null) {
+            return;
+        }
+
+        switch (align) {
+            case TOP_RIGHT:
+                cc.alignX("right").alignY("top");
+                break;
+            case TOP_LEFT:
+                cc.alignX("left").alignY("top");
+                break;
+            case TOP_CENTER:
+                cc.alignX("50%").alignY("top");
+                break;
+            case MIDDLE_RIGHT:
+                cc.alignX("right").alignY("50%");
+                break;
+            case MIDDLE_LEFT:
+                cc.alignX("left").alignY("50%");
+                break;
+            case MIDDLE_CENTER:
+                cc.alignX("50%").alignY("50%");
+                break;
+            case BOTTOM_RIGHT:
+                cc.alignX("right").alignY("bottom");
+                break;
+            case BOTTOM_LEFT:
+                cc.alignX("left").alignY("bottom");
+                break;
+            case BOTTOM_CENTER:
+                cc.alignX("50%").alignY("bottom");
+                break;
+        }
+    }
+
+    private static CC getSizeConstraints(int width, int widthUnits, boolean expandX, int height, int heightUnits, boolean expandY) {
+        CC cc = new CC();
+
+        if (width == -1) { // own size
+            cc.growX(0);
+        }
+        else if (widthUnits == Component.UNITS_PERCENTAGE) {
+            cc.growX();
+            cc.width(width + "%");
+        }
+        else if (width != 0 && widthUnits == Component.UNITS_PIXELS) {
+            cc.growX(0);
+            cc.width(width + "!");  // min, pref, max size as specified
+        }
+        else {
+            if (expandX) {
+                cc.growX();
+                cc.growPrioX(99); // lower grow priority
+                cc.width("100%"); // preffered size to full container
+            }
+            else {
+                cc.growX(0);
+            }
+        }
+
+        if (height == -1) { // own size
+            cc.growY(0.0f);
+        }
+        else if (heightUnits == Component.UNITS_PERCENTAGE) {
+            cc.growY();
+            cc.height(height + "%");
+        }
+        else if (height != 0 && heightUnits == Component.UNITS_PIXELS) {
+            cc.growY(0.0f);
+            cc.height(height + "!"); // min, pref, max size as specified
+        }
+        else {
+            if (expandY) {
+                cc.growY();
+                cc.growPrioY(99); // lower grow priority
+                cc.height("100%"); // preffered size to full container
+            }
+            else {
+                cc.growY(0.0f);
+            }
+        }
+        return cc;
+    }
+
 }

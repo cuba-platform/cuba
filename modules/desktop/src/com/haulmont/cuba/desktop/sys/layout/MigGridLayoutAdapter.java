@@ -53,11 +53,16 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
             lc.debug(1000);
 
         layout.setLayoutConstraints(lc);
+
+        // middle align in grid by default
+        /*AC rowConstr = new AC();
+        rowConstr.align("top");
+        layout.setRowConstraints(rowConstr);*/
     }
 
     @Override
     public CC getConstraints(com.haulmont.cuba.gui.components.Component component) {
-        return MigLayoutConstraints.getSizeConstraints(component);
+        return MigLayoutHelper.getConstraints(component);
     }
 
     @Override
@@ -65,9 +70,27 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
         int spanX = col2 - col;
         int spanY = row2 - row;
 
-        CC constraints = MigLayoutConstraints.getSizeConstraints(component);
+        CC constraints = MigLayoutHelper.getConstraints(component);
         constraints.cell(col, row, spanX, spanY);
 
         return constraints;
+    }
+
+    @Override
+    public void updateConstraints(JComponent component, Object constraints) {
+        // todo delete, evidently no needed
+        /*if (layout.isManagingComponent(component)
+                && layout.getComponentConstraints(component) instanceof CC
+                && constraints instanceof CC) {
+            // trying to keep the same cell and row for component
+            CC current = (CC) layout.getComponentConstraints(component);
+            int col = current.getCellX();
+            int row = current.getCellY();
+            int spanX = current.getSpanX();
+            int spanY = current.getSpanY();
+
+            ((CC) constraints).cell(col, row, spanX, spanY);
+        }*/
+        layout.setComponentConstraints(component, constraints);
     }
 }

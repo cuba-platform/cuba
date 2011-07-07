@@ -53,4 +53,6 @@ public abstract class BoxLayoutAdapter extends LayoutAdapter {
         this.direction = direction;
         update();
     }
+
+    public abstract void updateConstraints(JComponent component, Object constraints);
 }

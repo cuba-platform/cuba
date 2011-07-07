@@ -22,9 +22,11 @@ import javax.swing.*;
  */
 public abstract class DesktopAbstractComponent<C extends JComponent>
     implements
-        Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.Expandable
+        DesktopComponent, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.Expandable
 {
     protected C impl;
+
+    protected DesktopContainer container;
 
     protected String id;
     protected IFrame frame;
@@ -32,6 +34,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     protected boolean expandable = true;
 
     protected ComponentSize widthSize, heightSize;
+    protected Alignment alignment;
 
     protected Log log = LogFactory.getLog(getClass());
 
@@ -101,7 +104,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     public void setHeight(String height) {
         heightSize = ComponentSize.parse(height);
-        // todo update if already added to container
+        requestContainerUpdate();
     }
 
     public float getWidth() {
@@ -114,14 +117,16 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     public void setWidth(String width) {
         widthSize = ComponentSize.parse(width);
-        // todo update if already added to container
+        requestContainerUpdate();
     }
 
     public Alignment getAlignment() {
-        return null;
+        return alignment;
     }
 
     public void setAlignment(Alignment alignment) {
+        this.alignment = alignment;
+        requestContainerUpdate();
     }
 
     public String getStyleName() {
@@ -145,5 +150,15 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     public JComponent getComposition() {
         return impl;
+    }
+
+    public void setContainer(DesktopContainer container) {
+        this.container = container;
+    }
+
+    protected void requestContainerUpdate() {
+        if (container != null) {
+            container.updateComponent(this);
+        }
     }
 }

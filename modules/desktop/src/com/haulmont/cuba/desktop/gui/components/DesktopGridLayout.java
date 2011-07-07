@@ -21,7 +21,7 @@ import java.util.*;
  */
 public class DesktopGridLayout
         extends DesktopAbstractComponent<JPanel>
-        implements GridLayout
+        implements GridLayout, DesktopContainer
 {
     protected GridLayoutAdapter layoutAdapter;
 
@@ -63,6 +63,10 @@ public class DesktopGridLayout
             }
         }
         ownComponents.add(component);
+
+        if (component instanceof DesktopComponent) {
+            ((DesktopComponent) component).setContainer(this);
+        }
     }
 
     public int getRows() {
@@ -93,6 +97,10 @@ public class DesktopGridLayout
             }
         }
         ownComponents.add(component);
+
+        if (component instanceof DesktopComponent) {
+            ((DesktopComponent) component).setContainer(this);
+        }
     }
 
     public void remove(Component component) {
@@ -101,6 +109,10 @@ public class DesktopGridLayout
             componentByIds.remove(component.getId());
         }
         ownComponents.remove(component);
+
+        if (component instanceof DesktopComponent) {
+            ((DesktopComponent) component).setContainer(null);
+        }
     }
 
     public <T extends Component> T getOwnComponent(String id) {
@@ -129,5 +141,14 @@ public class DesktopGridLayout
 
     public void setSpacing(boolean enabled) {
         layoutAdapter.setSpacing(enabled);
+    }
+
+    @Override
+    public void updateComponent(Component child) {
+        if (!ownComponents.contains(child)) {
+            throw new UnsupportedOperationException("It's not a child");
+        }
+        JComponent composition = DesktopComponentsHelper.getComposition(child);
+        layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
     }
 }

@@ -20,7 +20,7 @@ import java.util.*;
  */
 public abstract class DesktopAbstractBox
         extends DesktopAbstractComponent<JPanel>
-        implements com.haulmont.cuba.gui.components.BoxLayout
+        implements com.haulmont.cuba.gui.components.BoxLayout, DesktopContainer
 {
     protected BoxLayoutAdapter layoutAdapter;
 
@@ -44,6 +44,10 @@ public abstract class DesktopAbstractBox
             }
         }
         ownComponents.add(component);
+
+        if (component instanceof DesktopComponent) {
+            ((DesktopComponent) component).setContainer(this);
+        }
     }
 
     public void remove(Component component) {
@@ -56,6 +60,19 @@ public abstract class DesktopAbstractBox
             componentByIds.remove(component.getId());
         }
         ownComponents.remove(component);
+
+        if (component instanceof DesktopComponent) {
+            ((DesktopComponent) component).setContainer(null);
+        }
+    }
+
+    @Override
+    public void updateComponent(Component child) {
+        if (!ownComponents.contains(child)) {
+            throw new UnsupportedOperationException("It's not a child");
+        }
+        JComponent composition = DesktopComponentsHelper.getComposition(child);
+        layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
     }
 
     public <T extends Component> T getOwnComponent(String id) {

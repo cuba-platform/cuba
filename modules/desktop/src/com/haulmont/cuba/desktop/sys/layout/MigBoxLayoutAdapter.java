@@ -10,7 +10,6 @@ import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,6 +46,7 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
         AC colConstr = new AC();
 
         if (direction.equals(FlowDirection.X)) {
+            rowConstr.align("top");
             lc.flowX();
             if (expandedComponent != null) {
                 adjustExpanding(lc, colConstr);
@@ -92,21 +92,18 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
     public void expand(Component component, String height, String width) {
         super.expand(component, height, width);
 
-        // if not specified here, it means that full expand
-        // while for other components it means own size
-        if (StringUtils.isEmpty(width)) {
-            width = "100%";
-        }
-        if (StringUtils.isEmpty(height)) {
-            height = "100%";
-        }
-        CC constraints = MigLayoutConstraints.getSizeConstraints(width, height, true);
+        CC constraints = MigLayoutHelper.getExpandConstraints(width, height);
+        layout.setComponentConstraints(component, constraints);
+    }
+
+    @Override
+    public void updateConstraints(JComponent component, Object constraints) {
         layout.setComponentConstraints(component, constraints);
     }
 
     @Override
     public CC getConstraints(com.haulmont.cuba.gui.components.Component component) {
-        CC constraints = MigLayoutConstraints.getSizeConstraints(component);
+        CC constraints = MigLayoutHelper.getConstraints(component);
         return constraints;
     }
 }

@@ -45,7 +45,7 @@ import java.util.List;
  *
  * @author krivopustov
  */
-public class DesktopWindow implements Window, Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow
+public class DesktopWindow implements Window, Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow, DesktopContainer
 {
     private static final long serialVersionUID = 1026363207247384464L;
 
@@ -348,6 +348,10 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
             registerComponent(component);
         }
         ownComponents.add(component);
+
+        if (component instanceof DesktopComponent) {
+            ((DesktopComponent) component).setContainer(this);
+        }
     }
 
     public void remove(Component component) {
@@ -356,6 +360,10 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
             componentByIds.remove(component.getId());
         }
         ownComponents.remove(component);
+
+        if (component instanceof DesktopComponent) {
+            ((DesktopComponent) component).setContainer(null);
+        }
     }
 
     public <T extends Component> T getOwnComponent(String id) {
@@ -517,6 +525,15 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
 
     protected JComponent getContainer() {
         return panel;
+    }
+
+    @Override
+    public void updateComponent(Component child) {
+        if (!ownComponents.contains(child)) {
+            throw new UnsupportedOperationException("It's not a child");
+        }
+        JComponent composition = DesktopComponentsHelper.getComposition(child);
+        layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
     }
 
     public static class Editor extends DesktopWindow implements Window.Editor {
