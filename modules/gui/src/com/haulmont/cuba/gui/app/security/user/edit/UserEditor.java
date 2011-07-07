@@ -384,7 +384,7 @@ public class UserEditor extends AbstractEditor {
         private boolean hasDefaultRole(Set selected) {
             for (Object roleObj : selected) {
                 UserRole role = (UserRole) roleObj;
-                if (role.getRole().getDefaultRole())
+                if (Boolean.TRUE.equals(role.getRole().getDefaultRole()))
                     return true;
             }
             return false;
