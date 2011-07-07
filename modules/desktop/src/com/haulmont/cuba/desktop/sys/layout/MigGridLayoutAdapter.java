@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.sys.layout;
 
+import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
@@ -55,9 +56,9 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
         layout.setLayoutConstraints(lc);
 
         // middle align in grid by default
-        /*AC rowConstr = new AC();
+        AC rowConstr = new AC();
         rowConstr.align("top");
-        layout.setRowConstraints(rowConstr);*/
+        layout.setRowConstraints(rowConstr);
     }
 
     @Override

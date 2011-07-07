@@ -31,22 +31,24 @@ public abstract class AbstractFieldFactory {
     public Component createField(Datasource datasource, String property) {
         MetaClass metaClass = datasource.getMetaClass();
         MetaPropertyPath mpp = metaClass.getPropertyPath(property);
-        if (mpp.getRange().isDatatype()) {
-            Datatype datatype = mpp.getRange().asDatatype();
-            String typeName = datatype.getName();
-            if (typeName.equals(StringDatatype.NAME)) {
-                return createStringField(datasource, property);
-            } else if (typeName.equals(BooleanDatatype.NAME)) {
-                return createBooleanField(datasource, property);
-            } else if (typeName.equals(DateDatatype.NAME) || typeName.equals(DateTimeDatatype.NAME)) {
-                return createDateField(datasource, property);
-            } else if (datatype instanceof NumberDatatype) {
-                return createNumberField(datasource, property);
+        if (mpp != null) {
+            if (mpp.getRange().isDatatype()) {
+                Datatype datatype = mpp.getRange().asDatatype();
+                String typeName = datatype.getName();
+                if (typeName.equals(StringDatatype.NAME)) {
+                    return createStringField(datasource, property);
+                } else if (typeName.equals(BooleanDatatype.NAME)) {
+                    return createBooleanField(datasource, property);
+                } else if (typeName.equals(DateDatatype.NAME) || typeName.equals(DateTimeDatatype.NAME)) {
+                    return createDateField(datasource, property);
+                } else if (datatype instanceof NumberDatatype) {
+                    return createNumberField(datasource, property);
+                }
+            } else if (mpp.getRange().isClass()) {
+                return createEntityField(datasource, property);
+            } else if (mpp.getRange().isEnum()) {
+                return createEnumField(datasource, property, mpp.getMetaProperty());
             }
-        } else if (mpp.getRange().isClass()) {
-            return createEntityField(datasource, property);
-        } else if (mpp.getRange().isEnum()) {
-            return createEnumField(datasource, property, mpp.getMetaProperty());
         }
         return createUnsupportedField(mpp);
     }
@@ -105,7 +107,7 @@ public abstract class AbstractFieldFactory {
 
     private Component createUnsupportedField(MetaPropertyPath mpp) {
         DesktopLabel label = new DesktopLabel();
-        label.setValue("TODO: " + mpp.getRange());
+        label.setValue("TODO: " + (mpp != null ? mpp.getRange() : ""));
         return label;
     }
 
