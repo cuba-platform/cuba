@@ -32,6 +32,8 @@ public class LabelLoader extends AbstractDatasourceComponentLoader {
 
         loadVisible(component, element);
 
+        loadAlign(component, element);
+
         loadStyleName(component, element);
 
         String caption = element.attributeValue("value");
