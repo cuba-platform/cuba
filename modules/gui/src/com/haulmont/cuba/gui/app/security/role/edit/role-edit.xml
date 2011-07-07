@@ -124,13 +124,6 @@
                                      caption="msg://permissions.grant"
                                      width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
                         </buttonsPanel>
-                        <!--<buttonsPanel>
-                            <popupButton id="screen-permissions-grant" icon="icons/add.png"
-                                         caption="msg://permissions.grant"
-                                         width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
-                            <button id="screen-permissions-remove" action="screen-permissions.remove"
-                                    caption="msg://permissions.remove" icon="icons/remove.png"/>
-                        </buttonsPanel>-->
 
                         <treeTable id="screen-permissions-tree">
                             <columns>
@@ -139,14 +132,6 @@
                             </columns>
                             <rows datasource="screen-permissions-tree-ds"/>
                         </treeTable>
-
-                        <!--<table id="screen-permissions">
-                            <columns>
-                                <column id="target" caption="msg://target"/>
-                                <column id="value" caption="msg://value"/>
-                            </columns>
-                            <rows datasource="screen-permissions"/>
-                        </table>-->
                     </vbox>
                 </tab>
                 <tab id="entity-permissions-tab" caption="msg://entity-permissions" lazy="true">
