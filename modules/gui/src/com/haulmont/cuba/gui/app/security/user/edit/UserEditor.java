@@ -60,7 +60,7 @@ public class UserEditor extends AbstractEditor {
         rolesTable = getComponent("roles");
         rolesTable.addAction(new AddRoleAction());
         rolesTable.addAction(new EditRoleAction());
-        rolesTable.addAction(new RemoveAction(rolesTable, false));
+        rolesTable.addAction(new RemoveRoleAction(rolesTable, false));
 
         substTable = getComponent("subst");
         substTable.addAction(new AddSubstitutedAction());
@@ -356,6 +356,38 @@ public class UserEditor extends AbstractEditor {
         @Override
         public String getCaption() {
             return getMessage("actions.Edit");
+        }
+    }
+
+    private class RemoveRoleAction extends RemoveAction {
+
+        private boolean hasDefaultRole = false;
+
+        public RemoveRoleAction(com.haulmont.cuba.gui.components.List owner, boolean autocommit) {
+            super(owner, autocommit);
+        }
+
+        @Override
+        protected void confirmAndRemove(Set selected) {
+            hasDefaultRole = hasDefaultRole(selected);
+            super.confirmAndRemove(selected);
+        }
+
+        @Override
+        protected String getConfirmationMessage(String messagesPackage) {
+            if (hasDefaultRole)
+                return getMessage("dialogs.Confirmation.RemoveDefaultRole");
+            else
+                return super.getConfirmationMessage(messagesPackage);
+        }
+
+        private boolean hasDefaultRole(Set selected) {
+            for (Object roleObj : selected) {
+                UserRole role = (UserRole) roleObj;
+                if (role.getRole().getDefaultRole())
+                    return true;
+            }
+            return false;
         }
     }
 

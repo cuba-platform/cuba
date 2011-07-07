@@ -14,8 +14,8 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
@@ -53,7 +53,7 @@ public class RemoveAction extends AbstractAction {
     }
 
     public String getCaption() {
-        final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+        final String messagesPackage = AppConfig.getMessagesPack();
         return MessageProvider.getMessage(messagesPackage, "actions.Remove");
     }
 
@@ -63,7 +63,7 @@ public class RemoveAction extends AbstractAction {
 
     public boolean isEnabled() {
         return super.isEnabled() &&
-                (isManyToMany() || UserSessionClient.getUserSession().isEntityOpPermitted(datasource.getMetaClass(), EntityOp.DELETE));
+                (isManyToMany() || UserSessionProvider.getUserSession().isEntityOpPermitted(datasource.getMetaClass(), EntityOp.DELETE));
     }
 
     public void actionPerform(Component component) {
@@ -75,10 +75,10 @@ public class RemoveAction extends AbstractAction {
     }
 
     protected void confirmAndRemove(final Set selected) {
-        final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+        final String messagesPackage = AppConfig.getMessagesPack();
         owner.getFrame().showOptionDialog(
-                MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation"),
-                MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove"),
+                getConfirmationTitle(messagesPackage),
+                getConfirmationMessage(messagesPackage),
                 IFrame.MessageType.CONFIRMATION,
                 new Action[]{
                         new AbstractAction("ok") {
@@ -118,6 +118,14 @@ public class RemoveAction extends AbstractAction {
                         }
                 }
         );
+    }
+
+    protected String getConfirmationMessage(String messagesPackage) {
+        return MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove");
+    }
+
+    protected String getConfirmationTitle(String messagesPackage) {
+        return MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation");
     }
 
     protected void doRemove(Set selected, boolean autocommit) {
