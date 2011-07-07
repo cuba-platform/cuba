@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
- * Haulmont Technology proprietary and confidential.
- * Use is subject to license terms.
- */
+* Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+* Haulmont Technology proprietary and confidential.
+* Use is subject to license terms.
+*/
 
 allprojects {
     artifactGroup = 'com.haulmont.cuba'
@@ -106,7 +106,16 @@ configure(globalModule) {
     task enhance(dependsOn: [compileJava, processResources], type: CubaEnhancing) {
         persistenceXml = "$globalModule.projectDir/src/cuba-persistence.xml"
     }
+    task releaseTimestamp(dependsOn: [compileJava, processResources]) << {
+        Date releaseDate = new Date()
+        String timeStamp = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(releaseDate)
+
+        File releaseFile = new File("$buildDir/classes/main/com/haulmont/cuba/core/global/release.timestamp")
+        releaseFile.delete()
+        releaseFile.write(timeStamp)
+    }
     classes.dependsOn enhance
+    classes.dependsOn releaseTimestamp
 }
 
 configure(coreModule) {
