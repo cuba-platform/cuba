@@ -11,6 +11,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
+import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -375,7 +376,14 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             assignTypicalAttributes(component);
             JComponent jComponent = DesktopComponentsHelper.unwrap(component);
 
-            impl.add(jComponent, new CC().cell(col*2+1, row, 1, 1));
+            CC cell = new CC().cell(col * 2 + 1, row, 1, 1);
+
+            if (field.getWidth() != null) {
+                component.setWidth(field.getWidth());
+                MigLayoutHelper.applyWidth(cell, (int) component.getWidth(), component.getWidthUnits(), false);
+            }
+
+            impl.add(jComponent, cell);
         }
     }
 

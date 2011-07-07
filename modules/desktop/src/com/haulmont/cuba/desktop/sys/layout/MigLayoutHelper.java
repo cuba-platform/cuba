@@ -112,51 +112,57 @@ public class MigLayoutHelper {
 
     private static CC getSizeConstraints(int width, int widthUnits, boolean expandX, int height, int heightUnits, boolean expandY) {
         CC cc = new CC();
+        applyWidth(cc, width, widthUnits, expandX);
+        applyHeight(cc, height, heightUnits, expandY);
+        return cc;
+    }
 
-        if (width == -1) { // own size
-            cc.growX(0);
-        }
-        else if (widthUnits == Component.UNITS_PERCENTAGE) {
-            cc.growX();
-            cc.width(width + "%");
-        }
-        else if (width != 0 && widthUnits == Component.UNITS_PIXELS) {
-            cc.growX(0);
-            cc.width(width + "!");  // min, pref, max size as specified
-        }
-        else {
-            if (expandX) {
-                cc.growX();
-                cc.growPrioX(99); // lower grow priority
-                cc.width("100%"); // preffered size to full container
-            }
-            else {
-                cc.growX(0);
-            }
-        }
-
+    public static void applyHeight(CC constraints, int height, int heightUnits, boolean expand) {
         if (height == -1) { // own size
-            cc.growY(0.0f);
+            constraints.growY(0.0f);
         }
         else if (heightUnits == Component.UNITS_PERCENTAGE) {
-            cc.growY();
-            cc.height(height + "%");
+            constraints.growY();
+            constraints.height(height + "%");
         }
         else if (height != 0 && heightUnits == Component.UNITS_PIXELS) {
-            cc.growY(0.0f);
-            cc.height(height + "!"); // min, pref, max size as specified
+            constraints.growY(0.0f);
+            constraints.height(height + "!"); // min, pref, max size as specified
         }
         else {
-            if (expandY) {
-                cc.growY();
-                cc.growPrioY(99); // lower grow priority
-                cc.height("100%"); // preffered size to full container
+            if (expand) {
+                constraints.growY();
+                constraints.growPrioY(99); // lower grow priority
+                constraints.height("100%"); // preffered size to full container
             }
             else {
-                cc.growY(0.0f);
+                constraints.growY(0.0f);
             }
         }
-        return cc;
+    }
+
+    public static void applyWidth(CC constraints, int width, int widthUnits, boolean expand) {
+        if (width == -1) { // own size
+            constraints.growX(0);
+        }
+        else if (widthUnits == Component.UNITS_PERCENTAGE) {
+            constraints.growX();
+            constraints.width(width + "%");
+        }
+        else if (width != 0 && widthUnits == Component.UNITS_PIXELS) {
+            constraints.growX(0);
+            constraints.width(width + "!");  // min, pref, max size as specified
+        }
+        else {
+            if (expand) {
+                constraints.growX();
+                constraints.growPrioX(99); // lower grow priority
+                constraints.width("100%"); // preffered size to full container
+            }
+            else {
+                constraints.growX(0);
+            }
+        }
     }
 
 }

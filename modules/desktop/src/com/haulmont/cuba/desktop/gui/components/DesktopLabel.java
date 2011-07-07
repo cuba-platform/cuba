@@ -39,6 +39,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
 
     public DesktopLabel() {
         impl = new JLabel();
+        setAlignment(Alignment.MIDDLE_LEFT);
     }
 
     public Datasource getDatasource() {
