@@ -55,10 +55,21 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
 
         layout.setLayoutConstraints(lc);
 
-        // middle align in grid by default
         AC rowConstr = new AC();
-        rowConstr.align("top");
+        rowConstr.align("top");  // left-top align by default
+        // todo add them when they will be needed. Now seem to bug a little
+        /*for (int i = 0; i < rowCount; i++) {
+            rowConstr.grow(rowRatio[i], i);
+        }*/
         layout.setRowConstraints(rowConstr);
+
+        AC colConstr = new AC();
+        for (int i = 0; i < colCount; i++) {
+            float ratio = columnRatio[i];
+            colConstr.grow(ratio, i);
+            colConstr.shrink(ratio != 0 ? 1.0f / ratio : 100.0f, i);
+        }
+        layout.setColumnConstraints(colConstr);
     }
 
     @Override

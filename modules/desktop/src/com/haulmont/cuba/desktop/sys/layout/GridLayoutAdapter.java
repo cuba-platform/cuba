@@ -10,6 +10,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 /**
  * <p>$Id$</p>
@@ -20,6 +21,9 @@ public abstract class GridLayoutAdapter extends LayoutAdapter {
 
     protected int rowCount;
     protected int colCount;
+
+    protected float[] columnRatio;
+    protected float[] rowRatio;
 
     public static GridLayoutAdapter create(JComponent container) {
         MigGridLayoutAdapter layoutAdapter = new MigGridLayoutAdapter(container);
@@ -43,6 +47,10 @@ public abstract class GridLayoutAdapter extends LayoutAdapter {
 
     public void setRows(int rows) {
         rowCount = rows;
+
+        rowRatio = new float[rows];
+        Arrays.fill(rowRatio, 1.0f);
+
         update();
     }
 
@@ -52,6 +60,9 @@ public abstract class GridLayoutAdapter extends LayoutAdapter {
 
     public void setColumns(int columns) {
         colCount = columns;
+        columnRatio = new float[columns];
+        Arrays.fill(columnRatio, 1.0f);
+
         update();
     }
 
@@ -59,4 +70,23 @@ public abstract class GridLayoutAdapter extends LayoutAdapter {
             com.haulmont.cuba.gui.components.Component component, int col, int row, int col2, int row2);
 
     public abstract void updateConstraints(JComponent component, Object constraints);
+
+    public void setColumnExpandRatio(int col, float ratio) {
+        columnRatio[col] = ratio;
+        update();
+    }
+
+    public float getColumnExpandRatio(int col) {
+        return columnRatio[col];
+    }
+
+    public float getRowExpandRatio(int col) {
+        return rowRatio[col];
+    }
+
+    public void setRowExpandRatio(int col, float ratio) {
+        rowRatio[col] = ratio;
+    }
+
+
 }
