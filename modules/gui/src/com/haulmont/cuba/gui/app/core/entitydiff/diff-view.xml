@@ -22,7 +22,7 @@
             <datasourceClass>com.haulmont.cuba.gui.app.core.entitydiff.DiffTreeDatasource</datasourceClass>
         </collectionDatasource>
     </dsContext>
-    <layout expand="vBox" height="300px">
+    <layout expand="vBox">
         <vbox id="vBox" expand="diffSplit">
             <split id="diffSplit" orientation="horizontal" pos="20">
                 <vbox expand="versionsList" spacing="true" margin="true">
