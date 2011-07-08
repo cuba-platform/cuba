@@ -43,6 +43,7 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
     protected void update() {
         LC lc = new LC();
         lc.setWrapAfter(getColumns());
+        lc.hideMode(2); // The size of an invisible component will be set to 0, 0 and the gaps will also be set to 0 around it.
 
         lc.setInsets(MigLayoutHelper.makeInsets(margins));
 

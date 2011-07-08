@@ -48,7 +48,11 @@ public class MigLayoutHelper {
         int heightValue = (int) h.value;
         int heightUnits = h.unit;
 
-        return getSizeConstraints(widthValue, widthUnits, true, heightValue, heightUnits, true);
+        CC cc = new CC();
+        applyWidth(cc, widthValue, widthUnits, true);
+        applyHeight(cc, heightValue, heightUnits, true);
+
+        return cc;
     }
 
     public static CC getConstraints(Component component) {
@@ -69,7 +73,11 @@ public class MigLayoutHelper {
         int height = (int) component.getHeight();
         int heightUnits = component.getHeightUnits();
 
-        CC cc = getSizeConstraints(width, widthUnits, expandX, height, heightUnits, expandY);
+        CC cc = new CC();
+
+        applyWidth(cc, width, widthUnits, expandX);
+        applyHeight(cc, height, heightUnits, expandY);
+
         applyAlignment(cc, component.getAlignment());
         return cc;
     }
@@ -108,13 +116,6 @@ public class MigLayoutHelper {
                 cc.alignX("50%").alignY("bottom");
                 break;
         }
-    }
-
-    private static CC getSizeConstraints(int width, int widthUnits, boolean expandX, int height, int heightUnits, boolean expandY) {
-        CC cc = new CC();
-        applyWidth(cc, width, widthUnits, expandX);
-        applyHeight(cc, height, heightUnits, expandY);
-        return cc;
     }
 
     public static void applyHeight(CC constraints, int height, int heightUnits, boolean expand) {
