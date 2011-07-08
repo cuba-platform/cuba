@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
@@ -35,7 +36,6 @@ public abstract class DesktopAbstractBox
     public void add(Component component) {
         JComponent composition = DesktopComponentsHelper.getComposition(component);
         impl.add(composition, layoutAdapter.getConstraints(component));
-//        setComponentAlignment(itmillComponent, WebComponentsHelper.convertAlignment(component.getAlignment()));
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
@@ -45,9 +45,7 @@ public abstract class DesktopAbstractBox
         }
         ownComponents.add(component);
 
-        if (component instanceof DesktopComponent) {
-            ((DesktopComponent) component).setContainer(this);
-        }
+        DesktopContainerHelper.assignContainer(component, this);
     }
 
     public void remove(Component component) {
@@ -61,16 +59,11 @@ public abstract class DesktopAbstractBox
         }
         ownComponents.remove(component);
 
-        if (component instanceof DesktopComponent) {
-            ((DesktopComponent) component).setContainer(null);
-        }
+        DesktopContainerHelper.assignContainer(component, null);
     }
 
     @Override
     public void updateComponent(Component child) {
-        if (!ownComponents.contains(child)) {
-            throw new UnsupportedOperationException("It's not a child");
-        }
         JComponent composition = DesktopComponentsHelper.getComposition(child);
         layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
     }

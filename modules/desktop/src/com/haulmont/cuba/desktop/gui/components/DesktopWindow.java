@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
+import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.AppConfig;
@@ -351,9 +352,7 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         }
         ownComponents.add(component);
 
-        if (component instanceof DesktopComponent) {
-            ((DesktopComponent) component).setContainer(this);
-        }
+        DesktopContainerHelper.assignContainer(component, this);
     }
 
     public void remove(Component component) {
@@ -363,9 +362,7 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         }
         ownComponents.remove(component);
 
-        if (component instanceof DesktopComponent) {
-            ((DesktopComponent) component).setContainer(null);
-        }
+        DesktopContainerHelper.assignContainer(component, null);
     }
 
     public <T extends Component> T getOwnComponent(String id) {
@@ -531,9 +528,6 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
 
     @Override
     public void updateComponent(Component child) {
-        if (!ownComponents.contains(child)) {
-            throw new UnsupportedOperationException("It's not a child");
-        }
         JComponent composition = DesktopComponentsHelper.getComposition(child);
         layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
     }

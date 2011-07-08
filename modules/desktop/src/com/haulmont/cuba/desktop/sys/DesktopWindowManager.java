@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.ScreenHistorySupport;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import org.apache.commons.lang.BooleanUtils;
@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.swing.AbstractAction;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -314,6 +315,10 @@ public class DesktopWindowManager extends WindowManager {
                 container.remove(c);
             }
             container.add(frame);
+            // expand loaded frame inside container to take its full size
+            if (container instanceof ExpandingLayout) {
+                ((ExpandingLayout) container).expand(frame);
+            }
         } else {
             throw new IllegalStateException(
                     "Parent component must be com.haulmont.cuba.gui.components.Component.Container"
