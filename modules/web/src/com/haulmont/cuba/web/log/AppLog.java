@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.log;
 
+import com.haulmont.cuba.core.global.SilentException;
 import com.vaadin.terminal.ParameterHandler;
 import com.vaadin.terminal.Terminal;
 import com.vaadin.terminal.URIHandler;
@@ -76,6 +77,10 @@ public class AppLog implements Serializable
 
     public void log(Terminal.ErrorEvent event) {
         Throwable t = event.getThrowable();
+
+        if (t instanceof SilentException)
+            return;
+
         if (t instanceof SocketException) {
             // Most likely client browser closed socket
             LogItem item = new LogItem(LogLevel.WARNING, "SocketException in CommunicationManager. Most likely client (browser) closed socket.", null);
