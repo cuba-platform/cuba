@@ -1195,7 +1195,7 @@
     <xs:complexType name="popupButtonType">
         <xs:complexContent>
             <xs:extension base="buttonType">
-                <xs:choice minOccurs="1" maxOccurs="1">
+                <xs:choice minOccurs="0" maxOccurs="1">
                     <xs:group ref="component"/>
                     <xs:group ref="layout"/>
                 </xs:choice>
