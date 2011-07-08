@@ -491,15 +491,21 @@ public class WebWindowManager extends WindowManager {
 
     public void setCurrentWindowCaption(Window window, String caption, String description) {
         TabSheet tabSheet = app.getAppWindow().getTabSheet();
-        if (tabSheet == null) return; // for SINGLE tabbing mode
+        if (tabSheet == null)
+            return; // for SINGLE tabbing mode
+
         WindowOpenMode openMode = getWindowOpenMode().get(window);
-        if (OpenType.DIALOG.equals(openMode.getOpenType())) {
+        if (openMode == null || OpenType.DIALOG.equals(openMode.getOpenType()))
             return;
-        }
+
         com.vaadin.ui.Component tabContent = tabSheet.getSelectedTab();
-        if (tabContent == null) return;
+        if (tabContent == null)
+            return;
+
         TabSheet.Tab tab = tabSheet.getTab(tabContent);
-        if (tab == null) return;
+        if (tab == null)
+            return;
+
         tab.setCaption(formatTabCaption(caption, description));
     }
 
