@@ -80,9 +80,10 @@ public class WebOptionsGroup
             t = o;
         } else if (o instanceof Entity) {
             t = o;
-        } else {
+        } else if (optionsDatasource != null) {
             t = optionsDatasource.getItem(o);
-        }
+        } else
+            t = null;
         return t;
     }
 
