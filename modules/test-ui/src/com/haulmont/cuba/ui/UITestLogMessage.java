@@ -49,9 +49,9 @@ public class UITestLogMessage {
         Iterator<Pattern> patternIterator = logLevels.keySet().iterator();
         while (patternIterator.hasNext() && (!find)) {
             Pattern pattern = patternIterator.next();
-            Matcher matcher = pattern.matcher(logEntry);
+            Matcher matcher = pattern.matcher(logEntry.trim());
             if (matcher.matches()) {
-                message = matcher.group(2);
+                message = matcher.group(2).trim();
                 level = logLevels.get(pattern);
                 find = true;
             }

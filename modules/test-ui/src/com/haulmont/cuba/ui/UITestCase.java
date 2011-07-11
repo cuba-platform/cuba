@@ -9,6 +9,7 @@ package com.haulmont.cuba.ui;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.imageio.ImageIO;
@@ -111,6 +112,18 @@ public abstract class UITestCase extends TestCase {
         ImageIO.write(screenShot, "PNG", new File(destinationFile));
     }
 
+    private void pipe(final InputStream sourceStream, final OutputStream outputStream) {
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    IOUtils.copy(sourceStream, outputStream);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }).start();
+    }
+
     private void executeTestScript(String scriptFile, String testFileName,
                                    StringBuilder errorLog, StringBuilder infoLog)
             throws FileNotFoundException {
@@ -123,18 +136,21 @@ public abstract class UITestCase extends TestCase {
         try {
             Process testRunner = Runtime.getRuntime().exec(scriptFile + " " + "\"" + testFilePath + "\"");
 
-            BufferedReader stdOut = new BufferedReader(new InputStreamReader(testRunner.getInputStream()));
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(testRunner.getErrorStream()));
+            ByteArrayOutputStream stdOutBuffer = new ByteArrayOutputStream();
+            ByteArrayOutputStream stdErrBuffer = new ByteArrayOutputStream();
 
-            String s;
-            while ((s = stdOut.readLine()) != null) {
-                infoLog.append(s).append("\n");
-            }
-            while ((s = stdError.readLine()) != null) {
-                errorLog.append(s).append("\n");
-            }
+            pipe(testRunner.getInputStream(), stdOutBuffer);
+            pipe(testRunner.getErrorStream(), stdErrBuffer);
+
+            testRunner.waitFor();
+
+            infoLog.append(new String(stdOutBuffer.toByteArray()));
+            errorLog.append(new String(stdErrBuffer.toByteArray()));
+
         } catch (IOException ex) {
             throw new RuntimeException("Problem with execute external test");
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Running test interrupted");
         }
     }
 
@@ -144,22 +160,25 @@ public abstract class UITestCase extends TestCase {
         UITestLogMessage currentMessage = null;
         String[] logStrings = infoLog.split("\n");
         for (String logEnrty : logStrings) {
-            UITestLogMessage logMessage = UITestLogMessage.parse(logEnrty);
-            if (logMessage.getMessageLevel() == UITestLogMessage.Level.STEP) {
-                if (currentMessage != null)
-                    currentStep.getLogMessages().add(currentMessage);
-                uiTestSteps.add(currentStep);
-                currentStep = new UITestStep(logMessage.getMessage());
-                currentMessage = null;
-            } else if (logMessage.getMessageLevel() != UITestLogMessage.Level.CONTENT) {
-                if (currentMessage != null)
-                    currentStep.getLogMessages().add(currentMessage);
-                currentMessage = logMessage;
-            } else {
-                if (currentMessage == null)
-                    currentMessage = new UITestLogMessage(UITestLogMessage.Level.CONTENT, "");
-                if (!StringUtils.isWhitespace(logMessage.getMessage()))
-                    currentMessage.getContent().append(logMessage.getMessage().trim()).append("\n");
+            if (!StringUtils.isWhitespace(logEnrty)) {
+                UITestLogMessage logMessage = UITestLogMessage.parse(logEnrty);
+
+                if (logMessage.getMessageLevel() == UITestLogMessage.Level.STEP) {
+                    if (currentMessage != null)
+                        currentStep.getLogMessages().add(currentMessage);
+                    uiTestSteps.add(currentStep);
+                    currentStep = new UITestStep(logMessage.getMessage());
+                    currentMessage = null;
+                } else if (logMessage.getMessageLevel() != UITestLogMessage.Level.CONTENT) {
+                    if (currentMessage != null)
+                        currentStep.getLogMessages().add(currentMessage);
+                    currentMessage = logMessage;
+                } else {
+                    if (currentMessage == null)
+                        currentMessage = new UITestLogMessage(UITestLogMessage.Level.CONTENT, "");
+                    if (!StringUtils.isWhitespace(logMessage.getMessage()))
+                        currentMessage.getContent().append(logMessage.getMessage().trim()).append("\n");
+                }
             }
         }
 
@@ -179,7 +198,13 @@ public abstract class UITestCase extends TestCase {
 
         if (!StringUtils.isWhitespace(errorsLog)) {
             UITestLogMessage logMessage = new UITestLogMessage(UITestLogMessage.Level.ERROR, "Fatal error");
-            logMessage.getContent().append(errorsLog);
+            String[] strings = errorsLog.split("\n");
+            for (String line : strings) {
+                line = line.trim();
+                if (StringUtils.isNotEmpty(line)) {
+                    logMessage.getContent().append(line).append("\n");
+                }
+            }
 
             UITestStep lastStep = uiTestSteps.get(uiTestSteps.size() - 1);
             lastStep.getLogMessages().add(logMessage);
