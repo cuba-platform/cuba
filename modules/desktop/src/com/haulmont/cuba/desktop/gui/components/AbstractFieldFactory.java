@@ -14,10 +14,12 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 
+import javax.persistence.TemporalType;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -40,7 +42,7 @@ public abstract class AbstractFieldFactory {
                 } else if (typeName.equals(BooleanDatatype.NAME)) {
                     return createBooleanField(datasource, property);
                 } else if (typeName.equals(DateDatatype.NAME) || typeName.equals(DateTimeDatatype.NAME)) {
-                    return createDateField(datasource, property);
+                    return createDateField(datasource, property, mpp);
                 } else if (datatype instanceof NumberDatatype) {
                     return createNumberField(datasource, property);
                 }
@@ -71,9 +73,21 @@ public abstract class AbstractFieldFactory {
         return textField;
     }
 
-    private Component createDateField(Datasource datasource, String property) {
+    private Component createDateField(Datasource datasource, String property, MetaPropertyPath mpp) {
         DesktopDateField dateField = new DesktopDateField();
         dateField.setDatasource(datasource, property);
+
+        MetaProperty metaProperty = mpp.getMetaProperty();
+        TemporalType tt = null;
+        if (metaProperty != null) {
+            if (metaProperty.getAnnotations() != null) {
+                tt = (TemporalType) metaProperty.getAnnotations().get("temporal");
+            }
+        }
+
+        if (tt == TemporalType.DATE) {
+            dateField.setResolution(DateField.Resolution.DAY);
+        }
         return dateField;
     }
 

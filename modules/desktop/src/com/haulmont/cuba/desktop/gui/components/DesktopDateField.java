@@ -13,8 +13,9 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
+import com.haulmont.cuba.desktop.sys.layout.MigBoxLayoutAdapter;
 import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -22,8 +23,11 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -32,7 +36,7 @@ import java.util.Date;
  * @author krivopustov
  */
 public class DesktopDateField
-    extends DesktopAbstractComponent<JXDatePicker>
+    extends DesktopAbstractComponent<JPanel>
     implements DateField
 {
     private Resolution resolution;
@@ -44,10 +48,97 @@ public class DesktopDateField
     private boolean required;
     private String requiredMessage;
 
+    private JXDatePicker datePicker;
+    private JTextField hoursField;
+    private JTextField minutesField;
+    private BoxLayoutAdapter adapter;
+    private DocumentListener minListener;
+    private DocumentListener hourListener;
+    private boolean valid = true;
+
     public DesktopDateField() {
-        impl = new JXDatePicker();
+        impl = new JPanel();
+        initComponentParts();
+        setResolution(Resolution.MIN);
+    }
+
+    private void initComponentParts() {
+        adapter = new MigBoxLayoutAdapter(impl);
+        impl.setLayout(adapter.getLayout());
+        adapter.setSpacing(false);
+        adapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.X);
+        adapter.setExpandLayout(true);
+
+        datePicker = new JXDatePicker();
         String dateFormat = Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getDateFormat();
-        impl.setFormats(dateFormat);
+        datePicker.setFormats(dateFormat);
+
+        hoursField = new JTextField();
+        hoursField.setColumns(2);
+
+        minutesField = new JTextField();
+        minutesField.setColumns(2);
+
+        hourListener = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                if (isHourUsed()) {
+                    updateInstance();
+                }
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                if (isHourUsed()) {
+                    updateInstance();
+                }
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                if (isHourUsed()) {
+                    updateInstance();
+                }
+            }
+        };
+
+        minListener = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                if (isMinUsed()) {
+                    updateInstance();
+                }
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                if (isMinUsed()) {
+                    updateInstance();
+                }
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                if (isMinUsed()) {
+                    updateInstance();
+                }
+            }
+        };
+    }
+
+    private void updateLayout() {
+        impl.removeAll();
+
+        impl.add(datePicker, "growx, w 100%");
+
+        if (isHourUsed()) {
+            impl.add(hoursField, "w 30px!");
+        }
+
+        if (isMinUsed()) {
+            impl.add(new JLabel(":"), "aligny 50%");
+            impl.add(minutesField, "w 30px!");
+        }
     }
 
     @Override
@@ -58,6 +149,7 @@ public class DesktopDateField
     @Override
     public void setResolution(Resolution resolution) {
         this.resolution = resolution;
+        updateLayout();
     }
 
     @Override
@@ -86,12 +178,24 @@ public class DesktopDateField
 
     @Override
     public <T> T getValue() {
-        return (T) impl.getDate();
+        try {
+            return (T) constructDate();
+        }
+        catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
     public void setValue(Object value) {
-        impl.setDate((Date) value);
+        updatingInstance = true;
+        try {
+            setDateParts((Date) value);
+            valid = true;
+        }
+        finally {
+            updatingInstance = false;
+        }
     }
 
     @Override
@@ -112,11 +216,17 @@ public class DesktopDateField
 
     @Override
     public boolean isValid() {
-        return true;
+        return valid;
     }
 
     @Override
     public void validate() throws ValidationException {
+        try {
+            constructDate();
+        }
+        catch (Exception e) {
+            throw new ValidationException(e);
+        }
     }
 
     @Override
@@ -146,7 +256,7 @@ public class DesktopDateField
                         Date value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         updatingInstance = true;
                         try {
-                            impl.setDate(value);
+                            setDateParts(value);
                         } finally {
                             updatingInstance = false;
                         }
@@ -159,7 +269,7 @@ public class DesktopDateField
                         if (property.equals(metaPropertyPath.toString())) {
                             updatingInstance = true;
                             try {
-                                impl.setDate((Date) value);
+                                setDateParts((Date) value);
                             } finally {
                                 updatingInstance = false;
                             }
@@ -168,7 +278,19 @@ public class DesktopDateField
                 }
         );
 
-        impl.addPropertyChangeListener(
+        if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
+            if (property.equals(metaPropertyPath.toString())) {
+                Date value = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
+                updatingInstance = true;
+                try {
+                    setDateParts(value);
+                } finally {
+                    updatingInstance = false;
+                }
+            }
+        }
+
+        datePicker.addPropertyChangeListener(
                 new PropertyChangeListener() {
                     @Override
                     public void propertyChange(PropertyChangeEvent evt) {
@@ -179,17 +301,40 @@ public class DesktopDateField
                 }
         );
 
+        hoursField.getDocument().addDocumentListener(hourListener);
+        minutesField.getDocument().addDocumentListener(minListener);
+
         setRequired(metaProperty.isMandatory());
+    }
+
+    private void setDateParts(Date value) {
+        datePicker.setDate(value);
+
+        if (value != null) {
+            Calendar calendar = Calendar.getInstance(UserSessionProvider.getLocale());
+            calendar.setTime(value);
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int min = calendar.get(Calendar.MINUTE);
+
+            hoursField.setText(String.format("%02d", hour));
+            minutesField.setText(String.format("%02d", min));
+        }
+        else {
+            hoursField.setText("");
+            minutesField.setText("");
+        }
     }
 
     @Override
     public boolean isEditable() {
-        return impl.isEditable();
+        return datePicker.isEditable();
     }
 
     @Override
     public void setEditable(boolean editable) {
-        impl.setEditable(editable);
+        datePicker.setEditable(editable);
+        hoursField.setEditable(editable);
+        minutesField.setEditable(editable);
     }
 
     @Override
@@ -216,10 +361,47 @@ public class DesktopDateField
 
         updatingInstance = true;
         try {
-            Date value = impl.getDate();
+            Date value = constructDate();
             InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
-        } finally {
+            valid = true;
+        }
+        catch (RuntimeException e) {
+            valid = false;
+        }
+        finally {
             updatingInstance = false;
         }
+    }
+
+    private Date constructDate() {
+        Calendar c = Calendar.getInstance(UserSessionProvider.getLocale());
+        c.setTime(datePicker.getDate());
+
+        if (isHourUsed()) {
+            int hours = Integer.valueOf(hoursField.getText());
+            if (hours < 0 || hours > 23) {
+                throw new NumberFormatException("Invalid hours: " + hours);
+            }
+            c.set(Calendar.HOUR_OF_DAY, hours);
+        }
+
+        if (isMinUsed()) {
+            int min = Integer.valueOf(minutesField.getText());
+            if (min < 0 || min > 59) {
+                throw new NumberFormatException("Invalid minutes: " + min);
+            }
+            c.set(Calendar.MINUTE, min);
+        }
+
+        Date time = c.getTime();
+        return time;
+    }
+
+    private boolean isHourUsed() {
+        return resolution != null && resolution.ordinal() <= Resolution.HOUR.ordinal();
+    }
+
+    private boolean isMinUsed() {
+        return resolution != null && resolution.ordinal() <= Resolution.MIN.ordinal();
     }
 }
