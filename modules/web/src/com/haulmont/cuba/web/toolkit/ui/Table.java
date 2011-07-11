@@ -42,6 +42,8 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
     protected boolean aggregatable = false;
 
+    protected boolean enableCancelSorting = false;
+
     private boolean textSelectionEnabled;
 
     private boolean showTotalAggregation = true;
@@ -133,12 +135,6 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
     /**
      * Gets items ids from a range of key values
-     *
-     * @param startRowKey
-     *            The start key
-     * @param endRowKey
-     *            The end key
-     * @return
      */
     protected Set<Object> getItemIdsInRange(Object itemId, final int length) {
         HashSet<Object> ids = new HashSet<Object>();
@@ -542,6 +538,10 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
             target.addVariable(this, "sortcolumn", columnIdMap
                     .key(getSortContainerPropertyId()));
             target.addVariable(this, "sortascending", isSortAscending());
+        }
+
+        if (isEnableCancelSorting()){
+            target.addVariable(this, "enableCancelSorting", true);
         }
 
         // Resets and paints "to be painted next" variables. Also reset
@@ -1069,6 +1069,14 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
             this.aggregatable = aggregatable;
             requestRepaint();
         }
+    }
+
+    public boolean isEnableCancelSorting() {
+        return enableCancelSorting;
+    }
+
+    public void setEnableCancelSorting(boolean enableCancelSorting) {
+        this.enableCancelSorting = enableCancelSorting;
     }
 
     public boolean isStoreColWidth() {

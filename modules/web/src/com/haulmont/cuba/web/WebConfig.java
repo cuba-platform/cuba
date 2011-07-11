@@ -130,6 +130,13 @@ public interface WebConfig extends Config
     boolean getAllowIdSuffix();
 
     /**
+     * Allows cancel sorting in table cell
+     */
+    @Property("cuba.web.enableCancelTableSorting")
+    @DefaultBoolean(false)
+    boolean getEnableCancelTableSorting();
+
+    /**
      * Used to support automatic testing. Contains a name of request parameter
      * that marks a request from an automatic testing tool, for example jMeter.
      */

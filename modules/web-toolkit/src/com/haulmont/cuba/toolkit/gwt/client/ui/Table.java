@@ -27,6 +27,7 @@ import com.vaadin.terminal.gwt.client.ui.VFilterSelect;
 import com.vaadin.terminal.gwt.client.ui.dd.VDragAndDropManager;
 import com.vaadin.terminal.gwt.client.ui.dd.VDragEvent;
 import com.vaadin.terminal.gwt.client.ui.dd.VTransferable;
+import org.apache.xpath.operations.Bool;
 import org.vaadin.hene.popupbutton.widgetset.client.ui.VPopupButton;
 
 import javax.annotation.Nullable;
@@ -158,6 +159,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected boolean sortAscending;
     protected String sortColumn;
+    protected boolean enableCancelSorting = false;
+    protected int sortSwitchCounts = 0;
     protected boolean columnReordering;
 
     /**
@@ -441,6 +444,10 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         if (uidl.hasVariable("sortascending")) {
             sortAscending = uidl.getBooleanVariable("sortascending");
             sortColumn = uidl.getStringVariable("sortcolumn");
+        }
+
+        if (uidl.hasVariable("enableCancelSorting")){
+            enableCancelSorting = uidl.getBooleanVariable("enableCancelSorting");
         }
 
         if (uidl.hasVariable("selected")) {
@@ -1440,11 +1447,21 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         // mouse event was a click to header -> sort column
                         if (sortable) {
                             if (sortColumn.equals(cid)) {
-                                // just toggle order
-                                client.updateVariable(paintableId, "sortascending",
-                                        !sortAscending, true);
+                                sortSwitchCounts++;
+                                if (Boolean.TRUE.equals(enableCancelSorting) && (sortSwitchCounts % 3) == 0){
+                                    // cancel sorting
+                                    client.updateVariable(paintableId, "cancelsorting",
+                                            "", true);
+                                    sortSwitchCounts= 0;
+                                }
+                                else{
+                                    // just toggle order
+                                    client.updateVariable(paintableId, "sortascending",
+                                            !sortAscending, true);
+                                }
                             } else {
-                                // set table scrolled by this column
+                                sortSwitchCounts = 1;
+                                // set table sorted by this column
                                 client.updateVariable(paintableId, "sortcolumn",
                                         cid, true);
                             }

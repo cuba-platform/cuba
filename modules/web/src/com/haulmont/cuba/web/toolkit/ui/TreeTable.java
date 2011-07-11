@@ -561,6 +561,10 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
             target.addVariable(this, "sortascending", isSortAscending());
         }
 
+        if (isEnableCancelSorting()){
+            target.addVariable(this, "enableCancelSorting", true);
+        }
+
         // Resets and paints "to be painted next" variables. Also reset
         // pageBuffer
         reqFirstRowToPaint = -1;

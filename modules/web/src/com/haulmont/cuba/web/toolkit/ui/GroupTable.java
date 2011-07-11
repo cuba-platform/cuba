@@ -339,6 +339,10 @@ public class GroupTable extends Table implements GroupTableContainer {
             target.addVariable(this, "sortascending", isSortAscending());
         }
 
+        if (isEnableCancelSorting()){
+            target.addVariable(this, "enableCancelSorting", true);
+        }
+
         // Resets and paints "to be painted next" variables. Also reset
         // pageBuffer
         reqFirstRowToPaint = -1;
