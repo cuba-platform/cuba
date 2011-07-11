@@ -25,7 +25,9 @@ import org.dom4j.Element;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * <p>$Id$</p>
@@ -56,6 +58,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
         layout = new MigLayout(lc);
         impl = new JPanel(layout);
+        if (isLayoutDebugEnabled()) {
+            impl.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+        }
     }
 
     public List<Field> getFields() {
@@ -378,10 +383,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
             CC cell = new CC().cell(col * 2 + 1, row, 1, 1);
 
-            if (field.getWidth() != null) {
+            if (field.getWidth() != null && component.getWidth() == 0 && component.getWidthUnits() == 0) {
                 component.setWidth(field.getWidth());
-                MigLayoutHelper.applyWidth(cell, (int) component.getWidth(), component.getWidthUnits(), false);
             }
+            MigLayoutHelper.applyWidth(cell, (int) component.getWidth(), component.getWidthUnits(), false);
+            MigLayoutHelper.applyHeight(cell, (int) component.getHeight(), component.getHeightUnits(), false);
 
             impl.add(jComponent, cell);
         }

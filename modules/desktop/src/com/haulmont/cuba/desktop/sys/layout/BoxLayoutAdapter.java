@@ -24,6 +24,9 @@ public abstract class BoxLayoutAdapter extends LayoutAdapter {
 
     protected Component expandedComponent;
 
+    // if true, should let children components gain more size than minimal. If false, then shrink them to minimal
+    protected boolean expandLayout = false;
+
     public static BoxLayoutAdapter create(JComponent container) {
         MigBoxLayoutAdapter layoutAdapter = new MigBoxLayoutAdapter(container);
         container.setLayout(layoutAdapter.getLayout());
@@ -55,4 +58,13 @@ public abstract class BoxLayoutAdapter extends LayoutAdapter {
     }
 
     public abstract void updateConstraints(JComponent component, Object constraints);
+
+    public boolean isExpandLayout() {
+        return expandLayout;
+    }
+
+    public void setExpandLayout(boolean expandLayout) {
+        this.expandLayout = expandLayout;
+        update();
+    }
 }

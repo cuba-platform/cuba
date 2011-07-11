@@ -19,4 +19,6 @@ import com.haulmont.cuba.gui.components.Component;
  */
 public interface DesktopComponent extends Component {
     void setContainer(DesktopContainer container);
+
+    void setExpanded(boolean expanded);
 }

@@ -28,6 +28,8 @@ public abstract class DesktopAbstractBox
     protected Collection<Component> ownComponents = new HashSet<Component>();
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
 
+    protected Component expandedComponent;
+
     public DesktopAbstractBox() {
         impl = new JPanel();
         layoutAdapter = BoxLayoutAdapter.create(impl);
@@ -85,8 +87,19 @@ public abstract class DesktopAbstractBox
     }
 
     public void expand(Component component, String height, String width) {
+        if (expandedComponent != null
+                && expandedComponent instanceof DesktopComponent) {
+            ((DesktopComponent) expandedComponent).setExpanded(false);
+        }
+
         JComponent composition = DesktopComponentsHelper.getComposition(component);
         layoutAdapter.expand(composition, height, width);
+
+        if (component instanceof DesktopComponent) {
+            ((DesktopComponent) component).setExpanded(true);
+        }
+
+        expandedComponent = component;
     }
 
     public void expand(Component component) {
@@ -103,5 +116,10 @@ public abstract class DesktopAbstractBox
 
     public void setSpacing(boolean enabled) {
         layoutAdapter.setSpacing(enabled);
+    }
+
+    @Override
+    public void setExpanded(boolean expanded) {
+        layoutAdapter.setExpandLayout(expanded);
     }
 }

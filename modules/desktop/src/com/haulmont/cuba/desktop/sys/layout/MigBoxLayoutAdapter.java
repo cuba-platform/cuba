@@ -51,14 +51,22 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
             lc.flowX();
             if (expandedComponent != null) {
                 adjustExpanding(lc, colConstr);
-            } else
+            } else {
                 lc.fillY();
+                if (!expandLayout) {
+                    colConstr.size("min!");
+                }
+            }
         } else {
             lc.flowY();
             if (expandedComponent != null) {
                 adjustExpanding(lc, rowConstr);
-            } else
+            } else {
                 lc.fillX();
+                if (!expandLayout) {
+                    rowConstr.size("min!");
+                }
+            }
         }
 
         lc.setInsets(MigLayoutHelper.makeInsets(margins));

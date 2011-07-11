@@ -6,8 +6,8 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.GroupBox;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -89,7 +89,7 @@ public class DesktopGroupBox
         titledBorder.setTitlePosition(TitledBorder.TOP);
         titledBorder.setBorder(
                 BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(java.awt.Color.gray),
+                        BorderFactory.createLineBorder(isLayoutDebugEnabled() ? java.awt.Color.BLUE : java.awt.Color.gray),
                         BorderFactory.createEmptyBorder(0,5,5,5)
                 )
         );
