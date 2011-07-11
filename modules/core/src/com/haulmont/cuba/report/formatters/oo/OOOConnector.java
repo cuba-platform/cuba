@@ -15,9 +15,13 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.sun.star.comp.helper.BootstrapException;
 import com.sun.star.uno.XComponentContext;
 import ooo.connector.BootstrapSocketConnector;
+import ooo.connector.server.OOoServer;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.*;
 
 @ManagedBean(OOOConnector.NAME)
@@ -37,7 +41,10 @@ public class OOOConnector {
 
     //  todo: Think about connection pool - current implementation is too slow
     public OOOConnection createConnection(String openOfficePath) throws BootstrapException {
-        BootstrapSocketConnector bsc = new BootstrapSocketConnector(openOfficePath);
+        List oooOptions = OOoServer.getDefaultOOoOptions();
+        oooOptions.add("-nofirststartwizard");
+        OOoServer oooServer = new OOoServer(openOfficePath, oooOptions);
+        BootstrapSocketConnector bsc = new BootstrapSocketConnector(oooServer);
         Integer port = freePorts.poll();
         if (port != null) {
             XComponentContext xComponentContext = bsc.connect("localhost", port);
