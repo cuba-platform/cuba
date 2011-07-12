@@ -14,6 +14,13 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 public interface RowsCount extends Component.BelongToFrame, Component.HasXmlDescriptor {
 
+    enum State {
+        FIRST_COMPLETE,     // "63 rows"
+        FIRST_INCOMPLETE,   // "1-100 rows of [?] >"
+        MIDDLE,             // "< 101-200 rows of [?] >"
+        LAST                // "< 201-252 rows"
+    }
+
     String NAME = "rowsCount";
 
     CollectionDatasource getDatasource();

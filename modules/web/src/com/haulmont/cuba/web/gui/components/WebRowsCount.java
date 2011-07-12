@@ -27,13 +27,6 @@ public class WebRowsCount
     private int start;
     private int size;
 
-    private enum State {
-        FIRST_COMPLETE,     // "63 rows"
-        FIRST_INCOMPLETE,   // "1-100 rows of [?] >"
-        MIDDLE,             // "< 101-200 rows of [?] >"
-        LAST                // "< 201-252 rows"
-    }
-
     public WebRowsCount() {
         component = new com.haulmont.cuba.web.toolkit.ui.RowsCount();
         component.setStyleName("table-rows-count");

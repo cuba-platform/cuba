@@ -261,8 +261,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
 //            action.setDatasource(datasource);
 //        }
 //
-//        if (rowsCount != null)
-//            rowsCount.setDatasource(datasource);
+        if (rowsCount != null)
+            rowsCount.setDatasource(datasource);
     }
 
     protected void initSelectionListener(final CollectionDatasource datasource) {
