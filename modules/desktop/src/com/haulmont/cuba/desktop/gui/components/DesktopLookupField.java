@@ -32,6 +32,7 @@ public class DesktopLookupField
     private BasicEventList<Object> items = new BasicEventList<Object>();
     private boolean optionsInitialized;
     private AutoCompleteSupport<Object> autoComplete;
+    private ValueWrapper prevValue;
 
     public DesktopLookupField() {
         impl = new JComboBox();
@@ -53,7 +54,12 @@ public class DesktopLookupField
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        updateValue((ValueWrapper) impl.getSelectedItem());
+                        ValueWrapper newValue = (ValueWrapper) impl.getSelectedItem();
+                        if (newValue != prevValue) {
+                            updateValue(newValue);
+                            fireValueChanged(prevValue == null ? null : prevValue.getValue(), newValue == null ? null : newValue.getValue());
+                            prevValue = newValue;
+                        }
                     }
                 }
         );

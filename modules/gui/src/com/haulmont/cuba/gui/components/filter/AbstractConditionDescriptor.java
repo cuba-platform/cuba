@@ -1,22 +1,21 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 15.10.2009 16:15:28
- *
- * $Id$
  */
-package com.haulmont.cuba.web.gui.components.filter;
+
+package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.QueryParser;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
+import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
 
-public abstract class ConditionDescriptor {
+public abstract class AbstractConditionDescriptor<T extends AbstractParam> {
+
+    protected static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
     protected Element element;
     protected String name;
@@ -27,8 +26,9 @@ public abstract class ConditionDescriptor {
     protected CollectionDatasource datasource;
     protected String entityAlias;
     protected boolean inExpr;
+    protected ParamFactory<T> paramFactory = getParamFactory();
 
-    public ConditionDescriptor(String name, String filterComponentName, CollectionDatasource datasource) {
+    public AbstractConditionDescriptor(String name, String filterComponentName, CollectionDatasource datasource) {
         this.name = name;
         this.filterComponentName = filterComponentName;
         this.datasource = datasource;
@@ -67,11 +67,12 @@ public abstract class ConditionDescriptor {
         this.inExpr = inExpr;
     }
 
-    public Param createParam(Condition condition) {
-        Param param = new Param(condition.createParamName(), getJavaClass(),
+    public T createParam(AbstractCondition condition) {
+        return paramFactory.createParam(condition.createParamName(), getJavaClass(),
                 getEntityParamWhere(), getEntityParamView(), datasource, inExpr);
-        return param;
     }
+
+    protected abstract ParamFactory<T> getParamFactory();
 
     public CollectionDatasource getDatasource() {
         return datasource;
@@ -83,7 +84,7 @@ public abstract class ConditionDescriptor {
         else return null;
     }
 
-    public abstract Condition createCondition();
+    public abstract AbstractCondition createCondition();
 
     public abstract Class getJavaClass();
 

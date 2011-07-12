@@ -17,7 +17,6 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -350,13 +349,14 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
     }
 
     private class ListEditWindow extends Window {
+        protected static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
         private static final String COMPONENT_WIDTH = "140";
         private VerticalLayout listLayout;
         private Map<Object, String> values;
 
         private ListEditWindow(Map<Object, String> values) {
-            super(MessageProvider.getMessage(ListEditWindow.class, "ListEditWindow.caption"));
+            super(MessageProvider.getMessage(MESSAGES_PACK, "ListEditWindow.caption"));
             setWidth(200, Sizeable.UNITS_PIXELS);
             setModal(true);
 

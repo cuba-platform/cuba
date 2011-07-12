@@ -10,18 +10,19 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
-public class ParamEditor extends CustomComponent implements Condition.Listener {
+public class ParamEditor extends CustomComponent implements AbstractCondition.Listener {
 
-    private Condition condition;
+    private AbstractCondition<Param> condition;
     private HorizontalLayout layout;
     private Component field;
 
-    public ParamEditor(final Condition condition, boolean showOperation) {
+    public ParamEditor(final AbstractCondition<Param> condition, boolean showOperation) {
         this.condition = condition;
 
         layout = new HorizontalLayout();

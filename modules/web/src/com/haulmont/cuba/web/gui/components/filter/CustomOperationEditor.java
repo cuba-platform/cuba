@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -21,7 +22,7 @@ import com.vaadin.ui.themes.BaseTheme;
 
 public class CustomOperationEditor extends OperationEditor {
 
-    public CustomOperationEditor(final Condition condition) {
+    public CustomOperationEditor(final AbstractCondition condition) {
         super(condition);
 
         Button btn = WebComponentsHelper.createButton();
@@ -33,13 +34,13 @@ public class CustomOperationEditor extends OperationEditor {
         btn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 final CustomConditionEditDlg dlg = new CustomConditionEditDlg((CustomCondition) condition);
-                dlg.addListener(new Window.CloseListener() {
+                dlg.getImpl().addListener(new Window.CloseListener() {
                     public void windowClose(Window.CloseEvent e) {
-                        App.getInstance().getAppWindow().removeWindow(dlg);
+                        App.getInstance().getAppWindow().removeWindow(dlg.getImpl());
                     }
                 });
-                App.getInstance().getAppWindow().addWindow(dlg);
-                dlg.center();
+                App.getInstance().getAppWindow().addWindow(dlg.getImpl());
+                dlg.getImpl().center();
             }
         });
 

@@ -103,13 +103,6 @@ public interface WebConfig extends Config
     @Default("default")
     String getAppWindowWallpaper();
 
-    @DefaultBoolean(true)
-    boolean getGenericFilterManualApplyRequired();
-
-    /** If true, then check filter conditions(empty or not) before apply filter */
-    @DefaultBoolean(true)
-    boolean getGenericFilterChecking();
-    
     @Factory(factory = StringListTypeFactory.class)
     @Default("htm|html|jpg|png|jpeg|pdf")
     List<String> getViewFileExtensions();

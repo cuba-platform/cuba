@@ -10,17 +10,11 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.components.filter.*;
 import org.dom4j.Element;
-import static org.apache.commons.lang.StringUtils.isBlank;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.core.global.MessageUtils;
 
-public class PropertyConditionDescriptor extends ConditionDescriptor {
-
-    protected String entityParamWhere;
-    protected String entityParamView;
+public class PropertyConditionDescriptor extends AbstractPropertyConditionDescriptor<Param> {
 
     public PropertyConditionDescriptor(String name,
                                        String caption,
@@ -28,17 +22,7 @@ public class PropertyConditionDescriptor extends ConditionDescriptor {
                                        String filterComponentName,
                                        CollectionDatasource datasource)
     {
-        super(name, filterComponentName, datasource);
-        this.caption = caption;
-
-        if (!isBlank(caption)) {
-            this.locCaption = MessageUtils.loadString(messagesPack, caption);
-        } else {
-            this.caption = MessageUtils.getMessageRef(metaClass, name);
-            this.locCaption = MessageProvider.getMessage(metaClass.getJavaClass(), metaClass.getJavaClass().getSimpleName() + "." + name);
-            if (this.locCaption == null || this.locCaption.equals(metaClass.getJavaClass().getSimpleName() + "." + name))
-                this.locCaption = MessageUtils.getPropertyCaption(metaClass, name);
-        }
+        super(name, caption, messagesPack, filterComponentName, datasource);
     }
 
     public PropertyConditionDescriptor(Element element,
@@ -46,47 +30,16 @@ public class PropertyConditionDescriptor extends ConditionDescriptor {
                                        String filterComponentName,
                                        CollectionDatasource datasource)
     {
-        this(element.attributeValue("name"),
-                element.attributeValue("caption"),
-                messagesPack,
-                filterComponentName,
-                datasource);
-        inExpr = Boolean.valueOf(element.attributeValue("inExpr"));
-        entityParamWhere = element.attributeValue("paramWhere");
-        entityParamView = element.attributeValue("paramView");
+        super(element,messagesPack,filterComponentName,datasource);
     }
 
     @Override
-    public Condition createCondition() {
+    public AbstractCondition createCondition() {
         return new PropertyCondition(this, entityAlias);
     }
 
     @Override
-    public Param createParam(Condition condition) {
-        MetaProperty metaProperty = datasource.getMetaClass().getProperty(name);
-        Param param = new Param(condition.createParamName(), getJavaClass(),
-                getEntityParamWhere(), getEntityParamView(), datasource, metaProperty, inExpr);
-        return param;
-    }
-
-    @Override
-    public Class getJavaClass() {
-        MetaProperty metaProperty = metaClass.getPropertyEx(name).getMetaProperty();
-        Class paramClass;
-        if (metaProperty != null)
-            paramClass = metaProperty.getJavaType();
-        else
-            throw new IllegalStateException("Unable to find property '" + name + "' in entity " + metaClass);
-        return paramClass;
-    }
-
-    @Override
-    public String getEntityParamWhere() {
-        return entityParamWhere;
-    }
-
-    @Override
-    public String getEntityParamView() {
-        return entityParamView;
+    protected ParamFactory getParamFactory() {
+        return new ParamFactoryImpl();
     }
 }

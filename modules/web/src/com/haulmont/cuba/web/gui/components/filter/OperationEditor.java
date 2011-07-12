@@ -10,22 +10,30 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.cuba.gui.components.filter.AbstractCondition;
+import com.haulmont.cuba.gui.components.filter.AbstractOperationEditor;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
-import java.util.ArrayList;
-import java.util.List;
+public class OperationEditor extends AbstractOperationEditor<CustomComponent> {
 
-public class OperationEditor extends CustomComponent {
+    protected Layout layout;
 
-    protected Condition condition;
-    protected VerticalLayout layout;
+    public OperationEditor(AbstractCondition condition) {
+        super(condition);
+    }
 
-    public OperationEditor(Condition condition) {
-        layout = new VerticalLayout();
-        layout.setSizeFull();
-        setCompositionRoot(layout);
+    @Override
+    protected void createEditor() {
+      impl =  new Editor();
+    }
 
-        this.condition = condition;
+    protected class Editor extends CustomComponent {
+        public Editor() {
+            layout = new VerticalLayout();
+            layout.setSizeFull();
+            setCompositionRoot(layout);
+        }
     }
 }

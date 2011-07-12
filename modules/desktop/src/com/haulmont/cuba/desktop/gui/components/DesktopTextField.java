@@ -22,6 +22,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.event.*;
 import java.text.ParseException;
 
 /**
@@ -44,6 +45,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     private boolean editable = true;
     private boolean visible = true;
     private boolean enabled = true;
+    private Object prevValue;
 
     private boolean updatingInstance;
 
@@ -83,6 +85,9 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
 
             impl.setEditable(editable);
             impl.setDocument(doc);
+            TextFieldListener listener = new TextFieldListener();
+            impl.addKeyListener(listener);
+            impl.addFocusListener(listener);
         }
         return impl;
     }
@@ -145,6 +150,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
 
     public void setMaxLength(int value) {
         maxLength = value;
+        doc.setMaxLength(value);
     }
 
     public Datatype getDatatype() {
@@ -319,5 +325,40 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     public JComponent getComposition() {
         getImpl();
         return composition;
+    }
+
+    protected class TextFieldListener implements FocusListener, KeyListener {
+        private static final int ENTER_CODE = 10;
+
+        @Override
+        public void focusGained(FocusEvent e) {
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            fireEvent();
+        }
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (ENTER_CODE == e.getKeyCode())
+                fireEvent();
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+        }
+
+        private void fireEvent() {
+            final Object value = getValue();
+            if (!value.equals(prevValue)) {
+                fireValueChanged(prevValue, value);
+                prevValue = value;
+            }
+        }
     }
 }

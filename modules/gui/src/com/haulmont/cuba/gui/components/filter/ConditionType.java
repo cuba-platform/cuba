@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.web.gui.components.filter;
+package com.haulmont.cuba.gui.components.filter;
 
 public enum ConditionType {
     PROPERTY,

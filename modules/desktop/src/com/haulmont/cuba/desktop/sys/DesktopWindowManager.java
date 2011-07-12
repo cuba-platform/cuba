@@ -488,6 +488,14 @@ public class DesktopWindowManager extends WindowManager {
         dialog.setVisible(true);
     }
 
+    public void setCurrentWindowCaption(String caption, String description) {
+        if (tabsPane == null)
+            return;
+        int selectedIndex = tabsPane.getSelectedIndex();
+        if (selectedIndex != -1)
+            tabsPane.setTitleAt(selectedIndex, formatTabCaption(caption, description));
+    }
+
     protected JComponent findTab(Window window) {
         Set<Map.Entry<JComponent, WindowBreadCrumbs>> set = tabs.entrySet();
         for (Map.Entry<JComponent, WindowBreadCrumbs> entry : set) {

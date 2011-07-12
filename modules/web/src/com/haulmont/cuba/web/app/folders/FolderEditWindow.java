@@ -10,10 +10,12 @@
  */
 package com.haulmont.cuba.web.app.folders;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.FoldersService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -21,7 +23,6 @@ import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.SearchFolder;
-import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
@@ -120,7 +121,7 @@ public class FolderEditWindow extends Window {
 
         applyDefaultCb = new CheckBox(getMessage("folders.folderEditWindow.applyDefault"));
         applyDefaultCb.setValue(BooleanUtils.isTrue(((AbstractSearchFolder)folder).getApplyDefault()));
-        applyDefaultCb.setVisible(ConfigProvider.getConfig(WebConfig.class).getGenericFilterManualApplyRequired()
+        applyDefaultCb.setVisible(ConfigProvider.getConfig(ClientConfig.class).getGenericFilterManualApplyRequired()
                 && folder instanceof SearchFolder
                 && BooleanUtils.isNotTrue(((SearchFolder) folder).getIsSet()));
         layout.addComponent(applyDefaultCb);

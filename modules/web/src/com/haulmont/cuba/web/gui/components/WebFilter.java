@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
@@ -29,6 +30,10 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.filter.AbstractCondition;
+import com.haulmont.cuba.gui.components.filter.AbstractParam;
+import com.haulmont.cuba.gui.components.filter.ConditionType;
+import com.haulmont.cuba.gui.components.filter.Op;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.filter.DenyingClause;
@@ -40,7 +45,6 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
@@ -67,14 +71,14 @@ import static org.apache.commons.lang.BooleanUtils.isTrue;
 
 public class WebFilter
         extends WebAbstractComponent<VerticalLayout> implements Filter {
-    private static final String MESSAGES_PACK = "com.haulmont.cuba.web.gui.components.filter";
+    private static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
     private PersistenceManagerService persistenceManager;
 
     private CollectionDatasource datasource;
     private QueryFilter dsQueryFilter;
     private FilterEntity filterEntity;
-    private List<Condition> conditions = Collections.EMPTY_LIST;
+    private List<AbstractCondition> conditions = Collections.EMPTY_LIST;
 
     private AbstractLayout paramsLayout;
     private AbstractOrderedLayout editLayout;
@@ -104,11 +108,10 @@ public class WebFilter
     private FilterEntity noFilter;
 
     private GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
-    private WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+    private ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
 
     public WebFilter() {
         persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
-
         component = new VerticalLayout();
         component.setMargin(true);
         component.setStyleName("generic-filter");
@@ -158,7 +161,6 @@ public class WebFilter
 
         createParamsLayout(false);
         component.addComponent(paramsLayout);
-
         updateControls();
     }
 
@@ -169,7 +171,6 @@ public class WebFilter
     private void initMaxResultsLayout() {
         maxResultsLayout = new HorizontalLayout();
         maxResultsLayout.setSpacing(true);
-
         maxResultsCb = new CheckBox(MessageProvider.getMessage(mainMessagesPack, "filter.maxResults.label1"));
         maxResultsCb.setImmediate(true);
         maxResultsCb.setValue(true);
@@ -208,7 +209,7 @@ public class WebFilter
         if (filterEntity == null)
             return;
 
-        if (!filterEntity.equals(noFilter)&&(BooleanUtils.isNotTrue(filterEntity.getIsSet())))
+        if ((BooleanUtils.isNotTrue(filterEntity.getIsSet())))
             actions.addAction(new CopyAction());
 
         if (checkGlobalFilterPermission()) {
@@ -236,11 +237,11 @@ public class WebFilter
     }
 
     public void apply(boolean isNewWindow) {
-        if (ConfigProvider.getConfig(WebConfig.class).getGenericFilterChecking()) {
+        if (clientConfig.getGenericFilterChecking()) {
             if (filterEntity != null) {
                 boolean haveCorrectCondition = false;
 
-                for (Condition condition : conditions) {
+                for (AbstractCondition condition : conditions) {
                     if ((condition.getParam()==null) || (condition.getParam().getValue() != null)) {
                         haveCorrectCondition = true;
                         break;
@@ -339,8 +340,8 @@ public class WebFilter
     }
 
     private void createParamsLayout(boolean focusOnConditions) {
-        List<Condition> visibleConditions = new ArrayList<Condition>();
-        for (Condition condition : conditions) {
+        List<AbstractCondition> visibleConditions = new ArrayList<AbstractCondition>();
+        for (AbstractCondition condition : conditions) {
             if (!condition.isHidden())
                 visibleConditions.add(condition);
         }
@@ -358,7 +359,7 @@ public class WebFilter
         grid.setMargin(true, false, false, false);
         boolean focusSetted=false;
         for (int i = 0; i < visibleConditions.size(); i++) {
-            Condition condition = visibleConditions.get(i);
+            AbstractCondition condition = visibleConditions.get(i);
             HorizontalLayout paramLayout = new HorizontalLayout();
             paramLayout.setSpacing(true);
             boolean bottomMargin = (i / columns) < (rows - 1); // no bottom margin for the last row
@@ -465,7 +466,7 @@ public class WebFilter
         }
         if (BooleanUtils.isTrue(filterEntity.getApplyDefault()) ||
                 BooleanUtils.isTrue(filterEntity.getIsSet()) ||
-                !ConfigProvider.getConfig(WebConfig.class).getGenericFilterManualApplyRequired())
+                !clientConfig.getGenericFilterManualApplyRequired())
             apply(true);
     }
 
@@ -503,7 +504,7 @@ public class WebFilter
                                 try {
                                     select.setValue(filter);
                                     updateControls();
-                                    if (ConfigProvider.getConfig(WebConfig.class).getGenericFilterManualApplyRequired()) {
+                                    if (clientConfig.getGenericFilterManualApplyRequired()) {
                                         if (filter.getApplyDefault()) {
                                             apply(true);
                                         }
@@ -736,7 +737,7 @@ public class WebFilter
         this.datasource = datasource;
         this.dsQueryFilter = datasource.getQueryFilter();
 
-        if (webConfig.getGenericFilterManualApplyRequired()) {
+        if (clientConfig.getGenericFilterManualApplyRequired()) {
             // set initial denying condition to get empty datasource before explicit filter applying
             QueryFilter queryFilter = new QueryFilter(new DenyingClause(), datasource.getMetaClass().getName());
             if (dsQueryFilter != null) {
@@ -803,25 +804,24 @@ public class WebFilter
     }
 
     public <T extends Component> T getOwnComponent(String id) {
-        List<Condition> list = editor == null ? conditions : editor.getConditions();
+        List<AbstractCondition> list = editor == null ? conditions : editor.getConditions();
 
-        for (Condition condition : list) {
+        for (AbstractCondition condition : list) {
             if (condition.getParam() != null) {
                 String paramName = condition.getParam().getName();
-                String paramName2 = "";
 
                 if (condition instanceof RuntimePropCondition) {
-                    paramName2 = ((RuntimePropCondition) condition).getCategoryAttributeParam().getName();
+                    String paramName2 = ((RuntimePropCondition) condition).getCategoryAttributeParam().getName();
+                    String componentName2 = paramName2.substring(paramName.lastIndexOf('.') + 1);
+                    if (id.equals(componentName2)) {
+                        ParamWrapper w = new ParamWrapper(condition, ((RuntimePropCondition) condition).getCategoryAttributeParam());
+                        return (T) w;
+                    }
                 }
                 String componentName = paramName.substring(paramName.lastIndexOf('.') + 1);
                 if (id.equals(componentName)) {
                     ParamWrapper wrapper = new ParamWrapper(condition, condition.getParam());
                     return (T) wrapper;
-                }
-                String componentName2 = paramName2.substring(paramName.lastIndexOf('.') + 1);
-                if (id.equals(componentName2)) {
-                    ParamWrapper w = new ParamWrapper(condition, ((RuntimePropCondition) condition).getCategoryAttributeParam());
-                    return (T) w;
                 }
             }
         }
@@ -846,7 +846,7 @@ public class WebFilter
 
     private void parseFilterXml() {
         if (filterEntity == null) {
-            conditions = new ArrayList<Condition>();
+            conditions = new ArrayList<AbstractCondition>();
         } else {
             FilterParser parser =
                     new FilterParser(filterEntity.getXml(), getFrame().getMessagesPack(), getId(), datasource);
@@ -1017,12 +1017,12 @@ public class WebFilter
     private String submintParameters() {
         FilterParser parser = new FilterParser(filterEntity.getXml(), MESSAGES_PACK, filterEntity.getComponentId(), datasource);
         parser.fromXml();
-        List<Condition> defaultConditions = parser.getConditions();
-        Iterator<Condition> it = conditions.iterator();
-        Iterator<Condition> defaultIt = defaultConditions.iterator();
+        List<AbstractCondition> defaultConditions = parser.getConditions();
+        Iterator<AbstractCondition> it = conditions.iterator();
+        Iterator<AbstractCondition> defaultIt = defaultConditions.iterator();
         while (it.hasNext()) {
-            Condition current = it.next();
-            Condition defCondition = defaultIt.next();
+            AbstractCondition current = it.next();
+            AbstractCondition defCondition = defaultIt.next();
             if (current.getParam().getValue() != null) {
                 defCondition.setParam(current.getParam());
             }
@@ -1194,10 +1194,10 @@ public class WebFilter
 
     private static class ParamWrapper implements HasValue {
 
-        private final Condition condition;
-        private final Param param;
+        private final AbstractCondition condition;
+        private final AbstractParam param;
 
-        private ParamWrapper(Condition condition, Param param) {
+        private ParamWrapper(AbstractCondition condition, AbstractParam param) {
             this.condition = condition;
             this.param = param;
         }
@@ -1210,22 +1210,22 @@ public class WebFilter
                     && !((String) value).startsWith(ParametersHelper.CASE_INSENSITIVE_MARKER)) {
                 // try to wrap value for case-insensitive "like" search
                 if (condition instanceof PropertyCondition) {
-                    PropertyCondition.Op op = ((PropertyCondition) condition).getOperator();
-                    if (PropertyCondition.Op.CONTAINS.equals(op) || op.equals(PropertyCondition.Op.DOES_NOT_CONTAIN)) {
+                    Op op = ((PropertyCondition) condition).getOperator();
+                    if (Op.CONTAINS.equals(op) || op.equals(Op.DOES_NOT_CONTAIN)) {
                         value = wrapValueForLike(value);
-                    } else if (PropertyCondition.Op.STARTS_WITH.equals(op)) {
+                    } else if (Op.STARTS_WITH.equals(op)) {
                         value = wrapValueForLike(value, false, true);
-                    } else if (PropertyCondition.Op.ENDS_WITH.equals(op)) {
+                    } else if (Op.ENDS_WITH.equals(op)) {
                         value = wrapValueForLike(value, true, false);
                     }
                 } else if (condition instanceof CustomCondition) {
                     String where = ((CustomCondition) condition).getWhere();
-                    PropertyCondition.Op op = ((CustomCondition) condition).getOperator();
+                    Op op = ((CustomCondition) condition).getOperator();
                     Matcher matcher = LIKE_PATTERN.matcher(where);
                     if (matcher.find()) {
-                        if (PropertyCondition.Op.STARTS_WITH.equals(op)) {
+                        if (Op.STARTS_WITH.equals(op)) {
                             value = wrapValueForLike(value, false, true);
-                        } else if (PropertyCondition.Op.ENDS_WITH.equals(op)) {
+                        } else if (Op.ENDS_WITH.equals(op)) {
                             value = wrapValueForLike(value, true, false);
                         } else {
                             value = wrapValueForLike(value);

@@ -10,17 +10,18 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
-public class NameEditor extends CustomComponent implements Condition.Listener {
+public class NameEditor extends CustomComponent implements AbstractCondition.Listener {
 
-    protected Condition condition;
+    protected AbstractCondition condition;
     protected HorizontalLayout layout;
     private Label lab;
 
-    public NameEditor(final Condition condition) {
+    public NameEditor(final AbstractCondition condition) {
         layout = new HorizontalLayout();
         layout.setSizeFull();
         setCompositionRoot(layout);

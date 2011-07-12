@@ -1,0 +1,84 @@
+/*
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+package com.haulmont.cuba.gui.components.filter;
+
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import org.dom4j.Element;
+
+import static org.apache.commons.lang.StringUtils.isBlank;
+
+/**
+ * <p>$Id$</p>
+ *
+ * @author devyatkin
+ */
+public abstract class AbstractPropertyConditionDescriptor<T extends AbstractParam> extends AbstractConditionDescriptor<T> {
+    protected String entityParamWhere;
+    protected String entityParamView;
+
+    public AbstractPropertyConditionDescriptor(String name,
+                                               String caption,
+                                               String messagesPack,
+                                               String filterComponentName,
+                                               CollectionDatasource datasource) {
+        super(name, filterComponentName, datasource);
+        this.caption = caption;
+
+        if (!isBlank(caption)) {
+            this.locCaption = MessageUtils.loadString(messagesPack, caption);
+        } else {
+            this.caption = MessageUtils.getMessageRef(metaClass, name);
+            this.locCaption = MessageProvider.getMessage(metaClass.getJavaClass(), metaClass.getJavaClass().getSimpleName() + "." + name);
+            if (this.locCaption == null || this.locCaption.equals(metaClass.getJavaClass().getSimpleName() + "." + name))
+                this.locCaption = MessageUtils.getPropertyCaption(metaClass, name);
+        }
+    }
+
+    public AbstractPropertyConditionDescriptor(Element element, String messagesPack, String filterComponentName,
+                                               CollectionDatasource datasource) {
+        this(element.attributeValue("name"),
+                element.attributeValue("caption"),
+                messagesPack,
+                filterComponentName,
+                datasource);
+        inExpr = Boolean.valueOf(element.attributeValue("inExpr"));
+        entityParamWhere = element.attributeValue("paramWhere");
+        entityParamView = element.attributeValue("paramView");
+    }
+
+    public T createParam(AbstractCondition condition) {
+        MetaProperty metaProperty = datasource.getMetaClass().getProperty(name);
+        T param = paramFactory.createParam(condition.createParamName(), getJavaClass(),
+                getEntityParamWhere(), getEntityParamView(), datasource, metaProperty, inExpr);
+        return param;
+    }
+
+    @Override
+    public Class getJavaClass() {
+        MetaProperty metaProperty = metaClass.getPropertyEx(name).getMetaProperty();
+        Class paramClass;
+        if (metaProperty != null)
+            paramClass = metaProperty.getJavaType();
+        else
+            throw new IllegalStateException("Unable to find property '" + name + "' in entity " + metaClass);
+        return paramClass;
+    }
+
+    @Override
+    public String getEntityParamWhere() {
+        return entityParamWhere;
+    }
+
+    @Override
+    public String getEntityParamView() {
+        return entityParamView;
+    }
+
+}

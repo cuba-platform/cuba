@@ -1,14 +1,10 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 15.10.2009 14:48:39
- *
- * $Id$
  */
-package com.haulmont.cuba.web.gui.components.filter;
+
+package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.ScriptingProvider;
@@ -19,16 +15,19 @@ import org.dom4j.Element;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.RandomStringUtils;
+
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public abstract class Condition {
+public abstract class AbstractCondition<T extends AbstractParam> {
+    protected static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
     public interface Listener {
         void captionChanged();
+
         void paramChanged();
     }
 
@@ -41,21 +40,22 @@ public abstract class Condition {
     protected boolean inExpr;
     protected Class javaClass;
     protected Class paramClass;
-    protected Param param;
+    protected T param;
     protected String entityAlias;
     protected boolean hidden;
     protected String entityParamWhere;
     protected String entityParamView;
     protected Datasource datasource;
     protected UUID categoryAttrId;
+    protected ParamFactory<T> paramFactory = getParamFactory();
 
     protected List<Listener> listeners = new ArrayList<Listener>();
 
-    protected Condition() {
+    protected AbstractCondition() {
         throw new UnsupportedOperationException();
     }
 
-    protected Condition(Element element, String filterComponentName, Datasource datasource) {
+    protected AbstractCondition(Element element, String filterComponentName, Datasource datasource) {
         this.filterComponentName = filterComponentName;
         name = element.attributeValue("name");
         text = StringEscapeUtils.unescapeXml(element.getText());
@@ -72,7 +72,6 @@ public abstract class Condition {
             javaClass = ScriptingProvider.loadClass(aclass);
 
         List<Element> paramElements = Dom4j.elements(element, "param");
-        //todo support more than one parameter
         if (!paramElements.isEmpty()) {
             Element paramElem = paramElements.iterator().next();
 
@@ -87,8 +86,9 @@ public abstract class Condition {
                     categoryAttrId = UUID.fromString(paramElem.attributeValue("categoryAttrId"));
                 }
             }
+
             if (unary) {
-                param = new Param(paramName, null, null, null, null, false);
+                param = paramFactory.createParam(paramName, null, null, null, null, false);
             } else {
                 param = createParam(paramName);
             }
@@ -97,7 +97,7 @@ public abstract class Condition {
         }
     }
 
-    protected Condition(ConditionDescriptor descriptor) {
+    protected AbstractCondition(AbstractConditionDescriptor<T> descriptor) {
         name = descriptor.getName();
         caption = descriptor.getCaption();
         locCaption = descriptor.getLocCaption();
@@ -110,11 +110,11 @@ public abstract class Condition {
         datasource = descriptor.getDatasource();
     }
 
-    protected Param createParam(String paramName) {
+    protected T createParam(String paramName) {
         if (categoryAttrId != null) {
-            return new Param(paramName, paramClass, entityParamWhere, entityParamView, datasource, inExpr, categoryAttrId);
+            return paramFactory.createParam(paramName, paramClass, entityParamWhere, entityParamView, datasource, inExpr, categoryAttrId);
         } else
-            return new Param(paramName, paramClass == null ? javaClass : paramClass, entityParamWhere, entityParamView, datasource, inExpr);
+            return paramFactory.createParam(paramName, paramClass == null ? javaClass : paramClass, entityParamWhere, entityParamView, datasource, inExpr);
     }
 
     public void addListener(Listener listener) {
@@ -155,14 +155,14 @@ public abstract class Condition {
     protected void updateText() {
     }
 
-    public Param getParam() {
+    public T getParam() {
         return param;
     }
 
-    public void setParam(Param param) {
+    public void setParam(T param) {
         this.param = param;
 
-        for (Condition.Listener listener : listeners) {
+        for (AbstractCondition.Listener listener : listeners) {
             listener.paramChanged();
         }
     }
@@ -267,5 +267,7 @@ public abstract class Condition {
                 getName().replace('.', '_') + RandomStringUtils.randomNumeric(5);
     }
 
-    public abstract OperationEditor createOperationEditor();
+    public abstract AbstractOperationEditor createOperationEditor();
+
+    protected abstract ParamFactory<T> getParamFactory();
 }

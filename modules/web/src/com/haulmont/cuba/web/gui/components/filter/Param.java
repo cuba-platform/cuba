@@ -24,6 +24,7 @@ import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.filter.AbstractParam;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
@@ -44,194 +45,18 @@ import javax.persistence.TemporalType;
 import java.text.ParseException;
 import java.util.*;
 
-public class Param {
-
-    public enum Type {
-        ENTITY,
-        ENUM,
-        RUNTIME_ENUM,
-        DATATYPE,
-        UNARY
-    }
-
-    public static final String NULL = "NULL";
-
-    private String name;
-    private Type type;
-    private Class javaClass;
-    private Object value;
-    private String entityWhere;
-    private String entityView;
-    private Datasource datasource;
-    private MetaProperty property;
-    private boolean inExpr;
-    private List<String> runtimeEnum;
-    private UUID categoryAttrId;
-
-    private List<ValueListener> listeners = new ArrayList<ValueListener>();
+public class Param extends AbstractParam<Component> {
 
     public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, boolean inExpr) {
-        this(name, javaClass, entityWhere, entityView, datasource, null, inExpr);
+        super(name,javaClass,entityWhere,entityView,datasource,inExpr);
     }
 
     public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, boolean inExpr, UUID categoryAttrId) {
-        this(name, javaClass, entityWhere, entityView, datasource, null, inExpr);
-        this.categoryAttrId = categoryAttrId;
+        super(name,javaClass,entityWhere,entityView,datasource,inExpr,categoryAttrId);
     }
 
-    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
-                 MetaProperty property, boolean inExpr)
-    {
-        this.name = name;
-        if (javaClass != null) {
-            this.javaClass = javaClass;
-            if (SetValueEntity.class.isAssignableFrom(javaClass)) {
-                type = Type.RUNTIME_ENUM;
-            } else if (Entity.class.isAssignableFrom(javaClass)) {
-                type = Type.ENTITY;
-            } else if (Enum.class.isAssignableFrom(javaClass)) {
-                type = Type.ENUM;
-            } else {
-                type = Type.DATATYPE;
-            }
-        } else {
-            type = Type.UNARY;
-            this.javaClass = Boolean.class;
-        }
-        this.entityWhere = entityWhere;
-        this.entityView = entityView;
-        this.datasource = datasource;
-        this.property = property;
-        this.inExpr = inExpr;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public Class getJavaClass() {
-        return javaClass;
-    }
-
-    public Object getValue() {
-        return value;
-    }
-
-    public void setValue(Object value) {
-        if (!ObjectUtils.equals(value, this.value)) {
-            Object prevValue = this.value;
-            this.value = value;
-            for (ValueListener listener : listeners) {
-                listener.valueChanged(this, "value", prevValue, value);
-            }
-        }
-    }
-
-    public void parseValue(String text) {
-        if (NULL.equals(text)) {
-            value = null;
-            return;
-        }
-
-        if (inExpr) {
-            String[] parts = text.split(",");
-            List list = new ArrayList(parts.length);
-            for (String part : parts) {
-                list.add(parseSingleValue(part));
-            }
-            value = list;
-        } else {
-            value = parseSingleValue(text);
-        }
-    }
-
-    private Object parseSingleValue(String text) {
-        Object value;
-        switch (type) {
-            case ENTITY:
-                value = loadEntity(text);
-                break;
-
-            case ENUM:
-                value = Enum.valueOf(javaClass, text);
-                break;
-
-            case RUNTIME_ENUM:
-                value = text;
-                break;
-
-            case DATATYPE:
-            case UNARY:
-                Datatype datatype = Datatypes.getInstance().get(javaClass);
-                if (datatype == null)
-                    throw new UnsupportedOperationException("Unsupported parameter class: " + javaClass);
-
-                try {
-                    value = datatype.parse(text);
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-
-            default:
-                throw new IllegalStateException("Param type unknown");
-        }
-        return value;
-    }
-
-    private Object loadEntity(String id) {
-        DataService service = ServiceLocator.getDataService();
-        LoadContext ctx = new LoadContext(javaClass).setId(UUID.fromString(id));
-        Entity entity = service.load(ctx);
-        return entity;
-    }
-
-    public String formatValue() {
-        if (value == null)
-            return NULL;
-
-        if (value instanceof Collection) {
-            StringBuilder sb = new StringBuilder();
-            for (Iterator iterator = ((Collection) value).iterator(); iterator.hasNext();) {
-                Object v = iterator.next();
-                sb.append(formatSingleValue(v));
-                if (iterator.hasNext())
-                    sb.append(",");
-            }
-            return sb.toString();
-        } else {
-            return formatSingleValue(value);
-        }
-    }
-
-    private String formatSingleValue(Object v) {
-        switch (type) {
-            case ENTITY:
-                if (v instanceof UUID)
-                    return v.toString();
-                else if (v instanceof Entity)
-                    return ((Entity) v).getId().toString();
-
-            case ENUM:
-                return ((Enum) v).name();
-            case RUNTIME_ENUM:
-                return (String) v;
-
-            case DATATYPE:
-            case UNARY:
-                Datatype datatype = Datatypes.getInstance().get(javaClass);
-                if (datatype == null)
-                    throw new UnsupportedOperationException("Unsupported parameter class: " + javaClass);
-
-                return datatype.format(v);
-
-            default:
-                throw new IllegalStateException("Param type unknown");
-        }
+    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, MetaProperty property, boolean inExpr) {
+        super(name, javaClass, entityWhere, entityView, datasource, property, inExpr);
     }
 
     public Component createEditComponent() {
@@ -584,36 +409,6 @@ public class Param {
         }
     }
 
-    private String getValueCaption(Object v) {
-        if (v == null)
-            return null;
-
-        switch (type) {
-            case ENTITY:
-                if (v instanceof Instance)
-                    return ((Instance) v).getInstanceName();
-                else
-                    v.toString();
-
-            case ENUM:
-                return MessageProvider.getMessage((Enum) v);
-
-            case RUNTIME_ENUM:
-                return (String) v;
-
-            case DATATYPE:
-            case UNARY:
-                Datatype datatype = Datatypes.get(javaClass);
-                if (datatype == null)
-                    throw new UnsupportedOperationException("Unsupported parameter class: " + javaClass);
-
-                return datatype.format(v, UserSessionProvider.getLocale());
-
-            default:
-                throw new IllegalStateException("Param type unknown");
-        }
-    }
-
     private Component createRuntimeEnumLookup() {
         DataService dataService = ServiceLocator.lookup(DataService.NAME);
         LoadContext context = new LoadContext(CategoryAttribute.class);
@@ -677,26 +472,4 @@ public class Param {
         }
     }
 
-    public void toXml(Element element) {
-        Element paramElem = element.addElement("param");
-        paramElem.addAttribute("name", getName());
-        paramElem.addAttribute("javaClass", getJavaClass().getName());
-        if (SetValueEntity.class.isAssignableFrom(javaClass) && runtimeEnum != null) {
-            paramElem.addAttribute("categoryAttrId", categoryAttrId.toString());
-        }
-        paramElem.setText(formatValue());
-    }
-
-    public void addListener(ValueListener listener) {
-        if (!listeners.contains(listener))
-            listeners.add(listener);
-    }
-
-    public void removeListener(ValueListener listener) {
-        listeners.remove(listener);
-    }
-
-    public MetaProperty getProperty() {
-        return property;
-    }
 }

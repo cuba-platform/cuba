@@ -10,21 +10,17 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.haulmont.bali.util.Dom4j;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
-import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.ValuePathHelper;
+import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFilter;
 import com.vaadin.data.Property;
@@ -32,64 +28,32 @@ import com.vaadin.event.Action;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.BooleanUtils.isTrue;
 
-public class FilterEditor {
+public class FilterEditor extends AbstractFilterEditor {
 
-    private WebFilter webFilter;
-    private FilterEntity filterEntity;
-    private Element filterDescriptor;
-    private MetaClass metaClass;
-    private CollectionDatasource datasource;
-    private List<ConditionDescriptor> descriptors = new ArrayList<ConditionDescriptor>();
-    private List<String> existingNames;
-
-    private List<Condition> conditions = new ArrayList<Condition>();
     private AbstractOrderedLayout layout;
     private TextField nameField;
     private Table table;
-    private String messagesPack;
-    private String filterComponentName;
     private Select addSelect;
     private CheckBox defaultCb;
     private CheckBox applyDefaultCb;
 
     private static final String EDITOR_WIDTH = "640px";
     private static final String TABLE_WIDTH = "600px";
-    private static List<String> defaultExcludedProps = Arrays.asList("version");
     private CheckBox globalCb;
     private Button saveBtn;
 
     private Button upBtn;
     private Button downBtn;
 
-    private Boolean manualApplyRequired;
-
     public FilterEditor(final WebFilter webFilter, FilterEntity filterEntity,
                         Element filterDescriptor, List<String> existingNames) {
-        this.webFilter = webFilter;
-        this.filterEntity = filterEntity;
-        this.filterDescriptor = filterDescriptor;
-        this.datasource = webFilter.getDatasource();
-        this.messagesPack = webFilter.getFrame().getMessagesPack();
-        this.metaClass = datasource.getMetaClass();
-        this.existingNames = existingNames;
-
-        this.manualApplyRequired = ConfigProvider.getConfig(WebConfig.class).getGenericFilterManualApplyRequired();
-
-        String[] strings = ValuePathHelper.parse(filterEntity.getComponentId());
-        this.filterComponentName = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
-
-        parseDescriptorXml();
-
-        FilterParser parser = new FilterParser(this.filterEntity.getXml(), messagesPack, filterComponentName, datasource);
-        this.conditions = parser.fromXml().getConditions();
+        super(webFilter, filterEntity, filterDescriptor, existingNames);
     }
 
     public void init() {
@@ -115,10 +79,10 @@ public class FilterEditor {
             public void buttonClick(Button.ClickEvent event) {
                 Object item = table.getValue();
                 if (item != table.getNullSelectionItemId()) {
-                    Condition condition = (Condition) item;
+                    AbstractCondition condition = (AbstractCondition) item;
                     int index = conditions.indexOf(condition);
                     if (index > 0) {
-                        Condition next = conditions.get(index - 1);
+                        AbstractCondition next = conditions.get(index - 1);
                         conditions.set(index - 1, condition);
                         conditions.set(index, next);
                         updateTable();
@@ -134,11 +98,11 @@ public class FilterEditor {
             public void buttonClick(Button.ClickEvent event) {
                 Object item = table.getValue();
                 if (item != table.getNullSelectionItemId()) {
-                    Condition condition = (Condition) item;
+                    AbstractCondition condition = (AbstractCondition) item;
                     int index = conditions.indexOf(condition);
                     int count = conditions.size();
                     if (index < count - 1) {
-                        Condition next = conditions.get(index + 1);
+                        AbstractCondition next = conditions.get(index + 1);
                         conditions.set(index + 1, condition);
                         conditions.set(index, next);
                         updateTable();
@@ -154,7 +118,7 @@ public class FilterEditor {
         saveBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 if (commit())
-                    webFilter.editorCommitted();
+                    ((WebFilter) filter).editorCommitted();
             }
         });
         if (filterEntity.getCode() != null)
@@ -166,7 +130,7 @@ public class FilterEditor {
         cancelBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Cancel"));
         cancelBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                webFilter.editorCancelled();
+                ((WebFilter) filter).editorCancelled();
             }
         });
         controlLayout.addComponent(cancelBtn);
@@ -241,7 +205,7 @@ public class FilterEditor {
 
         HorizontalLayout hlayLayout = new HorizontalLayout();
         hlayLayout.setSpacing(true);
-        
+
         VerticalLayout controlsAndtable = new VerticalLayout();
         controlsAndtable.addComponent(topGrid);
         controlsAndtable.setSpacing(true);
@@ -254,15 +218,14 @@ public class FilterEditor {
         upDownLayout.addComponent(upBtn);
         upDownLayout.addComponent(downBtn);
         hlayLayout.addComponent(upDownLayout);
-        hlayLayout.setComponentAlignment(upDownLayout,Alignment.MIDDLE_CENTER);
-                                         
+        hlayLayout.setComponentAlignment(upDownLayout, Alignment.MIDDLE_CENTER);
         layout.addComponent(hlayLayout);
         layout.addComponent(bottomGrid);
 
         updateControls();
     }
 
-    public Button getSaveButton(){
+    public Button getSaveButton() {
         return saveBtn;
     }
 
@@ -275,7 +238,7 @@ public class FilterEditor {
         addSelect.setNullSelectionAllowed(true);
         addSelect.setFilteringMode(Select.FILTERINGMODE_CONTAINS);
         addSelect.setWidth("100px");
-        for (ConditionDescriptor descriptor : descriptors) {
+        for (AbstractConditionDescriptor descriptor : descriptors) {
             addSelect.addItem(descriptor);
             addSelect.setItemCaption(descriptor, descriptor.getLocCaption());
         }
@@ -294,7 +257,7 @@ public class FilterEditor {
         addSelect.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
                 if (addSelect.getValue() != null) {
-                    addCondition((ConditionDescriptor) addSelect.getValue());
+                    addCondition((AbstractConditionDescriptor) addSelect.getValue());
                     addSelect.select(null);
                 }
             }
@@ -320,7 +283,7 @@ public class FilterEditor {
         table.addContainerProperty(nameCol, NameEditor.class, null);
         table.setColumnWidth(nameCol, 160);
 
-        table.addContainerProperty(opCol, OperationEditor.class, null);
+        table.addContainerProperty(opCol, OperationEditor.Editor.class, null);
         table.setColumnWidth(opCol, 100);
 
         table.addContainerProperty(paramCol, ParamEditor.class, null);
@@ -332,14 +295,14 @@ public class FilterEditor {
         table.addContainerProperty(cntrCol, Button.class, null);
         table.setColumnWidth(cntrCol, 30);
 
-        for (final Condition condition : this.conditions) {
+        for (final AbstractCondition condition : this.conditions) {
             NameEditor nameEditor = new NameEditor(condition);
-            OperationEditor operationEditor = condition.createOperationEditor();
+            AbstractOperationEditor operationEditor = condition.createOperationEditor();
             ParamEditor paramEditor = new ParamEditor(condition, false);
 
             table.addItem(new Object[]{
                     nameEditor,
-                    operationEditor,
+                    operationEditor.getImpl(),
                     paramEditor,
                     createHiddenCheckbox(condition),
                     createDeleteConditionBtn(condition)
@@ -348,7 +311,7 @@ public class FilterEditor {
             );
         }
 
-        final Action showNameAction = new Action(MessageProvider.getMessage(getClass(), "FilterEditor.showNameAction"));
+        final Action showNameAction = new Action(MessageProvider.getMessage(MESSAGES_PACK, "FilterEditor.showNameAction"));
         table.addActionHandler(
                 new Action.Handler() {
                     public Action[] getActions(Object target, Object sender) {
@@ -358,8 +321,8 @@ public class FilterEditor {
                     public void handleAction(Action action, Object sender, Object target) {
                         if (action.equals(showNameAction)) {
                             App.getInstance().getWindowManager().showMessageDialog(
-                                    MessageProvider.getMessage(getClass(), "FilterEditor.showNameTitle"),
-                                    ((Condition) target).getParam().getName(),
+                                    MessageProvider.getMessage(MESSAGES_PACK, "FilterEditor.showNameTitle"),
+                                    ((AbstractCondition) target).getParam().getName(),
                                     IFrame.MessageType.CONFIRMATION
                             );
                         }
@@ -370,21 +333,17 @@ public class FilterEditor {
         layout.addComponent(table);
     }
 
-    private String getMessage(String key) {
-        return MessageProvider.getMessage(getClass(), key);
-    }
-
-    private void addCondition(ConditionDescriptor descriptor) {
-        Condition condition = descriptor.createCondition();
+    private void addCondition(AbstractConditionDescriptor descriptor) {
+        AbstractCondition condition = descriptor.createCondition();
         conditions.add(condition);
 
         NameEditor nameEditor = new NameEditor(condition);
-        OperationEditor operationEditor = condition.createOperationEditor();
+        AbstractOperationEditor operationEditor = condition.createOperationEditor();
         ParamEditor paramEditor = new ParamEditor(condition, false);
 
         table.addItem(new Object[]{
                 nameEditor,
-                operationEditor,
+                operationEditor.getImpl(),
                 paramEditor,
                 createHiddenCheckbox(condition),
                 createDeleteConditionBtn(condition)
@@ -395,7 +354,7 @@ public class FilterEditor {
         updateControls();
     }
 
-    private void deleteCondition(Condition condition) {
+    private void deleteCondition(AbstractCondition condition) {
         conditions.remove(condition);
         table.removeItem(condition);
         updateControls();
@@ -414,14 +373,14 @@ public class FilterEditor {
 
     private void updateTable() {
         table.removeAllItems();
-        for (final Condition condition : this.conditions) {
+        for (final AbstractCondition condition : this.conditions) {
             NameEditor nameEditor = new NameEditor(condition);
-            OperationEditor operationEditor = condition.createOperationEditor();
+            AbstractOperationEditor operationEditor = condition.createOperationEditor();
             ParamEditor paramEditor = new ParamEditor(condition, false);
 
             table.addItem(new Object[]{
                     nameEditor,
-                    operationEditor,
+                    operationEditor.getImpl(),
                     paramEditor,
                     createHiddenCheckbox(condition),
                     createDeleteConditionBtn(condition)
@@ -432,7 +391,7 @@ public class FilterEditor {
         updateControls();
     }
 
-    private Button createDeleteConditionBtn(final Condition condition) {
+    private Button createDeleteConditionBtn(final AbstractCondition condition) {
         Button delBtn = WebComponentsHelper.createButton("icons/tab-remove.png");
         delBtn.setStyleName(BaseTheme.BUTTON_LINK);
         delBtn.addListener(new Button.ClickListener() {
@@ -443,7 +402,7 @@ public class FilterEditor {
         return delBtn;
     }
 
-    private CheckBox createHiddenCheckbox(final Condition condition) {
+    private CheckBox createHiddenCheckbox(final AbstractCondition condition) {
         final CheckBox checkBox = new CheckBox();
         checkBox.setValue(condition.isHidden());
         checkBox.addListener(new Button.ClickListener() {
@@ -455,57 +414,49 @@ public class FilterEditor {
         return checkBox;
     }
 
-    private void parseDescriptorXml() {
-        for (Element element : Dom4j.elements(filterDescriptor)) {
-            ConditionDescriptor conditionDescriptor;
-            if ("properties".equals(element.getName())) {
-                addMultiplePropertyDescriptors(element, filterComponentName);
-            } else if ("property".equals(element.getName())) {
-                conditionDescriptor = new PropertyConditionDescriptor(element, messagesPack, filterComponentName, datasource);
-                descriptors.add(conditionDescriptor);
-            } else if ("custom".equals(element.getName())) {
-                conditionDescriptor = new CustomConditionDescriptor(element, messagesPack, filterComponentName, datasource);
-                descriptors.add(conditionDescriptor);
-            } else
-                throw new UnsupportedOperationException("Element not supported: " + element.getName());
-        }
-
-        Collections.sort(descriptors, new Comparator<ConditionDescriptor>() {
-            public int compare(ConditionDescriptor cd1, ConditionDescriptor cd2) {
-                return cd1.getLocCaption().compareTo(cd2.getLocCaption());
-            }
-        });
+    @Override
+    protected AbstractFilterParser createFilterParser(String xml, String messagesPack, String filterComponentName,
+                                                      CollectionDatasource datasource) {
+        return new FilterParser(xml, messagesPack, filterComponentName, datasource);
     }
 
-    private void addMultiplePropertyDescriptors(Element element, String filterComponentName) {
-        List<String> includedProps = new ArrayList<String>();
+    @Override
+    protected AbstractPropertyConditionDescriptor createPropertyConditionDescriptor(
+            Element element, String messagesPack, String filterComponentName, CollectionDatasource datasource) {
+        return new PropertyConditionDescriptor(element, messagesPack, filterComponentName, datasource);
+    }
 
-        String inclRe = element.attributeValue("include");
-        Pattern inclPattern = Pattern.compile(inclRe);
+    @Override
+    protected AbstractPropertyConditionDescriptor createPropertyConditionDescriptor(
+            String name, String caption, String messagesPack, String filterComponentName, CollectionDatasource datasource) {
+        return new PropertyConditionDescriptor(name, caption, messagesPack, filterComponentName, datasource);
+    }
 
-        for (MetaProperty property : metaClass.getProperties()) {
-            if (property.getRange().getCardinality().isMany())
-                continue;
-            if (defaultExcludedProps.contains(property.getName()))
-                continue;
+    @Override
+    protected AbstractCustomConditionDescriptor createCustomConditionDescriptor(
+            Element element, String messagesPack, String filterComponentName, CollectionDatasource datasource) {
+        return new CustomConditionDescriptor(element, messagesPack, filterComponentName, datasource);
+    }
 
-            if (inclPattern.matcher(property.getName()).matches()) {
-                includedProps.add(property.getName());
-            }
-        }
+    @Override
+    protected AbstractFilterParser createFilterParser(List<AbstractCondition> conditions, String messagesPack,
+                                                      String filterComponentName, Datasource datasource) {
+        return new FilterParser(conditions, messagesPack, filterComponentName, datasource);
+    }
 
-        String exclRe = element.attributeValue("exclude");
-        Pattern exclPattern = null;
-        if (!StringUtils.isBlank(exclRe))
-            exclPattern = Pattern.compile(exclRe);
+    @Override
+    protected String getName() {
+        return (String) nameField.getValue();
+    }
 
-        for (String prop : includedProps) {
-            if (exclPattern == null || !exclPattern.matcher(prop).matches()) {
-                ConditionDescriptor conditionDescriptor =
-                        new PropertyConditionDescriptor(prop, null, messagesPack, filterComponentName, datasource);
-                descriptors.add(conditionDescriptor);
-            }
-        }
+    @Override
+    protected boolean isGlobal() {
+        return (Boolean) globalCb.getValue();
+    }
+
+    @Override
+    protected void showNotification(String caption, String description) {
+        App.getInstance().getAppWindow().showNotification(caption, description, Window.Notification.TYPE_HUMANIZED_MESSAGE);
     }
 
     public AbstractOrderedLayout getLayout() {
@@ -516,54 +467,7 @@ public class FilterEditor {
         return filterEntity;
     }
 
-    public boolean commit() {
-        if (StringUtils.isBlank((String) nameField.getValue())) {
-            App.getInstance().getAppWindow().showNotification(
-                    getMessage("FilterEditor.commitError"),
-                    getMessage("FilterEditor.nameNotSet"),
-                    Window.Notification.TYPE_HUMANIZED_MESSAGE);
-            return false;
-        }
-
-        if (filterEntity.getFolder() == null) {
-            if (existingNames.contains(nameField.getValue())) {
-                App.getInstance().getAppWindow().showNotification(
-                        getMessage("FilterEditor.commitError"),
-                        getMessage("FilterEditor.nameAlreadyExists"),
-                        Window.Notification.TYPE_HUMANIZED_MESSAGE);
-                return false;
-            }
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (Condition condition : conditions) {
-            String error = condition.getError();
-            if (error != null)
-                sb.append(error).append("\n");
-        }
-        if (sb.length() > 0) {
-            App.getInstance().getAppWindow().showNotification(
-                    getMessage("FilterEditor.commitError"),
-                    sb.toString(),
-                    Window.Notification.TYPE_HUMANIZED_MESSAGE);
-            return false;
-        }
-
-        FilterParser parser = new FilterParser(conditions, messagesPack, filterComponentName, datasource);
-        String xml = parser.toXml().getXml();
-
-        filterEntity.setName(((String) nameField.getValue()).trim());
-        filterEntity.setXml(xml);
-
-        if (isTrue((Boolean) globalCb.getValue()))
-            filterEntity.setUser(null);
-        else
-            filterEntity.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
-
-        return true;
-    }
-
-    public List<Condition> getConditions() {
+    public List<AbstractCondition> getConditions() {
         return conditions;
     }
 }

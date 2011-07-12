@@ -48,4 +48,15 @@ public interface ClientConfig extends Config {
     @Property("cuba.passwordPolicyRegExp")
     @DefaultString("((?=.*\\d)(?=.*\\p{javaLowerCase})(?=.*\\p{javaUpperCase}).{6,20})")
     public String getPasswordPolicyRegExp();
+
+    @Property("cuba.gui.genericFilterManualApplyRequired")
+    @DefaultBoolean(true)
+    boolean getGenericFilterManualApplyRequired();
+
+    /**
+     * If true, then check filter conditions(empty or not) before apply filter
+     */
+    @Property("cuba.gui.genericFilterChecking")
+    @DefaultBoolean(true)
+    boolean getGenericFilterChecking();
 }

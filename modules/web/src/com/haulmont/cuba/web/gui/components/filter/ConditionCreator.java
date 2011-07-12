@@ -10,24 +10,32 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.cuba.gui.components.filter.AbstractCondition;
+import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
+import com.haulmont.cuba.gui.components.filter.ParamFactory;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.core.global.MessageProvider;
 
-public class ConditionCreator extends ConditionDescriptor {
+public class ConditionCreator extends AbstractConditionDescriptor {
 
     public ConditionCreator(String filterComponentName, CollectionDatasource datasource) {
         super("creator", filterComponentName, datasource);
-        locCaption = MessageProvider.getMessage(getClass(), "conditionCreator");
+        locCaption = MessageProvider.getMessage(MESSAGES_PACK, "conditionCreator");
     }
 
     @Override
-    public Condition createCondition() {
+    public AbstractCondition createCondition() {
         return new NewCustomCondition(this, "", null, entityAlias);
     }
 
     @Override
-    public Param createParam(Condition condition) {
+    public Param createParam(AbstractCondition condition) {
         return null;
+    }
+
+    @Override
+    protected ParamFactory getParamFactory() {
+        return new ParamFactoryImpl();
     }
 
     @Override
