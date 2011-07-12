@@ -206,11 +206,11 @@ public class WebWindowManager extends WindowManager {
         return getCurrentWindowData().stacks.get(breadCrumbs);
     }
 
-    protected void showWindow(final Window window, final String caption, OpenType type) {
-        showWindow(window, caption, null, type);
+    protected void showWindow(final Window window, final String caption, OpenType type, boolean multipleOpen) {
+        showWindow(window, caption, null, type, multipleOpen);
     }
 
-    protected void showWindow(final Window window, final String caption, final String description, OpenType type) {
+    protected void showWindow(final Window window, final String caption, final String description, OpenType type, final boolean multipleOpen) {
         AppWindow appWindow = app.getAppWindow();
         final WindowOpenMode openMode = new WindowOpenMode(window, type);
         Component component;
@@ -232,7 +232,7 @@ public class WebWindowManager extends WindowManager {
                             Window oldWindow = oldBreadCrumbs.getCurrentWindow();
                             oldWindow.closeAndRun("mainMenu", new Runnable() {
                                 public void run() {
-                                    showWindow(window, caption, OpenType.NEW_TAB);
+                                    showWindow(window, caption, OpenType.NEW_TAB, false);
                                 }
                             });
                             return;
@@ -241,13 +241,13 @@ public class WebWindowManager extends WindowManager {
                 } else {
                     final Integer hashCode = getWindowHashCode(window);
                     Layout tab = null;
-                    if (hashCode != null)
+                    if (hashCode != null && !multipleOpen)
                         tab = findTab(hashCode);
                     Layout oldLayout = tab;
                     final WindowBreadCrumbs oldBreadCrumbs = getTabs().get(oldLayout);
 
                     if (oldBreadCrumbs != null &&
-                            getCurrentWindowData().windowOpenMode.containsKey(oldBreadCrumbs.getCurrentWindow().<IFrame>getFrame())) {
+                            getCurrentWindowData().windowOpenMode.containsKey(oldBreadCrumbs.getCurrentWindow().<IFrame>getFrame()) && !multipleOpen) {
                         final Window oldWindow = oldBreadCrumbs.getCurrentWindow();
                         Layout l = new VerticalLayout();
                         appWindow.getTabSheet().replaceComponent(tab, l);
@@ -256,13 +256,13 @@ public class WebWindowManager extends WindowManager {
                             public void run() {
                                 putToWindowMap(oldWindow, hashCode);
                                 oldBreadCrumbs.addWindow(oldWindow);
-                                showWindow(window, caption, description, OpenType.NEW_TAB);
+                                showWindow(window, caption, description, OpenType.NEW_TAB, multipleOpen);
                             }
                         });
                         return;
                     }
                 }
-				 component = showWindowNewTab(window, caption, description, appWindow);
+				 component = showWindowNewTab(window, multipleOpen, caption, description, appWindow);
                 break;
 
             case THIS_TAB:
@@ -387,7 +387,8 @@ public class WebWindowManager extends WindowManager {
         return layout;
     }
 
-    protected Component showWindowNewTab(final Window window, final String caption, final String description, AppWindow appWindow) {
+    protected Component showWindowNewTab(final Window window, final boolean multipleOpen, final String caption,
+                                         final String description, AppWindow appWindow) {
         final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs();
         breadCrumbs.addListener(
                 new WindowBreadCrumbs.Listener() {
@@ -407,12 +408,13 @@ public class WebWindowManager extends WindowManager {
         );
         breadCrumbs.addWindow(window);
 
-        final Layout layout = createNewTabLayout(window, caption, description, appWindow, breadCrumbs);
+        final Layout layout = createNewTabLayout(window, multipleOpen, caption, description, appWindow, breadCrumbs);
 
         return layout;
     }
 
-    protected Layout createNewTabLayout(final Window window, final String caption, final String description, AppWindow appWindow, Component... components) {
+    protected Layout createNewTabLayout(final Window window, final boolean multipleOpen, final String caption,
+                                        final String description, AppWindow appWindow, Component... components) {
         final VerticalLayout layout = new VerticalLayout();
         layout.setSizeFull();
         if (components != null) {
@@ -434,7 +436,7 @@ public class WebWindowManager extends WindowManager {
             Layout tab = null;
             if (hashCode != null)
                 tab = findTab(hashCode);
-            if (tab != null) {
+            if (tab != null && !multipleOpen) {
                 tabSheet.replaceComponent(tab, layout);
                 tabSheet.removeComponent(tab);
                 getTabs().put(layout, (WindowBreadCrumbs) components[0]);

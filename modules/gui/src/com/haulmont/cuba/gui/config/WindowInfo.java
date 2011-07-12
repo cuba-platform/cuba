@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.gui.config;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.ScriptingProvider;
@@ -57,6 +58,10 @@ public class WindowInfo implements Serializable {
         }
 
         return screenClass;
+    }
+
+    public boolean getMultipleOpen() {
+        return BooleanUtils.toBoolean(descriptor.attributeValue("multipleOpen"));
     }
 
     /**

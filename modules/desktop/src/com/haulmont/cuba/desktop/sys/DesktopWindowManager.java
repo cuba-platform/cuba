@@ -105,12 +105,12 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     @Override
-    protected void showWindow(Window window, String caption, OpenType openType) {
-        showWindow(window, caption, null, openType);
+    protected void showWindow(Window window, String caption, OpenType openType, boolean multipleOpen) {
+        showWindow(window, caption, null, openType, multipleOpen);
     }
 
     @Override
-    protected void showWindow(Window window, String caption, String description, OpenType openType) {
+    protected void showWindow(Window window, String caption, String description, OpenType openType, boolean multipleOpen) {
         window.setCaption(caption);
         window.setDescription(description);
 

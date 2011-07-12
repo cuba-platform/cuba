@@ -313,7 +313,7 @@ public abstract class WindowManager implements Serializable {
             String caption = loadCaption(window, params);
             String description = loadDescription(window, params);
             putToWindowMap(window, hashCode);
-            showWindow(window, caption, description, openType);
+            showWindow(window, caption, description, openType, windowInfo.getMultipleOpen());
             return (T) window;
         } else {
             Class screenClass = windowInfo.getScreenClass();
@@ -404,7 +404,7 @@ public abstract class WindowManager implements Serializable {
             String caption = loadCaption(window, params);
             String description = loadDescription(window, params);
 
-            showWindow(window, caption, description, openType);
+            showWindow(window, caption, description, openType, false);
             return (T) window;
         }
 
@@ -431,7 +431,7 @@ public abstract class WindowManager implements Serializable {
 
         final String caption = loadCaption(window, params);
         final String description = loadDescription(window, params);
-        showWindow(window, caption, description, openType);
+        showWindow(window, caption, description, openType, false);
 
         //noinspection unchecked
         return (T) window;
@@ -474,7 +474,7 @@ public abstract class WindowManager implements Serializable {
         final String caption = loadCaption(window, params);
         final String description = loadDescription(window, params);
 
-        showWindow(window, caption, description, openType);
+        showWindow(window, caption, description, openType, false);
 
         //noinspection unchecked
         return (T) window;
@@ -596,9 +596,9 @@ public abstract class WindowManager implements Serializable {
         return (T) openLookup(windowInfo, handler, openType, Collections.<String, Object>emptyMap());
     }
 
-    protected abstract void showWindow(Window window, String caption, OpenType openType);
+    protected abstract void showWindow(Window window, String caption, OpenType openType, boolean multipleOpen);
 
-    protected abstract void showWindow(Window window, String caption, String description, OpenType openType);
+    protected abstract void showWindow(Window window, String caption, String description, OpenType openType, boolean multipleOpen);
 
     protected abstract void showFrame(Component parent, IFrame frame);
 
