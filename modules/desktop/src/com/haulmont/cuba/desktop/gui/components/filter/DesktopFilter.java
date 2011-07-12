@@ -212,7 +212,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     private void setActions(Table table) {
-        ButtonsPanel buttons = table.getButtonsPanel();
+        //todo
+        /*ButtonsPanel buttons = table.getButtonsPanel();
         if (buttons == null) {
             return; // in lookup windows, there is no button panel
         }
@@ -241,8 +242,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         if (removeFromCurSetBtn != null) {
             buttons.removeButton(removeFromCurSetBtn);
         }
-        //todo
-        /*if ((filterEntity != null) && (BooleanUtils.isTrue(filterEntity.getIsSet()))) {
+
+        if ((filterEntity != null) && (BooleanUtils.isTrue(filterEntity.getIsSet()))) {
             addToCurrSet = new AddToCurrSetAction();
 
             addToCurSetBtn = new WebButton();
