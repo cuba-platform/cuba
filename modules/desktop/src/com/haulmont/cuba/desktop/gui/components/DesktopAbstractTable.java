@@ -356,13 +356,13 @@ public abstract class DesktopAbstractTable<C extends JTable>
         if (generator == null)
             throw new IllegalArgumentException("generator is null");
 
-        Column col = getColumn(columnId);
-        tableModel.setColumnGenerated(col);
-        TableColumnModel columnModel = impl.getColumnModel();
-        TableColumn tableColumn = columnModel.getColumn(columnModel.getColumnIndex(col));
-        CellEditor cellEditor = new CellEditor(generator);
-        tableColumn.setCellEditor(cellEditor);
-        tableColumn.setCellRenderer(cellEditor);
+//        Column col = getColumn(columnId);
+//        tableModel.setColumnGenerated(col);
+//        TableColumnModel columnModel = impl.getColumnModel();
+//        TableColumn tableColumn = columnModel.getColumn(columnModel.getColumnIndex(col));
+//        CellEditor cellEditor = new CellEditor(generator);
+//        tableColumn.setCellEditor(cellEditor);
+//        tableColumn.setCellRenderer(cellEditor);
     }
 
     public void removeGeneratedColumn(Object id){
