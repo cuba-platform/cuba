@@ -41,6 +41,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     private int rows;
     private int cols;
     private String caption;
+    private boolean editable = true;
 
     private Map<String, Field> fields = new LinkedHashMap<String, Field>();
     private Map<Field, Integer> fieldsColumn = new HashMap<Field, Integer>();
@@ -50,8 +51,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     private Map<Field, CustomFieldGenerator> generators = new HashMap<Field, CustomFieldGenerator>();
     private AbstractFieldFactory fieldFactory = new FieldFactory();
 
+    private Set<Field> readOnlyFields = new HashSet<Field>();
+
     public DesktopFieldGroup() {
         LC lc = new LC();
+        lc.hideMode(3); // Invisible components will not participate in the layout at all and it will for instance not take up a grid cell.
         lc.insets("panel");
         if (LayoutAdapter.isDebug())
             lc.debug(1000);
@@ -87,9 +91,10 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     public void addField(Field field) {
-        fields.put(field.getId(), field);
-        fieldsColumn.put(field, 0);
-        fillColumnFields(0, field);
+        if (cols == 0) {
+            cols = 1;
+        }
+        addField(field, 0);
     }
 
     public void addField(Field field, int col) {
@@ -131,6 +136,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             }
         }
         rows = rowsCount();
+
+        createFields();
     }
 
     public boolean isRequired(Field field) {
@@ -185,14 +192,27 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     public boolean isEditable(Field field) {
-        Component component = fieldComponents.get(field);
-        return component instanceof Editable && ((Editable) component).isEditable();
+        return !readOnlyFields.contains(field);
     }
 
     public void setEditable(Field field, boolean editable) {
+        doSetEditable(field, editable);
+
+        if (editable) {
+            readOnlyFields.remove(field);
+        }
+        else {
+            readOnlyFields.add(field);
+        }
+    }
+
+    private void doSetEditable(Field field, boolean editable) {
         Component component = fieldComponents.get(field);
         if (component instanceof Editable) {
             ((Editable) component).setEditable(editable);
+        }
+        if (fieldLabels.containsKey(field)) {
+            fieldLabels.get(field).setEnabled(editable);
         }
     }
 
@@ -216,6 +236,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         Component component = fieldComponents.get(field);
         if (component != null)
             component.setEnabled(enabled);
+        if (fieldLabels.containsKey(field)) {
+            fieldLabels.get(field).setEnabled(enabled);
+        }
     }
 
     public boolean isEnabled(String fieldId) {
@@ -236,8 +259,12 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     public void setVisible(Field field, boolean visible) {
         Component component = fieldComponents.get(field);
-        if (component != null)
+        if (component != null) {
             component.setVisible(visible);
+        }
+        if (fieldLabels.containsKey(field)) {
+            fieldLabels.get(field).setVisible(visible);
+        }
     }
 
     public boolean isVisible(String fieldId) {
@@ -330,6 +357,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             throw new IllegalStateException(String.format("Field '%s' must be custom", field.getId()));
         }
         generators.put(field, fieldGenerator);
+        // immediately create field, even before postInit()
+        createFieldComponent(field);
     }
 
     public void addListener(ExpandListener listener) {
@@ -345,52 +374,68 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     public void postInit() {
-        int row = -1;
-        int col = -1;
+    }
+
+    private void createFields() {
         for (Field field : fields.values()) {
-            if (fieldsColumn.get(field) != col) {
-                row = 0;
-            } else {
-                row++;
-            }
-            col = fieldsColumn.get(field);
-
-            Datasource ds;
-            if (field.getDatasource() != null) {
-                ds = field.getDatasource();
-            } else {
-                ds = datasource;
+            if (field.isCustom()) {
+                continue; // custom field is generated in another method
             }
 
-            String caption = field.getCaption();
+            createFieldComponent(field);
+        }
+    }
+
+    private void createFieldComponent(Field field) {
+        int col = fieldsColumn.get(field);
+        int row = columnFields.get(col).indexOf(field);
+
+        Datasource ds;
+        if (field.getDatasource() != null) {
+            ds = field.getDatasource();
+        } else {
+            ds = datasource;
+        }
+
+        String caption = null;
+
+        CustomFieldGenerator generator = generators.get(field);
+        if (generator == null)
+            generator = createDefaultGenerator(field);
+
+        Component component = generator.generateField(ds, field.getId());
+
+        if (component instanceof com.haulmont.cuba.gui.components.Field) { // do not create caption for buttons etc.
+            caption = field.getCaption();
             if (caption == null) {
                 MetaProperty metaProperty = ds.getMetaClass().getProperty(field.getId());
                 if (metaProperty != null)
                     caption = MessageUtils.getPropertyCaption(metaProperty);
             }
-            JLabel label = new JLabel(caption);
-            impl.add(label, new CC().cell(col*2, row, 1, 1));
-            fieldLabels.put(field, label);
 
-            CustomFieldGenerator generator = generators.get(field);
-            if (generator == null)
-                generator = createDefaultGenerator(field);
-
-            Component component = generator.generateField(ds, field.getId());
-            fieldComponents.put(field, component);
-            assignTypicalAttributes(component);
-            JComponent jComponent = DesktopComponentsHelper.unwrap(component);
-
-            CC cell = new CC().cell(col * 2 + 1, row, 1, 1);
-
-            if (field.getWidth() != null && component.getWidth() == 0 && component.getWidthUnits() == 0) {
-                component.setWidth(field.getWidth());
+            if (StringUtils.isNotEmpty(((HasCaption) component).getCaption())) {
+                caption = ((HasCaption) component).getCaption();     // custom field has manually set caption
             }
-            MigLayoutHelper.applyWidth(cell, (int) component.getWidth(), component.getWidthUnits(), false);
-            MigLayoutHelper.applyHeight(cell, (int) component.getHeight(), component.getHeightUnits(), false);
-
-            impl.add(jComponent, cell);
         }
+
+        JLabel label = new JLabel(caption);
+
+        impl.add(label, new CC().cell(col*2, row, 1, 1));
+        fieldLabels.put(field, label);
+
+        fieldComponents.put(field, component);
+        assignTypicalAttributes(component);
+        JComponent jComponent = DesktopComponentsHelper.unwrap(component);
+
+        CC cell = new CC().cell(col * 2 + 1, row, 1, 1);
+
+        if (field.getWidth() != null && component.getWidth() == 0 && component.getWidthUnits() == 0) {
+            component.setWidth(field.getWidth());
+        }
+        MigLayoutHelper.applyWidth(cell, (int) component.getWidth(), component.getWidthUnits(), false);
+        MigLayoutHelper.applyHeight(cell, (int) component.getHeight(), component.getHeightUnits(), false);
+
+        impl.add(jComponent, cell);
     }
 
     private void assignTypicalAttributes(Component c) {
@@ -402,20 +447,25 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         }
     }
 
-    private CustomFieldGenerator createDefaultGenerator(Field field) {
+    private CustomFieldGenerator createDefaultGenerator(final Field field) {
         return new CustomFieldGenerator() {
             public Component generateField(Datasource datasource, Object propertyId) {
-                Component component = fieldFactory.createField(datasource, (String) propertyId);
+                Component component = fieldFactory.createField(datasource, (String) propertyId, field.getXmlDescriptor());
                 return component;
             }
         };
     }
 
     public boolean isEditable() {
-        return true;
+        return editable;
     }
 
     public void setEditable(boolean editable) {
+        this.editable = editable;
+
+        for (FieldGroup.Field field: fields.values()) {
+            doSetEditable(field, editable && !readOnlyFields.contains(field));
+        }
     }
 
     public String getCaption() {

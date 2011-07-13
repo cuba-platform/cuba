@@ -18,6 +18,8 @@ import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import javax.persistence.TemporalType;
 import java.util.Map;
@@ -30,7 +32,7 @@ import java.util.TreeMap;
  */
 public abstract class AbstractFieldFactory {
 
-    public Component createField(Datasource datasource, String property) {
+    public Component createField(Datasource datasource, String property, Element xmlDescriptor) {
         MetaClass metaClass = datasource.getMetaClass();
         MetaPropertyPath mpp = metaClass.getPropertyPath(property);
         if (mpp != null) {
@@ -38,7 +40,7 @@ public abstract class AbstractFieldFactory {
                 Datatype datatype = mpp.getRange().asDatatype();
                 String typeName = datatype.getName();
                 if (typeName.equals(StringDatatype.NAME)) {
-                    return createStringField(datasource, property);
+                    return createStringField(datasource, property, xmlDescriptor);
                 } else if (typeName.equals(BooleanDatatype.NAME)) {
                     return createBooleanField(datasource, property);
                 } else if (typeName.equals(DateDatatype.NAME) || typeName.equals(DateTimeDatatype.NAME)) {
@@ -67,9 +69,15 @@ public abstract class AbstractFieldFactory {
         return checkBox;
     }
 
-    private Component createStringField(Datasource datasource, String property) {
+    private Component createStringField(Datasource datasource, String property, Element xmlDescriptor) {
         DesktopTextField textField = new DesktopTextField();
         textField.setDatasource(datasource, property);
+
+        final String rows = xmlDescriptor.attributeValue("rows");
+        if (!StringUtils.isEmpty(rows)) {
+             textField.setRows(Integer.valueOf(rows));
+        }
+
         return textField;
     }
 

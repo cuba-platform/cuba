@@ -199,7 +199,7 @@ public class DesktopFrame
 
     @Override
     public boolean expandsWidth() {
-        return false;
+        return true;
     }
 
     @Override

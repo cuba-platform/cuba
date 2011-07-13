@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.sys.layout;
 
 import com.haulmont.cuba.desktop.gui.components.AutoExpanding;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
+import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Component;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.PlatformDefaults;
@@ -58,6 +59,12 @@ public class MigLayoutHelper {
     public static CC getConstraints(Component component) {
         boolean expandX = false;
         boolean expandY = false;
+
+        // for latter comparing with AutoExpanding
+        if (component instanceof AbstractFrame) {
+            component = ((AbstractFrame) component).getComponent();
+        }
+
         if (component instanceof AutoExpanding) {
             boolean expandable = component instanceof Component.Expandable
                     && ((Component.Expandable) component).isExpandable();

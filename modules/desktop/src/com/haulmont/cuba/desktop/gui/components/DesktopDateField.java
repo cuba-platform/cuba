@@ -55,6 +55,7 @@ public class DesktopDateField
     private DocumentListener minListener;
     private DocumentListener hourListener;
     private boolean valid = true;
+    private String caption;
 
     public DesktopDateField() {
         impl = new JPanel();
@@ -339,11 +340,12 @@ public class DesktopDateField
 
     @Override
     public String getCaption() {
-        return null;
+        return caption;
     }
 
     @Override
     public void setCaption(String caption) {
+        this.caption = caption;
     }
 
     @Override

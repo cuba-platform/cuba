@@ -18,12 +18,13 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * <p>$Id$</p>
@@ -48,6 +49,7 @@ public class DesktopPickerField
     private boolean editable = true;
 
     protected java.util.List<Action> actionsOrder = new LinkedList<Action>();
+    private String caption;
 
     public DesktopPickerField() {
         impl = new Picker();
@@ -206,11 +208,12 @@ public class DesktopPickerField
 
     @Override
     public String getCaption() {
-        return null;
+        return caption;
     }
 
     @Override
     public void setCaption(String caption) {
+        this.caption = caption;
     }
 
     @Override

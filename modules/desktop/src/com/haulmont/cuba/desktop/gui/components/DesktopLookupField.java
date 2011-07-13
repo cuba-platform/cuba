@@ -33,6 +33,7 @@ public class DesktopLookupField
     private boolean optionsInitialized;
     private AutoCompleteSupport<Object> autoComplete;
     private ValueWrapper prevValue;
+    private String caption;
 
     public DesktopLookupField() {
         impl = new JComboBox();
@@ -174,11 +175,12 @@ public class DesktopLookupField
 
     @Override
     public String getCaption() {
-        return null;
+        return caption;
     }
 
     @Override
     public void setCaption(String caption) {
+        this.caption = caption;
     }
 
     @Override

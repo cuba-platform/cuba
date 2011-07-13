@@ -22,7 +22,10 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.text.ParseException;
 
 /**
@@ -46,6 +49,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     private boolean visible = true;
     private boolean enabled = true;
     private Object prevValue;
+    private String caption;
 
     private boolean updatingInstance;
 
@@ -295,10 +299,11 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     }
 
     public String getCaption() {
-        return null;
+        return caption;
     }
 
     public void setCaption(String caption) {
+        this.caption = caption;
     }
 
     public String getDescription() {
