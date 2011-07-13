@@ -526,6 +526,7 @@
                         <xs:attribute name="datasource" type="xs:string" use="optional"/>
                         <xs:attribute name="property" type="xs:string" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
+                        <xs:attribute name="align" type="align" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="textField">
