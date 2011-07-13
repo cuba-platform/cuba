@@ -170,7 +170,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     }
 
     public void setValue(Object value) {
-        getImpl().setText(String.valueOf(value));
+        getImpl().setText(value == null ? "" : String.valueOf(value));
     }
 
     @Override

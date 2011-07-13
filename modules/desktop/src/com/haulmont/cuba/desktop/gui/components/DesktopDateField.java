@@ -58,6 +58,8 @@ public class DesktopDateField
     private boolean valid = true;
     private String caption;
 
+    private Object prevValue = null;
+
     public DesktopDateField() {
         impl = new JPanel();
         initComponentParts();
@@ -281,18 +283,17 @@ public class DesktopDateField
 
     private void updatePartsFromValue(Date value) {
         updatingInstance = true;
-        Object prevValue = getValue();
         try {
             setDateParts(value);
             valid = true;
         } finally {
             updatingInstance = false;
         }
-        if (valid) {
-            Object newValue = getValue();
-            if (!ObjectUtils.equals(prevValue, newValue))
-                fireValueChanged(prevValue, newValue);
-        }
+
+        Object newValue = getValue();
+        if (!ObjectUtils.equals(prevValue, newValue))
+            fireValueChanged(prevValue, newValue);
+        prevValue = newValue;
     }
 
     private void setDateParts(Date value) {
@@ -349,7 +350,6 @@ public class DesktopDateField
             return;
 
         updatingInstance = true;
-        Object prevValue = getValue();
         try {
             Date value = constructDate();
             InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
@@ -361,8 +361,12 @@ public class DesktopDateField
         finally {
             updatingInstance = false;
         }
-        if (valid)
-            fireValueChanged(prevValue, getValue());
+        if (valid) {
+            Object newValue = getValue();
+            if (!ObjectUtils.equals(prevValue, newValue))
+                fireValueChanged(prevValue, newValue);
+            prevValue = newValue;
+        }
     }
 
     private Date constructDate() {
