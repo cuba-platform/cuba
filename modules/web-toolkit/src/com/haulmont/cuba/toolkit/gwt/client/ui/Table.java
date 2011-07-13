@@ -1411,7 +1411,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 case Event.ONMOUSEDOWN:
                     VConsole.log(
                             "HeaderCaption: mouse down");
-                    if (columnReordering) {
+                    if (columnReordering && event.getButton() == Event.BUTTON_LEFT) {
                         dragging = true;
                         moved = false;
                         colIndex = getColIndexByKey(cid);
