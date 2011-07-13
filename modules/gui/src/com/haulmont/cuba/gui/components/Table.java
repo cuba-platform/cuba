@@ -58,7 +58,7 @@ public interface Table
     boolean isAllowMultiStringCells();
     void setAllowMultiStringCells(boolean value);
 
-    public class Column implements HasXmlDescriptor, HasCaption, HasFomatter, Serializable {
+    public static class Column implements HasXmlDescriptor, HasCaption, HasFomatter, Serializable {
 
         private static final long serialVersionUID = -8462478820056909896L;
 

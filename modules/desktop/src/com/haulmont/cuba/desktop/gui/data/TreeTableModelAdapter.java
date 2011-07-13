@@ -59,6 +59,11 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
     }
 
     @Override
+    public boolean isCellEditable(Object node, int column) {
+        return tableDelegate.isCellEditable(0, column);
+    }
+
+    @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return tableDelegate.isCellEditable(rowIndex, columnIndex);
     }
@@ -101,6 +106,11 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
     @Override
     public int getRowIndex(Entity entity) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setColumnGenerated(Table.Column column) {
+        tableDelegate.setColumnGenerated(column);
     }
 
     @Override

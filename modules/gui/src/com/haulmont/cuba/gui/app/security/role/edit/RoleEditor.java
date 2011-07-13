@@ -52,6 +52,7 @@ public class RoleEditor extends AbstractEditor {
         screenPermissionsGrants.refresh();
         screensPermissionDs.setPermissionDs(screenPermissionsGrants);
         screenPermissionsTree.refresh();
+        screenPermissionsTree.expandAll();
     }
 
     @Override

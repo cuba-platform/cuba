@@ -32,8 +32,12 @@ import org.dom4j.Element;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -61,6 +65,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
     protected boolean sortable = true;
     protected TableSettings tableSettings;
+    private boolean editable;
 
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
@@ -210,19 +215,6 @@ public abstract class DesktopAbstractTable<C extends JTable>
                         editableColumns.add((MetaPropertyPath) column.getId());
                     }
                 }
-
-//                if (column.isCollapsed() && component.isColumnCollapsingAllowed()) {
-//                    try {
-//                        component.setColumnCollapsed(column.getId(), true);
-//                    } catch (IllegalAccessException e) {
-//                        // do nothing
-//                    }
-//                }
-
-//                if (column.getAggregation() != null && isAggregatable()) {
-//                    component.addContainerPropertyAggregation(column.getId(),
-//                            WebComponentsHelper.convertAggregationType(column.getAggregation().getType()));
-//                }
             }
         }
 
@@ -239,16 +231,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
                     colMetaClass, colMetaProperty.getName(), EntityAttrAccess.VIEW)) {
                 columnsOrder.add((MetaPropertyPath) column.getId());
             }
-//            if (editable && column.getAggregation() != null
-//                    && (BooleanUtils.isTrue(column.isEditable()) || BooleanUtils.isTrue(column.isCalculatable())))
-//            {
-//                addAggregationCell(column);
-//            }
         }
-
-//        if (aggregationCells != null) {
-//            dsManager.addListener(createAggregationDatasourceListener());
-//        }
 
         setVisibleColumns(columnsOrder);
 
@@ -368,16 +351,29 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     public void addGeneratedColumn(String columnId, ColumnGenerator generator) {
+        if (columnId == null)
+            throw new IllegalArgumentException("columnId is null");
+        if (generator == null)
+            throw new IllegalArgumentException("generator is null");
+
+        Column col = getColumn(columnId);
+        tableModel.setColumnGenerated(col);
+        TableColumnModel columnModel = impl.getColumnModel();
+        TableColumn tableColumn = columnModel.getColumn(columnModel.getColumnIndex(col));
+        CellEditor cellEditor = new CellEditor(generator);
+        tableColumn.setCellEditor(cellEditor);
+        tableColumn.setCellRenderer(cellEditor);
     }
 
     public void removeGeneratedColumn(Object id){
     }
 
     public boolean isEditable() {
-        return false;
+        return editable;
     }
 
     public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 
     public ButtonsPanel getButtonsPanel() {
@@ -494,5 +490,39 @@ public abstract class DesktopAbstractTable<C extends JTable>
             popup.add(menuItem);
         }
         return popup;
+    }
+
+    private class CellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
+
+        private ColumnGenerator columnGenerator;
+
+        public CellEditor(ColumnGenerator columnGenerator) {
+            this.columnGenerator = columnGenerator;
+        }
+
+        private Component getCellComponent(int row) {
+            Entity item = tableModel.getItem(row);
+            com.haulmont.cuba.gui.components.Component component = columnGenerator.generateCell(DesktopAbstractTable.this, item.getId());
+            if (component == null)
+                return null;
+            else {
+                return DesktopComponentsHelper.getComposition(component);
+            }
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            return getCellComponent(row);
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return "";
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            return getCellComponent(row);
+        }
     }
 }

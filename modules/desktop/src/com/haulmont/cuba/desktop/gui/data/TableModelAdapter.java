@@ -34,6 +34,7 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
     protected CollectionDatasource<Entity<Object>, Object> datasource;
     protected List<MetaPropertyPath> properties = new ArrayList<MetaPropertyPath>();
     protected List<Table.Column> columns;
+    protected List<Table.Column> generatedColumns = new ArrayList<Table.Column>();
     protected boolean autoRefresh;
 
     public TableModelAdapter(
@@ -111,6 +112,15 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
         }
     }
 
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        Table.Column column = columns.get(columnIndex);
+        if (column.isEditable() || generatedColumns.contains(column))
+            return true;
+        else
+            return false;
+    }
+
     public Object getItemId(int rowIndex) {
         Object id = null;
         if (datasource instanceof CollectionDatasource.Ordered) {
@@ -157,6 +167,11 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
             }
         }
         return -1;
+    }
+
+    @Override
+    public void setColumnGenerated(Table.Column column) {
+        generatedColumns.add(column);
     }
 
     @Override

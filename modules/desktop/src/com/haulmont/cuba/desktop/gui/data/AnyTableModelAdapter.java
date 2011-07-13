@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.gui.data;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.Table;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
@@ -24,4 +25,6 @@ public interface AnyTableModelAdapter extends TableModel {
     Entity getItem(int rowIndex);
 
     int getRowIndex(Entity entity);
+
+    void setColumnGenerated(Table.Column column);
 }

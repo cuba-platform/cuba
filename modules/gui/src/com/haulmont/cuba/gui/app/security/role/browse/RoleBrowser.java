@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ExcelAction;
+import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
@@ -31,7 +32,7 @@ public class RoleBrowser extends AbstractLookup {
     protected void init(Map<String, Object> params) {
         table = getComponent("roles");
 
-        ComponentsHelper.createActions(table);
+        ComponentsHelper.createActions(table, EnumSet.allOf(ListActionType.class));
         table.addAction(new ExcelAction(table));
 
         table.addAction(new AbstractAction("assignToUsers") {
