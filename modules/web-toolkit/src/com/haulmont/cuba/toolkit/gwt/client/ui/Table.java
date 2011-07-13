@@ -1944,6 +1944,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         protected class VisibleColumnAction extends Action {
             String colKey;
             private boolean collapsed;
+            private boolean enabled = true;
 
             public VisibleColumnAction(String colKey) {
                 super(Table.TableHead.this);
@@ -1954,22 +1955,28 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
             @Override
             public void execute() {
-                client.getContextMenu().hide();
-                // toggle selected column
-                if (collapsedColumns.contains(colKey)) {
-                    collapsedColumns.remove(colKey);
-                } else {
-                    tHead.removeCell(colKey);
-                    collapsedColumns.add(colKey);
-                }
+                if (enabled) {
+                    client.getContextMenu().hide();
+                    // toggle selected column
+                    if (collapsedColumns.contains(colKey)) {
+                        collapsedColumns.remove(colKey);
+                    } else {
+                        tHead.removeCell(colKey);
+                        collapsedColumns.add(colKey);
+                    }
 
-                // update variable to server
-                client.updateVariable(paintableId, "collapsedcolumns",
-                        collapsedColumns.toArray(), updateImmediate());
+                    // update variable to server
+                    client.updateVariable(paintableId, "collapsedcolumns",
+                            collapsedColumns.toArray(), updateImmediate());
+                }
             }
 
             public void setCollapsed(boolean b) {
                 collapsed = b;
+            }
+
+            public void setEnabled(boolean enabled) {
+                this.enabled = enabled;
             }
 
             /**
@@ -2007,6 +2014,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             final Object[] cols = getActionColumns();
             final Action[] actions = new Action[cols.length];
 
+            boolean oneColumnLeft = (collapsedColumns.size() >= (cols.length - 1)); // Indicates whether there is only one displayed column
+
             for (int i = 0; i < cols.length; i++) {
                 final String cid = (String) cols[i];
                 final HeaderCell c = getHeaderCell(cid);
@@ -2015,6 +2024,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 a.setCaption(c.getCaption());
                 if (!c.isEnabled()) {
                     a.setCollapsed(true);
+                }
+                else if (oneColumnLeft){ //Disable ability to collapse if it's the last not collapsed column
+                    a.setEnabled(false);
                 }
                 actions[i] = a;
             }
