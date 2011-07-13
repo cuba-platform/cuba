@@ -192,6 +192,7 @@ public abstract class App extends Application
             exceptionHandlers.addHandler(new OptimisticExceptionHandler());
             exceptionHandlers.addHandler(new JPAOptimisticExceptionHandler());
             exceptionHandlers.addHandler(new ReportExceptionHandler());
+            exceptionHandlers.addHandler(new FileMissingExceptionHandler());
         } else {
             exceptionHandlers.getHandlers().clear();
         }

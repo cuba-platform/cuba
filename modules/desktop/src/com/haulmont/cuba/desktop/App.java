@@ -10,8 +10,11 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
+import com.haulmont.cuba.desktop.exception.FileMissingExceptionHandler;
 import com.haulmont.cuba.desktop.exception.NoUserSessionHandler;
 import com.haulmont.cuba.desktop.exception.SilentExceptionHandler;
+import com.haulmont.cuba.desktop.exception.OptimisticExceptionHandler;
+import com.haulmont.cuba.desktop.exception.JPAOptimisticExceptionHandler;
 import com.haulmont.cuba.desktop.sys.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
@@ -348,6 +351,9 @@ public class App implements ConnectionListener {
         if (isConnected) {
             exceptionHandlers.addHandler(new NoUserSessionHandler()); // must be the first handler
             exceptionHandlers.addHandler(new SilentExceptionHandler());
+            exceptionHandlers.addHandler(new OptimisticExceptionHandler());
+            exceptionHandlers.addHandler(new JPAOptimisticExceptionHandler());
+            exceptionHandlers.addHandler(new FileMissingExceptionHandler());
         } else {
             exceptionHandlers.getHandlers().clear();
         }

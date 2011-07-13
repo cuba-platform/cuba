@@ -82,6 +82,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
         compile(group: 'org.springframework', name: 'spring-beans', version: '3.0.5.RELEASE')
         compile(group: 'org.springframework', name: 'spring-context', version: '3.0.5.RELEASE')
         compile(group: 'org.springframework', name: 'spring-web', version: '3.0.5.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-orm', version: '3.0.5.RELEASE')
 
         testCompile(group: 'junit', name: 'junit', version: '4.5')
     }
@@ -143,7 +144,6 @@ configure(coreModule) {
         compile(group: 'org.openoffice', name: 'ridl', version: '3.0.0')
         compile(group: 'org.openoffice', name: 'unoil', version: '3.0.0')
         compile(group: 'org.springframework', name: 'spring-context-support', version: '3.0.5.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-orm', version: '3.0.5.RELEASE')
         compile(group: 'org.springframework', name: 'spring-tx', version: '3.0.5.RELEASE')
         compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.0.5.RELEASE')
 
