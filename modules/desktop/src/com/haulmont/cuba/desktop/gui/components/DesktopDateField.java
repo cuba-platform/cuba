@@ -18,7 +18,6 @@ import com.haulmont.cuba.desktop.sys.layout.MigBoxLayoutAdapter;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
 import org.jdesktop.swingx.JXDatePicker;
@@ -370,8 +369,12 @@ public class DesktopDateField
     }
 
     private Date constructDate() {
+        final Date datePickerDate = datePicker.getDate();
+        if (datePickerDate == null) {
+            return null;
+        }
         Calendar c = Calendar.getInstance(UserSessionProvider.getLocale());
-        c.setTime(datePicker.getDate());
+        c.setTime(datePickerDate);
 
         if (isHourUsed()) {
             int hours = Integer.valueOf(hoursField.getText());
