@@ -90,7 +90,7 @@ public class DesktopExportDisplay implements ExportDisplay {
             } finally {
                 dataProvider.close();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

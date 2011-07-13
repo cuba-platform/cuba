@@ -31,6 +31,7 @@ import java.util.UUID;
 
 @Controller
 public class FileDownloadController {
+    private static final int HTTP_NOT_FOUND = 468;
 
     private static Log log = LogFactory.getLog(FileDownloadController.class);
 
@@ -69,7 +70,7 @@ public class FileDownloadController {
                 os.flush();
             } catch (FileStorageException e) {
                 log.error("Unable to download file", e);
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.sendError(HTTP_NOT_FOUND);
             } finally {
                 IOUtils.closeQuietly(is);
                 IOUtils.closeQuietly(os);

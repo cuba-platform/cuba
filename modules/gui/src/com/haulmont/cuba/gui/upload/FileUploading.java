@@ -32,6 +32,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
+    private static final int HTTP_OK = 200;
+
     private Map<UUID, File> tempFiles = new ConcurrentHashMap<UUID, File>();
 
     /**
@@ -226,13 +228,14 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         HttpClient client = new DefaultHttpClient();
         try {
             HttpResponse response = client.execute(method);
-            if (response.getStatusLine().getStatusCode() != 200) {
+            if (response.getStatusLine().getStatusCode() != HTTP_OK) {
                 log.error("Unable to upload file to " + connectionUrl + "\n" + response.getStatusLine());
                 throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getName());
             }
         } catch (IOException e) {
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getName(), e);
         }
+        client.getConnectionManager().shutdown();
         deleteFile(fileId);
     }
 

@@ -11,15 +11,9 @@ import com.haulmont.cuba.gui.export.*;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
-import com.haulmont.cuba.web.rpt.ReportHtmlWindow;
-import com.haulmont.cuba.web.rpt.ReportOutputWindow;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Window;
 
 import java.io.Serializable;
-import java.util.Iterator;
 
 /**
  * Allows to show exported data in web browser or download it
@@ -78,8 +72,11 @@ public class WebExportDisplay implements ExportDisplay, Serializable {
             newWindow = viewFlag;
         }
 
-        final ResourceWindow window = new ResourceWindow(dataProvider, resourceName, format, attachment);
+        // Try to get stream
+        ProxyDataProvider proxyDataProvider = new ProxyDataProvider(dataProvider.provide());
+
         final App app = App.getInstance();
+        final ResourceWindow window = new ResourceWindow(proxyDataProvider, resourceName, format, attachment);
 
         cleanOpenedWindows(app);
         app.addWindow(window);
@@ -130,64 +127,6 @@ public class WebExportDisplay implements ExportDisplay, Serializable {
         }
         if (window != null) {
             application.removeWindow(window);
-        }
-    }
-
-    @Deprecated
-    public boolean isAttachment() {
-        return attachment;
-    }
-
-    @Deprecated
-    public boolean isNewWindow() {
-        return newWindow;
-    }
-
-    @Deprecated
-    public void showHtml(String html, String name) {
-        App app = App.getInstance();
-        cleanupWindows(app);
-        ReportOutputWindow window = new ReportHtmlWindow(name, html);
-        showWindow(app, window);
-    }
-
-    @Deprecated
-    private void showWindow(final App app, final ReportOutputWindow window) {
-
-        // this listener is useless, it doesn't work for closing of browser window
-        window.addListener(new Window.CloseListener() {
-            public void windowClose(Window.CloseEvent e) {
-                window.dispose();
-                app.removeWindow(window);
-            }
-        });
-
-        app.addWindow(window);
-        if (newWindow)
-            app.getAppWindow().open(
-                    new ExternalResource(window.getURL()),
-                    "_blank",
-                    800,
-                    600,
-                    Window.BORDER_DEFAULT
-            );
-        else
-            app.getAppWindow().open(
-                    new ExternalResource(window.getURL()),
-                    "_top"
-            );
-    }
-
-    @Deprecated
-    private void cleanupWindows(App app) {
-        ReportOutputWindow window = null;
-        for (Object obj : app.getWindows()) {
-            if (obj instanceof ReportOutputWindow) {
-                window = (ReportOutputWindow) obj;
-            }
-        }
-        if (window != null) {
-            app.removeWindow(window);
         }
     }
 }

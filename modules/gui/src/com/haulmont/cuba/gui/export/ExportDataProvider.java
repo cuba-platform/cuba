@@ -18,7 +18,7 @@ import java.io.InputStream;
  */
 public interface ExportDataProvider {
 
-    InputStream provide();
+    InputStream provide() throws ResourceException;
 
     void close();
 }

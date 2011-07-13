@@ -91,7 +91,7 @@ public class DesktopEmbedded extends DesktopAbstractComponent<JPanel> implements
         try {
             BufferedImage image = ImageIO.read(dataProvider.provide());
             setContents(image, fileName);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
             dataProvider.close();
