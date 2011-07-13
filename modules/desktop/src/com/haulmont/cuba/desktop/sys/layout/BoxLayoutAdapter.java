@@ -18,6 +18,8 @@ import java.awt.*;
  */
 public abstract class BoxLayoutAdapter extends LayoutAdapter {
 
+    public abstract Object getCaptionConstraints();
+
     public enum FlowDirection { X, Y }
 
     protected FlowDirection direction = FlowDirection.X;

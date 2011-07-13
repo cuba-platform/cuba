@@ -90,6 +90,17 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
     }
 
     @Override
+    public Object getCaptionConstraints(int col, int row, int col2, int row2) {
+        CC constraints = new CC();
+        constraints.cell(col, row);
+        constraints.flowY();
+        constraints.width("min!");
+        constraints.height("min!");
+
+        return constraints;
+    }
+
+    @Override
     public void updateConstraints(JComponent component, Object constraints) {
         // todo delete, evidently no needed
         /*if (layout.isManagingComponent(component)

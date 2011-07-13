@@ -98,6 +98,15 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
     }
 
     @Override
+    public Object getCaptionConstraints() {
+        CC cc = new CC();
+        cc.split(2);
+        cc.width("min!");
+        cc.height("min!");
+        return cc;
+    }
+
+    @Override
     public void expand(Component component, String height, String width) {
         super.expand(component, height, width);
 

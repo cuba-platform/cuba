@@ -61,13 +61,17 @@ public abstract class GridLayoutAdapter extends LayoutAdapter {
     public void setColumns(int columns) {
         colCount = columns;
         columnRatio = new float[columns];
-        Arrays.fill(columnRatio, 1.0f);
+        //Arrays.fill(columnRatio, 1.0f); // 0.0 by default
 
         update();
     }
 
     public abstract Object getConstraints(
             com.haulmont.cuba.gui.components.Component component, int col, int row, int col2, int row2);
+
+    public abstract Object getCaptionConstraints(
+            int col, int row, int col2, int row2
+    );
 
     public abstract void updateConstraints(JComponent component, Object constraints);
 

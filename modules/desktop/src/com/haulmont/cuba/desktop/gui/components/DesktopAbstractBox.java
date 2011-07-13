@@ -36,6 +36,12 @@ public abstract class DesktopAbstractBox
     }
 
     public void add(Component component) {
+        // add caption first
+        if (DesktopContainerHelper.hasExternalCaption(component)) {
+            String caption = ((HasCaption) component).getCaption();
+            impl.add(new JLabel(caption), layoutAdapter.getCaptionConstraints());
+        }
+
         JComponent composition = DesktopComponentsHelper.getComposition(component);
         impl.add(composition, layoutAdapter.getConstraints(component));
 

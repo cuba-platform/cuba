@@ -56,8 +56,14 @@ public class DesktopGridLayout
 
     public void add(Component component, int col, int row, int col2, int row2) {
         final JComponent composition = DesktopComponentsHelper.getComposition(component);
+
+        // add caption first
+        if (DesktopContainerHelper.hasExternalCaption(component)) {
+            String caption = ((HasCaption) component).getCaption();
+            impl.add(new JLabel(caption), layoutAdapter.getCaptionConstraints(col, row, col2, row2));
+        }
+
         impl.add(composition, layoutAdapter.getConstraints(component, col, row, col2, row2));
-        //setComponentAlignment(itmillComponent, WebComponentsHelper.convertAlignment(component.getAlignment()));
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
