@@ -911,7 +911,6 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             } else {
                 inputFieldKeyDown(event);
             }
-            DOM.eventCancelBubble(event.getNativeEvent().<Event>cast(), true);
         }
     }
 
