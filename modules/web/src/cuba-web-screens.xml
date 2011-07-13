@@ -90,4 +90,7 @@
     <screen id="sys$Categories.browse"
             template="/com/haulmont/cuba/gui/categories/category-browse.xml"/>
 
+    <screen id="taxi$Template.edit" template="/com/haulmont/taxi/client/ui/template_management/edit/template-edit.xml"/>
+    <screen id="taxi$Template.browse"
+            template="/com/haulmont/taxi/client/ui/template_management/browse/template-browse.xml"/>
 </screen-config>
