@@ -1010,28 +1010,14 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             final Property property = source.getItem(itemId).getItemProperty(columnId);
             final Object value = property.getValue();
 
-            //if images for checkboxes exist in theme, we'll display them in table,
-            //otherwise we'll display com.vaadin.ui.CheckBox component
-            String themeName = App.getInstance().getTheme();
-            File confDir = new File(AppContext.getProperty("cuba.confDir"));
-            File webAppRootDir = confDir.getParentFile().getParentFile();
-
-            File checkedFile = new File(webAppRootDir.getPath() + "/VAADIN/themes/" + themeName + "/table/img/checkbox-checked.png");
-            File uncheckedFile = new File(webAppRootDir.getPath() + "/VAADIN/themes/" + themeName + "/table/img/checkbox-unchecked.png");
-
-            if (!checkedFile.exists() || !uncheckedFile.exists()) {
-                final com.vaadin.ui.CheckBox checkBox = new com.vaadin.ui.CheckBox();
-                checkBox.setValue(BooleanUtils.toBoolean((Boolean) value));
-                checkBox.setEnabled(false);
-                return checkBox;
-            } else {
-                com.vaadin.ui.Embedded checkBoxImage;
-                if (BooleanUtils.isTrue((Boolean) value))
-                    checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("table/img/checkbox-checked.png"));
-                else
-                    checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("table/img/checkbox-unchecked.png"));
-                return checkBoxImage;
+            com.vaadin.ui.Embedded checkBoxImage;
+            if (BooleanUtils.isTrue((Boolean) value)){
+                checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("table/img/checkbox-checked.png"));
             }
+            else {
+                checkBoxImage = new com.vaadin.ui.Embedded("", new ThemeResource("table/img/checkbox-unchecked.png"));
+            }
+            return checkBoxImage;
         }
     }
 
