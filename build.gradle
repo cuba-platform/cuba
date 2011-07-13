@@ -334,6 +334,9 @@ configure(webModule) {
 }
 
 configure(desktopModule) {
+    apply(plugin: 'application')
+    mainClassName = 'com.haulmont.cuba.desktop.App'
+
     dependencies {
         compile(globalModule)
         compile(clientModule)
@@ -342,6 +345,26 @@ configure(desktopModule) {
         compile(group: 'com.haulmont.thirdparty', name: 'glazedlists', version: '1.8.0')
         compile(group: 'org.swinglabs', name: 'swingx-core', version: '1.6.2-2')
         runtime(group: 'org.springframework', name: 'spring-tx', version: '3.0.5.RELEASE')
+
+        assemble.dependsOn = [ classes ]
+    }
+
+    installApp {
+        into("$buildDir/app/" + applicationName)
+    }
+
+    task desktopInstall(dependsOn: assemble) << {
+        jar.execute()
+        startScripts.execute()
+        installApp.execute()
+    }
+
+    task desktopDist(dependsOn: assemble) << {
+        distZip.execute()
+    }
+
+    task desktopStart(dependsOn: desktopInstall) << {
+        run.execute()
     }
 }
 
