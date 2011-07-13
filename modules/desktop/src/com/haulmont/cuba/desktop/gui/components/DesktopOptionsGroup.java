@@ -36,6 +36,8 @@ public class DesktopOptionsGroup
     private Map<ValueWrapper, JToggleButton> items = new HashMap<ValueWrapper, JToggleButton>();
     private ButtonGroup buttonGroup;
 
+    private Object prevValue = null;
+
     public DesktopOptionsGroup() {
         impl = new JPanel(new MigLayout("flowy"));
     }
@@ -82,6 +84,7 @@ public class DesktopOptionsGroup
                     }
             );
 
+            prevValue = getValue();
             optionsInitialized = true;
         }
     }
@@ -97,6 +100,7 @@ public class DesktopOptionsGroup
                 addItem(new ObjectWrapper(obj));
             }
 
+            prevValue = getValue();
             optionsInitialized = true;
         }
     }
@@ -112,6 +116,7 @@ public class DesktopOptionsGroup
                 addItem(new MapKeyWrapper(key));
             }
 
+            prevValue = getValue();
             optionsInitialized = true;
         }
     }
@@ -155,6 +160,10 @@ public class DesktopOptionsGroup
                 updatingInstance = false;
             }
         }
+        Object newValue = getValue();
+        if (!ObjectUtils.equals(prevValue, newValue))
+            fireValueChanged(prevValue, newValue);
+        prevValue = newValue;
     }
 
     @Override
@@ -186,6 +195,11 @@ public class DesktopOptionsGroup
         } else {
             super.setValue(value);
         }
+
+        Object newValue = getValue();
+        if (!ObjectUtils.equals(prevValue, newValue))
+            fireValueChanged(prevValue, newValue);
+        prevValue = newValue;
     }
 
     protected <T> T wrapAsCollection(Object o) {

@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import org.apache.commons.lang.ObjectUtils;
 import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
@@ -36,7 +37,7 @@ import java.util.Date;
  * @author krivopustov
  */
 public class DesktopDateField
-    extends DesktopAbstractComponent<JPanel>
+    extends DesktopAbstractField<JPanel>
     implements DateField
 {
     private Resolution resolution;
@@ -189,22 +190,7 @@ public class DesktopDateField
 
     @Override
     public void setValue(Object value) {
-        updatingInstance = true;
-        try {
-            setDateParts((Date) value);
-            valid = true;
-        }
-        finally {
-            updatingInstance = false;
-        }
-    }
-
-    @Override
-    public void addListener(ValueListener listener) {
-    }
-
-    @Override
-    public void removeListener(ValueListener listener) {
+        updatePartsFromValue((Date) value);
     }
 
     @Override
@@ -255,12 +241,7 @@ public class DesktopDateField
                         if (updatingInstance)
                             return;
                         Date value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-                        updatingInstance = true;
-                        try {
-                            setDateParts(value);
-                        } finally {
-                            updatingInstance = false;
-                        }
+                        updatePartsFromValue(value);
                     }
 
                     @Override
@@ -268,12 +249,7 @@ public class DesktopDateField
                         if (updatingInstance)
                             return;
                         if (property.equals(metaPropertyPath.toString())) {
-                            updatingInstance = true;
-                            try {
-                                setDateParts((Date) value);
-                            } finally {
-                                updatingInstance = false;
-                            }
+                            updatePartsFromValue((Date) value);
                         }
                     }
                 }
@@ -282,12 +258,7 @@ public class DesktopDateField
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {
                 Date value = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
-                updatingInstance = true;
-                try {
-                    setDateParts(value);
-                } finally {
-                    updatingInstance = false;
-                }
+                updatePartsFromValue(value);
             }
         }
 
@@ -306,6 +277,22 @@ public class DesktopDateField
         minutesField.getDocument().addDocumentListener(minListener);
 
         setRequired(metaProperty.isMandatory());
+    }
+
+    private void updatePartsFromValue(Date value) {
+        updatingInstance = true;
+        Object prevValue = getValue();
+        try {
+            setDateParts(value);
+            valid = true;
+        } finally {
+            updatingInstance = false;
+        }
+        if (valid) {
+            Object newValue = getValue();
+            if (!ObjectUtils.equals(prevValue, newValue))
+                fireValueChanged(prevValue, newValue);
+        }
     }
 
     private void setDateParts(Date value) {
@@ -362,6 +349,7 @@ public class DesktopDateField
             return;
 
         updatingInstance = true;
+        Object prevValue = getValue();
         try {
             Date value = constructDate();
             InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
@@ -373,6 +361,8 @@ public class DesktopDateField
         finally {
             updatingInstance = false;
         }
+        if (valid)
+            fireValueChanged(prevValue, getValue());
     }
 
     private Date constructDate() {
