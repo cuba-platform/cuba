@@ -12,9 +12,11 @@ package com.haulmont.cuba.web.rpt;
 
 import com.haulmont.cuba.core.app.JasperReportService;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
+import com.haulmont.cuba.report.ReportOutputDocument;
+import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.app.ui.report.ReportHelper;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import net.sf.jasperreports.engine.*;
@@ -41,16 +43,16 @@ public class JasperReportHelper
         return rs.executeJasperReport(name, params, dataSource);
     }
 
-    public static void printJasperReport(String name, ReportOutput output) {
+    public static void printJasperReport(String name, ReportOutputDocument output) {
         printJasperReport(name, new HashMap(), output);
     }
 
-    public static void printJasperReport(String name, Map<String, Object> params, ReportOutput output) {
+    public static void printJasperReport(String name, Map<String, Object> params, ReportOutputDocument output) {
         JasperPrint print = executeJasperReport(name, params);
         printJasperReport(name, print, output);
     }
 
-    public static void printJasperReport(List<String> names, Map<String, Object> params, ReportOutput output, JRDataSource dataSource) {
+    public static void printJasperReport(List<String> names, Map<String, Object> params, ReportOutputDocument output, JRDataSource dataSource) {
         List<JasperPrint> prints = new ArrayList<JasperPrint>();
         for (String str : names) {
             prints.add(executeJasperReport(str, params, dataSource));
@@ -60,52 +62,60 @@ public class JasperReportHelper
         }
     }
 
-    public static void printJasperReport(String name, JasperPrint jasperPrint, ReportOutput output) {
+    public static void printJasperReport(String name, JasperPrint jasperPrint, ReportOutputDocument output) {
         List<JasperPrint> jasperPrints = new ArrayList<JasperPrint>();
         jasperPrints.add(jasperPrint);
         printJasperReport(name, jasperPrints, output);
     }
 
-    public static void printJasperReport(String name, List<JasperPrint> jasperPrint, ReportOutput output) {
-        WebExportDisplay display = new WebExportDisplay(output.isAttachment(), output.isNewWindow());
+    public static void printJasperReport(String name, List<JasperPrint> jasperPrint, ReportOutputDocument output) {
+        WebExportDisplay display = new WebExportDisplay();
 
-        if (output.getFormat() == ExportFormat.PDF || output.getFormat() == ExportFormat.XLS) {
-            byte[] bytes = exportJasperReportPdfXls(name, jasperPrint, output);
-            display.show(new ByteArrayDataProvider(bytes), name, output.getFormat());
-        } else if (output.getFormat() == ExportFormat.HTML) {
-            HttpSession httpSession = ((WebApplicationContext) App.getInstance().getContext()).getHttpSession();
-            httpSession.setAttribute(ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, jasperPrint);
-            String str = exportJasperReportHtml(name, jasperPrint);
-            display.showHtml(str, name);
+        switch (output.getOutputType()) {
+            case PDF:
+            case XLS:
+                byte[] bytes = exportJasperReportPdfXls(name, jasperPrint, output);
+                display.show(new ByteArrayDataProvider(bytes), name, ReportHelper.getExportFormat(output.getOutputType()));
+                break;
+
+            case HTML:
+                HttpSession httpSession = ((WebApplicationContext) App.getInstance().getContext()).getHttpSession();
+                httpSession.setAttribute(ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, jasperPrint);
+                String str = exportJasperReportHtml(name, jasperPrint);
+                display.show(new ByteArrayDataProvider(str.getBytes()), name);
+                break;
         }
     }
 
-
-    public static byte[] printJasperReportToBytes(String name, Map<String, Object> params, ReportOutput output) {
+    public static byte[] printJasperReportToBytes(String name, Map<String, Object> params, ReportOutputDocument output) {
         JasperPrint print = executeJasperReport(name, params);
         return printJasperReportToBytes(name, print, output);
     }
 
-    public static byte[] printJasperReportToBytes(String name, JasperPrint jasperPrint, ReportOutput output) {
+    public static byte[] printJasperReportToBytes(String name, JasperPrint jasperPrint, ReportOutputDocument output) {
         List<JasperPrint> jasperPrints = new ArrayList<JasperPrint>();
         jasperPrints.add(jasperPrint);
         return printJasperReportToBytes(name, jasperPrints, output);
     }
     
-    public static byte[] printJasperReportToBytes(String name, List<JasperPrint> jasperPrint, ReportOutput output) {
-        if (output.getFormat() == ExportFormat.PDF || output.getFormat() == ExportFormat.XLS) {
-            return exportJasperReportPdfXls(name, jasperPrint, output);
-        } else if (output.getFormat() == ExportFormat.HTML) {
-            return exportJasperReportHtml(name, jasperPrint).getBytes();
-        } else {
-            throw new UnsupportedOperationException("Format not supported: " + output.getFormat());
+    public static byte[] printJasperReportToBytes(String name, List<JasperPrint> jasperPrint, ReportOutputDocument output) {
+        switch (output.getOutputType()) {
+            case PDF:
+            case XLS:
+                return exportJasperReportPdfXls(name, jasperPrint, output);
+
+            case HTML:
+                return exportJasperReportHtml(name, jasperPrint).getBytes();
+
+            default:
+                throw new UnsupportedOperationException("Format not supported: " + output.getOutputType());
         }
     }
 
-    private static byte[] exportJasperReportPdfXls(String name, List<JasperPrint> jasperPrint, ReportOutput output) {
+    private static byte[] exportJasperReportPdfXls(String name, List<JasperPrint> jasperPrint, ReportOutputDocument output) {
         JRAbstractExporter exporter;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        if (output.getFormat() == ExportFormat.PDF) {
+        if (output.getOutputType() == ReportOutputType.PDF) {
             exporter = new JRPdfExporter();
         } else {
             exporter = new JRXlsExporter();

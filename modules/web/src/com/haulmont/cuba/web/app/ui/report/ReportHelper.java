@@ -46,6 +46,10 @@ public class ReportHelper {
     private ReportHelper() {
     }
 
+    public static ExportFormat getExportFormat(ReportOutputType reportOutputType) {
+        return exportFormats.get(reportOutputType);
+    }
+
     public static void runReport(Report report, Window window) {
         if (report != null) {
             if (report.getInputParameters() != null && report.getInputParameters().size() > 0) {
