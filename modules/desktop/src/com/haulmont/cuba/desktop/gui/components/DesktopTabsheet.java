@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.sys.ButtonTabComponent;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -292,6 +293,9 @@ public class DesktopTabsheet
         private String caption;
         private boolean enabled = true;
         private boolean visible = true;
+        private boolean closable;
+
+        private TabCloseHandler closeHandler;
 
         public TabImpl(String name, Component component) {
             this.name = name;
@@ -341,6 +345,54 @@ public class DesktopTabsheet
                 this.visible = visible;
                 DesktopTabsheet.this.updateTabVisibility(this);
             }
+        }
+
+        @Override
+        public boolean isClosable() {
+            return closable;
+        }
+
+        @Override
+        public void setClosable(boolean closable) {
+            if (closable != this.closable) {
+                if (closable) {
+                    addCloseComponent();
+                }
+                else {
+                    removeCloseComponent();
+                }
+                this.closable = closable;
+            }
+        }
+
+        private void removeCloseComponent() {
+            impl.setTabComponentAt(getTabIndex(), null);
+        }
+
+        private void addCloseComponent() {
+            ButtonTabComponent tabComponent = new ButtonTabComponent(
+                impl,
+                new ButtonTabComponent.CloseListener() {
+                    public void onTabClose(int tabIndex) {
+                        if (closeHandler != null) {
+                            closeHandler.onTabClose(TabImpl.this);
+                        }
+                        else {
+                            removeTab(getName());
+                        }
+                    }
+                }
+          );
+          impl.setTabComponentAt(getTabIndex(), tabComponent);
+        }
+
+        public TabCloseHandler getCloseHandler() {
+            return closeHandler;
+        }
+
+        @Override
+        public void setCloseHandler(TabCloseHandler tabCloseHandler) {
+            this.closeHandler = tabCloseHandler;
         }
 
         public Component getComponent() {

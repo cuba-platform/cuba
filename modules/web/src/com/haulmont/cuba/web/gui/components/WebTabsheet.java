@@ -38,6 +38,7 @@ public class WebTabsheet
 
     public WebTabsheet() {
         component = new TabSheetEx(this);
+        component.setCloseHandler(new MyCloseHandler());
     }
 
     protected Map<String, Tab> tabs = new HashMap<String, Tab>();
@@ -85,6 +86,7 @@ public class WebTabsheet
 
         private String name;
         private Component component;
+        private TabCloseHandler closeHandler;
 
         public Tab(String name, Component component) {
             this.name = name;
@@ -121,6 +123,27 @@ public class WebTabsheet
 
         public void setVisible(boolean visible) {
             WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component)).setVisible(visible);
+        }
+
+        @Override
+        public boolean isClosable() {
+            TabSheet.Tab tab = WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component));
+            return tab.isClosable();
+        }
+
+        @Override
+        public void setClosable(boolean closable) {
+            TabSheet.Tab tab = WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component));
+            tab.setClosable(closable);
+        }
+
+        public TabCloseHandler getCloseHandler() {
+            return closeHandler;
+        }
+
+        @Override
+        public void setCloseHandler(TabCloseHandler tabCloseHandler) {
+            this.closeHandler = tabCloseHandler;
         }
 
         public Component getComponent() {
@@ -288,6 +311,33 @@ public class WebTabsheet
 
                     ((DsContextImplementation) window.getDsContext()).resumeSuspended();
                 }
+            }
+        }
+    }
+
+    private class MyCloseHandler implements TabSheet.CloseHandler {
+        private static final long serialVersionUID = -6766617382191585632L;
+
+        @Override
+        public void onTabClose(TabSheet tabsheet, com.vaadin.ui.Component tabContent) {
+            // have no other way to get tab from tab content
+            for (Tab tab: tabs.values()) {
+                com.vaadin.ui.Component tabComponent = WebComponentsHelper.unwrap(tab.getComponent());
+                if (tabComponent == tabContent) {
+                    if (tab.isClosable()) {
+                        doHandleCloseTab(tab);
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void doHandleCloseTab(Tab tab) {
+            if (tab.getCloseHandler() != null) {
+                tab.getCloseHandler().onTabClose(tab);
+            }
+            else {
+                removeTab(tab.getName());
             }
         }
     }

@@ -9,12 +9,11 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.dom4j.Element;
 
 import java.io.Serializable;
 import java.util.Collection;
-
-import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 
 public interface Tabsheet 
     extends
@@ -49,9 +48,23 @@ public interface Tabsheet
 
         boolean isVisible();
         void setVisible(boolean visible);
+
+        boolean isClosable(); // false by default
+        void setClosable(boolean closable);
+
+        // use this to override close behavior, default action is to just remove tab
+        TabCloseHandler getCloseHandler();
+        void setCloseHandler(TabCloseHandler tabCloseHandler);
     }
 
     interface TabChangeListener extends Serializable {
         void tabChanged(Tab newTab);
+    }
+
+    /*
+     * Implement this to override default behavior when user clicks button to close tab
+     */
+    interface TabCloseHandler extends Serializable {
+        void onTabClose(Tab tab);
     }
 }
