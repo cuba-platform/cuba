@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -292,7 +293,10 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         public String toString() {
             if (obj == null)
                 return "";
-            return obj.toString();
+            if (obj instanceof Instance)
+                return InstanceUtils.getInstanceName((Instance) obj);
+            else
+                return obj.toString();
         }
 
         @Override
