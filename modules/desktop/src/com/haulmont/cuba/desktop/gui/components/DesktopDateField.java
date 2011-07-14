@@ -231,6 +231,11 @@ public class DesktopDateField
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
+        if (datasource == null) {
+            setValue(null);
+            return;
+        }
+
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
         metaProperty = metaPropertyPath.getMetaProperty();

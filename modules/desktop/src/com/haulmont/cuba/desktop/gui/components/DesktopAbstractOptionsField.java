@@ -177,7 +177,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
                 }
         );
 
-        if (datasource.getState() == Datasource.State.VALID) {
+        if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
             setValue(newValue);
         }

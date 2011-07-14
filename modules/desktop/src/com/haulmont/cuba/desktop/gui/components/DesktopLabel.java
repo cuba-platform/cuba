@@ -52,6 +52,12 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
 
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
+
+        if (datasource == null) {
+            setValue(null);
+            return;
+        }
+
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
         metaProperty = metaPropertyPath.getMetaProperty();
@@ -73,6 +79,11 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
                     }
                 }
         );
+
+        if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
+            Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
+            setValue(newValue);
+        }
     }
 
     private String formatValue(Object value) {
@@ -125,7 +136,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     }
 
     public void setValue(Object value) {
-        impl.setText((String) value);
+        impl.setText(value != null ? String.valueOf(value) : "");
     }
 
     public void addListener(ValueListener listener) {

@@ -14,7 +14,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.BooleanUtils;
 
@@ -52,7 +51,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
     }
 
     public void setValue(Object value) {
-        impl.setSelected((Boolean) value);
+        impl.setSelected(value != null ? (Boolean) value : false);
         updateInstance();
     }
 
@@ -69,6 +68,11 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
 
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
+
+        if (datasource == null) {
+            setValue(null);
+            return;
+        }
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
@@ -109,6 +113,11 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         );
 
         setRequired(metaProperty.isMandatory());
+
+        if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
+            Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
+            setValue(newValue);
+        }
     }
 
     public String getCaption() {

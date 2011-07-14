@@ -184,6 +184,11 @@ public class DesktopPickerField
                     }
                 }
         );
+
+        if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
+            Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
+            setValue(newValue);
+        }
     }
 
     protected void updateText(Object value) {
