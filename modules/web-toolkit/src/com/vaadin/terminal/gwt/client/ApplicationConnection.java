@@ -110,9 +110,10 @@ public class ApplicationConnection {
     private VContextMenu contextMenu = null;
 
     private Timer loadTimer;
-    private Timer loadTimer2;
-    private Timer loadTimer3;
+    private Timer blockUITimer;
     private Element loadElement;
+
+    private boolean uiBlocked = false;
 
     private final VView view;
 
@@ -794,25 +795,16 @@ public class ApplicationConnection {
         DOM.setElementProperty(loadElement, "className", "v-loading-indicator");
         DOM.setStyleAttribute(loadElement, "display", "block");
         // Initialize other timers
-        loadTimer2 = new Timer() {
-            @Override
-            public void run() {
-                DOM.setElementProperty(loadElement, "className",
-                        "v-loading-indicator-delay");
-            }
-        };
-        // Second one kicks in at 1500ms from request start
-        loadTimer2.schedule(1200);
 
-        loadTimer3 = new Timer() {
+        blockUITimer = new Timer() {
             @Override
             public void run() {
-                DOM.setElementProperty(loadElement, "className",
-                        "v-loading-indicator-wait");
+                uiBlocked = true;
+                blockUI();
             }
         };
-        // Third one kicks in at 5000ms from request start
-        loadTimer3.schedule(4700);
+        // Block UI after 1.5 sec delay
+        blockUITimer.schedule(1500);
 
         for (HasIndicator component: indicators) {
             component.showLoadingIndicator(true);
@@ -827,16 +819,33 @@ public class ApplicationConnection {
 
         if (loadTimer != null) {
             loadTimer.cancel();
-            if (loadTimer2 != null) {
-                loadTimer2.cancel();
-                loadTimer3.cancel();
+            if (blockUITimer != null) {
+                blockUITimer.cancel();
+                blockUITimer = null;
             }
             loadTimer = null;
         }
+
+        if (uiBlocked){
+            unBlockUI();
+            uiBlocked = false;
+        }
+
         if (loadElement != null) {
             DOM.setStyleAttribute(loadElement, "display", "none");
         }
     }
+
+    private native void blockUI()
+    /*-{
+        $wnd.jQuery.blockUI({ message: 'Please wait', css: {border: '3px solid #292929', background: '#333333', color: '#fff', padding: '10px' }});
+    }-*/;
+
+
+    private native void unBlockUI()
+    /*-{
+        $wnd.jQuery.unblockUI();
+    }-*/;
 
     /**
      * Checks if deferred commands are (potentially) still being executed as a
@@ -1632,8 +1641,6 @@ public class ApplicationConnection {
      *            the id of the paintable that owns the variable
      * @param variableName
      *            the name of the variable
-     * @param newValue
-     *            the new value to be sent
      * @param immediate
      *            true if the update is to be sent as soon as possible
      */
@@ -1697,8 +1704,6 @@ public class ApplicationConnection {
      *            the id of the paintable that owns the variable
      * @param variableName
      *            the name of the variable
-     * @param newValue
-     *            the new value to be sent
      * @param immediate
      *            true if the update is to be sent as soon as possible
      */
@@ -1732,8 +1737,6 @@ public class ApplicationConnection {
      *            the id of the paintable that owns the variable
      * @param variableName
      *            the name of the variable
-     * @param newValue
-     *            the new value to be sent
      * @param immediate
      *            true if the update is to be sent as soon as possible
      */
@@ -2106,7 +2109,6 @@ public class ApplicationConnection {
     /**
      * Converts relative sizes into pixel sizes.
      *
-     * @param child
      * @return true if the child has a relative size
      */
     private boolean handleComponentRelativeSize(ComponentDetail cd) {
@@ -2527,7 +2529,7 @@ public class ApplicationConnection {
      * window-name used in the server, but might be different from the
      * window-object target-name on client.
      *
-     * @param stringAttribute
+     * @param newName
      *            New name for the window.
      */
     public void setWindowName(String newName) {

@@ -250,6 +250,14 @@ input.v-modified,
 	z-index:30000;
 }
 
+/* block UI */
+.blockUI.blockMsg{
+    font-size: 20px;
+    font-family: Verdana, tahoma, arial;
+    color: #fff;
+    padding: 10px;
+}
+
 /* debug dialog */
 .v-debug-console {
 	background: white;
