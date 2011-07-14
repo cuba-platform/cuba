@@ -9,7 +9,7 @@
 
 .group-box {
     background: #fff;
-    padding-top: .5em; /*компенсирует сдвиг legend, это нужно так как на элемент накладывается overflow: hidden*/
+    padding-top: .5em; /*пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ legend, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ overflow: hidden*/
 }
 
 .group-box.group-box-nocollapsable.group-box-nocaption {
@@ -107,7 +107,7 @@
 
 .v-ie .group-box legend {
     position: absolute;
-    top: -.7em;
+    top: -.3em;
 }
 
 .v-ie .group-box .group-box-content {
