@@ -276,7 +276,9 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
             } else {
                 value = text;
             }
-            InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+            if (datasource.getItem() != null) {
+                InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+            }
         } finally {
             updatingInstance = false;
         }

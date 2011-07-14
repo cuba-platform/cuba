@@ -351,7 +351,9 @@ public class DesktopDateField
         updatingInstance = true;
         try {
             Date value = constructDate();
-            InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+            if (datasource.getItem() != null) {
+                InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+            }
             valid = true;
         }
         catch (RuntimeException e) {

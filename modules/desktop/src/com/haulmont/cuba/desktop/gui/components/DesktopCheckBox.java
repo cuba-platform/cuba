@@ -141,7 +141,9 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         updatingInstance = true;
         try {
             boolean value = impl.isSelected();
-            InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+            if (datasource.getItem() != null) {
+                InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+            }
         } finally {
             updatingInstance = false;
         }

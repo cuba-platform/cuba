@@ -163,8 +163,10 @@ public class DesktopOptionsGroup
         if (datasource != null && metaProperty != null) {
             updatingInstance = true;
             try {
-                InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(),
-                        selectedItem == null ? null : selectedItem.getValue());
+                if (datasource.getItem() != null) {
+                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(),
+                            selectedItem == null ? null : selectedItem.getValue());
+                }
             } finally {
                 updatingInstance = false;
             }
