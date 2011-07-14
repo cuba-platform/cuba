@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -33,6 +34,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
     private MetaPropertyPath metaPropertyPath;
 
     private boolean updatingInstance;
+    private Object prevValue;
 
     public DesktopCheckBox() {
         impl = new JCheckBox();
@@ -144,18 +146,25 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
     }
 
     private void updateInstance() {
-        if (updatingInstance || datasource == null || metaPropertyPath == null)
+        if (updatingInstance)
             return;
 
         updatingInstance = true;
         try {
-            boolean value = impl.isSelected();
-            if (datasource.getItem() != null) {
-                InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+            if ((datasource != null) && (metaPropertyPath != null)) {
+                boolean value = impl.isSelected();
+                if (datasource.getItem() != null) {
+                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+                }
             }
         } finally {
             updatingInstance = false;
         }
+
+        Object newValue = getValue();
+        if (!ObjectUtils.equals(prevValue, newValue))
+            fireValueChanged(prevValue, newValue);
+        prevValue = newValue;
     }
 
 }

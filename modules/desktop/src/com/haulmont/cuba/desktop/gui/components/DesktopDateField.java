@@ -350,14 +350,16 @@ public class DesktopDateField
     }
 
     private void updateInstance() {
-        if (updatingInstance || datasource == null || metaPropertyPath == null)
+        if (updatingInstance)
             return;
 
         updatingInstance = true;
         try {
-            Date value = constructDate();
-            if (datasource.getItem() != null) {
-                InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+            if (datasource != null && metaPropertyPath != null) {
+                Date value = constructDate();
+                if (datasource.getItem() != null) {
+                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+                }
             }
             valid = true;
         }

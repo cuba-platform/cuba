@@ -259,29 +259,38 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     }
 
     private void updateInstance() {
-        if (updatingInstance || datasource == null || metaPropertyPath == null)
+        if (updatingInstance)
             return;
 
         updatingInstance = true;
         try {
-            String text = getImpl().getText();
-            Object value;
-            if (metaProperty.getRange().isDatatype()) {
-                try {
-                    value = metaProperty.getRange().asDatatype().parse(text, UserSessionProvider.getLocale());
-                } catch (ParseException e) {
-                    log.warn(e);
-                    return;
+            if ((datasource != null) && (metaPropertyPath != null)) {
+                String text = getImpl().getText();
+                Object value;
+
+                if (metaProperty.getRange().isDatatype()) {
+                    try {
+                        value = metaProperty.getRange().asDatatype().parse(text, UserSessionProvider.getLocale());
+                    } catch (ParseException e) {
+                        log.warn(e);
+                        return;
+                    }
+                } else {
+                    value = text;
                 }
-            } else {
-                value = text;
-            }
-            if (datasource.getItem() != null) {
-                InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+
+                if (datasource.getItem() != null) {
+                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+                }
             }
         } finally {
             updatingInstance = false;
         }
+
+        Object newValue = getValue();
+        if (!ObjectUtils.equals(prevValue, newValue))
+            fireValueChanged(prevValue, newValue);
+        prevValue = newValue;
     }
 
     private String formatValue(Object value, MetaProperty metaProperty) {
