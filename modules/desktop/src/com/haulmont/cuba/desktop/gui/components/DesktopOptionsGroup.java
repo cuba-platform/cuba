@@ -84,6 +84,9 @@ public class DesktopOptionsGroup
                     }
             );
 
+            if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID))
+                setValue(datasource.getItem());
+
             prevValue = getValue();
             optionsInitialized = true;
         }
@@ -100,6 +103,9 @@ public class DesktopOptionsGroup
                 addItem(new ObjectWrapper(obj));
             }
 
+            if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID))
+                setValue(datasource.getItem());
+
             prevValue = getValue();
             optionsInitialized = true;
         }
@@ -115,6 +121,9 @@ public class DesktopOptionsGroup
             for (String key : optionsMap.keySet()) {
                 addItem(new MapKeyWrapper(key));
             }
+
+            if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID))
+                setValue(datasource.getItem());
 
             prevValue = getValue();
             optionsInitialized = true;

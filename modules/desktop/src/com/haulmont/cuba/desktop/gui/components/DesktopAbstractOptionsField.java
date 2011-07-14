@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
@@ -107,6 +108,11 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
+        if (datasource == null) {
+            setValue(null);
+            return;
+        }
+
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
         try {
@@ -170,6 +176,11 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
                     }
                 }
         );
+
+        if (datasource.getState() == Datasource.State.VALID) {
+            Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
+            setValue(newValue);
+        }
     }
 
     @Override
@@ -282,6 +293,15 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
             if (obj == null)
                 return "";
             return obj.toString();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof DesktopAbstractOptionsField.ObjectWrapper) {
+                ObjectWrapper anotherWrapper = (ObjectWrapper) obj;
+                return ObjectUtils.equals(this.obj, anotherWrapper.obj);
+            }
+            return false;
         }
     }
 }
