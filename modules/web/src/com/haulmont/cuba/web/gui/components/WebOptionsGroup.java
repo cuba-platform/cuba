@@ -9,17 +9,16 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.web.toolkit.ui.OptionGroup;
-import com.haulmont.bali.util.Dom4j;
 import com.vaadin.data.Property;
+import org.dom4j.Element;
 
 import java.util.*;
-
-import org.dom4j.Element;
 
 public class WebOptionsGroup
         extends
@@ -27,6 +26,10 @@ public class WebOptionsGroup
         implements
             OptionsGroup, Component.Wrapper, Component.HasSettings
 {
+    private static final String HORIZONTAL_STYLENAME = "horizontal";
+
+    private Orientation orientation = Orientation.VERTICAL;
+
     public WebOptionsGroup() {
         component = new OptionGroup() {
             @Override
@@ -211,5 +214,30 @@ public class WebOptionsGroup
             }
         }
         return true;
+    }
+
+    @Override
+    public Orientation getOrientation() {
+        return orientation;
+    }
+
+    @Override
+    public void setOrientation(Orientation orientation) {
+        if (orientation == null) {
+            throw new IllegalArgumentException("Orientation must not be null");
+        }
+        if (orientation != this.orientation) {
+            updateComponentStyle(orientation);
+        }
+        this.orientation = orientation;
+    }
+
+    private void updateComponentStyle(Orientation orientation) {
+        if (orientation == Orientation.HORIZONTAL) {
+            component.addStyleName(HORIZONTAL_STYLENAME);
+        }
+        else {
+            component.removeStyleName(HORIZONTAL_STYLENAME);
+        }
     }
 }

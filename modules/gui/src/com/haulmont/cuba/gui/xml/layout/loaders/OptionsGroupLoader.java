@@ -9,13 +9,17 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.xml.layout.*;
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DatasourceComponent;
+import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import org.dom4j.Element;
-import org.apache.commons.lang.StringUtils;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 public class OptionsGroupLoader extends AbstractFieldLoader {
     public OptionsGroupLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
@@ -25,13 +29,18 @@ public class OptionsGroupLoader extends AbstractFieldLoader {
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
         final OptionsGroup component = (OptionsGroup) super.loadComponent(factory, element, parent);
 
+        loadOrientation(component, element);
+        loadCaptionProperty(component, element);
+
+        return component;
+    }
+
+    protected void loadCaptionProperty(OptionsGroup component, Element element) {
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
             component.setCaptionMode(CaptionMode.PROPERTY);
             component.setCaptionProperty(captionProperty);
         }
-
-        return component;
     }
 
     @Override
@@ -46,5 +55,23 @@ public class OptionsGroupLoader extends AbstractFieldLoader {
         }
 
         super.loadDatasource(component, element);
+    }
+
+    protected void loadOrientation(OptionsGroup component, Element element) {
+        String orientation = element.attributeValue("orientation");
+
+        if (orientation == null) {
+            return;
+        }
+
+        if ("horizontal".equalsIgnoreCase(orientation)) {
+            component.setOrientation(OptionsGroup.Orientation.HORIZONTAL);
+        }
+        else if ("vertical".equalsIgnoreCase(orientation)) {
+            component.setOrientation(OptionsGroup.Orientation.VERTICAL);
+        }
+        else {
+            throw new IllegalStateException("Invalid orientation value for option group: " + orientation);
+        }
     }
 }

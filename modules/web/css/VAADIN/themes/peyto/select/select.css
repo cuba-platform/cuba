@@ -16,6 +16,12 @@
     zoom: 1;
 }
 
+.v-select-optiongroup-horizontal .v-select-option {
+    display: inline-block;
+    padding: 0;
+    margin: 3px;
+}
+
 .v-select-select {
     display: block;
     font-size: 8px;

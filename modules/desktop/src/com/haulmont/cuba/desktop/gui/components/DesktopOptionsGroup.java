@@ -20,7 +20,6 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
-import java.util.List;
 
 /**
  * <p>$Id$</p>
@@ -37,9 +36,17 @@ public class DesktopOptionsGroup
     private ButtonGroup buttonGroup;
 
     private Object prevValue = null;
+    private Orientation orientation = Orientation.VERTICAL;
+    private MigLayout layout;
 
     public DesktopOptionsGroup() {
-        impl = new JPanel(new MigLayout("flowy"));
+        layout = new MigLayout();
+        impl = new JPanel(layout);
+        updateLayout();
+    }
+
+    private void updateLayout() {
+        layout.setLayoutConstraints(orientation == Orientation.VERTICAL ? "flowy" : "flowx");
     }
 
     @Override
@@ -273,5 +280,19 @@ public class DesktopOptionsGroup
 
     @Override
     public void setEditable(boolean editable) {
+    }
+
+    @Override
+    public Orientation getOrientation() {
+        return orientation;
+    }
+
+    @Override
+    public void setOrientation(Orientation orientation) {
+        if (orientation == null) {
+            throw new IllegalArgumentException("Orientation must not be null");
+        }
+        this.orientation = orientation;
+        updateLayout();
     }
 }

@@ -739,6 +739,7 @@
                         <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
                         <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
                         <xs:attribute name="stylename" type="xs:string" use="optional"/>
+                        <xs:attribute name="orientation" default="vertical" type="orientation"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="upload">

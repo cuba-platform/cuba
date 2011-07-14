@@ -12,4 +12,12 @@ package com.haulmont.cuba.gui.components;
 public interface OptionsGroup extends OptionsField {
 
     String NAME = "optionsGroup";
+
+    Orientation getOrientation();
+    void setOrientation(Orientation orientation);
+
+    enum Orientation {
+        VERTICAL,
+        HORIZONTAL
+    }
 }
