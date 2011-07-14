@@ -92,6 +92,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     private boolean changingFilter;
     private boolean applyingDefault;
     private boolean editing = false;
+    private boolean initialized = false;
 
     private boolean useMaxResults;
     private JCheckBox maxResultsCb;
@@ -969,8 +970,12 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                         descr = filterEntity.getName();
                 else
                     descr = null;
-                window.setDescription(descr);
-                ((DesktopWindowManager) App.getInstance().getWindowManager()).setCurrentWindowCaption(window.getCaption(), descr);
+                if (!initialized) {
+                    window.setDescription(descr);
+                    initialized = true;
+                } else {
+                    ((DesktopWindowManager) App.getInstance().getWindowManager()).setCurrentWindowCaption(window.getCaption(), descr);
+                }
             }
             if (useMaxResults)
                 maxResultsCb.setSelected(true);
