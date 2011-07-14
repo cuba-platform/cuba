@@ -122,12 +122,10 @@ public class DesktopPickerField
 
     @Override
     public <T> T getValue() {
-        if (datasource == null) {
+        if ((datasource != null) && (metaPropertyPath != null)) {
+            return (T) datasource.getItem().getValue(metaProperty.getName());
+        } else
             return (T) value;
-        } else {
-            datasource.getItem().getValue(metaProperty.getName());
-            return null;
-        }
     }
 
     @Override

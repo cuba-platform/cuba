@@ -75,6 +75,9 @@ public abstract class DesktopAbstractField<C extends JComponent>
 
     @Override
     public void validate() throws ValidationException {
+        if (!isVisible() || !isEditable())
+            return;
+
         Object value = getValue();
         if (isEmpty(value)) {
             if (isRequired())

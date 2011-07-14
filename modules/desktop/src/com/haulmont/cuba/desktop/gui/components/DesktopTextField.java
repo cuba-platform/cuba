@@ -167,7 +167,19 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     }
 
     public <T> T getValue() {
-        return (T) getImpl().getText();
+        String text  = getImpl().getText();
+        if ((datasource != null) && (metaPropertyPath != null))   {
+            datatype = metaPropertyPath.getRange().asDatatype();
+        }
+        if (datatype != null) {
+            try {
+                return (T) datatype.parse(text);
+            } catch (ParseException ignored) {
+                setValueFromText(prevValue == null ? "" : String.valueOf(prevValue));
+                return (T) prevValue;
+            }
+        }
+        return (T) text;
     }
 
     public void setValue(Object value) {
@@ -252,7 +264,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
             updatingInstance = false;
         }
         Object value = getValue();
-        if (ObjectUtils.equals(prevValue, value)) {
+        if (!ObjectUtils.equals(prevValue, value)) {
             fireValueChanged(prevValue, value);
             prevValue = value;
         }
