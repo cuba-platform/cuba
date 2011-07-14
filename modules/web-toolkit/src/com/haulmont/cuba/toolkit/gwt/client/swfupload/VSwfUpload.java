@@ -33,6 +33,8 @@ public class VSwfUpload
 
     public static final String CLASSNAME = "v-multiupload";
 
+    private boolean initialized = false;
+
     private String paintableId;
     private ApplicationConnection client;
 
@@ -86,6 +88,9 @@ public class VSwfUpload
         if (client.updateComponent(this, uidl, false)) {
             return;
         }
+
+        if (initialized)
+            return;
 
         injectJs();
 
@@ -184,6 +189,8 @@ public class VSwfUpload
                 showUpload("varUpload_" + paintableId, opts);
             }
         });
+
+        initialized = true;
     }
 
     protected void injectJs() {
