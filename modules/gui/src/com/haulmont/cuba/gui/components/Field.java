@@ -16,7 +16,7 @@ import java.io.Serializable;
 public interface Field
     extends
         DatasourceComponent, Component.HasCaption, Component.HasValue, Component.Editable,
-        Component.BelongToFrame, Component.Expandable
+        Component.BelongToFrame, Component.Expandable, Component.HasValidState
 {
 
     boolean isRequired();
@@ -32,9 +32,6 @@ public interface Field
 
     void addValidator(Validator validator);
     void removeValidator(Validator validator);
-
-    boolean isValid();
-    void validate() throws ValidationException;
 
     interface Validator extends Serializable {
         void validate(Object value) throws ValidationException;

@@ -14,6 +14,7 @@ import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FieldGroup;
+import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -513,6 +514,48 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     @Override
     public boolean expandsHeight() {
         return false;
+    }
+
+    @Override
+    public boolean isValid() {
+        try {
+            validate();
+            return true;
+        } catch (ValidationException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void validate() throws ValidationException {
+        Map<Field, Exception> problems = new HashMap<Field, Exception>();
+
+        for (Map.Entry<Field, Component> componentEntry : fieldComponents.entrySet()) {
+            Field field = componentEntry.getKey();
+            Component component = componentEntry.getValue();
+
+            // If has valid state
+            if ((component instanceof HasValidState) &&
+                    (component instanceof Editable)) {
+                // If editable
+                if (component.isVisible() &&
+                        component.isEnabled() &&
+                        ((Editable) component).isEditable()) {
+
+                    try {
+                        ((HasValidState) component).validate();
+                    } catch (ValidationException ex) {
+                        problems.put(field, ex);
+                    }
+                }
+            }
+        }
+
+        if (!problems.isEmpty()) {
+            FieldsValidationException validationException = new FieldsValidationException();
+            validationException.setProblemFields(problems);
+            throw validationException;
+        }
     }
 
     protected class FieldFactory extends AbstractFieldFactory {

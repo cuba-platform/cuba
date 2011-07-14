@@ -14,9 +14,11 @@ import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 public interface FieldGroup extends Component, Component.BelongToFrame,
-        Component.HasCaption, Component.Editable, Component.Expandable, Component.HasSettings {
+        Component.HasCaption, Component.Editable, Component.Expandable, Component.HasSettings, Component.HasValidState {
 
     String NAME = "fieldGroup";
 
@@ -175,6 +177,33 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
 
         public void setCustom(boolean custom) {
             this.custom = custom;
+        }
+    }
+
+    public class FieldsValidationException extends ValidationException {
+        private Map<Field, Exception> problemFields;
+
+        public FieldsValidationException() {
+        }
+
+        public FieldsValidationException(String message) {
+            super(message);
+        }
+
+        public FieldsValidationException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        public FieldsValidationException(Throwable cause) {
+            super(cause);
+        }
+
+        public Map<Field, Exception> getProblemFields() {
+            return problemFields;
+        }
+
+        public void setProblemFields(Map<Field, Exception> problemFields) {
+            this.problemFields = problemFields;
         }
     }
 

@@ -167,15 +167,15 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     }
 
     public <T> T getValue() {
-        String text  = getImpl().getText();
+        String text = getImpl().getText();
         if ((datasource != null) && (metaPropertyPath != null))   {
             datatype = metaPropertyPath.getRange().asDatatype();
         }
         if (datatype != null) {
             try {
-                return (T) datatype.parse(text);
+                T value = (T) datatype.parse(text);
+                return value;
             } catch (ParseException ignored) {
-                setValueFromText(prevValue == null ? "" : String.valueOf(prevValue));
                 return (T) prevValue;
             }
         }
@@ -183,12 +183,31 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     }
 
     public void setValue(Object value) {
-        setValueFromText(value == null ? "" : String.valueOf(value));
+        if (metaProperty != null)
+            setTextAndValue(formatValue(value, metaProperty), value);
+        else
+            setTextAndValue(value == null ? "" : String.valueOf(value), value);
+    }
+
+    private void validateText() {
+        if ((datasource != null) && (metaPropertyPath != null)) {
+            datatype = metaPropertyPath.getRange().asDatatype();
+        }
+        if (datatype != null) {
+            try {
+                datatype.parse(impl.getText());
+            } catch (ParseException ignored) {
+                setValue(prevValue);
+            }
+        }
     }
 
     @Override
     protected boolean isEmpty(Object value) {
-        return StringUtils.isBlank((String) value);
+        if (value instanceof String)
+            return StringUtils.isBlank((String) value);
+        else
+            return value == null;
     }
 
     public Datasource getDatasource() {
@@ -219,7 +238,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
                             return;
                         Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         String text = formatValue(value, metaProperty);
-                        setValueFromText(text);
+                        setTextAndValue(text, value);
                     }
 
                     @Override
@@ -228,13 +247,13 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
                             return;
                         if (property.equals(metaPropertyPath.toString())) {
                             String text = formatValue(value, metaProperty);
-                            setValueFromText(text);
+                            setTextAndValue(text, value);
                         }
                     }
                 }
         );
 
-        doc.addDocumentListener(
+/*        doc.addDocumentListener(
                 new DocumentListener() {
                     public void insertUpdate(DocumentEvent e) {
                         updateInstance();
@@ -247,7 +266,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
                     public void changedUpdate(DocumentEvent e) {
                     }
                 }
-        );
+        );*/
 
         setRequired(metaProperty.isMandatory());
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
@@ -256,20 +275,20 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         }
     }
 
-    private void setValueFromText(String text) {
+    private void setTextAndValue(String text, Object value) {
         updatingInstance = true;
         try {
             getImpl().setText(text);
         } finally {
             updatingInstance = false;
         }
-        Object value = getValue();
         if (!ObjectUtils.equals(prevValue, value)) {
             fireValueChanged(prevValue, value);
             prevValue = value;
         }
     }
 
+/*
     private void updateInstance() {
         if (updatingInstance)
             return;
@@ -304,6 +323,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
             fireValueChanged(prevValue, newValue);
         prevValue = newValue;
     }
+*/
 
     private String formatValue(Object value, MetaProperty metaProperty) {
         String text;
@@ -396,6 +416,8 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         }
 
         private void fireEvent() {
+            validateText();
+
             final Object value = getValue();
             if (!ObjectUtils.equals(prevValue, value)) {
                 fireValueChanged(prevValue, value);

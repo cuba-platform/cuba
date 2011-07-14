@@ -228,6 +228,11 @@ public interface Component {
         void setButtonsPanel(ButtonsPanel panel);
     }
 
+    interface HasValidState {
+        boolean isValid();
+        void validate() throws ValidationException;
+    }
+
     interface HasPresentations extends HasSettings {
         void usePresentations(boolean b);
         boolean isUsePresentations();

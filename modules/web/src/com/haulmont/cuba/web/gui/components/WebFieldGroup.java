@@ -15,16 +15,21 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.gui.AbstractFieldFactory;
+import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
@@ -35,7 +40,7 @@ import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
-import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
@@ -409,7 +414,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     public void addValidator(Field field, final com.haulmont.cuba.gui.components.Field.Validator validator) {
         final com.vaadin.ui.Field f = component.getField(field.getId());
-        f.addValidator(new Validator() {
+        f.addValidator(new Validator()  {
             public void validate(Object value) throws InvalidValueException {
                 if ((!f.isRequired() && value == null))
                     return;
@@ -725,6 +730,46 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         fieldGroupElement = element.addElement("fieldGroup");
         fieldGroupElement.addAttribute("expanded", String.valueOf(isExpanded()));
         return true;
+    }
+
+    @Override
+    public boolean isValid() {
+        try {
+            validate();
+            return true;
+        } catch (ValidationException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void validate() throws ValidationException {
+        final Map<Object, Exception> problems = new HashMap<Object, Exception>();
+
+        final FieldGroup fieldGroup = component;
+        for (final Object propId : fieldGroup.getItemPropertyIds()) {
+            final com.vaadin.ui.Field f = fieldGroup.getField(propId);
+            if (f.isVisible() && f.isEnabled() && !f.isReadOnly())
+                validateField(f, propId, problems);
+        }
+
+        if (!problems.isEmpty()) {
+            FieldsValidationException validationException = new FieldsValidationException();
+            Map<Field, Exception> problemFields = new HashMap<Field, Exception>();
+            for (Map.Entry<Object, Exception> entry : problems.entrySet()) {
+                problemFields.put(getField(entry.getKey().toString()), entry.getValue());
+            }
+            validationException.setProblemFields(problemFields);
+            throw validationException;
+        }
+    }
+
+    private void validateField(com.vaadin.ui.Component impl, Object propertyId, final Map<Object, Exception> problems) {
+        try {
+            ((com.vaadin.ui.Field) impl).validate();
+        } catch (Validator.InvalidValueException e) {
+            problems.put(propertyId, e);
+        }
     }
 
     protected class ExpandCollapseListener implements FieldGroup.ExpandCollapseListener {
