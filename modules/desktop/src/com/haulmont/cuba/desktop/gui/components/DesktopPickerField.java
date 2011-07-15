@@ -142,10 +142,6 @@ public class DesktopPickerField
     }
 
     @Override
-    public void validate() throws ValidationException {
-    }
-
-    @Override
     public Datasource getDatasource() {
         return datasource;
     }

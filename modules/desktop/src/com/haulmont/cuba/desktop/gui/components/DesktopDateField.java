@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigBoxLayoutAdapter;
 import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -211,6 +212,7 @@ public class DesktopDateField
     public void validate() throws ValidationException {
         try {
             constructDate();
+            super.validate();
         }
         catch (Exception e) {
             throw new ValidationException(e);

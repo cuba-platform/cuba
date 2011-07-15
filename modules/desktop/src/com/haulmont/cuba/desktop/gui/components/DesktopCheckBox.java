@@ -57,9 +57,6 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         updateInstance();
     }
 
-    public void validate() throws ValidationException {
-    }
-
     public Datasource getDatasource() {
         return datasource;
     }
