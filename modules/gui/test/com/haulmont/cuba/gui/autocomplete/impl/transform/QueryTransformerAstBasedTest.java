@@ -2,6 +2,7 @@ package com.haulmont.cuba.gui.autocomplete.impl.transform;
 
 import com.haulmont.cuba.core.sys.jpql.DomainModel;
 import com.haulmont.cuba.core.sys.jpql.ErrorsFoundException;
+import com.haulmont.cuba.core.sys.jpql.Parser;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import com.haulmont.cuba.core.sys.jpql.model.EntityImpl;
@@ -794,5 +795,37 @@ public class QueryTransformerAstBasedTest {
         assertEquals(
                 "select COUNT(c.colour) from sec$Car c where c.colour.createdBy = :p",
                 res);
+    }
+
+
+    @Test
+    public void getResult_russianCharacters() throws RecognitionException {
+        EntityBuilder builder = new EntityBuilder();
+        EntityImpl playerEntity = builder.produceImmediately("Player");
+        DomainModel model = new DomainModel(playerEntity);
+
+        assertTransformsToSame(model, "SELECT p FROM Player p where p.name = 'ы'");
+
+        try {
+            new QueryTransformerAstBased(model, "SELECT з FROM Player p", "Player");
+            fail();
+        } catch (IllegalArgumentException e) {
+        }
+
+        try {
+            // в where русская c
+            new QueryTransformerAstBased(model, "SELECT c FROM Player c where с.name like '%12'", "Player"); 
+            fail();
+        } catch (IllegalArgumentException e) {
+        }
+    }
+
+    @Test
+    public void parser_parseWhereClause() throws RecognitionException {
+        try {
+            Parser.parseWhereClause("where з like '12%'");
+            fail();
+        } catch (IllegalArgumentException e) {
+        }
     }
 }

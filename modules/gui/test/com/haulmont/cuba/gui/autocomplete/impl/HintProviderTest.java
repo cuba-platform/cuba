@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.sys.jpql.InferredType;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import com.haulmont.cuba.core.sys.jpql.model.EntityImpl;
+import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import junit.framework.Assert;
 import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
@@ -22,6 +23,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * User: Alex Chevelev
