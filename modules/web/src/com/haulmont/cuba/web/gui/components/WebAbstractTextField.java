@@ -83,6 +83,7 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
         attachListener(component);
         component.setImmediate(true);
         component.setNullRepresentation("");
+        component.setInvalidCommitted(true);
     }
 
     protected abstract T createTextFieldImpl();

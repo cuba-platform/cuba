@@ -28,6 +28,7 @@ public class WebDateField
         component = new com.haulmont.cuba.web.toolkit.ui.DateField();
         attachListener(component);
         component.setImmediate(true);
+        component.setInvalidCommitted(true);
         setResolution(Resolution.MIN);
         if (ConfigProvider.getConfig(WebConfig.class).getCloseCalendarWhenDateSelected()){
             setCloseWhenDateSelected(true);

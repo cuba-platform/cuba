@@ -49,6 +49,7 @@ public class WebOptionsGroup
         };
         attachListener(component);
         component.setImmediate(true);
+        component.setInvalidCommitted(true);
     }
 
     @SuppressWarnings({"unchecked"})

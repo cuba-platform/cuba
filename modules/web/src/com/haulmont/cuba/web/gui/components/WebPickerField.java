@@ -53,6 +53,7 @@ public class WebPickerField
     public WebPickerField() {
         component = new Picker(this);
         component.setImmediate(true);
+        component.setInvalidCommitted(true);
         attachListener(component);
         addLookupAction();
         addClearAction();

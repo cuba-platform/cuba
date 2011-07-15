@@ -48,6 +48,7 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
         component.setImmediate(true);
         component.setMask(mask);
         component.setNullRepresentation(placeholder);
+        component.setInvalidCommitted(true);
         attachListener(component);
 
         final Property p = new AbstractPropertyWrapper() {

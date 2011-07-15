@@ -62,6 +62,7 @@ public class WebLookupField
         component.setImmediate(true);
         component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
         component.setFixedTextBoxWidth(true);
+        component.setInvalidCommitted(true);
 
         setFilterMode(FilterMode.CONTAINS);
 

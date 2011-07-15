@@ -72,6 +72,7 @@ public class WebTwinColumn
         component.setImmediate(true);
         component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_ITEM);
         component.setMultiSelect(true);
+        component.setInvalidCommitted(true);
     }
 
     @Override

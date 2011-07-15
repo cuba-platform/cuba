@@ -43,6 +43,7 @@ public class WebActionsField
         lookupField = new WebLookupField();
         this.component = new ActionsField((AbstractSelect) lookupField.getComponent());
         component.setImmediate(true);
+        component.setInvalidCommitted(true);
     }
 
     @Override

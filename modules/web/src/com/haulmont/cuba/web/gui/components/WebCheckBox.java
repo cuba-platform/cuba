@@ -30,6 +30,7 @@ public class WebCheckBox
         this.component = new com.haulmont.cuba.web.toolkit.ui.CheckBox();
         attachListener(component);
         component.setImmediate(true);
+        component.setInvalidCommitted(true);
     }
 
     @Override

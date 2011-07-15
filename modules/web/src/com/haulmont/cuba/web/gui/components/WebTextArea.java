@@ -26,6 +26,7 @@ public class WebTextArea
         attachListener(component);
         component.setImmediate(true);
         component.setNullRepresentation("");
+        component.setInvalidCommitted(true);
     }
 
     public int getRows() {
