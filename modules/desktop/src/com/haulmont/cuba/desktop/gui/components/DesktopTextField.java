@@ -26,6 +26,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.text.ParseException;
+import java.util.Locale;
 
 /**
  * <p>$Id$</p>
@@ -49,6 +50,9 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     private boolean enabled = true;
     private Object prevValue;
     private String caption;
+    private String description;
+
+    private Locale locale = UserSessionProvider.getLocale();
 
     private boolean updatingInstance;
 
@@ -171,38 +175,40 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
 
     public <T> T getValue() {
         String text = getImpl().getText();
-        if ((datasource != null) && (metaPropertyPath != null))   {
-            datatype = metaPropertyPath.getRange().asDatatype();
-        }
-        if (datatype != null) {
-            try {
-                T value = (T) datatype.parse(text);
-                return value;
-            } catch (ParseException ignored) {
-                return (T) prevValue;
-            }
-        }
-        return (T) text;
+        return (T) validateRawValue(text);
     }
 
     public void setValue(Object value) {
+        if (!isEditable())
+            return;
+
+        updateInstance(value);
+
+        String text;
         if (metaProperty != null)
-            setTextAndValue(formatValue(value, metaProperty), value);
+            text = formatValue(value, metaProperty);
+        else if (datatype != null)
+            text = datatype.format(value, locale);
         else
-            setTextAndValue(value == null ? "" : String.valueOf(value), value);
+            text = value == null ? "" : String.valueOf(value);
+        updateTextField(text);
+
+        fireChangeListeners();
     }
 
-    private void validateText() {
+    private Object validateRawValue(String rawValue) {
         if ((datasource != null) && (metaPropertyPath != null)) {
-            datatype = metaPropertyPath.getRange().asDatatype();
+            if (metaProperty.getRange().isDatatype())
+                datatype = metaPropertyPath.getRange().asDatatype();
         }
         if (datatype != null) {
             try {
-                datatype.parse(impl.getText());
+                return datatype.parse(rawValue);
             } catch (ParseException ignored) {
-                setValue(prevValue);
+                return prevValue;
             }
         }
+        return rawValue;
     }
 
     @Override
@@ -241,7 +247,8 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
                             return;
                         Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         String text = formatValue(value, metaProperty);
-                        setTextAndValue(text, value);
+                        updateTextField(text);
+                        fireChangeListeners();
                     }
 
                     @Override
@@ -250,69 +257,44 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
                             return;
                         if (property.equals(metaPropertyPath.toString())) {
                             String text = formatValue(value, metaProperty);
-                            setTextAndValue(text, value);
+                            updateTextField(text);
+                            fireChangeListeners();
                         }
                     }
                 }
         );
 
-/*        doc.addDocumentListener(
-                new DocumentListener() {
-                    public void insertUpdate(DocumentEvent e) {
-                        updateInstance();
-                    }
-
-                    public void removeUpdate(DocumentEvent e) {
-                        updateInstance();
-                    }
-
-                    public void changedUpdate(DocumentEvent e) {
-                    }
-                }
-        );*/
-
         setRequired(metaProperty.isMandatory());
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
-            Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
-            setValue(newValue);
+            Object value = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
+            String text = formatValue(value, metaProperty);
+            updateTextField(text);
+            fireChangeListeners();
         }
     }
 
-    private void setTextAndValue(String text, Object value) {
-        updatingInstance = true;
-        try {
-            getImpl().setText(text);
-        } finally {
-            updatingInstance = false;
-        }
-        if (!ObjectUtils.equals(prevValue, value)) {
-            fireValueChanged(prevValue, value);
-            prevValue = value;
+    private void updateTextField(String text) {
+        getImpl().setText(text);
+    }
+
+    private void fireChangeListeners() {
+        Object newValue = getValue();
+        if (!ObjectUtils.equals(prevValue, newValue)) {
+            fireValueChanged(prevValue, newValue);
+            prevValue = newValue;
         }
     }
 
-/*
-    private void updateInstance() {
+    private void updateInstance(Object value) {
         if (updatingInstance)
+            return;
+
+        if (ObjectUtils.equals(prevValue, value))
             return;
 
         updatingInstance = true;
         try {
             if ((datasource != null) && (metaPropertyPath != null)) {
-                String text = getImpl().getText();
-                Object value;
-
-                if (metaProperty.getRange().isDatatype()) {
-                    try {
-                        value = metaProperty.getRange().asDatatype().parse(text, UserSessionProvider.getLocale());
-                    } catch (ParseException e) {
-                        log.warn(e);
-                        return;
-                    }
-                } else {
-                    value = text;
-                }
-
                 if (datasource.getItem() != null) {
                     InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
                 }
@@ -320,13 +302,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         } finally {
             updatingInstance = false;
         }
-
-        Object newValue = getValue();
-        if (!ObjectUtils.equals(prevValue, newValue))
-            fireValueChanged(prevValue, newValue);
-        prevValue = newValue;
     }
-*/
 
     private String formatValue(Object value, MetaProperty metaProperty) {
         String text;
@@ -335,7 +311,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         } else if (formatter == null) {
             Range range = metaProperty.getRange();
             if (range.isDatatype()) {
-                text = range.asDatatype().format(value, UserSessionProvider.getLocale());
+                text = range.asDatatype().format(value, locale);
             } else if (range.isEnum()) {
                 text = value.toString();
             } else if (range.isClass()) {
@@ -367,10 +343,11 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     }
 
     public String getDescription() {
-        return null;
+        return description;
     }
 
     public void setDescription(String description) {
+        this.description = description;
     }
 
     public Formatter getFormatter() {
@@ -419,13 +396,8 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         }
 
         private void fireEvent() {
-            validateText();
-
-            final Object value = getValue();
-            if (!ObjectUtils.equals(prevValue, value)) {
-                fireValueChanged(prevValue, value);
-                prevValue = value;
-            }
+            Object newValue = validateRawValue(getImpl().getText());
+            setValue(newValue);
         }
     }
 }

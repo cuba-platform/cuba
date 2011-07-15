@@ -6,12 +6,10 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -21,6 +19,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * <p>$Id$</p>
@@ -36,6 +35,8 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     protected Formatter formatter;
 
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
+
+    private Locale locale = UserSessionProvider.getLocale();
 
     public DesktopLabel() {
         impl = new JLabel();
@@ -88,14 +89,27 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
 
     private String formatValue(Object value) {
         String text;
+        if (metaProperty != null)
+            text = formatValue(value, metaProperty);
+        else
+            text = value == null ? "" : String.valueOf(value);
+        return text;
+    }
+
+    private String formatValue(Object value, MetaProperty metaProperty) {
+        String text;
         if (value == null) {
             text = "";
         } else if (formatter == null) {
-            if (value instanceof Instance) {
-                text = InstanceUtils.getInstanceName((Instance) value);
-            } else {
+            Range range = metaProperty.getRange();
+            if (range.isDatatype()) {
+                text = range.asDatatype().format(value, locale);
+            } else if (range.isEnum()) {
                 text = value.toString();
-            }
+            } else if (range.isClass()) {
+                text = InstanceUtils.getInstanceName((Instance) value);
+            } else
+                text = value.toString();
         } else {
             text = formatter.format(value);
         }
@@ -136,7 +150,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     }
 
     public void setValue(Object value) {
-        impl.setText(value != null ? String.valueOf(value) : "");
+        impl.setText(formatValue(value));
     }
 
     public void addListener(ValueListener listener) {
