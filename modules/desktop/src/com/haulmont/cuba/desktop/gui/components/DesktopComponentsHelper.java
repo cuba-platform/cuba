@@ -82,7 +82,7 @@ public class DesktopComponentsHelper {
                 return (T) component;
             else {
                 if (component instanceof Component.Container) {
-                    return getComponentByIteration((Component.Container) component, id);
+                    return (T) getComponentByIteration((Component.Container) component, id);
                 }
             }
         }
