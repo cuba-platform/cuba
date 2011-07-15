@@ -9,11 +9,16 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
+import org.apache.commons.lang.ArrayUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * <p>$Id$</p>
@@ -41,36 +46,47 @@ public class DesktopComponentsHelper {
         return (JComponent) comp;
     }
 
+    @Nonnull
     public static <T extends Component> T getComponent(Component.Container comp, String id) {
-        final JComponent container = unwrap(comp);
-
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
             final Component component = comp.getOwnComponent(id);
 
             if (component == null) {
-                return (T) getComponentByIteration(container, id);
+                Component c = getComponentByIteration(comp, id);
+                if (c != null)
+                    return (T) c;
             } else {
                 return (T) component;
             }
         } else {
             Component component = comp.getOwnComponent(elements[0]);
             if (component == null) {
-                return (T) getComponentByIteration(container, id);
+                Component c = getComponentByIteration(comp, id);
+                if (c != null)
+                    return (T) c;
             } else {
-                final List<String> subpath = Arrays.asList(elements).subList(1, elements.length);
+                String[] subpath = (String[]) ArrayUtils.subarray(elements, 1, elements.length);
                 if (component instanceof Component.Container) {
-                    return ((Component.Container) component).<T>getComponent(
-                            ValuePathHelper.format(subpath.toArray(new String[subpath.size()])));
-                } else {
-                    return null;
+                    return ((Component.Container) component).<T>getComponent(ValuePathHelper.format(subpath));
                 }
             }
         }
+        throw new IllegalStateException("Component '" + id + "' not found");
     }
 
-    private static <T extends Component> T getComponentByIteration(JComponent container, String id) {
-        throw new UnsupportedOperationException();
+    @Nullable
+    private static <T extends Component> T getComponentByIteration(Component.Container container, String id) {
+        for (Component component : container.getOwnComponents()) {
+            if (id.equals(component.getId()))
+                return (T) component;
+            else {
+                if (component instanceof Component.Container) {
+                    return getComponentByIteration((Component.Container) component, id);
+                }
+            }
+        }
+        return null;
     }
 
     public static Collection<Component> getComponents(Component container) {
