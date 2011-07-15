@@ -116,7 +116,12 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
 
     @Override
     public void updateConstraints(JComponent component, Object constraints) {
-        layout.setComponentConstraints(component, constraints);
+        if (component == expandedComponent) {
+            expand(component);
+        }
+        else {
+            layout.setComponentConstraints(component, constraints);
+        }
     }
 
     @Override
