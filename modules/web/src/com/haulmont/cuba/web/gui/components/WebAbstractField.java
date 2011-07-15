@@ -9,13 +9,12 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.gui.data.DsManager;
@@ -23,13 +22,15 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 
+import java.text.ParseException;
 import java.util.*;
+import java.util.List;
 
 public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     extends
         WebAbstractComponent<T>
     implements
-        Component.HasValue
+        Component.HasValue, Component.Validatable
 {
     protected Datasource<Entity> datasource;
     protected MetaProperty metaProperty;
@@ -145,6 +146,27 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         }
     }
 
+    protected Object convertRawValue(Object value) throws ValidationException {
+        if (value instanceof String) {
+            Datatype datatype = null;
+            if (this instanceof TextField) {
+                datatype = ((TextField) this).getDatatype();
+            }
+            if ((datasource != null) && (metaPropertyPath != null)) {
+                if (metaProperty.getRange().isDatatype())
+                    datatype = metaPropertyPath.getRange().asDatatype();
+            }
+            if (datatype != null) {
+                try {
+                    return datatype.parse((String) value);
+                } catch (ParseException ignored) {
+                    throw new ValidationException();
+                }
+            }
+        }
+        return value;
+    }
+
     public void addValidator(final com.haulmont.cuba.gui.components.Field.Validator validator) {
         if (!validators.containsKey(validator)) {
             final Validator componentValidator = new Validator() {
@@ -153,7 +175,10 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
                     if ((!isRequired() && value == null))
                         return;
                     try {
-                        validator.validate(value);
+                        if (isRequired() && (value == null))
+                            throw new RequiredValueMissingException(component.getRequiredError());
+
+                        validator.validate(convertRawValue(value));
                     } catch (ValidationException e) {
                         throw new InvalidValueException(e.getMessage());
                     }

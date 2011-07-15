@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -18,13 +19,10 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -40,7 +38,7 @@ import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
@@ -50,6 +48,7 @@ import org.dom4j.Element;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.util.*;
 import java.util.List;
 
@@ -380,7 +379,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             MetaProperty metaProperty = dsComponent.getMetaProperty();
 
             if (metaProperty != null) {
-                dsComponent.setEditable(UserSessionClient.isEditPermitted(metaProperty)
+                dsComponent.setEditable(UserSessionProvider.isEditPermitted(metaProperty)
                         && dsComponent.isEditable());
             }
         }
@@ -391,7 +390,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         if (propertyPath != null) {
             MetaProperty metaProperty = propertyPath.getMetaProperty();
 
-            setEditable(fieldConf, UserSessionClient.isEditPermitted(metaProperty)
+            setEditable(fieldConf, UserSessionProvider.isEditPermitted(metaProperty)
                     && isEditable(fieldConf));
         }
     }
@@ -412,14 +411,44 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         this.cols = cols;
     }
 
-    public void addValidator(Field field, final com.haulmont.cuba.gui.components.Field.Validator validator) {
+    protected Object convertRawValue(Field field, Object value) throws ValidationException {
+        if (value instanceof String) {
+            Datatype datatype = null;
+            MetaPropertyPath propertyPath = null;
+
+            if (field.getDatasource() != null) {
+                propertyPath = datasource.getMetaClass().getPropertyPath(field.getId());
+            } else if (datasource != null) {
+                propertyPath = datasource.getMetaClass().getPropertyPath(field.getId());
+            }
+
+            if (propertyPath != null) {
+                if (propertyPath.getMetaProperty().getRange().isDatatype())
+                    datatype = propertyPath.getRange().asDatatype();
+            }
+
+            if (datatype != null) {
+                try {
+                    return datatype.parse((String) value);
+                } catch (ParseException ignored) {
+                    String message = MessageProvider.getMessage(WebWindow.class, "invalidValue");
+                    String fieldCaption = MessageUtils.getPropertyCaption(propertyPath.getMetaProperty());
+                    message = String.format(message, fieldCaption);
+                    throw new ValidationException(message);
+                }
+            }
+        }
+        return value;
+    }
+
+    public void addValidator(final Field field, final com.haulmont.cuba.gui.components.Field.Validator validator) {
         final com.vaadin.ui.Field f = component.getField(field.getId());
         f.addValidator(new Validator()  {
             public void validate(Object value) throws InvalidValueException {
                 if ((!f.isRequired() && value == null))
                     return;
                 try {
-                    validator.validate(value);
+                    validator.validate(convertRawValue(field, value));
                 } catch (ValidationException e) {
                     throw new InvalidValueException(e.getMessage());
                 }
@@ -754,12 +783,21 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
 
         if (!problems.isEmpty()) {
-            FieldsValidationException validationException = new FieldsValidationException();
             Map<Field, Exception> problemFields = new HashMap<Field, Exception>();
             for (Map.Entry<Object, Exception> entry : problems.entrySet()) {
                 problemFields.put(getField(entry.getKey().toString()), entry.getValue());
             }
+
+            StringBuilder msgBuilder = new StringBuilder(
+                    MessageProvider.getMessage(WebWindow.class, "validationFail") + "<br>");
+            for (Field field : problemFields.keySet()) {
+                Exception ex = problemFields.get(field);
+                msgBuilder.append(ex.getMessage()).append("<br>");
+            }
+
+            FieldsValidationException validationException = new FieldsValidationException(msgBuilder.toString());
             validationException.setProblemFields(problemFields);
+
             throw validationException;
         }
     }
