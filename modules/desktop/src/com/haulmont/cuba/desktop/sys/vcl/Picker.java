@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.sys.vcl;
 
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,7 +53,7 @@ public class Picker extends JComponent {
     }
 
     protected void initActionsPanel() {
-        actionsPanel = new JPanel(new GridLayout(1, 0, 0, 0));
+        actionsPanel = new JPanel(new MigLayout("hidemode 2, ins 0 0 0 0, gap 0"));
         for (JButton button : buttons) {
             actionsPanel.add(button);
         }
@@ -66,7 +67,8 @@ public class Picker extends JComponent {
         if (buttons.contains(button))
             return;
 
-        button.setPreferredSize(new Dimension(20, DesktopComponentsHelper.FIELD_HEIGHT));
+        button.setPreferredSize(new Dimension(22, DesktopComponentsHelper.FIELD_HEIGHT));
+        button.setMaximumSize(new Dimension(22, Integer.MAX_VALUE));
         buttons.add(button);
         actionsPanel.add(button);
     }

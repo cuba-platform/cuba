@@ -241,6 +241,10 @@ public class DesktopPickerField
     @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
+        for (Action action : actionsOrder) {
+            if (action instanceof StandardAction)
+                ((StandardAction) action).setEditable(isEditable());
+        }
     }
 
     @Override
