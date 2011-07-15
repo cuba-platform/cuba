@@ -535,7 +535,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             Component component = componentEntry.getValue();
 
             // If has valid state
-            if ((component instanceof HasValidState) &&
+            if ((component instanceof Validatable) &&
                     (component instanceof Editable)) {
                 // If editable
                 if (component.isVisible() &&
@@ -543,7 +543,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
                         ((Editable) component).isEditable()) {
 
                     try {
-                        ((HasValidState) component).validate();
+                        ((Validatable) component).validate();
                     } catch (ValidationException ex) {
                         problems.put(field, ex);
                     }

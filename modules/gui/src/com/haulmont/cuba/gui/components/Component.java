@@ -228,7 +228,7 @@ public interface Component {
         void setButtonsPanel(ButtonsPanel panel);
     }
 
-    interface HasValidState {
+    interface Validatable {
         boolean isValid();
         void validate() throws ValidationException;
     }

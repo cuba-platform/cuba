@@ -14,11 +14,10 @@ import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 
 public interface FieldGroup extends Component, Component.BelongToFrame,
-        Component.HasCaption, Component.Editable, Component.Expandable, Component.HasSettings, Component.HasValidState {
+        Component.HasCaption, Component.Editable, Component.Expandable, Component.HasSettings, Component.Validatable {
 
     String NAME = "fieldGroup";
 
