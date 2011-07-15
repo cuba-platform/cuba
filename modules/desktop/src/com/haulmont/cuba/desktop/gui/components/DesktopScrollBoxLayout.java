@@ -28,6 +28,7 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
         impl = new JScrollPane();
         // by default it is turned off
         impl.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        impl.setBorder(null);
     }
 
     @Override

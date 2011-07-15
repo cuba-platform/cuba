@@ -29,6 +29,7 @@ public abstract class DesktopAbstractBox
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
 
     protected Component expandedComponent;
+    protected Map<Component, ComponentCaption> captions = new HashMap<Component, ComponentCaption>();
 
     public DesktopAbstractBox() {
         impl = new JPanel();
@@ -38,8 +39,9 @@ public abstract class DesktopAbstractBox
     public void add(Component component) {
         // add caption first
         if (DesktopContainerHelper.hasExternalCaption(component)) {
-            String caption = ((HasCaption) component).getCaption();
-            impl.add(new JLabel(caption), layoutAdapter.getCaptionConstraints());
+            ComponentCaption caption = new ComponentCaption(component);
+            captions.put(component, caption);
+            impl.add(caption, layoutAdapter.getCaptionConstraints());
         }
 
         JComponent composition = DesktopComponentsHelper.getComposition(component);
@@ -59,6 +61,10 @@ public abstract class DesktopAbstractBox
     public void remove(Component component) {
         JComponent composition = DesktopComponentsHelper.getComposition(component);
         impl.remove(composition);
+        if (captions.containsKey(component)) {
+            impl.remove(captions.get(component));
+            captions.remove(component);
+        }
         impl.revalidate();
         impl.repaint();
 
@@ -68,12 +74,18 @@ public abstract class DesktopAbstractBox
         ownComponents.remove(component);
 
         DesktopContainerHelper.assignContainer(component, null);
+        if (expandedComponent == component) {
+            expandedComponent = null;
+        }
     }
 
     @Override
     public void updateComponent(Component child) {
         JComponent composition = DesktopComponentsHelper.getComposition(child);
         layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
+        if (captions.containsKey(child)) {
+            captions.get(child).update();
+        }
     }
 
     public <T extends Component> T getOwnComponent(String id) {

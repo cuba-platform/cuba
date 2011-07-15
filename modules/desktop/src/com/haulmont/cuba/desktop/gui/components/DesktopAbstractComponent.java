@@ -82,6 +82,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     public void setEnabled(boolean enabled) {
         impl.setEnabled(enabled);
+        requestContainerUpdate();
     }
 
     public boolean isVisible() {
@@ -90,6 +91,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     public void setVisible(boolean visible) {
         impl.setVisible(visible);
+        requestContainerUpdate();
     }
 
     public void requestFocus() {

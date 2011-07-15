@@ -66,6 +66,8 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     protected Element xmlDescriptor;
     protected String caption;
     protected String description;
+    protected Component expandedComponent;
+    protected Map<Component, ComponentCaption> captions = new HashMap<Component, ComponentCaption>();
 
     protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<com.haulmont.cuba.gui.components.Action>();
 
@@ -335,8 +337,18 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     }
 
     public void expand(Component component, String height, String width) {
+        if (expandedComponent != null && expandedComponent instanceof DesktopComponent) {
+            ((DesktopComponent) expandedComponent).setExpanded(false);
+        }
+
         JComponent composition = DesktopComponentsHelper.getComposition(component);
         layoutAdapter.expand(composition, height, width);
+
+        if (component instanceof DesktopComponent) {
+            ((DesktopComponent) component).setExpanded(true);
+        }
+
+        expandedComponent = component;
     }
 
     public void expand(Component component) {
@@ -344,6 +356,12 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     }
 
     public void add(Component component) {
+        if (DesktopContainerHelper.hasExternalCaption(component)) {
+            ComponentCaption caption = new ComponentCaption(component);
+            captions.put(component, caption);
+            getContainer().add(caption, layoutAdapter.getCaptionConstraints());
+        }
+
         JComponent composition = DesktopComponentsHelper.getComposition(component);
         getContainer().add(composition, layoutAdapter.getConstraints(component));
         if (component.getId() != null) {
@@ -357,12 +375,19 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
 
     public void remove(Component component) {
         getContainer().remove(DesktopComponentsHelper.getComposition(component));
+        if (captions.containsKey(component)) {
+            getContainer().remove(captions.get(component));
+            captions.remove(component);
+        }
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
         }
         ownComponents.remove(component);
 
         DesktopContainerHelper.assignContainer(component, null);
+        if (expandedComponent == component) {
+            expandedComponent = null;
+        }
     }
 
     public <T extends Component> T getOwnComponent(String id) {
@@ -530,6 +555,9 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     public void updateComponent(Component child) {
         JComponent composition = DesktopComponentsHelper.getComposition(child);
         layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
+        if (captions.containsKey(child)) {
+            captions.get(child).update();
+        }
     }
 
     public static class Editor extends DesktopWindow implements Window.Editor {

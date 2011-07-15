@@ -19,8 +19,6 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.FocusEvent;
@@ -111,6 +109,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         this.enabled = enabled;
         if (impl != null)
             impl.setEnabled(enabled);
+        requestContainerUpdate();
     }
 
     @Override
@@ -118,6 +117,10 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         this.visible = visible;
         if (impl != null)
             impl.setVisible(visible);
+        if (composition != impl && composition != null) {
+            composition.setVisible(visible);
+        }
+        requestContainerUpdate();
     }
 
     @Override

@@ -28,6 +28,7 @@ public class DesktopGridLayout
 
     protected Collection<Component> ownComponents = new HashSet<Component>();
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
+    protected Map<Component, ComponentCaption> captions = new HashMap<Component, ComponentCaption>();
 
     public DesktopGridLayout() {
         impl = new JPanel();
@@ -59,8 +60,9 @@ public class DesktopGridLayout
 
         // add caption first
         if (DesktopContainerHelper.hasExternalCaption(component)) {
-            String caption = ((HasCaption) component).getCaption();
-            impl.add(new JLabel(caption), layoutAdapter.getCaptionConstraints(col, row, col2, row2));
+            ComponentCaption caption = new ComponentCaption(component);
+            captions.put(component, caption);
+            impl.add(caption, layoutAdapter.getCaptionConstraints(col, row, col2, row2));
         }
 
         impl.add(composition, layoutAdapter.getConstraints(component, col, row, col2, row2));
@@ -93,6 +95,7 @@ public class DesktopGridLayout
     }
 
     public void add(Component component) {
+        // captions not added here
         final JComponent composition = DesktopComponentsHelper.getComposition(component);
         impl.add(composition, layoutAdapter.getConstraints(component));
         //setComponentAlignment(itmillComponent, WebComponentsHelper.convertAlignment(component.getAlignment()));
@@ -110,6 +113,10 @@ public class DesktopGridLayout
 
     public void remove(Component component) {
         impl.remove(DesktopComponentsHelper.getComposition(component));
+        if (captions.containsKey(component)) {
+            impl.remove(captions.get(component));
+            captions.remove(component);
+        }
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
         }
@@ -150,5 +157,8 @@ public class DesktopGridLayout
     public void updateComponent(Component child) {
         JComponent composition = DesktopComponentsHelper.getComposition(child);
         layoutAdapter.updateConstraints(composition, layoutAdapter.getConstraints(child));
+        if (captions.containsKey(child)) {
+            captions.get(child).update();
+        }
     }
 }
