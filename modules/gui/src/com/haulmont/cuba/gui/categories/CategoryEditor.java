@@ -69,11 +69,8 @@ public class CategoryEditor extends AbstractEditor {
     }
 
     private void initDataTypeColumn() {
-
-        MetaPropertyPath dataType = table.getDatasource().getMetaClass().getPropertyPath("dataType");
-
-        table.removeGeneratedColumn(dataType);
-        table.addGeneratedColumn(dataType.toString(), new Table.ColumnGenerator() {
+        table.removeGeneratedColumn("dataType");
+        table.addGeneratedColumn("dataType", new Table.ColumnGenerator() {
             public Component generateCell(Table table, Object itemId) {
                 Label dataTypeLabel = factory.createComponent(Label.NAME);
                 String labelContent;
@@ -97,9 +94,8 @@ public class CategoryEditor extends AbstractEditor {
     }
 
     public void initDefaultValueColumns() {
-        MetaPropertyPath defaultString = table.getDatasource().getMetaClass().getPropertyPath("defaultEntityId");
-        table.removeGeneratedColumn(defaultString);
-        table.addGeneratedColumn(defaultString.toString(), new Table.ColumnGenerator() {
+        table.removeGeneratedColumn("defaultEntityId");
+        table.addGeneratedColumn("defaultEntityId", new Table.ColumnGenerator() {
             public Component generateCell(Table table, Object itemId) {
                 Label defaultValueLabel = factory.createComponent(Label.NAME);
                 String labelContent = "";

@@ -109,8 +109,13 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
     }
 
     @Override
-    public void setColumnGenerated(Table.Column column) {
-        tableDelegate.setColumnGenerated(column);
+    public void addGeneratedColumn(Table.Column column) {
+        tableDelegate.addGeneratedColumn(column);
+    }
+
+    @Override
+    public void removeGeneratedColumn(Table.Column column) {
+        tableDelegate.removeGeneratedColumn(column);
     }
 
     @Override

@@ -170,8 +170,13 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
     }
 
     @Override
-    public void setColumnGenerated(Table.Column column) {
+    public void addGeneratedColumn(Table.Column column) {
         generatedColumns.add(column);
+    }
+
+    @Override
+    public void removeGeneratedColumn(Table.Column column) {
+        generatedColumns.remove(column);
     }
 
     @Override

@@ -23,7 +23,7 @@ import java.util.List;
 public class DesktopComponentsHelper {
 
     public static final int BUTTON_HEIGHT = 30;
-    public static final int FIELD_HEIGHT = 27;
+    public static final int FIELD_HEIGHT = 21;
 
     public static JComponent unwrap(Component component) {
         Object comp = component;
@@ -105,6 +105,5 @@ public class DesktopComponentsHelper {
 
     public static void adjustSize(JComboBox comboBox) {
         comboBox.setPreferredSize(new Dimension(0, FIELD_HEIGHT));
-        comboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, FIELD_HEIGHT));
     }
 }

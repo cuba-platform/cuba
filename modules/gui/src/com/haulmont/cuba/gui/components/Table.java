@@ -246,5 +246,5 @@ public interface Table
 
     void addGeneratedColumn(String columnId, ColumnGenerator generator);
 
-    void removeGeneratedColumn(Object id);
+    void removeGeneratedColumn(String columnId);
 }

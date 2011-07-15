@@ -140,7 +140,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.addGeneratedColumn(id, (com.vaadin.ui.Table.ColumnGenerator) generator);
     }
 
-    public void removeGeneratedColumn(Object id) {
+    protected void removeGeneratedColumn(Object id) {
         component.removeGeneratedColumn(id);
     }
 
@@ -780,6 +780,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                     }
                 }
         );
+    }
+
+    public void removeGeneratedColumn(String columnId) {
+        MetaPropertyPath targetCol = getDatasource().getMetaClass().getPropertyPath(columnId);
+        removeGeneratedColumn(targetCol);
     }
 
     protected Map<Object, Object> __aggregate(AggregationContainer container, AggregationContainer.Context context) {

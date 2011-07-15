@@ -42,9 +42,7 @@ public class CategoryBrowser extends AbstractLookup{
         table.addAction(new EditAction());
         table.addAction(new RemoveAction(table));
 
-        MetaPropertyPath entityType = table.getDatasource().getMetaClass().getPropertyPath("entityType");
-
-        table.removeGeneratedColumn(entityType);
+        table.removeGeneratedColumn("entityType");
 
         table.addGeneratedColumn("entityType",new Table.ColumnGenerator(){
             @Override

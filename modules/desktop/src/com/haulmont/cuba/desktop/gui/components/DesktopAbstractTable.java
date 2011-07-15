@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -244,8 +245,35 @@ public abstract class DesktopAbstractTable<C extends JTable>
 //            action.setDatasource(datasource);
 //        }
 //
+        datasource.addListener(
+                new CollectionDsListenerAdapter() {
+                    @Override
+                    public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                        onDataChange();
+                    }
+
+                    @Override
+                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+                        onDataChange();
+                    }
+                }
+        );
+
         if (rowsCount != null)
             rowsCount.setDatasource(datasource);
+    }
+
+    protected void onDataChange() {
+        packRows(2);
+
+        Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
+        while (columnEnumeration.hasMoreElements()) {
+            TableColumn tableColumn = columnEnumeration.nextElement();
+            TableCellEditor cellEditor = tableColumn.getCellEditor();
+            if (cellEditor instanceof DesktopAbstractTable.CellEditor) {
+                ((CellEditor) cellEditor).clearCache();
+            }
+        }
     }
 
     protected void initSelectionListener(final CollectionDatasource datasource) {
@@ -356,16 +384,21 @@ public abstract class DesktopAbstractTable<C extends JTable>
         if (generator == null)
             throw new IllegalArgumentException("generator is null");
 
-//        Column col = getColumn(columnId);
-//        tableModel.setColumnGenerated(col);
-//        TableColumnModel columnModel = impl.getColumnModel();
-//        TableColumn tableColumn = columnModel.getColumn(columnModel.getColumnIndex(col));
-//        CellEditor cellEditor = new CellEditor(generator);
-//        tableColumn.setCellEditor(cellEditor);
-//        tableColumn.setCellRenderer(cellEditor);
+        Column col = getColumn(columnId);
+        tableModel.addGeneratedColumn(col);
+        TableColumnModel columnModel = impl.getColumnModel();
+        TableColumn tableColumn = columnModel.getColumn(columnModel.getColumnIndex(col));
+        CellEditor cellEditor = new CellEditor(generator);
+        tableColumn.setCellEditor(cellEditor);
+        tableColumn.setCellRenderer(cellEditor);
     }
 
-    public void removeGeneratedColumn(Object id){
+    public void removeGeneratedColumn(String columnId){
+        if (id == null)
+            throw new IllegalArgumentException("columnId is null");
+
+        Column col = getColumn(columnId);
+        tableModel.removeGeneratedColumn(col);
     }
 
     public boolean isEditable() {
@@ -492,9 +525,46 @@ public abstract class DesktopAbstractTable<C extends JTable>
         return popup;
     }
 
+    /**
+     * Returns the preferred height of a row.
+     * The result is equal to the tallest cell in the row.
+     * @param rowIndex row index
+     * @param margin margin to add to the renderer height
+     * @return row height
+     */
+    public int getPreferredRowHeight(int rowIndex, int margin) {
+        // Get the current default height for all rows
+        int height = impl.getRowHeight();
+
+        // Determine highest cell in the row
+        for (int c = 0; c < impl.getColumnCount(); c++) {
+            TableCellRenderer renderer = impl.getCellRenderer(rowIndex, c);
+            Component comp = impl.prepareRenderer(renderer, rowIndex, c);
+            int h = comp.getPreferredSize().height + 2 * margin;
+            height = Math.max(height, h);
+        }
+        return height;
+    }
+
+    /**
+     * Sets the height of each row into the preferred height of the
+     * tallest cell in that row.
+     * @param margin margin to add to the renderer height
+     */
+    public void packRows(int margin) {
+        for (int r = 0; r < impl.getRowCount(); r++) {
+            int h = getPreferredRowHeight(r, margin);
+
+            if (impl.getRowHeight(r) != h) {
+                impl.setRowHeight(r, h);
+            }
+        }
+    }
+
     private class CellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
         private ColumnGenerator columnGenerator;
+        private Map<Integer, Component> cache = new HashMap<Integer, Component>();
 
         public CellEditor(ColumnGenerator columnGenerator) {
             this.columnGenerator = columnGenerator;
@@ -503,11 +573,14 @@ public abstract class DesktopAbstractTable<C extends JTable>
         private Component getCellComponent(int row) {
             Entity item = tableModel.getItem(row);
             com.haulmont.cuba.gui.components.Component component = columnGenerator.generateCell(DesktopAbstractTable.this, item.getId());
+            Component comp;
             if (component == null)
-                return null;
+                comp = new JLabel("");
             else {
-                return DesktopComponentsHelper.getComposition(component);
+                comp = DesktopComponentsHelper.getComposition(component);
             }
+            cache.put(row, comp);
+            return comp;
         }
 
         @Override
@@ -522,7 +595,16 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            return getCellComponent(row);
+            Component component = cache.get(row);
+            if (component == null) {
+                component = getCellComponent(row);
+                cache.put(row, component);
+            }
+            return component;
+        }
+
+        public void clearCache() {
+            cache.clear();
         }
     }
 }

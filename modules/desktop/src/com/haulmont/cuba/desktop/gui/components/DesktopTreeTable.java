@@ -171,4 +171,9 @@ public class DesktopTreeTable
             impl.getTreeSelectionModel().addSelectionPath(treePath);
         }
     }
+
+    @Override
+    public void packRows(int margin) {
+        // not supported on JXTreeTable
+    }
 }
