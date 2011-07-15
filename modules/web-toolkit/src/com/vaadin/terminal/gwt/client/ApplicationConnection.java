@@ -223,7 +223,7 @@ public class ApplicationConnection {
 
         view.init(cnf.getRootPanelId(), this);
 
-        showLoadingIndicator();
+        showLoadingIndicator(false);
     }
 
     /**
@@ -719,7 +719,7 @@ public class ApplicationConnection {
                      * should make it visible
                      */
                     if (loadTimer != null) {
-                        showLoadingIndicator();
+                        showLoadingIndicator(true);
                     }
 
                 }
@@ -784,7 +784,7 @@ public class ApplicationConnection {
         }
     }
 
-    private void showLoadingIndicator() {
+    private void showLoadingIndicator(boolean blockUI) {
         // show initial throbber
         if (loadElement == null) {
             loadElement = DOM.createDiv();
@@ -796,15 +796,17 @@ public class ApplicationConnection {
         DOM.setStyleAttribute(loadElement, "display", "block");
         // Initialize other timers
 
-        blockUITimer = new Timer() {
-            @Override
-            public void run() {
-                uiBlocked = true;
-                blockUI();
-            }
-        };
-        // Block UI after 1.5 sec delay
-        blockUITimer.schedule(1500);
+        if (blockUI) {
+            blockUITimer = new Timer() {
+                @Override
+                public void run() {
+                    uiBlocked = true;
+                    blockUI();
+                }
+            };
+            // Block UI after 1.5 sec delay
+            blockUITimer.schedule(1500);
+        }
 
         for (HasIndicator component: indicators) {
             component.showLoadingIndicator(true);
