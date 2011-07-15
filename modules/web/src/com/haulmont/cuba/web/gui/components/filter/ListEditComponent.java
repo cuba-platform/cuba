@@ -78,7 +78,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent event) {
                         ListEditWindow window = new ListEditWindow(values);
-                        getWindow().addWindow(window);
+                        com.haulmont.cuba.web.App.getInstance().getAppWindow().addWindow(window);
                     }
                 }
         );
