@@ -60,6 +60,8 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
     private String lookupScreen;
     private WindowManager.OpenType lookupOpenMode = WindowManager.OpenType.THIS_TAB;
 
+    private TokenStyleGenerator tokenStyleGenerator;
+
     private boolean lookup;
 
     private boolean editable;
@@ -293,6 +295,14 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
         this.simple = simple;
     }
 
+    public void setTokenStyleGenerator(TokenStyleGenerator tokenStyleGenerator) {
+        this.tokenStyleGenerator = tokenStyleGenerator;
+    }
+
+    public TokenStyleGenerator getTokenStyleGenerator() {
+        return tokenStyleGenerator;
+    }
+
     protected String instanceCaption(Instance instance) {
         if (instance == null) { return ""; }
         if (instance.getMetaClass().getPropertyEx(captionProperty) != null) {
@@ -447,6 +457,7 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
                 } else {
                     f.setValue(item);
                 }
+                setTokenStyle(f, itemId);
                 container.addComponent(f);
             }
 
@@ -525,6 +536,15 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
         @Override
         public Class<?> getType() {
             return List.class;
+        }
+
+        protected void setTokenStyle(TokenListLabel label, Object itemId) {
+            if (tokenStyleGenerator != null) {
+                String styleName = tokenStyleGenerator.getStyle(itemId);
+                if (styleName != null && !styleName.equals("")) {
+                    label.setStyleName(styleName);
+                }
+            }
         }
     }
 

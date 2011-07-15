@@ -77,6 +77,13 @@ public interface TokenList extends Component, Component.BelongToFrame,
     ItemChangeHandler getItemChangeHandler();
     void setItemChangeHandler(ItemChangeHandler handler);
 
+    void setTokenStyleGenerator(TokenStyleGenerator tokenStyleGenerator);
+    TokenStyleGenerator getTokenStyleGenerator();
+
+    public interface TokenStyleGenerator {
+        String getStyle(Object itemId);
+    }
+
     interface ItemChangeHandler {
         void addItem(Object item);
         void removeItem(Object item);
