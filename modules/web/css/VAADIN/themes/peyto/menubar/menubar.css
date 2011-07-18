@@ -2,10 +2,6 @@
     padding-top: 3px;
 }
 
-.v-ie .v-menubar {
-    padding-top: 0;
-}
-
 .v-menubar table {
     font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif;
     font-size: 11px;

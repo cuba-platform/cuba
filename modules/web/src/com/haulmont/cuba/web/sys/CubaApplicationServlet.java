@@ -361,7 +361,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
             page.write("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7\" />\n");
 */
         }
-        page.write("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=8\"/>\n");
+        page.write("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\"/>\n");
         page.write("<style type=\"text/css\">"
                 + "html, body {height:100%;margin:0;}</style>");
 

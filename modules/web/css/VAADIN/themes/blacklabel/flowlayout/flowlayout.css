@@ -29,7 +29,7 @@
     padding: 0 5px 5px 0;
 }
 
-.v-ie .flow-layout .flow-layout-widget {
+.v-ie7 .flow-layout .flow-layout-widget, .v-ie8 .flow-layout .flow-layout-widget {
     display: inline;
     zoom: 1;
 }

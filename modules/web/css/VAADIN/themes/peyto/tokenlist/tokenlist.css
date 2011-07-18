@@ -40,6 +40,6 @@
 
 
 /* fix css for IE */
-.v-ie .token-list.inline .token-list-label .content {
+.v-ie7 .token-list.inline .token-list-label .content, .v-ie8 .token-list.inline .token-list-label .content {
     overflow: visible;
 }

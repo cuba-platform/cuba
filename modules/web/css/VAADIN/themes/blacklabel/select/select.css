@@ -100,9 +100,9 @@
     font-size: 8pt;
 }
 
-.v-ie .v-app .v-filterselect .v-filterselect-input,
-.v-ie .v-window .v-filterselect .v-filterselect-input,
-.v-ie .v-popupview-popup .v-filterselect .v-filterselect-input {
+.v-ie7 .v-app .v-filterselect .v-filterselect-input, .v-ie8 .v-app .v-filterselect .v-filterselect-input,
+.v-ie7 .v-window .v-filterselect .v-filterselect-input, .v-ie8 .v-window .v-filterselect .v-filterselect-input,
+.v-ie7 .v-popupview-popup .v-filterselect .v-filterselect-input, .v-ie8 .v-popupview-popup .v-filterselect .v-filterselect-input {
     padding-top: 3px;
 }
 

@@ -103,9 +103,9 @@
     background: #fff url(img/bg-center-filter-readonly.png) no-repeat right top;
 }
 
-.v-ie .v-app .v-filterselect .v-filterselect-input,
-.v-ie .v-window .v-filterselect .v-filterselect-input,
-.v-ie .v-popupview-popup .v-filterselect .v-filterselect-input {
+.v-ie7 .v-app .v-filterselect .v-filterselect-input,
+.v-ie7 .v-window .v-filterselect .v-filterselect-input,
+.v-ie7 .v-popupview-popup .v-filterselect .v-filterselect-input {
     padding-top: 4px;
     margin-top: -1px;
 }
@@ -113,6 +113,7 @@
 .v-ie8 .v-app .v-filterselect .v-filterselect-input,
 .v-ie8 .v-window .v-filterselect .v-filterselect-input,
 .v-ie8 .v-popupview-popup .v-filterselect .v-filterselect-input {
+    padding-top: 4px;
     margin-top: 0;
 }
 

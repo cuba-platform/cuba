@@ -185,13 +185,13 @@ float: none;
 .v-ie6 .v-nativebutton {
 width: 1px;
 }
-.v-ie .v-nativebutton {
+.v-ie7 .v-nativebutton, .v-ie8 .v-nativebutton {
 overflow: visible;
 padding-left: 1em;
 padding-right: 1em;
 }
 
-.v-ie .v-nativebutton-link {
+.v-ie7 .v-nativebutton-link, .v-ie8 .v-nativebutton-link {
 padding: 0;
 }
 
