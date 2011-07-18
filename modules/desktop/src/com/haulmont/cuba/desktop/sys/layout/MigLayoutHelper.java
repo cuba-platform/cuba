@@ -11,7 +11,6 @@ import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.Component;
 import net.miginfocom.layout.CC;
-import net.miginfocom.layout.PlatformDefaults;
 import net.miginfocom.layout.UnitValue;
 import org.apache.commons.lang.StringUtils;
 
@@ -24,10 +23,19 @@ public class MigLayoutHelper {
 
     public static UnitValue[] makeInsets(boolean[] margins) {
         UnitValue[] unitValues = new UnitValue[4];
-        for (int i = 0; i < unitValues.length; i++) {
-            unitValues[i] = margins[i] ? PlatformDefaults.getPanelInsets(i) : new UnitValue(0);
-        }
+
+        // at cuba it's       top, right, bottom, left
+        // at MigLayout it's  top, left, bottom, right
+        unitValues[0] = makeInsetValue(margins[0]);
+        unitValues[1] = makeInsetValue(margins[3]);
+        unitValues[2] = makeInsetValue(margins[2]);
+        unitValues[3] = makeInsetValue(margins[1]);
+
         return unitValues;
+    }
+
+    private static UnitValue makeInsetValue(boolean margin) {
+        return margin ? null : new UnitValue(0);
     }
 
     public static CC getExpandConstraints(String width, String height) {
