@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.sys.vcl;
 
 import com.haulmont.cuba.desktop.App;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -59,7 +60,7 @@ public class CollapsiblePanel extends JPanel {
         titleBtn.setFont(UIManager.getLookAndFeelDefaults().getFont("Panel.font"));
         titleBtn.setFocusable(false);
         titleBtn.setContentAreaFilled(false);
-        titleBtn.setVisible(true);
+        titleBtn.setVisible(false);
 
         titleBtn.addActionListener(new ActionListener() {
             @Override
@@ -175,6 +176,11 @@ public class CollapsiblePanel extends JPanel {
     }
 
     public void setCaption(String caption) {
+        if (StringUtils.isEmpty(caption))
+            titleBtn.setVisible(false);
+        else
+            titleBtn.setVisible(true);
+
         titleBtn.setText(caption);
         placeTitleComponent();
     }
@@ -231,6 +237,11 @@ public class CollapsiblePanel extends JPanel {
 
         @Override
         public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            if (StringUtils.isEmpty(getCaption())) {
+                super.paintBorder(c, g, x, y, width, height);
+                return;
+            }
+
             Rectangle borderR = new Rectangle(x + EDGE_SPACING, y + EDGE_SPACING, width - (EDGE_SPACING * 2), height - (EDGE_SPACING * 2));
             Insets borderInsets = new Insets(3, 3, 3, 3);
 
