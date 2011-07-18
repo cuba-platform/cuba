@@ -31,7 +31,10 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
     public AbstractPropertyCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
         super(element, filterComponentName, datasource);
 
-        this.locCaption = MessageUtils.loadString(messagesPack, caption);
+        String propertyPath = datasource.getMetaClass().getJavaClass().getSimpleName() + "." + name;
+        this.locCaption = MessageProvider.getMessage(datasource.getMetaClass().getJavaClass(), propertyPath);
+        if (locCaption == null || locCaption.equals(propertyPath))
+            this.locCaption = MessageUtils.loadString(messagesPack, caption);
 
         String text = element.getText();
         Matcher matcher = PATTERN_NULL.matcher(text);
