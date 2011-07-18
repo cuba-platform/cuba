@@ -132,29 +132,6 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
                             return;
                         Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         setValue(value);
-
-//                        if (value == null) {
-//                            setSelectedItem(null);
-//                            return;
-//                        }
-//
-//                        Object selectedItem;
-//                        if (optionsMap != null) {
-//                            for (Map.Entry<String, Object> entry : optionsMap.entrySet()) {
-//                                if (value.equals(entry.getValue())) {
-//                                    setSelectedItem(new MapKeyWrapper(entry.getKey()));
-//                                    return;
-//                                }
-//                            }
-//                            setSelectedItem(null);
-//                            return;
-//                        }
-//
-//                        if (value instanceof Entity) {
-//                            selectedItem = new EntityWrapper((Entity) value);
-//                        } else
-//                            selectedItem = new ObjectWrapper(value);
-//                        setSelectedItem(selectedItem);
                     }
 
                     @Override
@@ -163,17 +140,6 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
                             return;
                         if (property.equals(metaPropertyPath.toString())) {
                             setValue(value);
-//                            updatingInstance = true;
-//                            try {
-//                                Object selectedItem;
-//                                if (value instanceof Entity) {
-//                                    selectedItem = new EntityWrapper((Entity) value);
-//                                } else
-//                                    throw new UnsupportedOperationException(); // TODO
-//                                setSelectedItem(selectedItem);
-//                            } finally {
-//                                updatingInstance = false;
-//                            }
                         }
                     }
                 }
@@ -197,8 +163,9 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
 
     @Override
     public <T> T getValue() {
-        ValueWrapper selectedItem = (ValueWrapper) getSelectedItem();
-        return selectedItem != null ? (T) selectedItem.getValue() : null;
+        Object selectedItem = getSelectedItem();
+        return selectedItem != null && selectedItem instanceof ValueWrapper ?
+                (T) ((ValueWrapper) selectedItem).getValue() : null;
     }
 
     @Override

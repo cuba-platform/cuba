@@ -19,10 +19,9 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+import java.awt.event.*;
 
 /**
  * <p>$Id$</p>
@@ -57,11 +56,15 @@ public class DesktopLookupField
                 }
             });
         }
-
-        impl.addActionListener(
-                new ActionListener() {
+        // set value only on PopupMenu closing to avoid firing listeners on keyboard navigation
+        impl.addPopupMenuListener(
+                new PopupMenuListener() {
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                    }
+
+                    @Override
+                    public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
                         Object selectedItem = impl.getSelectedItem();
                         if (selectedItem instanceof ValueWrapper) {
                             ValueWrapper newValue = (ValueWrapper) selectedItem;
@@ -72,7 +75,13 @@ public class DesktopLookupField
                             }
                         } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
                             newOptionHandler.addNewOption((String) selectedItem);
+                        } else {
+                            impl.setSelectedItem(prevValue);
                         }
+                    }
+
+                    @Override
+                    public void popupMenuCanceled(PopupMenuEvent e) {
                     }
                 }
         );
