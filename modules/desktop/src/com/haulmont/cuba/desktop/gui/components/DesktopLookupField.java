@@ -9,10 +9,14 @@ package com.haulmont.cuba.desktop.gui.components;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
 import ca.odell.glazedlists.swing.AutoCompleteSupport;
+import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -34,6 +38,9 @@ public class DesktopLookupField
     private AutoCompleteSupport<Object> autoComplete;
     private ValueWrapper prevValue;
     private String caption;
+    private boolean editable;
+    private NewOptionHandler newOptionHandler;
+    private boolean newOptionAllowed;
 
     public DesktopLookupField() {
         impl = new JComboBox();
@@ -55,11 +62,16 @@ public class DesktopLookupField
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        ValueWrapper newValue = (ValueWrapper) impl.getSelectedItem();
-                        if (newValue != prevValue) {
-                            updateValue(newValue);
-                            fireValueChanged(prevValue == null ? null : prevValue.getValue(), newValue == null ? null : newValue.getValue());
-                            prevValue = newValue;
+                        Object selectedItem = impl.getSelectedItem();
+                        if (selectedItem instanceof ValueWrapper) {
+                            ValueWrapper newValue = (ValueWrapper) selectedItem;
+                            if (newValue != prevValue) {
+                                updateValue(newValue);
+                                fireValueChanged(prevValue == null ? null : prevValue.getValue(), newValue == null ? null : newValue.getValue());
+                                prevValue = newValue;
+                            }
+                        } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
+                            newOptionHandler.addNewOption((String) selectedItem);
                         }
                     }
                 }
@@ -101,6 +113,18 @@ public class DesktopLookupField
             for (Object id : optionsDatasource.getItemIds()) {
                 items.add(new EntityWrapper(optionsDatasource.getItem(id)));
             }
+
+            optionsDatasource.addListener(
+                    new CollectionDsListenerAdapter<Entity<Object>>() {
+                        @Override
+                        public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                            items.clear();
+                            for (Object id : optionsDatasource.getItemIds()) {
+                                items.add(new EntityWrapper(optionsDatasource.getItem(id)));
+                            }
+                        }
+                    }
+            );
         } else if (optionsMap != null) {
             for (String key : optionsMap.keySet()) {
                 items.add(new MapKeyWrapper(key));
@@ -108,6 +132,11 @@ public class DesktopLookupField
         } else if (optionsList != null) {
             for (Object obj : optionsList) {
                 items.add(new ObjectWrapper(obj));
+            }
+        } else if (datasource != null && metaProperty != null && metaProperty.getRange().isEnum()) {
+            Enumeration<Enum> enumeration = metaProperty.getRange().asEnumeration();
+            for (Enum en : enumeration.getValues()) {
+                items.add(new ObjectWrapper(en));
             }
         }
 
@@ -137,20 +166,22 @@ public class DesktopLookupField
 
     @Override
     public boolean isNewOptionAllowed() {
-        return false;
+        return newOptionAllowed;
     }
 
     @Override
     public void setNewOptionAllowed(boolean newOptionAllowed) {
+        this.newOptionAllowed = newOptionAllowed;
     }
 
     @Override
     public NewOptionHandler getNewOptionHandler() {
-        return null;
+        return newOptionHandler;
     }
 
     @Override
     public void setNewOptionHandler(NewOptionHandler newOptionHandler) {
+        this.newOptionHandler = newOptionHandler;
     }
 
     @Override
@@ -196,11 +227,13 @@ public class DesktopLookupField
 
     @Override
     public boolean isEditable() {
-        return true;
+        return editable;
     }
 
     @Override
     public void setEditable(boolean editable) {
+        this.editable = editable;
+        impl.setEnabled(editable);
     }
 
     @Override

@@ -12,6 +12,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.OptionsField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -293,10 +294,14 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         public String toString() {
             if (obj == null)
                 return "";
+
             if (obj instanceof Instance)
                 return InstanceUtils.getInstanceName((Instance) obj);
-            else
-                return obj.toString();
+
+            if (obj instanceof Enum)
+                return MessageProvider.getMessage((Enum) obj);
+
+            return obj.toString();
         }
 
         @Override
