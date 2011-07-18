@@ -85,6 +85,17 @@ public class DesktopLookupField
                     }
                 }
         );
+        impl.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Object selectedItem = impl.getSelectedItem();
+                        if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
+                            newOptionHandler.addNewOption((String) selectedItem);
+                        }
+                    }
+                }
+        );
 
         setFilterMode(FilterMode.CONTAINS);
 
