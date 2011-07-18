@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.presentations.PresentationsChangeListener;
 import com.haulmont.cuba.security.entity.Presentation;
 import org.dom4j.Element;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -200,6 +201,31 @@ public interface Component {
     interface Expandable extends Component {
         void setExpandable(boolean expandable);
         boolean isExpandable();
+    }
+
+    /**
+     * Is able to collapse (folding)
+     */
+    interface Collapsible {
+        boolean isExpanded();
+        void setExpanded(boolean expanded);
+
+        boolean isCollapsible();
+        void setCollapsible(boolean collapsable);
+
+        void addListener(ExpandListener listener);
+        void removeListener(ExpandListener listener);
+
+        void addListener(CollapseListener listener);
+        void removeListener(CollapseListener listener);
+
+        interface ExpandListener extends Serializable {
+            void onExpand(Collapsible component);
+        }
+
+        interface CollapseListener extends Serializable {
+            void onCollapse(Collapsible component);
+        }
     }
 
     interface Disposable {

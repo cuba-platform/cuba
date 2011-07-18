@@ -9,6 +9,8 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.GroupBox;
+import org.apache.commons.lang.BooleanUtils;
+import org.dom4j.Element;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,13 +67,13 @@ public class DesktopGroupBox
     }
 
     @Override
-    public boolean isCollapsable() {
+    public boolean isCollapsible() {
         return collapsiblePanel.isCollapsable();
     }
 
     @Override
-    public void setCollapsable(boolean collapsable) {
-        collapsiblePanel.setCollapsable(collapsable);
+    public void setCollapsible(boolean collapsible) {
+        collapsiblePanel.setCollapsible(collapsible);
     }
 
     @Override
@@ -170,5 +172,25 @@ public class DesktopGroupBox
     @Override
     public JComponent getComposition() {
         return collapsiblePanel;
+    }
+
+    public void applySettings(Element element) {
+        Element groupBoxElement = element.element("groupBox");
+        if (groupBoxElement != null) {
+            String expanded = groupBoxElement.attributeValue("expanded");
+            if (expanded != null) {
+                setExpanded(BooleanUtils.toBoolean(expanded));
+            }
+        }
+    }
+
+    public boolean saveSettings(Element element) {
+        Element groupBoxElement = element.element("groupBox");
+        if (groupBoxElement != null) {
+            element.remove(groupBoxElement);
+        }
+        groupBoxElement = element.addElement("groupBox");
+        groupBoxElement.addAttribute("expanded", BooleanUtils.toStringTrueFalse(isExpanded()));
+        return true;
     }
 }

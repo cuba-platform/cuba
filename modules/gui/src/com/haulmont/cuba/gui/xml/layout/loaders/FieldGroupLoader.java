@@ -93,7 +93,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         loadHeight(component, element);
         loadWidth(component, element);
 
-        loadCollapsable(component, element);
+        loadCollapsible(component, element);
         loadExpandable(component, element);
 
         loadCaptionAlignment(component, element);
@@ -339,20 +339,6 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         String captionAlignment = element.attributeValue("captionAlignment");
         if (!StringUtils.isEmpty(captionAlignment)) {
             component.setCaptionAlignment(FieldGroup.FieldCaptionAlignment.valueOf(captionAlignment));
-        }
-    }
-
-    private void loadCollapsable(FieldGroup component, Element element) {
-        String collapsable = element.attributeValue("collapsable");
-        if (!StringUtils.isEmpty(collapsable)) {
-            boolean b = BooleanUtils.toBoolean(collapsable);
-            component.setCollapsable(b);
-            if (b) {
-                String expanded = element.attributeValue("expanded");
-                if (!StringUtils.isBlank(expanded)) {
-                    component.setExpanded(BooleanUtils.toBoolean(expanded));
-                }
-            }
         }
     }
 }

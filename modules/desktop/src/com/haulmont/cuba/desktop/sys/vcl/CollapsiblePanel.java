@@ -18,6 +18,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 /**
+ * Panel with border and collapse/expand button
  * <p>$Id$</p>
  *
  * @author artamonov
@@ -134,8 +135,8 @@ public class CollapsiblePanel extends JPanel {
     }
 
     public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
         if (collapsable) {
-            this.expanded = expanded;
             if (expanded)
                 expandPanel();
             else
@@ -147,7 +148,7 @@ public class CollapsiblePanel extends JPanel {
         return collapsable;
     }
 
-    public void setCollapsable(boolean collapsable) {
+    public void setCollapsible(boolean collapsable) {
         this.collapsable = collapsable;
         if (collapsable) {
             setExpanded(true);
@@ -231,7 +232,7 @@ public class CollapsiblePanel extends JPanel {
         @Override
         public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
             Rectangle borderR = new Rectangle(x + EDGE_SPACING, y + EDGE_SPACING, width - (EDGE_SPACING * 2), height - (EDGE_SPACING * 2));
-            Insets borderInsets = new Insets(3, 10, 10, 10);
+            Insets borderInsets = new Insets(3, 3, 3, 3);
 
             Rectangle rect = new Rectangle(x, y, width, height);
             Insets insets = getBorderInsets(c);

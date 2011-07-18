@@ -483,11 +483,11 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         component.setExpanded(expanded);
     }
 
-    public boolean isCollapsable() {
+    public boolean isCollapsible() {
         return component.isCollapsable();
     }
 
-    public void setCollapsable(boolean collapsable) {
+    public void setCollapsible(boolean collapsable) {
         component.setCollapsable(collapsable);
     }
 
@@ -757,7 +757,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             element.remove(fieldGroupElement);
         }
         fieldGroupElement = element.addElement("fieldGroup");
-        fieldGroupElement.addAttribute("expanded", String.valueOf(isExpanded()));
+        fieldGroupElement.addAttribute("expanded", BooleanUtils.toStringTrueFalse(isExpanded()));
         return true;
     }
 

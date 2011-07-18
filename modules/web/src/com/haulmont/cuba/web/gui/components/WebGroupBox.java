@@ -21,7 +21,9 @@ import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.Layout;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.dom4j.Element;
 
 import java.util.*;
 
@@ -112,11 +114,11 @@ public class WebGroupBox extends WebAbstractPanel implements GroupBox {
         }
     }
 
-    public boolean isCollapsable() {
+    public boolean isCollapsible() {
         return collapsable;
     }
 
-    public void setCollapsable(boolean collapsable) {
+    public void setCollapsible(boolean collapsable) {
         this.collapsable = collapsable;
         if (collapsable) {
             setExpanded(true);
@@ -199,8 +201,8 @@ public class WebGroupBox extends WebAbstractPanel implements GroupBox {
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
-        target.addAttribute("collapsable", isCollapsable());
-        if (isCollapsable()) {
+        target.addAttribute("collapsable", isCollapsible());
+        if (isCollapsible()) {
             target.addAttribute("expanded", isExpanded());
         }
     }
@@ -208,7 +210,7 @@ public class WebGroupBox extends WebAbstractPanel implements GroupBox {
     @Override
     public void changeVariables(Object source, Map variables) {
         super.changeVariables(source, variables);
-        if (isCollapsable()) {
+        if (isCollapsible()) {
             if (variables.containsKey("expand")) {
                 setExpanded(true);
                 getContent().requestRepaintAll();
@@ -221,5 +223,25 @@ public class WebGroupBox extends WebAbstractPanel implements GroupBox {
                 fireCollapseListeners();
             }
         }
+    }
+
+    public void applySettings(Element element) {
+        Element groupBoxElement = element.element("groupBox");
+        if (groupBoxElement != null) {
+            String expanded = groupBoxElement.attributeValue("expanded");
+            if (expanded != null) {
+                setExpanded(BooleanUtils.toBoolean(expanded));
+            }
+        }
+    }
+
+    public boolean saveSettings(Element element) {
+        Element groupBoxElement = element.element("groupBox");
+        if (groupBoxElement != null) {
+            element.remove(groupBoxElement);
+        }
+        groupBoxElement = element.addElement("groupBox");
+        groupBoxElement.addAttribute("expanded", BooleanUtils.toStringTrueFalse(isExpanded()));
+        return true;
     }
 }

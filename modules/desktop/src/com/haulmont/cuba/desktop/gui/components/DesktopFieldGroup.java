@@ -23,11 +23,11 @@ import com.haulmont.cuba.gui.data.DsContext;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -58,8 +58,8 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     private CollapsiblePanel collapsiblePanel;
 
-    private List<FieldGroup.ExpandListener> expandListeners = null;
-    private List<FieldGroup.CollapseListener> collapseListeners = null;
+    private List<ExpandListener> expandListeners = null;
+    private List<CollapseListener> collapseListeners = null;
 
     public DesktopFieldGroup() {
         LC lc = new LC();
@@ -108,23 +108,23 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
-    public boolean isCollapsable() {
+    public boolean isCollapsible() {
         return collapsiblePanel.isCollapsable();
     }
 
     @Override
-    public void setCollapsable(boolean collapsable) {
-        collapsiblePanel.setCollapsable(collapsable);
+    public void setCollapsible(boolean collapsable) {
+        collapsiblePanel.setCollapsible(collapsable);
     }
 
-    public void addListener(FieldGroup.ExpandListener listener) {
+    public void addListener(ExpandListener listener) {
         if (expandListeners == null) {
-            expandListeners = new ArrayList<FieldGroup.ExpandListener>();
+            expandListeners = new ArrayList<ExpandListener>();
         }
         expandListeners.add(listener);
     }
 
-    public void removeListener(FieldGroup.ExpandListener listener) {
+    public void removeListener(ExpandListener listener) {
         if (expandListeners != null) {
             expandListeners.remove(listener);
             if (expandListeners.isEmpty()) {
@@ -135,20 +135,20 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     private void fireExpandListeners() {
         if (expandListeners != null) {
-            for (final FieldGroup.ExpandListener expandListener : expandListeners) {
+            for (final ExpandListener expandListener : expandListeners) {
                 expandListener.onExpand(this);
             }
         }
     }
 
-    public void addListener(FieldGroup.CollapseListener listener) {
+    public void addListener(CollapseListener listener) {
         if (collapseListeners == null) {
-            collapseListeners = new ArrayList<FieldGroup.CollapseListener>();
+            collapseListeners = new ArrayList<CollapseListener>();
         }
         collapseListeners.add(listener);
     }
 
-    public void removeListener(FieldGroup.CollapseListener listener) {
+    public void removeListener(CollapseListener listener) {
         if (collapseListeners != null) {
             collapseListeners.remove(listener);
             if (collapseListeners.isEmpty()) {
@@ -159,7 +159,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     private void fireCollapseListeners() {
         if (collapseListeners != null) {
-            for (final FieldGroup.CollapseListener collapseListener : collapseListeners) {
+            for (final CollapseListener collapseListener : collapseListeners) {
                 collapseListener.onCollapse(this);
             }
         }
@@ -556,10 +556,23 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     public void applySettings(Element element) {
+        Element fieldGroupElement = element.element("fieldGroup");
+        if (fieldGroupElement != null) {
+            String expanded = fieldGroupElement.attributeValue("expanded");
+            if (expanded != null) {
+                setExpanded(BooleanUtils.toBoolean(expanded));
+            }
+        }
     }
 
     public boolean saveSettings(Element element) {
-        return false;
+        Element fieldGroupElement = element.element("fieldGroup");
+        if (fieldGroupElement != null) {
+            element.remove(fieldGroupElement);
+        }
+        fieldGroupElement = element.addElement("fieldGroup");
+        fieldGroupElement.addAttribute("expanded", BooleanUtils.toStringTrueFalse(isExpanded()));
+        return true;
     }
 
     public Collection<Component> getComponents() {

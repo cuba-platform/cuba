@@ -226,6 +226,20 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
     }
 
+    protected void loadCollapsible(Component.Collapsible component, Element element) {
+        String collapsable = element.attributeValue("collapsable");
+        if (!StringUtils.isEmpty(collapsable)) {
+            boolean b = BooleanUtils.toBoolean(collapsable);
+            component.setCollapsible(b);
+            if (b) {
+                String collapsed = element.attributeValue("collapsed");
+                if (!StringUtils.isBlank(collapsed)) {
+                    component.setExpanded(!BooleanUtils.toBoolean(collapsed));
+                }
+            }
+        }
+    }
+
     protected void assignFrame(final Component.BelongToFrame component) {
         if (context.getFrame() != null) {
             component.setFrame(context.getFrame());

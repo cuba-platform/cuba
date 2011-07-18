@@ -17,7 +17,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 public interface FieldGroup extends Component, Component.BelongToFrame,
-        Component.HasCaption, Component.Editable, Component.Expandable, Component.HasSettings, Component.Validatable {
+        Component.HasCaption, Component.Editable, Component.Expandable, Component.Collapsible, Component.HasSettings, Component.Validatable {
 
     String NAME = "fieldGroup";
 
@@ -38,12 +38,6 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
 
     void addValidator(Field field, com.haulmont.cuba.gui.components.Field.Validator validator);
     void addValidator(String fieldId, com.haulmont.cuba.gui.components.Field.Validator validator);
-
-    boolean isCollapsable();
-    void setCollapsable(boolean collapsable);
-
-    boolean isExpanded();
-    void setExpanded(boolean expanded);
 
     boolean isEditable(Field field);
     void setEditable(Field field, boolean editable);
@@ -77,12 +71,6 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
 
     void addCustomField(String fieldId, CustomFieldGenerator fieldGenerator);
     void addCustomField(Field field, CustomFieldGenerator fieldGenerator);
-
-    void addListener(ExpandListener listener);
-    void removeListener(ExpandListener listener);
-
-    void addListener(CollapseListener listener);
-    void removeListener(CollapseListener listener);
 
     void postInit();
 
@@ -204,14 +192,6 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
         public void setProblemFields(Map<Field, Exception> problemFields) {
             this.problemFields = problemFields;
         }
-    }
-
-    interface ExpandListener extends Serializable {
-        void onExpand(FieldGroup component);
-    }
-
-    interface CollapseListener extends Serializable {
-        void onCollapse(FieldGroup component);
     }
 
     interface CustomFieldGenerator extends Serializable {
