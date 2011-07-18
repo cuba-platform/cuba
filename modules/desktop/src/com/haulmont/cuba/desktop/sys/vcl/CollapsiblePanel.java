@@ -1,0 +1,348 @@
+/*
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+package com.haulmont.cuba.desktop.sys.vcl;
+
+import com.haulmont.cuba.desktop.App;
+
+import javax.annotation.Nullable;
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+/**
+ * <p>$Id$</p>
+ *
+ * @author artamonov
+ */
+public class CollapsiblePanel extends JPanel {
+
+    private static final int COLLAPSED_HEIGHT = 10;
+
+    private boolean expanded = true;
+    private boolean collapsable = false;
+
+    private JComponent composition;
+    private JButton titleBtn;
+
+    private Dimension preferredSize;
+
+    public interface CollapseListener extends java.util.EventListener {
+
+        public void collapsed();
+
+        public void expanded();
+    }
+
+    java.util.List<CollapseListener> collapseListeners;
+
+    private Icon expandedIcon;
+    private Icon collapsedIcon;
+
+    public CollapsiblePanel(JComponent composition) {
+        this.composition = composition;
+
+        titleBtn = new JButton();
+        titleBtn.setBorder(BorderFactory.createEmptyBorder(0, 3, 5, 3));
+        titleBtn.setVerticalTextPosition(AbstractButton.CENTER);
+        titleBtn.setHorizontalTextPosition(AbstractButton.RIGHT);
+        titleBtn.setMargin(new Insets(0, 0, 3, 0));
+
+        titleBtn.setFont(UIManager.getLookAndFeelDefaults().getFont("Panel.font"));
+        titleBtn.setFocusable(false);
+        titleBtn.setContentAreaFilled(false);
+        titleBtn.setVisible(true);
+
+        titleBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (isCollapsable())
+                    setExpanded(!isExpanded());
+            }
+        });
+
+        // Add icons
+        loadIcons();
+        refreshTitleIcon();
+
+        setLayout(new BorderLayout());
+        add(titleBtn, BorderLayout.CENTER);
+        add(composition, BorderLayout.CENTER);
+
+        setBorder(new CollapsibleTitledBorder(null, titleBtn));
+
+        preferredSize = getPreferredSize();
+
+        placeTitleComponent();
+    }
+
+    private void refreshTitleIcon() {
+        if (collapsable) {
+            if (expanded)
+                titleBtn.setIcon(expandedIcon);
+            else
+                titleBtn.setIcon(collapsedIcon);
+        } else
+            titleBtn.setIcon(null);
+    }
+
+    private void placeTitleComponent() {
+        Insets insets = getInsets();
+        Rectangle containerRectangle = getBounds();
+        Rectangle componentRectangle = ((CollapsibleTitledBorder)getBorder()).getComponentRect(containerRectangle, insets);
+        titleBtn.setBounds(componentRectangle);
+    }
+
+    private void loadIcons() {
+        expandedIcon = App.getInstance().getResources().getIcon("icons/item-expanded.png");
+        collapsedIcon = App.getInstance().getResources().getIcon("icons/item-collapsed.png");
+    }
+
+    private void expandPanel() {
+        add(composition, BorderLayout.CENTER);
+
+        titleBtn.setIcon(expandedIcon);
+        setPreferredSize(preferredSize);
+        updateUI();
+
+        fireExpandListeners();
+    }
+
+    private void collapsePanel() {
+        int collapsedWidth = getWidth();
+        int collapsedHeight = COLLAPSED_HEIGHT;
+
+        preferredSize = getPreferredSize();
+
+        titleBtn.setIcon(collapsedIcon);
+        remove(composition);
+        setPreferredSize(new Dimension(collapsedWidth, collapsedHeight));
+        updateUI();
+
+        fireCollapseListeners();
+    }
+
+    public boolean isExpanded() {
+        return !collapsable || expanded;
+    }
+
+    public void setExpanded(boolean expanded) {
+        if (collapsable) {
+            this.expanded = expanded;
+            if (expanded)
+                expandPanel();
+            else
+                collapsePanel();
+        }
+    }
+
+    public boolean isCollapsable() {
+        return collapsable;
+    }
+
+    public void setCollapsable(boolean collapsable) {
+        this.collapsable = collapsable;
+        if (collapsable) {
+            setExpanded(true);
+        }
+
+        refreshTitleIcon();
+        titleBtn.updateUI();
+        placeTitleComponent();
+        updateUI();
+    }
+
+    public JComponent getComposition() {
+        return composition;
+    }
+
+    public void setComposition(JComponent composition) {
+        this.composition = composition;
+        updateUI();
+        placeTitleComponent();
+    }
+
+    public String getCaption() {
+        return titleBtn.getText();
+    }
+
+    public void setCaption(String caption) {
+        titleBtn.setText(caption);
+        placeTitleComponent();
+    }
+
+    public void addCollapseListener(CollapseListener collapseListener) {
+        if (collapseListeners == null)
+            collapseListeners = new ArrayList<CollapseListener>();
+        collapseListeners.add(collapseListener);
+    }
+
+    public void removeCollapseListener(CollapseListener collapseListener) {
+        if (collapseListeners != null) {
+            collapseListeners.remove(collapseListener);
+            if (collapseListeners.isEmpty())
+                collapseListeners = null;
+        }
+    }
+
+    private void fireExpandListeners() {
+        if (collapseListeners != null) {
+            for (final CollapsiblePanel.CollapseListener collapseListener : collapseListeners) {
+                collapseListener.expanded();
+            }
+        }
+    }
+
+    private void fireCollapseListeners() {
+        if (collapseListeners != null) {
+            for (final CollapsiblePanel.CollapseListener collapseListener : collapseListeners) {
+                collapseListener.collapsed();
+            }
+        }
+    }
+
+    private class CollapsibleTitledBorder extends TitledBorder {
+
+        private JButton titleComponent;
+
+        public CollapsibleTitledBorder(Border border) {
+            this(border, null, LEFT, TOP);
+        }
+
+        public CollapsibleTitledBorder(@Nullable Border border, JButton titleButton) {
+            this(border, titleButton, LEFT, TOP);
+        }
+
+        public CollapsibleTitledBorder(@Nullable Border border, @Nullable JButton titleButton, int titleJustification, int titlePosition) {
+            super(border, null, titleJustification, titlePosition, null, null);
+            this.titleComponent = titleButton;
+            if (border == null) {
+                this.border = super.getBorder();
+            }
+        }
+
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            Rectangle borderR = new Rectangle(x + EDGE_SPACING, y + EDGE_SPACING, width - (EDGE_SPACING * 2), height - (EDGE_SPACING * 2));
+            Insets borderInsets = new Insets(3, 10, 10, 10);
+
+            Rectangle rect = new Rectangle(x, y, width, height);
+            Insets insets = getBorderInsets(c);
+            Rectangle compR = getComponentRect(rect, insets);
+            int diff;
+            switch (titlePosition) {
+                case ABOVE_TOP:
+                    diff = compR.height + TEXT_SPACING;
+                    borderR.y += diff;
+                    borderR.height -= diff;
+                    break;
+                case TOP:
+                case DEFAULT_POSITION:
+                    diff = insets.top / 2 - borderInsets.top - EDGE_SPACING;
+                    borderR.y += diff;
+                    borderR.height -= diff;
+                    break;
+                case BELOW_TOP:
+                case ABOVE_BOTTOM:
+                    break;
+                case BOTTOM:
+                    diff = insets.bottom / 2 - borderInsets.bottom - EDGE_SPACING;
+                    borderR.height -= diff;
+                    break;
+                case BELOW_BOTTOM:
+                    diff = compR.height + TEXT_SPACING;
+                    borderR.height -= diff;
+                    break;
+            }
+            border.paintBorder(c, g, borderR.x, borderR.y, borderR.width, borderR.height);
+            Color col = g.getColor();
+            g.setColor(c.getBackground());
+            g.fillRect(compR.x, compR.y, compR.width, compR.height);
+            g.setColor(col);
+        }
+
+        @Override
+        public Insets getBorderInsets(Component c, Insets insets) {
+            Insets borderInsets = new Insets(3, 10, 10, 10);
+            insets.top = EDGE_SPACING + TEXT_SPACING + borderInsets.top;
+            insets.right = EDGE_SPACING + TEXT_SPACING + borderInsets.right;
+            insets.bottom = EDGE_SPACING + TEXT_SPACING + borderInsets.bottom;
+            insets.left = EDGE_SPACING + TEXT_SPACING + borderInsets.left;
+
+            if (c == null || titleComponent == null) {
+                return insets;
+            }
+
+            int compHeight = titleComponent.getPreferredSize().height;
+
+            switch (titlePosition) {
+                case ABOVE_TOP:
+                    insets.top += compHeight + TEXT_SPACING;
+                    break;
+                case TOP:
+                case DEFAULT_POSITION:
+                    insets.top += Math.max(compHeight, borderInsets.top) - borderInsets.top;
+                    break;
+                case BELOW_TOP:
+                    insets.top += compHeight + TEXT_SPACING;
+                    break;
+                case ABOVE_BOTTOM:
+                    insets.bottom += compHeight + TEXT_SPACING;
+                    break;
+                case BOTTOM:
+                    insets.bottom += Math.max(compHeight, borderInsets.bottom) - borderInsets.bottom;
+                    break;
+                case BELOW_BOTTOM:
+                    insets.bottom += compHeight + TEXT_SPACING;
+                    break;
+            }
+            return insets;
+        }
+
+        public Rectangle getComponentRect(Rectangle rect, Insets borderInsets) {
+            Dimension compD = titleComponent.getPreferredSize();
+            Rectangle compR = new Rectangle(0, 0, compD.width, compD.height);
+            switch (titlePosition) {
+                case ABOVE_TOP:
+                    compR.y = EDGE_SPACING;
+                    break;
+                case TOP:
+                case DEFAULT_POSITION:
+                    compR.y = EDGE_SPACING + (borderInsets.top - EDGE_SPACING - TEXT_SPACING - compD.height) / 2;
+                    break;
+                case BELOW_TOP:
+                    compR.y = borderInsets.top - compD.height - TEXT_SPACING;
+                    break;
+                case ABOVE_BOTTOM:
+                    compR.y = rect.height - borderInsets.bottom + TEXT_SPACING;
+                    break;
+                case BOTTOM:
+                    compR.y = rect.height - borderInsets.bottom + TEXT_SPACING + (borderInsets.bottom - EDGE_SPACING - TEXT_SPACING - compD.height) / 2;
+                    break;
+                case BELOW_BOTTOM:
+                    compR.y = rect.height - compD.height - EDGE_SPACING;
+                    break;
+            }
+            switch (titleJustification) {
+                case LEFT:
+                case DEFAULT_JUSTIFICATION:
+                    compR.x = TEXT_INSET_H + borderInsets.left - EDGE_SPACING;
+                    break;
+                case RIGHT:
+                    compR.x = rect.width - borderInsets.right - TEXT_INSET_H - compR.width;
+                    break;
+                case CENTER:
+                    compR.x = (rect.width - compR.width) / 2;
+                    break;
+            }
+            return compR;
+        }
+    }
+}

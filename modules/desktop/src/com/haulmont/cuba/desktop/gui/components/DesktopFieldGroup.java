@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
+import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.ValidationException;
@@ -55,6 +56,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     private Set<Field> readOnlyFields = new HashSet<Field>();
 
+    private CollapsiblePanel collapsiblePanel;
+
+    private List<FieldGroup.ExpandListener> expandListeners = null;
+    private List<FieldGroup.CollapseListener> collapseListeners = null;
+
     public DesktopFieldGroup() {
         LC lc = new LC();
         lc.hideMode(3); // Invisible components will not participate in the layout at all and it will for instance not take up a grid cell.
@@ -66,6 +72,96 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         impl = new JPanel(layout);
         if (isLayoutDebugEnabled()) {
             impl.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+        }
+
+        collapsiblePanel = new CollapsiblePanel(super.getComposition());
+        collapsiblePanel.addCollapseListener(new CollapsiblePanel.CollapseListener() {
+            @Override
+            public void collapsed() {
+                fireCollapseListeners();
+            }
+
+            @Override
+            public void expanded() {
+                fireExpandListeners();
+            }
+        });
+
+        if (isLayoutDebugEnabled()) {
+            collapsiblePanel.setBorder(
+                    BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(Color.GRAY),
+                            BorderFactory.createEmptyBorder(0, 5, 5, 5)
+                    )
+            );
+        }
+    }
+
+@Override
+    public boolean isExpanded() {
+        return collapsiblePanel.isExpanded();
+    }
+
+    @Override
+    public void setExpanded(boolean expanded) {
+        collapsiblePanel.setExpanded(expanded);
+    }
+
+    @Override
+    public boolean isCollapsable() {
+        return collapsiblePanel.isCollapsable();
+    }
+
+    @Override
+    public void setCollapsable(boolean collapsable) {
+        collapsiblePanel.setCollapsable(collapsable);
+    }
+
+    public void addListener(FieldGroup.ExpandListener listener) {
+        if (expandListeners == null) {
+            expandListeners = new ArrayList<FieldGroup.ExpandListener>();
+        }
+        expandListeners.add(listener);
+    }
+
+    public void removeListener(FieldGroup.ExpandListener listener) {
+        if (expandListeners != null) {
+            expandListeners.remove(listener);
+            if (expandListeners.isEmpty()) {
+                expandListeners = null;
+            }
+        }
+    }
+
+    private void fireExpandListeners() {
+        if (expandListeners != null) {
+            for (final FieldGroup.ExpandListener expandListener : expandListeners) {
+                expandListener.onExpand(this);
+            }
+        }
+    }
+
+    public void addListener(FieldGroup.CollapseListener listener) {
+        if (collapseListeners == null) {
+            collapseListeners = new ArrayList<FieldGroup.CollapseListener>();
+        }
+        collapseListeners.add(listener);
+    }
+
+    public void removeListener(FieldGroup.CollapseListener listener) {
+        if (collapseListeners != null) {
+            collapseListeners.remove(listener);
+            if (collapseListeners.isEmpty()) {
+                collapseListeners = null;
+            }
+        }
+    }
+
+    private void fireCollapseListeners() {
+        if (collapseListeners != null) {
+            for (final FieldGroup.CollapseListener collapseListener : collapseListeners) {
+                collapseListener.onCollapse(this);
+            }
         }
     }
 
@@ -177,20 +273,6 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         Field field = fields.get(fieldId);
         if (fieldId != null)
             addValidator(field, validator);
-    }
-
-    public boolean isCollapsable() {
-        return false;
-    }
-
-    public void setCollapsable(boolean collapsable) {
-    }
-
-    public boolean isExpanded() {
-        return false;
-    }
-
-    public void setExpanded(boolean expanded) {
     }
 
     public boolean isEditable(Field field) {
@@ -363,18 +445,6 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         createFieldComponent(field);
     }
 
-    public void addListener(ExpandListener listener) {
-    }
-
-    public void removeListener(ExpandListener listener) {
-    }
-
-    public void addListener(CollapseListener listener) {
-    }
-
-    public void removeListener(CollapseListener listener) {
-    }
-
     public void postInit() {
     }
 
@@ -471,22 +541,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     public String getCaption() {
-        return caption;
+        return collapsiblePanel.getCaption();
     }
 
     public void setCaption(String caption) {
-        this.caption = caption;
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(caption);
-        titledBorder.setTitleJustification(TitledBorder.LEFT);
-        titledBorder.setTitlePosition(TitledBorder.TOP);
-        titledBorder.setBorder(
-                BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(java.awt.Color.gray),
-                        BorderFactory.createEmptyBorder(0,5,5,5)
-                )
-        );
-        titledBorder.setTitleFont(UIManager.getLookAndFeelDefaults().getFont("Panel.font"));
-        impl.setBorder(titledBorder);
+        collapsiblePanel.setCaption(caption);
     }
 
     public String getDescription() {
@@ -505,6 +564,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     public Collection<Component> getComponents() {
         return fieldComponents.values();
+    }
+
+    @Override
+    public JComponent getComposition() {
+        return collapsiblePanel;
     }
 
     @Override

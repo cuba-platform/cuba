@@ -6,12 +6,15 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.GroupBox;
 
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * <p>$Id$</p>
@@ -19,43 +22,108 @@ import java.util.Collection;
  * @author krivopustov
  */
 public class DesktopGroupBox
-    extends DesktopVBox
-    implements GroupBox
-{
-    private String caption;
+        extends DesktopVBox
+        implements GroupBox {
 
-    @Override
-    public boolean isCollapsable() {
-        return false;
-    }
+    private CollapsiblePanel collapsiblePanel;
 
-    @Override
-    public void setCollapsable(boolean collapsable) {
+    private List<ExpandListener> expandListeners = null;
+    private List<CollapseListener> collapseListeners = null;
+
+    public DesktopGroupBox() {
+        collapsiblePanel = new CollapsiblePanel(super.getComposition());
+        collapsiblePanel.addCollapseListener(new CollapsiblePanel.CollapseListener() {
+            @Override
+            public void collapsed() {
+                fireCollapseListeners();
+            }
+
+            @Override
+            public void expanded() {
+                fireExpandListeners();
+            }
+        });
+
+        if (isLayoutDebugEnabled()) {
+            collapsiblePanel.setBorder(
+                    BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(Color.BLUE),
+                            BorderFactory.createEmptyBorder(0, 5, 5, 5)
+                    )
+            );
+        }
     }
 
     @Override
     public boolean isExpanded() {
-        return true;
+        return collapsiblePanel.isExpanded();
     }
 
     @Override
     public void setExpanded(boolean expanded) {
+        collapsiblePanel.setExpanded(expanded);
+    }
+
+    @Override
+    public boolean isCollapsable() {
+        return collapsiblePanel.isCollapsable();
+    }
+
+    @Override
+    public void setCollapsable(boolean collapsable) {
+        collapsiblePanel.setCollapsable(collapsable);
     }
 
     @Override
     public void addListener(ExpandListener listener) {
+        if (expandListeners == null) {
+            expandListeners = new ArrayList<ExpandListener>();
+        }
+        expandListeners.add(listener);
     }
 
     @Override
     public void removeListener(ExpandListener listener) {
+        if (expandListeners != null) {
+            expandListeners.remove(listener);
+            if (expandListeners.isEmpty()) {
+                expandListeners = null;
+            }
+        }
+    }
+
+    private void fireExpandListeners() {
+        if (expandListeners != null) {
+            for (final ExpandListener expandListener : expandListeners) {
+                expandListener.onExpand(this);
+            }
+        }
     }
 
     @Override
     public void addListener(CollapseListener listener) {
+        if (collapseListeners == null) {
+            collapseListeners = new ArrayList<CollapseListener>();
+        }
+        collapseListeners.add(listener);
     }
 
     @Override
     public void removeListener(CollapseListener listener) {
+        if (collapseListeners != null) {
+            collapseListeners.remove(listener);
+            if (collapseListeners.isEmpty()) {
+                collapseListeners = null;
+            }
+        }
+    }
+
+    private void fireCollapseListeners() {
+        if (collapseListeners != null) {
+            for (final CollapseListener collapseListener : collapseListeners) {
+                collapseListener.onCollapse(this);
+            }
+        }
     }
 
     @Override
@@ -78,23 +146,12 @@ public class DesktopGroupBox
 
     @Override
     public String getCaption() {
-        return caption;
+        return collapsiblePanel.getCaption();
     }
 
     @Override
     public void setCaption(String caption) {
-        this.caption = caption;
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(caption);
-        titledBorder.setTitleJustification(TitledBorder.LEFT);
-        titledBorder.setTitlePosition(TitledBorder.TOP);
-        titledBorder.setBorder(
-                BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(isLayoutDebugEnabled() ? java.awt.Color.BLUE : java.awt.Color.gray),
-                        BorderFactory.createEmptyBorder(0,5,5,5)
-                )
-        );
-        titledBorder.setTitleFont(UIManager.getLookAndFeelDefaults().getFont("Panel.font"));
-        impl.setBorder(titledBorder);
+        collapsiblePanel.setCaption(caption);
     }
 
     @Override
@@ -108,5 +165,10 @@ public class DesktopGroupBox
 
     @Override
     public void expandLayout(boolean expandLayout) {
+    }
+
+    @Override
+    public JComponent getComposition() {
+        return collapsiblePanel;
     }
 }
