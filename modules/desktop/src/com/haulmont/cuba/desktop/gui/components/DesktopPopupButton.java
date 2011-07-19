@@ -30,6 +30,7 @@ public class DesktopPopupButton
     private JPopupMenu popup;
 
     private String icon;
+    private String description;
 
     public static final String DEFAULT_ICON = "/popupbutton/open-popup.png";
 
@@ -133,11 +134,12 @@ public class DesktopPopupButton
 
     @Override
     public String getDescription() {
-        return null;
+        return description;
     }
 
     @Override
     public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
@@ -152,10 +154,5 @@ public class DesktopPopupButton
             impl.setIcon(resources.getIcon(icon));
         else
             impl.setIcon(resources.getIcon(DEFAULT_ICON));
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
     }
 }
