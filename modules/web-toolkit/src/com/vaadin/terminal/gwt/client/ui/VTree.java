@@ -16,8 +16,13 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.*;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
 import com.haulmont.cuba.toolkit.gwt.client.ui.IScrollablePanel;
@@ -25,19 +30,20 @@ import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.dd.*;
 import com.vaadin.terminal.gwt.client.ui.layout.CellBasedLayout;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
  */
-public class VTree extends SimplePanel implements Paintable, VHasDropHandler, TextSelectionManager {
+@SuppressWarnings({"GWTStyleCheck"})
+public class VTree extends FocusElementPanel implements Paintable, VHasDropHandler, TextSelectionManager, FocusHandler, BlurHandler, KeyPressHandler, KeyDownHandler {
 
     public static final String CLASSNAME = "v-tree";
 
     public static final String ITEM_CLICK_EVENT_ID = "itemClick";
+
+    public static final int MULTISELECT_MODE_DEFAULT = 0;
+    public static final int MULTISELECT_MODE_SIMPLE = 1;
 
     protected Set<String> selectedIds = new HashSet<String>();
     protected ApplicationConnection client;
@@ -45,6 +51,9 @@ public class VTree extends SimplePanel implements Paintable, VHasDropHandler, Te
     protected boolean selectable;
     protected boolean isMultiselect;
     protected String currentMouseOverKey;
+    private TreeNode lastSelection;
+    private TreeNode focusedNode;
+    private int multiSelectMode = MULTISELECT_MODE_DEFAULT;
 
     protected final HashMap<String, TreeNode> keyToNode = new HashMap<String, TreeNode>();
 
@@ -66,19 +75,102 @@ public class VTree extends SimplePanel implements Paintable, VHasDropHandler, Te
 
     private VAbstractDropHandler dropHandler;
 
+    private boolean selectionHasChanged = false;
+
     private int dragMode;
 
     private boolean doubleClickMode = false;
 
+    private static final int CHARCODE_SPACE = 32;
+
     private FlowPanel content = new FlowPanel();
 
     private CellBasedLayout.Spacing borderPaddings = null;
+
+    /*
+     * In webkit, focus may have been requested for this component but not yet
+     * gained. Use this to trac if tree has gained the focus on webkit. See
+     * FocusImplSafari and #6373
+     */
+    private boolean treeHasFocus;
 
     public VTree() {
         super();
         setStyleName(CLASSNAME);
         setWidget(content);
         content.setStyleName(CLASSNAME + "-content");
+
+        addFocusHandler(this);
+        addBlurHandler(this);
+
+        /*
+         * Firefox auto-repeat works correctly only if we use a key press
+         * handler, other browsers handle it correctly when using a key down
+         * handler
+         */
+        if (BrowserInfo.get().isGecko() || BrowserInfo.get().isOpera()) {
+            addKeyPressHandler(this);
+        } else {
+            addKeyDownHandler(this);
+        }
+
+        /*
+         * We need to use the sinkEvents method to catch the keyUp events so we
+         * can cache a single shift. KeyUpHandler cannot do this. At the same
+         * time we catch the mouse down and up events so we can apply the text
+         * selection patch in IE
+         */
+        sinkEvents(Event.ONMOUSEDOWN | Event.ONMOUSEUP | Event.ONKEYUP);
+
+        /*
+         * Re-set the tab index to make sure that the FocusElementPanel's
+         * (super) focus element gets the tab index and not the element
+         * containing the tree.
+         */
+        setTabIndex(0);
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.google.gwt.user.client.ui.Widget#onBrowserEvent(com.google.gwt.user
+     * .client.Event)
+     */
+    @Override
+    public void onBrowserEvent(Event event) {
+        super.onBrowserEvent(event);
+        if (event.getTypeInt() == Event.ONMOUSEDOWN) {
+            // Prevent default text selection in IE
+            if (BrowserInfo.get().isIE()) {
+                ((Element) event.getEventTarget().cast()).setPropertyJSO(
+                        "onselectstart", applyDisableTextSelectionIEHack());
+            }
+        } else if (event.getTypeInt() == Event.ONMOUSEUP) {
+            // Remove IE text selection hack
+            if (BrowserInfo.get().isIE()) {
+                ((Element) event.getEventTarget().cast()).setPropertyJSO(
+                        "onselectstart", null);
+            }
+        } else if (event.getTypeInt() == Event.ONKEYUP) {
+            if (selectionHasChanged) {
+                if (event.getKeyCode() == getNavigationDownKey()
+                        && !event.getShiftKey()) {
+                    sendSelectionToServer();
+                    event.preventDefault();
+                } else if (event.getKeyCode() == getNavigationUpKey()
+                        && !event.getShiftKey()) {
+                    sendSelectionToServer();
+                    event.preventDefault();
+                } else if (event.getKeyCode() == KeyCodes.KEY_SHIFT) {
+                    sendSelectionToServer();
+                    event.preventDefault();
+                } else if (event.getKeyCode() == getNavigationSelectKey()) {
+                    sendSelectionToServer();
+                    event.preventDefault();
+                }
+            }
+        }
     }
 
     protected void updateActionMap(UIDL c) {
@@ -164,6 +256,46 @@ public class VTree extends SimplePanel implements Paintable, VHasDropHandler, Te
 
         rendering = false;
 
+    }
+
+     /**
+     * Returns the first root node of the tree or null if there are no root
+     * nodes.
+     *
+     * @return The first root {@link TreeNode}
+     */
+    protected TreeNode getFirstRootNode() {
+        if (content.getWidgetCount() == 0) {
+            return null;
+        }
+        return (TreeNode) content.getWidget(0);
+    }
+
+    /**
+     * Returns the last root node of the tree or null if there are no root
+     * nodes.
+     *
+     * @return The last root {@link TreeNode}
+     */
+    protected TreeNode getLastRootNode() {
+        if (content.getWidgetCount() == 0) {
+            return null;
+        }
+        return (TreeNode) content.getWidget(content.getWidgetCount() - 1);
+    }
+
+    /**
+     * Returns a list of all root nodes in the Tree in the order they appear in
+     * the tree.
+     *
+     * @return A list of all root {@link TreeNode}s.
+     */
+    protected List<TreeNode> getRootNodes() {
+        ArrayList<TreeNode> rootNodes = new ArrayList<TreeNode>();
+        for (int i = 0; i < content.getWidgetCount(); i++) {
+            rootNodes.add((TreeNode) content.getWidget(i));
+        }
+        return rootNodes;
     }
 
     @Override
@@ -376,9 +508,20 @@ public class VTree extends SimplePanel implements Paintable, VHasDropHandler, Te
         return selectedIds.contains(treeNode.key);
     }
 
+    /**
+     * Sends the selection to the server
+     */
+    private void sendSelectionToServer() {
+        client.updateVariable(paintableId, "selected", selectedIds
+                .toArray(new String[selectedIds.size()]), immediate);
+        selectionHasChanged = false;
+    }
+
+    @SuppressWarnings({"GWTStyleCheck"})
     public class TreeNode extends SimplePanel implements ActionOwner {
 
         public static final String CLASSNAME = "v-tree-node";
+        public static final String CLASSNAME_FOCUSED = CLASSNAME + "-focused";
 
         public String key;
 
@@ -401,6 +544,8 @@ public class VTree extends SimplePanel implements Paintable, VHasDropHandler, Te
         private Event mouseDownEvent;
 
         private int cachedHeight = -1;
+
+        private boolean focused = false;
 
         private boolean blocked = false;
 
@@ -492,13 +637,86 @@ public class VTree extends SimplePanel implements Paintable, VHasDropHandler, Te
             }
         }
 
+        /**
+         * Handles mouse selection
+         *
+         * @param ctrl
+         *            Was the ctrl-key pressed
+         * @param shift
+         *            Was the shift-key pressed
+         * @return Returns true if event was handled, else false
+         */
+        private boolean handleClickSelection(final boolean ctrl,
+                final boolean shift) {
+
+            // always when clicking an item, focus it
+            setFocusedNode(this, false);
+
+            if (!isIE6OrOpera()) {
+                /*
+                 * Ensure that the tree's focus element also gains focus
+                 * (TreeNodes focus is faked using FocusElementPanel in browsers
+                 * other than IE6 and Opera).
+                 */
+                focus();
+            }
+
+            Scheduler.ScheduledCommand command = new Scheduler.ScheduledCommand() {
+                public void execute() {
+
+                    if (multiSelectMode == MULTISELECT_MODE_SIMPLE
+                            || !isMultiselect) {
+                        toggleSelection();
+                        lastSelection = TreeNode.this;
+                    } else if (multiSelectMode == MULTISELECT_MODE_DEFAULT) {
+                        // Handle ctrl+click
+                        if (isMultiselect && ctrl && !shift) {
+                            toggleSelection();
+                            lastSelection = TreeNode.this;
+
+                            // Handle shift+click
+                        } else if (isMultiselect && !ctrl && shift) {
+                            deselectAll();
+                            selectNodeRange(lastSelection.key, key);
+                            sendSelectionToServer();
+
+                            // Handle ctrl+shift click
+                        } else if (isMultiselect && ctrl && shift) {
+                            selectNodeRange(lastSelection.key, key);
+
+                            // Handle click
+                        } else {
+                            // TODO should happen only if this alone not yet
+                            // selected,
+                            // now sending excess server calls
+                            deselectAll();
+                            toggleSelection();
+                            lastSelection = TreeNode.this;
+                        }
+                    }
+                }
+            };
+
+            if (BrowserInfo.get().isWebkit() && !treeHasFocus) {
+                /*
+                 * Safari may need to wait for focus. See FocusImplSafari.
+                 */
+                // VConsole.log("Deferring click handling to let webkit gain focus...");
+                Scheduler.get().scheduleDeferred(command);
+            } else {
+                command.execute();
+            }
+
+            return true;
+        }
+
         @Override
         public void onBrowserEvent(Event event) {
             super.onBrowserEvent(event);
-            handleBrowseEvent(event);
+            handleBrowserEvent(event);
         }
 
-        protected void handleBrowseEvent(Event event) {
+        protected void handleBrowserEvent(Event event) {
             if (disabled) {
                 return;
             }
@@ -531,25 +749,52 @@ public class VTree extends SimplePanel implements Paintable, VHasDropHandler, Te
                     // state change
                     toggleState();
                 } else if (!readonly && inCaption) {
-                    // caption click = selection change && possible click event
-                    toggleSelection();
+                    if (selectable) {
+                        // caption click = selection change && possible click
+                        // event
+                        if (handleClickSelection(event.getCtrlKey()
+                                || event.getMetaKey(), event.getShiftKey())) {
+                            event.preventDefault();
+                        }
+                    } else {
+                        // Not selectable, only focus the node.
+                        setFocusedNode(this);
+                    }
                 }
-                DOM.eventCancelBubble(event, true);
+                event.stopPropagation();
             } else if (type == Event.ONCONTEXTMENU) {
                 showContextMenu(event);
             }
 
             if (dragMode != 0 || dropHandler != null) {
-                if (type == Event.ONMOUSEDOWN) {
-                    if (nodeCaptionDiv.isOrHasChild(event.getTarget())) {
+                if (type == Event.ONMOUSEDOWN || type == Event.ONTOUCHSTART) {
+                    if (nodeCaptionDiv.isOrHasChild((Node) event
+                            .getEventTarget().cast())) {
                         if (dragMode > 0
-                                && event.getButton() == NativeEvent.BUTTON_LEFT) {
-                            event.preventDefault(); // prevent text selection
-                            mouseDownEvent = event;
+                                && (type == Event.ONTOUCHSTART || event
+                                        .getButton() == NativeEvent.BUTTON_LEFT)) {
+                            mouseDownEvent = event; // save event for possible
+                            // dd operation
+                            if (type == Event.ONMOUSEDOWN) {
+                                event.preventDefault(); // prevent text
+                                // selection
+                            } else {
+                                /*
+                                 * FIXME We prevent touch start event to be used
+                                 * as a scroll start event. Note that we cannot
+                                 * easily distinguish whether the user wants to
+                                 * drag or scroll. The same issue is in table
+                                 * that has scrollable area and has drag and
+                                 * drop enable. Some kind of timer might be used
+                                 * to resolve the issue.
+                                 */
+                                event.stopPropagation();
+                            }
                         }
                     }
                 } else if (type == Event.ONMOUSEMOVE
-                        || type == Event.ONMOUSEOUT) {
+                        || type == Event.ONMOUSEOUT
+                        || type == Event.ONTOUCHMOVE) {
 
                     if (mouseDownEvent != null) {
                         // start actual drag on slight move when mouse is down
@@ -572,6 +817,10 @@ public class VTree extends SimplePanel implements Paintable, VHasDropHandler, Te
                     currentMouseOverKey = key;
                     event.stopPropagation();
                 }
+
+            } else if (type == Event.ONMOUSEDOWN
+                    && event.getButton() == NativeEvent.BUTTON_LEFT) {
+                event.preventDefault(); // text selection
             }
         }
 
@@ -766,6 +1015,24 @@ public class VTree extends SimplePanel implements Paintable, VHasDropHandler, Te
             return childrenLoaded;
         }
 
+        /**
+         * Returns the children of the node
+         *
+         * @return A set of tree nodes
+         */
+        public List<TreeNode> getChildren() {
+            List<TreeNode> nodes = new LinkedList<TreeNode>();
+
+            if (!isLeaf() && isChildrenLoaded()) {
+                Iterator<Widget> iter = childNodeContainer.iterator();
+                while (iter.hasNext()) {
+                    TreeNode node = (TreeNode) iter.next();
+                    nodes.add(node);
+                }
+            }
+            return nodes;
+        }
+
         public Action[] getActions() {
             if (actionKeys == null) {
                 return new Action[] {};
@@ -804,6 +1071,27 @@ public class VTree extends SimplePanel implements Paintable, VHasDropHandler, Te
         protected boolean isSelected() {
             return VTree.this.isSelected(this);
         }
+
+        /**
+         * Travels up the hierarchy looking for this node
+         *
+         * @param child
+         *            The child which grandparent this is or is not
+         * @return True if this is a grandparent of the child node
+         */
+        public boolean isGrandParentOf(TreeNode child) {
+            TreeNode currentNode = child;
+            boolean isGrandParent = false;
+            while (currentNode != null) {
+                currentNode = currentNode.getParentNode();
+                if (currentNode == this) {
+                    isGrandParent = true;
+                    break;
+                }
+            }
+            return isGrandParent;
+        }
+
 
         public void showContextMenu(Event event) {
             if (!readonly && !disabled) {
@@ -845,6 +1133,40 @@ public class VTree extends SimplePanel implements Paintable, VHasDropHandler, Te
             super.onDetach();
             client.getContextMenu().ensureHidden(this);
         }
+
+        /**
+         * Is the node focused?
+         *
+         * @param focused
+         *            True if focused, false if not
+         */
+        public void setFocused(boolean focused) {
+            if (!this.focused && focused) {
+                nodeCaptionDiv.addClassName(CLASSNAME_FOCUSED);
+                if (BrowserInfo.get().isIE6()) {
+                    ie6compatnode.addClassName(CLASSNAME_FOCUSED);
+                }
+                this.focused = focused;
+                if (isIE6OrOpera()) {
+                    nodeCaptionDiv.focus();
+                }
+                treeHasFocus = true;
+            } else if (this.focused && !focused) {
+                nodeCaptionDiv.removeClassName(CLASSNAME_FOCUSED);
+                if (BrowserInfo.get().isIE6()) {
+                    ie6compatnode.removeClassName(CLASSNAME_FOCUSED);
+                }
+                this.focused = focused;
+                treeHasFocus = false;
+            }
+        }
+
+        /**
+         * Scrolls the caption into view
+         */
+        public void scrollIntoView() {
+            nodeCaptionDiv.scrollIntoView();
+        }
     }
 
     public VDropHandler getDropHandler() {
@@ -858,4 +1180,855 @@ public class VTree extends SimplePanel implements Paintable, VHasDropHandler, Te
     public boolean allowTextSelection() {
         return false;
     }
+
+    /**
+     * Deselects all items in the tree
+     */
+    public void deselectAll() {
+        for (String key : selectedIds) {
+            TreeNode node = keyToNode.get(key);
+            if (node != null) {
+                node.setSelected(false);
+            }
+        }
+        selectedIds.clear();
+        selectionHasChanged = true;
+    }
+
+    /**
+     * Selects a range of nodes
+     *
+     * @param startNodeKey
+     *            The start node key
+     * @param endNodeKey
+     *            The end node key
+     */
+    private void selectNodeRange(String startNodeKey, String endNodeKey) {
+
+        TreeNode startNode = keyToNode.get(startNodeKey);
+        TreeNode endNode = keyToNode.get(endNodeKey);
+
+        // The nodes have the same parent
+        if (startNode.getParent() == endNode.getParent()) {
+            doSiblingSelection(startNode, endNode);
+
+            // The start node is a grandparent of the end node
+        } else if (startNode.isGrandParentOf(endNode)) {
+            doRelationSelection(startNode, endNode);
+
+            // The end node is a grandparent of the start node
+        } else if (endNode.isGrandParentOf(startNode)) {
+            doRelationSelection(endNode, startNode);
+
+        } else {
+            doNoRelationSelection(startNode, endNode);
+        }
+    }
+
+    /**
+     * Selects a node and deselect all other nodes
+     *
+     * @param node
+     *            The node to select
+     */
+    private void selectNode(TreeNode node, boolean deselectPrevious) {
+        if (deselectPrevious) {
+            deselectAll();
+        }
+
+        if (node != null) {
+            node.setSelected(true);
+            selectedIds.add(node.key);
+            lastSelection = node;
+        }
+        selectionHasChanged = true;
+    }
+
+    /**
+     * Deselects a node
+     *
+     * @param node
+     *            The node to deselect
+     */
+    private void deselectNode(TreeNode node) {
+        node.setSelected(false);
+        selectedIds.remove(node.key);
+        selectionHasChanged = true;
+    }
+
+    /**
+     * Selects all the open children to a node
+     *
+     * @param node
+     *            The parent node
+     */
+    private void selectAllChildren(TreeNode node, boolean includeRootNode) {
+        if (includeRootNode) {
+            node.setSelected(true);
+            selectedIds.add(node.key);
+        }
+
+        for (TreeNode child : node.getChildren()) {
+            if (!child.isLeaf() && child.getState()) {
+                selectAllChildren(child, true);
+            } else {
+                child.setSelected(true);
+                selectedIds.add(child.key);
+            }
+        }
+        selectionHasChanged = true;
+    }
+
+    /**
+     * Selects all children until a stop child is reached
+     *
+     * @param root
+     *            The root not to start from
+     * @param stopNode
+     *            The node to finish with
+     * @param includeRootNode
+     *            Should the root node be selected
+     * @param includeStopNode
+     *            Should the stop node be selected
+     *
+     * @return Returns false if the stop child was found, else true if all
+     *         children was selected
+     */
+    private boolean selectAllChildrenUntil(TreeNode root, TreeNode stopNode,
+            boolean includeRootNode, boolean includeStopNode) {
+        if (includeRootNode) {
+            root.setSelected(true);
+            selectedIds.add(root.key);
+        }
+        if (root.getState() && root != stopNode) {
+            for (TreeNode child : root.getChildren()) {
+                if (!child.isLeaf() && child.getState() && child != stopNode) {
+                    if (!selectAllChildrenUntil(child, stopNode, true,
+                            includeStopNode)) {
+                        return false;
+                    }
+                } else if (child == stopNode) {
+                    if (includeStopNode) {
+                        child.setSelected(true);
+                        selectedIds.add(child.key);
+                    }
+                    return false;
+                } else if (child.isLeaf()) {
+                    child.setSelected(true);
+                    selectedIds.add(child.key);
+                }
+            }
+        }
+        selectionHasChanged = true;
+
+        return true;
+    }
+
+    /**
+     * Select a range between two nodes which have no relation to each other
+     *
+     * @param startNode
+     *            The start node to start the selection from
+     * @param endNode
+     *            The end node to end the selection to
+     */
+    private void doNoRelationSelection(TreeNode startNode, TreeNode endNode) {
+
+        TreeNode commonParent = getCommonGrandParent(startNode, endNode);
+        TreeNode startBranch = null, endBranch = null;
+
+        // Find the children of the common parent
+        List<TreeNode> children;
+        if (commonParent != null) {
+            children = commonParent.getChildren();
+        } else {
+            children = getRootNodes();
+        }
+
+        // Find the start and end branches
+        for (TreeNode node : children) {
+            if (nodeIsInBranch(startNode, node)) {
+                startBranch = node;
+            }
+            if (nodeIsInBranch(endNode, node)) {
+                endBranch = node;
+            }
+        }
+
+        // Swap nodes if necessary
+        if (children.indexOf(startBranch) > children.indexOf(endBranch)) {
+            TreeNode temp = startBranch;
+            startBranch = endBranch;
+            endBranch = temp;
+
+            temp = startNode;
+            startNode = endNode;
+            endNode = temp;
+        }
+
+        // Select all children under the start node
+        selectAllChildren(startNode, true);
+        TreeNode startParent = startNode.getParentNode();
+        TreeNode currentNode = startNode;
+        while (startParent != null && startParent != commonParent) {
+            List<TreeNode> startChildren = startParent.getChildren();
+            for (int i = startChildren.indexOf(currentNode) + 1; i < startChildren
+                    .size(); i++) {
+                selectAllChildren(startChildren.get(i), true);
+            }
+
+            currentNode = startParent;
+            startParent = startParent.getParentNode();
+        }
+
+        // Select nodes until the end node is reached
+        for (int i = children.indexOf(startBranch) + 1; i <= children
+                .indexOf(endBranch); i++) {
+            selectAllChildrenUntil(children.get(i), endNode, true, true);
+        }
+
+        // Ensure end node was selected
+        endNode.setSelected(true);
+        selectedIds.add(endNode.key);
+        selectionHasChanged = true;
+    }
+
+    /**
+     * Examines the children of the branch node and returns true if a node is in
+     * that branch
+     *
+     * @param node
+     *            The node to search for
+     * @param branch
+     *            The branch to search in
+     * @return True if found, false if not found
+     */
+    private boolean nodeIsInBranch(TreeNode node, TreeNode branch) {
+        if (node == branch) {
+            return true;
+        }
+        for (TreeNode child : branch.getChildren()) {
+            if (child == node) {
+                return true;
+            }
+            if (!child.isLeaf() && child.getState()) {
+                if (nodeIsInBranch(node, child)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Selects a range of items which are in direct relation with each other.<br/>
+     * NOTE: The start node <b>MUST</b> be before the end node!
+     *
+     * @param startNode
+     *
+     * @param endNode
+     */
+    private void doRelationSelection(TreeNode startNode, TreeNode endNode) {
+        TreeNode currentNode = endNode;
+        while (currentNode != startNode) {
+            currentNode.setSelected(true);
+            selectedIds.add(currentNode.key);
+
+            // Traverse children above the selection
+            List<TreeNode> subChildren = currentNode.getParentNode()
+                    .getChildren();
+            if (subChildren.size() > 1) {
+                selectNodeRange(subChildren.iterator().next().key,
+                        currentNode.key);
+            } else if (subChildren.size() == 1) {
+                TreeNode n = subChildren.get(0);
+                n.setSelected(true);
+                selectedIds.add(n.key);
+            }
+
+            currentNode = currentNode.getParentNode();
+        }
+        startNode.setSelected(true);
+        selectedIds.add(startNode.key);
+        selectionHasChanged = true;
+    }
+
+    /**
+     * Selects a range of items which have the same parent.
+     *
+     * @param startNode
+     *            The start node
+     * @param endNode
+     *            The end node
+     */
+    private void doSiblingSelection(TreeNode startNode, TreeNode endNode) {
+        TreeNode parent = startNode.getParentNode();
+
+        List<TreeNode> children;
+        if (parent == null) {
+            // Topmost parent
+            children = getRootNodes();
+        } else {
+            children = parent.getChildren();
+        }
+
+        // Swap start and end point if needed
+        if (children.indexOf(startNode) > children.indexOf(endNode)) {
+            TreeNode temp = startNode;
+            startNode = endNode;
+            endNode = temp;
+        }
+
+        Iterator<TreeNode> childIter = children.iterator();
+        boolean startFound = false;
+        while (childIter.hasNext()) {
+            TreeNode node = childIter.next();
+            if (node == startNode) {
+                startFound = true;
+            }
+
+            if (startFound && node != endNode && node.getState()) {
+                selectAllChildren(node, true);
+            } else if (startFound && node != endNode) {
+                node.setSelected(true);
+                selectedIds.add(node.key);
+            }
+
+            if (node == endNode) {
+                node.setSelected(true);
+                selectedIds.add(node.key);
+                break;
+            }
+        }
+        selectionHasChanged = true;
+    }
+
+    /**
+     * Returns the first common parent of two nodes
+     *
+     * @param node1
+     *            The first node
+     * @param node2
+     *            The second node
+     * @return The common parent or null
+     */
+    public TreeNode getCommonGrandParent(TreeNode node1, TreeNode node2) {
+        // If either one does not have a grand parent then return null
+        if (node1.getParentNode() == null || node2.getParentNode() == null) {
+            return null;
+        }
+
+        // If the nodes are parents of each other then return null
+        if (node1.isGrandParentOf(node2) || node2.isGrandParentOf(node1)) {
+            return null;
+        }
+
+        // Get parents of node1
+        List<TreeNode> parents1 = new ArrayList<TreeNode>();
+        TreeNode parent1 = node1.getParentNode();
+        while (parent1 != null) {
+            parents1.add(parent1);
+            parent1 = parent1.getParentNode();
+        }
+
+        // Get parents of node2
+        List<TreeNode> parents2 = new ArrayList<TreeNode>();
+        TreeNode parent2 = node2.getParentNode();
+        while (parent2 != null) {
+            parents2.add(parent2);
+            parent2 = parent2.getParentNode();
+        }
+
+        // Search the parents for the first common parent
+        for (int i = 0; i < parents1.size(); i++) {
+            parent1 = parents1.get(i);
+            for (int j = 0; j < parents2.size(); j++) {
+                parent2 = parents2.get(j);
+                if (parent1 == parent2) {
+                    return parent1;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets the node currently in focus
+     *
+     * @param node
+     *            The node to focus or null to remove the focus completely
+     * @param scrollIntoView
+     *            Scroll the node into view
+     */
+    public void setFocusedNode(TreeNode node, boolean scrollIntoView) {
+        // Unfocus previously focused node
+        if (focusedNode != null) {
+            focusedNode.setFocused(false);
+        }
+
+        if (node != null) {
+            node.setFocused(true);
+        }
+
+        focusedNode = node;
+
+        if (node != null && scrollIntoView) {
+            /*
+             * Delay scrolling the focused node into view if we are still
+             * rendering. #5396
+             */
+            if (!rendering) {
+                node.scrollIntoView();
+            } else {
+                Scheduler.get().scheduleDeferred(new Command() {
+                    public void execute() {
+                        focusedNode.scrollIntoView();
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Focuses a node and scrolls it into view
+     *
+     * @param node
+     *            The node to focus
+     */
+    public void setFocusedNode(TreeNode node) {
+        setFocusedNode(node, true);
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.google.gwt.event.dom.client.FocusHandler#onFocus(com.google.gwt.event
+     * .dom.client.FocusEvent)
+     */
+    public void onFocus(FocusEvent event) {
+        treeHasFocus = true;
+        // If no node has focus, focus the first item in the tree
+        if (focusedNode == null && lastSelection == null && selectable) {
+            setFocusedNode(getFirstRootNode(), false);
+        } else if (focusedNode != null && selectable) {
+            setFocusedNode(focusedNode, false);
+        } else if (lastSelection != null && selectable) {
+            setFocusedNode(lastSelection, false);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.google.gwt.event.dom.client.BlurHandler#onBlur(com.google.gwt.event
+     * .dom.client.BlurEvent)
+     */
+    public void onBlur(BlurEvent event) {
+        treeHasFocus = false;
+        if (focusedNode != null) {
+            focusedNode.setFocused(false);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.google.gwt.event.dom.client.KeyPressHandler#onKeyPress(com.google
+     * .gwt.event.dom.client.KeyPressEvent)
+     */
+    public void onKeyPress(KeyPressEvent event) {
+        NativeEvent nativeEvent = event.getNativeEvent();
+        int keyCode = nativeEvent.getKeyCode();
+        if (keyCode == 0 && nativeEvent.getCharCode() == ' ') {
+            // Provide a keyCode for space to be compatible with FireFox
+            // keypress event
+            keyCode = CHARCODE_SPACE;
+        }
+        if (handleKeyNavigation(keyCode, event.isControlKeyDown()
+                || event.isMetaKeyDown(), event.isShiftKeyDown())) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+
+        /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.google.gwt.event.dom.client.KeyDownHandler#onKeyDown(com.google.gwt
+     * .event.dom.client.KeyDownEvent)
+     */
+    public void onKeyDown(KeyDownEvent event) {
+        if (handleKeyNavigation(event.getNativeEvent().getKeyCode(), event
+                .isControlKeyDown()
+                || event.isMetaKeyDown(), event.isShiftKeyDown())) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+
+    /**
+     * Handles the keyboard navigation
+     *
+     * @param keycode
+     *            The keycode of the pressed key
+     * @param ctrl
+     *            Was ctrl pressed
+     * @param shift
+     *            Was shift pressed
+     * @return Returns true if the key was handled, else false
+     */
+    protected boolean handleKeyNavigation(int keycode, boolean ctrl,
+            boolean shift) {
+
+        // Navigate down
+        if (keycode == getNavigationDownKey()) {
+            TreeNode node = null;
+            // If node is open and has children then move in to the children
+            if (!focusedNode.isLeaf() && focusedNode.getState()
+                    && focusedNode.getChildren().size() > 0) {
+                node = focusedNode.getChildren().get(0);
+            }
+
+            // Else move down to the next sibling
+            else {
+                node = getNextSibling(focusedNode);
+                if (node == null) {
+                    // Else jump to the parent and try to select the next
+                    // sibling there
+                    TreeNode current = focusedNode;
+                    while (node == null && current.getParentNode() != null) {
+                        node = getNextSibling(current.getParentNode());
+                        current = current.getParentNode();
+                    }
+                }
+            }
+
+            if (node != null) {
+                setFocusedNode(node);
+                if (selectable) {
+                    if (!ctrl && !shift) {
+                        selectNode(node, true);
+                    } else if (shift && isMultiselect) {
+                        deselectAll();
+                        selectNodeRange(lastSelection.key, node.key);
+                    } else if (shift) {
+                        selectNode(node, true);
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Navigate up
+        if (keycode == getNavigationUpKey()) {
+            TreeNode prev = getPreviousSibling(focusedNode);
+            TreeNode node = null;
+            if (prev != null) {
+                node = getLastVisibleChildInTree(prev);
+            } else if (focusedNode.getParentNode() != null) {
+                node = focusedNode.getParentNode();
+            }
+            if (node != null) {
+                setFocusedNode(node);
+                if (selectable) {
+                    if (!ctrl && !shift) {
+                        selectNode(node, true);
+                    } else if (shift && isMultiselect) {
+                        deselectAll();
+                        selectNodeRange(lastSelection.key, node.key);
+                    } else if (shift) {
+                        selectNode(node, true);
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Navigate left (close branch)
+        if (keycode == getNavigationLeftKey()) {
+            if (!focusedNode.isLeaf() && focusedNode.getState()) {
+                focusedNode.setState(false, true);
+            } else if (focusedNode.getParentNode() != null
+                    && (focusedNode.isLeaf() || !focusedNode.getState())) {
+
+                if (ctrl || !selectable) {
+                    setFocusedNode(focusedNode.getParentNode());
+                } else if (shift) {
+                    doRelationSelection(focusedNode.getParentNode(),
+                            focusedNode);
+                    setFocusedNode(focusedNode.getParentNode());
+                } else {
+                    focusAndSelectNode(focusedNode.getParentNode());
+                }
+            }
+            return true;
+        }
+
+        // Navigate right (open branch)
+        if (keycode == getNavigationRightKey()) {
+            if (!focusedNode.isLeaf() && !focusedNode.getState()) {
+                focusedNode.setState(true, true);
+            } else if (!focusedNode.isLeaf()) {
+                if (ctrl || !selectable) {
+                    setFocusedNode(focusedNode.getChildren().get(0));
+                } else if (shift) {
+                    setSelected(focusedNode, true);
+                    setFocusedNode(focusedNode.getChildren().get(0));
+                    setSelected(focusedNode, true);
+                } else {
+                    focusAndSelectNode(focusedNode.getChildren().get(0));
+                }
+            }
+            return true;
+        }
+
+        // Selection
+        if (keycode == getNavigationSelectKey()) {
+            if (!focusedNode.isSelected()) {
+                selectNode(
+                        focusedNode,
+                        (!isMultiselect || multiSelectMode == MULTISELECT_MODE_SIMPLE)
+                                && selectable);
+            } else {
+                deselectNode(focusedNode);
+            }
+            return true;
+        }
+
+        // Home selection
+        if (keycode == getNavigationStartKey()) {
+            TreeNode node = getFirstRootNode();
+            if (ctrl || !selectable) {
+                setFocusedNode(node);
+            } else if (shift) {
+                deselectAll();
+                selectNodeRange(focusedNode.key, node.key);
+            } else {
+                selectNode(node, true);
+            }
+            sendSelectionToServer();
+            return true;
+        }
+
+        // End selection
+        if (keycode == getNavigationEndKey()) {
+            TreeNode lastNode = getLastRootNode();
+            TreeNode node = getLastVisibleChildInTree(lastNode);
+            if (ctrl || !selectable) {
+                setFocusedNode(node);
+            } else if (shift) {
+                deselectAll();
+                selectNodeRange(focusedNode.key, node.key);
+            } else {
+                selectNode(node, true);
+            }
+            sendSelectionToServer();
+            return true;
+        }
+
+        return false;
+    }
+
+    private void focusAndSelectNode(TreeNode node) {
+        /*
+         * Keyboard navigation doesn't work reliably if the tree is in
+         * multiselect mode as well as isNullSelectionAllowed = false. It first
+         * tries to deselect the old focused node, which fails since there must
+         * be at least one selection. After this the newly focused node is
+         * selected and we've ended up with two selected nodes even though we
+         * only navigated with the arrow keys.
+         *
+         * Because of this, we first select the next node and later de-select
+         * the old one.
+         */
+        TreeNode oldFocusedNode = focusedNode;
+        setFocusedNode(node);
+        setSelected(focusedNode, true);
+        setSelected(oldFocusedNode, false);
+    }
+
+    /**
+     * Traverses the tree to the bottom most child
+     *
+     * @param root
+     *            The root of the tree
+     * @return The bottom most child
+     */
+    private TreeNode getLastVisibleChildInTree(TreeNode root) {
+        if (root.isLeaf() || !root.getState() || root.getChildren().size() == 0) {
+            return root;
+        }
+        List<TreeNode> children = root.getChildren();
+        return getLastVisibleChildInTree(children.get(children.size() - 1));
+    }
+
+
+    /**
+     * Gets the next sibling in the tree
+     *
+     * @param node
+     *            The node to get the sibling for
+     * @return The sibling node or null if the node is the last sibling
+     */
+    private TreeNode getNextSibling(TreeNode node) {
+        TreeNode parent = node.getParentNode();
+        List<TreeNode> children;
+        if (parent == null) {
+            children = getRootNodes();
+        } else {
+            children = parent.getChildren();
+        }
+
+        int idx = children.indexOf(node);
+        if (idx < children.size() - 1) {
+            return children.get(idx + 1);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the previous sibling in the tree
+     *
+     * @param node
+     *            The node to get the sibling for
+     * @return The sibling node or null if the node is the first sibling
+     */
+    private TreeNode getPreviousSibling(TreeNode node) {
+        TreeNode parent = node.getParentNode();
+        List<TreeNode> children;
+        if (parent == null) {
+            children = getRootNodes();
+        } else {
+            children = parent.getChildren();
+        }
+
+        int idx = children.indexOf(node);
+        if (idx > 0) {
+            return children.get(idx - 1);
+        }
+
+        return null;
+    }
+
+    /**
+     * Add this to the element mouse down event by using element.setPropertyJSO
+     * ("onselectstart",applyDisableTextSelectionIEHack()); Remove it then again
+     * when the mouse is depressed in the mouse up event.
+     *
+     * @return Returns the JSO preventing text selection
+     */
+    private native JavaScriptObject applyDisableTextSelectionIEHack()
+    /*-{
+            return function(){ return false; };
+    }-*/;
+
+    /**
+     * Get the key that moves the selection head upwards. By default it is the
+     * up arrow key but by overriding this you can change the key to whatever
+     * you want.
+     *
+     * @return The keycode of the key
+     */
+    protected int getNavigationUpKey() {
+        return KeyCodes.KEY_UP;
+    }
+
+    /**
+     * Get the key that moves the selection head downwards. By default it is the
+     * down arrow key but by overriding this you can change the key to whatever
+     * you want.
+     *
+     * @return The keycode of the key
+     */
+    protected int getNavigationDownKey() {
+        return KeyCodes.KEY_DOWN;
+    }
+
+    /**
+     * Get the key that scrolls to the left in the table. By default it is the
+     * left arrow key but by overriding this you can change the key to whatever
+     * you want.
+     *
+     * @return The keycode of the key
+     */
+    protected int getNavigationLeftKey() {
+        return KeyCodes.KEY_LEFT;
+    }
+
+    /**
+     * Get the key that scroll to the right on the table. By default it is the
+     * right arrow key but by overriding this you can change the key to whatever
+     * you want.
+     *
+     * @return The keycode of the key
+     */
+    protected int getNavigationRightKey() {
+        return KeyCodes.KEY_RIGHT;
+    }
+
+    /**
+     * Get the key that selects an item in the table. By default it is the space
+     * bar key but by overriding this you can change the key to whatever you
+     * want.
+     *
+     * @return
+     */
+    protected int getNavigationSelectKey() {
+        return CHARCODE_SPACE;
+    }
+
+    /**
+     * Get the key the moves the selection one page up in the table. By default
+     * this is the Page Up key but by overriding this you can change the key to
+     * whatever you want.
+     *
+     * @return
+     */
+    protected int getNavigationPageUpKey() {
+        return KeyCodes.KEY_PAGEUP;
+    }
+
+    /**
+     * Get the key the moves the selection one page down in the table. By
+     * default this is the Page Down key but by overriding this you can change
+     * the key to whatever you want.
+     *
+     * @return
+     */
+    protected int getNavigationPageDownKey() {
+        return KeyCodes.KEY_PAGEDOWN;
+    }
+
+    /**
+     * Get the key the moves the selection to the beginning of the table. By
+     * default this is the Home key but by overriding this you can change the
+     * key to whatever you want.
+     *
+     * @return
+     */
+    protected int getNavigationStartKey() {
+        return KeyCodes.KEY_HOME;
+    }
+
+    /**
+     * Get the key the moves the selection to the end of the table. By default
+     * this is the End key but by overriding this you can change the key to
+     * whatever you want.
+     *
+     * @return
+     */
+    protected int getNavigationEndKey() {
+        return KeyCodes.KEY_END;
+    }
+
+    private boolean isIE6OrOpera() {
+        return BrowserInfo.get().isIE6() || BrowserInfo.get().isOpera();
+    }
+
 }

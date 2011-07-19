@@ -271,7 +271,7 @@ public class VWidgetsTree extends VTree implements Container {
         }
 
         @Override
-        protected void handleBrowseEvent(Event event) {
+        protected void handleBrowserEvent(Event event) {
             if (disabled) return;
             if (canExpand && DOM.eventGetType(event) == Event.ONCLICK) {
                 Element target = DOM.eventGetCurrentTarget(event);
