@@ -54,6 +54,8 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
     boolean isVisible(String fieldId);
     void setVisible(String fieldId, boolean visible);
 
+    boolean isBorderVisible();
+
     Object getFieldValue(Field field);
     void setFieldValue(Field field, Object value);
     Object getFieldValue(String fieldId);

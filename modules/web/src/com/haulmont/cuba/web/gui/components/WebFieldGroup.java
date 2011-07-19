@@ -627,6 +627,11 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         setVisible(field, visible);
     }
 
+    @Override
+    public boolean isBorderVisible() {
+        return StringUtils.isNotEmpty(caption);
+    }
+
     public Object getFieldValue(Field field) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         return f.getValue();

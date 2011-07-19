@@ -43,7 +43,6 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     private Datasource datasource;
     private int rows;
     private int cols;
-    private String caption;
     private boolean editable = true;
 
     private Map<String, Field> fields = new LinkedHashMap<String, Field>();
@@ -362,6 +361,11 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             setVisible(field, visible);
     }
 
+    @Override
+    public boolean isBorderVisible() {
+        return StringUtils.isNotEmpty(getCaption());
+    }
+
     public Object getFieldValue(Field field) {
         Component component = fieldComponents.get(field);
         if (component instanceof HasValue) {
@@ -546,6 +550,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     public void setCaption(String caption) {
         collapsiblePanel.setCaption(caption);
+        collapsiblePanel.setBorderVisible(isBorderVisible());
     }
 
     public String getDescription() {
