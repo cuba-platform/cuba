@@ -218,9 +218,13 @@ public class DesktopWindowManager extends WindowManager {
 
         breadCrumbs.addWindow(window);
 
-        tabsPane.setTitleAt(tabsPane.getSelectedIndex(), formatTabCaption(caption, description));
+        setWindowCaption(caption, description, tabsPane.getSelectedIndex());
 
         return layout;
+    }
+
+    private void setWindowCaption(String caption, String description, int tabIndex) {
+        ((ButtonTabComponent)tabsPane.getTabComponentAt(tabIndex)).setCaption(formatTabCaption(caption, description));
     }
 
     protected JComponent showWindowNewTab(Window window, String caption, String description) {
@@ -392,7 +396,7 @@ public class DesktopWindowManager extends WindowManager {
                 layout.remove(DesktopComponentsHelper.getComposition(window));
                 layout.add(component);
 
-                tabsPane.setTitleAt(tabsPane.getSelectedIndex(), formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription()));
+                setWindowCaption(currentWindow.getCaption(),  currentWindow.getDescription(), tabsPane.getSelectedIndex());
 
                 fireListeners(window, tabs.size() != 0);
                 break;
@@ -492,8 +496,9 @@ public class DesktopWindowManager extends WindowManager {
         if (tabsPane == null)
             return;
         int selectedIndex = tabsPane.getSelectedIndex();
-        if (selectedIndex != -1)
-            tabsPane.setTitleAt(selectedIndex, formatTabCaption(caption, description));
+        if (selectedIndex != -1) {
+            setWindowCaption(caption, description, selectedIndex);
+        }
     }
 
     protected JComponent findTab(Window window) {

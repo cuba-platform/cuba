@@ -34,6 +34,8 @@ public class CollapsiblePanel extends JPanel {
     private JComponent composition;
     private JButton titleBtn;
 
+    private boolean borderVisible = true;
+
     private Dimension preferredSize;
 
     public interface CollapseListener extends java.util.EventListener {
@@ -161,6 +163,15 @@ public class CollapsiblePanel extends JPanel {
         updateUI();
     }
 
+    public boolean isBorderVisible() {
+        return borderVisible;
+    }
+
+    public void setBorderVisible(boolean borderVisible) {
+        this.borderVisible = borderVisible;
+        this.repaint();
+    }
+
     public JComponent getComposition() {
         return composition;
     }
@@ -237,6 +248,9 @@ public class CollapsiblePanel extends JPanel {
 
         @Override
         public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            if (!borderVisible)
+                return;
+
             if (StringUtils.isEmpty(getCaption())) {
                 super.paintBorder(c, g, x, y, width, height);
                 return;

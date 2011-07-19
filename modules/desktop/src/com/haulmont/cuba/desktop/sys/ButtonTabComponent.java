@@ -36,6 +36,7 @@ package com.haulmont.cuba.desktop.sys;
  *
  * @author krivopustov
  */
+
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 
@@ -51,12 +52,15 @@ import java.awt.event.*;
  */
 public class ButtonTabComponent extends JPanel {
 
+    protected JButton tabButton;
+
     public interface CloseListener {
         void onTabClose(int tabIndex);
     }
 
     private final JTabbedPane pane;
     private CloseListener listener;
+    private JLabel titleLabel;
 
     public ButtonTabComponent(final JTabbedPane pane, CloseListener listener) {
         //unset default FlowLayout' gaps
@@ -68,7 +72,7 @@ public class ButtonTabComponent extends JPanel {
         setOpaque(false);
 
         //make JLabel read titles from JTabbedPane
-        JLabel label = new JLabel() {
+        titleLabel = new JLabel() {
             public String getText() {
                 int i = pane.indexOfTabComponent(ButtonTabComponent.this);
                 if (i != -1) {
@@ -78,16 +82,30 @@ public class ButtonTabComponent extends JPanel {
             }
         };
 
-        add(label);
+        add(titleLabel);
         //add more space between the label and the button
-        label.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
         //tab button
-        JButton button = new TabButton();
-        add(button);
+        tabButton = new TabButton();
+        add(tabButton);
         //add more space to the top of the component
         setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
 
         this.listener = listener;
+    }
+
+    public String getCaption() {
+        return titleLabel.getText();
+    }
+
+    public void setCaption(String caption) {
+        int i = pane.indexOfTabComponent(this);
+        if (i != -1) {
+            pane.setTitleAt(i, caption);
+        }
+        titleLabel.setText(caption);
+        tabButton.revalidate();
+        tabButton.repaint();
     }
 
     private class TabButton extends JButton implements ActionListener {
