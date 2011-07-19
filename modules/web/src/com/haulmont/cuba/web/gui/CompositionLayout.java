@@ -10,11 +10,11 @@
  */
 package com.haulmont.cuba.web.gui;
 
-import com.vaadin.incubator.dashlayout.ui.VerDashLayout;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class CompositionLayout extends VerDashLayout {
+public class CompositionLayout extends VerticalLayout {
     private final Component component;
 
     public CompositionLayout(Component component) {

@@ -13,16 +13,16 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.ButtonsPanel;
 import com.haulmont.cuba.gui.components.Component;
-import com.vaadin.incubator.dashlayout.client.ui.VDashLayout;
-import com.vaadin.ui.ClientWidget;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.gwt.client.ui.VHorizontalLayout;
+import com.vaadin.ui.ClientWidget;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 @SuppressWarnings("serial")
-@ClientWidget(VDashLayout.class)
+@ClientWidget(VHorizontalLayout.class)
 public class WebButtonsPanel extends WebHBoxLayout
         implements ButtonsPanel {
 

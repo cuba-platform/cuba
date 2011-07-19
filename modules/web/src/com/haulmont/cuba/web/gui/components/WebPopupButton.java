@@ -12,8 +12,8 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import com.vaadin.incubator.dashlayout.ui.VerDashLayout;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
 import org.vaadin.hene.popupbutton.PopupButton;
@@ -39,9 +39,9 @@ public class WebPopupButton
         component = new PopupButton("");
         component.setImmediate(true);
 
-        vPopupComponent = new VerDashLayout();
+        vPopupComponent = new VerticalLayout();
         vPopupComponent.addStyleName("popupmenu");
-        ((VerDashLayout) vPopupComponent).setMargin(true);
+        ((VerticalLayout) vPopupComponent).setMargin(true);
         vPopupComponent.setSizeUndefined();
         component.setComponent(vPopupComponent);
     }
