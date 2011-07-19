@@ -9,6 +9,17 @@
 
     <entry-point class="com.haulmont.cuba.toolkit.gwt.client.WidgetSet" />
 
+    <!--
+        Uncomment the 'generate-with' below if you want to enable lazy loading strategy of client code (code splitting).
+        For further info please visit http://dev.vaadin.com/wiki/WidgetSet
+    -->
+    <!--
+    <generate-with
+        class="com.vaadin.terminal.gwt.widgetsetutils.LazyWidgetMapGenerator">
+        <when-type-is class="com.vaadin.terminal.gwt.client.WidgetMap" />
+    </generate-with>
+    -->
+
     <!--<set-property name="user.agent" value="gecko1_8"/>-->
     <!--<set-property name="user.agent" value="safari" />-->
 </module>
