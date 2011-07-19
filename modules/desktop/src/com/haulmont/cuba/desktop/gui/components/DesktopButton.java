@@ -14,6 +14,8 @@ import org.apache.commons.lang.StringUtils;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * <p>$Id$</p>
@@ -58,6 +60,21 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
         }
 
         action.setOwner(this);
+
+        action.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    @Override
+                    public void propertyChange(PropertyChangeEvent evt) {
+                        if (Action.PROP_ICON.equals(evt.getPropertyName())) {
+                            setIcon(DesktopButton.this.action.getIcon());
+                        } else if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
+                            setCaption(DesktopButton.this.action.getCaption());
+                        } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
+                            setEnabled(DesktopButton.this.action.isEnabled());
+                        }
+                    }
+                }
+        );
     }
 
     public String getCaption() {

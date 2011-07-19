@@ -15,6 +15,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * <p>$Id$</p>
@@ -55,7 +57,7 @@ public class DesktopPopupButton
     private void showPopup() {
         popup.removeAll();
         for (final Action action : actionsOrder) {
-            JMenuItem menuItem = new JMenuItem(action.getCaption());
+            final JMenuItem menuItem = new JMenuItem(action.getCaption());
             menuItem.addActionListener(
                     new ActionListener() {
                         @Override
@@ -64,6 +66,21 @@ public class DesktopPopupButton
                         }
                     }
             );
+            menuItem.setEnabled(action.isEnabled());
+
+            action.addPropertyChangeListener(
+                    new PropertyChangeListener() {
+                        @Override
+                        public void propertyChange(PropertyChangeEvent evt) {
+                            if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
+                                menuItem.setText(action.getCaption());
+                            } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
+                                menuItem.setEnabled(action.isEnabled());
+                            }
+                        }
+                    }
+            );
+
             popup.add(menuItem);
         }
 
@@ -135,5 +152,10 @@ public class DesktopPopupButton
             impl.setIcon(resources.getIcon(icon));
         else
             impl.setIcon(resources.getIcon(DEFAULT_ICON));
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
     }
 }
