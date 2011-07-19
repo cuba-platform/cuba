@@ -50,7 +50,7 @@ public abstract class AbstractTextFieldLoader extends AbstractFieldLoader {
 
         String datatypeStr = element.attributeValue("datatype");
         if (!StringUtils.isEmpty(datatypeStr)) {
-            Datatype datatype = Datatypes.getInstance().get(datatypeStr);
+            Datatype datatype = Datatypes.get(datatypeStr);
             component.setDatatype(datatype);
         }
 

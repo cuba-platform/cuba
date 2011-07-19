@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -28,6 +29,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -221,12 +223,12 @@ public class DesktopDateField
 
     @Override
     public Datasource getDatasource() {
-        return null;
+        return datasource;
     }
 
     @Override
     public MetaProperty getMetaProperty() {
-        return null;
+        return metaProperty;
     }
 
     @Override
@@ -360,7 +362,17 @@ public class DesktopDateField
             if (datasource != null && metaPropertyPath != null) {
                 Date value = constructDate();
                 if (datasource.getItem() != null) {
-                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+                    Object obj = value;
+                    Datatype<Object> datatype = metaProperty.getRange().asDatatype();
+                    if (!datatype.getJavaClass().equals(Date.class)) {
+                        String str = Datatypes.get(Date.class).format(value);
+                        try {
+                            obj = datatype.parse(str);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), obj);
                 }
             }
             valid = true;

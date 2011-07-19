@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.web.gui;
 
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -268,9 +270,10 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
     protected void initDateField(com.vaadin.ui.DateField field, MetaProperty metaProperty, Element xmlDescriptor) {
         TemporalType tt = null;
         if (metaProperty != null) {
-            if (metaProperty.getAnnotations() != null) {
+            if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME)))
+                tt = TemporalType.DATE;
+            else if (metaProperty.getAnnotations() != null)
                 tt = (TemporalType) metaProperty.getAnnotations().get("temporal");
-            }
         }
 
         final String resolution = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("resolution");

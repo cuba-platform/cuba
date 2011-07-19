@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.web.gui.data;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -79,16 +80,33 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
     }
 
     protected Object valueOf(Object newValue) throws Property.ConversionException {
+        if (newValue == null)
+            return newValue;
         final Range range = propertyPath.getRange();
         if (range == null) {
             return newValue;
         } else {
             final Object obj;
-            if (range.isDatatype() && newValue instanceof String) {
-                try {
-                    obj = range.asDatatype().parse((String) newValue, UserSessionProvider.getLocale());
-                } catch (ParseException e) {
-                    throw new Property.ConversionException(e);
+            if (range.isDatatype()) {
+                Datatype<Object> datatype = range.asDatatype();
+                if (newValue instanceof String) {
+                    try {
+                        obj = datatype.parse((String) newValue, UserSessionProvider.getLocale());
+                    } catch (ParseException e) {
+                        throw new Property.ConversionException(e);
+                    }
+                } else {
+                    if (newValue.getClass().equals(datatype.getJavaClass())) {
+                        return newValue;
+                    } else {
+                        Datatype newValueDatatype = Datatypes.get(newValue.getClass());
+                        String str = newValueDatatype.format(newValue);
+                        try {
+                            obj = datatype.parse(str);
+                        } catch (ParseException e) {
+                            throw new Property.ConversionException(e);
+                        }
+                    }
                 }
             } else {
                 obj = newValue;

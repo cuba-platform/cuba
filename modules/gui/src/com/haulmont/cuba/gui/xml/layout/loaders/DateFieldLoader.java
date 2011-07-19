@@ -33,7 +33,9 @@ public class DateFieldLoader extends AbstractFieldLoader {
 
         TemporalType tt = null;
         if (component.getMetaProperty() != null) {
-            if (component.getMetaProperty().getAnnotations() != null)
+            if (component.getMetaProperty().getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME)))
+                tt = TemporalType.DATE;
+            else if (component.getMetaProperty().getAnnotations() != null)
                 tt = (TemporalType) component.getMetaProperty().getAnnotations().get("temporal");
         }
 

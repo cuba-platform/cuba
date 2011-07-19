@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
@@ -88,9 +89,10 @@ public abstract class AbstractFieldFactory {
         MetaProperty metaProperty = mpp.getMetaProperty();
         TemporalType tt = null;
         if (metaProperty != null) {
-            if (metaProperty.getAnnotations() != null) {
+            if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME)))
+                tt = TemporalType.DATE;
+            else if (metaProperty.getAnnotations() != null)
                 tt = (TemporalType) metaProperty.getAnnotations().get("temporal");
-            }
         }
 
         if (tt == TemporalType.DATE) {
