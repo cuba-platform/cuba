@@ -16,8 +16,10 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigBoxLayoutAdapter;
+import com.haulmont.cuba.desktop.sys.vcl.DatePicker.DatePicker;
+import com.haulmont.cuba.desktop.sys.vcl.TimeField.TimeField;
+import com.haulmont.cuba.desktop.sys.vcl.TimeField.TimeFieldDocument;
 import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -42,6 +44,9 @@ public class DesktopDateField
     extends DesktopAbstractField<JPanel>
     implements DateField
 {
+    private static final String HOUR_FORMAT="00";
+    private static final String HOUR_MINUTE_FORMAT="00:00";
+
     private Resolution resolution;
     private Datasource datasource;
     private MetaPropertyPath metaPropertyPath;
@@ -52,11 +57,9 @@ public class DesktopDateField
     private String requiredMessage;
 
     private JXDatePicker datePicker;
-    private JTextField hoursField;
-    private JTextField minutesField;
+    private TimeField timeField;
     private BoxLayoutAdapter adapter;
-    private DocumentListener minListener;
-    private DocumentListener hourListener;
+    private DocumentListener timeListener;
     private boolean valid = true;
     private String caption;
 
@@ -75,17 +78,11 @@ public class DesktopDateField
         adapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.X);
         adapter.setExpandLayout(true);
 
-        datePicker = new JXDatePicker();
-        String dateFormat = Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getDateFormat();
-        datePicker.setFormats(dateFormat);
+        datePicker = new DatePicker();
 
-        hoursField = new JTextField();
-        hoursField.setColumns(2);
+        timeField = new TimeField(HOUR_MINUTE_FORMAT);
 
-        minutesField = new JTextField();
-        minutesField.setColumns(2);
-
-        hourListener = new DocumentListener() {
+        timeListener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 if (isHourUsed()) {
@@ -103,29 +100,6 @@ public class DesktopDateField
             @Override
             public void changedUpdate(DocumentEvent e) {
                 if (isHourUsed()) {
-                    updateInstance();
-                }
-            }
-        };
-
-        minListener = new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                if (isMinUsed()) {
-                    updateInstance();
-                }
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                if (isMinUsed()) {
-                    updateInstance();
-                }
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                if (isMinUsed()) {
                     updateInstance();
                 }
             }
@@ -136,15 +110,14 @@ public class DesktopDateField
         impl.removeAll();
 
         impl.add(datePicker, "growx, w 100%");
-
-        if (isHourUsed()) {
-            impl.add(hoursField, "w 30px!");
+        if (isHourUsed() && !isMinUsed()) {
+            timeField.setDocument(new TimeFieldDocument(timeField, HOUR_FORMAT));
+            impl.add(timeField, "w 23px!");
+        } else if (isHourUsed() && isMinUsed()) {
+            timeField.setDocument(new TimeFieldDocument(timeField, HOUR_MINUTE_FORMAT));
+            impl.add(timeField, "w 45px!");
         }
-
-        if (isMinUsed()) {
-            impl.add(new JLabel(":"), "aligny 50%");
-            impl.add(minutesField, "w 30px!");
-        }
+        timeField.getDocument().addDocumentListener(timeListener);
     }
 
     @Override
@@ -283,8 +256,7 @@ public class DesktopDateField
                 }
         );
 
-        hoursField.getDocument().addDocumentListener(hourListener);
-        minutesField.getDocument().addDocumentListener(minListener);
+        timeField.getDocument().addDocumentListener(timeListener);
 
         setRequired(metaProperty.isMandatory());
     }
@@ -313,12 +285,10 @@ public class DesktopDateField
             int hour = calendar.get(Calendar.HOUR_OF_DAY);
             int min = calendar.get(Calendar.MINUTE);
 
-            hoursField.setText(String.format("%02d", hour));
-            minutesField.setText(String.format("%02d", min));
+            timeField.setText(String.format("%02d", hour)+String.format("%02d", min));
         }
         else {
-            hoursField.setText("");
-            minutesField.setText("");
+            timeField.setText("");
         }
     }
 
@@ -330,8 +300,7 @@ public class DesktopDateField
     @Override
     public void setEditable(boolean editable) {
         datePicker.setEditable(editable);
-        hoursField.setEditable(editable);
-        minutesField.setEditable(editable);
+        timeField.setEditable(editable);
     }
 
     @Override
@@ -400,18 +369,12 @@ public class DesktopDateField
         c.setTime(datePickerDate);
 
         if (isHourUsed()) {
-            int hours = Integer.valueOf(hoursField.getText());
-            if (hours < 0 || hours > 23) {
-                throw new NumberFormatException("Invalid hours: " + hours);
-            }
+            int hours = timeField.getHours();
             c.set(Calendar.HOUR_OF_DAY, hours);
         }
 
         if (isMinUsed()) {
-            int min = Integer.valueOf(minutesField.getText());
-            if (min < 0 || min > 59) {
-                throw new NumberFormatException("Invalid minutes: " + min);
-            }
+            int min = timeField.getMinutes();
             c.set(Calendar.MINUTE, min);
         }
 
