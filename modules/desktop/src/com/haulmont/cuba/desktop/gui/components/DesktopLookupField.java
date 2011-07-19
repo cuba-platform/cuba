@@ -12,6 +12,7 @@ import ca.odell.glazedlists.swing.AutoCompleteSupport;
 import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -29,7 +30,7 @@ import java.awt.event.*;
  * @author krivopustov
  */
 public class DesktopLookupField
-    extends DesktopAbstractOptionsField<JComboBox>
+    extends DesktopAbstractOptionsField<ExtendedComboBox>
     implements LookupField
 {
     private BasicEventList<Object> items = new BasicEventList<Object>();
@@ -43,7 +44,7 @@ public class DesktopLookupField
     private boolean settingValue;
 
     public DesktopLookupField() {
-        impl = new JComboBox();
+        impl = new ExtendedComboBox();
         impl.setEditable(true);
         impl.setPrototypeDisplayValue("AAAAAAAAAAAA");
         autoComplete = AutoCompleteSupport.install(impl, items);
@@ -164,6 +165,7 @@ public class DesktopLookupField
         }
 
         optionsInitialized = true;
+        impl.updatePopupWidth();
     }
 
     @Override

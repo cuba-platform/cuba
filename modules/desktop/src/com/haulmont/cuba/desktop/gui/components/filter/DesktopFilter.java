@@ -131,6 +131,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         noFilter.setName(MessageProvider.getMessage(mainMessagesPack, "filter.noFilter"));
 
         select = new DesktopFilterSelect();
+        Dimension dimension = select.getMinimumSize();
+        select.setMinimumSize(new Dimension(300, dimension.height));
         select.addItemListener(new SelectListener());
 
         impl.add(select);

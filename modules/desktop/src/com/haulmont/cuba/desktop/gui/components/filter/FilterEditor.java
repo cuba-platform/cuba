@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
+import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.*;
@@ -261,7 +262,7 @@ public class FilterEditor extends AbstractFilterEditor {
         JLabel label = new JLabel(getMessage("FilterEditor.addCondition"));
         panel.add(label, new CC().alignX("right"));
 
-        addSelect = new JComboBox();
+        addSelect = new ExtendedComboBox();
 
         addSelect.addItem(null);
         for (AbstractConditionDescriptor descriptor : descriptors) {

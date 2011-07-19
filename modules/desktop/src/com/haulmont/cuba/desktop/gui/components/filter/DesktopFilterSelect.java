@@ -6,9 +6,9 @@
 
 package com.haulmont.cuba.desktop.gui.components.filter;
 
+import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.security.entity.FilterEntity;
 
-import javax.swing.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +18,7 @@ import java.util.Set;
  *
  * @author devyatkin
  */
-public class DesktopFilterSelect extends JComboBox {
+public class DesktopFilterSelect extends ExtendedComboBox {
     private Set<FilterEntity> filters = new HashSet<FilterEntity>();
     private ItemWrapper<FilterEntity> noFilterWrapper;
 

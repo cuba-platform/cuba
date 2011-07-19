@@ -19,6 +19,7 @@ import com.haulmont.cuba.desktop.gui.components.DesktopDateField;
 import com.haulmont.cuba.desktop.gui.components.DesktopLookupField;
 import com.haulmont.cuba.desktop.gui.components.DesktopPickerField;
 import com.haulmont.cuba.desktop.gui.components.DesktopTextField;
+import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.DateField;
@@ -251,7 +252,7 @@ public class Param extends AbstractParam<JComponent> {
     }
 
     private JComponent createBooleanField() {
-        final JComboBox field = new JComboBox();
+        final JComboBox field = new ExtendedComboBox();
 
         field.addItem("");
         field.addItem(Boolean.TRUE);

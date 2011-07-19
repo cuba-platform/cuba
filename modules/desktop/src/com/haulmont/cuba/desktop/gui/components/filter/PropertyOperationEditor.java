@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.gui.components.filter;
 
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.Op;
 
@@ -26,7 +27,7 @@ public class PropertyOperationEditor extends OperationEditor{
 
     @Override
     protected void createEditor() {
-        final JComboBox select = new JComboBox();
+        final JComboBox select = new ExtendedComboBox();
         boolean selected=false;
         for (Op op : Op.availableOps(condition.getJavaClass())) {
             ItemWrapper<Op> wrapper = new ItemWrapper<Op>(op, MessageProvider.getMessage(op));
