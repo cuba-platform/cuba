@@ -744,26 +744,39 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
                     fireClick(event);
                 }
             }
-            if (type == Event.ONCLICK) {
-                if (getElement() == target || ie6compatnode == target) {
-                    // state change
-                    toggleState();
-                } else if (!readonly && inCaption) {
-                    if (selectable) {
-                        // caption click = selection change && possible click
-                        // event
-                        if (handleClickSelection(event.getCtrlKey()
-                                || event.getMetaKey(), event.getShiftKey())) {
-                            event.preventDefault();
+            switch (type){
+                case Event.ONCLICK:
+                    if (getElement() == target || ie6compatnode == target) {
+                        // state change
+                        toggleState();
+                    } else if (!readonly && inCaption) {
+                        if (selectable) {
+                            // caption click = selection change && possible click
+                            // event
+                            if (handleClickSelection(event.getCtrlKey()
+                                    || event.getMetaKey(), event.getShiftKey())) {
+                                event.preventDefault();
+                            }
+                        } else {
+                            // Not selectable, only focus the node.
+                            setFocusedNode(this);
                         }
-                    } else {
-                        // Not selectable, only focus the node.
-                        setFocusedNode(this);
                     }
-                }
-                event.stopPropagation();
-            } else if (type == Event.ONCONTEXTMENU) {
-                showContextMenu(event);
+                    event.stopPropagation();
+                    break;
+                case Event.ONMOUSEUP:
+                    if (event.getButton() == NativeEvent.BUTTON_RIGHT){
+                        setFocusedNode(this, false);
+                        if (selectable){
+                            selectNode(this, true);
+                            sendSelectionToServer();
+                        }
+                        event.stopPropagation();
+                    }
+                    break;
+                case Event.ONCONTEXTMENU:
+                    showContextMenu(event);
+                    break;
             }
 
             if (dragMode != 0 || dropHandler != null) {
