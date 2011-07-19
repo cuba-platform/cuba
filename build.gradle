@@ -42,7 +42,6 @@ def uiTestModule = project(':cuba-test-ui')
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
 def vaadin = [group: 'com.haulmont.thirdparty', name: 'vaadin', version: '6.6.1.91']
-def dashlayout = [group: 'com.haulmont.thirdparty', name: 'dashlayout', version: '0.1.5']
 def popupbutton = [group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '1.0.0']
 def gwtUser = [group: 'com.google.gwt', name: 'gwt-user', version: '2.3.0']
 def gwtDev = [group: 'com.google.gwt', name: 'gwt-dev', version: '2.3.0']
@@ -218,7 +217,6 @@ configure(guiModule) {
 configure(webToolkitModule) {
     dependencies {
         compile(vaadin)
-        compile(dashlayout)
         compile(popupbutton)
 
         provided(gwtUser)
@@ -249,7 +247,6 @@ configure(webModule) {
         compile(group: 'org.jasig.cas', name: 'cas-client-core', version: '3.1.10')
         compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.0.5.RELEASE')
         compile(vaadin)
-        compile(dashlayout)
         compile(popupbutton)
 
         runtime(group: 'com.haulmont.thirdparty', name: 'jcifs', version: '1.3.10')
