@@ -81,7 +81,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     }
 
     public void setEnabled(boolean enabled) {
-        impl.setEnabled(enabled);
+        getComposition().setEnabled(enabled);
         requestContainerUpdate();
     }
 
@@ -90,7 +90,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     }
 
     public void setVisible(boolean visible) {
-        impl.setVisible(visible);
+        getComposition().setVisible(visible);
         requestContainerUpdate();
     }
 
