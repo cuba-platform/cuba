@@ -382,7 +382,10 @@ public class WebFilter
         paramsLayout = grid;
     }
 
-    private void setActions(Table table){
+    private void setActions(Table table) {
+        if (foldersPane == null) {
+            return;
+        }
         ButtonsPanel buttons = table.getButtonsPanel();
         if (buttons == null) {
             return; // in lookup windows, there is no button panel
