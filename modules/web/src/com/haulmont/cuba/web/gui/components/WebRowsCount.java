@@ -148,7 +148,22 @@ public class WebRowsCount
                 component.getCountButton().setVisible(false);
                 component.getPrevButton().setVisible(false);
                 component.getNextButton().setVisible(false);
-                msgKey = "table.rowsCount.msg2";
+                if (size % 100 > 10 && size % 100 < 20) {
+                    msgKey = "table.rowsCount.msg2Plural1";
+                } else {
+                    switch (size % 10) {
+                        case 1:
+                            msgKey = "table.rowsCount.msg2Singular";
+                            break;
+                        case 2:
+                        case 3:
+                        case 4:
+                            msgKey = "table.rowsCount.msg2Plural2";
+                            break;
+                        default:
+                            msgKey = "table.rowsCount.msg2Plural1";
+                    }
+                }
                 countValue = String.valueOf(size);
                 break;
             case FIRST_INCOMPLETE:
@@ -169,7 +184,7 @@ public class WebRowsCount
                 component.getCountButton().setVisible(false);
                 component.getPrevButton().setVisible(true);
                 component.getNextButton().setVisible(false);
-                msgKey = "table.rowsCount.msg2";
+                msgKey = "table.rowsCount.msg2Plural1";
                 countValue = (start + 1) + "-" + (start + size);
                 break;
             default:

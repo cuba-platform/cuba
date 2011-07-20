@@ -17,10 +17,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 
 /**
  * <p>$Id$</p>
@@ -54,30 +51,10 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                         }
                     }
             );
-            impl.getCountLabel().addMouseListener(new MouseListener() {
+            impl.getCountLabel().addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     onLinkClick();
-                }
-
-                @Override
-                public void mousePressed(MouseEvent e) {
-
-                }
-
-                @Override
-                public void mouseReleased(MouseEvent e) {
-
-                }
-
-                @Override
-                public void mouseEntered(MouseEvent e) {
-
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-
                 }
             });
 
@@ -132,7 +109,22 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                 impl.getCountLabel().setVisible(false);
                 impl.getPrevButton().setVisible(false);
                 impl.getNextButton().setVisible(false);
-                msgKey = "table.rowsCount.msg2";
+                if (size % 100 > 10 && size % 100 < 20) {
+                    msgKey = "table.rowsCount.msg2Plural1";
+                } else {
+                    switch (size % 10) {
+                        case 1:
+                            msgKey = "table.rowsCount.msg2Singular";
+                            break;
+                        case 2:
+                        case 3:
+                        case 4:
+                            msgKey = "table.rowsCount.msg2Plural2";
+                            break;
+                        default:
+                            msgKey = "table.rowsCount.msg2Plural1";
+                    }
+                }
                 countValue = String.valueOf(size);
                 break;
             case FIRST_INCOMPLETE:
