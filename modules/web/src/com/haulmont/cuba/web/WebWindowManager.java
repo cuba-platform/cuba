@@ -331,42 +331,6 @@ public class WebWindowManager extends WindowManager {
                 }
             }
         });
-
-        appWindow.getMainLayout().getWindow().addAction(new ShortcutListener("onEnter", ShortcutAction.KeyCode.ENTER, null) {
-            @Override
-            public void handleAction(Object sender, Object target) {
-                AppWindow appWindow = app.getAppWindow();
-                Window window = null;
-                if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
-                    TabSheet tabSheet = appWindow.getTabSheet();
-                    if (tabSheet != null) {
-                        VerticalLayout layout = (VerticalLayout) tabSheet.getSelectedTab();
-                        if (layout != null) {
-                            WindowBreadCrumbs breadCrumbs = getTabs().get(layout);
-                            window = breadCrumbs.getCurrentWindow();
-                        }
-                    }
-                } else {
-                    Iterator<WindowBreadCrumbs> it = getCurrentWindowData().tabs.values().iterator();
-                    if (it.hasNext()) {
-                        window = it.next().getCurrentWindow();
-                    }
-                }
-                if (window == null)
-                    return;
-
-                if (window instanceof com.haulmont.cuba.gui.components.AbstractEditor) {
-                    ((com.haulmont.cuba.gui.components.AbstractEditor) window).commitAndClose();
-                } else {
-                    Collection<com.haulmont.cuba.gui.components.Component> components = window.getComponents();
-                    for (com.haulmont.cuba.gui.components.Component c : components) {
-                        if (c instanceof WebFilter) {
-                            ((WebFilter) c).apply(false);
-                        }
-                    }
-                }
-            }
-        });
     }
 
     protected Layout createNewWinLayout(Window window, Component... components) {
