@@ -661,6 +661,7 @@
                     <xs:complexType>
                         <xs:attribute name="id" type="xs:string" use="required"/>
 
+                        <xs:attribute name="visible" type="xs:string" use="optional"/>
                         <xs:attribute name="editable" type="xs:string" use="optional"/>
                         <xs:attribute name="enable" type="xs:string" use="optional"/>
                         <xs:attribute name="required" type="xs:boolean" use="optional"/>

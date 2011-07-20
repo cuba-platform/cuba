@@ -86,15 +86,6 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
                 fireExpandListeners();
             }
         });
-
-        if (isLayoutDebugEnabled()) {
-            collapsiblePanel.setBorder(
-                    BorderFactory.createCompoundBorder(
-                            BorderFactory.createLineBorder(Color.GRAY),
-                            BorderFactory.createEmptyBorder(0, 5, 5, 5)
-                    )
-            );
-        }
     }
 
 @Override
@@ -502,14 +493,13 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         }
 
         JLabel label = new JLabel(caption);
-
+        label.setVisible(component.isVisible());
         impl.add(label, new CC().cell(col*2, row, 1, 1));
         fieldLabels.put(field, label);
 
         fieldComponents.put(field, component);
         assignTypicalAttributes(component);
-        JComponent jComponent = DesktopComponentsHelper.unwrap(component);
-
+        JComponent jComponent = DesktopComponentsHelper.getComposition(component);
         CC cell = new CC().cell(col * 2 + 1, row, 1, 1);
 
         if (field.getWidth() != null && component.getWidth() == 0 && component.getWidthUnits() == 0) {

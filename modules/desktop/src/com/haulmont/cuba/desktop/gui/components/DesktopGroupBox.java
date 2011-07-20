@@ -13,7 +13,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -45,15 +44,6 @@ public class DesktopGroupBox
                 fireExpandListeners();
             }
         });
-
-        if (isLayoutDebugEnabled()) {
-            collapsiblePanel.setBorder(
-                    BorderFactory.createCompoundBorder(
-                            BorderFactory.createLineBorder(Color.BLUE),
-                            BorderFactory.createEmptyBorder(0, 5, 5, 5)
-                    )
-            );
-        }
     }
 
     @Override
