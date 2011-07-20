@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -108,8 +109,14 @@ public class CollapsiblePanel extends JPanel {
     private void placeTitleComponent() {
         Insets insets = getInsets();
         Rectangle containerRectangle = getBounds();
-        Rectangle componentRectangle = ((CollapsibleTitledBorder)getBorder()).getComponentRect(containerRectangle, insets);
-        titleBtn.setBounds(componentRectangle);
+        if (borderVisible) {
+            Rectangle componentRectangle = ((CollapsibleTitledBorder) getBorder()).getComponentRect(containerRectangle, insets);
+            titleBtn.setBounds(componentRectangle);
+        } else {
+            Dimension compD = titleBtn.getPreferredSize();
+            Rectangle compR = new Rectangle(20 - insets.left, 0, compD.width, compD.height);
+            titleBtn.setBounds(compR);
+        }
     }
 
     private void loadIcons() {
@@ -177,6 +184,11 @@ public class CollapsiblePanel extends JPanel {
 
     public void setBorderVisible(boolean borderVisible) {
         this.borderVisible = borderVisible;
+        if (borderVisible) {
+            setBorder(new CollapsibleTitledBorder(null, titleBtn));
+            placeTitleComponent();
+        } else
+            this.setBorder(new EmptyBorder(15, 5, 5, 5));
         this.repaint();
     }
 
