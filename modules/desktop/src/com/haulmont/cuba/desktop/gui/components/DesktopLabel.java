@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -37,6 +38,10 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
 
     private Locale locale = UserSessionProvider.getLocale();
+
+    private Object prevValue;
+
+    private boolean updatingInstance = false;
 
     public DesktopLabel() {
         impl = new JLabel();
@@ -70,12 +75,15 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
                         Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         String text = formatValue(value);
                         impl.setText(text);
+                        fireChangeListeners();
                     }
+
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                         if (property.equals(metaPropertyPath.toString())) {
                             String text = formatValue(value);
                             impl.setText(text);
+                            fireChangeListeners();
                         }
                     }
                 }
@@ -121,20 +129,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     }
 
     public void setEditable(boolean editable) {
-    }
-
-    public String getCaption() {
-        return null;
-    }
-
-    public void setCaption(String caption) {
-    }
-
-    public String getDescription() {
-        return null;
-    }
-
-    public void setDescription(String description) {
+        throw new UnsupportedOperationException("Cann't set editable for Label");
     }
 
     public Formatter getFormatter() {
@@ -151,6 +146,35 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
 
     public void setValue(Object value) {
         impl.setText(formatValue(value));
+        updateInstance(value);
+        fireChangeListeners();
+    }
+
+    private void updateInstance(Object value) {
+        if (updatingInstance)
+            return;
+
+        if (ObjectUtils.equals(prevValue, value))
+            return;
+
+        updatingInstance = true;
+        try {
+            if ((datasource != null) && (metaPropertyPath != null)) {
+                if (datasource.getItem() != null) {
+                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+                }
+            }
+        } finally {
+            updatingInstance = false;
+        }
+    }
+
+    private void fireChangeListeners() {
+        Object newValue = getValue();
+        if (!ObjectUtils.equals(prevValue, newValue)) {
+            fireValueChanged(prevValue, newValue);
+            prevValue = newValue;
+        }
     }
 
     public void addListener(ValueListener listener) {

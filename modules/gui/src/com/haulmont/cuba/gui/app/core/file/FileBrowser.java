@@ -8,16 +8,14 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.web.app.ui.core.file;
+package com.haulmont.cuba.gui.app.core.file;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.app.FileDownloadHelper;
-import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,7 +38,7 @@ public class FileBrowser extends AbstractWindow {
         filesTable.addAction(new EditAction(filesTable, WindowManager.OpenType.DIALOG));
         filesTable.addAction(new RemoveAction(filesTable));
         filesTable.addAction(new RefreshAction(filesTable));
-        filesTable.addAction(new ExcelAction(filesTable, new WebExportDisplay()));
+        filesTable.addAction(new ExcelAction(filesTable, AppConfig.createExportDisplay()));
 
         Button uploadBtn = getComponent("multiupload");
         uploadBtn.setAction(new AbstractAction("files.multiupload") {
@@ -48,7 +46,7 @@ public class FileBrowser extends AbstractWindow {
             public void actionPerform(Component component) {
                 Map<String, Object> params = Collections.<String, Object>emptyMap();
 
-                final Window window = frame.openEditor("multiupload", null,
+                final Window window = frame.openEditor("multiuploadDialog", null,
                         WindowManager.OpenType.DIALOG,
                         params, null);
 
@@ -68,6 +66,6 @@ public class FileBrowser extends AbstractWindow {
             }
         });
 
-        FileDownloadHelper.initGeneratedColumn(filesTable);
+//        FileDownloadHelper.initGeneratedColumn(filesTable);
     }
 }

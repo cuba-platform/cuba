@@ -48,22 +48,6 @@ public class WebLabel
         component = new com.vaadin.ui.Label();
     }
 
-    public String getCaption() {
-        return component.getCaption();
-    }
-
-    public void setCaption(String caption) {
-        component.setCaption(caption);
-    }
-
-    public String getDescription() {
-        return component.getDescription();
-    }
-
-    public void setDescription(String description) {
-        component.setDescription(description);
-    }
-
     public Datasource getDatasource() {
         return datasource;
     }
@@ -120,9 +104,8 @@ public class WebLabel
     }
 
     public void setEditable(boolean editable) {
-        // Do nothing
+        throw new UnsupportedOperationException("Cann't set editable for Label");
     }
-
 
     public void addListener(ValueListener listener) {
         if (!listeners.contains(listener)) listeners.add(listener);

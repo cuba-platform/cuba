@@ -1,13 +1,13 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="com.haulmont.cuba.web.app.ui.core.file.MultiUploader"
+        class="com.haulmont.cuba.gui.app.core.file.MultiUploader"
         datasource="filesDs"
-        messagesPack="com.haulmont.cuba.web.app.ui.core.file"
+        messagesPack="com.haulmont.cuba.gui.app.core.file"
         caption="msg://editorCaption">
 
     <dsContext>
         <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor" view="browse">
-            <datasourceClass>com.haulmont.cuba.web.app.ui.core.file.MultiuploadsDatasource</datasourceClass>
+            <datasourceClass>com.haulmont.cuba.gui.app.core.file.MultiuploadsDatasource</datasourceClass>
         </collectionDatasource>
     </dsContext>
     <#assign width = 560>
@@ -15,7 +15,7 @@
     <layout expand="windowActions">
         <vbox id="vBox" margin="true" spacing="true" stylename="edit-area">
             <hbox height="30" spacing="true">
-                <multiupload id="multiUpload" height="25px" width="90px"/>
+                <multiupload id="multiUpload" width="90px"/>
                 <button action="uploadsTable.remove" icon="icons/remove.png"/>
             </hbox>
 

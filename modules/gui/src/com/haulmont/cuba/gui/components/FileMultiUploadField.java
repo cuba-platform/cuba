@@ -48,7 +48,7 @@ public interface FileMultiUploadField extends Component, Component.HasCaption, C
     /**
      * Get uploads map
      *
-     * @return Map<UUID - Id of file in FileUploadService, String - FileName>
+     * @return Map ( UUID - Id of file in FileUploadService, String - FileName )
      */
     Map<UUID, String> getUploadsMap();
 }

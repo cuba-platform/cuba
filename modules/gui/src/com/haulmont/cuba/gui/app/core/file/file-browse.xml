@@ -1,9 +1,9 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="com.haulmont.cuba.web.app.ui.core.file.FileBrowser">
+        class="com.haulmont.cuba.gui.app.core.file.FileBrowser">
 
     <metadataContext>
-        <deployViews name="/com/haulmont/cuba/web/app/ui/core/file/file.views.xml"/>
+        <deployViews name="/com/haulmont/cuba/gui/app/core/file/file.views.xml"/>
     </metadataContext>
 
     <dsContext>
@@ -33,7 +33,7 @@
             <columns>
                 <column id="name" caption="msg://name"/>
                 <column id="extension" caption="msg://extension"/>
-                <column id="size" caption="msg://size"/>
+                <!--<column id="size" caption="msg://size"/>-->
                 <column id="createDate" caption="msg://createDate"/>
             </columns>
             <rows datasource="filesDs"/>

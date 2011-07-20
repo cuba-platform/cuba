@@ -32,6 +32,8 @@ public class WebFileMultiUploadField extends
 
     private Map<UUID, String> files = new HashMap<UUID, String>();
 
+    private String description = "";
+
     // Client control parameters
     private ValueProvider componentParams = new ValueProvider() {
         Map<String, Object> params = new HashMap<String, Object>();
@@ -98,8 +100,7 @@ public class WebFileMultiUploadField extends
         component = uploader;
     }
 
-    private String description = "";
-
+    @Override
     public String getCaption() {
         if (componentParams.getParameters().containsKey("caption"))
             return (String) componentParams.getParameters().get("caption");
@@ -107,23 +108,28 @@ public class WebFileMultiUploadField extends
             return "";
     }
 
+    @Override
     public void setCaption(String caption) {
         this.componentParams.getParameters().put("caption", caption);
         component.requestRepaint();
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public void addListener(UploadListener listener) {
         if (!listeners.contains(listener)) listeners.add(listener);
     }
 
+    @Override
     public void removeListener(UploadListener listener) {
         listeners.remove(listener);
     }
@@ -131,7 +137,7 @@ public class WebFileMultiUploadField extends
     /**
      * Get uploads map
      *
-     * @return Map<UUID - Id of file in FileUploadService, String - FileName>
+     * @return Map (UUID - Id of file in FileUploadService, String - FileName )
      */
     public Map<UUID, String> getUploadsMap() {
         return files;

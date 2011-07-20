@@ -5,12 +5,6 @@
     <screen id="core$Server.browse"
             template="/com/haulmont/cuba/web/app/ui/core/server/server-browse.xml"/>
 
-    <screen id="core$FileDescriptor.browse"
-            template="/com/haulmont/cuba/web/app/ui/core/file/file-browse.xml"/>
-
-    <screen id="core$FileDescriptor.edit"
-            template="/com/haulmont/cuba/web/app/ui/core/file/file-edit.xml"/>
-
     <screen id="cuba$ExcelExport"
             template="/com/haulmont/cuba/web/app/ui/export/excel/excel-export.xml"/>
 
@@ -81,8 +75,6 @@
 
     <screen id="sec$ScreenHistory.browse"
             template="/com/haulmont/cuba/web/app/ui/security/history/screen-history-browse.xml"/>
-
-    <screen id="multiupload" template="/com/haulmont/cuba/web/app/ui/core/file/multiupload.xml"/>
 
     <screen id="sys$SendingMessage.browse"
             template="/com/haulmont/cuba/web/ui/sendingmessage/browse/sending-message-browse.xml"/>

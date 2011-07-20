@@ -23,7 +23,6 @@ import java.awt.event.ActionEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -47,8 +46,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
     protected UUID fileId;
 
-    protected FileOutputStream outputStream;
-    protected UUID tempFileId;
+   protected UUID tempFileId;
 
     private List<Listener> listeners = new ArrayList<Listener>();
 
@@ -184,7 +182,6 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
 
     @Override
     public void release() {
-        outputStream = null;
         bytes = null;
     }
 

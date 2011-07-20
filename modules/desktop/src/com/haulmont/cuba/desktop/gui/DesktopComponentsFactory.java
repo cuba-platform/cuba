@@ -57,6 +57,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(LookupPickerField.NAME, DesktopLookupPickerField.class);
         classes.put(OptionsGroup.NAME, DesktopOptionsGroup.class);
         classes.put(FileUploadField.NAME, DesktopFileUploadField.class);
+        classes.put(FileMultiUploadField.NAME, DesktopFileMultiUploadField.class);
         classes.put(Tabsheet.NAME, DesktopTabsheet.class);
         classes.put(Embedded.NAME, DesktopEmbedded.class);
         classes.put(WidgetsTree.NAME, DesktopWidgetsTree.class);
@@ -67,6 +68,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(element, componentClass);
     }
 
+    @Override
     public <T extends Component> T createComponent(String name) {
         final Class<Component> componentClass = (Class<Component>) classes.get(name);
         if (componentClass == null) {
@@ -81,10 +83,12 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         }
     }
 
+    @Override
     public <T extends Timer> T createTimer() {
         return null;
     }
 
+    @Override
     public <T extends Chart> T createChart(String vendor, String name) {
         return null;
     }

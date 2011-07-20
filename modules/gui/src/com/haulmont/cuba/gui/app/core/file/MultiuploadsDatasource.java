@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.web.app.ui.core.file;
+package com.haulmont.cuba.gui.app.core.file;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.data.DataService;

@@ -65,6 +65,14 @@
     <screen id="core$Server.edit"
             template="/com/haulmont/cuba/gui/app/core/server/edit/server-edit.xml"/>
 
+    <screen id="multiuploadDialog" template="/com/haulmont/cuba/gui/app/core/file/multiupload.xml"/>
+
+    <screen id="core$FileDescriptor.browse"
+            template="/com/haulmont/cuba/gui/app/core/file/file-browse.xml"/>
+
+    <screen id="core$FileDescriptor.edit"
+            template="/com/haulmont/cuba/gui/app/core/file/file-edit.xml"/>
+
     <screen id="sys$Category.edit"
             template="/com/haulmont/cuba/gui/categories/category-edit.xml"/>
 

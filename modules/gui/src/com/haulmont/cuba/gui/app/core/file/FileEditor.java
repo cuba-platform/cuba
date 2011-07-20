@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.web.app.ui.core.file;
+package com.haulmont.cuba.gui.app.core.file;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
@@ -19,7 +19,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
-import com.haulmont.cuba.web.app.FileDownloadHelper;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.util.Map;
@@ -53,6 +53,14 @@ public class FileEditor extends AbstractEditor {
         createDateLab = getComponent("createDate");
     }
 
+    private String getFileExt(String fileName) {
+        int i = fileName.lastIndexOf('.');
+        if (i > -1)
+            return StringUtils.substring(fileName, i + 1, i + 20);
+        else
+            return "";
+    }
+
     @Override
     public void setItem(Entity item) {
         super.setItem(item);
@@ -71,11 +79,12 @@ public class FileEditor extends AbstractEditor {
 
                 public void uploadSucceeded(Event event) {
                     nameText.setValue(uploadField.getFileName());
-                    extLabel.setValue(FileDownloadHelper.getFileExt(uploadField.getFileName()));
+                    extLabel.setValue(getFileExt(uploadField.getFileName()));
 
                     FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
                     File file = fileUploading.getFile(uploadField.getFileId());
-                    sizeLab.setValue(String.valueOf(file.length()));
+                    Integer size = (int)file.length();
+                    sizeLab.setValue(size);
 
                     createDateLab.setValue(TimeProvider.currentTimestamp());
                     okBtn.setEnabled(true);
