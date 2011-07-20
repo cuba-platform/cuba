@@ -121,7 +121,11 @@ public class LoginWorkerBean implements LoginWorker
         Transaction tx = Locator.createTransaction();
         try {
             User user = loadUser(login, null, locale);
-            UserSession session = userSessionManager.createSession(user, locale, false);
+            Locale userLocale = locale;
+            if (!StringUtils.isBlank(user.getLanguage())) {
+                userLocale = new Locale(user.getLanguage());
+            }
+            UserSession session = userSessionManager.createSession(user, userLocale, false);
             if (user.getDefaultSubstitutedUser() != null) {
                 userSessionManager.updateSession(session, user.getDefaultSubstitutedUser());
             }
