@@ -297,6 +297,15 @@ public class DesktopDateField
         return datePicker.isEditable();
     }
 
+    public boolean isEnabled() {
+        return datePicker.isEnabled();
+    }
+
+    public void setEnabled(boolean enabled) {
+        datePicker.setEnabled(enabled);
+        timeField.setEnabled(enabled);
+    }
+
     @Override
     public void setEditable(boolean editable) {
         datePicker.setEditable(editable);
