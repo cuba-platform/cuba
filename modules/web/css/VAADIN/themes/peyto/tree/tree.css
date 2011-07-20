@@ -27,6 +27,16 @@
     background: transparent url(img/item-expanded.png) no-repeat 16px 1px;
 }
 
+.v-tree-node-children .v-tree-node.noChildren{
+	padding-left: 16px;
+    background: transparent url(img/tree-line.png) no-repeat 16px 1px;
+}
+
+.v-tree-node-children .v-tree-node.noChildren.last{
+	padding-left: 16px;
+    background: transparent url(img/tree-line-last.png) no-repeat 16px 1px;
+}
+
 .v-tree-node-leaf.v-tree-node{
     padding-left: 16px;
     background: url(img/tree-line.png) no-repeat left top
