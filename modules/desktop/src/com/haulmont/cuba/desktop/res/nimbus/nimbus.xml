@@ -1,0 +1,50 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+<theme xmlns="http://www.haulmont.com/schema/cuba/desktop/theme-config.xsd">
+    <lookAndFeel>com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel</lookAndFeel>
+
+    <ui-defaults>
+        <font property="CollapsiblePanel.font" family="SansSerif" size="12" style="bold"/>
+        <color property="Hyperlink.visitedColor" value="#0033ff"/>
+        <color property="Hyperlink.linkColor" value="#0033ff"/>
+    </ui-defaults>
+
+    <style name="h2">
+        <font family="Verdana" style="bold" size="14"/>
+    </style>
+
+    <style name="edit-area">
+        <components>
+            com.haulmont.cuba.desktop.gui.components.DesktopVBox
+            com.haulmont.cuba.desktop.gui.components.DesktopHBox
+            com.haulmont.cuba.desktop.gui.components.DesktopGridLayout
+        </components>
+        <border type="compound">
+            <border type="empty" margins="5 5 5 5"/>
+            <border type="line" color="128 128 128"/>
+        </border>
+    </style>
+
+    <style name="edit-area">
+        <components>
+            com.haulmont.cuba.desktop.gui.components.DesktopGroupBox
+            com.haulmont.cuba.desktop.gui.components.DesktopFieldGroup
+        </components>
+    </style>
+
+    <!--<style name="addedItem">
+        <foreground color="#00ff00"/>
+    </style>
+
+    <style name="modifiedItem">
+        <foreground color="#0000ff"/>
+    </style>
+
+    <style name="removedItem">
+        <foreground color="#ff0000"/>
+    </style>-->
+
+</theme>

@@ -31,4 +31,7 @@ public interface DesktopConfig extends Config {
 
     @DefaultBoolean(false)
     boolean isLayoutDebugEnabled();
+
+    @Default("nimbus")
+    String getTheme();
 }

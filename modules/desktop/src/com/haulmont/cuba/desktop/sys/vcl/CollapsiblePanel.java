@@ -59,7 +59,7 @@ public class CollapsiblePanel extends JPanel {
         titleBtn.setHorizontalTextPosition(AbstractButton.RIGHT);
         titleBtn.setMargin(new Insets(0, 0, 3, 0));
 
-        titleBtn.setFont(UIManager.getLookAndFeelDefaults().getFont("Panel.font"));
+        titleBtn.setFont(getTitleFont());
         titleBtn.setFocusable(false);
         titleBtn.setContentAreaFilled(false);
         titleBtn.setVisible(false);
@@ -85,6 +85,14 @@ public class CollapsiblePanel extends JPanel {
         preferredSize = getPreferredSize();
 
         placeTitleComponent();
+    }
+
+    private Font getTitleFont() {
+        UIDefaults lafDefaults = UIManager.getLookAndFeelDefaults();
+        if (lafDefaults.getFont("CollapsiblePanel.font") != null) { // take it from desktop theme
+            return lafDefaults.getFont("CollapsiblePanel.font");
+        }
+        return lafDefaults.getFont("Panel.font");
     }
 
     private void refreshTitleIcon() {

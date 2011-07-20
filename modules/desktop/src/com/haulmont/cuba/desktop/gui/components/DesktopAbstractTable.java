@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.AnyTableModelAdapter;
 import com.haulmont.cuba.desktop.gui.data.RowSorterImpl;
+import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.EditAction;
@@ -67,6 +68,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected boolean sortable = true;
     protected TableSettings tableSettings;
     private boolean editable;
+    private StyleProvider styleProvider;
 
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
@@ -370,6 +372,45 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     public void setStyleProvider(StyleProvider styleProvider) {
+        this.styleProvider = styleProvider;
+        final Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
+        TableCellRenderer newRenderer = styleProvider != null ? new CustomCellRenderer() : null;
+        while (columnEnumeration.hasMoreElements()) {
+            TableColumn column = columnEnumeration.nextElement();
+            column.setCellRenderer(newRenderer);
+        }
+    }
+
+    private class CustomCellRenderer implements TableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            TableCellRenderer renderer = table.getDefaultRenderer(value != null ? value.getClass() : Object.class);
+            java.awt.Component component = renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+            Entity item = tableModel.getItem(row);
+            int modelColumn = table.convertColumnIndexToModel(column);
+            Object property = columnsOrder.get(modelColumn).getId();
+
+            String style = styleProvider.getStyleName(item, property);
+            if (style != null) {
+                DesktopTheme theme = App.getInstance().getTheme();
+                if (theme != null) {
+                    HashSet<String> properties = new HashSet<String>();
+
+                    if (hasFocus) {
+                        properties.add("focused");
+                    }
+                    else if (isSelected) {
+                        properties.add("selected");
+                    }
+                    else {
+                        properties.add("unselected");
+                    }
+                    theme.applyStyle(component, style, properties);
+                }
+            }
+            return component;
+        }
     }
 
     public void setPagingMode(PagingMode mode) {

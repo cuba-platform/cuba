@@ -7,8 +7,10 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
+import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import org.apache.commons.logging.Log;
@@ -138,6 +140,10 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     }
 
     public void setStyleName(String name) {
+        DesktopTheme theme = App.getInstance().getTheme();
+        if (theme != null) {
+            theme.applyStyle(this, name);
+        }
     }
 
     public Element getXmlDescriptor() {

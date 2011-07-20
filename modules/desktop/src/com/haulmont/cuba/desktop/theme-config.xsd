@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.haulmont.com/schema/cuba/desktop/theme-config.xsd">
+
+    <xs:element name="theme" type="themeType"/>
+
+    <xs:complexType name="themeType">
+        <xs:sequence>
+            <xs:element name="lookAndFeel" maxOccurs="1" minOccurs="0"/>
+            <xs:element type="uiDefaultsType" name="ui-defaults" maxOccurs="1" minOccurs="0"/>
+            <xs:element type="styleType" name="style" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="uiDefaultsType">
+        <xs:sequence>
+            <xs:element type="colorType" name="color" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element type="fontType" name="font" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element type="insetsType" name="insets" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="colorType">
+        <xs:attribute type="xs:string" name="property" use="required"/>
+        <xs:attribute type="xs:string" name="value" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="fontType">
+        <xs:attribute type="xs:string" name="property" use="required"/>
+        <xs:attribute type="xs:string" name="family" use="required"/>
+        <xs:attribute type="fontStyleType" name="style" use="optional"/>
+        <xs:attribute type="xs:int" name="size" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="insetsType">
+        <xs:attribute type="xs:string" name="property" use="required"/>
+        <xs:attribute type="xs:string" name="value" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="styleType">
+        <xs:sequence>
+            <xs:element type="colorDecoratorType" name="foreground" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element type="colorDecoratorType" name="background" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element type="fontDecoratorType" name="font" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element type="borderType" name="border" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element type="customDecoratorType" name="custom" maxOccurs="1" minOccurs="0"/>
+            <xs:element name="components" maxOccurs="1" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="component" use="optional"/>
+        <xs:attribute type="xs:string" name="name" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="colorDecoratorType">
+        <xs:attribute type="xs:string" name="color" use="required"/>
+        <xs:attribute type="xs:string" name="property" use="optional"/>
+        <xs:attribute type="xs:string" name="state" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="fontDecoratorType">
+        <xs:attribute type="xs:string" name="family" use="optional"/>
+        <xs:attribute type="fontStyleType" name="style" use="optional"/>
+        <xs:attribute type="xs:int" name="size" use="optional"/>
+        <xs:attribute type="xs:string" name="property" use="optional"/>
+        <xs:attribute type="xs:string" name="state" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="customDecoratorType">
+        <xs:attribute type="xs:string" name="class" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="borderType">
+        <xs:sequence>
+            <xs:element type="borderType" name="border" minOccurs="0" maxOccurs="2"/>
+        </xs:sequence>
+        <xs:attribute type="borderTypeType" name="type" use="required"/>
+        <xs:attribute type="xs:string" name="margins" use="optional"/>
+        <xs:attribute type="xs:string" name="color" use="optional"/>
+        <xs:attribute type="xs:int" name="width" use="optional"/>
+    </xs:complexType>
+
+    <xs:simpleType name="borderTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="line"/>
+            <xs:enumeration value="compound"/>
+            <xs:enumeration value="empty"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="fontStyleType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="plain"/>
+            <xs:enumeration value="bold"/>
+            <xs:enumeration value="italic"/>
+            <xs:enumeration value="bold-italic"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

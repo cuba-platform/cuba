@@ -398,4 +398,12 @@ public class DesktopDateField
     private boolean isMinUsed() {
         return resolution != null && resolution.ordinal() <= Resolution.MIN.ordinal();
     }
+
+    public JXDatePicker getDatePicker() {
+        return datePicker;
+    }
+
+    public TimeField getTimeField() {
+        return timeField;
+    }
 }

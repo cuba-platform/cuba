@@ -15,10 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>$Id$</p>
@@ -37,6 +34,11 @@ public class Resources {
         StrTokenizer tokenizer = new StrTokenizer(locations);
         roots = tokenizer.getTokenList();
         Collections.reverse(roots);
+    }
+
+    public Resources(List<String> roots) {
+        this.roots = new ArrayList<String>(roots);
+        Collections.reverse(this.roots);
     }
 
     public Icon getIcon(String name) {
@@ -61,7 +63,7 @@ public class Resources {
             }
             if (bytes == null) {
                 log.warn("Resource " + name + " not found in " + roots);
-                InputStream stream = ScriptingProvider.getResourceAsStream("/com/haulmont/cuba/desktop/res/icons/attention.png");
+                InputStream stream = ScriptingProvider.getResourceAsStream("/com/haulmont/cuba/desktop/res/nimbus/icons/attention.png");
                 if (stream != null) {
                     try {
                         bytes = IOUtils.toByteArray(stream);

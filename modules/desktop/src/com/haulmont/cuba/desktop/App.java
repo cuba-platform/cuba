@@ -9,13 +9,10 @@ package com.haulmont.cuba.desktop;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
-import com.haulmont.cuba.desktop.exception.FileMissingExceptionHandler;
-import com.haulmont.cuba.desktop.exception.NoUserSessionHandler;
-import com.haulmont.cuba.desktop.exception.SilentExceptionHandler;
-import com.haulmont.cuba.desktop.exception.OptimisticExceptionHandler;
-import com.haulmont.cuba.desktop.exception.JPAOptimisticExceptionHandler;
+import com.haulmont.cuba.desktop.exception.*;
 import com.haulmont.cuba.desktop.sys.*;
+import com.haulmont.cuba.desktop.theme.DesktopTheme;
+import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -59,9 +56,9 @@ public class App implements ConnectionListener {
 
     private DisabledGlassPane glassPane;
 
-    protected Resources resources;
-
     protected ExceptionHandlers exceptionHandlers;
+
+    protected DesktopTheme theme;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -80,7 +77,6 @@ public class App implements ConnectionListener {
     public App() {
         try {
             System.setSecurityManager(null);
-            initLookAndFeel();
             initHomeDir();
             initLogging();
         } catch (Throwable t) {
@@ -94,7 +90,7 @@ public class App implements ConnectionListener {
             DesktopAppContextLoader contextLoader = new DesktopAppContextLoader(getDefaultAppPropertiesConfig());
             contextLoader.load();
 
-            initResources();
+            initTheme();
             initUI();
             initExceptionHandling();
         } catch (Throwable t) {
@@ -169,24 +165,15 @@ public class App implements ConnectionListener {
         log = LogFactory.getLog(App.class);
     }
 
-    protected void initLookAndFeel() throws Exception {
-        JDialog.setDefaultLookAndFeelDecorated(true);
-        JFrame.setDefaultLookAndFeelDecorated(true);
-
-        boolean found = false;
-        for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-                UIManager.setLookAndFeel(info.getClassName());
-                found = true;
-                break;
-            }
-        }
-        if (!found)
-            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+    protected void initTheme() throws Exception {
+        DesktopConfig config = ConfigProvider.getConfig(DesktopConfig.class);
+        String themeName = config.getTheme();
+        theme = DesktopThemeLoader.getInstance().loadTheme(themeName);
+        theme.init();
     }
 
-    protected void initResources() {
-        resources = new Resources(ConfigProvider.getConfig(DesktopConfig.class).getResourceLocations());
+    public DesktopTheme getTheme() {
+        return theme;
     }
 
     protected void initUI() {
@@ -392,7 +379,7 @@ public class App implements ConnectionListener {
     }
 
     public Resources getResources() {
-        return resources;
+        return theme.getResources();
     }
 
     public void showNotificationPopup(String caption, IFrame.NotificationType type) {
