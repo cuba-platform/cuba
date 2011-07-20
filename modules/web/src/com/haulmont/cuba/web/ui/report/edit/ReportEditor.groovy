@@ -37,6 +37,7 @@ import com.haulmont.cuba.report.ReportTemplate
 import com.haulmont.cuba.core.app.FileStorageService
 import com.haulmont.cuba.gui.ServiceLocator
 import com.haulmont.cuba.core.entity.FileDescriptor
+import com.haulmont.cuba.core.global.FileStorageException
 
 public class ReportEditor extends AbstractEditor {
 
@@ -95,7 +96,7 @@ public class ReportEditor extends AbstractEditor {
                     if (ReportTemplate.isInstance(entity) && result.containsKey(entity)) {
                         java.util.List deletedFilesList = (java.util.List) deletedFiles.get(entity)
                         for (FileDescriptor fileDescriptor: deletedFilesList) {
-                            storageService.removeFile(fileDescriptor)
+                            removeQuietly(storageService, fileDescriptor)
                         }
                     }
                 }
@@ -104,12 +105,18 @@ public class ReportEditor extends AbstractEditor {
                     if (ReportTemplate.isInstance(entity) && result.containsKey(entity)) {
                         java.util.List deletedFilesList = (java.util.List) deletedFiles.get(entity)
                         for (FileDescriptor fileDescriptor: deletedFilesList) {
-                            storageService.removeFile(fileDescriptor)
+                            removeQuietly(storageService, fileDescriptor)
                         }
                         ReportTemplate template = (ReportTemplate) entity
-                        storageService.removeFile(template.templateFileDescriptor)
+                        removeQuietly(storageService, template.templateFileDescriptor)
                     }
                 }
+            }
+
+            private void removeQuietly(storageService, fileDescriptor) {
+                try {
+                    storageService.removeFile(fileDescriptor)
+                } catch (FileStorageException ignored) { }
             }
         })
     }
@@ -123,8 +130,9 @@ public class ReportEditor extends AbstractEditor {
         Table parametersTable = getComponent('generalFrame.parametersFrame.inputParametersTable')
         parametersTable.addAction(
                 new CreateAction(parametersTable, WindowManager.OpenType.DIALOG) {
-                    @Override protected Map<String, Object> getInitialValues() {
-                        return ['position': parametersDs.itemIds.size(), 'report': report]
+                    @Override
+                    protected Map<String, Object> getInitialValues() {
+                        return new HashMap(['position': parametersDs.itemIds.size(), 'report': report])
                     }
                 }
         )
@@ -191,8 +199,9 @@ public class ReportEditor extends AbstractEditor {
 
         formatsTable.addAction(
                 new CreateAction(formatsTable, WindowManager.OpenType.DIALOG) {
-                    @Override protected Map<String, Object> getInitialValues() {
-                        return ['report': report]
+                    @Override
+                    protected Map<String, Object> getInitialValues() {
+                        return new HashMap(['report': report])
                     }
                 }
         )
@@ -216,7 +225,7 @@ public class ReportEditor extends AbstractEditor {
         screenTable.addAction(
                 new CreateAction(screenTable) {
                     @Override protected Map<String, Object> getInitialValues() {
-                        return ['report': report]
+                        return new HashMap(['report': report])
                     }
                 }
         )
@@ -335,17 +344,20 @@ public class ReportEditor extends AbstractEditor {
     private def initTemplates() {
         Table templatesTable = getComponent('generalFrame.templatesTable')
         templatesTable.addAction(new CreateAction(templatesTable, OpenType.DIALOG) {
-            @Override protected Map<String, Object> getInitialValues() {
-                return ['report': report]
+            @Override
+            protected Map<String, Object> getInitialValues() {
+                return new HashMap(['report': report])
             }
 
-            @Override protected Map<String, Object> getWindowParams() {
-                return ['deletedContainer': deletedFiles]
+            @Override
+            protected Map<String, Object> getWindowParams() {
+                return new HashMap(['deletedContainer': deletedFiles])
             }
         });
         templatesTable.addAction(new EditAction(templatesTable, OpenType.DIALOG) {
-            @Override protected Map<String, Object> getWindowParams() {
-                return ['deletedContainer': deletedFiles]
+            @Override
+            protected Map<String, Object> getWindowParams() {
+                return new HashMap(['deletedContainer': deletedFiles])
             }
         });
         templatesTable.addAction(new RemoveAction(templatesTable, false));
