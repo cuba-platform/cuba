@@ -89,6 +89,10 @@ public class DesktopWindowManager extends WindowManager {
         }
     }
 
+    private Integer getWindowHashCode(Window window){
+       return windows.get(window);
+    }
+
     @Override
     protected Window getWindow(Integer hashCode) {
         Set<Map.Entry<Window, Integer>> set = windows.entrySet();
@@ -119,12 +123,20 @@ public class DesktopWindowManager extends WindowManager {
 
         switch (openType) {
             case NEW_TAB:
-                JComponent tab = findTab(window);
-                if (tab != null) {
-                    tabsPane.setSelectedComponent(tab);
-                    windowData = tab;
+                Integer hashCode = getWindowHashCode(window);
+                JComponent tab;
+                if (hashCode != null && !multipleOpen && (tab = findTab(hashCode)) != null) {
+                    int oldTabPosition = -1;
+                    for (int i = 0; i < tabsPane.getTabCount(); i++) {
+                        if (tab.equals(tabsPane.getComponentAt(i))) {
+                            oldTabPosition = i;
+                        }
+                    }
+                    WindowBreadCrumbs oldBreadCrumbs = tabs.get(tab);
+                    oldBreadCrumbs.getCurrentWindow().close("mainMenu");
+                    windowData = showWindowNewTab(window, caption, description, oldTabPosition);
                 } else {
-                    windowData = showWindowNewTab(window, caption, description);
+                    windowData = showWindowNewTab(window, caption, description, null);
                 }
                 break;
             case THIS_TAB:
@@ -227,7 +239,7 @@ public class DesktopWindowManager extends WindowManager {
         ((ButtonTabComponent)tabsPane.getTabComponentAt(tabIndex)).setCaption(formatTabCaption(caption, description));
     }
 
-    protected JComponent showWindowNewTab(Window window, String caption, String description) {
+    protected JComponent showWindowNewTab(Window window, String caption, String description, Integer tabPosition) {
         final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs();
         breadCrumbs.addListener(
                 new WindowBreadCrumbs.Listener() {
@@ -247,22 +259,26 @@ public class DesktopWindowManager extends WindowManager {
         );
         breadCrumbs.addWindow(window);
 
-        JComponent tabContent = createNewTabSheet(window, caption, description, breadCrumbs);
+        JComponent tabContent = createNewTabSheet(window, caption, description, breadCrumbs, tabPosition);
 
         tabs.put(tabContent, breadCrumbs);
 
         return tabContent;
     }
 
-    protected JComponent createNewTabSheet(Window window, String caption, String description, WindowBreadCrumbs breadCrumbs) {
+    protected JComponent createNewTabSheet(Window window, String caption, String description, WindowBreadCrumbs breadCrumbs, Integer tabPosition) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(breadCrumbs, BorderLayout.NORTH);
 
         JComponent composition = DesktopComponentsHelper.getComposition(window);
         panel.add(composition, BorderLayout.CENTER);
-
-        tabsPane.add(formatTabCaption(caption, description), panel);
-        int idx = tabsPane.getTabCount() - 1;
+        int idx;
+        if (tabPosition != null) {
+            idx = tabPosition;
+        } else {
+            idx = tabsPane.getTabCount();
+        }
+        tabsPane.insertTab(formatTabCaption(caption, description), null, panel, null, idx);
 
         ButtonTabComponent tabComponent = new ButtonTabComponent(
                 tabsPane,
@@ -501,10 +517,11 @@ public class DesktopWindowManager extends WindowManager {
         }
     }
 
-    protected JComponent findTab(Window window) {
+    protected JComponent findTab(Integer hashCode) {
         Set<Map.Entry<JComponent, WindowBreadCrumbs>> set = tabs.entrySet();
         for (Map.Entry<JComponent, WindowBreadCrumbs> entry : set) {
-            if (entry.getValue().getCurrentWindow().equals(window))
+            Window currentWindow = entry.getValue().getCurrentWindow();
+            if (hashCode.equals(getWindowHashCode(currentWindow)))
                 return entry.getKey();
         }
         return null;
