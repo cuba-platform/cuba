@@ -8,8 +8,6 @@ package com.haulmont.cuba.web.gui;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.charts.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.web.gui.WebTimer;
-import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.gui.components.charts.WebXYChartRow;
 import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreeBarChart;
@@ -19,7 +17,6 @@ import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreeXYLineChart;
 import com.haulmont.cuba.web.toolkit.ui.charts.jfree.JFreeChart;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +41,7 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put("flowbox", WebFlowBoxLayout.class);
 
         classes.put(Button.NAME, WebButton.class);
+        classes.put(LinkButton.NAME, WebLinkButton.class);
         classes.put(Label.NAME, WebLabel.class);
         classes.put(CheckBox.NAME, WebCheckBox.class);
         classes.put(GroupBox.NAME, WebGroupBox.class);

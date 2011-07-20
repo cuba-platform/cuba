@@ -37,6 +37,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(SplitPanel.NAME, DesktopSplitPanel.class);
 
         classes.put(Button.NAME, DesktopButton.class);
+        classes.put(LinkButton.NAME, DesktopLinkButton.class);
         classes.put(Label.NAME, DesktopLabel.class);
         classes.put(CheckBox.NAME, DesktopCheckBox.class);
         classes.put(TextField.NAME, DesktopTextField.class);

@@ -28,7 +28,7 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     private String icon;
 
     public DesktopButton() {
-        impl = new JButton();
+        impl = createImplementation();
         impl.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -39,6 +39,10 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
                 }
         );
         DesktopComponentsHelper.adjustSize(impl);
+    }
+
+    protected JButton createImplementation() {
+        return new JButton();
     }
 
     public com.haulmont.cuba.gui.components.Action getAction() {

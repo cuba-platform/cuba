@@ -26,10 +26,10 @@ import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.AbstractParam;
@@ -119,7 +119,6 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         MigLayout topLayout = new MigLayout(topLc);
 
         impl = new JPanel(topLayout);
-        impl.setBorder(BorderFactory.createLineBorder(java.awt.Color.gray));
         //todo foldersPane
 
         noFilter = new FilterEntity() {
