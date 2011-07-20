@@ -13,6 +13,15 @@
 .v-tree-node {
 	background: transparent url(img/item-collapsed.png) no-repeat 0 1px;
 }
+
+.v-tree-node.noChildren {
+	background: transparent url(img/tree-line.png) no-repeat 0 1px;
+}
+
+.v-tree-node.noChildren.last {
+	background: transparent url(img/tree-line-last.png) no-repeat 0 1px;
+}
+
 .v-tree-node-expanded {
 	background: transparent url(img/item-expanded.png) no-repeat 0 1px;
 }
