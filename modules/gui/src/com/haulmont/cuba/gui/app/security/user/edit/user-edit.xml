@@ -37,7 +37,7 @@
     <#assign width=250>
     <layout>
         <vbox expand="split" spacing="true">
-            <fieldGroup id="fields" width="100%" datasource="user" collapsable="false" stylename="edit-area">
+            <fieldGroup id="fields" width="100%" datasource="user" collapsable="false" border="visible">
                 <column flex="1" width="250px">
                     <field id="login" required="true" requiredMessage="msg://loginMsg"/>
                     <field id="passw" custom="true" visible="PersistenceHelper.isNew(param_item)"

@@ -19,7 +19,7 @@
     </dsContext>
 
     <layout expand="space">
-        <fieldGroup datasource="serverDs" stylename="edit-area" width="500px">
+        <fieldGroup datasource="serverDs" border="visible" width="500px">
             <column width="100%">
                 <field id="name"/>
                 <field id="address"/>
