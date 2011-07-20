@@ -479,6 +479,13 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="borderMode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="visible"/>
+            <xs:enumeration value="hidden"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:group name="component">
         <xs:sequence>
             <xs:choice minOccurs="1" maxOccurs="unbounded">
@@ -900,6 +907,7 @@
                         <xs:attribute name="height" type="xs:string" use="optional"/>
                         <xs:attribute name="visible" type="xs:string" use="optional"/>
                         <xs:attribute name="datasource" type="xs:string" use="optional"/>
+                        <xs:attribute name="border" type="borderMode" use="optional" default="hidden"/>
                         <xs:attribute name="collapsable" type="xs:string" use="optional"/>
                         <xs:attribute name="expandable" type="xs:string" use="optional"/>
                         <xs:attribute name="editable" type="xs:string" use="optional"/>
@@ -1033,7 +1041,6 @@
             </xs:choice>
         </xs:sequence>
     </xs:group>
-
 
     <xs:group name="nestedDatasources">
         <xs:sequence>

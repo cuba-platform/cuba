@@ -44,6 +44,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     private int rows;
     private int cols;
     private boolean editable = true;
+    private boolean borderVisible = false;
 
     private Map<String, Field> fields = new LinkedHashMap<String, Field>();
     private Map<Field, Integer> fieldsColumn = new HashMap<Field, Integer>();
@@ -59,7 +60,6 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     private List<ExpandListener> expandListeners = null;
     private List<CollapseListener> collapseListeners = null;
-
     public DesktopFieldGroup() {
         LC lc = new LC();
         lc.hideMode(3); // Invisible components will not participate in the layout at all and it will for instance not take up a grid cell.
@@ -74,6 +74,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         }
 
         collapsiblePanel = new CollapsiblePanel(super.getComposition());
+        collapsiblePanel.setBorderVisible(false);
         collapsiblePanel.addCollapseListener(new CollapsiblePanel.CollapseListener() {
             @Override
             public void collapsed() {
@@ -363,7 +364,13 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     @Override
     public boolean isBorderVisible() {
-        return StringUtils.isNotEmpty(getCaption());
+        return borderVisible;
+    }
+
+    @Override
+    public void setBorderVisible(boolean borderVisible) {
+        this.borderVisible = borderVisible;
+        collapsiblePanel.setBorderVisible(borderVisible);
     }
 
     public Object getFieldValue(Field field) {
@@ -550,7 +557,6 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     public void setCaption(String caption) {
         collapsiblePanel.setCaption(caption);
-        collapsiblePanel.setBorderVisible(isBorderVisible());
     }
 
     public String getDescription() {

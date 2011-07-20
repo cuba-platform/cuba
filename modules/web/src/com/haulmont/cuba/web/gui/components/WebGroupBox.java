@@ -244,4 +244,14 @@ public class WebGroupBox extends WebAbstractPanel implements GroupBox {
         groupBoxElement.addAttribute("expanded", BooleanUtils.toStringTrueFalse(isExpanded()));
         return true;
     }
+
+    @Override
+    public boolean isBorderVisible() {
+        return true;
+    }
+
+    @Override
+    public void setBorderVisible(boolean borderVisible) {
+        throw new UnsupportedOperationException();
+    }
 }

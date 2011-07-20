@@ -140,6 +140,14 @@ public interface Component {
     }
 
     /**
+     * Object having a border
+     */
+    interface HasBorder {
+        boolean isBorderVisible();
+        void setBorderVisible(boolean borderVisible);
+    }
+
+    /**
      * Object having a value
      */
     interface HasValue extends Editable, BelongToFrame {

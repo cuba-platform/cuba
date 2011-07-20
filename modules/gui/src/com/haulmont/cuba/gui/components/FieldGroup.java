@@ -16,8 +16,8 @@ import org.dom4j.Element;
 import java.io.Serializable;
 import java.util.Map;
 
-public interface FieldGroup extends Component, Component.BelongToFrame,
-        Component.HasCaption, Component.Editable, Component.Expandable, Component.Collapsible, Component.HasSettings, Component.Validatable {
+public interface FieldGroup extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasBorder,
+        Component.Editable, Component.Expandable, Component.Collapsible, Component.HasSettings, Component.Validatable {
 
     String NAME = "fieldGroup";
 
@@ -53,8 +53,6 @@ public interface FieldGroup extends Component, Component.BelongToFrame,
     void setVisible(Field field, boolean visible);
     boolean isVisible(String fieldId);
     void setVisible(String fieldId, boolean visible);
-
-    boolean isBorderVisible();
 
     Object getFieldValue(Field field);
     void setFieldValue(Field field, Object value);

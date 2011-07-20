@@ -240,6 +240,16 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         }
     }
 
+    protected void loadBorder(Component.HasBorder component, Element element) {
+        String border = element.attributeValue("border");
+        if (!StringUtils.isEmpty(border)) {
+            if ("visible".equalsIgnoreCase(border))
+                component.setBorderVisible(true);
+            else if ("hidden".equalsIgnoreCase(border))
+                component.setBorderVisible(false);
+        }
+    }
+
     protected void assignFrame(final Component.BelongToFrame component) {
         if (context.getFrame() != null) {
             component.setFrame(context.getFrame());

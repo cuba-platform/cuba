@@ -15,8 +15,8 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.FieldGroup;
@@ -95,6 +95,8 @@ public class FieldGroupLoader extends AbstractFieldLoader {
 
         loadCollapsible(component, element);
         loadExpandable(component, element);
+
+        loadBorder(component, element);
 
         loadCaptionAlignment(component, element);
 
@@ -266,7 +268,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         FieldGroup fieldGroup = (FieldGroup) component;
         if (fieldGroup.getDatasource() != null) {
             MetaClass metaClass = fieldGroup.getDatasource().getMetaClass();
-            UserSession userSession = UserSessionClient.getUserSession();
+            UserSession userSession = UserSessionProvider.getUserSession(); // UserSessionClient.getUserSession();
             boolean editable = (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
                     || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE));
             if (!editable) {
@@ -292,7 +294,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 MetaClass metaClass = metaClass(component, field);
                 MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
 
-                UserSession userSession = UserSessionClient.getUserSession();
+                UserSession userSession = UserSessionProvider.getUserSession(); // UserSessionClient.getUserSession();
                 boolean b = (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
                         || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
                         && userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);

@@ -55,6 +55,7 @@ import java.util.List;
 public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements com.haulmont.cuba.gui.components.FieldGroup {
 
     private static final long serialVersionUID = 768889467060419241L;
+    private static final String BORDER_STYLE_NAME = "edit-area";
 
     private Map<String, Field> fields = new LinkedHashMap<String, Field>();
     private Map<Field, Integer> fieldsColumn = new HashMap<Field, Integer>();
@@ -66,6 +67,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     private String caption;
     private String description;
+    private boolean borderVisible;
 
     private int cols = 1;
 
@@ -629,7 +631,26 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     @Override
     public boolean isBorderVisible() {
-        return StringUtils.isNotEmpty(caption);
+        String styleName = getStyleName();
+        if (StringUtils.isNotEmpty(styleName))
+            return styleName.contains(BORDER_STYLE_NAME);
+        return false;
+    }
+
+    @Override
+    public void setBorderVisible(boolean borderVisible) {
+        String styleName = getStyleName();
+        if (borderVisible) {
+            if (StringUtils.isNotEmpty(styleName)) {
+                if (!styleName.contains(BORDER_STYLE_NAME))
+                    styleName = styleName + " " + BORDER_STYLE_NAME;
+            } else
+                styleName = BORDER_STYLE_NAME;
+        } else {
+            if (StringUtils.isNotEmpty(styleName))
+                styleName = styleName.replace(BORDER_STYLE_NAME, "");
+        }
+        setStyleName(styleName);
     }
 
     public Object getFieldValue(Field field) {

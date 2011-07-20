@@ -170,6 +170,16 @@ public class DesktopGroupBox
     }
 
     @Override
+    public boolean isBorderVisible() {
+        return true;
+    }
+
+    @Override
+    public void setBorderVisible(boolean borderVisible) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public JComponent getComposition() {
         return collapsiblePanel;
     }
