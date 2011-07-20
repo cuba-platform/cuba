@@ -15,9 +15,11 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
+import com.haulmont.cuba.report.Report;
 import com.haulmont.cuba.report.ReportTemplate;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ import java.util.Map;
  */
 public class TemplateEditor extends BasicEditor {
     private static final long serialVersionUID = 2000883633888106921L;
+    private static final String DEFAULT_TEMPLATE_CODE = "DEFAULT";
 
     private ReportTemplate template;
 
@@ -47,6 +50,16 @@ public class TemplateEditor extends BasicEditor {
     public void setItem(Entity item) {
         super.setItem(item);
         template = (ReportTemplate) getItem();
+        if (StringUtils.isEmpty(template.getCode())) {
+            Report report = template.getReport();
+            if (report != null) {
+                if ((report.getTemplates() == null) || (report.getTemplates().size() == 0)) {
+                    template.setCode(DEFAULT_TEMPLATE_CODE);
+                    template.setDefaultFlag(true);
+                } else
+                    template.setCode("Template_" + Integer.toString(report.getTemplates().size()));
+            }
+        }
         enableCustomProps(template.getCustomFlag());
 
         templateDescriptor = template.getTemplateFileDescriptor();
