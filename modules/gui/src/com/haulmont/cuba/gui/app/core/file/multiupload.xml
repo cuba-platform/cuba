@@ -6,9 +6,8 @@
         caption="msg://editorCaption">
 
     <dsContext>
-        <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor" view="browse">
-            <datasourceClass>com.haulmont.cuba.gui.app.core.file.MultiuploadsDatasource</datasourceClass>
-        </collectionDatasource>
+        <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor"
+                              view="browse" refreshMode="NEVER"/>
     </dsContext>
     <#assign width = 560>
     <#assign height = 300>
