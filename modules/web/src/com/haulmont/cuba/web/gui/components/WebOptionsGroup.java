@@ -165,6 +165,7 @@ public class WebOptionsGroup
                 }
             }
 
+            Object value = getValue();
             setOptionsList(newOptionList);
 
             if (!selectedOptionList.isEmpty()) {
@@ -172,6 +173,9 @@ public class WebOptionsGroup
                     setValue(selectedOptionList);
                 else
                     setValue(selectedOptionList.get(0));
+            } else {
+                if (value != null)
+                    setValue(value);
             }
 //            setValue(selectedOptionList);  todo: [degtyarjov] was commented to provide some functionality on control screen 
         }
