@@ -24,11 +24,9 @@ public class ShowInfoAction extends AbstractAction {
     public static final String ACTION_PERMISSION = "cuba.gui.showInfo";
 
     private CollectionDatasource ds;
-//    protected String mp;
 
     public ShowInfoAction() {
         super(ACTION_ID);
-//        mp = AppConfig.getMessagesPack();
     }
 
     public CollectionDatasource getDatasource() {
@@ -44,6 +42,7 @@ public class ShowInfoAction extends AbstractAction {
         return MessageProvider.getMessage(AppConfig.getMessagesPack(), "table.showInfoAction");
     }
 
+    @Override
     public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
         if (ds == null)
             return;
@@ -55,59 +54,6 @@ public class ShowInfoAction extends AbstractAction {
 
             IFrame frame = ((Component.BelongToFrame) component).getFrame();
             frame.openWindow("sysInfoWindow", WindowManager.OpenType.DIALOG, params);
-
-/*            ((Component.BelongToFrame) component).getFrame().showMessageDialog(
-                    MessageProvider.getMessage(mp, "table.showInfoAction"),
-                    compileInfo(ds),
-                    IFrame.MessageType.CONFIRMATION
-            );*/
         }
     }
-
-    /*private String compileInfo(CollectionDatasource ds) {
-        StringBuilder sb = new StringBuilder();
-
-        MetaClass metaClass = ds.getMetaClass();
-        sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.entityName", metaClass.getName())).append("<br/>");
-        sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.entityClass", metaClass.getJavaClass().getName())).append("<br/>");
-
-        javax.persistence.Table annotation = (javax.persistence.Table) metaClass.getJavaClass().getAnnotation(javax.persistence.Table.class);
-        if (annotation != null)
-            sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.entityTable", annotation.name())).append("<br/>");
-
-        Entity instance = ds.getItem();
-        if (instance != null) {
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-            sb.append("<hr/>");
-            sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.id", instance.getId())).append("<br/>");
-            if (instance instanceof Versioned && ((Versioned) instance).getVersion() != null) {
-                sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.version", ((Versioned) instance).getVersion())).append("<br/>");
-            }
-            if (instance instanceof BaseEntity) {
-                if (((BaseEntity) instance).getCreateTs() != null)
-                    sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.createTs", df.format(((BaseEntity) instance).getCreateTs()))).append("<br/>");
-                if (((BaseEntity) instance).getCreatedBy() != null)
-                    sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.createdBy", ((BaseEntity) instance).getCreatedBy())).append("<br/>");
-            }
-            if (instance instanceof Updatable) {
-                Date updateTs = ((Updatable) instance).getUpdateTs();
-                if (updateTs != null)
-                    sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.updateTs", df.format(updateTs))).append("<br/>");
-                String updatedBy = ((Updatable) instance).getUpdatedBy();
-                if (updatedBy != null)
-                    sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.updatedBy", updatedBy)).append("<br/>");
-            }
-            if (instance instanceof SoftDelete) {
-                Date deleteTs = ((SoftDelete) instance).getDeleteTs();
-                if (deleteTs != null)
-                    sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.deleteTs", df.format(deleteTs))).append("<br/>");
-                String deletedBy = ((SoftDelete) instance).getDeletedBy();
-                if (deletedBy != null)
-                    sb.append(MessageProvider.formatMessage(mp, "table.showInfoAction.deletedBy", deletedBy)).append("<br/>");
-            }
-        }
-
-        return sb.toString();
-    }*/
 }

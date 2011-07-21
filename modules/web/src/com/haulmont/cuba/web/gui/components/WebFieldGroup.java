@@ -67,7 +67,6 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     private String caption;
     private String description;
-    private boolean borderVisible;
 
     private int cols = 1;
 
