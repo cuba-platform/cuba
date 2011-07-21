@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.datatypes.Enumeration;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -22,6 +23,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +41,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     protected String captionProperty;
     protected String descProperty;
     protected CollectionDatasource<Entity<Object>, Object> optionsDatasource;
-    protected List<Object> optionsList;
+    protected List optionsList;
     protected Map<String, Object> optionsMap;
     protected Datasource datasource;
     protected MetaProperty metaProperty;
@@ -144,6 +146,16 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
                     }
                 }
         );
+
+        setRequired(metaProperty.isMandatory());
+
+        if (metaProperty.getRange().isEnum()) {
+            final Enumeration enumeration = metaProperty.getRange().asEnumeration();
+            final Class<Enum> javaClass = enumeration.getJavaClass();
+
+            setOptionsList(Arrays.asList(javaClass.getEnumConstants()));
+            setCaptionMode(CaptionMode.ITEM);
+        }
 
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
