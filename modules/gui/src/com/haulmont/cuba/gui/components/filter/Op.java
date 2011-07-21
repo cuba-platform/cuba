@@ -21,6 +21,7 @@ import java.util.UUID;
 public enum Op {
     EQUAL("=", false),
     IN("in", false),
+    NOT_IN("not in", false),
     NOT_EQUAL("<>", false),
     GREATER(">", false),
     GREATER_OR_EQUAL(">=", false),
@@ -59,11 +60,11 @@ public enum Op {
 
     public static EnumSet<Op> availableOps(Class javaClass) {
         if (String.class.equals(javaClass))
-            return EnumSet.of(EQUAL, IN, NOT_EQUAL, CONTAINS, DOES_NOT_CONTAIN, EMPTY, NOT_EMPTY, STARTS_WITH, ENDS_WITH);
+            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, CONTAINS, DOES_NOT_CONTAIN, EMPTY, NOT_EMPTY, STARTS_WITH, ENDS_WITH);
 
         else if (Date.class.isAssignableFrom(javaClass)
                 || Number.class.isAssignableFrom(javaClass))
-            return EnumSet.of(EQUAL, IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, EMPTY, NOT_EMPTY);
+            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, GREATER, GREATER_OR_EQUAL, LESSER, LESSER_OR_EQUAL, EMPTY, NOT_EMPTY);
 
         else if (Boolean.class.equals(javaClass))
             return EnumSet.of(EQUAL, NOT_EQUAL, EMPTY, NOT_EMPTY);
@@ -71,7 +72,7 @@ public enum Op {
         else if (UUID.class.equals(javaClass)
                 || Enum.class.isAssignableFrom(javaClass)
                 || Entity.class.isAssignableFrom(javaClass))
-            return EnumSet.of(EQUAL, IN, NOT_EQUAL, EMPTY, NOT_EMPTY);
+            return EnumSet.of(EQUAL, IN, NOT_IN, NOT_EQUAL, EMPTY, NOT_EMPTY);
 
         else
             throw new UnsupportedOperationException("Unsupported java class: " + javaClass);

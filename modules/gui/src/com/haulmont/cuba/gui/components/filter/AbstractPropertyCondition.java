@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  */
 public abstract class AbstractPropertyCondition<T extends AbstractParam> extends AbstractCondition<T> {
 
-    private static Pattern PATTERN = Pattern.compile("\\s*(\\S+)\\s+((?:not\\s+)*\\S+)\\s+(\\S+)\\s*");
+    private static Pattern PATTERN = Pattern.compile("\\s*(\\S+)\\s+((?:not\\s+)*\\S+)\\s+(\\S+)[\\S\\s]*");
     private static Pattern PATTERN_NULL = Pattern.compile("\\s*(\\S+)\\s+(is\\s+(?:not\\s+)?null)\\s*");
 
     private Op operator;
@@ -67,7 +67,9 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
     @Override
     protected void updateText() {
         StringBuilder sb = new StringBuilder();
-
+        if (operator.equals(Op.NOT_IN)) {
+            sb.append("((");
+        }
         sb.append(entityAlias).append(".").append(name);
 
         if (AbstractParam.Type.ENTITY.equals(param.getType()))
@@ -83,6 +85,10 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
             sb.append(":").append(param.getName());
             if (inExpr)
                 sb.append(")");
+
+            if (operator.equals(Op.NOT_IN)) {
+                sb.append(") or (" + entityAlias + "." + name + " is null)) ");
+            }
         }
 
         text = sb.toString();
@@ -115,7 +121,7 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
                 setParam(paramFactory.createParam(paramName, null, null, null, null, false));
             } else {
                 unary = false;
-                inExpr = operator.equals(Op.IN);
+                inExpr = operator.equals(Op.IN) || operator.equals(Op.NOT_IN);
                 setParam(paramFactory.createParam(
                         paramName, javaClass, entityParamWhere, entityParamView, datasource, param.getProperty(), inExpr));
             }

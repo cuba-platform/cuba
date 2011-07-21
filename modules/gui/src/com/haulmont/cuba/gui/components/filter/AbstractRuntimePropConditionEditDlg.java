@@ -167,7 +167,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
 
         String paramStr = " ? ";
         if (!op.isUnary())
-            if (Op.IN.equals(op))
+            if (Op.IN.equals(op) || Op.NOT_IN.equals(op))
                 paramStr = " ( ? ) ";
 
         String where = "cav.entityId=" +
@@ -185,7 +185,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
         condition.setUnary(op.isUnary());
         condition.setEntityParamView(null);
         condition.setEntityParamWhere(null);
-        condition.setInExpr(Op.IN.equals(op));
+        condition.setInExpr(Op.IN.equals(op) || Op.NOT_IN.equals(op));
         condition.setOperator(operationSelect.<Op>getValue());
         AbstractParam param;
 
