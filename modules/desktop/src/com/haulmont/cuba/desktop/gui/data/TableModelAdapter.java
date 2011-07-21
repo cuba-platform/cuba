@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.gui.data;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageUtils;
@@ -106,7 +107,14 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
         if (column.getId() instanceof MetaPropertyPath) {
             String property = column.getId().toString();
             Object value = item.getValueEx(property);
-            return MessageUtils.format(value, ((MetaPropertyPath) column.getId()).getMetaProperty());
+            MetaPropertyPath metaProperty = ((MetaPropertyPath) column.getId());
+
+            boolean isDataType = (metaProperty.getRange().isDatatype());
+            if (isDataType && hasDefaultFormatting(value))
+                return value;
+            else
+                return MessageUtils.format(value, ((MetaPropertyPath) column.getId()).getMetaProperty());
+
         } else {
             return null;
         }
@@ -198,5 +206,23 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
         }
         ((CollectionDatasource.Sortable) datasource).sort(
                 sortInfos.toArray(new CollectionDatasource.Sortable.SortInfo[sortInfos.size()]));
+    }
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        Table.Column column = columns.get(columnIndex);
+        Class columnType = column.getType();
+
+        if (hasDefaultFormatting(columnType))
+            return columnType;
+        return super.getColumnClass(columnIndex);
+    }
+
+    private boolean hasDefaultFormatting(Object value) {
+        return Boolean.class.isInstance(value);
+    }
+
+    private boolean hasDefaultFormatting(Class valueClass) {
+        return Boolean.class.equals(valueClass);
     }
 }
