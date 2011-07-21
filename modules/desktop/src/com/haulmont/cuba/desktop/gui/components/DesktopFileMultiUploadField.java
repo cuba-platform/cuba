@@ -54,7 +54,9 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
         impl.setAction(new AbstractAction(caption, resources.getIcon(DEFAULT_ICON)) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                processFiles(fileChooser.getSelectedFiles());
+                if (fileChooser.showOpenDialog(impl) == JFileChooser.APPROVE_OPTION) {
+                    processFiles(fileChooser.getSelectedFiles());
+                }
             }
         });
         DesktopComponentsHelper.adjustSize(impl);
@@ -87,6 +89,20 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
         notifyQuerCompleteListeners();
     }
 
+    private boolean checkFiles(File[] files) {
+        final Integer maxUploadSizeMb = ConfigProvider.getConfig(ClientConfig.class).getMaxUploadSizeMb();
+        final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
+
+        for (File file : files) {
+            if (file.length() > maxSize) {
+                String warningMsg = MessageProvider.getMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message");
+                getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void notifyStartListeners(File file) {
         for (UploadListener uploadListener : listeners)
             uploadListener.fileUploadStart(file.getName());
@@ -105,20 +121,6 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
     private void notifyErrorListeners(File file, String message) {
         for (UploadListener uploadListener : listeners)
             uploadListener.errorNotify(file.getName(), message, 0);
-    }
-
-    private boolean checkFiles(File[] files) {
-        final Integer maxUploadSizeMb = ConfigProvider.getConfig(ClientConfig.class).getMaxUploadSizeMb();
-        final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
-
-        for (File file : files) {
-            if (file.length() > maxSize) {
-                String warningMsg = MessageProvider.getMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message");
-                getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
-                return false;
-            }
-        }
-        return true;
     }
 
     @Override

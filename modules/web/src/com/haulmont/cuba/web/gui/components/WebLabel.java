@@ -104,7 +104,6 @@ public class WebLabel
     }
 
     public void setEditable(boolean editable) {
-//        throw new UnsupportedOperationException("Cann't set editable for Label");
     }
 
     public void addListener(ValueListener listener) {
