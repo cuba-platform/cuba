@@ -67,6 +67,7 @@ public class FolderEditWindow extends Window {
         center();
 
         nameField = new TextField();
+        nameField.setRequired(true);
         nameField.setCaption(getMessage("folders.folderEditWindow.nameField"));
         nameField.setWidth(250, Sizeable.UNITS_PIXELS);
         nameField.setValue(folder.getName());
@@ -148,7 +149,11 @@ public class FolderEditWindow extends Window {
         okBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 SearchFolder folder = (SearchFolder)FolderEditWindow.this.folder;
-                //TODO check empty name
+                if (StringUtils.trimToNull((String) nameField.getValue()) == null) {
+                    String msg = MessageProvider.getMessage(messagesPack, "folders.folderEditWindow.emptyName");
+                    showNotification(msg, Notification.TYPE_TRAY_NOTIFICATION);
+                    return;
+                }
                 folder.setName((String) nameField.getValue());
                 folder.setTabName((String) tabNameField.getValue());
 

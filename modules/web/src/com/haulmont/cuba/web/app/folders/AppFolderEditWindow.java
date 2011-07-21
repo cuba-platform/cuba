@@ -64,7 +64,11 @@ public class AppFolderEditWindow extends FolderEditWindow {
         okBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 AppFolder folder = (AppFolder) AppFolderEditWindow.this.folder;
-
+                if (StringUtils.trimToNull((String) nameField.getValue()) == null) {
+                    String msg = MessageProvider.getMessage(messagesPack, "folders.folderEditWindow.emptyName");
+                    showNotification(msg, Notification.TYPE_TRAY_NOTIFICATION);
+                    return;
+                }
                 folder.setName((String) nameField.getValue());
                 folder.setTabName((String) tabNameField.getValue());
 
