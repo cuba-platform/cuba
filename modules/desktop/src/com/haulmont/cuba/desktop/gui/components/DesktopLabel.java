@@ -129,7 +129,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     }
 
     public void setEditable(boolean editable) {
-        throw new UnsupportedOperationException("Cann't set editable for Label");
+//        throw new UnsupportedOperationException("Cann't set editable for Label");
     }
 
     public Formatter getFormatter() {
