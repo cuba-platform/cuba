@@ -9,22 +9,21 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.OptionsGroup;
 import com.haulmont.cuba.web.toolkit.ui.OptionGroup;
 import com.vaadin.data.Property;
-import org.dom4j.Element;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class WebOptionsGroup
         extends
             WebAbstractOptionsField<OptionGroup>
         implements
-            OptionsGroup, Component.Wrapper, Component.HasSettings
+            OptionsGroup, Component.Wrapper
 {
     private static final String HORIZONTAL_STYLENAME = "horizontal";
 
@@ -127,98 +126,6 @@ public class WebOptionsGroup
             t = o;
         }
         return t;
-    }
-
-    public void applySettings(Element element) {
-        if (!CaptionMode.ITEM.equals(this.captionMode)) {
-            //TODO develop settings for DS optionGroup
-            return;
-        }
-        final Element allOptionsElement = element.element("allOptions");
-        final List optionsList = getOptionsList();
-        if (allOptionsElement != null && optionsList != null) {
-            List newOptionList = new ArrayList();
-            List selectedOptionList = new ArrayList();
-            final Element sortedOptionsElement = allOptionsElement.element("sortedOptions");
-            final Element selectedOptionsElement = allOptionsElement.element("selectedOptions");
-
-            for (Element e : Dom4j.elements(sortedOptionsElement, "option")) {
-                for (Object o : optionsList) {
-                    if (o.toString().equals(e.attributeValue("id"))) {
-                        newOptionList.add(o);
-                        break;
-                    }
-                }
-            }
-
-            for (Element e : Dom4j.elements(selectedOptionsElement, "option")) {
-                for (Object o : optionsList) {
-                    if (o.toString().equals(e.attributeValue("id"))) {
-                        selectedOptionList.add(o);
-                        break;
-                    }
-                }
-            }
-            for (Object o : optionsList) {
-                if (!newOptionList.contains(o)) {
-                    newOptionList.add(o);
-                }
-            }
-
-            Object value = getValue();
-            setOptionsList(newOptionList);
-
-            if (!selectedOptionList.isEmpty()) {
-                if (isMultiSelect())
-                    setValue(selectedOptionList);
-                else
-                    setValue(selectedOptionList.get(0));
-            } else {
-                if (value != null)
-                    setValue(value);
-            }
-//            setValue(selectedOptionList);  todo: [degtyarjov] was commented to provide some functionality on control screen 
-        }
-    }
-
-    public boolean saveSettings(Element element) {
-        if (!CaptionMode.ITEM.equals(this.captionMode)) {
-            //TODO develop settings for DS optionGroup
-            return true;
-        }
-        Element allOptionsElement = element.element("allOptions");
-        if (allOptionsElement != null) {
-            element.remove(allOptionsElement);
-        }
-        allOptionsElement = element.addElement("allOptions");
-        Element sortedOptionsElement = allOptionsElement.addElement("sortedOptions");
-        Element selectedOptionsElement = allOptionsElement.addElement("selectedOptions");
-        final List optionsList = getOptionsList();
-        if (optionsList != null) {
-            for (Object o : optionsList) {
-                Element option = sortedOptionsElement.addElement("option");
-                option.addAttribute("id", o.toString());
-            }
-        }
-
-        if (isMultiSelect()) {
-            final Set<Set> selectedSet = getValue();
-            if (selectedSet != null) {
-                for (Set set : selectedSet) {
-                    for (Object o : set) {
-                        Element option = selectedOptionsElement.addElement("option");
-                        option.addAttribute("id", o.toString());
-                    }
-                }
-            }
-        } else {
-            final Object value = getValue();
-            if (value != null) {
-                Element option = selectedOptionsElement.addElement("option");
-                option.addAttribute("id", value.toString());
-            }
-        }
-        return true;
     }
 
     @Override
