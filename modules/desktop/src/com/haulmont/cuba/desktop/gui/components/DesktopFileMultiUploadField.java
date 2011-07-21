@@ -95,8 +95,7 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
 
         for (File file : files) {
             if (file.length() > maxSize) {
-                String warningMsg = MessageProvider.getMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message");
-                getFrame().showNotification(warningMsg, IFrame.NotificationType.WARNING);
+                notifyFileSizeExceedLimit(file);
                 return false;
             }
         }
@@ -121,6 +120,12 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
     private void notifyErrorListeners(File file, String message) {
         for (UploadListener uploadListener : listeners)
             uploadListener.errorNotify(file.getName(), message, 0);
+    }
+
+    private void notifyFileSizeExceedLimit(File file) {
+        String warningMsg = MessageProvider.getMessage(AppConfig.getMessagesPack(), "upload.fileTooBig.message");
+        for (UploadListener uploadListener : listeners)
+            uploadListener.errorNotify(file.getName(), warningMsg, FileMultiUploadField.FILE_EXCEEDS_SIZE_LIMIT);
     }
 
     @Override

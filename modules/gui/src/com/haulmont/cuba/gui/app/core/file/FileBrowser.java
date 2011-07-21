@@ -23,8 +23,6 @@ import java.util.Map;
 
 public class FileBrowser extends AbstractWindow {
 
-    private CollectionDatasource ds;
-
     public FileBrowser(IFrame frame) {
         super(frame);
     }
@@ -66,6 +64,7 @@ public class FileBrowser extends AbstractWindow {
             }
         });
 
+//        TODO generated column with download link and formatted file size
 //        FileDownloadHelper.initGeneratedColumn(filesTable);
     }
 }
