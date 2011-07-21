@@ -18,6 +18,7 @@ package com.vaadin.terminal.gwt.client.ui;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.dom.client.*;
@@ -697,7 +698,7 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
                 }
             };
 
-            if (BrowserInfo.get().isWebkit() && !treeHasFocus) {
+            if ((BrowserInfo.get().isWebkit() ||  BrowserInfo.get().isChrome()) && !treeHasFocus) {
                 /*
                  * Safari may need to wait for focus. See FocusImplSafari.
                  */
@@ -838,15 +839,44 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
         }
 
         private void fireClick(Event evt) {
-            // non-immediate iff an immediate select event is going to happen
-            boolean imm = !immediate
-                    || !selectable
-                    || (!isNullSelectionAllowed && isSelected() && selectedIds
-                            .size() == 1);
-            MouseEventDetails details = new MouseEventDetails(evt);
-            client.updateVariable(paintableId, "clickedKey", key, false);
-            client.updateVariable(paintableId, "clickEvent",
-                    details.toString(), imm);
+            /*
+             * Ensure we have focus in tree before sending variables. Otherwise
+             * previously modified field may contain dirty variables.
+             */
+            if (!treeHasFocus) {
+                if (isIE6OrOpera()) {
+                    if (focusedNode == null) {
+                        getNodeByKey(key).setFocused(true);
+                    } else {
+                        focusedNode.setFocused(true);
+                    }
+                } else {
+                    focus();
+                }
+            }
+            final MouseEventDetails details = new MouseEventDetails(evt);
+            ScheduledCommand command = new ScheduledCommand() {
+                public void execute() {
+                    // non-immediate iff an immediate select event is going to
+                    // happen
+                    boolean imm = !immediate
+                            || !selectable
+                            || (!isNullSelectionAllowed && isSelected() && selectedIds
+                                    .size() == 1);
+                    client.updateVariable(paintableId, "clickedKey", key,
+                                    false);
+                    client.updateVariable(paintableId, "clickEvent", details
+                            .toString(), imm);
+                }
+            };
+            if (treeHasFocus) {
+                command.execute();
+            } else {
+                /*
+                 * Webkits need a deferring due to FocusImplSafari uses timeout
+                 */
+                Scheduler.get().scheduleDeferred(command);
+            }
         }
 
         protected void toggleSelection() {
@@ -1163,14 +1193,12 @@ public class VTree extends FocusElementPanel implements Paintable, VHasDropHandl
                 if (isIE6OrOpera()) {
                     nodeCaptionDiv.focus();
                 }
-                treeHasFocus = true;
             } else if (this.focused && !focused) {
                 nodeCaptionDiv.removeClassName(CLASSNAME_FOCUSED);
                 if (BrowserInfo.get().isIE6()) {
                     ie6compatnode.removeClassName(CLASSNAME_FOCUSED);
                 }
                 this.focused = focused;
-                treeHasFocus = false;
             }
         }
 
