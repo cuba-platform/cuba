@@ -145,7 +145,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                 impl.getCountLabel().setVisible(false);
                 impl.getPrevButton().setVisible(true);
                 impl.getNextButton().setVisible(false);
-                msgKey = "table.rowsCount.msg2";
+                msgKey = "table.rowsCount.msg2Plural2";
                 countValue = (start + 1) + "-" + (start + size);
                 break;
             default:

@@ -184,7 +184,7 @@ public class WebRowsCount
                 component.getCountButton().setVisible(false);
                 component.getPrevButton().setVisible(true);
                 component.getNextButton().setVisible(false);
-                msgKey = "table.rowsCount.msg2Plural1";
+                msgKey = "table.rowsCount.msg2Plural2";
                 countValue = (start + 1) + "-" + (start + size);
                 break;
             default:
