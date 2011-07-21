@@ -110,11 +110,14 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
             MetaPropertyPath metaProperty = ((MetaPropertyPath) column.getId());
 
             boolean isDataType = (metaProperty.getRange().isDatatype());
-            if (isDataType && hasDefaultFormatting(value))
-                return value;
-            else
+            if (isDataType && hasDefaultFormatting(metaProperty.getRangeJavaClass())) {
+                if (value != null)
+                    return value;
+                else
+                    return getDefaultValue(metaProperty.getRangeJavaClass());
+            } else {
                 return MessageUtils.format(value, ((MetaPropertyPath) column.getId()).getMetaProperty());
-
+            }
         } else {
             return null;
         }
@@ -218,11 +221,13 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
         return super.getColumnClass(columnIndex);
     }
 
-    private boolean hasDefaultFormatting(Object value) {
-        return Boolean.class.isInstance(value);
-    }
-
     private boolean hasDefaultFormatting(Class valueClass) {
         return Boolean.class.equals(valueClass);
+    }
+
+    private Object getDefaultValue(Class valueClass) {
+        if (Boolean.class.equals(valueClass))
+            return Boolean.FALSE;
+        return null;
     }
 }
