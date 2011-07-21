@@ -67,6 +67,8 @@
 
     <screen id="multiuploadDialog" template="/com/haulmont/cuba/gui/app/core/file/multiupload.xml"/>
 
+    <screen id="sysInfoWindow" template="/com/haulmont/cuba/gui/app/core/showinfo/show-info.xml"/>
+
     <screen id="core$FileDescriptor.browse"
             template="/com/haulmont/cuba/gui/app/core/file/file-browse.xml"/>
 

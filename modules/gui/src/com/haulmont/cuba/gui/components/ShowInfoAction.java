@@ -8,19 +8,15 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.web.gui.components;
+package com.haulmont.cuba.gui.components;
 
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.App;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ShowInfoAction extends AbstractAction {
 
@@ -28,11 +24,11 @@ public class ShowInfoAction extends AbstractAction {
     public static final String ACTION_PERMISSION = "cuba.gui.showInfo";
 
     private CollectionDatasource ds;
-    protected String mp;
+//    protected String mp;
 
     public ShowInfoAction() {
         super(ACTION_ID);
-        mp = AppConfig.getInstance().getMessagesPack();
+//        mp = AppConfig.getMessagesPack();
     }
 
     public CollectionDatasource getDatasource() {
@@ -45,21 +41,30 @@ public class ShowInfoAction extends AbstractAction {
 
     @Override
     public String getCaption() {
-        return MessageProvider.getMessage(mp, "table.showInfoAction");
+        return MessageProvider.getMessage(AppConfig.getMessagesPack(), "table.showInfoAction");
     }
 
     public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
         if (ds == null)
             return;
 
-        App.getInstance().getWindowManager().showMessageDialog(
-                MessageProvider.getMessage(mp, "table.showInfoAction"),
-                compileInfo(ds),
-                IFrame.MessageType.CONFIRMATION
-        );
+        if (component instanceof Component.BelongToFrame) {
+
+            Map<String,Object> params = new HashMap<String, Object>();
+            params.put("itemDs", ds);
+
+            IFrame frame = ((Component.BelongToFrame) component).getFrame();
+            frame.openWindow("sysInfoWindow", WindowManager.OpenType.DIALOG, params);
+
+/*            ((Component.BelongToFrame) component).getFrame().showMessageDialog(
+                    MessageProvider.getMessage(mp, "table.showInfoAction"),
+                    compileInfo(ds),
+                    IFrame.MessageType.CONFIRMATION
+            );*/
+        }
     }
 
-    private String compileInfo(CollectionDatasource ds) {
+    /*private String compileInfo(CollectionDatasource ds) {
         StringBuilder sb = new StringBuilder();
 
         MetaClass metaClass = ds.getMetaClass();
@@ -104,5 +109,5 @@ public class ShowInfoAction extends AbstractAction {
         }
 
         return sb.toString();
-    }
+    }*/
 }

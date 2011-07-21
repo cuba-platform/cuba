@@ -7,8 +7,10 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.desktop.gui.data.TreeModelAdapter;
 import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -153,6 +155,15 @@ public class DesktopTree
         impl.setModel(model);
 
         impl.addTreeSelectionListener(new SelectionListener());
+
+        if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
+            ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
+            if (action == null) {
+                action = new ShowInfoAction();
+                addAction(action);
+            }
+            action.setDatasource(datasource);
+        }
     }
 
     @Override

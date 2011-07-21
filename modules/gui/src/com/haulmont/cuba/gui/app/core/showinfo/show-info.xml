@@ -1,0 +1,26 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.showinfo.SystemInfoWindow"
+        messagesPack="com.haulmont.cuba.gui.app.core.showinfo"
+        caption="msg://showInfo.title">
+
+    <dsContext>
+        <collectionDatasource id="paramsDs" view="_local" class="com.haulmont.cuba.core.global.KeyValueEntity" refreshMode="NEVER"/>
+    </dsContext>
+
+    <layout expand="infoTable" spacing="true" height="270">
+        <table id="infoTable" editable="false">
+            <columns>
+                <column id="key" caption="msg://showInfo.name" width="150"/>
+                <column id="keyValue" caption="msg://showInfo.value"/>
+            </columns>
+            <rows datasource="paramsDs"/>
+        </table>
+    </layout>
+</window>

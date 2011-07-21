@@ -238,15 +238,15 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
         setVisibleColumns(columnsOrder);
 
-//        if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
-//            ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
-//            if (action == null) {
-//                action = new ShowInfoAction();
-//                addAction(action);
-//            }
-//            action.setDatasource(datasource);
-//        }
-//
+        if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
+            ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
+            if (action == null) {
+                action = new ShowInfoAction();
+                addAction(action);
+            }
+            action.setDatasource(datasource);
+        }
+
         datasource.addListener(
                 new CollectionDsListenerAdapter() {
                     @Override

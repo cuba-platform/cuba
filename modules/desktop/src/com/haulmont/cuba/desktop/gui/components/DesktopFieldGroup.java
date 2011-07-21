@@ -11,10 +11,12 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DatasourceComponent;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -478,6 +480,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             generator = createDefaultGenerator(field);
 
         Component component = generator.generateField(ds, field.getId());
+        applyPermissions(component);
 
         if (component instanceof com.haulmont.cuba.gui.components.Field) { // do not create caption for buttons etc.
             caption = field.getCaption();
@@ -494,7 +497,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
         JLabel label = new JLabel(caption);
         label.setVisible(component.isVisible());
-        impl.add(label, new CC().cell(col*2, row, 1, 1));
+        impl.add(label, new CC().cell(col * 2, row, 1, 1));
         fieldLabels.put(field, label);
 
         fieldComponents.put(field, component);
@@ -509,6 +512,18 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         MigLayoutHelper.applyHeight(cell, (int) component.getHeight(), component.getHeightUnits(), false);
 
         impl.add(jComponent, cell);
+    }
+
+    private void applyPermissions(Component c) {
+        if (c instanceof DatasourceComponent) {
+            DatasourceComponent dsComponent = (DatasourceComponent) c;
+            MetaProperty metaProperty = dsComponent.getMetaProperty();
+
+            if (metaProperty != null) {
+                dsComponent.setEditable(UserSessionProvider.isEditPermitted(metaProperty)
+                        && dsComponent.isEditable());
+            }
+        }
     }
 
     private void assignTypicalAttributes(Component c) {
