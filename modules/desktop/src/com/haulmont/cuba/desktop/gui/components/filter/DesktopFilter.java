@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.gui.components.filter;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
@@ -34,7 +35,6 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.AbstractParam;
 import com.haulmont.cuba.gui.components.filter.Op;
-import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.filter.DenyingClause;
@@ -184,7 +184,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         } else {
             int maxResults = persistenceManager.getFetchUI(datasource.getMetaClass().getName());
-            maxResultsField.setValue(String.valueOf(maxResults));
+            maxResultsField.setValue(maxResults);
             datasource.setMaxResults(maxResults);
         }
     }
@@ -472,8 +472,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         maxResultsField = new DesktopTextField();
         maxResultsField.setMaxLength(4);
         maxResultsField.<JTextField>getComponent().setPreferredSize(new Dimension(40, DesktopComponentsHelper.FIELD_HEIGHT));
-        maxResultsField.addValidator(
-                new IntegerValidator(MessageProvider.getMessage(mainMessagesPack, "validation.invalidNumber")));
+        maxResultsField.setDatatype(Datatypes.get(Integer.class));
         maxResultsPanel.add(maxResultsField.<java.awt.Component>getComponent());
 
         JLabel maxResultsLabel2 = new JLabel(MessageProvider.getMessage(mainMessagesPack, "filter.maxResults.label2"));
@@ -534,7 +533,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         if (useMaxResults) {
             int maxResults;
             if (BooleanUtils.isTrue(maxResultsCb.isSelected()))
-                maxResults = Integer.valueOf(maxResultsField.<String>getValue());
+                maxResults = maxResultsField.<Integer>getValue();
             else
                 maxResults = persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName());
             datasource.setMaxResults(maxResults);

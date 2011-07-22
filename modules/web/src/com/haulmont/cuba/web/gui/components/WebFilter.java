@@ -189,7 +189,18 @@ public class WebFilter
         maxResultsField.setWidth(40, UNITS_PIXELS);
         maxResultsField.setInvalidAllowed(false);
         maxResultsField.addValidator(
-                new IntegerValidator(MessageProvider.getMessage(mainMessagesPack, "validation.invalidNumber")));
+                new IntegerValidator(MessageProvider.getMessage(mainMessagesPack, "validation.invalidNumber")) {
+                    @Override
+                    public void validate(Object value) throws InvalidValueException {
+                        try {
+                            super.validate(value);
+                        } catch (InvalidValueException e) {
+                            maxResultsField.requestRepaint();
+                            throw e;
+                        }
+                    }
+                }
+        );
         maxResultsLayout.addComponent(maxResultsField);
 
         Label maxResultsLabel2 = new Label(MessageProvider.getMessage(mainMessagesPack, "filter.maxResults.label2"));
