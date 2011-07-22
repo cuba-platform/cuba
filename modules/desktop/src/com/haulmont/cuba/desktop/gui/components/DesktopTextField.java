@@ -179,21 +179,20 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     }
 
     public void setValue(Object value) {
-        if (!isEditable())
-            return;
+        if (!ObjectUtils.equals(prevValue, value)) {
+            updateInstance(value);
 
-        updateInstance(value);
+            String text;
+            if (metaProperty != null)
+                text = formatValue(value, metaProperty);
+            else if (datatype != null)
+                text = datatype.format(value, locale);
+            else
+                text = value == null ? "" : String.valueOf(value);
+            updateTextField(text);
 
-        String text;
-        if (metaProperty != null)
-            text = formatValue(value, metaProperty);
-        else if (datatype != null)
-            text = datatype.format(value, locale);
-        else
-            text = value == null ? "" : String.valueOf(value);
-        updateTextField(text);
-
-        fireChangeListeners();
+            fireChangeListeners();
+        }
     }
 
     private Object validateRawValue(String rawValue) {

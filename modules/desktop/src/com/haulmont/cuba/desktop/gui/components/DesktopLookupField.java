@@ -19,10 +19,12 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 
-import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 /**
  * <p>$Id$</p>
@@ -36,7 +38,6 @@ public class DesktopLookupField
     private BasicEventList<Object> items = new BasicEventList<Object>();
     private boolean optionsInitialized;
     private AutoCompleteSupport<Object> autoComplete;
-    private ValueWrapper prevValue;
     private String caption;
     private boolean editable;
     private NewOptionHandler newOptionHandler;
@@ -69,7 +70,8 @@ public class DesktopLookupField
                     public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
                         Object selectedItem = impl.getSelectedItem();
                         if (selectedItem instanceof ValueWrapper) {
-                            updateValue((ValueWrapper) selectedItem);
+                            updateInstance(selectedItem);
+                            fireChangeListeners();
                         } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
                             newOptionHandler.addNewOption((String) selectedItem);
                         } else {
@@ -101,7 +103,14 @@ public class DesktopLookupField
         DesktopComponentsHelper.adjustSize(impl);
     }
 
-    protected void updateValue(ValueWrapper selectedItem) {
+    @Override
+    protected void updateInstance(Object value) {
+        ValueWrapper selectedItem;
+        if (value instanceof ValueWrapper)
+            selectedItem = (ValueWrapper) value;
+        else
+            selectedItem = (ValueWrapper) impl.getSelectedItem();
+
         updatingInstance = true;
         try {
             if (selectedItem != prevValue) {
@@ -109,11 +118,6 @@ public class DesktopLookupField
                     InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(),
                             selectedItem == null ? null : selectedItem.getValue());
                 }
-                fireValueChanged(
-                        prevValue == null ? null : prevValue.getValue(),
-                        selectedItem == null ? null : selectedItem.getValue()
-                );
-                prevValue = selectedItem;
             }
         } finally {
             updatingInstance = false;
@@ -276,7 +280,6 @@ public class DesktopLookupField
         settingValue = true;
         try {
             super.setValue(value);
-            updateValue((ValueWrapper) impl.getSelectedItem());
         } finally {
             settingValue = false;
         }

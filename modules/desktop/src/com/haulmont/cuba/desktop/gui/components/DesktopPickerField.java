@@ -44,7 +44,7 @@ public class DesktopPickerField
 
     protected MetaClass metaClass;
 
-    protected Object value;
+    protected Object prevValue;
 
     private boolean editable = true;
 
@@ -125,20 +125,20 @@ public class DesktopPickerField
         if ((datasource != null) && (metaPropertyPath != null)) {
             return (T) datasource.getItem().getValue(metaProperty.getName());
         } else
-            return (T) value;
+            return (T) prevValue;
     }
 
     @Override
     public void setValue(Object value) {
-        if (datasource == null) {
-            Object oldValue = this.value;
-            this.value = value;
-            if (!ObjectUtils.equals(oldValue, value))
-                fireValueChanged(oldValue, value);
-        } else {
-            datasource.getItem().setValue(metaProperty.getName(), value);
+        if (!ObjectUtils.equals(prevValue, value)) {
+            if (datasource == null) {
+                if (!ObjectUtils.equals(prevValue, value))
+                    fireValueChanged(prevValue, value);
+            } else {
+                datasource.getItem().setValue(metaProperty.getName(), value);
+            }
+            updateText(value);
         }
-        updateText(value);
     }
 
     @Override

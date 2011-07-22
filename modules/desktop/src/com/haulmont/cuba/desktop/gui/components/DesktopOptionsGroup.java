@@ -35,7 +35,6 @@ public class DesktopOptionsGroup
     private Map<ValueWrapper, JToggleButton> items = new HashMap<ValueWrapper, JToggleButton>();
     private ButtonGroup buttonGroup;
 
-    private Object prevValue = null;
     private Orientation orientation = Orientation.VERTICAL;
     private MigLayout layout;
 
@@ -91,10 +90,10 @@ public class DesktopOptionsGroup
                     }
             );
 
-            if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID))
-                setValue(datasource.getItem());
-
-            prevValue = getValue();
+            if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID)) {
+                updateComponent(datasource.getItem());
+                fireChangeListeners();
+            }
             optionsInitialized = true;
         }
     }
@@ -110,10 +109,10 @@ public class DesktopOptionsGroup
                 addItem(new ObjectWrapper(obj));
             }
 
-            if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID))
-                setValue(datasource.getItem());
-
-            prevValue = getValue();
+            if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID)) {
+                updateComponent(datasource.getItem());
+                fireChangeListeners();
+            }
             optionsInitialized = true;
         }
     }
@@ -129,10 +128,10 @@ public class DesktopOptionsGroup
                 addItem(new MapKeyWrapper(key));
             }
 
-            if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID))
-                setValue(datasource.getItem());
-
-            prevValue = getValue();
+            if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID)) {
+                updateComponent(datasource.getItem());
+                fireChangeListeners();
+            }
             optionsInitialized = true;
         }
     }
@@ -151,7 +150,7 @@ public class DesktopOptionsGroup
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        updateValue(item);
+                        updateInstance(item);
                     }
                 }
         );
@@ -166,7 +165,26 @@ public class DesktopOptionsGroup
         buttonGroup = null;
     }
 
-    private void updateValue(ValueWrapper selectedItem) {
+    @Override
+    protected void updateComponent(Object value) {
+        if (multiselect && value instanceof Collection) {
+            for (Object v : ((Collection) value)) {
+                for (Map.Entry<ValueWrapper, JToggleButton> entry : items.entrySet()) {
+                    if (ObjectUtils.equals(entry.getKey().getValue(), v))
+                        entry.getValue().setSelected(true);
+                    else
+                        entry.getValue().setSelected(false);
+                }
+            }
+        } else {
+            super.updateComponent(value);
+        }
+    }
+
+    @Override
+    protected void updateInstance(Object value) {
+        ValueWrapper selectedItem = (ValueWrapper) value;
+
         if (datasource != null && metaProperty != null) {
             updatingInstance = true;
             try {
@@ -178,10 +196,6 @@ public class DesktopOptionsGroup
                 updatingInstance = false;
             }
         }
-        Object newValue = getValue();
-        if (!ObjectUtils.equals(prevValue, newValue))
-            fireValueChanged(prevValue, newValue);
-        prevValue = newValue;
     }
 
     @Override
@@ -197,27 +211,6 @@ public class DesktopOptionsGroup
         } else {
             return (T) wrapAsCollection(super.getValue());
         }
-    }
-
-    @Override
-    public void setValue(Object value) {
-        if (multiselect && value instanceof Collection) {
-            for (Object v : ((Collection) value)) {
-                for (Map.Entry<ValueWrapper, JToggleButton> entry : items.entrySet()) {
-                    if (ObjectUtils.equals(entry.getKey().getValue(), v))
-                        entry.getValue().setSelected(true);
-                    else
-                        entry.getValue().setSelected(false);
-                }
-            }
-        } else {
-            super.setValue(value);
-        }
-
-        Object newValue = getValue();
-        if (!ObjectUtils.equals(prevValue, newValue))
-            fireValueChanged(prevValue, newValue);
-        prevValue = newValue;
     }
 
     protected <T> T wrapAsCollection(Object o) {

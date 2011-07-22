@@ -167,7 +167,9 @@ public class DesktopDateField
 
     @Override
     public void setValue(Object value) {
-        updatePartsFromValue((Date) value);
+        if (!ObjectUtils.equals(prevValue, value)) {
+            updatePartsFromValue((Date) value);
+        }
     }
 
     @Override

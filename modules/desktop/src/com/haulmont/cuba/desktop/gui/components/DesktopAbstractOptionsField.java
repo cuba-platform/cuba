@@ -48,6 +48,8 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     protected MetaPropertyPath metaPropertyPath;
     protected boolean updatingInstance;
 
+    protected Object prevValue;
+
     @Override
     public CollectionDatasource getOptionsDatasource() {
         return optionsDatasource;
@@ -133,7 +135,8 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
                         if (updatingInstance)
                             return;
                         Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-                        setValue(value);
+                        updateComponent(value);
+                        fireChangeListeners();
                     }
 
                     @Override
@@ -141,7 +144,8 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
                         if (updatingInstance)
                             return;
                         if (property.equals(metaPropertyPath.toString())) {
-                            setValue(value);
+                            updateComponent(value);
+                            fireChangeListeners();
                         }
                     }
                 }
@@ -159,8 +163,16 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
 
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
-            setValue(newValue);
+            updateComponent(newValue);
+            fireChangeListeners();
         }
+    }
+
+    protected void fireChangeListeners() {
+        Object newValue = getValue();
+        if (!ObjectUtils.equals(prevValue, newValue))
+            fireValueChanged(prevValue, newValue);
+        prevValue = newValue;
     }
 
     @Override
@@ -180,8 +192,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
                 (T) ((ValueWrapper) selectedItem).getValue() : null;
     }
 
-    @Override
-    public void setValue(Object value) {
+    protected void updateComponent(Object value) {
         if (value == null) {
             setSelectedItem(null);
             return;
@@ -204,6 +215,18 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         } else
             selectedItem = new ObjectWrapper(value);
         setSelectedItem(selectedItem);
+    }
+
+    protected void updateInstance(Object value) {
+    }
+
+    @Override
+    public void setValue(Object value) {
+        if (!ObjectUtils.equals(prevValue, value)) {
+            updateComponent(value);
+            updateInstance(value);
+            fireChangeListeners();
+        }
     }
 
     protected abstract Object getSelectedItem();

@@ -48,23 +48,30 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         );
     }
 
+    @Override
     public <T> T getValue() {
         return (T) (Boolean) impl.isSelected();
     }
 
+    @Override
     public void setValue(Object value) {
-        impl.setSelected(value != null ? (Boolean) value : false);
-        updateInstance();
+        if (!ObjectUtils.equals(prevValue, value)) {
+            impl.setSelected(value != null ? (Boolean) value : false);
+            updateInstance();
+        }
     }
 
+    @Override
     public Datasource getDatasource() {
         return datasource;
     }
 
+    @Override
     public MetaProperty getMetaProperty() {
         return metaProperty;
     }
 
+    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
@@ -105,6 +112,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
 
         impl.addActionListener(
                 new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         updateInstance();
                     }
@@ -119,25 +127,31 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         }
     }
 
+    @Override
     public String getCaption() {
         return impl.getText();
     }
 
+    @Override
     public void setCaption(String caption) {
         impl.setText(caption);
     }
 
+    @Override
     public String getDescription() {
         return null;
     }
 
+    @Override
     public void setDescription(String description) {
     }
 
+    @Override
     public boolean isEditable() {
         return impl.isEnabled();
     }
 
+    @Override
     public void setEditable(boolean editable) {
         impl.setEnabled(editable);
     }
@@ -163,5 +177,4 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
             fireValueChanged(prevValue, newValue);
         prevValue = newValue;
     }
-
 }
