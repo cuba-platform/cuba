@@ -9,25 +9,15 @@
  */
 package com.haulmont.cuba.web.gui.data;
 
-import com.haulmont.cuba.core.app.PersistenceManagerService;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
-import com.haulmont.cuba.web.App;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewProperty;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Range;
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -220,11 +210,12 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
         public void valueChanged(Entity source, String property, Object prevValue, Object value) {
             Item wrapper = getItemWrapper(source);
 
-            MetaProperty metaProperty = datasource.getMetaClass().getProperty(property);
-            if (metaProperty == null) {
+            // MetaProperty worked wrong with properties from inherited superclasses
+            MetaPropertyPath metaPropertyPath = datasource.getMetaClass().getPropertyPath(property);
+            if (metaPropertyPath == null) {
                 return;
             }
-            Property itemProperty = wrapper.getItemProperty(metaProperty);
+            Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
             if (itemProperty instanceof PropertyWrapper) {
                 ((PropertyWrapper) itemProperty).fireValueChangeEvent();
             }
