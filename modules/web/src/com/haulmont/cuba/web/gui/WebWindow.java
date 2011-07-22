@@ -195,6 +195,14 @@ public class WebWindow
         return null;
     }
 
+    public boolean isValid() {
+        return delegate.isValid();
+    }
+
+    public void validate() throws ValidationException {
+        delegate.validate();
+    }
+
     public DialogParams getDialogParams() {
         return App.getInstance().getWindowManager().getDialogParams();
     }
@@ -609,23 +617,6 @@ public class WebWindow
             return WebComponentsHelper.getComponents(getContainer(), com.vaadin.ui.Field.class);
         }
 
-        public boolean isValid() {
-            for (com.vaadin.ui.Field field : getFields()) {
-                if (!field.isValid()) return false;
-            }
-            return true;
-        }
-
-        public void validate() throws ValidationException {
-            for (com.vaadin.ui.Field field : getFields()) {
-                try {
-                    field.validate();
-                } catch (Validator.InvalidValueException e) {
-                    throw new ValidationException(e.getMessage());
-                }
-            }
-        }
-
         protected MetaClass getMetaClass() {
             return getDatasource().getMetaClass();
         }
@@ -675,95 +666,72 @@ public class WebWindow
         }
 
         public boolean validateOnCommit() {
-            final Map<Exception, com.vaadin.ui.Field> problems =
-                    new HashMap<Exception, com.vaadin.ui.Field>();
+            Map<Exception, Component> problems = new HashMap<Exception, Component>();
 
-            ComponentsHelper.walkComponents(this, new ComponentVisitor() {
-                public void visit(Component component, String name) {
-
-                    com.vaadin.ui.Component impl = WebComponentsHelper.unwrap(component);
-
-                    // validate component
-                    if (component instanceof WebAbstractTable) {
-                        try {
-                            ((WebAbstractTable) component).validate();
-                        } catch (ValidationException e) {
-                            problems.put(e, ((com.vaadin.ui.Field) impl));
-                        }
-                    } else if (impl instanceof com.vaadin.ui.Field
-                            && impl.isVisible() && impl.isEnabled() && !impl.isReadOnly()) {
-                        if (impl instanceof FieldGroup) {
-                            final FieldGroup fieldGroup = (FieldGroup) impl;
-                            for (final Object propId : fieldGroup.getItemPropertyIds()) {
-                                final Field f = fieldGroup.getField(propId);
-                                if (f.isVisible() && f.isEnabled() && !f.isReadOnly())
-                                    validateField(f, problems);
-                            }
-                        } else {
-                            validateField(impl, problems);
-                        }
+            Collection<Component> components = ComponentsHelper.getComponents(this);
+            for (Component component : components) {
+                if (component instanceof Validatable) {
+                    try {
+                        ((Validatable) component).validate();
+                    } catch (ValidationException e) {
+                        log.warn("Validation failed", e);
+                        problems.put(e, component);
                     }
-
-                    // validate table columns
-                    if (impl instanceof com.vaadin.ui.Table) {
-                        Set visibleComponents = ((Table) impl).getVisibleComponents();
-                        for (Object visibleComponent : visibleComponents) {
-                            if (visibleComponent instanceof com.vaadin.ui.Field
-                                    && ((com.vaadin.ui.Field) visibleComponent).isEnabled() &&
-                                    !((com.vaadin.ui.Field) visibleComponent).isReadOnly()) {
-                                try {
-                                    ((com.vaadin.ui.Field) visibleComponent).validate();
-                                } catch (Validator.InvalidValueException e) {
-                                    problems.put(e, ((com.vaadin.ui.Field) visibleComponent));
-                                }
-                            }
-                        }
-                    }
-
                 }
-            });
+            }
 
-            if (problems.isEmpty()) return true;
+//                    // TODO validate table columns - smthng like this:
+//                    if (impl instanceof com.vaadin.ui.Table) {
+//                        Set visibleComponents = ((Table) impl).getVisibleComponents();
+//                        for (Object visibleComponent : visibleComponents) {
+//                            if (visibleComponent instanceof com.vaadin.ui.Field
+//                                    && ((com.vaadin.ui.Field) visibleComponent).isEnabled() &&
+//                                    !((com.vaadin.ui.Field) visibleComponent).isReadOnly()) {
+//                                try {
+//                                    ((com.vaadin.ui.Field) visibleComponent).validate();
+//                                } catch (Validator.InvalidValueException e) {
+//                                    problems.put(e, ((com.vaadin.ui.Field) visibleComponent));
+//                                }
+//                            }
+//                        }
+//                    }
+//
+//                }
+//            });
 
-            com.vaadin.ui.Field field = null;
-            StringBuffer buffer = new StringBuffer(
-                    MessageProvider.getMessage(WebWindow.class, "validationFail") + "<br>");
+            if (problems.isEmpty())
+                return true;
+
+            Component component = null;
+            StringBuilder buffer = new StringBuilder(MessageProvider.getMessage(WebWindow.class, "validationFail") + "<br>");
             for (Exception exception : problems.keySet()) {
-                if (field == null) field = problems.get(exception);
+                if (component == null)
+                    component = problems.get(exception);
                 buffer.append(exception.getMessage()).append("<br>");
             }
 
             showNotification(MessageProvider.getMessage(WebWindow.class, "validationFail.caption"),
                     buffer.toString(), NotificationType.TRAY);
-            if (field != null) {
+            if (component != null) {
                 try {
-                    com.vaadin.ui.Component c = field;
-                    com.vaadin.ui.Component cp;
-                    do{
-                        cp = c.getParent();
-                        if(cp != null)
-                            if (cp instanceof com.vaadin.ui.Component.Focusable) {
-                                ((com.vaadin.ui.Component.Focusable) cp).focus();
-                            } else if (cp instanceof TabSheet){
-                                ((TabSheet)cp).setSelectedTab(c);
-                            }
-                        c = cp;
-                    }while(c != null);
-                    field.focus();
-                } catch (UnsupportedOperationException e) {
+                    com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
+                    com.vaadin.ui.Component c = vComponent;
+                    while (c != null) {
+                        if (c instanceof com.vaadin.ui.Component.Focusable) {
+                            ((com.vaadin.ui.Component.Focusable) c).focus();
+                        } else if (c instanceof TabSheet) {
+                            ((TabSheet) c).setSelectedTab(c);
+                        }
+                        c = c.getParent();
+                    }
+                    if (vComponent instanceof com.vaadin.ui.Component.Focusable)
+                        ((com.vaadin.ui.Component.Focusable) vComponent).focus();
+                } catch (Exception e) {
                     //
                 }
             }
 
             return false;
-        }
-
-        private void validateField(com.vaadin.ui.Component impl, final Map<Exception, Field> problems) {
-            try {
-                ((Field) impl).validate();
-            } catch (Validator.InvalidValueException e) {
-                problems.put(e, ((Field) impl));
-            }
         }
     }
 

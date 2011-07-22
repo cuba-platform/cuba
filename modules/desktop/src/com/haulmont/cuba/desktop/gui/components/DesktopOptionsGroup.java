@@ -231,10 +231,6 @@ public class DesktopOptionsGroup
     }
 
     @Override
-    public void validate() throws ValidationException {
-    }
-
-    @Override
     public String getCaption() {
         return null;
     }

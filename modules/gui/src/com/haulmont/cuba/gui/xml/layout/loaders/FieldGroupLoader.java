@@ -244,12 +244,18 @@ public class FieldGroupLoader extends AbstractFieldLoader {
     }
 
     protected void loadRequired(FieldGroup component, FieldGroup.Field field) {
+        boolean isMandatory = false;
+        MetaClass metaClass = metaClass(component, field);
+        if (metaClass != null) {
+            MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
+            isMandatory = metaProperty.isMandatory();
+        }
+
         Element element = field.getXmlDescriptor();
         final String required = element.attributeValue("required");
-        if (!StringUtils.isEmpty(required)) {
+        if (isMandatory || !StringUtils.isEmpty(required)) {
             String requiredMsg = element.attributeValue("requiredMessage");
             if (StringUtils.isEmpty(requiredMsg)) {
-                MetaClass metaClass = metaClass(component, field);
                 if (metaClass != null) {
                     MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
                     requiredMsg = MessageProvider.formatMessage(
@@ -259,7 +265,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                     );
                 }
             }
-            component.setRequired(field, BooleanUtils.toBoolean(required), loadResourceString(requiredMsg));
+            component.setRequired(field, isMandatory || BooleanUtils.toBoolean(required), loadResourceString(requiredMsg));
         }
     }
 

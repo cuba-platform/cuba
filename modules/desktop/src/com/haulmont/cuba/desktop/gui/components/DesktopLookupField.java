@@ -39,7 +39,7 @@ public class DesktopLookupField
     private boolean optionsInitialized;
     private AutoCompleteSupport<Object> autoComplete;
     private String caption;
-    private boolean editable;
+    private boolean editable = true;
     private NewOptionHandler newOptionHandler;
     private boolean newOptionAllowed;
     private boolean settingValue;
@@ -224,15 +224,6 @@ public class DesktopLookupField
 
     @Override
     public void setMultiSelect(boolean multiselect) {
-    }
-
-    @Override
-    public boolean isValid() {
-        return true;
-    }
-
-    @Override
-    public void validate() throws ValidationException {
     }
 
     @Override

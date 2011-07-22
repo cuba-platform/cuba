@@ -9,7 +9,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -20,9 +19,7 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
 
-import java.text.ParseException;
 import java.util.*;
 import java.util.List;
 
@@ -37,10 +34,11 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     protected MetaPropertyPath metaPropertyPath;
 
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
-    protected Map<com.haulmont.cuba.gui.components.Field.Validator, Validator> validators =
-            new HashMap<com.haulmont.cuba.gui.components.Field.Validator, Validator>();
+    protected List<Field.Validator> validators = new ArrayList<Field.Validator>();
 
     protected DsManager dsManager;
+
+    protected String requiredMessage;
 
     public Datasource getDatasource() {
         return datasource;
@@ -83,6 +81,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     }
 
     public void setRequiredMessage(String msg) {
+        requiredMessage = msg;
         component.setRequiredError(msg);
     }
 
@@ -146,74 +145,42 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         }
     }
 
-    protected Object convertRawValue(Object value) throws ValidationException {
-        if (value instanceof String) {
-            Datatype datatype = null;
-            if (this instanceof TextField) {
-                datatype = ((TextField) this).getDatatype();
-            }
-            if ((datasource != null) && (metaPropertyPath != null)) {
-                if (metaProperty.getRange().isDatatype())
-                    datatype = metaPropertyPath.getRange().asDatatype();
-            }
-            if (datatype != null) {
-                try {
-                    return datatype.parse((String) value);
-                } catch (ParseException ignored) {
-                    throw new ValidationException();
-                }
-            }
-        }
-        return value;
+    public void addValidator(Field.Validator validator) {
+        if (!validators.contains(validator))
+            validators.add(validator);
     }
 
-    public void addValidator(final com.haulmont.cuba.gui.components.Field.Validator validator) {
-        if (!validators.containsKey(validator)) {
-            final Validator componentValidator = new Validator() {
-
-                public void validate(Object value) throws InvalidValueException {
-                    if ((!isRequired() && value == null))
-                        return;
-                    try {
-                        if (isRequired() && (value == null))
-                            throw new RequiredValueMissingException(component.getRequiredError());
-
-                        validator.validate(convertRawValue(value));
-                    } catch (ValidationException e) {
-                        throw new InvalidValueException(e.getMessage());
-                    }
-                }
-
-                public boolean isValid(Object value) {
-                    try {
-                        validate(value);
-                        return true;
-                    } catch (InvalidValueException e) {
-                        getFrame().showNotification(e.getMessage(), IFrame.NotificationType.HUMANIZED);
-                        return false;
-                    }
-                }
-            };
-
-            component.addValidator(componentValidator);
-            validators.put(validator, componentValidator);
-        }
-    }
-
-    public void removeValidator(com.haulmont.cuba.gui.components.Field.Validator validator) {
-        component.removeValidator(validators.get(validator));
+    public void removeValidator(Field.Validator validator) {
         validators.remove(validator);
     }
 
     public boolean isValid() {
-        return component.isValid();
+        try {
+            validate();
+            return true;
+        } catch (ValidationException e) {
+            return false;
+        }
     }
 
     public void validate() throws ValidationException {
-        try {
-            component.validate();
-        } catch (Validator.InvalidValueException e) {
-            throw new ValidationException(e.getMessage());
+        if (!isVisible() || !isEditable() || !isEnabled())
+            return;
+
+        Object value = getValue();
+        if (isEmpty(value)) {
+            if (isRequired())
+                throw new RequiredValueMissingException(requiredMessage, this);
+            else
+                return;
         }
+
+        for (Field.Validator validator : validators) {
+            validator.validate(value);
+        }
+    }
+
+    protected boolean isEmpty(Object value) {
+        return value == null;
     }
 }

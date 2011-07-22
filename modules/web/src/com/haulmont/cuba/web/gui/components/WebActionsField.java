@@ -43,6 +43,7 @@ public class WebActionsField
         lookupField = new WebLookupField();
         this.component = new ActionsField((AbstractSelect) lookupField.getComponent());
         component.setImmediate(true);
+        component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
     }
 
@@ -288,12 +289,12 @@ public class WebActionsField
 
     @Override
     public boolean isValid() {
-        return component.isValid();
+        return lookupField.isValid();
     }
 
     @Override
     public void validate() throws ValidationException {
-        component.validate();
+        lookupField.validate();
     }
 
     public WebLookupField getLookupField() {

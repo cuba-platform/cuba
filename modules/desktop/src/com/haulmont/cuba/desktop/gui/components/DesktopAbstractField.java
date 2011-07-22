@@ -51,7 +51,8 @@ public abstract class DesktopAbstractField<C extends JComponent>
 
     @Override
     public void addValidator(Validator validator) {
-        validators.add(validator);
+        if (!validators.contains(validator))
+            validators.add(validator);
     }
 
     @Override

@@ -53,6 +53,12 @@ public interface IFrame
 
     void registerComponent(Component component);
 
+    /** Check validity by invoking validators on all components which support them */
+    boolean isValid();
+
+    /** Check validity by invoking validators on all components which support them */
+    void validate() throws ValidationException;
+
     /**
      * These parameters will be used for a next modal dialog.<br>
      * Parameters reset to default values after opening of each modal dialog.

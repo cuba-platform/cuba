@@ -63,6 +63,9 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     private Set<Field> readOnlyFields = new HashSet<Field>();
 
+    private Map<Field, List<com.haulmont.cuba.gui.components.Field.Validator>> fieldValidators =
+            new HashMap<Field, List<com.haulmont.cuba.gui.components.Field.Validator>>();
+
     private Datasource<Entity> datasource;
 
     private String caption;
@@ -430,7 +433,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
             if (datatype != null) {
                 try {
-                    return datatype.parse((String) value);
+                    return datatype.parse((String) value, UserSessionProvider.getLocale());
                 } catch (ParseException ignored) {
                     String message = MessageProvider.getMessage(WebWindow.class, "invalidValue");
                     String fieldCaption = MessageUtils.getPropertyCaption(propertyPath.getMetaProperty());
@@ -443,30 +446,13 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     }
 
     public void addValidator(final Field field, final com.haulmont.cuba.gui.components.Field.Validator validator) {
-        final com.vaadin.ui.Field f = component.getField(field.getId());
-        f.addValidator(new Validator()  {
-            public void validate(Object value) throws InvalidValueException {
-                if ((!f.isRequired() && value == null))
-                    return;
-                try {
-                    validator.validate(convertRawValue(field, value));
-                } catch (ValidationException e) {
-                    throw new InvalidValueException(e.getMessage());
-                }
-            }
-
-            public boolean isValid(Object value) {
-                try {
-                    validate(value);
-                    return true;
-                } catch (InvalidValueException e) {
-                    return false;
-                }
-            }
-        });
-        if (f instanceof AbstractField) {
-            ((AbstractField) f).setValidationVisible(true);
+        List<com.haulmont.cuba.gui.components.Field.Validator> validators = fieldValidators.get(field);
+        if (validators == null) {
+            validators = new ArrayList<com.haulmont.cuba.gui.components.Field.Validator>();
+            fieldValidators.put(field, validators);
         }
+        if (!validators.contains(validator))
+            validators.add(validator);
     }
 
     public void addValidator(String fieldId, com.haulmont.cuba.gui.components.Field.Validator validator) {
@@ -800,11 +786,26 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     public void validate() throws ValidationException {
         final Map<Object, Exception> problems = new HashMap<Object, Exception>();
 
-        final FieldGroup fieldGroup = component;
-        for (final Object propId : fieldGroup.getItemPropertyIds()) {
-            final com.vaadin.ui.Field f = fieldGroup.getField(propId);
-            if (f.isVisible() && f.isEnabled() && !f.isReadOnly())
-                validateField(f, propId, problems);
+        for (Field field : getFields()) {
+            com.vaadin.ui.Field f = component.getField(field.getId());
+            if (f.isVisible() && f.isEnabled() && !f.isReadOnly()) {
+                Object value = convertRawValue(field, getFieldValue(field));
+                if (isEmpty(value)) {
+                    if (isRequired(field))
+                        problems.put(field.getId(), new RequiredValueMissingException(f.getRequiredError(), this));
+                } else {
+                    List<com.haulmont.cuba.gui.components.Field.Validator> validators = fieldValidators.get(field);
+                    if (validators != null) {
+                        for (com.haulmont.cuba.gui.components.Field.Validator validator : validators) {
+                            try {
+                                validator.validate(value);
+                            } catch (ValidationException e) {
+                                problems.put(field.getId(), e);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         if (!problems.isEmpty()) {
@@ -813,11 +814,13 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 problemFields.put(getField(entry.getKey().toString()), entry.getValue());
             }
 
-            StringBuilder msgBuilder = new StringBuilder(
-                    MessageProvider.getMessage(WebWindow.class, "validationFail") + "<br>");
-            for (Field field : problemFields.keySet()) {
+            StringBuilder msgBuilder = new StringBuilder();
+            for (Iterator<Field> iterator = problemFields.keySet().iterator(); iterator.hasNext(); ) {
+                Field field = iterator.next();
                 Exception ex = problemFields.get(field);
-                msgBuilder.append(ex.getMessage()).append("<br>");
+                msgBuilder.append(ex.getMessage());
+                if (iterator.hasNext())
+                    msgBuilder.append("<br>");
             }
 
             FieldsValidationException validationException = new FieldsValidationException(msgBuilder.toString());
@@ -827,12 +830,11 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
-    private void validateField(com.vaadin.ui.Component impl, Object propertyId, final Map<Object, Exception> problems) {
-        try {
-            ((com.vaadin.ui.Field) impl).validate();
-        } catch (Validator.InvalidValueException e) {
-            problems.put(propertyId, e);
-        }
+    private boolean isEmpty(Object value) {
+        if (value instanceof String)
+            return StringUtils.isBlank((String) value);
+        else
+            return value == null;
     }
 
     protected class ExpandCollapseListener implements FieldGroup.ExpandCollapseListener {

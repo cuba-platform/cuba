@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -134,6 +135,26 @@ public class WebFrame extends WebVBoxLayout
 
     public DialogParams getDialogParams() {
         return App.getInstance().getWindowManager().getDialogParams();
+    }
+
+    public boolean isValid() {
+        Collection<Component> components = ComponentsHelper.getComponents(this);
+        for (Component component : components) {
+            if (component instanceof Validatable) {
+                if (!((Validatable) component).isValid())
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    public void validate() throws ValidationException {
+        Collection<Component> components = ComponentsHelper.getComponents(this);
+        for (Component component : components) {
+            if (component instanceof Validatable) {
+                ((Validatable) component).validate();
+            }
+        }
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {

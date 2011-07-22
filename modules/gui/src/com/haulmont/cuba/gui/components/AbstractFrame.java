@@ -187,6 +187,16 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
         frame.registerComponent(component);
     }
 
+    @Override
+    public boolean isValid() {
+        return frame.isValid();
+    }
+
+    @Override
+    public void validate() throws ValidationException {
+        frame.validate();
+    }
+
     public DialogParams getDialogParams() {
         return frame.getDialogParams();
     }

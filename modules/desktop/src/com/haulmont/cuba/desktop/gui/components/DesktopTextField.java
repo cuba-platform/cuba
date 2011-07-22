@@ -10,8 +10,12 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -206,8 +210,12 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         }
         if (datatype != null) {
             try {
-                return datatype.parse(rawValue);
+                return datatype.parse(rawValue, locale);
             } catch (ParseException ignored) {
+                App.getInstance().showNotificationPopup(
+                        MessageProvider.getMessage(AppConfig.getMessagesPack(), "validationFail"),
+                        IFrame.NotificationType.TRAY
+                );
                 return prevValue;
             }
         }

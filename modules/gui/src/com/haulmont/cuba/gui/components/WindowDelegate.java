@@ -135,6 +135,26 @@ public class WindowDelegate {
         );
     }
 
+    public boolean isValid() {
+        Collection<Component> components = ComponentsHelper.getComponents(window);
+        for (Component component : components) {
+            if (component instanceof Component.Validatable) {
+                if (!((Component.Validatable) component).isValid())
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    public void validate() throws ValidationException {
+        Collection<Component> components = ComponentsHelper.getComponents(window);
+        for (Component component : components) {
+            if (component instanceof Component.Validatable) {
+                ((Component.Validatable) component).validate();
+            }
+        }
+    }
+
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);

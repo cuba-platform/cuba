@@ -168,17 +168,16 @@ public class DesktopPickerField
                 new DsListenerAdapter() {
                     @Override
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                        Object prevValue = prevItem == null ? null : InstanceUtils.getValueEx(prevItem, metaPropertyPath.getPath());
                         Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         updateText(value);
-                        fireValueChanged(prevValue, value);
+                        fireChangeListeners();
                     }
 
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                         if (property.equals(metaProperty.getName())) {
                             updateText(value);
-                            fireValueChanged(prevValue, value);
+                            fireChangeListeners();
                         }
                     }
                 }
@@ -187,6 +186,14 @@ public class DesktopPickerField
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
             setValue(newValue);
+        }
+    }
+
+    private void fireChangeListeners() {
+        Object newValue = getValue();
+        if (!ObjectUtils.equals(prevValue, newValue)) {
+            fireValueChanged(prevValue, newValue);
+            prevValue = newValue;
         }
     }
 

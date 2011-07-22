@@ -264,6 +264,14 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
             allComponents.put(component.getId(), component);
     }
 
+    public boolean isValid() {
+        return delegate.isValid();
+    }
+
+    public void validate() throws ValidationException {
+        delegate.validate();
+    }
+
     public DialogParams getDialogParams() {
         return App.getInstance().getWindowManager().getDialogParams();
     }
@@ -579,26 +587,6 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
             ((EditorWindowDelegate) delegate).setItem(item);
         }
 
-        public boolean isValid() {
-            Collection<Component> components = ComponentsHelper.getComponents(this);
-            for (Component component : components) {
-                if (component instanceof Field) {
-                    if (!((Field) component).isValid())
-                        return false;
-                }
-            }
-            return true;
-        }
-
-        public void validate() throws ValidationException {
-            Collection<Component> components = DesktopComponentsHelper.getComponents(this);
-            for (Component component : components) {
-                if (component instanceof Field) {
-                    ((Field) component).validate();
-                }
-            }
-        }
-
         @Override
         public boolean onClose(String actionId) {
             releaseLock();
@@ -632,11 +620,11 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         public boolean validateOnCommit() {
             List<String> problems = new ArrayList<String>();
 
-            Collection<Component> components = DesktopComponentsHelper.getComponents(this);
+            Collection<Component> components = ComponentsHelper.getComponents(this);
             for (Component component : components) {
-                if (component instanceof Field) {
+                if (component instanceof Validatable) {
                     try {
-                        ((Field) component).validate();
+                        ((Validatable) component).validate();
                     } catch (ValidationException e) {
                         log.warn("Validation failed", e);
                         problems.add(e.getMessage());

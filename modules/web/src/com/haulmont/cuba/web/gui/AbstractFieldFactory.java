@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.gui;
 
+import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateDatatype;
 import com.haulmont.chile.core.model.MetaClass;
@@ -18,6 +19,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.CaptionMode;
@@ -38,6 +40,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.persistence.TemporalType;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 
@@ -93,6 +96,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                     cubaField = lookupField;
                     field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(lookupField);
                 } else {
+                    // datatype
                     Class<?> type = item.getItemProperty(propertyId).getType();
                     if (Boolean.class.isAssignableFrom(type)) {
                         field = new CheckBox();
@@ -109,6 +113,31 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                         }
                     } else {
                         field = super.createField(item, propertyId, uiContext);
+                        field.setInvalidAllowed(false);
+                        field.addValidator(
+                                new com.vaadin.data.Validator() {
+                                    @Override
+                                    public void validate(Object value) throws InvalidValueException {
+                                        if (!isValid(value)) {
+                                            field.requestRepaint();
+                                            throw new InvalidValueException("Unable to parse value: " + value);
+                                        }
+                                    }
+
+                                    @Override
+                                    public boolean isValid(Object value) {
+                                        Datatype datatype = range.asDatatype();
+                                        if (value instanceof String && datatype != null) {
+                                            try {
+                                                datatype.parse((String) value, UserSessionProvider.getLocale());
+                                            } catch (ParseException e) {
+                                                return false;
+                                            }
+                                        }
+                                        return true;
+                                    }
+                                }
+                        );
                     }
                 }
             } else {

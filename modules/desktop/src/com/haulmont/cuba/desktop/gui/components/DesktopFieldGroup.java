@@ -648,9 +648,12 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         if (!problems.isEmpty()) {
             StringBuilder msgBuilder = new StringBuilder(
                     MessageProvider.getMessage(DesktopWindow.class, "validationFail") + "<br>");
-            for (Field field : problems.keySet()) {
+            for (Iterator<Field> iterator = problems.keySet().iterator(); iterator.hasNext(); ) {
+                Field field = iterator.next();
                 Exception ex = problems.get(field);
-                msgBuilder.append(ex.getMessage()).append("<br>");
+                msgBuilder.append(ex.getMessage());
+                if (iterator.hasNext())
+                    msgBuilder.append("<br>");
             }
 
             FieldsValidationException validationException = new FieldsValidationException(msgBuilder.toString());

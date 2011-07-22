@@ -96,12 +96,6 @@ public interface Window extends Serializable, IFrame, Component.HasCaption, Comp
         /** Set edited entity. Invoked by the framework on opening the window. */
         void setItem(Entity item);
 
-        /** Check validity by invoking validators on all components which support them */
-        boolean isValid();
-
-        /** Check validity by invoking validators on all components which support them */
-        void validate() throws ValidationException;
-
         /**
          * Check validity by invoking validators on all components which support them
          * and show validation result notification
