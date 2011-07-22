@@ -1175,8 +1175,10 @@
 
     <xs:complexType name="buttonsPanelType">
         <xs:sequence>
-            <xs:element name="button" minOccurs="0" maxOccurs="unbounded" type="buttonType"/>
-            <xs:element name="popupButton" minOccurs="0" maxOccurs="unbounded" type="popupButtonType"/>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="button" minOccurs="0" maxOccurs="unbounded" type="buttonType"/>
+                <xs:element name="popupButton" minOccurs="0" maxOccurs="unbounded" type="popupButtonType"/>
+            </xs:choice>
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="optional"/>
         <xs:attribute name="width" type="xs:string" use="optional"/>
