@@ -151,6 +151,7 @@ public class DesktopOptionsGroup
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         updateInstance(item);
+                        fireChangeListeners();
                     }
                 }
         );
@@ -183,7 +184,11 @@ public class DesktopOptionsGroup
 
     @Override
     protected void updateInstance(Object value) {
-        ValueWrapper selectedItem = (ValueWrapper) value;
+        ValueWrapper selectedItem;
+        if (value instanceof ValueWrapper)
+            selectedItem = (ValueWrapper) value;
+        else
+            selectedItem = new ObjectWrapper(value);
 
         if (datasource != null && metaProperty != null) {
             updatingInstance = true;
