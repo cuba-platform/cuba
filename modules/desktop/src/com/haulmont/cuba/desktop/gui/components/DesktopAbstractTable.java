@@ -17,8 +17,10 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.AnyTableModelAdapter;
 import com.haulmont.cuba.desktop.gui.data.RowSorterImpl;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
@@ -70,6 +72,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
     private boolean editable;
     private StyleProvider styleProvider;
 
+    private Action itemClickAction;
+
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
         panel = new JPanel(layout);
@@ -90,9 +94,15 @@ public abstract class DesktopAbstractTable<C extends JTable>
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         if (e.getClickCount() == 2) {
-                            Action action = getAction(EditAction.ACTION_ID);
-                            if (action != null)
-                                action.actionPerform(DesktopAbstractTable.this);
+                            Action action = getItemClickAction();
+                            if (action == null) {
+                                action = getAction(EditAction.ACTION_ID);
+                            }
+                            if (action != null && action.isEnabled()) {
+                                Window window = ComponentsHelper.getWindow(DesktopAbstractTable.this);
+                                if (!(window instanceof Window.Lookup))
+                                    action.actionPerform(DesktopAbstractTable.this);
+                            }
                         }
                     }
 
@@ -310,11 +320,18 @@ public abstract class DesktopAbstractTable<C extends JTable>
     public void addValidator(Field.Validator validator) {
     }
 
-    public void setItemClickAction(com.haulmont.cuba.gui.components.Action action) {
+    public void setItemClickAction(Action action) {
+        if (itemClickAction != null) {
+            removeAction(itemClickAction);
+        }
+        itemClickAction = action;
+        if (!getActions().contains(action)) {
+            addAction(action);
+        }
     }
 
     public Action getItemClickAction() {
-        return null;
+        return itemClickAction;
     }
 
     public List<Column> getNotCollapsedColumns() {
