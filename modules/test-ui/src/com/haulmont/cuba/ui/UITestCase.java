@@ -196,7 +196,9 @@ public abstract class UITestCase extends TestCase {
             }
         }
 
-        if (!StringUtils.isWhitespace(errorsLog) && (errorsLog.contains("error"))) {
+        if (!StringUtils.isWhitespace(errorsLog) &&
+                (errorsLog.contains("error") || errorsLog.contains("Exception"))) {
+
             UITestLogMessage logMessage = new UITestLogMessage(UITestLogMessage.Level.ERROR, "Fatal error");
             String[] strings = errorsLog.split("\n");
             for (String line : strings) {
@@ -238,14 +240,12 @@ public abstract class UITestCase extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        super.setUp();
         // start browser or another program
         startProgramInstance();
     }
 
     @Override
     protected void tearDown() throws Exception {
-        super.tearDown();
         // Exit from client program
         stopProgramInstance();
     }
