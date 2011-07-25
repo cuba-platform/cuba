@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.sys.vcl.DatePicker;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import org.apache.commons.lang.ObjectUtils;
 import org.jdesktop.swingx.JXDatePicker;
@@ -19,8 +20,9 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.text.DateFormat;
-import java.text.ParseException;
+
+import java.text.*;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -32,6 +34,11 @@ public class DatePicker extends JXDatePicker {
     protected String format;
 
     private static final char PLACE_HOLDER = '_';
+
+    public DatePicker(){
+        super();
+        setUI(new CustomDatePickerUI());
+    }
 
     public void setEditor(final JFormattedTextField editor) {
 
@@ -60,6 +67,12 @@ public class DatePicker extends JXDatePicker {
         editor.setDocument(new DatePickerDocument(editor, format, getMask(format), PLACE_HOLDER));
     }
 
+    public void setLinkDay(Date linkDay) {
+        MessageFormat todayFormat = new MessageFormat(MessageProvider.getMessage("com.haulmont.cuba.desktop", "DatePicker.linkFormat"));
+        todayFormat.setFormat(0, new SimpleDateFormat(Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getDateFormat()));
+        setLinkFormat(todayFormat);
+        super.setLinkDay(linkDay);
+    }
 
     public void setFormats(String... formats) {
         super.setFormats(formats);
@@ -101,6 +114,10 @@ public class DatePicker extends JXDatePicker {
     }
 
     public class CustomDatePickerFormatter extends DatePickerFormatter {
+        public void install(final JFormattedTextField ftf) {
+            super.install(ftf);
+            ftf.setCaretPosition(0);
+        }
 
         public CustomDatePickerFormatter(DateFormat formats[], Locale locale) {
             super(formats, locale);
