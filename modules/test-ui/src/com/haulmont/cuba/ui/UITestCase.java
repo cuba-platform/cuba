@@ -134,7 +134,13 @@ public abstract class UITestCase extends TestCase {
             throw new FileNotFoundException("Couldn't found test file: " + testFile.getAbsolutePath());
 
         try {
-            Process testRunner = Runtime.getRuntime().exec(scriptFile + " " + "\"" + testFilePath + "\"");
+            String command;
+            if (OsUtils.isWindows())
+                command = scriptFile + " " + "\"" + testFilePath + "\"";
+            else
+                command = scriptFile + " " + testFilePath;
+
+            Process testRunner = Runtime.getRuntime().exec(command);
 
             ByteArrayOutputStream stdOutBuffer = new ByteArrayOutputStream();
             ByteArrayOutputStream stdErrBuffer = new ByteArrayOutputStream();
@@ -262,7 +268,7 @@ public abstract class UITestCase extends TestCase {
     }
 
     protected String getTestFilePath(String testFileName) {
-        return ACCEPTANCE_DIR + "testsuite/" + testFileName;
+        return new File(ACCEPTANCE_DIR + "testsuite/" + testFileName).getAbsolutePath();
     }
 
     protected boolean isSuccessful(List<UITestStep> testSteps) {
