@@ -18,15 +18,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
-import com.vaadin.terminal.gwt.client.Container;
-import com.vaadin.terminal.gwt.client.Focusable;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.RenderInformation;
-import com.vaadin.terminal.gwt.client.RenderSpace;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.Util;
+import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.ui.ShortcutActionHandler.ShortcutActionHandlerOwner;
 
 /**
@@ -477,7 +469,7 @@ public class VPanel extends SimplePanel implements Container,
         if (height != null && !"".equals(height)) {
             final int targetHeight = getOffsetHeight();
             int containerHeight = targetHeight
-                    - captionNode.getParentElement().getOffsetHeight()
+                    - getCaptionContainerOffsetHeight()
                     - bottomDecoration.getOffsetHeight()
                     - getContainerBorderHeight();
             if (containerHeight < 0) {
@@ -520,6 +512,10 @@ public class VPanel extends SimplePanel implements Container,
             return captionPaddingHorizontal;
         }
         return 0;
+    }
+
+    protected int getCaptionContainerOffsetHeight(){
+        return captionNode.getParentElement().getOffsetHeight();
     }
 
     protected int getContainerBorderHeight() {

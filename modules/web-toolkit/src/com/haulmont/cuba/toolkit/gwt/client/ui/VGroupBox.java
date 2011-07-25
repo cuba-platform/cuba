@@ -157,6 +157,11 @@ public class VGroupBox extends VPanel {
     }
 
     @Override
+    protected int getCaptionContainerOffsetHeight() {
+        return 0; // because we do not need to count legend offsetHeight
+    }
+
+    @Override
     protected void detectContainerBorders() {
         if (isAttached()) {
             String oldWidth = DOM.getStyleAttribute(contentNode, "width");
