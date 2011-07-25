@@ -23,7 +23,8 @@ import java.util.regex.Pattern;
  */
 public abstract class AbstractPropertyCondition<T extends AbstractParam> extends AbstractCondition<T> {
 
-    private static Pattern PATTERN = Pattern.compile("\\s*(\\S+)\\s+((?:not\\s+)*\\S+)\\s+(\\S+)[\\S\\s]*");
+    private static Pattern PATTERN = Pattern.compile("\\s*(\\S+)\\s+((?:not\\s+)*\\S+)\\s+(\\S+)\\s*");
+    private static Pattern PATTERN_NOT_IN = Pattern.compile("\\s*[(]\\s*[(]\\s*(\\S+)\\s+((:not\\s+)*\\S+)\\s+(\\S+)[\\S\\s]*");
     private static Pattern PATTERN_NULL = Pattern.compile("\\s*(\\S+)\\s+(is\\s+(?:not\\s+)?null)\\s*");
 
     private Op operator;
@@ -39,7 +40,9 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
         String text = element.getText();
         Matcher matcher = PATTERN_NULL.matcher(text);
         if (!matcher.matches()) {
-            matcher = PATTERN.matcher(text);
+            matcher = PATTERN_NOT_IN.matcher(text);
+            if (!matcher.matches())
+                matcher = PATTERN.matcher(text);
             if (!matcher.matches())
                 throw new IllegalStateException("Unable to build condition from: " + text);
         }
