@@ -136,7 +136,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
                             return;
                         Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         updateComponent(value);
-                        fireChangeListeners();
+                        fireChangeListeners(value);
                     }
 
                     @Override
@@ -145,7 +145,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
                             return;
                         if (property.equals(metaPropertyPath.toString())) {
                             updateComponent(value);
-                            fireChangeListeners();
+                            fireChangeListeners(value);
                         }
                     }
                 }
@@ -169,7 +169,10 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     }
 
     protected void fireChangeListeners() {
-        Object newValue = getValue();
+        fireChangeListeners(getValue());
+    }
+
+    protected void fireChangeListeners(Object newValue) {
         if (!ObjectUtils.equals(prevValue, newValue))
             fireValueChanged(prevValue, newValue);
         prevValue = newValue;

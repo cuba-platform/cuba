@@ -170,14 +170,14 @@ public class DesktopPickerField
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
                         Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         updateText(value);
-                        fireChangeListeners();
+                        fireChangeListeners(value);
                     }
 
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                         if (property.equals(metaProperty.getName())) {
                             updateText(value);
-                            fireChangeListeners();
+                            fireChangeListeners(value);
                         }
                     }
                 }
@@ -190,7 +190,10 @@ public class DesktopPickerField
     }
 
     private void fireChangeListeners() {
-        Object newValue = getValue();
+        fireChangeListeners(getValue());
+    }
+
+    private void fireChangeListeners(Object newValue) {
         if (!ObjectUtils.equals(prevValue, newValue)) {
             fireValueChanged(prevValue, newValue);
             prevValue = newValue;

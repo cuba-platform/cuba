@@ -75,7 +75,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
                         Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         String text = formatValue(value);
                         impl.setText(text);
-                        fireChangeListeners();
+                        fireChangeListeners(value);
                     }
 
                     @Override
@@ -83,7 +83,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
                         if (property.equals(metaPropertyPath.toString())) {
                             String text = formatValue(value);
                             impl.setText(text);
-                            fireChangeListeners();
+                            fireChangeListeners(value);
                         }
                     }
                 }
@@ -169,7 +169,10 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     }
 
     private void fireChangeListeners() {
-        Object newValue = getValue();
+        fireChangeListeners(getValue());
+    }
+
+    private void fireChangeListeners(Object newValue) {
         if (!ObjectUtils.equals(prevValue, newValue)) {
             fireValueChanged(prevValue, newValue);
             prevValue = newValue;

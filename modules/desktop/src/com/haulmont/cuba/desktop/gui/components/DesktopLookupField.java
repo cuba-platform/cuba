@@ -14,7 +14,6 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.components.LookupField;
-import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
@@ -75,7 +74,7 @@ public class DesktopLookupField
                         } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
                             newOptionHandler.addNewOption((String) selectedItem);
                         } else {
-                            impl.setSelectedItem(prevValue);
+                            impl.setSelectedItem(createValueWrapper(prevValue));
                         }
                     }
 
@@ -170,6 +169,19 @@ public class DesktopLookupField
 
         optionsInitialized = true;
         impl.updatePopupWidth();
+    }
+
+    private ValueWrapper createValueWrapper(Object value) {
+        if (optionsDatasource != null) {
+            return new EntityWrapper((Entity) value);
+        } else if (optionsMap != null) {
+            return new MapKeyWrapper((String) value);
+        } else if (optionsList != null) {
+            return new ObjectWrapper(value);
+        } else if (datasource != null && metaProperty != null && metaProperty.getRange().isEnum()) {
+            return new ObjectWrapper(value);
+        }
+        return new ObjectWrapper(value);
     }
 
     @Override
