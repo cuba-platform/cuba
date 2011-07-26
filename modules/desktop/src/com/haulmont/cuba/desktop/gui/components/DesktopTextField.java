@@ -205,21 +205,36 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
 
     private Object validateRawValue(String rawValue) {
         if ((datasource != null) && (metaPropertyPath != null)) {
-            if (metaProperty.getRange().isDatatype())
+            Range range = metaProperty.getRange();
+            if (range.isDatatype())
                 datatype = metaPropertyPath.getRange().asDatatype();
+            if (range.isClass())
+                return prevValue;
+            if (range.isEnum()) {
+                try {
+                    return range.asEnumeration().parse(rawValue, locale);
+                } catch (ParseException e) {
+                    showValidationMessage();
+                    return prevValue;
+                }
+            }
         }
         if (datatype != null) {
             try {
                 return datatype.parse(rawValue, locale);
             } catch (ParseException ignored) {
-                App.getInstance().showNotificationPopup(
-                        MessageProvider.getMessage(AppConfig.getMessagesPack(), "validationFail"),
-                        IFrame.NotificationType.TRAY
-                );
+                showValidationMessage();
                 return prevValue;
             }
         }
         return rawValue;
+    }
+
+    private void showValidationMessage() {
+        App.getInstance().showNotificationPopup(
+                MessageProvider.getMessage(AppConfig.getMessagesPack(), "validationFail"),
+                IFrame.NotificationType.TRAY
+        );
     }
 
     @Override
@@ -258,7 +273,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
                             return;
                         Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         updateComponent(value);
-                        fireChangeListeners();
+                        fireChangeListeners(value);
                     }
 
                     @Override
@@ -267,7 +282,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
                             return;
                         if (property.equals(metaPropertyPath.toString())) {
                             updateComponent(value);
-                            fireChangeListeners();
+                            fireChangeListeners(value);
                         }
                     }
                 }
@@ -283,6 +298,13 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
 
     private void fireChangeListeners() {
         Object newValue = getValue();
+        if (!ObjectUtils.equals(prevValue, newValue)) {
+            fireValueChanged(prevValue, newValue);
+            prevValue = newValue;
+        }
+    }
+
+    private void fireChangeListeners(Object newValue) {
         if (!ObjectUtils.equals(prevValue, newValue)) {
             fireValueChanged(prevValue, newValue);
             prevValue = newValue;
