@@ -30,9 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 /**
  * <p>$Id$</p>
@@ -71,9 +69,6 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
         layout = new MigLayout(lc);
         impl = new JPanel(layout);
-        if (isLayoutDebugEnabled()) {
-            impl.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
-        }
 
         collapsiblePanel = new CollapsiblePanel(super.getComposition());
         collapsiblePanel.setBorderVisible(false);

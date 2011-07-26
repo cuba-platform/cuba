@@ -8,9 +8,6 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 
-import javax.swing.*;
-import java.awt.*;
-
 /**
  * <p>$Id$</p>
  *
@@ -20,9 +17,6 @@ public class DesktopVBox extends DesktopAbstractBox implements AutoExpanding {
 
     public DesktopVBox() {
         layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.Y);
-        if (isLayoutDebugEnabled()) {
-            impl.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-        }
     }
 
     @Override
