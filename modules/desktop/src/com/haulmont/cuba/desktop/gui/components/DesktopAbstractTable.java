@@ -42,10 +42,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
@@ -73,6 +70,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
     private StyleProvider styleProvider;
 
     private Action itemClickAction;
+
+    private boolean columnsSizeInited = false;
 
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
@@ -129,6 +128,60 @@ public abstract class DesktopAbstractTable<C extends JTable>
                     }
                 }
         );
+
+        // Listener for adjust column widths
+        impl.getTableHeader().addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                if (!columnsSizeInited) {
+                    adjustColumnHeaders();
+                    columnsSizeInited = true;
+                }
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+            }
+        });
+    }
+
+    private void adjustColumnHeaders() {
+        List<TableColumn> notInited = new LinkedList<TableColumn>();
+        int summaryWidth = 0;
+        int componentWidth = impl.getParent().getWidth();
+
+        Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
+        int i = 0;
+        while (columnEnumeration.hasMoreElements()) {
+            TableColumn tableColumn = columnEnumeration.nextElement();
+            Column column = columnsOrder.get(i++);
+
+            Integer width = column.getWidth();
+            if (width != null) {
+                tableColumn.setPreferredWidth(width);
+                tableColumn.setWidth(width);
+                summaryWidth += width;
+            } else
+                notInited.add(tableColumn);
+        }
+
+        if (notInited.size() != impl.getColumnCount()) {
+            impl.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+            if (!notInited.isEmpty() && (componentWidth > summaryWidth)) {
+                int defaultWidth = (componentWidth - summaryWidth) / notInited.size();
+                for (TableColumn column : notInited)
+                    column.setPreferredWidth( Math.max(defaultWidth, column.getWidth()) );
+            }
+        }
     }
 
     protected abstract void initTableModel(CollectionDatasource datasource);
@@ -364,7 +417,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     public RowsCount getRowsCount() {
-        return null;
+        return rowsCount;
     }
 
     public void setRowsCount(RowsCount rowsCount) {
