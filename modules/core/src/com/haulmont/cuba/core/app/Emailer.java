@@ -245,14 +245,18 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         msg.setSentDate(new Date());
         msg.setFrom(new InternetAddress(from));
 
-        MimeMultipart content = new MimeMultipart("related");
+        MimeMultipart content = new MimeMultipart("mixed");
+        MimeBodyPart textBodyPart = new MimeBodyPart();
+        MimeMultipart textPart = new MimeMultipart("related");
         MimeBodyPart contentBodyPart = new MimeBodyPart();
         if (text.trim().startsWith("<html>")) {
             contentBodyPart.setContent(text, "text/html; charset=UTF-8");
         } else {
             contentBodyPart.setContent(text, "text/plain; charset=UTF-8");
         }
-        content.addBodyPart(contentBodyPart);
+        textPart.addBodyPart(contentBodyPart);
+        textBodyPart.setContent(textPart);
+        content.addBodyPart(textBodyPart);
 
         if (attachments != null) {
             for (EmailAttachment attachment : attachments) {
@@ -272,14 +276,16 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
                 }
 
                 String contentId = attachment.getContentId();
-                if (contentId == null) contentId = encodedFileName;
+                if (contentId == null) {
+                    contentId = encodedFileName;
+                    content.addBodyPart(attachBodyPart);
+                } else
+                    textPart.addBodyPart(attachBodyPart);
 
                 attachBodyPart.setHeader("Content-ID", "<" + contentId + ">");
                 attachBodyPart.setHeader("Content-Type", contentType + "; charset=utf-8; name=" + encodedFileName);
                 attachBodyPart.setFileName(encodedFileName);
                 attachBodyPart.setDisposition("inline");
-
-                content.addBodyPart(attachBodyPart);
             }
         }
 
@@ -291,7 +297,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
 
     public String getFromAddress() {
         String fromAddress = AppContext.getProperty(EMAIL_DEFAULT_FROM_ADDRESS_PROPERTY_NAME);
-        return fromAddress != null ? fromAddress : config.getFromAddress() ;
+        return fromAddress != null ? fromAddress : config.getFromAddress();
     }
 
     public void setFromAddress(String address) {
