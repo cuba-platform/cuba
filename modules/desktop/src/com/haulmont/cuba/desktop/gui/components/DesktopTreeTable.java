@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import org.jdesktop.swingx.JXTreeTable;
 
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
@@ -80,6 +81,16 @@ public class DesktopTreeTable
         if (!model.isLeaf(model.getRoot())) {
             recursiveExpand(model.getRoot());
         }
+        readjustColumns();
+    }
+
+    private void readjustColumns() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                adjustColumnHeaders();
+            }
+        });
     }
 
     private void recursiveExpand(Object node) {
@@ -111,6 +122,7 @@ public class DesktopTreeTable
             return;
 
         impl.collapsePath(new TreePath(((TreeTableModelAdapter) tableModel).getRoot()));
+        readjustColumns();
     }
 
     @Override

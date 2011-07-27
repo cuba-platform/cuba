@@ -153,7 +153,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
         });
     }
 
-    private void adjustColumnHeaders() {
+    protected void adjustColumnHeaders() {
         List<TableColumn> notInited = new LinkedList<TableColumn>();
         int summaryWidth = 0;
         int componentWidth = impl.getParent().getWidth();
