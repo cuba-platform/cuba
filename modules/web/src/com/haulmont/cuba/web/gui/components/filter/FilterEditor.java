@@ -171,7 +171,7 @@ public class FilterEditor extends AbstractFilterEditor {
         applyDefaultCb = new CheckBox();
         applyDefaultCb.setCaption(getMessage("FilterEditor.applyDefault"));
         applyDefaultCb.setImmediate(true);
-
+        applyDefaultCb.setEnabled(false);
         applyDefaultCb.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
                 if (filterEntity != null) {

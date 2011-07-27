@@ -221,6 +221,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         applyDefaultLabel = new JLabel(getMessage("FilterEditor.applyDefault"));
         applyDefaultCb = new JCheckBox();
+        applyDefaultCb.setEnabled(false);
         applyDefaultCb.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
