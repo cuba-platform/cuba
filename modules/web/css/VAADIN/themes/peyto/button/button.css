@@ -34,10 +34,18 @@
     display: inline;
 }
 
+.v-button-icon .v-button-wrap {
+   padding: 3px 5px 1px 0px;
+}
+
+.v-popupbutton .v-button-wrap {
+   padding: 4px 5px 1px 0px;
+}
+
 .v-button-wrap {
-    height: 20px;
-    /*background: transparent url(img/button.png) no-repeat right top;*/
-    padding: 4px 5px 1px 0px;
+    height: 19px;
+    /*background: transparent url(../peyto/button/img/button.png) no-repeat right top;*/
+    padding: 5px 5px 1px 0px;
     display: block;
 }
 
