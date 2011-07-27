@@ -16,7 +16,6 @@ import com.haulmont.cuba.desktop.sys.vcl.Picker;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
@@ -132,13 +131,12 @@ public class DesktopPickerField
     public void setValue(Object value) {
         if (!ObjectUtils.equals(prevValue, value)) {
             if (datasource == null) {
-                if (!ObjectUtils.equals(prevValue, value))
-                    fireValueChanged(prevValue, value);
+                fireChangeListeners();
             } else {
                 datasource.getItem().setValue(metaProperty.getName(), value);
             }
-            updateText(value);
         }
+        updateText(value);
     }
 
     @Override
