@@ -502,6 +502,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
         CellEditor cellEditor = new CellEditor(generator);
         tableColumn.setCellEditor(cellEditor);
         tableColumn.setCellRenderer(cellEditor);
+
+        packRows(2);
     }
 
     public void removeGeneratedColumn(String columnId){
