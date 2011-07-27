@@ -19,6 +19,7 @@ import com.sun.star.document.XDocumentInsertable;
 import com.sun.star.drawing.XShape;
 import com.sun.star.embed.XStorage;
 import com.sun.star.frame.*;
+import com.sun.star.graphic.XGraphicProvider;
 import com.sun.star.io.XActiveDataSource;
 import com.sun.star.io.XInputStream;
 import com.sun.star.io.XOutputStream;
@@ -168,6 +169,10 @@ public final class ODTUnoConverter {
 
     public static XReplaceable asXReplaceable(Object o) {
         return (XReplaceable) UnoRuntime.queryInterface(XReplaceable.class, o);
+    }
+
+    public static XGraphicProvider asXGraphicProvider(Object o) {
+        return (XGraphicProvider) UnoRuntime.queryInterface(XGraphicProvider.class, o);
     }
 
     public static Any createAny(Object o) {

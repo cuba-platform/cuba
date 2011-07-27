@@ -18,6 +18,7 @@ import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.ReportValueFormat;
 import com.haulmont.cuba.report.exception.FailedToConnectToOpenOfficeException;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
+import com.haulmont.cuba.report.formatters.doctags.BitmapTagHandler;
 import com.haulmont.cuba.report.formatters.doctags.HtmlContentTagHandler;
 import com.haulmont.cuba.report.formatters.doctags.ImageTagHandler;
 import com.haulmont.cuba.report.formatters.doctags.TagHandler;
@@ -72,6 +73,8 @@ public class DocFormatter extends AbstractFormatter {
         tagHandlers.add(new ImageTagHandler());
         // HTML Content tag
         tagHandlers.add(new HtmlContentTagHandler());
+        // Bitmap tag
+        tagHandlers.add(new BitmapTagHandler());
     }
 
     private OOOConnection connection;
