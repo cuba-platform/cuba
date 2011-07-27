@@ -77,6 +77,7 @@ public class ExtendedComboBox extends JComboBox {
         if (!layingOut) {
             dim.width = Math.max(widestLengh, dim.width);
             dim.width = Math.min(MAX_LIST_WIDTH, dim.width);
+            dim.width = Math.max(getWidth(), dim.width);
         }
         return dim;
     }

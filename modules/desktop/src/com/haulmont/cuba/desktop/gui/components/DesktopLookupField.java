@@ -10,8 +10,10 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
 import ca.odell.glazedlists.swing.AutoCompleteSupport;
 import com.haulmont.chile.core.datatypes.Enumeration;
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -34,6 +36,8 @@ public class DesktopLookupField
     extends DesktopAbstractOptionsField<ExtendedComboBox>
     implements LookupField
 {
+    private static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
+
     private BasicEventList<Object> items = new BasicEventList<Object>();
     private boolean optionsInitialized;
     private AutoCompleteSupport<Object> autoComplete;
@@ -42,6 +46,8 @@ public class DesktopLookupField
     private NewOptionHandler newOptionHandler;
     private boolean newOptionAllowed;
     private boolean settingValue;
+
+    private Object nullOption;
 
     public DesktopLookupField() {
         impl = new ExtendedComboBox();
@@ -73,9 +79,8 @@ public class DesktopLookupField
                             fireChangeListeners();
                         } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
                             newOptionHandler.addNewOption((String) selectedItem);
-                        } else {
+                        } else if (!newOptionAllowed)
                             impl.setSelectedItem(createValueWrapper(prevValue));
-                        }
                     }
 
                     @Override
@@ -97,7 +102,7 @@ public class DesktopLookupField
                 }
         );
 
-        setFilterMode(FilterMode.CONTAINS);
+        setFilterMode(DEFAULT_FILTER_MODE);
 
         DesktopComponentsHelper.adjustSize(impl);
     }
@@ -175,7 +180,18 @@ public class DesktopLookupField
         if (optionsDatasource != null) {
             return new EntityWrapper((Entity) value);
         } else if (optionsMap != null) {
-            return new MapKeyWrapper((String) value);
+            String title = "";
+
+            if (value == null)
+                title = "";
+
+            if (value instanceof Instance)
+                title = InstanceUtils.getInstanceName((Instance) value);
+
+            if (value instanceof Enum)
+                title =  MessageProvider.getMessage((Enum) value);
+
+            return new MapKeyWrapper(title);
         } else if (optionsList != null) {
             return new ObjectWrapper(value);
         } else if (datasource != null && metaProperty != null && metaProperty.getRange().isEnum()) {
@@ -186,11 +202,12 @@ public class DesktopLookupField
 
     @Override
     public Object getNullOption() {
-        return null;
+        return nullOption;
     }
 
     @Override
     public void setNullOption(Object nullOption) {
+        this.nullOption = nullOption;
     }
 
     @Override
@@ -201,8 +218,12 @@ public class DesktopLookupField
 
     @Override
     public void setFilterMode(FilterMode mode) {
-        autoComplete.setFilterMode(FilterMode.CONTAINS.equals(mode)
-                ? TextMatcherEditor.CONTAINS : TextMatcherEditor.STARTS_WITH);
+        if (FilterMode.CONTAINS.equals(mode))
+            autoComplete.setFilterMode(TextMatcherEditor.CONTAINS);
+        else if (FilterMode.STARTS_WITH.equals(mode))
+            autoComplete.setFilterMode(TextMatcherEditor.STARTS_WITH);
+        else
+            autoComplete.setFilterMode(TextMatcherEditor.EXACT);
     }
 
     @Override
@@ -213,6 +234,14 @@ public class DesktopLookupField
     @Override
     public void setNewOptionAllowed(boolean newOptionAllowed) {
         this.newOptionAllowed = newOptionAllowed;
+        if (newOptionAllowed)         {
+            setFilterMode(FilterMode.NO);
+            autoComplete.setCorrectsCase(false);
+        }
+        else {
+            setFilterMode(DEFAULT_FILTER_MODE);
+            autoComplete.setCorrectsCase(true);
+        }
     }
 
     @Override
