@@ -131,12 +131,12 @@ public class DesktopPickerField
     public void setValue(Object value) {
         if (!ObjectUtils.equals(prevValue, value)) {
             if (datasource == null) {
-                fireChangeListeners();
+                fireChangeListeners(value);
             } else {
                 datasource.getItem().setValue(metaProperty.getName(), value);
             }
+            updateText(value);
         }
-        updateText(value);
     }
 
     @Override
@@ -183,7 +183,8 @@ public class DesktopPickerField
 
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
-            setValue(newValue);
+            updateText(newValue);
+            fireChangeListeners();
         }
     }
 

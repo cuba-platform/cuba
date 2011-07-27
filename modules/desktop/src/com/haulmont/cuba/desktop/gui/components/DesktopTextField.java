@@ -227,6 +227,8 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
                 return prevValue;
             }
         }
+        if (StringUtils.isEmpty(rawValue))
+            return null;
         return rawValue;
     }
 
@@ -419,6 +421,9 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
 
         private void fireEvent() {
             Object newValue = validateRawValue(getImpl().getText());
+            if ("".equals(newValue))
+                newValue = null;
+
             if (!ObjectUtils.equals(prevValue, newValue))
                 setValue(newValue);
             else
