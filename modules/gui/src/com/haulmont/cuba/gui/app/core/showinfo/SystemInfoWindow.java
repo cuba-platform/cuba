@@ -24,7 +24,8 @@ import java.util.UUID;
  */
 public class SystemInfoWindow extends AbstractWindow {
 
-    private CollectionDatasource itemDs;
+    private Entity instance;
+    private MetaClass metaClass;
     private CollectionDatasource<KeyValueEntity, UUID> paramsDs;
 
     public SystemInfoWindow(IFrame frame) {
@@ -36,13 +37,12 @@ public class SystemInfoWindow extends AbstractWindow {
         super.init(params);
 
         paramsDs = getDsContext().get("paramsDs");
-        itemDs = (CollectionDatasource) params.get("itemDs");
-
+        instance = (Entity) params.get("item");
+        metaClass = (MetaClass) params.get("metaClass");
         compileInfo();
     }
 
     private void compileInfo() {
-        MetaClass metaClass = itemDs.getMetaClass();
         includeParam("table.showInfoAction.entityName", metaClass.getName());
         includeParam("table.showInfoAction.entityClass", metaClass.getJavaClass().getName());
 
@@ -50,7 +50,6 @@ public class SystemInfoWindow extends AbstractWindow {
         if (annotation != null)
             includeParam("table.showInfoAction.entityTable", annotation.name());
 
-        Entity instance = itemDs.getItem();
         if (instance != null) {
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

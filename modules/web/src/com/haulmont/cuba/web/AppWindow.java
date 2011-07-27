@@ -11,16 +11,16 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.NoSuchScreenException;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.config.MenuCommand;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
@@ -37,6 +37,7 @@ import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 import com.haulmont.cuba.web.toolkit.ui.MenuBar;
 import com.haulmont.cuba.web.toolkit.ui.RichNotification;
+import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.*;
@@ -834,6 +835,10 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                 MessageProvider.getMessage(getMessagesPack(), "actions.closeCurrentTab")
         );
 
+        private com.vaadin.event.Action showInfo = new com.vaadin.event.Action(
+                MessageProvider.getMessage(getMessagesPack(), "actions.showInfo")
+        );
+
         public AppTabSheet() {
             setCloseHandler(new CloseHandler() {
                 public void onTabClose(TabSheet tabsheet, Component tabContent) {
@@ -866,8 +871,33 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             closeHandlers.put(tabContent, closeHandler);
         }
 
+         public com.haulmont.cuba.gui.components.Window.Editor findEditor(Layout layout) {
+            Iterator<Component> iterator = layout.getComponentIterator();
+            while (iterator.hasNext()) {
+                Component component = iterator.next();
+                if (component instanceof WindowBreadCrumbs) {
+                    WindowBreadCrumbs breadCrumbs = (WindowBreadCrumbs) component;
+                    if (breadCrumbs.getCurrentWindow() instanceof com.haulmont.cuba.gui.components.Window.Editor)
+                        return (com.haulmont.cuba.gui.components.Window.Editor) breadCrumbs.getCurrentWindow();
+                }
+            }
+            return null;
+        }
+
         public com.vaadin.event.Action[] getActions(Object target, Object sender) {
-            return new com.vaadin.event.Action[] {
+            if (target != null) {
+                if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION) &&
+                        findEditor((Layout) target) != null ) {
+                    return new com.vaadin.event.Action[]{
+                            closeCurrentTab, closeOtherTabs, closeAllTabs, showInfo
+                    };
+                }
+            } else {
+                return new com.vaadin.event.Action[]{
+                        closeCurrentTab, closeOtherTabs, closeAllTabs, showInfo
+                };
+            }
+            return new com.vaadin.event.Action[]{
                     closeCurrentTab, closeOtherTabs, closeAllTabs
             };
         }
@@ -879,6 +909,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                 closeOtherTabs((com.vaadin.ui.Component) target);
             } else if (action.equals(closeAllTabs)) {
                 closeAllTabs();
+            } else if (action.equals(showInfo)) {
+                showInfo(target);
             }
         }
 
@@ -899,6 +931,13 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                 if (tab.equals(currentTab)) continue;
                 closeTab(tab);
             }
+        }
+
+        public void showInfo(Object target) {
+            com.haulmont.cuba.gui.components.Window.Editor editor = findEditor((Layout) target);
+            Entity entity = editor.getItem();
+            MetaClass metaClass = MetadataProvider.getSession().getClass(entity.getClass());
+            new ShowInfoAction().showInfo(entity, metaClass, editor);
         }
 
         public interface TabCloseHandler extends Serializable {

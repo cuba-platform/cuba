@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
@@ -48,12 +50,15 @@ public class ShowInfoAction extends AbstractAction {
             return;
 
         if (component instanceof Component.BelongToFrame) {
-
-            Map<String,Object> params = new HashMap<String, Object>();
-            params.put("itemDs", ds);
-
-            IFrame frame = ((Component.BelongToFrame) component).getFrame();
-            frame.openWindow("sysInfoWindow", WindowManager.OpenType.DIALOG, params);
+            showInfo(ds.getItem(), ds.getMetaClass(), (Component.BelongToFrame) component);
         }
+    }
+
+    public void showInfo(Entity entity, MetaClass metaClass, Component.BelongToFrame component) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("metaClass", metaClass);
+        params.put("item", entity);
+        IFrame frame = (component).getFrame();
+        frame.openWindow("sysInfoWindow", WindowManager.OpenType.DIALOG, params);
     }
 }
