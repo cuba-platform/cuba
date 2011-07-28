@@ -530,6 +530,7 @@ public class WebWindow
                             }
                     }
             );
+            closing = false;
             return false;
         }
 
