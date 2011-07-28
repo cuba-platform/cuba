@@ -24,10 +24,14 @@ public class UUIDTypeHandler implements TypeHandler {
     }
 
     public Object getResult(ResultSet rs, String columnName) throws SQLException {
-        return UUID.fromString(rs.getString(columnName));
+        String val = rs.getString(columnName);
+        if (val != null) return UUID.fromString(val);
+        else return null;
     }
 
     public Object getResult(CallableStatement cs, int columnIndex) throws SQLException {
-        return UUID.fromString(cs.getString(columnIndex));
+        String val = cs.getString(columnIndex);
+        if (val != null) return UUID.fromString(val);
+        else return null;
     }
 }

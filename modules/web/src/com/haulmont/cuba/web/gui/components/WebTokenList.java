@@ -86,7 +86,7 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
 
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
-
+        metaClass = datasource.getMetaClass();
         datasource.addListener(new CollectionDatasourceListener() {
             public void collectionChanged(CollectionDatasource ds, Operation operation) {
                 if (actionsHelper == null) {
