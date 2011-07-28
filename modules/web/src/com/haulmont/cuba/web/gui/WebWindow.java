@@ -58,6 +58,8 @@ public class WebWindow
 {
     private static final long serialVersionUID = -686695761338837334L;
 
+    private boolean closing=false;
+
     private String id;
     private String debugId;
 
@@ -494,6 +496,9 @@ public class WebWindow
     }
 
     public boolean close(final String actionId) {
+        if (closing)
+            return true;
+        closing = true;
         WebWindowManager windowManager = App.getInstance().getWindowManager();
 
         if (!forceClose && getDsContext() != null && getDsContext().isModified()) {
@@ -535,6 +540,7 @@ public class WebWindow
         if (res && doAfterClose != null) {
             doAfterClose.run();
         }
+        closing = res;
         return res;
     }
 
