@@ -522,6 +522,13 @@ public abstract class DesktopAbstractTable<C extends JTable>
         this.editable = editable;
     }
 
+    public void setEnabled(boolean enabled) {
+        impl.setEnabled(enabled);
+        if (buttonsPanel != null) {
+            buttonsPanel.setEnabled(enabled);
+        }
+    }
+
     public ButtonsPanel getButtonsPanel() {
         return buttonsPanel;
     }

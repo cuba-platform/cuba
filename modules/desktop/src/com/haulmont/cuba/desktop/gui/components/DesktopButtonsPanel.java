@@ -49,4 +49,11 @@ public class DesktopButtonsPanel extends DesktopHBox implements ButtonsPanel {
         else
             return null;
     }
+
+    public void setEnabled(boolean enabled) {
+        Collection<Button> buttons = getButtons();
+        for (Button button : buttons) {
+            button.setEnabled(enabled);
+        }
+    }
 }
