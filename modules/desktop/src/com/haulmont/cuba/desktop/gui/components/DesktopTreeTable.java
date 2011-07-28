@@ -84,15 +84,6 @@ public class DesktopTreeTable
         readjustColumns();
     }
 
-    private void readjustColumns() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                adjustColumnHeaders();
-            }
-        });
-    }
-
     private void recursiveExpand(Object node) {
         TreeTableModelAdapter model = (TreeTableModelAdapter) tableModel;
         impl.expandPath(model.getTreePath(node));
@@ -185,7 +176,7 @@ public class DesktopTreeTable
     }
 
     @Override
-    public void packRows(int margin) {
+    public void packRows() {
         // not supported on JXTreeTable
     }
 }

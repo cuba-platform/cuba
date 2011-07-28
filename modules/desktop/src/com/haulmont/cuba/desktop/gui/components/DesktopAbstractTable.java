@@ -34,6 +34,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellEditor;
@@ -42,7 +43,10 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.Component;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 
@@ -55,6 +59,10 @@ public abstract class DesktopAbstractTable<C extends JTable>
         extends DesktopAbstractActionOwnerComponent<C>
         implements Table
 {
+    private static final int HEIGHT_MARGIN_FOR_ROWS = 2;
+    private static final int WIDTH_MARGIN_FOR_CELL = 2;
+    private static final int MIN_ROW_HEIGHT = 32;
+
     protected MigLayout layout;
     protected JPanel panel;
     protected JPanel topPanel;
@@ -70,8 +78,6 @@ public abstract class DesktopAbstractTable<C extends JTable>
     private StyleProvider styleProvider;
 
     private Action itemClickAction;
-
-    private boolean columnsSizeInited = false;
 
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
@@ -129,26 +135,14 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 }
         );
 
-        // Listener for adjust column widths
-        impl.getTableHeader().addComponentListener(new ComponentListener() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                if (!columnsSizeInited) {
-                    adjustColumnHeaders();
-                    columnsSizeInited = true;
-                }
-            }
+        readjustColumns();
+    }
 
+    protected void readjustColumns() {
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
-            public void componentMoved(ComponentEvent e) {
-            }
-
-            @Override
-            public void componentShown(ComponentEvent e) {
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent e) {
+            public void run() {
+                adjustColumnHeaders();
             }
         });
     }
@@ -315,11 +309,26 @@ public abstract class DesktopAbstractTable<C extends JTable>
                     @Override
                     public void collectionChanged(CollectionDatasource ds, Operation operation) {
                         onDataChange();
+                        packRows();
                     }
 
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        onDataChange();
+                        List<Column> columns = getColumns();
+                        boolean find = false;
+                        int i = 0;
+                        while ((i < columns.size()) & !find) {
+                            Object columnId = columns.get(i).getId();
+                            if (columnId instanceof MetaPropertyPath) {
+                                String propertyName = ((MetaPropertyPath) columnId).getMetaProperty().getName();
+                                if (propertyName.equals(property))
+                                    find = true;
+                            }
+                            i++;
+                        }
+                        if (find)
+                            onDataChange();
+                        packRows();
                     }
                 }
         );
@@ -329,8 +338,6 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     protected void onDataChange() {
-        packRows(2);
-
         Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
         while (columnEnumeration.hasMoreElements()) {
             TableColumn tableColumn = columnEnumeration.nextElement();
@@ -339,6 +346,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 ((CellEditor) cellEditor).clearCache();
             }
         }
+        impl.repaint();
     }
 
     protected void initSelectionListener(final CollectionDatasource datasource) {
@@ -503,7 +511,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
         tableColumn.setCellEditor(cellEditor);
         tableColumn.setCellRenderer(cellEditor);
 
-        packRows(2);
+        packRows();
     }
 
     public void removeGeneratedColumn(String columnId){
@@ -621,6 +629,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
     public void refresh() {
         datasource.refresh();
+        packRows();
+        impl.repaint();
     }
 
     protected JPopupMenu createPopupMenu() {
@@ -649,10 +659,9 @@ public abstract class DesktopAbstractTable<C extends JTable>
      * Returns the preferred height of a row.
      * The result is equal to the tallest cell in the row.
      * @param rowIndex row index
-     * @param margin margin to add to the renderer height
      * @return row height
      */
-    public int getPreferredRowHeight(int rowIndex, int margin) {
+    public int getPreferredRowHeight(int rowIndex) {
         // Get the current default height for all rows
         int height = impl.getRowHeight();
 
@@ -660,8 +669,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
         for (int c = 0; c < impl.getColumnCount(); c++) {
             TableCellRenderer renderer = impl.getCellRenderer(rowIndex, c);
             Component comp = impl.prepareRenderer(renderer, rowIndex, c);
-            int h = comp.getPreferredSize().height + 2 * margin;
-            height = Math.max(height, h);
+            int componentHeight = comp.getPreferredSize().height;
+            height = Math.max(height, componentHeight);
         }
         return height;
     }
@@ -669,15 +678,23 @@ public abstract class DesktopAbstractTable<C extends JTable>
     /**
      * Sets the height of each row into the preferred height of the
      * tallest cell in that row.
-     * @param margin margin to add to the renderer height
      */
-    public void packRows(int margin) {
+    public void packRows() {
         for (int r = 0; r < impl.getRowCount(); r++) {
-            int h = getPreferredRowHeight(r, margin);
+            int h = getPreferredRowHeight(r);
 
             if (impl.getRowHeight(r) != h) {
-                impl.setRowHeight(r, h);
+                impl.setRowHeight(r, Math.max(h, MIN_ROW_HEIGHT));
             }
+        }
+    }
+
+    private class ComponentWrapper extends JPanel {
+        private ComponentWrapper(Component component) {
+            setLayout(new BorderLayout());
+            setBorder(new EmptyBorder(HEIGHT_MARGIN_FOR_ROWS, WIDTH_MARGIN_FOR_CELL,
+                    HEIGHT_MARGIN_FOR_ROWS, WIDTH_MARGIN_FOR_CELL));
+            add(component, BorderLayout.CENTER);
         }
     }
 
@@ -695,10 +712,10 @@ public abstract class DesktopAbstractTable<C extends JTable>
             com.haulmont.cuba.gui.components.Component component = columnGenerator.generateCell(DesktopAbstractTable.this, item.getId());
             Component comp;
             if (component == null)
-                comp = new JLabel("");
-            else {
-                comp = DesktopComponentsHelper.getComposition(component);
-            }
+                comp = new ComponentWrapper(new JLabel(""));
+            else
+                comp = new ComponentWrapper(DesktopComponentsHelper.getComposition(component));
+
             cache.put(row, comp);
             return comp;
         }
