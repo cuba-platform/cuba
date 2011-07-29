@@ -21,8 +21,10 @@ public class DeletePolicyException extends RuntimeException
 
     private String refEntity;
 
+    public static final String ERR_MESSAGE = "Unable to delete: there are references from ";
+
     public DeletePolicyException(String refEntity) {
-        super("Unable to delete: there are references from " + refEntity);
+        super(ERR_MESSAGE + refEntity);
         this.refEntity = refEntity;
     }
 

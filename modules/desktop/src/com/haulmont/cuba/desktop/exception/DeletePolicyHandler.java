@@ -1,33 +1,35 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Ilya Grachev
- * Created: 29.07.2009 18:51:21
- *
- * $Id$
  */
-package com.haulmont.cuba.web.exception;
+
+package com.haulmont.cuba.desktop.exception;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.web.App;
-import com.vaadin.terminal.Terminal;
-import com.vaadin.ui.Window;
+import com.haulmont.cuba.core.global.DeletePolicyException;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.gui.components.IFrame;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * <p>$Id$</p>
+ *
+ * @author devyatkin
+ */
 public class DeletePolicyHandler implements ExceptionHandler {
 
     @Override
-    public boolean handle(Terminal.ErrorEvent event, App app) {
-        Throwable t = event.getThrowable();
+    public boolean handle(Thread thread, Throwable exception) {
+        Throwable t = exception;
         try {
             while (t != null) {
                 if (t.getMessage() != null && t.getMessage().contains(getMarker())) {
-                    doHandle(t.getMessage(), app);
+                    doHandle(thread, t.getMessage());
                     return true;
                 }
                 t = t.getCause();
@@ -42,7 +44,7 @@ public class DeletePolicyHandler implements ExceptionHandler {
         return DeletePolicyException.ERR_MESSAGE;
     }
 
-    protected void doHandle(String message, App app) {
+    protected void doHandle(Thread thread, String message) {
         String localizedEntityName;
         MetaClass metaClass = recognizeMetaClass(message);
         if (metaClass != null) {
@@ -54,8 +56,8 @@ public class DeletePolicyHandler implements ExceptionHandler {
         }
         String msg = MessageProvider.getMessage(getClass(), "deletePolicy.message");
         String references = MessageProvider.getMessage(getClass(), "deletePolicy.references.message");
-        app.getAppWindow().showNotification(msg + "<br>" + references + " \"" + localizedEntityName + "\"",
-                Window.Notification.TYPE_ERROR_MESSAGE);
+        App.getInstance().showNotificationPopup(msg + "<br>" + references + " \"" + localizedEntityName + "\"",
+                IFrame.NotificationType.ERROR);
     }
 
     protected MetaClass recognizeMetaClass(String message) {
@@ -68,4 +70,5 @@ public class DeletePolicyHandler implements ExceptionHandler {
             return null;
         }
     }
+
 }

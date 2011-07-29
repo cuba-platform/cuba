@@ -338,8 +338,14 @@ public class App implements ConnectionListener {
         if (isConnected) {
             exceptionHandlers.addHandler(new NoUserSessionHandler()); // must be the first handler
             exceptionHandlers.addHandler(new SilentExceptionHandler());
+            exceptionHandlers.addHandler(new UniqueConstraintViolationHandler());
+            exceptionHandlers.addHandler(new AccessDeniedHandler());
+            exceptionHandlers.addHandler(new NoSuchScreenHandler());
+            exceptionHandlers.addHandler(new DeletePolicyHandler());
+            exceptionHandlers.addHandler(new NumericOverflowExceptionHandler());
             exceptionHandlers.addHandler(new OptimisticExceptionHandler());
             exceptionHandlers.addHandler(new JPAOptimisticExceptionHandler());
+            exceptionHandlers.addHandler(new ReportExceptionHandler());
             exceptionHandlers.addHandler(new FileMissingExceptionHandler());
         } else {
             exceptionHandlers.getHandlers().clear();
