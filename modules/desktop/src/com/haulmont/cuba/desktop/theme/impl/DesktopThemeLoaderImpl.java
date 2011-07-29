@@ -309,10 +309,37 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
         else if ("insets".equals(elementName)) {
             return loadInsets(element);
         }
+        else if ("dimension".equals(elementName)) {
+            return loadDimension(element);
+        }
         else {
             log.error("Uknown UI property value: " + elementName);
             return null;
         }
+    }
+
+    private Dimension loadDimension(Element element) {
+        String value = element.attributeValue("value");
+        if (value == null) {
+            log.error("Dimension value should specified");
+            return null;
+        }
+        String[] values = value.split(" ");
+        if (values.length != 2) {
+            log.error("Dimension value should be like '0 0': " + value);
+            return null;
+        }
+
+        try {
+            int width = Integer.parseInt(values[0]);
+            int height = Integer.parseInt(values[1]);
+            return new Dimension(width, height);
+        }
+        catch (NumberFormatException e) {
+            log.error("Dimension value should be like '0 0': " + value);
+            return null;
+        }
+
     }
 
     private Insets loadInsets(Element element) {

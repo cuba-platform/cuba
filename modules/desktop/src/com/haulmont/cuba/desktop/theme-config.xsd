@@ -23,6 +23,7 @@
             <xs:element type="colorType" name="color" maxOccurs="unbounded" minOccurs="0"/>
             <xs:element type="fontType" name="font" maxOccurs="unbounded" minOccurs="0"/>
             <xs:element type="insetsType" name="insets" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element type="dimensionType" name="dimension" maxOccurs="unbounded" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -39,6 +40,11 @@
     </xs:complexType>
 
     <xs:complexType name="insetsType">
+        <xs:attribute type="xs:string" name="property" use="required"/>
+        <xs:attribute type="xs:string" name="value" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="dimensionType">
         <xs:attribute type="xs:string" name="property" use="required"/>
         <xs:attribute type="xs:string" name="value" use="required"/>
     </xs:complexType>
