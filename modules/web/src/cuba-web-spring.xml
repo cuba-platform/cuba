@@ -31,6 +31,7 @@
     </bean>
 
     <bean id="cuba_web_Configuration" class="com.haulmont.cuba.web.jmx.Configuration"/>
+    <bean id="cuba_web_Caching" class="com.haulmont.cuba.web.jmx.Caching"/>
 
     <bean id="cuba_FileUploading" class="com.haulmont.cuba.gui.upload.FileUploading"/>
 
@@ -40,6 +41,7 @@
         <property name="beans">
             <map>
                 <entry key="${cuba.webContextName}.cuba:service=Configuration" value-ref="cuba_web_Configuration"/>
+                <entry key="${cuba.webContextName}.cuba:service=Caching" value-ref="cuba_web_Caching"/>
                 <entry key="${cuba.webContextName}.cuba:service=FileUploading" value-ref="cuba_FileUploading"/>
             </map>
         </property>
@@ -48,6 +50,7 @@
                 <property name="interfaceMappings">
                     <map>
                         <entry key="cuba_web_Configuration" value="com.haulmont.cuba.web.jmx.ConfigurationMBean"/>
+                        <entry key="cuba_web_Caching" value="com.haulmont.cuba.web.jmx.CachingMBean"/>
                         <entry key="cuba_FileUploading" value="com.haulmont.cuba.gui.upload.FileUploadingMBean"/>
                     </map>
                 </property>
