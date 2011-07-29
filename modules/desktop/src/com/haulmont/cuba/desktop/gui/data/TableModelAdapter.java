@@ -192,6 +192,24 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
     }
 
     @Override
+    public void addColumn(Table.Column column) {
+        columns.add(column);
+        if (column.getId() instanceof MetaPropertyPath)
+            properties.add((MetaPropertyPath) column.getId());
+
+        fireTableStructureChanged();
+    }
+
+    @Override
+    public void removeColumn(Table.Column column) {
+        columns.remove(column);
+        if (column.getId() instanceof MetaPropertyPath)
+            properties.remove((MetaPropertyPath) column.getId());
+
+        fireTableStructureChanged();
+    }
+
+    @Override
     public void sort(List<? extends RowSorter.SortKey> sortKeys) {
         if (!(datasource instanceof CollectionDatasource.Sortable) || sortKeys == null)
             return;

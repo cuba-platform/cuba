@@ -28,4 +28,7 @@ public interface AnyTableModelAdapter extends TableModel {
 
     void addGeneratedColumn(Table.Column column);
     void removeGeneratedColumn(Table.Column column);
+
+    void addColumn(Table.Column column);
+    void removeColumn(Table.Column column);
 }

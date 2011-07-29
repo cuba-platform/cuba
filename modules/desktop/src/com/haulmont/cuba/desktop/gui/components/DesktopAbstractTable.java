@@ -200,11 +200,43 @@ public abstract class DesktopAbstractTable<C extends JTable>
     public void addColumn(Column column) {
         columns.put((MetaPropertyPath) column.getId(), column);
         columnsOrder.add(column);
+
+        if (tableModel != null)
+            tableModel.addColumn(column);
+
+        setColumnIdentifiers();
+        refresh();
     }
 
     public void removeColumn(Column column) {
-        columns.remove((MetaPropertyPath) column.getId());
-        columnsOrder.remove(column);
+        MetaPropertyPath metaPropertyPath = (MetaPropertyPath) column.getId();
+        String name = metaPropertyPath.getMetaProperty().getName();
+
+        TableColumn tableColumn = null;
+        Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
+        while (columnEnumeration.hasMoreElements() && (tableColumn == null)) {
+            TableColumn xColumn = columnEnumeration.nextElement();
+            Object identifier = xColumn.getIdentifier();
+            if (identifier instanceof String) {
+                if (identifier.equals(name))
+                    tableColumn = xColumn;
+            } else
+            if (column.equals(identifier))
+                tableColumn = xColumn;
+        }
+
+        if (tableColumn != null) {
+            impl.getColumnModel().removeColumn(tableColumn);
+            impl.removeColumn(tableColumn);
+
+            columns.remove(metaPropertyPath);
+            columnsOrder.remove(column);
+
+            if (tableModel != null)
+                tableModel.removeColumn(column);
+
+            setColumnIdentifiers();
+        }
     }
 
     public void setDatasource(final CollectionDatasource datasource) {
@@ -238,13 +270,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
         initTableModel(datasource);
 
-        Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
-        int i = 0;
-        while (columnEnumeration.hasMoreElements()) {
-            TableColumn tableColumn = columnEnumeration.nextElement();
-            Column column = columnsOrder.get(i++);
-            tableColumn.setIdentifier(column);
-        }
+        setColumnIdentifiers();
 
         impl.setRowSorter(new RowSorterImpl(tableModel));
 
@@ -335,6 +361,16 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
         if (rowsCount != null)
             rowsCount.setDatasource(datasource);
+    }
+
+    private void setColumnIdentifiers() {
+        Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
+        int i = 0;
+        while (columnEnumeration.hasMoreElements()) {
+            TableColumn tableColumn = columnEnumeration.nextElement();
+            Column column = columnsOrder.get(i++);
+            tableColumn.setIdentifier(column);
+        }
     }
 
     protected void onDataChange() {
@@ -628,9 +664,11 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     public void refresh() {
-        datasource.refresh();
-        packRows();
-        impl.repaint();
+        if (datasource != null) {
+            datasource.refresh();
+            packRows();
+            impl.repaint();
+        }
     }
 
     protected JPopupMenu createPopupMenu() {
@@ -684,7 +722,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
             int h = getPreferredRowHeight(r);
 
             if (impl.getRowHeight(r) != h) {
-                impl.setRowHeight(r, Math.max(h, MIN_ROW_HEIGHT));
+                impl.setRowHeight(r, h);
             }
         }
     }

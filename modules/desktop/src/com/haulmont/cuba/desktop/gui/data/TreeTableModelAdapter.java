@@ -119,6 +119,14 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
     }
 
     @Override
+    public void addColumn(Table.Column column) {
+    }
+
+    @Override
+    public void removeColumn(Table.Column column) {
+    }
+
+    @Override
     public Object getValueAt(Object node, int column) {
         Entity entity = treeDelegate.getEntity(node);
         if (entity == null) {

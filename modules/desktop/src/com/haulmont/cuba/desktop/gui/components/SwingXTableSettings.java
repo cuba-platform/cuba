@@ -100,7 +100,7 @@ public class SwingXTableSettings implements TableSettings {
                 TableColumnExt tableColumn = table.getColumnExt(column);
 
                 String width = colElem.attributeValue("width");
-                if (width != null)
+                if ((width != null) && (tableColumn != null))
                     tableColumn.setPreferredWidth(Integer.valueOf(width));
 
                 String visible = colElem.attributeValue("visible");
