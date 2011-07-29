@@ -337,7 +337,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
             if (range.isDatatype()) {
                 text = range.asDatatype().format(value, locale);
             } else if (range.isEnum()) {
-                text = value.toString();
+                text = MessageProvider.getMessage((Enum) value);
             } else if (range.isClass()) {
                 text = InstanceUtils.getInstanceName((Instance) value);
             } else

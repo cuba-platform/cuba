@@ -9,6 +9,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
@@ -113,7 +114,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
             if (range.isDatatype()) {
                 text = range.asDatatype().format(value, locale);
             } else if (range.isEnum()) {
-                text = value.toString();
+                text = MessageProvider.getMessage((Enum) value);
             } else if (range.isClass()) {
                 text = InstanceUtils.getInstanceName((Instance) value);
             } else
