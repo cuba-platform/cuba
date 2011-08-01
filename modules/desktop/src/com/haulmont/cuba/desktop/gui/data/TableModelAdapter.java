@@ -62,8 +62,7 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
                 new CollectionDsListenerAdapter() {
                     @Override
                     public void collectionChanged(CollectionDatasource ds, Operation operation) {
-                        if (operation != Operation.REFRESH)
-                            fireTableDataChanged();
+                        fireTableDataChanged();
                     }
 
                     @Override
