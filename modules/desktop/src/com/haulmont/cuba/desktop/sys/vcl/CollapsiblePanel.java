@@ -187,8 +187,13 @@ public class CollapsiblePanel extends JPanel {
         if (borderVisible) {
             setBorder(new CollapsibleTitledBorder(null, titleBtn));
             placeTitleComponent();
-        } else
-            this.setBorder(new EmptyBorder(15, 5, 5, 5));
+        } else {
+            if (titleBtn.isVisible())
+                this.setBorder(new EmptyBorder(12, 2, 2, 2));
+            else
+                this.setBorder(new EmptyBorder(0, 0, 0, 0));
+            placeTitleComponent();
+        }
         this.repaint();
     }
 
@@ -213,7 +218,7 @@ public class CollapsiblePanel extends JPanel {
             titleBtn.setVisible(true);
 
         titleBtn.setText(caption);
-        placeTitleComponent();
+        setBorderVisible(borderVisible);
     }
 
     public void addCollapseListener(CollapseListener collapseListener) {

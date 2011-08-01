@@ -85,7 +85,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         });
     }
 
-@Override
+    @Override
     public boolean isExpanded() {
         return collapsiblePanel.isExpanded();
     }
