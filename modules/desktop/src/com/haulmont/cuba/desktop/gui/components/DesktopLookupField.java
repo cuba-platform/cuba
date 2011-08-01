@@ -22,10 +22,7 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.event.*;
 
 /**
  * <p>$Id$</p>
@@ -39,11 +36,14 @@ public class DesktopLookupField
     private static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
 
     private BasicEventList<Object> items = new BasicEventList<Object>();
-    private boolean optionsInitialized;
     private AutoCompleteSupport<Object> autoComplete;
     private String caption;
-    private boolean editable = true;
     private NewOptionHandler newOptionHandler;
+
+    private boolean optionsInitialized;
+    private boolean resetValueState = false;
+
+    private boolean editable = true;
     private boolean newOptionAllowed;
     private boolean settingValue;
 
@@ -61,6 +61,12 @@ public class DesktopLookupField
                 @Override
                 public void focusGained(FocusEvent e) {
                     initOptions();
+                }
+
+                @Override
+                public void focusLost(FocusEvent e) {
+                    // Reset invalid value
+                    checkSelectedValue();
                 }
             });
         }
@@ -110,6 +116,22 @@ public class DesktopLookupField
         setFilterMode(DEFAULT_FILTER_MODE);
 
         DesktopComponentsHelper.adjustSize(impl);
+    }
+
+    private void checkSelectedValue() {
+        if (!resetValueState) {
+            resetValueState = true;
+            Object selectedItem = impl.getSelectedItem();
+            if (selectedItem instanceof ValueWrapper) {
+            } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
+            } else if (!newOptionAllowed) {
+                ValueWrapper prevValueItem = createValueWrapper(prevValue);
+                impl.setSelectedItem(prevValueItem);
+                impl.getModel().setSelectedItem(prevValueItem);
+                impl.getEditor().setItem(prevValueItem);
+            }
+            resetValueState = false;
+        }
     }
 
     @Override
