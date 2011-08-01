@@ -80,6 +80,7 @@ public interface GlobalConfig extends Config {
     /**
      * Used to show alternative locales on user login
      */
+    @Property("cuba.availableLocales")
     @Factory(factory = AvailableLocalesFactory.class)
     @Default("English|en;Russian|ru")
     Map<String, Locale> getAvailableLocales();
