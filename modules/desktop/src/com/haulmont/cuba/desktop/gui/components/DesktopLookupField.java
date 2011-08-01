@@ -73,14 +73,19 @@ public class DesktopLookupField
 
                     @Override
                     public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-                        Object selectedItem = impl.getSelectedItem();
-                        if (selectedItem instanceof ValueWrapper) {
-                            updateInstance(selectedItem);
-                            fireChangeListeners();
-                        } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
-                            newOptionHandler.addNewOption((String) selectedItem);
-                        } else if (!newOptionAllowed)
-                            impl.setSelectedItem(createValueWrapper(prevValue));
+                        if (!autoComplete.isEditableState()) {
+                            // Only if realy item changed
+                            Object selectedItem = impl.getSelectedItem();
+                            if (selectedItem instanceof ValueWrapper) {
+                                updateInstance(selectedItem);
+                                updateComponent(((ValueWrapper) selectedItem).getValue());
+                                fireChangeListeners();
+                            } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
+                                newOptionHandler.addNewOption((String) selectedItem);
+                            } else if ((selectedItem!=null) && !newOptionAllowed) {
+                                impl.setSelectedItem(createValueWrapper(prevValue));
+                            }
+                        }
                     }
 
                     @Override
@@ -177,7 +182,9 @@ public class DesktopLookupField
     }
 
     private ValueWrapper createValueWrapper(Object value) {
-        if (optionsDatasource != null) {
+        if (value instanceof ValueWrapper) {
+            return (ValueWrapper) value;
+        } else if (optionsDatasource != null) {
             return new EntityWrapper((Entity) value);
         } else if (optionsMap != null) {
             String title = "";
@@ -208,6 +215,7 @@ public class DesktopLookupField
     @Override
     public void setNullOption(Object nullOption) {
         this.nullOption = nullOption;
+        autoComplete.setFirstItem(createValueWrapper(nullOption));
     }
 
     @Override
@@ -218,12 +226,8 @@ public class DesktopLookupField
 
     @Override
     public void setFilterMode(FilterMode mode) {
-        if (FilterMode.CONTAINS.equals(mode))
-            autoComplete.setFilterMode(TextMatcherEditor.CONTAINS);
-        else if (FilterMode.STARTS_WITH.equals(mode))
-            autoComplete.setFilterMode(TextMatcherEditor.STARTS_WITH);
-        else
-            autoComplete.setFilterMode(TextMatcherEditor.EXACT);
+        autoComplete.setFilterMode(FilterMode.CONTAINS.equals(mode)
+                ? TextMatcherEditor.CONTAINS : TextMatcherEditor.STARTS_WITH);
     }
 
     @Override
@@ -234,14 +238,6 @@ public class DesktopLookupField
     @Override
     public void setNewOptionAllowed(boolean newOptionAllowed) {
         this.newOptionAllowed = newOptionAllowed;
-        if (newOptionAllowed)         {
-            setFilterMode(FilterMode.NO);
-            autoComplete.setCorrectsCase(false);
-        }
-        else {
-            setFilterMode(DEFAULT_FILTER_MODE);
-            autoComplete.setCorrectsCase(true);
-        }
     }
 
     @Override

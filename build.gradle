@@ -339,7 +339,7 @@ configure(desktopModule) {
         compile(clientModule)
         compile(guiModule)
         compile(group: 'com.haulmont.thirdparty', name: 'miglayout', version: '3.7.4')
-        compile(group: 'com.haulmont.thirdparty', name: 'glazedlists', version: '1.8.0')
+        compile(group: 'com.haulmont.thirdparty', name: 'glazedlists', version: '1.9.20110801')
         compile(group: 'org.swinglabs', name: 'swingx-core', version: '1.6.2-2')
         runtime(group: 'org.springframework', name: 'spring-tx', version: '3.0.5.RELEASE')
 
