@@ -22,7 +22,7 @@
 
     <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
         <param name="Target" value="System.out"/>
-        <param name="Threshold" value="INFO"/>
+        <param name="Threshold" value="DEBUG"/>
 
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d %-5p [%c] %m%n"/>
@@ -46,6 +46,14 @@
     </category>
 
     <category name="openjpa">
+        <priority value="INFO"/>
+    </category>
+
+    <category name="openjpa.jdbc.SQL">
+        <priority value="DEBUG"/>
+    </category>
+
+    <category name="openjpa.jdbc.SQLDiag">
         <priority value="DEBUG"/>
     </category>
 
@@ -53,7 +61,6 @@
         <priority value="INFO"/>
     </category>
 
-    <!-- Limit the org.apache category to INFO as its DEBUG is verbose -->
     <category name="org.apache">
         <priority value="INFO"/>
     </category>

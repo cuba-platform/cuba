@@ -20,10 +20,7 @@ import org.springframework.core.io.Resource;
 
 import javax.persistence.Entity;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PersistenceConfigProcessor {
 
@@ -95,9 +92,15 @@ public class PersistenceConfigProcessor {
             throw new IllegalStateException("Output file not set");
 
         Map<String, String> classes = new LinkedHashMap<String, String>();
+        Map<String, String> properties = new HashMap<String, String>();
 
         for (String fileName : sourceFileNames) {
-            addClasses(fileName, classes);
+            Document doc = getDocument(fileName);
+            Element puElem = findPersistenceUnitElement(doc.getRootElement());
+            if (puElem == null)
+                throw new IllegalStateException("No persistence unit named 'cuba' found among multiple units inside " + fileName);
+            addClasses(puElem, classes);
+            addProperties(puElem, properties);
         }
 
         String fileName = sourceFileNames.get(sourceFileNames.size() - 1);
@@ -114,6 +117,17 @@ public class PersistenceConfigProcessor {
 
         for (String className : classes.values()) {
             puElem.addElement("class").setText(className);
+        }
+
+        Element propertiesEl = puElem.element("properties");
+        if (propertiesEl != null)
+            puElem.remove(propertiesEl);
+
+        propertiesEl = puElem.addElement("properties");
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            Element element = propertiesEl.addElement("property");
+            element.addAttribute("name", entry.getKey());
+            element.addAttribute("value", entry.getValue());
         }
 
         File outFile = new File(outFileName);
@@ -135,14 +149,7 @@ public class PersistenceConfigProcessor {
         }
     }
 
-    private void addClasses(String fileName, Map<String, String> classes) {
-        Document doc = getDocument(fileName);
-        Element rootElem = doc.getRootElement();
-
-        Element puElem = findPersistenceUnitElement(rootElem);
-        if (puElem == null)
-            throw new IllegalStateException("No persistence unit named 'cuba' found among multiple units inside " + fileName);
-
+    private void addClasses(Element puElem, Map<String, String> classes) {
         for (Element element : Dom4j.elements(puElem, "class")) {
             String className = element.getText();
             Class<Object> cls = ReflectionHelper.getClass(className);
@@ -152,6 +159,13 @@ public class PersistenceConfigProcessor {
             } else {
                 classes.put(className, className);
             }
+        }
+    }
+
+    private void addProperties(Element puElem, Map<String, String> properties) {
+        Element propertiesEl = puElem.element("properties");
+        for (Element element : Dom4j.elements(propertiesEl, "property")) {
+            properties.put(element.attributeValue("name"), element.attributeValue("value"));
         }
     }
 

@@ -14,24 +14,20 @@ import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.core.app.DataCacheMBean;
-import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.View;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.kernel.Broker;
-import org.apache.openjpa.kernel.OpCallbacks;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.persistence.AutoDetachType;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.StoreCache;
 
-import java.util.*;
 import java.sql.Connection;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class EntityManagerImpl implements EntityManager
 {
@@ -45,9 +41,9 @@ public class EntityManagerImpl implements EntityManager
     private boolean closed;
     private Set<CloseListener> closeListeners = new HashSet<CloseListener>();
 
-    private boolean deleteDeferred = true;
+    private boolean softDeletion = true;
 
-    private OpCallbacksImpl dummyOpCallbacks = new OpCallbacksImpl();
+//    private OpCallbacksImpl dummyOpCallbacks = new OpCallbacksImpl();
 
     private static Boolean storeCacheEnabled;
 
@@ -55,8 +51,6 @@ public class EntityManagerImpl implements EntityManager
 
     EntityManagerImpl(OpenJPAEntityManager jpaEntityManager) {
         delegate = jpaEntityManager;
-        // Set AutoDetachType to none to prevent automatic detach after transaction rollback 
-//        delegate.setAutoDetach(EnumSet.noneOf(AutoDetachType.class));
     }
 
     private static boolean isStoreCacheEnabled() {
@@ -72,22 +66,11 @@ public class EntityManagerImpl implements EntityManager
     }
 
     public boolean isSoftDeletion() {
-        return deleteDeferred;
+        return softDeletion;
     }
 
-    public void setSoftDeletion(boolean deleteDeferred) {
-        if (deleteDeferred != this.deleteDeferred) {
-            // clear SQL queries cache
-            OpenJPAConfiguration conf = ((OpenJPAEntityManagerFactorySPI) delegate.getEntityManagerFactory()).getConfiguration();
-            if (conf instanceof JDBCConfiguration) {
-                Map map = ((JDBCConfiguration) conf).getQuerySQLCacheInstance();
-                for (Object val : map.values()) {
-                    if (val instanceof Map)
-                        ((Map) val).clear();
-                }
-            }
-            this.deleteDeferred = deleteDeferred;
-        }
+    public void setSoftDeletion(boolean softDeletion) {
+        this.softDeletion = softDeletion;
     }
 
     public void persist(Entity entity) {
@@ -103,7 +86,7 @@ public class EntityManagerImpl implements EntityManager
     }
 
     public void remove(Entity entity) {
-        if (entity instanceof SoftDelete && deleteDeferred) {
+        if (entity instanceof SoftDelete && softDeletion) {
             ((SoftDelete) entity).setDeleteTs(TimeProvider.currentTimestamp());
             ((SoftDelete) entity).setDeletedBy(SecurityProvider.currentUserSession().getUser().getLogin());
         }
@@ -114,7 +97,7 @@ public class EntityManagerImpl implements EntityManager
 
     public <T extends Entity> T find(Class<T> clazz, Object key) {
         T entity = delegate.find(clazz, key);
-        if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted() && deleteDeferred)
+        if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted() && softDeletion)
             return null;
         else
             return entity;
@@ -195,35 +178,35 @@ public class EntityManagerImpl implements EntityManager
         return (Connection) delegate.getConnection();
     }
 
-    public void detachAll() {
-        Broker broker = ((org.apache.openjpa.persistence.EntityManagerImpl) delegate).getBroker();
-
-        if (isStoreCacheEnabled()) {
-            // When using L2 cache we have to evict all updated entities, because they are being put
-            // into cache after detaching, with all fields = null.
-            // This is because DataCacheStoreManager remembers StateManagers before detaching, but
-            // commits states into cache after detaching.
-
-            // For new entities go standard way
-            broker.setPopulateDataCache(false);
-
-            // Save updated entities to evict them on close() 
-            entitiesToEvict = new ArrayList<Entity>();
-            for (Object obj : broker.getManagedObjects()) {
-                PersistenceCapable pc = (PersistenceCapable) obj;
-                if (!pc.pcIsNew() && pc.pcIsDirty() && pc instanceof Entity) {
-                    entitiesToEvict.add((Entity) pc);
-                }
-            }
-        }
-
-        broker.detachAll(dummyOpCallbacks);
-    }
-
-    private static class OpCallbacksImpl implements OpCallbacks
-    {
-        public int processArgument(int op, Object arg, OpenJPAStateManager sm) {
-            return ACT_RUN | ACT_CASCADE;
-        }
-    }
+//    public void detachAll() {
+//        Broker broker = ((org.apache.openjpa.persistence.EntityManagerImpl) delegate).getBroker();
+//
+//        if (isStoreCacheEnabled()) {
+//            // When using L2 cache we have to evict all updated entities, because they are being put
+//            // into cache after detaching, with all fields = null.
+//            // This is because DataCacheStoreManager remembers StateManagers before detaching, but
+//            // commits states into cache after detaching.
+//
+//            // For new entities go standard way
+//            broker.setPopulateDataCache(false);
+//
+//            // Save updated entities to evict them on close()
+//            entitiesToEvict = new ArrayList<Entity>();
+//            for (Object obj : broker.getManagedObjects()) {
+//                PersistenceCapable pc = (PersistenceCapable) obj;
+//                if (!pc.pcIsNew() && pc.pcIsDirty() && pc instanceof Entity) {
+//                    entitiesToEvict.add((Entity) pc);
+//                }
+//            }
+//        }
+//
+//        broker.detachAll(dummyOpCallbacks);
+//    }
+//
+//    private static class OpCallbacksImpl implements OpCallbacks
+//    {
+//        public int processArgument(int op, Object arg, OpenJPAStateManager sm) {
+//            return ACT_RUN | ACT_CASCADE;
+//        }
+//    }
 }
