@@ -105,6 +105,18 @@ public class DesktopDateField
                 }
             }
         };
+
+        datePicker.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    @Override
+                    public void propertyChange(PropertyChangeEvent evt) {
+                        if ("date".equals(evt.getPropertyName())) {
+                            updateInstance();
+                        }
+                    }
+                }
+        );
+
     }
 
     private void updateLayout() {
@@ -247,19 +259,6 @@ public class DesktopDateField
                 updatePartsFromValue(value);
             }
         }
-
-        datePicker.addPropertyChangeListener(
-                new PropertyChangeListener() {
-                    @Override
-                    public void propertyChange(PropertyChangeEvent evt) {
-                        if ("date".equals(evt.getPropertyName())) {
-                            updateInstance();
-                        }
-                    }
-                }
-        );
-
-        timeField.getDocument().addDocumentListener(timeListener);
 
         setRequired(metaProperty.isMandatory());
     }
