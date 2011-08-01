@@ -12,7 +12,7 @@ package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 
-public interface Tree extends List
+public interface Tree extends ListComponent
 {
     String NAME = "tree";
 

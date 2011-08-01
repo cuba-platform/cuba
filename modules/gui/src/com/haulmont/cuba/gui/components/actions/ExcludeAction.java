@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.List;
+import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.Set;
@@ -27,11 +27,11 @@ public class ExcludeAction extends RemoveAction {
 
     protected final boolean confirm;
 
-    public ExcludeAction(List owner, boolean autocommit, boolean confirm) {
+    public ExcludeAction(ListComponent owner, boolean autocommit, boolean confirm) {
         this(owner, autocommit, confirm, ACTION_ID);
     }
 
-    public ExcludeAction(List owner, boolean autocommit, boolean confirm, String id) {
+    public ExcludeAction(ListComponent owner, boolean autocommit, boolean confirm, String id) {
         super(owner, autocommit, id);
         this.confirm = confirm;
     }

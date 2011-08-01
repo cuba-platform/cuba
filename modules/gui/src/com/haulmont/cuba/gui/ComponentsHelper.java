@@ -11,7 +11,7 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.List;
+import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.*;
 
 import java.util.*;
@@ -159,7 +159,7 @@ public abstract class ComponentsHelper {
      * Creates standard Create, Edit and Remove actions for the component
      * @param owner List, Table or Tree component
      */
-    public static void createActions(List owner) {
+    public static void createActions(ListComponent owner) {
         createActions(owner, EnumSet.of(ListActionType.CREATE, ListActionType.EDIT, ListActionType.REMOVE));
     }
 
@@ -168,7 +168,7 @@ public abstract class ComponentsHelper {
      * @param owner List, Table or Tree component
      * @param actions set of actions to create
      */
-    public static void createActions(List owner, EnumSet<ListActionType> actions) {
+    public static void createActions(ListComponent owner, EnumSet<ListActionType> actions) {
         if (actions.contains(ListActionType.CREATE))
             owner.addAction(new CreateAction(owner));
 

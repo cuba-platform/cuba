@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.List;
+import com.haulmont.cuba.gui.components.ListComponent;
 
 public class FilterApplyAction extends AbstractAction {
 
@@ -22,13 +22,13 @@ public class FilterApplyAction extends AbstractAction {
 
     public static final String ACTION_ID = "apply";
 
-    protected final List owner;
+    protected final ListComponent owner;
 
-    public FilterApplyAction(List owner) {
+    public FilterApplyAction(ListComponent owner) {
         this(owner, ACTION_ID);
     }
 
-    public FilterApplyAction(List owner, String id) {
+    public FilterApplyAction(ListComponent owner, String id) {
         super(ACTION_ID);
         this.owner = owner;
     }

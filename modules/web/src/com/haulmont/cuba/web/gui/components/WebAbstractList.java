@@ -1,7 +1,7 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.List;
+import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.vaadin.ui.AbstractSelect;
 
@@ -14,7 +14,7 @@ public abstract class WebAbstractList<T extends AbstractSelect>
     extends
         WebAbstractActionOwnerComponent<T>
     implements
-        List
+        ListComponent
 {
     protected CollectionDatasource datasource;
 

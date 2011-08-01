@@ -34,19 +34,19 @@ public class CreateAction extends AbstractAction {
 
     public static final String ACTION_ID = "create";
 
-    protected final List owner;
+    protected final ListComponent owner;
     protected final WindowManager.OpenType openType;
     protected final CollectionDatasource datasource;
 
-    public CreateAction(List owner) {
+    public CreateAction(ListComponent owner) {
         this(owner, WindowManager.OpenType.THIS_TAB, ACTION_ID);
     }
 
-    public CreateAction(List owner, WindowManager.OpenType openType) {
+    public CreateAction(ListComponent owner, WindowManager.OpenType openType) {
         this(owner, openType, ACTION_ID);
     }
 
-    public CreateAction(List owner, WindowManager.OpenType openType, String id) {
+    public CreateAction(ListComponent owner, WindowManager.OpenType openType, String id) {
         super(id);
         this.owner = owner;
         this.openType = openType;

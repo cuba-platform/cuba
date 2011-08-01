@@ -25,12 +25,12 @@ import java.util.*;
  *     </ul>
  *     See also:
  *     <ul>
- *         <li>{@link com.haulmont.cuba.gui.ComponentsHelper#createActions(List)}
- *         <li>{@link com.haulmont.cuba.gui.ComponentsHelper#createActions(List, java.util.EnumSet)}
+ *         <li>{@link com.haulmont.cuba.gui.ComponentsHelper#createActions(ListComponent)}
+ *         <li>{@link com.haulmont.cuba.gui.ComponentsHelper#createActions(ListComponent, java.util.EnumSet)}
   *     </ul>
  */
 @Deprecated
-public abstract class ListActionsHelper<T extends List> implements Serializable {
+public abstract class ListActionsHelper<T extends ListComponent> implements Serializable {
 
     protected IFrame frame;
     protected T component;

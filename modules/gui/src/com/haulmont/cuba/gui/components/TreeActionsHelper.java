@@ -25,8 +25,8 @@ import java.util.Collections;
  *     </ul>
  *     See also:
  *     <ul>
- *         <li>{@link com.haulmont.cuba.gui.ComponentsHelper#createActions(List)}
- *         <li>{@link com.haulmont.cuba.gui.ComponentsHelper#createActions(List, java.util.EnumSet)}
+ *         <li>{@link com.haulmont.cuba.gui.ComponentsHelper#createActions(ListComponent)}
+ *         <li>{@link com.haulmont.cuba.gui.ComponentsHelper#createActions(ListComponent, java.util.EnumSet)}
   *     </ul>
  */
 @Deprecated

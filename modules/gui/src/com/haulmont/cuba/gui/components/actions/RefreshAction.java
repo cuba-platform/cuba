@@ -14,7 +14,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.List;
+import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.Map;
@@ -25,13 +25,13 @@ public class RefreshAction extends AbstractAction {
 
     public static final String ACTION_ID = "refresh";
 
-    protected List owner;
+    protected ListComponent owner;
 
-    public RefreshAction(List owner) {
+    public RefreshAction(ListComponent owner) {
         this(owner, ACTION_ID);
     }
 
-    public RefreshAction(List owner, String id) {
+    public RefreshAction(ListComponent owner, String id) {
         super(id);
         this.owner = owner;
     }

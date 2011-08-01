@@ -109,8 +109,8 @@ public class FrameContext implements WindowContext {
         if (component instanceof Component.HasValue) {
             //noinspection RedundantTypeArguments
             return ((Component.HasValue) component).<T>getValue();
-        } else if (component instanceof com.haulmont.cuba.gui.components.List) {
-            com.haulmont.cuba.gui.components.List list = (com.haulmont.cuba.gui.components.List) component;
+        } else if (component instanceof ListComponent) {
+            ListComponent list = (ListComponent) component;
             //noinspection unchecked
             return list.isMultiSelect() ? (T)list.getSelected() : (T)list.getSingleSelected();
         } else {
@@ -133,7 +133,7 @@ public class FrameContext implements WindowContext {
             throw new RuntimeException("Component not found: " + componentName);
         if (component instanceof Component.HasValue) {
             ((Component.HasValue) component).addListener(listener);
-        } else if (component instanceof com.haulmont.cuba.gui.components.List) {
+        } else if (component instanceof ListComponent) {
             throw new UnsupportedOperationException("List component is not supported yet");
         } else {
             throw new RuntimeException("Unable to add listener to the component " + component);
@@ -146,7 +146,7 @@ public class FrameContext implements WindowContext {
             throw new RuntimeException("Component not found: " + componentName);
         if (component instanceof Component.HasValue) {
             ((Component.HasValue) component).removeListener(listener);
-        } else if (component instanceof com.haulmont.cuba.gui.components.List) {
+        } else if (component instanceof ListComponent) {
             throw new UnsupportedOperationException("List component is not supported yet");
         } else {
             throw new RuntimeException("Unable to add listener to the component " + component);

@@ -29,20 +29,20 @@ public class RemoveAction extends AbstractAction {
 
     public static final String ACTION_ID = "remove";
 
-    protected final List owner;
+    protected final ListComponent owner;
     protected final boolean autocommit;
     protected final CollectionDatasource datasource;
     protected MetaProperty metaProperty;
 
-    public RemoveAction(List owner) {
+    public RemoveAction(ListComponent owner) {
         this(owner, true, ACTION_ID);
     }
 
-    public RemoveAction(List owner, boolean autocommit) {
+    public RemoveAction(ListComponent owner, boolean autocommit) {
         this(owner, autocommit, ACTION_ID);
     }
 
-    public RemoveAction(List owner, boolean autocommit, String id) {
+    public RemoveAction(ListComponent owner, boolean autocommit, String id) {
         super(id);
         this.owner = owner;
         this.autocommit = autocommit;

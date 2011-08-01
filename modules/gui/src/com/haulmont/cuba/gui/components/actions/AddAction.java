@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.List;
+import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
@@ -28,20 +28,20 @@ public class AddAction extends AbstractAction {
 
     public static final String ACTION_ID = "add";
 
-    protected List owner;
+    protected ListComponent owner;
     protected final Window.Lookup.Handler handler;
     protected final WindowManager.OpenType openType;
     protected CollectionDatasource datasource;
 
-    public AddAction(List owner, Window.Lookup.Handler handler) {
+    public AddAction(ListComponent owner, Window.Lookup.Handler handler) {
         this(owner, handler, WindowManager.OpenType.THIS_TAB, ACTION_ID);
     }
 
-    public AddAction(List owner, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+    public AddAction(ListComponent owner, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         this(owner, handler, openType, ACTION_ID);
     }
 
-    public AddAction(List owner, Window.Lookup.Handler handler, WindowManager.OpenType openType, String id) {
+    public AddAction(ListComponent owner, Window.Lookup.Handler handler, WindowManager.OpenType openType, String id) {
         super(id);
         this.owner = owner;
         this.handler = handler;

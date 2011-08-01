@@ -363,7 +363,7 @@ public class UserEditor extends AbstractEditor {
 
         private boolean hasDefaultRole = false;
 
-        public RemoveRoleAction(com.haulmont.cuba.gui.components.List owner, boolean autocommit) {
+        public RemoveRoleAction(ListComponent owner, boolean autocommit) {
             super(owner, autocommit);
         }
 

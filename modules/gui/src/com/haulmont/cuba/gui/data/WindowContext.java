@@ -38,7 +38,7 @@ public interface WindowContext extends Serializable {
      * <br>First split by dots taking into account square brackets, and looking for a component from left to right.
      * <br>If a component not found, return null.
      * <br>If a component found and it is a {@link com.haulmont.cuba.gui.components.Component.HasValue}
-     * or {@link com.haulmont.cuba.gui.components.List}, retrieve its value.
+     * or {@link com.haulmont.cuba.gui.components.ListComponent}, retrieve its value.
      * <br>If the value is null, return it.
      * <br>If there is nothing left in the path after the component name, return the value.
      * <br>Else if the value is {@link com.haulmont.chile.core.model.Instance}, drill down to it and return the value

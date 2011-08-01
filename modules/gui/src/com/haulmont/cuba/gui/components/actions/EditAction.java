@@ -32,19 +32,19 @@ public class EditAction extends AbstractAction {
 
     public static final String ACTION_ID = "edit";
 
-    protected List owner;
+    protected ListComponent owner;
     protected WindowManager.OpenType openType;
     protected CollectionDatasource datasource;
 
-    public EditAction(List owner) {
+    public EditAction(ListComponent owner) {
         this(owner, WindowManager.OpenType.THIS_TAB, ACTION_ID);
     }
 
-    public EditAction(List owner, WindowManager.OpenType openType) {
+    public EditAction(ListComponent owner, WindowManager.OpenType openType) {
         this(owner, openType, ACTION_ID);
     }
 
-    public EditAction(List owner, WindowManager.OpenType openType, String id) {
+    public EditAction(ListComponent owner, WindowManager.OpenType openType, String id) {
         super(id);
         this.owner = owner;
         this.openType = openType;

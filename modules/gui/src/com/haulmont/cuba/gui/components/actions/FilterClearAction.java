@@ -17,7 +17,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.components.List;
+import com.haulmont.cuba.gui.components.ListComponent;
 
 public class FilterClearAction extends AbstractAction {
 
@@ -25,14 +25,14 @@ public class FilterClearAction extends AbstractAction {
 
     public static final String ACTION_ID = "clear";
 
-    protected final List owner;
+    protected final ListComponent owner;
     protected final String containerName;
 
-    public FilterClearAction(List owner, String containerName) {
+    public FilterClearAction(ListComponent owner, String containerName) {
         this(owner, containerName, ACTION_ID);
     }
 
-    public FilterClearAction(List owner, String containerName, String id) {
+    public FilterClearAction(ListComponent owner, String containerName, String id) {
         super(id);
         this.owner = owner;
         this.containerName = containerName;

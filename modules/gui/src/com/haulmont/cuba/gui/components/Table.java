@@ -19,7 +19,7 @@ import java.util.List;
 
 public interface Table
     extends
-        com.haulmont.cuba.gui.components.List, Component.Editable, Component.HasSettings, Component.Expandable,
+        ListComponent, Component.Editable, Component.HasSettings, Component.Expandable,
         Component.HasButtonsPanel, Component.HasPresentations
 {
     String NAME = "table";
