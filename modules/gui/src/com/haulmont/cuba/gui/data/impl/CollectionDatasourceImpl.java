@@ -285,6 +285,10 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
         deleted(item);
 
+        if (this.item != null && this.item.equals(item)) {
+            this.item = null;
+        }
+
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
 
@@ -302,6 +306,10 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
         data.remove(item.getId());
         detachListener(item);
+
+        if (this.item != null && this.item.equals(item)) {
+            this.item = null;
+        }
 
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
     }
@@ -346,6 +354,10 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             data.put(item.getId(), item);
             attachListener(item);
             forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+        }
+
+        if (this.item != null && this.item.equals(item)) {
+            this.item = item;
         }
     }
 
