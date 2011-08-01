@@ -138,6 +138,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
 
     public void setFormatter(Formatter formatter) {
         this.formatter = formatter;
+        impl.setText(formatValue(prevValue));
     }
 
     public <T> T getValue() {
@@ -147,7 +148,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     public void setValue(Object value) {
         impl.setText(formatValue(value));
         updateInstance(value);
-        fireChangeListeners();
+        fireChangeListeners(value);
     }
 
     private void updateInstance(Object value) {
@@ -167,10 +168,6 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
         } finally {
             updatingInstance = false;
         }
-    }
-
-    private void fireChangeListeners() {
-        fireChangeListeners(getValue());
     }
 
     private void fireChangeListeners(Object newValue) {
