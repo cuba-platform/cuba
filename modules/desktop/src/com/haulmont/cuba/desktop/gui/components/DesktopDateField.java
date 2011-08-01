@@ -58,7 +58,6 @@ public class DesktopDateField
 
     private JXDatePicker datePicker;
     private TimeField timeField;
-    private BoxLayoutAdapter adapter;
     private DocumentListener timeListener;
     private boolean valid = true;
     private String caption;
@@ -69,14 +68,16 @@ public class DesktopDateField
         impl = new JPanel();
         initComponentParts();
         setResolution(Resolution.MIN);
+
+        DesktopComponentsHelper.adjustDateFieldSize(impl);
     }
 
     private void initComponentParts() {
-        adapter = new MigBoxLayoutAdapter(impl);
-        impl.setLayout(adapter.getLayout());
+        BoxLayoutAdapter adapter = new MigBoxLayoutAdapter(impl);
         adapter.setSpacing(false);
         adapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.X);
         adapter.setExpandLayout(true);
+        impl.setLayout(adapter.getLayout());
 
         datePicker = new DatePicker();
 
