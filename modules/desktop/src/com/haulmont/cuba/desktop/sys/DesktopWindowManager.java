@@ -108,6 +108,15 @@ public class DesktopWindowManager extends WindowManager {
     protected void checkCanOpenWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params) {
     }
 
+    protected boolean hasModalWindow() {
+        Set<Map.Entry<Window, WindowOpenMode>> openModes = windowOpenMode.entrySet();
+        for (Map.Entry<Window, WindowOpenMode> openMode : openModes) {
+            if (OpenType.DIALOG.equals(openMode.getValue().getOpenType()))
+                return true;
+        }
+        return false;
+    }
+
     @Override
     protected void showWindow(Window window, String caption, OpenType openType, boolean multipleOpen) {
         showWindow(window, caption, null, openType, multipleOpen);
@@ -115,6 +124,11 @@ public class DesktopWindowManager extends WindowManager {
 
     @Override
     protected void showWindow(Window window, String caption, String description, OpenType openType, boolean multipleOpen) {
+        boolean forciblyDialog = false;
+        if (hasModalWindow()) {
+            openType = OpenType.DIALOG;
+            forciblyDialog = true;
+        }
         window.setCaption(caption);
         window.setDescription(description);
 
@@ -143,7 +157,7 @@ public class DesktopWindowManager extends WindowManager {
                 windowData = showWindowThisTab(window, caption, description);
                 break;
             case DIALOG:
-                windowData = showWindowDialog(window, caption, description);
+                windowData = showWindowDialog(window, caption, description, forciblyDialog);
                 break;
             default:
                 throw new UnsupportedOperationException();
@@ -161,7 +175,7 @@ public class DesktopWindowManager extends WindowManager {
         afterShowWindow(window);
     }
 
-    private JDialog showWindowDialog(final Window window, String caption, String description) {
+    private JDialog showWindowDialog(final Window window, String caption, String description, boolean forciblyDialog) {
         JDialog dialog = new JDialog(App.getInstance().getMainFrame(), caption);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -177,21 +191,28 @@ public class DesktopWindowManager extends WindowManager {
         );
 
         Dimension dim = new Dimension();
-        final DialogParams dialogParams = getDialogParams();
-        if (dialogParams.getWidth() != null)
-            dim.width = dialogParams.getWidth();
-        else
-            dim.width = 600;
+        if (forciblyDialog) {
+            window.setHeight("100%");
+            dim.width = 800;
+            dim.height = 500;
+            dialog.setResizable(true);
+        } else {
+            final DialogParams dialogParams = getDialogParams();
+            if (dialogParams.getWidth() != null)
+                dim.width = dialogParams.getWidth();
+            else
+                dim.width = 600;
 
-        if (dialogParams.getHeight() != null) {
-            dim.height = dialogParams.getHeight();
+            if (dialogParams.getHeight() != null) {
+                dim.height = dialogParams.getHeight();
+            }
+            dialog.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
+
+            dialogParams.reset();
         }
         dialog.setMinimumSize(dim);
-        dialog.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
         dialog.pack();
         dialog.setLocationRelativeTo(App.getInstance().getMainFrame());
-
-        dialogParams.reset();
 
         App.getInstance().disable(null);
         dialog.setVisible(true);

@@ -52,10 +52,10 @@ public class WebWindowManager extends WindowManager {
         private static final long serialVersionUID = -3919777239558187362L;
 
         protected final Map<Layout, WindowBreadCrumbs> tabs = new HashMap<Layout, WindowBreadCrumbs>();
-        protected final Map<WindowBreadCrumbs,Stack<Map.Entry<Window,Integer>>> stacks = new HashMap<WindowBreadCrumbs,Stack<Map.Entry<Window,Integer>>>();
+        protected final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>>();
         protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
-        protected final Map<Window,Integer> windows = new HashMap<Window,Integer>();
-		protected final Map<Layout, WindowBreadCrumbs> fakeTabs = new HashMap<Layout, WindowBreadCrumbs>();
+        protected final Map<Window, Integer> windows = new HashMap<Window, Integer>();
+        protected final Map<Layout, WindowBreadCrumbs> fakeTabs = new HashMap<Layout, WindowBreadCrumbs>();
     }
 
     protected App app;
@@ -206,12 +206,26 @@ public class WebWindowManager extends WindowManager {
         return getCurrentWindowData().stacks.get(breadCrumbs);
     }
 
+    protected boolean hasModalWindow() {
+        Set<Map.Entry<Window, WindowOpenMode>> windowOpenMode = getCurrentWindowData().windowOpenMode.entrySet();
+        for (Map.Entry<Window, WindowOpenMode> openMode : windowOpenMode) {
+            if (OpenType.DIALOG.equals(openMode.getValue().getOpenType()))
+                return true;
+        }
+        return false;
+    }
+
     protected void showWindow(final Window window, final String caption, OpenType type, boolean multipleOpen) {
         showWindow(window, caption, null, type, multipleOpen);
     }
 
     protected void showWindow(final Window window, final String caption, final String description, OpenType type, final boolean multipleOpen) {
         AppWindow appWindow = app.getAppWindow();
+        boolean forciblyDialog = false;
+        if (hasModalWindow()) {
+            type = OpenType.DIALOG;
+            forciblyDialog = true;
+        }
         final WindowOpenMode openMode = new WindowOpenMode(window, type);
         Component component;
 
@@ -262,7 +276,7 @@ public class WebWindowManager extends WindowManager {
                         return;
                     }
                 }
-				 component = showWindowNewTab(window, multipleOpen, caption, description, appWindow);
+                component = showWindowNewTab(window, multipleOpen, caption, description, appWindow);
                 break;
 
             case THIS_TAB:
@@ -271,7 +285,7 @@ public class WebWindowManager extends WindowManager {
                 break;
 
             case DIALOG:
-                component = showWindowDialog(window, caption, description, appWindow);
+                component = showWindowDialog(window, caption, description, appWindow, forciblyDialog);
                 break;
 
             default:
@@ -544,7 +558,7 @@ public class WebWindowManager extends WindowManager {
         return layout;
     }
 
-    protected Component showWindowDialog(final Window window, final String caption, final String description, AppWindow appWindow) {
+    protected Component showWindowDialog(final Window window, final String caption, final String description, AppWindow appWindow, boolean forciblyDialog) {
         removeWindowsWithName(window.getId());
 
         final com.vaadin.ui.Window win = createDialogWindow(window);
@@ -566,21 +580,28 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        final DialogParams dialogParams = getDialogParams();
-        if (dialogParams.getWidth() != null)
-            win.setWidth(dialogParams.getWidth().floatValue(), Sizeable.UNITS_PIXELS);
-        else
-            win.setWidth(600, Sizeable.UNITS_PIXELS);
+        if (forciblyDialog) {
+            outerLayout.setHeight(100, Sizeable.UNITS_PERCENTAGE);
+            win.setWidth(800, Sizeable.UNITS_PIXELS);
+            win.setHeight(500, Sizeable.UNITS_PIXELS);
+            win.setResizable(true);
+            window.setHeight("100%");
+        } else {
+            final DialogParams dialogParams = getDialogParams();
+            if (dialogParams.getWidth() != null)
+                win.setWidth(dialogParams.getWidth().floatValue(), Sizeable.UNITS_PIXELS);
+            else
+                win.setWidth(600, Sizeable.UNITS_PIXELS);
 
-        if (dialogParams.getHeight() != null) {
-            win.setHeight(dialogParams.getHeight().floatValue(), Sizeable.UNITS_PIXELS);
-            win.getContent().setHeight("100%");
+            if (dialogParams.getHeight() != null) {
+                win.setHeight(dialogParams.getHeight().floatValue(), Sizeable.UNITS_PIXELS);
+                win.getContent().setHeight("100%");
+            }
+
+            win.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
+
+            dialogParams.reset();
         }
-
-        win.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
-
-        dialogParams.reset();
-
         win.setModal(true);
 
         App.getInstance().getAppWindow().addWindow(win);
