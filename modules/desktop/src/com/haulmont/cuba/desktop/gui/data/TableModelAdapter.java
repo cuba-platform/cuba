@@ -7,7 +7,6 @@
 package com.haulmont.cuba.desktop.gui.data;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageUtils;

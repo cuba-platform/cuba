@@ -61,7 +61,6 @@ public abstract class DesktopAbstractTable<C extends JTable>
 {
     private static final int HEIGHT_MARGIN_FOR_ROWS = 2;
     private static final int WIDTH_MARGIN_FOR_CELL = 2;
-    private static final int MIN_ROW_HEIGHT = 32;
 
     protected MigLayout layout;
     protected JPanel panel;
