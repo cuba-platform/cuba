@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -164,6 +165,8 @@ public class DesktopTree
             }
             action.setDatasource(datasource);
         }
+
+        datasource.addListener(new CollectionDsActionsNotifier(this));
     }
 
     @Override

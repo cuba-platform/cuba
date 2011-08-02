@@ -23,6 +23,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -360,6 +361,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
         if (rowsCount != null)
             rowsCount.setDatasource(datasource);
+
+        datasource.addListener(new CollectionDsActionsNotifier(this));
     }
 
     private void setColumnIdentifiers() {

@@ -13,11 +13,15 @@ package com.haulmont.cuba.gui.components.actions;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ListComponent;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -26,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class EditAction extends AbstractAction {
+public class EditAction extends AbstractAction implements CollectionDatasourceListener {
 
     private static final long serialVersionUID = -4849373795449480016L;
 
@@ -53,7 +57,7 @@ public class EditAction extends AbstractAction {
 
     public String getCaption() {
         final String messagesPackage = AppConfig.getInstance().getMessagesPack();
-        if (UserSessionClient.getUserSession().isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.UPDATE))
+        if (UserSessionProvider.getUserSession().isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.UPDATE))
             return MessageProvider.getMessage(messagesPackage, "actions.Edit");
         else
             return MessageProvider.getMessage(messagesPackage, "actions.View");
@@ -108,5 +112,23 @@ public class EditAction extends AbstractAction {
     }
 
     protected void afterWindowClosed(Window window) {
+    }
+
+    @Override
+    public void collectionChanged(CollectionDatasource ds, Operation operation) {
+    }
+
+    @Override
+    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+        setEnabled(item != null);
+    }
+
+    @Override
+    public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
+        setEnabled(Datasource.State.VALID.equals(state) && ds.getItem() != null);
+    }
+
+    @Override
+    public void valueChanged(Object source, String property, Object prevValue, Object value) {
     }
 }
