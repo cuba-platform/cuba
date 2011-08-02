@@ -222,7 +222,7 @@ public class WebWindowManager extends WindowManager {
     protected void showWindow(final Window window, final String caption, final String description, OpenType type, final boolean multipleOpen) {
         AppWindow appWindow = app.getAppWindow();
         boolean forciblyDialog = false;
-        if (hasModalWindow()) {
+        if (type != OpenType.DIALOG && hasModalWindow()) {
             type = OpenType.DIALOG;
             forciblyDialog = true;
         }

@@ -40,8 +40,8 @@ public class ScreenHistoryBrowse extends AbstractWindow{
         LinkColumnHelper.initColumn(historyTable, "caption",
                 new LinkColumnHelper.Handler() {
                     public void onClick(Entity entity) {
-                        openUrl(entity);
                         close("windowClose");
+                        openUrl(entity);
                     }
                 }
         );
