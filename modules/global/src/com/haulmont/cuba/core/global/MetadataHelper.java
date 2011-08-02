@@ -21,6 +21,7 @@ import org.dom4j.Element;
 import javax.persistence.*;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -188,7 +189,14 @@ public abstract class MetadataHelper {
     }
 
     public static boolean isTransient(MetaProperty metaProperty) {
-        return isAnnotationPresent(metaProperty.getDeclaringClass(), metaProperty.getName(), Transient.class);
+        boolean isMetaProperty = isAnnotationPresent(metaProperty.getAnnotatedElement(),
+                com.haulmont.chile.core.annotations.MetaProperty.class);
+        return isMetaProperty || isAnnotationPresent(metaProperty.getAnnotatedElement(), Transient.class);
+    }
+
+    private static boolean isAnnotationPresent(AnnotatedElement annotatedElement,
+                                               Class<? extends Annotation> annotationClass) {
+        return annotatedElement.isAnnotationPresent(annotationClass);
     }
 
     public static void deployViews(Element rootFrameElement) {
