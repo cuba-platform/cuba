@@ -39,7 +39,7 @@ public class ResourceWindow extends Window {
      * @param dataProvider ExportDataprovider
      * @param resourceName Resource name for client side
      * @param format       Resource type, can be null
-     * @param attachment   If true then download file else view
+     * @param attachment   If (true) then { download file } else { view }
      */
     public ResourceWindow(ExportDataProvider dataProvider, String resourceName,
                           ExportFormat format, boolean attachment) {
@@ -94,8 +94,22 @@ public class ResourceWindow extends Window {
         else
             contentDisposition = "inline; " + fileNameParam;
 
+        downloadStream.setParameter("Cache-Control", "no-cache");
+        downloadStream.setParameter("Pragma", "no-cache");
+        downloadStream.setParameter("Expires", "-1");
+
         downloadStream.setParameter("Content-Disposition", contentDisposition);
 
         return downloadStream;
+    }
+
+    @Override
+    protected void close() {
+        super.close();
+        try {
+            if (dataProvider != null)
+                dataProvider.close();
+        } catch (Exception ignored) {
+        }
     }
 }

@@ -10,14 +10,17 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * Data provider for FileDescriptor
@@ -33,6 +36,8 @@ public class FileDataProvider implements ExportDataProvider {
     private FileDescriptor fileDescriptor;
     private InputStream inputStream;
     private boolean closed = false;
+
+    protected ClientConnectionManager connectionManager;
 
     public FileDataProvider(FileDescriptor fileDescriptor) {
         this.fileDescriptor = fileDescriptor;
@@ -75,7 +80,7 @@ public class FileDataProvider implements ExportDataProvider {
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         } finally {
-            httpClient.getConnectionManager().shutdown();
+            connectionManager = httpClient.getConnectionManager();
         }
 
         return inputStream;
@@ -86,11 +91,14 @@ public class FileDataProvider implements ExportDataProvider {
             closed = true;
             try {
                 inputStream.close();
+                if (connectionManager != null)
+                    connectionManager.shutdown();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } finally {
                 inputStream = null;
                 fileDescriptor = null;
+                connectionManager = null;
             }
         } else
             throw new RuntimeException("DataProvider is closed");

@@ -52,9 +52,11 @@ public class FileDownloadController {
             HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
+
         UserSession userSession = getSession(request, response);
         if (userSession == null) {
             error(response);
+            return null;
         }
 
         WebSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
@@ -84,6 +86,7 @@ public class FileDownloadController {
             response.setHeader("Pragma", "no-cache");
             response.setDateHeader("Expires", 0);
             response.setHeader("Content-Type", getContentType(fd));
+            response.setHeader("Pragma", "no-cache");
             response.setHeader("Content-Disposition", (attach ? "attachment" : "inline")
                     + "; filename=" + fileName);
 

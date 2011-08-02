@@ -126,6 +126,7 @@ public class WebExportDisplay implements ExportDisplay, Serializable {
             }
         }
         if (window != null) {
+            window.close();
             application.removeWindow(window);
         }
     }

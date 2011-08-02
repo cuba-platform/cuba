@@ -58,7 +58,7 @@ public class FileDownloadController {
 
             response.setHeader("Cache-Control", "no-cache");
             response.setHeader("Pragma", "no-cache");
-            response.setDateHeader("Expires", 0);
+            response.setIntHeader("Expires", -1);
             response.setHeader("Content-Type", FileTypesHelper.DEFAULT_MIME_TYPE);
 
             InputStream is = null;
@@ -66,11 +66,22 @@ public class FileDownloadController {
             try {
                 is = fileStorage.openFileInputStream(fd);
                 os = response.getOutputStream();
-                IOUtils.copy(is, os);
+
+                byte[] buffer = new byte[1024 * 64];
+                long count = 0;
+                int n = 0;
+                while (-1 != (n = is.read(buffer))) {
+                    os.write(buffer, 0, n);
+                    count += n;
+                }
+
                 os.flush();
             } catch (FileStorageException e) {
                 log.error("Unable to download file", e);
                 response.sendError(HTTP_NOT_FOUND);
+            } catch (Exception ex) {
+                log.error("Unable to download file", ex);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             } finally {
                 IOUtils.closeQuietly(is);
                 IOUtils.closeQuietly(os);
