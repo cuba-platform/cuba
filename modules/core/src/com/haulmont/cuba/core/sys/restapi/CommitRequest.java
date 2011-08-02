@@ -15,11 +15,12 @@ import java.util.*;
  * Author: Alexander Chevelev
  * Date: 27.04.2011
  * Time: 0:55:10
+ * $Id$
  */
 public class CommitRequest {
     private Collection commitInstances;
     private Collection removeInstances;
-    private boolean softDeletion;
+    private boolean softDeletion = true;
     private HashSet<String> newInstanceIds = new HashSet<String>();
     private Map<String, InstanceRef> instanceRefs = new HashMap<String, InstanceRef>();
 
@@ -30,7 +31,6 @@ public class CommitRequest {
     public Collection getRemoveInstances() {
         return removeInstances == null ? Collections.emptyList() : removeInstances;
     }
-
 
     public boolean isSoftDeletion() {
         return softDeletion;
