@@ -22,4 +22,9 @@
         <property name="serviceInterface" value="com.haulmont.cuba.core.app.CubaDeployerService"/>
     </bean>
 
+    <bean name="/cuba_LocalizedMessageService" class="com.haulmont.cuba.core.sys.remoting.HttpServiceExporter">
+        <property name="service" ref="cuba_LocalizedMessageService"/>
+        <property name="serviceInterface" value="com.haulmont.cuba.core.app.LocalizedMessageService"/>
+    </bean>
+
 </beans>

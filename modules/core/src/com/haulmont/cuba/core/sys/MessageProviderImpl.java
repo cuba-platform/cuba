@@ -22,4 +22,9 @@ public class MessageProviderImpl extends AbstractMessageProvider
                     SecurityProvider.currentUserSession().getLocale() :
                     Locale.getDefault();
     }
+
+    @Override
+    protected String searchRemotely(String pack, String key, Locale locale) {
+        return null;
+    }
 }

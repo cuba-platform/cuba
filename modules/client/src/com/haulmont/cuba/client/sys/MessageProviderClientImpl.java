@@ -10,8 +10,10 @@
  */
 package com.haulmont.cuba.client.sys;
 
+import com.haulmont.cuba.core.app.LocalizedMessageService;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.sys.AbstractMessageProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.Locale;
@@ -22,5 +24,18 @@ public class MessageProviderClientImpl extends AbstractMessageProvider {
     protected Locale getUserLocale() {
         UserSession userSession = UserSessionProvider.getUserSession();
         return userSession != null ? userSession.getLocale() : Locale.getDefault();
+    }
+
+    @Override
+    protected String searchRemotely(String pack, String key, Locale locale) {
+        if (!AppContext.isStarted())
+            return null;
+
+        LocalizedMessageService ms = AppContext.getBean(LocalizedMessageService.NAME);
+        String message = ms.getMessage(pack, key, locale);
+        if (key.equals(message))
+            return null;
+        else
+            return message;
     }
 }

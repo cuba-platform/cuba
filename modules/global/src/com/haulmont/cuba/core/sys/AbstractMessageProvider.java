@@ -34,10 +34,15 @@ public abstract class AbstractMessageProvider extends MessageProvider
 
     private Map<String, String> strCache = new ConcurrentHashMap<String, String>();
 
+    private Map<String, String> notFoundCache = new ConcurrentHashMap<String, String>();
+
     protected abstract Locale getUserLocale();
+
+    protected abstract String searchRemotely(String pack, String key, Locale locale);
 
     protected void __clearCache() {
         strCache.clear();
+        notFoundCache.clear();
     }
 
     protected String __getMessage(Class caller, String key) {
@@ -78,6 +83,11 @@ public abstract class AbstractMessageProvider extends MessageProvider
         if (key == null)
             throw new IllegalArgumentException("Message key is null");
 
+        String notFoundKey = makeCacheKey(packs, key, locale);
+        String notFoundValue = notFoundCache.get(notFoundKey);
+        if (notFoundValue != null)
+            return notFoundValue;
+
         StrTokenizer tokenizer = new StrTokenizer(packs);
         List<String> list = tokenizer.getTokenList();
         Collections.reverse(list);
@@ -85,6 +95,9 @@ public abstract class AbstractMessageProvider extends MessageProvider
             String msg = searchFiles(pack, key, locale);
             if (msg == null) {
                 msg = searchClasspath(pack, key, locale);
+            }
+            if (msg == null) {
+                msg = searchRemotely(pack, key, locale);
             }
             if (msg != null)
                 return msg;
@@ -94,6 +107,7 @@ public abstract class AbstractMessageProvider extends MessageProvider
             String packName = new StrBuilder().appendWithSeparators(list, ",").toString();
             log.trace("Resource '" + makeCacheKey(packName, key, locale) + "' not found");
         }
+        notFoundCache.put(notFoundKey, key);
         return key;
     }
 
