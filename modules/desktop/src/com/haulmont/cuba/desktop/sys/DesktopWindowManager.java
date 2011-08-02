@@ -29,6 +29,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.font.OpenType;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
@@ -125,7 +126,7 @@ public class DesktopWindowManager extends WindowManager {
     @Override
     protected void showWindow(Window window, String caption, String description, OpenType openType, boolean multipleOpen) {
         boolean forciblyDialog = false;
-        if (hasModalWindow()) {
+        if (openType != OpenType.DIALOG && hasModalWindow()) {
             openType = OpenType.DIALOG;
             forciblyDialog = true;
         }
