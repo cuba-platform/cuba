@@ -277,7 +277,7 @@ public abstract class UITestCase extends TestCase {
 
     protected void startProgramInstance() throws IOException {
         String clientProgram = System.getenv(ACCEPTANCE_CLIENT_KEY);
-        if (StringUtils.isWhitespace(clientProgram))
+        if (StringUtils.isEmpty(clientProgram) || StringUtils.isWhitespace(clientProgram))
             clientProgram = getClientProgram();
 
         clientRunner = Runtime.getRuntime().exec(clientProgram, getEnvSpecs(ACCEPTANCE_CLIENT_ENV_KEY), null);
