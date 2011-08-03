@@ -44,6 +44,17 @@ public abstract class UITestCase extends TestCase {
 
     private Process clientRunner;
 
+    private String[] environmentSpecs = null;
+    {
+        // Server environment
+        if (!OsUtils.isWindows()) {
+            environmentSpecs = new String[] {
+                "DISPLAY=:0.0",
+                "XAUTHORITY=/home/haulmont/.Xauthority"
+            };
+        }
+    }
+
     public UITestCase() {
         super();
     }
@@ -77,8 +88,8 @@ public abstract class UITestCase extends TestCase {
                     if (!result)
                         throw new IOException("Couldn't create out directory");
                 }
-                captureScreen(outDirPath + getName() + ".png");
                 saveLog(testSteps, outDirPath + getName() + ".log");
+                captureScreen(outDirPath + getName() + ".png");
                 break;
             }
         }
@@ -140,7 +151,7 @@ public abstract class UITestCase extends TestCase {
             else
                 command = scriptFile + " " + testFilePath;
 
-            Process testRunner = Runtime.getRuntime().exec(command);
+            Process testRunner = Runtime.getRuntime().exec(command, environmentSpecs, null);
 
             ByteArrayOutputStream stdOutBuffer = new ByteArrayOutputStream();
             ByteArrayOutputStream stdErrBuffer = new ByteArrayOutputStream();
@@ -260,7 +271,7 @@ public abstract class UITestCase extends TestCase {
         String clientProgram = System.getenv(ACCEPTANCE_CLIENT_KEY);
         if (StringUtils.isEmpty(clientProgram))
             clientProgram = getClientProgram();
-        clientRunner = Runtime.getRuntime().exec(clientProgram);
+        clientRunner = Runtime.getRuntime().exec(clientProgram, environmentSpecs, null);
     }
 
     protected void stopProgramInstance() {
