@@ -40,20 +40,21 @@ public abstract class UITestCase extends TestCase {
      */
     private static final String ACCEPTANCE_CLIENT_KEY = "ACCEPTANCE_CLIENT";
 
+    /**
+     * Key in system environment variables <br/>
+     * Define custom environment variables for client program
+     */
+    private static final String ACCEPTANCE_CLIENT_ENV_KEY = "ACCEPTANCE_CLIENT_ENV";
+
+    /**
+     * Key in system environment variables <br/>
+     * Define custom environment variables for executor script
+     */
+    private static final String ACCEPTANCE_EXECUTOR_ENV_KEY = "ACCEPTANCE_EXECUTOR_ENV";
+
     private static final String ACCEPTANCE_DIR = "tests/ui/";
 
     private Process clientRunner;
-
-    private String[] environmentSpecs = null;
-    {
-        // Server environment
-        if (!OsUtils.isWindows()) {
-            environmentSpecs = new String[] {
-                "DISPLAY=:0.0",
-                "XAUTHORITY=/home/haulmont/.Xauthority"
-            };
-        }
-    }
 
     public UITestCase() {
         super();
@@ -151,7 +152,7 @@ public abstract class UITestCase extends TestCase {
             else
                 command = scriptFile + " " + testFilePath;
 
-            Process testRunner = Runtime.getRuntime().exec(command, environmentSpecs, null);
+            Process testRunner = Runtime.getRuntime().exec(command, getEnvSpecs(ACCEPTANCE_EXECUTOR_ENV_KEY), null);
 
             ByteArrayOutputStream stdOutBuffer = new ByteArrayOutputStream();
             ByteArrayOutputStream stdErrBuffer = new ByteArrayOutputStream();
@@ -269,9 +270,18 @@ public abstract class UITestCase extends TestCase {
 
     protected void startProgramInstance() throws IOException {
         String clientProgram = System.getenv(ACCEPTANCE_CLIENT_KEY);
-        if (StringUtils.isEmpty(clientProgram))
+        if (StringUtils.isWhitespace(clientProgram))
             clientProgram = getClientProgram();
-        clientRunner = Runtime.getRuntime().exec(clientProgram, environmentSpecs, null);
+
+        clientRunner = Runtime.getRuntime().exec(clientProgram, getEnvSpecs(ACCEPTANCE_CLIENT_ENV_KEY), null);
+    }
+
+    private String[] getEnvSpecs(String key) {
+        String[] environmentSpecs = null;
+        String environment = System.getenv(key);
+        if (!StringUtils.isWhitespace(environment))
+            environmentSpecs = environment.split("\\|");
+        return environmentSpecs;
     }
 
     protected void stopProgramInstance() {
