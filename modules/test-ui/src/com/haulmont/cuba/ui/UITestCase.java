@@ -79,23 +79,30 @@ public abstract class UITestCase extends TestCase {
         StringBuilder info = new StringBuilder();
         executeTestScript(executorScript, testFileName, errors, info);
 
+        String outDirPath = getOutputPath();
+
         List<UITestStep> testSteps = analyzeTestSteps(info.toString(), errors.toString());
         for (UITestStep testStep : testSteps) {
             if (!testStep.isSuccess()) {
-                String outDirPath = ACCEPTANCE_DIR + "out/";
-                File outDir = new File(outDirPath);
-                if (!outDir.exists()) {
-                    boolean result = outDir.mkdirs();
-                    if (!result)
-                        throw new IOException("Couldn't create out directory");
-                }
-                saveLog(testSteps, outDirPath + getName() + ".log");
                 captureScreen(outDirPath + getName() + ".png");
                 break;
             }
         }
 
+        saveLog(testSteps, outDirPath + getName() + ".log");
+
         return testSteps;
+    }
+
+    private String getOutputPath() throws IOException {
+        String outDirPath = ACCEPTANCE_DIR + "out/";
+        File outDir = new File(outDirPath);
+        if (!outDir.exists()) {
+            boolean result = outDir.mkdirs();
+            if (!result)
+                throw new IOException("Couldn't create out directory");
+        }
+        return outDirPath;
     }
 
     private void saveLog(List<UITestStep> testSteps, String logFile) throws Exception {
