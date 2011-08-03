@@ -185,7 +185,7 @@ public abstract class UITestCase extends TestCase {
         UITestLogMessage currentMessage = null;
         String[] logStrings = infoLog.split("\n");
         for (String logEnrty : logStrings) {
-            if (!StringUtils.isWhitespace(logEnrty)) {
+            if (isNotWhitespaceString(logEnrty)) {
                 UITestLogMessage logMessage = UITestLogMessage.parse(logEnrty);
 
                 if (logMessage.getMessageLevel() == UITestLogMessage.Level.STEP) {
@@ -201,7 +201,7 @@ public abstract class UITestCase extends TestCase {
                 } else {
                     if (currentMessage == null)
                         currentMessage = new UITestLogMessage(UITestLogMessage.Level.CONTENT, "");
-                    if (!StringUtils.isWhitespace(logMessage.getMessage()))
+                    if (isNotWhitespaceString(logMessage.getMessage()))
                         currentMessage.getContent().append(logMessage.getMessage().trim()).append("\n");
                 }
             }
@@ -221,7 +221,7 @@ public abstract class UITestCase extends TestCase {
             }
         }
 
-        if (!StringUtils.isWhitespace(errorsLog) &&
+        if (isNotWhitespaceString(errorsLog) &&
                 (errorsLog.contains("error") || errorsLog.contains("Exception"))) {
 
             UITestLogMessage logMessage = new UITestLogMessage(UITestLogMessage.Level.ERROR, "Fatal error");
@@ -286,9 +286,13 @@ public abstract class UITestCase extends TestCase {
     private String[] getEnvSpecs(String key) {
         String[] environmentSpecs = null;
         String environment = System.getenv(key);
-        if (!StringUtils.isWhitespace(environment))
+        if (isNotWhitespaceString(environment))
             environmentSpecs = environment.split("\\|");
         return environmentSpecs;
+    }
+
+    private boolean isNotWhitespaceString(String str) {
+        return StringUtils.isNotEmpty(str) && !StringUtils.isWhitespace(str);
     }
 
     protected void stopProgramInstance() {
