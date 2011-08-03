@@ -56,6 +56,8 @@ public abstract class UITestCase extends TestCase {
 
     private Process clientRunner;
 
+    private boolean makeScreenshot = false;
+
     public UITestCase() {
         super();
     }
@@ -79,17 +81,16 @@ public abstract class UITestCase extends TestCase {
         StringBuilder info = new StringBuilder();
         executeTestScript(executorScript, testFileName, errors, info);
 
-        String outDirPath = getOutputPath();
-
         List<UITestStep> testSteps = analyzeTestSteps(info.toString(), errors.toString());
-        for (UITestStep testStep : testSteps) {
-            if (!testStep.isSuccess()) {
-                captureScreen(outDirPath + getName() + ".png");
-                break;
-            }
+        int i = 0;
+        while (i < testSteps.size() && testSteps.get(i).isSuccess()) {
+            i++;
         }
 
+        String outDirPath = getOutputPath();
         saveLog(testSteps, outDirPath + getName() + ".log");
+        if (i < testSteps.size() && makeScreenshot)
+            captureScreen(outDirPath + getName() + ".png");
 
         return testSteps;
     }
@@ -310,5 +311,13 @@ public abstract class UITestCase extends TestCase {
             Assert.assertTrue("Failed on step: " + testStep.getName(), testStep.isSuccess());
         }
         return result;
+    }
+
+    protected boolean isMakeScreenshot() {
+        return makeScreenshot;
+    }
+
+    protected void setMakeScreenshot(boolean makeScreenshot) {
+        this.makeScreenshot = makeScreenshot;
     }
 }
