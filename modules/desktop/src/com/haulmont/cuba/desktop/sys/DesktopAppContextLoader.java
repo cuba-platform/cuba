@@ -8,16 +8,14 @@ package com.haulmont.cuba.desktop.sys;
 
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
-import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SingleSecurityContextHolder;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.config.WindowConfig;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -29,8 +27,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Locale;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * <p>$Id$</p>
@@ -46,11 +43,13 @@ public class DesktopAppContextLoader {
     public static final String SPRING_CONTEXT_CONFIG = "cuba.springContextConfig";
 
     private String defaultAppPropertiesConfig;
+    private String[] args;
 
     private Log log = LogFactory.getLog(DesktopAppContextLoader.class);
 
-    public DesktopAppContextLoader(String defaultAppPropertiesConfig) {
+    public DesktopAppContextLoader(String defaultAppPropertiesConfig, String[] args) {
         this.defaultAppPropertiesConfig = defaultAppPropertiesConfig;
+        this.args = args;
     }
 
     public void load() {
@@ -131,6 +130,16 @@ public class DesktopAppContextLoader {
             }
         }
 
+        for (String arg : args) {
+            arg = arg.trim();
+            int pos = arg.indexOf('=');
+            if (pos > 0) {
+                String key = arg.substring(0, pos);
+                String value = arg.substring(pos + 1);
+                properties.setProperty(key, value);
+            }
+        }
+
         StrSubstitutor substitutor = new StrSubstitutor(new StrLookup() {
             @Override
             public String lookup(String key) {
@@ -142,6 +151,13 @@ public class DesktopAppContextLoader {
             String value = substitutor.replace(properties.getProperty((String) key));
             AppContext.setProperty((String) key, value);
         }
+
+        List<String> list = new ArrayList<String>();
+        for (String key : AppContext.getPropertyNames()) {
+            list.add(key + "=" + AppContext.getProperty(key));
+        }
+        Collections.sort(list);
+        log.info(new StrBuilder("AppProperties:\n").appendWithSeparators(list, "\n"));
     }
 
     private void initAppContext() {

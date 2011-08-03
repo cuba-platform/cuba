@@ -15,7 +15,10 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.sys.AbstractMessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
+import java.net.ConnectException;
+import java.util.List;
 import java.util.Locale;
 
 public class MessageProviderClientImpl extends AbstractMessageProvider {
@@ -31,11 +34,20 @@ public class MessageProviderClientImpl extends AbstractMessageProvider {
         if (!AppContext.isStarted())
             return null;
 
-        LocalizedMessageService ms = AppContext.getBean(LocalizedMessageService.NAME);
-        String message = ms.getMessage(pack, key, locale);
-        if (key.equals(message))
-            return null;
-        else
-            return message;
+        try {
+            LocalizedMessageService ms = AppContext.getBean(LocalizedMessageService.NAME);
+            String message = ms.getMessage(pack, key, locale);
+            if (key.equals(message))
+                return null;
+            else
+                return message;
+        } catch (Exception e) {
+            List list = ExceptionUtils.getThrowableList(e);
+            for (Object throwable : list) {
+                if (throwable instanceof ConnectException)
+                    return null; // silently ignore connection errors
+            }
+            throw (RuntimeException) e;
+        }
     }
 }

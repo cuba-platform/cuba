@@ -31,6 +31,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Locale;
 
 /**
@@ -60,10 +61,10 @@ public class App implements ConnectionListener {
 
     protected DesktopTheme theme;
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                app = new App();
+                app = new App(args);
                 app.show();
                 app.showLoginDialog();
             }
@@ -74,7 +75,7 @@ public class App implements ConnectionListener {
         return app;
     }
 
-    public App() {
+    public App(String[] args) {
         try {
             System.setSecurityManager(null);
             initHomeDir();
@@ -85,9 +86,11 @@ public class App implements ConnectionListener {
         }
 
         try {
+            log.debug("Program arguments: " + Arrays.toString(args));
+
             initConnection();
 
-            DesktopAppContextLoader contextLoader = new DesktopAppContextLoader(getDefaultAppPropertiesConfig());
+            DesktopAppContextLoader contextLoader = new DesktopAppContextLoader(getDefaultAppPropertiesConfig(), args);
             contextLoader.load();
 
             initTheme();
