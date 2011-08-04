@@ -83,13 +83,12 @@ public class DesktopLookupField
                             // Only if realy item changed
                             Object selectedItem = impl.getSelectedItem();
                             if (selectedItem instanceof ValueWrapper) {
-                                updateInstance(selectedItem);
-                                updateComponent(((ValueWrapper) selectedItem).getValue());
-                                fireChangeListeners();
+                                Object selectedValue = ((ValueWrapper) selectedItem).getValue();
+                                setValue(selectedValue);
                             } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
                                 newOptionHandler.addNewOption((String) selectedItem);
                             } else if ((selectedItem!=null) && !newOptionAllowed) {
-                                impl.setSelectedItem(createValueWrapper(prevValue));
+                                updateComponent(prevValue);
                             }
                         }
                     }
@@ -125,33 +124,9 @@ public class DesktopLookupField
             if (selectedItem instanceof ValueWrapper) {
             } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
             } else if (!newOptionAllowed) {
-                ValueWrapper prevValueItem = createValueWrapper(prevValue);
-                impl.setSelectedItem(prevValueItem);
-                impl.getModel().setSelectedItem(prevValueItem);
-                impl.getEditor().setItem(prevValueItem);
+                updateComponent(prevValue);
             }
             resetValueState = false;
-        }
-    }
-
-    @Override
-    protected void updateInstance(Object value) {
-        ValueWrapper selectedItem;
-        if (value instanceof ValueWrapper)
-            selectedItem = (ValueWrapper) value;
-        else
-            selectedItem = (ValueWrapper) impl.getSelectedItem();
-
-        updatingInstance = true;
-        try {
-            if (selectedItem != prevValue) {
-                if (datasource != null && metaProperty != null && datasource.getItem() != null) {
-                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(),
-                            selectedItem == null ? null : selectedItem.getValue());
-                }
-            }
-        } finally {
-            updatingInstance = false;
         }
     }
 

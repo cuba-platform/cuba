@@ -91,8 +91,9 @@ public class DesktopOptionsGroup
             );
 
             if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID)) {
-                updateComponent(datasource.getItem());
-                fireChangeListeners();
+                Entity newValue = datasource.getItem();
+                updateComponent(newValue);
+                fireChangeListeners(newValue);
             }
             optionsInitialized = true;
         }
@@ -110,8 +111,9 @@ public class DesktopOptionsGroup
             }
 
             if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID)) {
-                updateComponent(datasource.getItem());
-                fireChangeListeners();
+                Entity newValue = datasource.getItem();
+                updateComponent(newValue);
+                fireChangeListeners(newValue);
             }
             optionsInitialized = true;
         }
@@ -129,8 +131,9 @@ public class DesktopOptionsGroup
             }
 
             if ((datasource!= null) && (datasource.getState() == Datasource.State.VALID)) {
-                updateComponent(datasource.getItem());
-                fireChangeListeners();
+                Entity newValue = datasource.getItem();
+                updateComponent(newValue);
+                fireChangeListeners(newValue);
             }
             optionsInitialized = true;
         }
@@ -150,8 +153,11 @@ public class DesktopOptionsGroup
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        updateInstance(item);
-                        fireChangeListeners();
+                        Object newValue = item.getValue();
+                        if (!ObjectUtils.equals(newValue, prevValue)) {
+                            updateInstance(newValue);
+                            fireChangeListeners(newValue);
+                        }
                     }
                 }
         );
@@ -179,27 +185,6 @@ public class DesktopOptionsGroup
             }
         } else {
             super.updateComponent(value);
-        }
-    }
-
-    @Override
-    protected void updateInstance(Object value) {
-        ValueWrapper selectedItem;
-        if (value instanceof ValueWrapper)
-            selectedItem = (ValueWrapper) value;
-        else
-            selectedItem = new ObjectWrapper(value);
-
-        if (datasource != null && metaProperty != null) {
-            updatingInstance = true;
-            try {
-                if (datasource.getItem() != null) {
-                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(),
-                            selectedItem == null ? null : selectedItem.getValue());
-                }
-            } finally {
-                updatingInstance = false;
-            }
         }
     }
 

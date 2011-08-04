@@ -12,7 +12,6 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.CheckBox;
-import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.BooleanUtils;
@@ -56,9 +55,14 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
     @Override
     public void setValue(Object value) {
         if (!ObjectUtils.equals(prevValue, value)) {
-            impl.setSelected(value != null ? (Boolean) value : false);
+            updateComponent(value);
             updateInstance();
+            fireChangeListeners(value);
         }
+    }
+
+    private void updateComponent(Object value) {
+        impl.setSelected(value != null && BooleanUtils.isTrue((Boolean) value));
     }
 
     @Override
@@ -96,7 +100,8 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
                         if (updatingInstance)
                             return;
                         Boolean value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-                        impl.setSelected(BooleanUtils.isTrue(value));
+                        updateComponent(value);
+                        fireChangeListeners(value);
                     }
 
                     @Override
@@ -104,7 +109,8 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
                         if (updatingInstance)
                             return;
                         if (property.equals(metaPropertyPath.toString())) {
-                            impl.setSelected(BooleanUtils.isTrue((Boolean) value));
+                            updateComponent(value);
+                            fireChangeListeners(value);
                         }
                     }
                 }
@@ -115,6 +121,7 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         updateInstance();
+                        fireChangeListeners(getValue());
                     }
                 }
         );
@@ -171,8 +178,9 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
         } finally {
             updatingInstance = false;
         }
+    }
 
-        Object newValue = getValue();
+    private void fireChangeListeners(Object newValue) {
         if (!ObjectUtils.equals(prevValue, newValue))
             fireValueChanged(prevValue, newValue);
         prevValue = newValue;

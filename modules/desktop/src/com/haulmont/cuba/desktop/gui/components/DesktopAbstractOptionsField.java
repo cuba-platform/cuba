@@ -40,12 +40,15 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
     protected String descProperty;
+
     protected CollectionDatasource<Entity<Object>, Object> optionsDatasource;
     protected List optionsList;
     protected Map<String, Object> optionsMap;
+
     protected Datasource datasource;
     protected MetaProperty metaProperty;
     protected MetaPropertyPath metaPropertyPath;
+
     protected boolean updatingInstance;
 
     protected Object prevValue;
@@ -164,12 +167,8 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
             updateComponent(newValue);
-            fireChangeListeners();
+            fireChangeListeners(newValue);
         }
-    }
-
-    protected void fireChangeListeners() {
-        fireChangeListeners(getValue());
     }
 
     protected void fireChangeListeners(Object newValue) {
@@ -221,6 +220,13 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     }
 
     protected void updateInstance(Object value) {
+        updatingInstance = true;
+        try {
+            if (datasource != null && metaProperty != null && datasource.getItem() != null)
+                InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+        } finally {
+            updatingInstance = false;
+        }
     }
 
     @Override
@@ -228,7 +234,7 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
         if (!ObjectUtils.equals(prevValue, value)) {
             updateComponent(value);
             updateInstance(value);
-            fireChangeListeners();
+            fireChangeListeners(value);
         }
     }
 

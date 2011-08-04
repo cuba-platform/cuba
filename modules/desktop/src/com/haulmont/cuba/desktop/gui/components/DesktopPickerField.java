@@ -49,6 +49,7 @@ public class DesktopPickerField
 
     protected java.util.List<Action> actionsOrder = new LinkedList<Action>();
     private String caption;
+    private boolean updatingInstance;
 
     public DesktopPickerField() {
         impl = new Picker();
@@ -130,12 +131,25 @@ public class DesktopPickerField
     @Override
     public void setValue(Object value) {
         if (!ObjectUtils.equals(prevValue, value)) {
-            if (datasource == null) {
-                fireChangeListeners(value);
-            } else {
-                datasource.getItem().setValue(metaProperty.getName(), value);
-            }
-            updateText(value);
+            updateInstance(value);
+            updateComponent(value);
+            fireChangeListeners(value);
+        }
+    }
+
+    private void updateInstance(Object value) {
+        if (updatingInstance)
+            return;
+
+        if (ObjectUtils.equals(prevValue, value))
+            return;
+
+        updatingInstance = true;
+        try {
+            if (datasource != null && metaProperty != null && datasource.getItem() != null)
+                InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
+        } finally {
+            updatingInstance = false;
         }
     }
 
@@ -166,15 +180,21 @@ public class DesktopPickerField
                 new DsListenerAdapter() {
                     @Override
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+                        if (updatingInstance)
+                            return;
+
                         Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-                        updateText(value);
+                        updateComponent(value);
                         fireChangeListeners(value);
                     }
 
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+                        if (updatingInstance)
+                            return;
+
                         if (property.equals(metaProperty.getName())) {
-                            updateText(value);
+                            updateComponent(value);
                             fireChangeListeners(value);
                         }
                     }
@@ -183,7 +203,7 @@ public class DesktopPickerField
 
         if ((datasource.getState() == Datasource.State.VALID) && (datasource.getItem() != null)) {
             Object newValue = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
-            updateText(newValue);
+            updateComponent(newValue);
             fireChangeListeners();
         }
     }
@@ -199,7 +219,7 @@ public class DesktopPickerField
         }
     }
 
-    protected void updateText(Object value) {
+    protected void updateComponent(Object value) {
         String text;
 
         if (value == null) {

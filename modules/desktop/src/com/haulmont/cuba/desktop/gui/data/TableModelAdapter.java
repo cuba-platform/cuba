@@ -94,6 +94,7 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
         return c.getCaption();
     }
 
+    @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         Object id = getItemId(rowIndex);
 

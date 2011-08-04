@@ -6,10 +6,11 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.chile.core.model.*;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
@@ -34,11 +35,9 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     protected MetaProperty metaProperty;
     protected MetaPropertyPath metaPropertyPath;
 
-    protected Formatter formatter;
-
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
 
-    private Locale locale = UserSessionProvider.getLocale();
+    private DefaultValueFormatter valueFormatter;
 
     private Object prevValue;
 
@@ -47,6 +46,9 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     public DesktopLabel() {
         impl = new JLabel();
         setAlignment(Alignment.MIDDLE_LEFT);
+
+        Locale locale = UserSessionProvider.getLocale();
+        valueFormatter = new DefaultValueFormatter(locale);
     }
 
     public Datasource getDatasource() {
@@ -69,21 +71,27 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
         metaPropertyPath = metaClass.getPropertyPath(property);
         metaProperty = metaPropertyPath.getMetaProperty();
 
+        valueFormatter.setMetaProperty(metaProperty);
+
         datasource.addListener(
                 new DsListenerAdapter() {
                     @Override
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+                        if (updatingInstance)
+                            return;
+
                         Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-                        String text = formatValue(value);
-                        impl.setText(text);
+                        updateComponent(value);
                         fireChangeListeners(value);
                     }
 
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+                        if (updatingInstance)
+                            return;
+
                         if (property.equals(metaPropertyPath.toString())) {
-                            String text = formatValue(value);
-                            impl.setText(text);
+                            updateComponent(value);
                             fireChangeListeners(value);
                         }
                     }
@@ -96,35 +104,6 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
         }
     }
 
-    private String formatValue(Object value) {
-        String text;
-        if (metaProperty != null)
-            text = formatValue(value, metaProperty);
-        else
-            text = value == null ? "" : String.valueOf(value);
-        return text;
-    }
-
-    private String formatValue(Object value, MetaProperty metaProperty) {
-        String text;
-        if (value == null) {
-            text = "";
-        } else if (formatter == null) {
-            Range range = metaProperty.getRange();
-            if (range.isDatatype()) {
-                text = range.asDatatype().format(value, locale);
-            } else if (range.isEnum()) {
-                text = MessageProvider.getMessage((Enum) value);
-            } else if (range.isClass()) {
-                text = InstanceUtils.getInstanceName((Instance) value);
-            } else
-                text = value.toString();
-        } else {
-            text = formatter.format(value);
-        }
-        return text;
-    }
-
     public boolean isEditable() {
         return false;
     }
@@ -133,22 +112,25 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
     }
 
     public Formatter getFormatter() {
-        return formatter;
+        return valueFormatter.getFormatter();
     }
 
     public void setFormatter(Formatter formatter) {
-        this.formatter = formatter;
-        impl.setText(formatValue(prevValue));
+        valueFormatter.setFormatter(formatter);
+        updateComponent(prevValue);
     }
 
     public <T> T getValue() {
-        return (T) impl.getText();
+        return (T) prevValue;
     }
 
+    @Override
     public void setValue(Object value) {
-        impl.setText(formatValue(value));
-        updateInstance(value);
-        fireChangeListeners(value);
+       if (!ObjectUtils.equals(prevValue, value)) {
+           updateInstance(value);
+           updateComponent(value);
+           fireChangeListeners(value);
+       }
     }
 
     private void updateInstance(Object value) {
@@ -168,6 +150,10 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
         } finally {
             updatingInstance = false;
         }
+    }
+
+    private void updateComponent(Object value) {
+        impl.setText(valueFormatter.formatValue(value));
     }
 
     private void fireChangeListeners(Object newValue) {

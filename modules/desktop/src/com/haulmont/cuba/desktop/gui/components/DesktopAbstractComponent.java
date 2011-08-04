@@ -6,16 +6,24 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.Range;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.ComponentSize;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.IFrame;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import javax.swing.*;
+import java.util.Locale;
 
 /**
  * <p>$Id$</p>
@@ -172,4 +180,75 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public void setExpanded(boolean expanded) {}
+
+    /**
+     * Default formatter for {@link DesktopLabel} and {@link DesktopTextField}
+     */
+    protected static class DefaultValueFormatter {
+
+        private MetaProperty metaProperty;
+        private Formatter formatter;
+        private Datatype datatype;
+        private Locale locale;
+
+        public DefaultValueFormatter(Locale locale) {
+            this.locale = locale;
+        }
+
+        public Formatter getFormatter() {
+            return formatter;
+        }
+
+        public void setFormatter(Formatter formatter) {
+            this.formatter = formatter;
+        }
+
+        public Datatype getDatatype() {
+            return datatype;
+        }
+
+        public void setDatatype(Datatype datatype) {
+            this.datatype = datatype;
+        }
+
+        public MetaProperty getMetaProperty() {
+            return metaProperty;
+        }
+
+        public void setMetaProperty(MetaProperty metaProperty) {
+            this.metaProperty = metaProperty;
+        }
+
+        /**
+         * Format value for text field or lable
+         * @param value Object value
+         * @return Formatted string
+         */
+        public String formatValue(Object value) {
+            String text = "";
+            if (formatter == null) {
+                if (value == null) {
+                    text = "";
+                } else {
+                    if (metaProperty != null) {
+                        Range range = metaProperty.getRange();
+                        if (range.isDatatype()) {
+                            text = range.asDatatype().format(value, locale);
+                        } else if (range.isEnum()) {
+                            text = MessageProvider.getMessage((Enum) value);
+                        } else if (range.isClass()) {
+                            text = InstanceUtils.getInstanceName((Instance) value);
+                        } else
+                            text = String.valueOf(value);
+                    } else if (datatype != null) {
+                        datatype.format(value, locale);
+                    } else
+                        text = String.valueOf(value);
+                }
+            } else {
+                text = formatter.format(value);
+            }
+            return text;
+        }
+    }
 }

@@ -181,7 +181,8 @@ public class DesktopDateField
     @Override
     public void setValue(Object value) {
         if (!ObjectUtils.equals(prevValue, value)) {
-            updatePartsFromValue((Date) value);
+            updateComponent((Date) value);
+            fireChangeListeners(value);
         }
     }
 
@@ -239,7 +240,8 @@ public class DesktopDateField
                         if (updatingInstance)
                             return;
                         Date value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-                        updatePartsFromValue(value);
+                        updateComponent(value);
+                        fireChangeListeners(value);
                     }
 
                     @Override
@@ -247,7 +249,8 @@ public class DesktopDateField
                         if (updatingInstance)
                             return;
                         if (property.equals(metaPropertyPath.toString())) {
-                            updatePartsFromValue((Date) value);
+                            updateComponent((Date) value);
+                            fireChangeListeners(value);
                         }
                     }
                 }
@@ -256,14 +259,15 @@ public class DesktopDateField
         if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
             if (property.equals(metaPropertyPath.toString())) {
                 Date value = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
-                updatePartsFromValue(value);
+                updateComponent(value);
+                fireChangeListeners(value);
             }
         }
 
         setRequired(metaProperty.isMandatory());
     }
 
-    private void updatePartsFromValue(Date value) {
+    private void updateComponent(Date value) {
         updatingInstance = true;
         try {
             setDateParts(value);
@@ -271,8 +275,9 @@ public class DesktopDateField
         } finally {
             updatingInstance = false;
         }
+    }
 
-        Object newValue = getValue();
+    private void fireChangeListeners(Object newValue) {
         if (!ObjectUtils.equals(prevValue, newValue))
             fireValueChanged(prevValue, newValue);
         prevValue = newValue;
@@ -365,9 +370,7 @@ public class DesktopDateField
         }
         if (valid) {
             Object newValue = getValue();
-            if (!ObjectUtils.equals(prevValue, newValue))
-                fireValueChanged(prevValue, newValue);
-            prevValue = newValue;
+            fireChangeListeners(newValue);
         }
     }
 

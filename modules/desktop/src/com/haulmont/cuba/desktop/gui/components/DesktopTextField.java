@@ -40,33 +40,42 @@ import java.util.Locale;
 public class DesktopTextField extends DesktopAbstractField<JTextComponent> implements TextField {
 
     private TextComponentDocument doc;
+
+    private Datatype datatype;
     private Datasource datasource;
     private MetaProperty metaProperty;
     private MetaPropertyPath metaPropertyPath;
+
     private int rows;
     private int columns;
-    private boolean secret;
-    private Datatype datatype;
-    private Formatter formatter;
     private int maxLength;
+
+    private boolean secret;
     private boolean editable = true;
     private boolean visible = true;
     private boolean enabled = true;
+
     private Object prevValue;
+
     private String caption;
     private String description;
 
+    private DefaultValueFormatter valueFormatter;
     private Locale locale = UserSessionProvider.getLocale();
 
     private boolean updatingInstance;
+    private boolean keyEvent;
 
     private JComponent composition;
 
     public DesktopTextField() {
         doc = new TextComponentDocument();
         doc.setMaxLength(maxLength);
+
+        valueFormatter = new DefaultValueFormatter(locale);
     }
 
+    @Override
     protected JTextComponent getImpl() {
         if (impl == null) {
             if (rows > 1) {
@@ -103,6 +112,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         return impl;
     }
 
+    @Override
     public int getRows() {
         return rows;
     }
@@ -136,71 +146,74 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         return visible;
     }
 
+    @Override
     public void setRows(int rows) {
         if ((this.rows <= 1 && rows > 1) || (this.rows > 1 && rows == 1))
             impl = null;
         this.rows = rows;
     }
 
+    @Override
     public int getColumns() {
         return columns;
     }
 
+    @Override
     public void setColumns(int columns) {
         this.columns = columns;
     }
 
+    @Override
     public boolean isSecret() {
         return secret;
     }
 
+    @Override
     public void setSecret(boolean secret) {
         if (this.secret != secret)
             impl = null;
         this.secret = secret;
     }
 
+    @Override
     public int getMaxLength() {
         return maxLength;
     }
 
+    @Override
     public void setMaxLength(int value) {
         maxLength = value;
         doc.setMaxLength(value);
     }
 
+    @Override
     public Datatype getDatatype() {
         return datatype;
     }
 
+    @Override
     public void setDatatype(Datatype datatype) {
         this.datatype = datatype;
+        valueFormatter.setDatatype(datatype);
     }
 
+    @Override
     public <T> T getValue() {
         String text = getImpl().getText();
         return (T) validateRawValue(text);
     }
 
+    @Override
     public void setValue(Object value) {
-        if (!ObjectUtils.equals(prevValue, value)) {
-            updateInstance(value);
-
-            updateComponent(value);
-
-            fireChangeListeners();
-        }
+       if (!ObjectUtils.equals(prevValue, value)) {
+           updateInstance(value);
+           updateComponent(value);
+           fireChangeListeners(value);
+       }
     }
 
     private void updateComponent(Object value) {
-        String text;
-        if (metaProperty != null)
-            text = formatValue(value, metaProperty);
-        else if (datatype != null)
-            text = datatype.format(value, locale);
-        else
-            text = value == null ? "" : String.valueOf(value);
-        getImpl().setText(text);
+        getImpl().setText(valueFormatter.formatValue(value));
     }
 
     private Object validateRawValue(String rawValue) {
@@ -247,14 +260,17 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
             return value == null;
     }
 
+    @Override
     public Datasource getDatasource() {
         return datasource;
     }
 
+    @Override
     public MetaProperty getMetaProperty() {
         return metaProperty;
     }
 
+    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
@@ -267,12 +283,15 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         metaPropertyPath = metaClass.getPropertyPath(property);
         metaProperty = metaPropertyPath.getMetaProperty();
 
+        valueFormatter.setMetaProperty(metaProperty);
+
         datasource.addListener(
                 new DsListenerAdapter() {
                     @Override
                     public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
                         if (updatingInstance)
                             return;
+
                         Object value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
                         updateComponent(value);
                         fireChangeListeners(value);
@@ -282,6 +301,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                         if (updatingInstance)
                             return;
+
                         if (property.equals(metaPropertyPath.toString())) {
                             updateComponent(value);
                             fireChangeListeners(value);
@@ -305,8 +325,8 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     private void fireChangeListeners(Object newValue) {
         if (!ObjectUtils.equals(prevValue, newValue)) {
             fireValueChanged(prevValue, newValue);
-            prevValue = newValue;
         }
+        prevValue = newValue;
     }
 
     private void updateInstance(Object value) {
@@ -318,34 +338,11 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
 
         updatingInstance = true;
         try {
-            if ((datasource != null) && (metaPropertyPath != null)) {
-                if (datasource.getItem() != null) {
-                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
-                }
-            }
+            if (datasource != null && metaProperty != null && datasource.getItem() != null)
+                InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
         } finally {
             updatingInstance = false;
         }
-    }
-
-    private String formatValue(Object value, MetaProperty metaProperty) {
-        String text;
-        if (value == null) {
-            text = "";
-        } else if (formatter == null) {
-            Range range = metaProperty.getRange();
-            if (range.isDatatype()) {
-                text = range.asDatatype().format(value, locale);
-            } else if (range.isEnum()) {
-                text = MessageProvider.getMessage((Enum) value);
-            } else if (range.isClass()) {
-                text = InstanceUtils.getInstanceName((Instance) value);
-            } else
-                text = value.toString();
-        } else {
-            text = formatter.format(value);
-        }
-        return text;
     }
 
     public boolean isEditable() {
@@ -375,11 +372,11 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     }
 
     public Formatter getFormatter() {
-        return formatter;
+        return valueFormatter.getFormatter();
     }
 
     public void setFormatter(Formatter formatter) {
-        this.formatter = formatter;
+        valueFormatter.setFormatter(formatter);
     }
 
     @Override
