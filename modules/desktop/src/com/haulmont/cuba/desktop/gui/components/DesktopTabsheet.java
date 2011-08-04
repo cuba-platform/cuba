@@ -321,6 +321,7 @@ public class DesktopTabsheet
         public void setCaption(String caption) {
             this.caption = caption;
             DesktopTabsheet.this.impl.setTitleAt(getTabIndex(), caption);
+            setTabComponentCaption(caption);
         }
 
         @Override
@@ -384,6 +385,12 @@ public class DesktopTabsheet
                 }
           );
           impl.setTabComponentAt(getTabIndex(), tabComponent);
+        }
+
+        private void setTabComponentCaption(String caption) {
+            java.awt.Component component = impl.getTabComponentAt(getTabIndex());
+            if (component instanceof ButtonTabComponent)
+                ((ButtonTabComponent) component).setCaption(caption);
         }
 
         public TabCloseHandler getCloseHandler() {
