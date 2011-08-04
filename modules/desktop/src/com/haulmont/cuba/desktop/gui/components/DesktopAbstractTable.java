@@ -44,10 +44,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
@@ -78,6 +75,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
     private StyleProvider styleProvider;
 
     private Action itemClickAction;
+
+    private boolean columnsInited = false;
 
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
@@ -135,7 +134,14 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 }
         );
 
-        readjustColumns();
+        scrollPane.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                if (!columnsInited)
+                    adjustColumnHeaders();
+                columnsInited = true;
+            }
+        });
     }
 
     protected void readjustColumns() {
