@@ -75,6 +75,7 @@ public class DesktopLookupField
                 new PopupMenuListener() {
                     @Override
                     public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                        impl.updatePopupWidth();
                     }
 
                     @Override
@@ -175,7 +176,6 @@ public class DesktopLookupField
         }
 
         optionsInitialized = true;
-        impl.updatePopupWidth();
     }
 
     private ValueWrapper createValueWrapper(Object value) {
