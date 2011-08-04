@@ -7,7 +7,6 @@
 package com.haulmont.cuba.desktop.gui.components.filter;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
@@ -18,10 +17,7 @@ import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.App;
-import com.haulmont.cuba.desktop.gui.components.DesktopAbstractComponent;
-import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
-import com.haulmont.cuba.desktop.gui.components.DesktopPopupButton;
-import com.haulmont.cuba.desktop.gui.components.DesktopTextField;
+import com.haulmont.cuba.desktop.gui.components.*;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.AppConfig;
@@ -56,10 +52,7 @@ import org.dom4j.Element;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -96,7 +89,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     private boolean useMaxResults;
     private JCheckBox maxResultsCb;
-    private DesktopTextField maxResultsField;
+    //private DesktopTextField maxResultsField;
+    private MaxResultsField maxResultsField;
 
     private DesktopPopupButton actions;
 
@@ -468,12 +462,9 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         }
         );
         maxResultsPanel.add(maxResultsCb);
-
-        maxResultsField = new DesktopTextField();
-        maxResultsField.setMaxLength(4);
-        maxResultsField.<JTextField>getComponent().setPreferredSize(new Dimension(40, DesktopComponentsHelper.FIELD_HEIGHT));
-        maxResultsField.setDatatype(Datatypes.get(Integer.class));
-        maxResultsPanel.add(maxResultsField.<java.awt.Component>getComponent());
+        maxResultsField = new MaxResultsField(4);
+        maxResultsField.setPreferredSize(new Dimension(42, DesktopComponentsHelper.FIELD_HEIGHT));
+        maxResultsPanel.add(maxResultsField);
 
         JLabel maxResultsLabel2 = new JLabel(MessageProvider.getMessage(mainMessagesPack, "filter.maxResults.label2"));
         maxResultsPanel.add(maxResultsLabel2);
@@ -533,7 +524,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         if (useMaxResults) {
             int maxResults;
             if (BooleanUtils.isTrue(maxResultsCb.isSelected()))
-                maxResults = maxResultsField.<Integer>getValue();
+                maxResults = maxResultsField.getValue();
             else
                 maxResults = persistenceManager.getMaxFetchUI(datasource.getMetaClass().getName());
             datasource.setMaxResults(maxResults);
@@ -1195,6 +1186,61 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         }
 
         public void setFrame(IFrame frame) {
+        }
+    }
+
+    private class MaxResultsField extends JTextField{
+        private Integer value;
+        private final int ENTER_CODE = 10;
+
+        public MaxResultsField(int length) {
+            TextComponentDocument doc = new TextComponentDocument();
+            doc.setMaxLength(length);
+            this.setDocument(doc);
+            addFocusListener(new FocusListener() {
+                @Override
+                public void focusGained(FocusEvent e) {
+
+                }
+
+                @Override
+                public void focusLost(FocusEvent e) {
+                    checkValue();
+                }
+            });
+            addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    if (ENTER_CODE == e.getKeyCode())
+                        checkValue();
+                }
+            });
+        }
+
+        private void checkValue() {
+            try {
+                Integer newValue = Integer.parseInt(getText());
+                setValue(newValue);
+
+            } catch (NumberFormatException ex) {
+                setValue(value);
+            }
+        }
+
+        public Integer getValue() {
+            try {
+                Integer newValue = Integer.parseInt(getText());
+                setValue(newValue);
+                return value;
+            } catch (NumberFormatException e) {
+                setValue(value);
+                return value;
+            }
+        }
+
+        public void setValue(Integer value) {
+            this.value = value;
+            setText(String.valueOf(value));
         }
     }
 }
