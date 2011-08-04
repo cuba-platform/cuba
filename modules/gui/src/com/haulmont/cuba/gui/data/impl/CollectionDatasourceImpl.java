@@ -286,7 +286,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         deleted(item);
 
         if (this.item != null && this.item.equals(item)) {
-            this.item = null;
+            setItem(null);
         }
 
         forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
