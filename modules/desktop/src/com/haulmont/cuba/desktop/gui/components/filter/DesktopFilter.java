@@ -23,6 +23,7 @@ import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
@@ -965,7 +966,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                     window.setDescription(descr);
                     initialized = true;
                 } else {
-                    ((DesktopWindowManager) App.getInstance().getWindowManager()).setCurrentWindowCaption(window.getCaption(), descr);
+                    DesktopWindowManager wManager = (DesktopWindowManager) App.getInstance().getWindowManager();
+                    wManager.setCurrentWindowCaption(window, window.getCaption(), descr);
                 }
             }
             if (useMaxResults)

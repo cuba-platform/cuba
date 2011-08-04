@@ -29,7 +29,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.font.OpenType;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
@@ -530,12 +529,20 @@ public class DesktopWindowManager extends WindowManager {
         dialog.setVisible(true);
     }
 
-    public void setCurrentWindowCaption(String caption, String description) {
-        if (tabsPane == null)
-            return;
-        int selectedIndex = tabsPane.getSelectedIndex();
-        if (selectedIndex != -1) {
-            setWindowCaption(caption, description, selectedIndex);
+    public void setCurrentWindowCaption(Window window, String caption, String description) {
+        WindowOpenMode openMode = windowOpenMode.get(window);
+        OpenType openType = openMode.getOpenType();
+        if (openType != OpenType.DIALOG) {
+            if (tabsPane == null)
+                return;
+            int selectedIndex = tabsPane.getSelectedIndex();
+            if (selectedIndex != -1) {
+                setWindowCaption(caption, description, selectedIndex);
+            }
+        } else {
+            JDialog jDialog = (JDialog) windowOpenMode.get(window).getData();
+            if (jDialog != null)
+                jDialog.setTitle(formatTabDescription(caption, description));
         }
     }
 
