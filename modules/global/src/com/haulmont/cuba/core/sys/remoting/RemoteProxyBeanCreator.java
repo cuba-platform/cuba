@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
+import com.haulmont.cuba.core.sys.AppContext;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -31,16 +33,18 @@ public class RemoteProxyBeanCreator implements BeanFactoryPostProcessor, Applica
 
     protected Map<String, String> services;
 
-    protected String baseUrl;
+    protected String baseUrl = AppContext.getProperty("cuba.connectionUrl");
+    protected String servletPath = "remoting";
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     }
 
     public void setBaseUrl(String baseUrl) {
-        if (baseUrl.endsWith("/"))
-            this.baseUrl = baseUrl;
-        else
-            this.baseUrl = baseUrl + "/";
+        this.baseUrl = baseUrl;
+    }
+
+    public void setServletPath(String servletPath) {
+        this.servletPath = servletPath;
     }
 
     public void setRemoteServices(Map<String, String> services) {
@@ -54,7 +58,19 @@ public class RemoteProxyBeanCreator implements BeanFactoryPostProcessor, Applica
 
         for (Map.Entry<String, String> entry : services.entrySet()) {
             String name = entry.getKey();
-            String serviceUrl = baseUrl + name;
+
+            StringBuilder sb = new StringBuilder();
+            String[] urls = baseUrl.split("[,;]");
+            for (String url : urls) {
+                if (!StringUtils.isBlank(url)) {
+                    url = url + "/" + servletPath + "/" + name;
+                    sb.append(url).append(",");
+                }
+            }
+            if (sb.charAt(sb.length() - 1) == ',')
+                sb.deleteCharAt(sb.length() - 1);
+
+            String serviceUrl = sb.toString();
             String serviceInterface = entry.getValue();
             BeanDefinition definition = new RootBeanDefinition(HttpServiceProxy.class);
             MutablePropertyValues propertyValues = definition.getPropertyValues();

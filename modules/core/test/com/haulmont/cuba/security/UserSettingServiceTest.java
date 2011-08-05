@@ -21,7 +21,7 @@ public class UserSettingServiceTest extends CubaTestCase
 
     protected void setUp() throws Exception {
         super.setUp();
-        uss = Locator.lookupLocal(UserSettingService.JNDI_NAME);
+        uss = Locator.lookup(UserSettingService.NAME);
     }
 
     protected void tearDown() throws Exception {

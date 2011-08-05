@@ -196,7 +196,7 @@ public class UserEditor extends AbstractEditor {
                         if(items.size()==0)
                             return;
                         StringBuilder sb = new StringBuilder();
-                        UserSessionService uss = ServiceLocator.lookup(UserSessionService.JNDI_NAME);
+                        UserSessionService uss = ServiceLocator.lookup(UserSessionService.NAME);
                         for (Object item : items) {
                             if (item == null) continue;
                             PermissionConfig.Target target = (PermissionConfig.Target)item;

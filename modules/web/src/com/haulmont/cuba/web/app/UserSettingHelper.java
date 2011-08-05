@@ -20,7 +20,7 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 public class UserSettingHelper {
 
     public static AppWindow.Mode loadAppWindowMode() {
-        UserSettingService uss = ServiceLocator.lookup(UserSettingService.JNDI_NAME);
+        UserSettingService uss = ServiceLocator.lookup(UserSettingService.NAME);
         String s = uss.loadSetting(ClientType.WEB, "appWindowMode");
         if (s != null) {
             if (AppWindow.Mode.SINGLE.name().equals(s)) {
@@ -34,7 +34,7 @@ public class UserSettingHelper {
     }
 
     public static void saveAppWindowMode(AppWindow.Mode mode) {
-        UserSettingService uss = ServiceLocator.lookup(UserSettingService.JNDI_NAME);
+        UserSettingService uss = ServiceLocator.lookup(UserSettingService.NAME);
         uss.saveSetting(ClientType.WEB, "appWindowMode", mode.name());
     }
 

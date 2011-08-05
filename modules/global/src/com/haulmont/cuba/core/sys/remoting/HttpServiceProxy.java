@@ -18,5 +18,6 @@ public class HttpServiceProxy extends HttpInvokerProxyFactoryBean {
     public HttpServiceProxy() {
         super();
         setRemoteInvocationFactory(new CubaRemoteInvocationFactory());
+        setHttpInvokerRequestExecutor(new ClusteredHttpInvokerRequestExecutor());
     }
 }

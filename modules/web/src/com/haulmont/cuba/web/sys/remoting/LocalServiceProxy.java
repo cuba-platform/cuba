@@ -7,6 +7,7 @@
 package com.haulmont.cuba.web.sys.remoting;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.Deserializer;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceDirectory;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceInvocation;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceInvocationResult;
@@ -112,31 +113,14 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
 
             LocalServiceInvocationResult result = invoker.invoke(invocation);
 
+            // don't use SerializationUtils.deserialize() here to avoid ClassNotFoundException
             if (result.getException() != null) {
-                Throwable t = (Throwable) deserialize(result.getException());
+                Throwable t = (Throwable) Deserializer.deserialize(result.getException());
                 throw t;
             } else {
-                Object data = deserialize(result.getData());
+                Object data = Deserializer.deserialize(result.getData());
                 return data;
             }
         }
-
-        // don't use SerializationUtils.deserialize() here to avoid ClassNotFoundException
-        public Object deserialize(byte[] bytes) {
-            if (bytes == null) {
-                return null;
-            }
-            try {
-                ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bytes));
-                return ois.readObject();
-            }
-            catch (IOException ex) {
-                throw new IllegalArgumentException("Failed to deserialize object", ex);
-            }
-            catch (ClassNotFoundException ex) {
-                throw new IllegalStateException("Failed to deserialize object type", ex);
-            }
-        }
-
     }
 }

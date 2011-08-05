@@ -26,9 +26,6 @@ public interface UserSessionService
 {
     String NAME = "cuba_UserSessionService";
 
-    @Deprecated
-    String JNDI_NAME = NAME;
-
     UserSession getUserSession(UUID sessionId);
 
     void putSessionAttribute(UUID sessionId, String name, Serializable value);

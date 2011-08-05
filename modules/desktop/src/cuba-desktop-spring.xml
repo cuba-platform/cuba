@@ -33,7 +33,8 @@
     <!-- Remote stubs -->
 
     <bean id="cuba_proxyCreator" class="com.haulmont.cuba.core.sys.remoting.RemoteProxyBeanCreator">
-        <property name="baseUrl" value="${cuba.connectionUrl}/remoting"/>
+        <property name="baseUrl" value="${cuba.connectionUrl}"/>
+        <property name="servletPath" value="remoting"/>
         <property name="remoteServices">
             <map>
                 <entry key="cuba_LoginService" value="com.haulmont.cuba.security.app.LoginService"/>
@@ -53,6 +54,7 @@
                 <entry key="cuba_LocalizedMessageService" value="com.haulmont.cuba.core.app.LocalizedMessageService"/>
                 <entry key="cuba_ReportService" value="com.haulmont.cuba.core.app.JasperReportService"/>
                 <entry key="report_ReportService" value="com.haulmont.cuba.report.app.ReportService"/>
+                <entry key="cuba_TestingService" value="com.haulmont.cuba.core.app.TestingService"/>
             </map>
         </property>
     </bean>

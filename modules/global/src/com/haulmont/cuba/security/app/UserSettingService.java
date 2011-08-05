@@ -20,9 +20,6 @@ public interface UserSettingService
 {
     String NAME = "cuba_UserSettingService";
 
-    @Deprecated
-    String JNDI_NAME = NAME;
-
     /** Load settings for the current user and null client type. Returns null if no such setting found. */
     String loadSetting(String name);
 

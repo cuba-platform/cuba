@@ -12,7 +12,9 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
+import com.haulmont.cuba.core.sys.Deserializer;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jgroups.*;
@@ -45,7 +47,8 @@ public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, A
             return;
 
         log.debug("Sending message " + message.getClass() + ": " + message);
-        Message msg = new Message(null, null, message);
+        byte[] bytes = SerializationUtils.serialize(message);
+        Message msg = new Message(null, null, bytes);
         try {
             channel.send(msg);
         } catch (ChannelNotConnectedException e) {
@@ -137,10 +140,13 @@ public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, A
     private class ClusterReceiver implements Receiver {
 
         public void receive(Message msg) {
-            Serializable data = (Serializable) msg.getObject();
-            if (data == null)
+            byte[] bytes = msg.getBuffer();
+            if (bytes == null) {
+                log.debug("Null buffer received");
                 return;
+            }
 
+            Serializable data = (Serializable) Deserializer.deserialize(bytes);
             log.debug("Received message " + data.getClass() + ": " + data);
             ClusterListener listener = listeners.get(data.getClass().getName());
             if (listener != null)
