@@ -326,7 +326,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     public boolean isVisible(Field field) {
         Component component = fieldComponents.get(field);
-        return component != null && component.isVisible();
+        return component != null && component.isVisible() && isVisible();
     }
 
     public void setVisible(Field field, boolean visible) {
@@ -617,11 +617,17 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     @Override
     public void validate() throws ValidationException {
+        if (!isVisible() || !isEditable() || !isEnabled())
+            return;
+
         Map<Field, Exception> problems = new HashMap<Field, Exception>();
 
         for (Map.Entry<Field, Component> componentEntry : fieldComponents.entrySet()) {
             Field field = componentEntry.getKey();
             Component component = componentEntry.getValue();
+
+            if (!isEditable(field) || !isEnabled(field) || !isVisible(field))
+                continue;
 
             // If has valid state
             if ((component instanceof Validatable) &&

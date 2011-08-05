@@ -7,7 +7,10 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.model.*;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -52,7 +55,6 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
 
     private boolean secret;
     private boolean editable = true;
-    private boolean visible = true;
     private boolean enabled = true;
 
     private Object prevValue;
@@ -64,7 +66,6 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     private Locale locale = UserSessionProvider.getLocale();
 
     private boolean updatingInstance;
-    private boolean keyEvent;
 
     private JComponent composition;
 
@@ -128,22 +129,6 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         if (impl != null)
             impl.setEnabled(enabled);
         requestContainerUpdate();
-    }
-
-    @Override
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-        if (impl != null)
-            impl.setVisible(visible);
-        if (composition != impl && composition != null) {
-            composition.setVisible(visible);
-        }
-        requestContainerUpdate();
-    }
-
-    @Override
-    public boolean isVisible() {
-        return visible;
     }
 
     @Override

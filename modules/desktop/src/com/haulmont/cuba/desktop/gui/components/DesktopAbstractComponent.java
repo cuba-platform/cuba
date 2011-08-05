@@ -52,99 +52,127 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
         return impl;
     }
 
+    @Override
     public <A extends IFrame> A getFrame() {
         return (A) frame;
     }
 
+    @Override
     public void setFrame(IFrame frame) {
         this.frame = frame;
         frame.registerComponent(this);
     }
 
+    @Override
     public void setExpandable(boolean expandable) {
         this.expandable = expandable;
     }
 
+    @Override
     public boolean isExpandable() {
         return expandable;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
 
+    @Override
     public String getDebugId() {
         return null;
     }
 
+    @Override
     public void setDebugId(String id) {
     }
 
+    @Override
     public boolean isEnabled() {
         return impl.isEnabled();
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         getComposition().setEnabled(enabled);
         requestContainerUpdate();
     }
 
+    @Override
     public boolean isVisible() {
-        return impl.isVisible();
+        boolean componentVisible = impl != null && impl.isVisible();
+
+        if (container != null)
+            return componentVisible && container.isVisible();
+        else
+            return componentVisible;
     }
 
+    @Override
     public void setVisible(boolean visible) {
         getComposition().setVisible(visible);
         requestContainerUpdate();
     }
 
+    @Override
     public void requestFocus() {
         impl.requestFocus();
     }
 
+    @Override
     public float getHeight() {
         return heightSize != null ? heightSize.value : 0.0f;
     }
 
+    @Override
     public int getHeightUnits() {
         return heightSize != null ? heightSize.unit : 0;
     }
 
+    @Override
     public void setHeight(String height) {
         heightSize = ComponentSize.parse(height);
         requestContainerUpdate();
     }
 
+    @Override
     public float getWidth() {
         return widthSize != null ? widthSize.value : 0.0f;
     }
 
+    @Override
     public int getWidthUnits() {
         return widthSize != null ? widthSize.unit : 0;
     }
 
+    @Override
     public void setWidth(String width) {
         widthSize = ComponentSize.parse(width);
         requestContainerUpdate();
     }
 
+    @Override
     public Alignment getAlignment() {
         return alignment;
     }
 
+    @Override
     public void setAlignment(Alignment alignment) {
         this.alignment = alignment;
         requestContainerUpdate();
     }
 
+    @Override
     public String getStyleName() {
         return null;
     }
 
+    @Override
     public void setStyleName(String name) {
         DesktopTheme theme = App.getInstance().getTheme();
         if (theme != null) {
@@ -152,22 +180,27 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
         }
     }
 
+    @Override
     public Element getXmlDescriptor() {
         return xmlDescriptor;
     }
 
+    @Override
     public void setXmlDescriptor(Element element) {
         xmlDescriptor = element;
     }
 
+    @Override
     public <T> T getComponent() {
         return (T) impl;
     }
 
+    @Override
     public JComponent getComposition() {
         return impl;
     }
 
+    @Override
     public void setContainer(DesktopContainer container) {
         this.container = container;
     }
