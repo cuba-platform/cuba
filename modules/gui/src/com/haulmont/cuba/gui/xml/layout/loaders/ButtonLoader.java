@@ -9,7 +9,8 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.dom4j.Element;
 
@@ -36,6 +37,7 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
         loadExpandable(component, element);
 
         loadWidth(component, element);
+        loadAlign(component, element);
 
         assignFrame(component);
 

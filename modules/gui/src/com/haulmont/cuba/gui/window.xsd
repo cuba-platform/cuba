@@ -568,6 +568,7 @@
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasWidthProp"/>
+        <xs:attributeGroup ref="hasAlign"/>
 
         <xs:attribute name="action" type="xs:string" use="optional"/>
         <xs:attribute name="icon" type="xs:string" use="optional" default="icon://"/>
@@ -1154,7 +1155,8 @@
         <xs:sequence>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
                 <xs:element name="collectionDatasource" minOccurs="0" maxOccurs="unbounded" type="nestedCollectionDs"/>
-                <xs:element name="hierarchicalDatasource" minOccurs="0" maxOccurs="unbounded" type="nestedHierarchicalDs"/>
+                <xs:element name="hierarchicalDatasource" minOccurs="0" maxOccurs="unbounded"
+                            type="nestedHierarchicalDs"/>
                 <xs:element name="datasource">
                     <xs:complexType>
                         <xs:group ref="nestedDatasources"/>
