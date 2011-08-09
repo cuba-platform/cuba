@@ -79,38 +79,42 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     @Override
     protected JTextComponent getImpl() {
         if (impl == null) {
-            if (rows > 1) {
-                impl = new JTextArea();
-                ((JTextArea) impl).setRows(rows);
-                ((JTextArea) impl).setLineWrap(true);
-                ((JTextArea) impl).setWrapStyleWord(true);
-
-                int height = (int) impl.getPreferredSize().getHeight();
-                impl.setMinimumSize(new Dimension(0, height));
-
-                composition = new JScrollPane(impl);
-                composition.setPreferredSize(new Dimension(150, height));
-                composition.setMinimumSize(new Dimension(0, height));
-
-                doc.putProperty("filterNewlines", false);
-
-            } else {
-                if (secret)
-                    impl = new JPasswordField();
-                else
-                    impl = new JTextField();
-                int height = (int) impl.getPreferredSize().getHeight();
-                impl.setPreferredSize(new Dimension(150, height));
-                composition = impl;
-            }
-
-            impl.setEditable(editable);
-            impl.setDocument(doc);
-            TextFieldListener listener = new TextFieldListener();
-            impl.addKeyListener(listener);
-            impl.addFocusListener(listener);
+            instantiateImpl();
         }
         return impl;
+    }
+
+    private void instantiateImpl() {
+        if (rows > 1) {
+            impl = new JTextArea();
+            ((JTextArea) impl).setRows(rows);
+            ((JTextArea) impl).setLineWrap(true);
+            ((JTextArea) impl).setWrapStyleWord(true);
+
+            int height = (int) impl.getPreferredSize().getHeight();
+            impl.setMinimumSize(new Dimension(0, height));
+
+            composition = new JScrollPane(impl);
+            composition.setPreferredSize(new Dimension(150, height));
+            composition.setMinimumSize(new Dimension(0, height));
+
+            doc.putProperty("filterNewlines", false);
+
+        } else {
+            if (secret)
+                impl = new JPasswordField();
+            else
+                impl = new JTextField();
+            int height = (int) impl.getPreferredSize().getHeight();
+            impl.setPreferredSize(new Dimension(150, height));
+            composition = impl;
+        }
+
+        impl.setEditable(editable);
+        impl.setDocument(doc);
+        TextFieldListener listener = new TextFieldListener();
+        impl.addKeyListener(listener);
+        impl.addFocusListener(listener);
     }
 
     @Override

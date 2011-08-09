@@ -79,6 +79,7 @@ public abstract class AbstractFieldFactory {
              textField.setRows(Integer.valueOf(rows));
         }
 
+        textField.setVisible(true);
         return textField;
     }
 
