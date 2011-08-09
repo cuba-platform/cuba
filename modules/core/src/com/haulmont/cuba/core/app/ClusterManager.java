@@ -42,20 +42,27 @@ public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, A
         AppContext.addListener(this);
     }
 
-    public void send(Serializable message) {
+    public void send(final Serializable message) {
         if (channel == null)
             return;
 
         log.debug("Sending message " + message.getClass() + ": " + message);
-        byte[] bytes = SerializationUtils.serialize(message);
-        Message msg = new Message(null, null, bytes);
-        try {
-            channel.send(msg);
-        } catch (ChannelNotConnectedException e) {
-            log.error("Send error", e);
-        } catch (ChannelClosedException e) {
-            log.error("Send error", e);
-        }
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                byte[] bytes = SerializationUtils.serialize(message);
+                Message msg = new Message(null, null, bytes);
+                try {
+                    channel.send(msg);
+                } catch (ChannelNotConnectedException e) {
+                    log.error("Send error", e);
+                } catch (ChannelClosedException e) {
+                    log.error("Send error", e);
+                }
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 
     public synchronized void addListener(Class messageClass, ClusterListener listener) {

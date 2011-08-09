@@ -15,11 +15,11 @@ import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
  */
 public class HttpServiceProxy extends HttpInvokerProxyFactoryBean {
 
-    public HttpServiceProxy() {
+    public HttpServiceProxy(ClusterInvocationSupport support) {
         super();
         setRemoteInvocationFactory(new CubaRemoteInvocationFactory());
 
-        ClusteredHttpInvokerRequestExecutor executor = new ClusteredHttpInvokerRequestExecutor();
+        ClusteredHttpInvokerRequestExecutor executor = new ClusteredHttpInvokerRequestExecutor(support);
         executor.setBeanClassLoader(getBeanClassLoader());
         setHttpInvokerRequestExecutor(executor);
     }

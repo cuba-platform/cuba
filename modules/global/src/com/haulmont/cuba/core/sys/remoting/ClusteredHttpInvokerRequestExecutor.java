@@ -8,10 +8,8 @@ package com.haulmont.cuba.core.sys.remoting;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientConfiguration;
-import org.springframework.remoting.httpinvoker.HttpInvokerClientInterceptor;
 import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
 import org.springframework.remoting.support.RemoteInvocationResult;
-import org.springframework.remoting.support.UrlBasedRemoteAccessor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,18 +27,25 @@ import java.util.List;
  */
 public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerRequestExecutor {
 
+    private ClusterInvocationSupport support;
+
+    public ClusteredHttpInvokerRequestExecutor(ClusterInvocationSupport support) {
+        this.support = support;
+    }
+
     @Override
     protected RemoteInvocationResult doExecuteRequest(HttpInvokerClientConfiguration config, ByteArrayOutputStream baos) throws IOException, ClassNotFoundException {
         HttpURLConnection con = null;
-        String[] urls = config.getServiceUrl().split("[,;]");
-        for (int i = 0; i < urls.length; i++) {
-            String url = urls[i];
+
+        List<String> urlList = support.getUrlList(config.getServiceUrl());
+        for (int i = 0; i < urlList.size(); i++) {
+            String url = urlList.get(i);
             con = openConnection(url);
             try {
                 prepareConnection(con, baos.size());
                 writeRequestBody(config, con, baos);
                 if (i > 0) {
-                    changeUrlPriority(config, urls, url);
+                    support.updateUrlPriority(url);
                 }
                 break;
             } catch (IOException e) {
@@ -54,7 +59,7 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
                     }
                 }
                 if (isConnectException) {
-                    if (i < urls.length - 1) {
+                    if (i < urlList.size() - 1) {
                         logger.info("Trying to invoke the next available URL");
                         continue;
                     }
@@ -67,16 +72,6 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
         InputStream responseBody = readResponseBody(config, con);
 
         return readRemoteInvocationResult(responseBody, config.getCodebaseUrl());
-    }
-
-    private void changeUrlPriority(HttpInvokerClientConfiguration config, String[] urls, String successUrl) {
-        StringBuilder sb = new StringBuilder(successUrl);
-        for (String url : urls) {
-            if (!url.equals(successUrl)) {
-                sb.append(",").append(url);
-            }
-        }
-        ((UrlBasedRemoteAccessor) config).setServiceUrl(sb.toString());
     }
 
     protected HttpURLConnection openConnection(String serviceUrl) throws IOException {
