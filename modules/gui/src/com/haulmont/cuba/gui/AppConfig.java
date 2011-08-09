@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.io.IOUtils;
@@ -203,6 +204,10 @@ public abstract class AppConfig
         return getInstance().__createExportDisplay();
     }
 
+    public static BackgroundWorker getBackgroundWorker() {
+        return getInstance().__getBackgroundWorker();
+    }
+
     /**
      * Client-specific components factory
      */
@@ -211,6 +216,8 @@ public abstract class AppConfig
     }
 
     protected abstract ExportDisplay __createExportDisplay();
+
+    protected abstract BackgroundWorker __getBackgroundWorker();
 
     protected abstract ComponentsFactory __getFactory();
 }

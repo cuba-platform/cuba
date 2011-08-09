@@ -7,11 +7,11 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
-import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 
 /**
  * <p>$Id$</p>
@@ -21,10 +21,21 @@ import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 public class WebAppConfig extends AppConfig {
 
     private volatile ComponentsFactory componentsFactory;
+    private volatile BackgroundWorker backgroundWorker;
 
     @Override
     protected ExportDisplay __createExportDisplay() {
         return new WebExportDisplay();
+    }
+
+    @Override
+    protected BackgroundWorker __getBackgroundWorker() {
+        if (backgroundWorker == null) {
+            synchronized (this) {
+                // TODO implement WebBackgroundWorker
+            }
+        }
+        return backgroundWorker;
     }
 
     @Override
