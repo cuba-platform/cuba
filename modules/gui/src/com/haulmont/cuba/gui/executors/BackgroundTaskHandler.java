@@ -14,13 +14,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author artamonov
  */
-public abstract class BackgroundTaskHandler<T> {
-
-    protected BackgroundTask<T> backgroundTask;
-
-    protected BackgroundTaskHandler(BackgroundTask<T> backgroundTask) {
-        this.backgroundTask = backgroundTask;
-    }
+public abstract class BackgroundTaskHandler {
 
     /**
      * Execute task

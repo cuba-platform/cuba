@@ -192,13 +192,14 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
     /**
      * Task handler
      */
-    private class TaskHandler<T> extends BackgroundTaskHandler<T> {
+    private class TaskHandler<T> extends BackgroundTaskHandler {
 
         private volatile boolean executed = false;
         private TaskExecutor<T> backroundTaskExecutor;
+        private BackgroundTask backgroundTask;
 
         protected TaskHandler(BackgroundTask<T> task) {
-            super(task);
+            this.backgroundTask = task;
             this.backroundTaskExecutor = new TaskExecutor<T>(task);
             task.setProgressHandler(backroundTaskExecutor);
         }
