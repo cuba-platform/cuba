@@ -9,6 +9,7 @@ package com.haulmont.cuba.desktop;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.desktop.exception.*;
 import com.haulmont.cuba.desktop.sys.*;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
@@ -31,7 +32,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -304,9 +308,35 @@ public class App implements ConnectionListener {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createLineBorder(Color.gray));
         panel.setPreferredSize(new Dimension(0, 20));
-        JLabel connectionStateLab = new JLabel("Connected");
+
+        ClusterInvocationSupport clusterInvocationSupport = AppContext.getBean("cuba_clusterInvocationSupport");
+        String url = clusterInvocationSupport.getUrlList().isEmpty() ? "?" : clusterInvocationSupport.getUrlList().get(0);
+
+        final JLabel connectionStateLab = new JLabel(
+                MessageProvider.formatMessage(AppConfig.getMessagesPack(), "statusBar.connected", getUserFriendlyConnectionUrl(url)));
+
+        clusterInvocationSupport.addListener(
+                new ClusterInvocationSupport.Listener() {
+                    @Override
+                    public void urlListChanged(List<String> newUrlList) {
+                        String url = newUrlList.isEmpty() ? "?" : newUrlList.get(0);
+                        connectionStateLab.setText(
+                                MessageProvider.formatMessage(AppConfig.getMessagesPack(), "statusBar.connected", getUserFriendlyConnectionUrl(url)));
+                    }
+                }
+        );
+
         panel.add(connectionStateLab, BorderLayout.WEST);
         return panel;
+    }
+
+    protected String getUserFriendlyConnectionUrl(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            return url.getHost() + (url.getPort() == -1 ? "" : ":" + url.getPort());
+        } catch (MalformedURLException e) {
+            return urlString;
+        }
     }
 
     protected JComponent createCenterPane() {
