@@ -34,6 +34,7 @@ public class FilterSelect extends Select {
     private int fetched;
 
     private static Log log = LogFactory.getLog(FilterSelect.class);
+    private boolean isFirstChange = true;
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
@@ -120,37 +121,42 @@ public class FilterSelect extends Select {
             Object value = getValue();
             boolean valueFound = true;
 
-            if (items instanceof Ordered) {
-                log.trace("getFilteredOptions (container: " + items +  "): ordered collection, iterating through items for current page");
-                filteredOptions = new LinkedList();
-                valueFound = false;
+            if (!isFirstChange) {
+                if (items instanceof Ordered) {
+                    log.trace("getFilteredOptions (container: " + items + "): ordered collection, iterating through items for current page");
+                    filteredOptions = new LinkedList();
+                    valueFound = false;
 
-                int count = (currentPage + 1) * getPageLength();
-                count = Math.max(count, fetched);
+                    int count = (currentPage + 1) * getPageLength();
+                    count = Math.max(count, fetched);
 
-                Object itemId = ((Ordered) items).firstItemId();
-                if (itemId != null) {
-                    Object prevItemId = itemId;
-                    filteredOptions.add(prevItemId);
-                    if (value == null || value.equals(prevItemId))
-                        valueFound = true;
-
-                    fetched = 0;
-                    for (int i = 0; i < count; i++) {
-                        itemId = ((Ordered) items).nextItemId(prevItemId);
-                        if (itemId == null)
-                            break;
-                        filteredOptions.add(itemId);
-                        if (value == null || value.equals(itemId))
+                    Object itemId = ((Ordered) items).firstItemId();
+                    if (itemId != null) {
+                        Object prevItemId = itemId;
+                        filteredOptions.add(prevItemId);
+                        if (value == null || value.equals(prevItemId))
                             valueFound = true;
-                        prevItemId = itemId;
-                        fetched++;
+
+                        fetched = 0;
+                        for (int i = 0; i < count; i++) {
+                            itemId = ((Ordered) items).nextItemId(prevItemId);
+                            if (itemId == null)
+                                break;
+                            filteredOptions.add(itemId);
+                            if (value == null || value.equals(itemId))
+                                valueFound = true;
+                            prevItemId = itemId;
+                            fetched++;
+                        }
                     }
+                } else {
+                    log.trace("getFilteredOptions (container: " + items + "): loading all itemIds");
+                    filteredOptions = new LinkedList(getItemIds());
+                    fetched = filteredOptions.size();
                 }
             } else {
-                log.trace("getFilteredOptions (container: " + items +  "): loading all itemIds");
-                filteredOptions = new LinkedList(getItemIds());
-                fetched = filteredOptions.size();
+                filteredOptions = new LinkedList();
+                valueFound = false;
             }
 
             if (!valueFound && value != null) {
@@ -256,5 +262,24 @@ public class FilterSelect extends Select {
         }
         target.endTag("so");
         return keyIndex;
+    }
+
+    @Override
+    public void changeVariables(Object source, Map variables) {
+        super.changeVariables(source, variables);
+
+        Object value = getValue();
+        if (isFirstChange && variables.containsKey("page") && value != null) {
+            Object itemId = ((Ordered) items).firstItemId();
+            int count = 1;
+            for (int i = 0; i < items.size(); i++) {
+                if (itemId == null || value.equals(itemId))
+                    break;
+                itemId = ((Ordered) items).nextItemId(itemId);
+                count++;
+            }
+            currentPage = Math.round(count / getPageLength());
+        }
+        isFirstChange = false;
     }
 }
