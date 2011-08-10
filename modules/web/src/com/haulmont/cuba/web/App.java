@@ -97,6 +97,8 @@ public abstract class App extends Application
 
     private transient HttpServletResponse response;
 
+    private transient HttpSession httpSession;
+
     private AppCookies cookies;
 
     protected boolean testModeRequest = false;
@@ -308,7 +310,9 @@ public abstract class App extends Application
     public void transactionStart(Application application, Object transactionData) {
         HttpServletRequest request = (HttpServletRequest) transactionData;
 
-        request.getSession().setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
+        this.httpSession = request.getSession();
+
+        httpSession.setMaxInactiveInterval(webConfig.getHttpSessionExpirationTimeoutSec());
 
         setClientAddress(request);
 
@@ -336,7 +340,7 @@ public abstract class App extends Application
 
         setupCurrentWindowName(requestURI, windowName);
 
-        String action = (String) request.getSession().getAttribute(LAST_REQUEST_ACTION_ATTR);
+        String action = (String) httpSession.getAttribute(LAST_REQUEST_ACTION_ATTR);
 
         if (!connection.isConnected() &&
                 !(("login".equals(action)) || auxillaryUrl(requestURI))) {
@@ -503,6 +507,10 @@ public abstract class App extends Application
 
     public AppCookies getCookies() {
         return cookies;
+    }
+
+    public HttpSession getHttpSession() {
+        return httpSession;
     }
 
     public String getCookieValue(String name) {

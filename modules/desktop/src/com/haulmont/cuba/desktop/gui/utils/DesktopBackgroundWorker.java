@@ -10,9 +10,9 @@ import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
-import com.haulmont.cuba.gui.executors.ProgressHandler;
 
 import javax.swing.*;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Desktop implementation of {@link BackgroundWorker}
@@ -34,27 +33,32 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
     private WatchDog watchDogThread;
 
     public DesktopBackgroundWorker() {
-        watchDogThread = new WatchDog();
+        watchDogThread = new DesktopWatchDog();
     }
 
     @Override
     public <T> BackgroundTaskHandler handle(BackgroundTask<T> task) {
         checkNotNull(task);
 
-        return new TaskHandler<T>(task);
+        // create task handler
+        TaskExecutor<T> taskExecutor = new DesktopTaskExecutor<T>(task);
+        return new TaskHandler<T>(taskExecutor, watchDogThread);
     }
 
     /**
      * WatchDog
      */
-    private class WatchDog extends SwingWorker<Void, TaskExecutor> {
+    private class DesktopWatchDog extends SwingWorker<Void, TaskHandler> implements BackgroundWorker.WatchDog{
+
+        private static final int WATCHDOG_INTERVAL = 100;
 
         private boolean watching = false;
         private ReentrantLock watchLock;
-        private Set<TaskExecutor> watches;
+        private Set<TaskHandler> watches;
 
-        private WatchDog() {
+        private DesktopWatchDog() {
             watchLock = new ReentrantLock();
+            watches = new LinkedHashSet<TaskHandler>();
         }
 
         @Override
@@ -63,15 +67,14 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
             watchLock.lock();
 
-            long actual = TimeProvider.currentTimestamp().getTime();
+            long actualTime = TimeProvider.currentTimestamp().getTime();
 
-            List<TaskExecutor> forRemove = new LinkedList<TaskExecutor>();
-            List<TaskExecutor> hangupTasks = new LinkedList<TaskExecutor>();
-            for (TaskExecutor task : watches) {
+            List<TaskHandler> forRemove = new LinkedList<TaskHandler>();
+            for (TaskHandler task : watches) {
                 if (task.isCancelled() || task.isDone()) {
                     forRemove.add(task);
-                } else if (task.checkHangup(actual)) {
-                    publish(task);
+                } else if (task.checkHangup(actualTime)) {
+                    cancelTask(task);
                     forRemove.add(task);
                 }
             }
@@ -83,9 +86,13 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
             return null;
         }
 
+        private void cancelTask(TaskHandler task) {
+            publish(task);
+        }
+
         @Override
-        protected void process(List<TaskExecutor> chunks) {
-            for (TaskExecutor task : chunks) {
+        protected void process(List<TaskHandler> chunks) {
+            for (TaskHandler task : chunks) {
                 if (task.isHangup())
                     task.cancel(true);
             }
@@ -93,37 +100,30 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         private void startWatching() {
             watching = true;
-            watchDogThread.execute();
+            execute();
         }
 
-        public void manageTask(TaskExecutor tDesktopBackroundTask) {
+        public void manageTask(TaskHandler backroundTask) {
             watchLock.lock();
 
-            watches.add(tDesktopBackroundTask);
-
-            watchLock.unlock();
+            watches.add(backroundTask);
 
             if (!watching) {
                 startWatching();
             }
+
+            watchLock.unlock();
         }
     }
 
     /**
      * Task runner
      */
-    private class TaskExecutor<T> extends SwingWorker<Void, T> implements ProgressHandler<T> {
-
-        private long timeout = 0;
-        private TimeUnit timeUnit;
-        private long timeoutMillis;
-
-        private long startTimeStamp;
-        private boolean isHangup = false;
+    private class DesktopTaskExecutor<T> extends SwingWorker<Void, T> implements TaskExecutor<T> {
 
         private BackgroundTask<T> runnableTask;
 
-        private TaskExecutor(BackgroundTask<T> runnableTask) {
+        private DesktopTaskExecutor(BackgroundTask<T> runnableTask) {
             this.runnableTask = runnableTask;
         }
 
@@ -140,101 +140,21 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         @Override
         protected void done() {
-            super.done();
             runnableTask.done();
+        }
+
+        public void execute(long timeout, TimeUnit unit) {
+            execute();
+        }
+
+        @Override
+        public BackgroundTask<T> getTask() {
+            return runnableTask;
         }
 
         @Override
         public void handleProgress(T... changes) {
             publish(changes);
-        }
-
-        /**
-         * If task is executing too long
-         * @param time Actual time
-         * @return Hangup flag
-         */
-        public boolean checkHangup(long time) {
-            if (isDone() || isCancelled())
-                return false;
-            else if (timeout <= 0)
-                return false;
-            else {
-
-                return false;
-            }
-        }
-
-        public boolean isHangup() {
-            return isHangup;
-        }
-
-        public void execute(long timeout, TimeUnit unit) {
-            this.timeout = timeout;
-            this.timeUnit = unit;
-            this.timeoutMillis = timeUnit.toMillis(timeout);
-            this.startTimeStamp = TimeProvider.currentTimestamp().getTime();
-
-            watchDogThread.manageTask(this);
-
-            execute();
-        }
-
-        public long getTimeout() {
-            return timeout;
-        }
-
-        public TimeUnit getTimeUnit() {
-            return timeUnit;
-        }
-    }
-
-    /**
-     * Task handler
-     */
-    private class TaskHandler<T> extends BackgroundTaskHandler {
-
-        private volatile boolean executed = false;
-        private TaskExecutor<T> backroundTaskExecutor;
-        private BackgroundTask backgroundTask;
-
-        protected TaskHandler(BackgroundTask<T> task) {
-            this.backgroundTask = task;
-            this.backroundTaskExecutor = new TaskExecutor<T>(task);
-            task.setProgressHandler(backroundTaskExecutor);
-        }
-
-        @Override
-        public void execute() {
-            checkState(!executed, "Task is already started");
-            executed = true;
-            backroundTaskExecutor.execute();
-        }
-
-        @Override
-        public void execute(long timeout, TimeUnit unit) {
-            checkState(!executed, "Task is already started");
-            executed = true;
-            backroundTaskExecutor.execute(timeout, unit);
-        }
-
-        @Override
-        public boolean cancel(boolean mayInterruptIfRunning) {
-            backgroundTask.beforeCancel();
-            boolean canceled = backroundTaskExecutor.cancel(mayInterruptIfRunning);
-            if (canceled)
-                backgroundTask.canceled();
-            return canceled;
-        }
-
-        @Override
-        public boolean isDone() {
-            return backroundTaskExecutor.isDone();
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return backroundTaskExecutor.isCancelled();
         }
     }
 }

@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
+import com.haulmont.cuba.web.gui.utils.WebBackgroundWorker;
 
 /**
  * <p>$Id$</p>
@@ -32,7 +33,7 @@ public class WebAppConfig extends AppConfig {
     protected BackgroundWorker __getBackgroundWorker() {
         if (backgroundWorker == null) {
             synchronized (this) {
-                // TODO implement WebBackgroundWorker
+                backgroundWorker = new WebBackgroundWorker();
             }
         }
         return backgroundWorker;

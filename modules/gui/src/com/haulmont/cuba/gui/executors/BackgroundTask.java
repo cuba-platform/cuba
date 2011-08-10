@@ -6,17 +6,25 @@
 
 package com.haulmont.cuba.gui.executors;
 
+import com.haulmont.cuba.gui.components.Window;
+
 import java.util.List;
 
 /**
  * Backround task for execute in {@link BackgroundWorker}
  * <p>$Id$</p>
  *
+ * @param <T> measure unit which shows progress of task
  * @author artamonov
  */
 public abstract class BackgroundTask<T> {
 
     private ProgressHandler<T> progressHandler;
+    private Window ownerWindow;
+
+    protected BackgroundTask(Window ownerWindow) {
+        this.ownerWindow = ownerWindow;
+    }
 
     /**
      * Main tasks method
@@ -33,12 +41,6 @@ public abstract class BackgroundTask<T> {
      * Task canceled handler
      */
     public void canceled(){
-    }
-
-    /**
-     * Task cancel handler
-     */
-    public void beforeCancel(){
     }
 
     /**
@@ -62,5 +64,9 @@ public abstract class BackgroundTask<T> {
 
     public void setProgressHandler(ProgressHandler<T> progressHandler) {
         this.progressHandler = progressHandler;
+    }
+
+    public Window getOwnerWindow() {
+        return ownerWindow;
     }
 }

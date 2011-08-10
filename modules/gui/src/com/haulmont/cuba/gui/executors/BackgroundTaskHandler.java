@@ -14,12 +14,12 @@ import java.util.concurrent.TimeUnit;
  *
  * @author artamonov
  */
-public abstract class BackgroundTaskHandler {
+public interface BackgroundTaskHandler {
 
     /**
      * Execute task
      */
-    public abstract void execute();
+    void execute();
 
     /**
      * Execute with timeout <br/>
@@ -28,24 +28,24 @@ public abstract class BackgroundTaskHandler {
      * @param timeout Timeout
      * @param unit TimeUnit
      */
-    public abstract void execute(long timeout, TimeUnit unit);
+    void execute(long timeout, TimeUnit unit);
 
     /**
      * Try to cancel task
      * @param mayInterruptIfRunning Interrupt if running
      * @return True if canceled
      */
-    public abstract boolean cancel(boolean mayInterruptIfRunning);
+    boolean cancel(boolean mayInterruptIfRunning);
 
     /**
      * Done flag
      * @return True if task is already done
      */
-    public abstract boolean isDone();
+    boolean isDone();
 
     /**
      * Canceled flag
      * @return True if task has been canceled
      */
-    public abstract boolean isCancelled();
+    boolean isCancelled();
 }
