@@ -16,4 +16,6 @@ public interface TestingService {
     String NAME = "cuba_TestingService";
 
     String executeFor(int timeMillis);
+
+    boolean primitiveParameters(boolean b, int i, long l, double d);
 }

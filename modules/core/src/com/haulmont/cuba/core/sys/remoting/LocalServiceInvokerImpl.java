@@ -7,13 +7,11 @@
 package com.haulmont.cuba.core.sys.remoting;
 
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.Deserializer;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.core.sys.ServerSecurityUtils;
+import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.SerializationUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -47,7 +45,7 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
             String[] parameterTypeNames = invocation.getParameterTypeNames();
             Class[] parameterTypes = new Class[parameterTypeNames.length];
             for (int i = 0; i < parameterTypeNames.length; i++) {
-                Class<?> paramClass = Class.forName(parameterTypeNames[i], true, classLoader); // use Class.forName() because array parameters possible
+                Class<?> paramClass = ClassUtils.getClass(classLoader, parameterTypeNames[i]);
                 parameterTypes[i] = paramClass;
             }
 
@@ -61,7 +59,7 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
                     if (argumentsData[i] == null)
                         arguments[i] = null;
                     else
-                        arguments[i] = deserialize(argumentsData[i]);
+                        arguments[i] = Deserializer.deserialize(argumentsData[i]);
                 }
             }
 
@@ -79,23 +77,6 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
             return result;
         } finally {
             Thread.currentThread().setContextClassLoader(clientClassLoader);
-        }
-    }
-
-    // don't use SerializationUtils.deserialize() here to avoid ClassNotFoundException
-    public Object deserialize(byte[] bytes) {
-        if (bytes == null) {
-            return null;
-        }
-        try {
-            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bytes));
-            return ois.readObject();
-        }
-        catch (IOException ex) {
-            throw new IllegalArgumentException("Failed to deserialize object", ex);
-        }
-        catch (ClassNotFoundException ex) {
-            throw new IllegalStateException("Failed to deserialize object type", ex);
         }
     }
 }

@@ -31,4 +31,10 @@ public class TestingServiceBean implements TestingService {
         log.debug("executeFor " + timeMillis + " finished");
         return "Done";
     }
+
+    @Override
+    public boolean primitiveParameters(boolean b, int i, long l, double d) {
+        log.debug("primitiveParameters: " + b + ", " + i + ", " + l + ", " + d);
+        return b;
+    }
 }
