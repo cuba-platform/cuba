@@ -21,11 +21,18 @@ import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
 public abstract class ScriptingProvider {
+
+    protected String confPath;
+
+    public ScriptingProvider(ConfigProvider configProvider) {
+        confPath = configProvider.doGetConfig(GlobalConfig.class).getConfDir() + File.pathSeparator;
+    }
 
     public enum Layer {
         CORE,
@@ -89,8 +96,8 @@ public abstract class ScriptingProvider {
 
     public Class doLoadClass(String name) {
         try {
-            String path = ConfigProvider.getConfig(GlobalConfig.class).getConfDir() + "/" + name.replace(".", "/");
-            if (new File(path + ".java").exists())
+            File file = new File(confPath, name.replace(".", "/") + ".java");
+            if (file.exists())
                 return JavaClassLoader.getInstance().loadClass(name);
             else
                 return doGetGroovyClassLoader().loadClass(name, true, false);
@@ -102,7 +109,16 @@ public abstract class ScriptingProvider {
     @Nullable
     public InputStream doGetResourceAsStream(String name) {
         String s = name.startsWith("/") ? name.substring(1) : name;
-        return doGetGroovyClassLoader().getResourceAsStream(s);
+        File file = new File(confPath, s);
+        if (file.exists()) {
+            try {
+                return new FileInputStream(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            return doGetGroovyClassLoader().getResourceAsStream(s);
+        }
     }
 
     @Nullable

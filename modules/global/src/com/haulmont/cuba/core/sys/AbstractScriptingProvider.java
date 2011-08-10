@@ -38,7 +38,7 @@ public abstract class AbstractScriptingProvider extends ScriptingProvider {
 
     private Log log = LogFactory.getLog(getClass());
 
-    protected String groovyClassPath = "";
+    protected String groovyClassPath;
 
     protected Map<Layer, Set<String>> imports = new HashMap<Layer, Set<String>>();
 
@@ -49,8 +49,8 @@ public abstract class AbstractScriptingProvider extends ScriptingProvider {
     protected Map<Layer, GenericKeyedObjectPool> pools = new HashMap<Layer, GenericKeyedObjectPool>();
 
     public AbstractScriptingProvider(ConfigProvider configProvider) {
-        GlobalConfig config = configProvider.doGetConfig(GlobalConfig.class);
-        groovyClassPath = config.getConfDir() + File.pathSeparator;
+        super(configProvider);
+        groovyClassPath = confPath;
 
         String classPathProp = AppContext.getProperty("cuba.groovyClassPath");
         if (StringUtils.isNotBlank(classPathProp)) {
