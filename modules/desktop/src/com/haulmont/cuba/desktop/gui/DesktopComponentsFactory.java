@@ -62,6 +62,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(Embedded.NAME, DesktopEmbedded.class);
         classes.put(WidgetsTree.NAME, DesktopWidgetsTree.class);
         classes.put(GroupBox.NAME, DesktopGroupBox.class);
+        classes.put(TimeField.NAME, DesktopTimeField.class);
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {
@@ -85,7 +86,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
 
     @Override
     public <T extends Timer> T createTimer() {
-        return null;
+        return (T) new DesktopTimer();
     }
 
     @Override

@@ -78,6 +78,8 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     protected boolean forceClose;
     protected Runnable doAfterClose;
 
+    protected List<Timer> timers = new ArrayList<Timer>();
+
     private Log log = LogFactory.getLog(DesktopWindow.class);
 
     public DesktopWindow() {
@@ -186,9 +188,20 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     }
 
     public void addTimer(Timer timer) {
+        if (timer instanceof DesktopTimer) {
+            timers.add(timer);
+            ((DesktopTimer) timer).startTimer();
+        }
     }
 
     public Timer getTimer(String id) {
+        if (id == null)
+            throw new IllegalArgumentException("id is null");
+
+        for (Timer timer : timers) {
+            if (id.equals(timer.getId()))
+                return timer;
+        }
         return null;
     }
 

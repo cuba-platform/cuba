@@ -70,6 +70,7 @@ public interface Window extends Serializable, IFrame, Component.HasCaption, Comp
     /**
      * Returns a {@link Timer} assigned to this window by it's own ID
      * @param id Timer ID
+     * @return timer or null if not found
      */
     Timer getTimer(String id);
 
