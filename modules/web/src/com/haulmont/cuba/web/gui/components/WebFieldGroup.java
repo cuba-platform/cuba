@@ -788,7 +788,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         for (Field field : getFields()) {
             com.vaadin.ui.Field f = component.getField(field.getId());
-            if (f.isVisible() && f.isEnabled() && !f.isReadOnly()) {
+            if (f != null && f.isVisible() && f.isEnabled() && !f.isReadOnly()) {
                 Object value = convertRawValue(field, getFieldValue(field));
                 if (isEmpty(value)) {
                     if (isRequired(field))
