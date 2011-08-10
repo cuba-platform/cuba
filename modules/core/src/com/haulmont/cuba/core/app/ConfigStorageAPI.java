@@ -20,4 +20,6 @@ public interface ConfigStorageAPI
     String getConfigProperty(String name);
 
     void setConfigProperty(String name, String value);
+
+    void clearCache();
 }

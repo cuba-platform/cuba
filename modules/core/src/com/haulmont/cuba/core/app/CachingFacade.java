@@ -10,15 +10,24 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.security.app.EntityLogMBean;
+import com.haulmont.cuba.security.app.EntityLogAPI;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 
 @ManagedBean("cuba_CachingFacade")
 public class CachingFacade implements CachingFacadeMBean {
+
+    @Inject
+    private ResourceRepositoryAPI resourceRepository;
+
+    @Inject
+    private ConfigStorageAPI configStorage;
+
+    @Inject
+    private EntityLogAPI entityLog;
 
     public void clearGroovyCache() {
         ScriptingProvider.clearCache();
@@ -29,14 +38,14 @@ public class CachingFacade implements CachingFacadeMBean {
     }
 
     public void clearResourceRepositoryCache() {
-        Locator.lookupMBean(ResourceRepositoryMBean.class).evictAll();
+        resourceRepository.evictAll();
     }
 
     public void clearConfigStorageCache() {
-        Locator.lookupMBean(ConfigStorageMBean.class).clearCache();
+        configStorage.clearCache();
     }
 
     public void clearEntityLogCache() {
-        Locator.lookupMBean(EntityLogMBean.class).invalidateCache();
+        entityLog.invalidateCache();
     }
 }

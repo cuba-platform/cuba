@@ -40,4 +40,6 @@ public interface ResourceRepositoryAPI
      * @return String resource
      */
     String getResAsString(String name);
+
+    void evictAll();
 }

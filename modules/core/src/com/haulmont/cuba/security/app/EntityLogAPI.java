@@ -34,4 +34,10 @@ public interface EntityLogAPI
     void registerDelete(BaseEntity entity);
 
     void registerDelete(BaseEntity entity, boolean auto);
+
+    /**
+     * Invalidates configuration cache.
+     * The configuration will be recreated from the database on next lifecycle event.
+     */
+    void invalidateCache();
 }
