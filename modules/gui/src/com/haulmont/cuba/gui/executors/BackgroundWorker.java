@@ -7,7 +7,13 @@
 package com.haulmont.cuba.gui.executors;
 
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -38,7 +44,7 @@ public interface BackgroundWorker {
      */
     interface TaskExecutor<T> extends ProgressHandler<T> {
 
-        void execute();
+        void startExecution();
 
         boolean cancelExecution(boolean mayInterruptIfRunning);
 
@@ -54,6 +60,8 @@ public interface BackgroundWorker {
      */
     class TaskHandler<T> implements BackgroundTaskHandler {
 
+        private Log log = LogFactory.getLog(BackgroundWorker.class);
+
         private TaskExecutor<T> taskExecutor;
         private WatchDog watchDog;
 
@@ -65,19 +73,31 @@ public interface BackgroundWorker {
         private long timeoutMillis;
 
         private long startTimeStamp;
+        private UserSession userSession;
 
         public TaskHandler(TaskExecutor<T> taskExecutor, WatchDog watchDog) {
             this.taskExecutor = taskExecutor;
             this.watchDog = watchDog;
+            this.userSession = UserSessionProvider.getUserSession();
+
+            BackgroundTask task = taskExecutor.getTask();
+
+            task.getOwnerWindow().addListener(new Window.CloseListener() {
+                @Override
+                public void windowClosed(String actionId) {
+                    ownerWindowClosed();
+                }
+            });
         }
 
-        @Override
-        public void execute() {
-            checkState(!started, "Task is already started");
-
-            this.started = true;
-
-            taskExecutor.execute();
+        private void ownerWindowClosed() {
+            if (!taskExecutor.isCancelled() && !taskExecutor.isDone() && started) {
+                UUID userId = getUserSession().getId();
+                Window ownerWindow = getTask().getOwnerWindow();
+                String windowClass = ownerWindow.getClass().getCanonicalName();
+                log.debug("Window closed. User: " + userId + " Window: " + windowClass);
+                cancel(true);
+            }
         }
 
         @Override
@@ -93,7 +113,10 @@ public interface BackgroundWorker {
 
             this.watchDog.manageTask(this);
 
-            taskExecutor.execute();
+            UUID userId = getUserSession().getId();
+            log.debug("Run task. User: " + userId);
+
+            taskExecutor.startExecution();
         }
 
         @Override
@@ -109,6 +132,11 @@ public interface BackgroundWorker {
          * Cancel without events for tasks
          */
         public void close() {
+            UUID userId = getUserSession().getId();
+            Window ownerWindow = getTask().getOwnerWindow();
+            String windowClass = ownerWindow.getClass().getCanonicalName();
+            log.debug("Task killed. User: " + userId + " Window: " + windowClass);
+
             taskExecutor.cancelExecution(true);
         }
 
@@ -120,6 +148,14 @@ public interface BackgroundWorker {
         @Override
         public boolean isCancelled() {
             return taskExecutor.isCancelled();
+        }
+
+        public BackgroundTask<T> getTask() {
+            return taskExecutor.getTask();
+        }
+
+        public UserSession getUserSession() {
+            return userSession;
         }
 
         /**

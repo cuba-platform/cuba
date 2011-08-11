@@ -17,11 +17,6 @@ import java.util.concurrent.TimeUnit;
 public interface BackgroundTaskHandler {
 
     /**
-     * Execute task
-     */
-    void execute();
-
-    /**
      * Execute with timeout <br/>
      * If the task appears to hang then it will be canceled
      *

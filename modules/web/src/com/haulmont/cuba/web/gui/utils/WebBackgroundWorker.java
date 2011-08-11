@@ -8,12 +8,13 @@ package com.haulmont.cuba.web.gui.utils;
 
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.gui.components.Timer;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebTimer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +28,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author artamonov
  */
 public class WebBackgroundWorker implements BackgroundWorker {
+
+    private Log log = LogFactory.getLog(WebBackgroundWorker.class);
 
     private static final int UI_TIMER_UPDATE_MS = 500;
 
@@ -83,13 +86,6 @@ public class WebBackgroundWorker implements BackgroundWorker {
         });
         appInstance.addTimer(pingTimer, task.getOwnerWindow());
 
-        task.getOwnerWindow().addListener(new Window.CloseListener() {
-            @Override
-            public void windowClosed(String actionId) {
-                taskHandler.cancel(true);
-            }
-        });
-
         return taskHandler;
     }
 
@@ -113,8 +109,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 while (watching) {
                     cleanupTasks();
                 }
-            } catch (Exception ignored) {
-                throw new RuntimeException(ignored);
+            } catch (Exception ex) {
+                log.error("WatchDog crashed", ex);
             }
         }
 
@@ -199,6 +195,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
             }
         }
 
+        @Override
         public boolean cancelExecution(boolean mayInterruptIfRunning) {
             boolean canceled = false;
 
@@ -217,7 +214,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
                 this.canceled = canceled;
             }
-            if ((pingTimer != null) && canceled) {
+            if ((pingTimer != null) && mayInterruptIfRunning) {
                 pingTimer.stopTimer();
                 pingTimer = null;
             }
@@ -229,14 +226,17 @@ public class WebBackgroundWorker implements BackgroundWorker {
             return runnableTask;
         }
 
-        public void execute() {
+        @Override
+        public void startExecution() {
             start();
         }
 
+        @Override
         public boolean isCancelled() {
             return canceled;
         }
 
+        @Override
         public boolean isDone() {
             return done;
         }
