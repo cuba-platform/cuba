@@ -1079,6 +1079,10 @@ public class WebWindowManager extends WindowManager {
         return id + "." + count;
     }
 
+    public void reset() {
+        appWindowMap.clear();
+    }
+
     public interface ShowStartupLayoutListener extends Serializable {
         void onShowStartupLayout();
     }

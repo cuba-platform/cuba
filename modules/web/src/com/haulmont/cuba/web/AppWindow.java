@@ -356,6 +356,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
             final TextField searchField = new com.haulmont.cuba.web.toolkit.ui.TextField();
             searchField.setWidth(120, Sizeable.UNITS_PIXELS);
+            searchField.setDebugId("ftsField." + (int) (Math.random() * 1000000));
             searchField.addShortcutListener(new ShortcutListener("fts", com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {
                 @Override
                 public void handleAction(Object sender, Object target) {
@@ -956,6 +957,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             App.getInstance().getWindowManager().checkModificationsAndCloseAll(
                     new Runnable() {
                         public void run() {
+                            App.getInstance().getWindowManager().reset();
                             String redirectionUrl = connection.logout();
                             open(new ExternalResource(App.getInstance().getURL() + redirectionUrl));
                         }
