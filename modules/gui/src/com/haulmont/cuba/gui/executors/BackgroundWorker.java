@@ -96,7 +96,8 @@ public interface BackgroundWorker {
                 Window ownerWindow = getTask().getOwnerWindow();
                 String windowClass = ownerWindow.getClass().getCanonicalName();
                 log.debug("Window closed. User: " + userId + " Window: " + windowClass);
-                cancel(true);
+
+                taskExecutor.cancelExecution(true);
             }
         }
 
