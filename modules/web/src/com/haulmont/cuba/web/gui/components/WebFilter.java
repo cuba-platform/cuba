@@ -608,7 +608,7 @@ public class WebFilter
         select.setValue(filterEntity);
     }
 
-    private String getCurrentFilterCaption() {
+    public String getCurrentFilterCaption() {
         String name;
         if (filterEntity != null)
             if (filterEntity.getCode() == null)
@@ -631,6 +631,10 @@ public class WebFilter
                 name = MessageProvider.getMessage(MESSAGES_PACK, "folderPrefix") + " " + name;
         }
         return name;
+    }
+
+    public List<AbstractCondition> getConditions() {
+        return Collections.unmodifiableList(conditions);
     }
 
     public void editorCancelled() {

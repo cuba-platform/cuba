@@ -85,6 +85,11 @@ public class ExcelExporter {
     }
 
     public void exportTable(Table table, List<Table.Column> columns, Boolean exportExpanded, ExportDisplay display) {
+        exportTable(table, columns, exportExpanded, display, null);
+    }
+
+    public void exportTable(Table table, List<Table.Column> columns, Boolean exportExpanded,
+                            ExportDisplay display, List<String> filterDescription) {
          if (display == null)
             throw new IllegalArgumentException("ExportDisplay is null");
 
@@ -92,8 +97,21 @@ public class ExcelExporter {
         createFonts();
 
         int r = 0;
-        HSSFRow row = sheet.createRow(0);
-
+        if (filterDescription != null) {
+            for (r = 0; r < filterDescription.size(); r++) {
+                String line = filterDescription.get(r);
+                HSSFRow row = sheet.createRow(r);
+                if (r == 0) {
+                    HSSFRichTextString richTextFilterName = new HSSFRichTextString(line);
+                    richTextFilterName.applyFont(boldFont);
+                    row.createCell(0).setCellValue(richTextFilterName);
+                } else {
+                    row.createCell(0).setCellValue(line);
+                }
+            }
+            r++;
+        }
+        HSSFRow row = sheet.createRow(r);
         createAutoColumnSizers(columns.size());
 
         for (int c = 0; c < columns.size(); c++) {
@@ -193,7 +211,7 @@ public class ExcelExporter {
             return;
         }
         HSSFRow row = sheet.createRow(rowNumber);
-        Instance instance = table.getDatasource().getItem(itemId);
+        Instance instance = (Instance) table.getDatasource().getItem(itemId);
 
         int level = 0;
         if (table instanceof TreeTable) {
@@ -230,7 +248,7 @@ public class ExcelExporter {
             return;
         if (val instanceof Number) {
             Number n = (Number) val;
-            final Datatype datatype = Datatypes.getInstance().get(n.getClass());
+            final Datatype datatype = Datatypes.get(n.getClass());
             String str;
             if (sizersIndex == 0) {
                 str = createSpaceString(level) + datatype.format(n);
@@ -263,7 +281,7 @@ public class ExcelExporter {
             cell.setCellStyle(cellStyle);
 
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
-                String str = Datatypes.getInstance().get(Date.class).format((Date) val);
+                String str = Datatypes.get(Date.class).format((Date) val);
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
         } else if (val instanceof Boolean) {
@@ -286,7 +304,7 @@ public class ExcelExporter {
             }
         } else if (val instanceof Entity){
             Entity entityVal = (Entity) val;
-            String instanceName = entityVal.getInstanceName();
+            String instanceName = ((Instance) entityVal).getInstanceName();
             String str = sizersIndex == 0 ? createSpaceString(level) + instanceName : instanceName;
             cell.setCellValue(new HSSFRichTextString(str));
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
