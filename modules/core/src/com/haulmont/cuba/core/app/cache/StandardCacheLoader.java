@@ -8,20 +8,13 @@ package com.haulmont.cuba.core.app.cache;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.app.ResourceRepository;
-import com.haulmont.cuba.core.app.ResourceRepositoryAPI;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.View;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jfree.data.xml.DatasetReader;
 
-import javax.annotation.Resource;
-import java.io.*;
 import java.util.List;
 
 /**
@@ -70,8 +63,7 @@ public class StandardCacheLoader implements CacheLoader {
 
         if (StringUtils.isEmpty(dbQuery)) {
             try {
-                ResourceRepositoryAPI repositoryAPI = Locator.lookup(ResourceRepositoryAPI.NAME);
-                dbQuery = repositoryAPI.getResAsString(queryPath);
+                dbQuery = ScriptingProvider.getResourceAsString(queryPath);
             } catch (Exception e) {
                 log.error("Broken or missing query file for cache: " + cache.getName());
                 throw new CacheException(e);
