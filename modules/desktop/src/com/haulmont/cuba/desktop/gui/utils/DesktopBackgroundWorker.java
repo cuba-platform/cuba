@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.desktop.gui.utils;
 
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
@@ -32,8 +34,8 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
     private WatchDog watchDog;
 
-    public DesktopBackgroundWorker() {
-        watchDog = new DesktopWatchDog();
+    public DesktopBackgroundWorker(ConfigProvider configProvider) {
+        watchDog = new DesktopWatchDog(configProvider);
     }
 
     @Override
@@ -51,13 +53,14 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
      */
     private class DesktopWatchDog extends SwingWorker<Void, TaskHandler> implements BackgroundWorker.WatchDog {
 
-        private static final int WATCHDOG_INTERVAL = 2000;
-
         private boolean watching = false;
         private final Set<TaskHandler> watches;
 
-        private DesktopWatchDog() {
+        private final Integer watchDogInterval;
+
+        private DesktopWatchDog(ConfigProvider configProvider) {
             watches = new LinkedHashSet<TaskHandler>();
+            watchDogInterval = configProvider.doGetConfig(ClientConfig.class).getWatchDogInterval();
         }
 
         @Override
@@ -73,7 +76,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         }
 
         private void cleanupTasks() throws InterruptedException {
-            TimeUnit.MILLISECONDS.sleep(WATCHDOG_INTERVAL);
+            TimeUnit.MILLISECONDS.sleep(watchDogInterval);
 
             synchronized (watches) {
                 long actualTime = TimeProvider.currentTimestamp().getTime();

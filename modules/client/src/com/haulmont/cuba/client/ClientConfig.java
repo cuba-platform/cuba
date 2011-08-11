@@ -33,6 +33,10 @@ public interface ClientConfig extends Config {
     @DefaultInteger(20)
     Integer getMaxUploadSizeMb();
 
+    @Property("cuba.backgroundWorker.watchDogInterval")
+    @DefaultInteger(2000)
+    Integer getWatchDogInterval();
+
     @Property("cuba.collectionDatasourceDbSortEnabled")
     @DefaultBoolean(true)
     boolean getCollectionDatasourceDbSortEnabled();

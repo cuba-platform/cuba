@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.web.gui.utils;
 
+import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
@@ -35,8 +37,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
     private WatchDog watchDog;
 
-    public WebBackgroundWorker() {
-        watchDog = new WebWatchDog();
+    public WebBackgroundWorker(ConfigProvider configProvider) {
+        watchDog = new WebWatchDog(configProvider);
     }
 
     @Override
@@ -94,13 +96,14 @@ public class WebBackgroundWorker implements BackgroundWorker {
      */
     private class WebWatchDog extends Thread implements WatchDog {
 
-        private static final int WATCHDOG_INTERVAL = 2000;
-
         private volatile boolean watching = false;
         private final Set<TaskHandler> watches;
 
-        private WebWatchDog() {
+        private final Integer watchDogInterval;
+
+        private WebWatchDog(ConfigProvider configProvider) {
             watches = new LinkedHashSet<TaskHandler>();
+            watchDogInterval = configProvider.doGetConfig(ClientConfig.class).getWatchDogInterval();
         }
 
         @Override
@@ -115,7 +118,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         private void cleanupTasks() throws Exception {
-            TimeUnit.MILLISECONDS.sleep(WATCHDOG_INTERVAL);
+            TimeUnit.MILLISECONDS.sleep(watchDogInterval);
 
             synchronized (watches) {
                 long actual = TimeProvider.currentTimestamp().getTime();
