@@ -27,9 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.persistence.FetchPlan;
 
-import java.util.Set;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 public class ViewHelper
 {
@@ -143,13 +141,20 @@ public class ViewHelper
     public static void fetchInstance(Instance instance, View view) {
         if (PersistenceHelper.isDetached(instance))
             throw new IllegalArgumentException("Can not fetch detached entity. Merge first.");
-        __fetchInstance(instance, view, new HashSet<Instance>());
+        __fetchInstance(instance, view, new HashMap<Instance, Set<View>>());
     }
 
-    private static void __fetchInstance(Instance instance, View view, Set<Instance> visited) {
-        if (visited.contains(instance))
+    private static void __fetchInstance(Instance instance, View view, Map<Instance, Set<View>> visited) {
+        Set<View> views = visited.get(instance);
+
+        if (views == null) {
+            views = new HashSet<View>();
+            visited.put(instance, views);
+        } else if (views.contains(view)) {
             return;
-        visited.add(instance);
+        }
+
+        views.add(view);
 
         log.trace("Fetching instance " + instance);
         for (ViewProperty property : view.getProperties()) {
