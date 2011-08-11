@@ -6,13 +6,13 @@
 
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.WebComponentsFactory;
-import com.haulmont.cuba.web.gui.utils.WebBackgroundWorker;
 
 /**
  * <p>$Id$</p>
@@ -22,7 +22,6 @@ import com.haulmont.cuba.web.gui.utils.WebBackgroundWorker;
 public class WebAppConfig extends AppConfig {
 
     private volatile ComponentsFactory componentsFactory;
-    private volatile BackgroundWorker backgroundWorker;
 
     @Override
     protected ExportDisplay __createExportDisplay() {
@@ -31,12 +30,7 @@ public class WebAppConfig extends AppConfig {
 
     @Override
     protected BackgroundWorker __getBackgroundWorker() {
-        if (backgroundWorker == null) {
-            synchronized (this) {
-                backgroundWorker = new WebBackgroundWorker();
-            }
-        }
-        return backgroundWorker;
+        return AppContext.getBean(BackgroundWorker.NAME);
     }
 
     @Override

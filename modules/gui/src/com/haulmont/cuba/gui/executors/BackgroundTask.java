@@ -12,6 +12,10 @@ import java.util.List;
 
 /**
  * Backround task for execute in {@link BackgroundWorker}
+ * <p>
+ * <b>It is strongly recommended to be able to interrupt working thread, <br/>
+ * don't ignore {@link InterruptedException} or its ancestors</b>
+ * </p>
  * <p>$Id$</p>
  *
  * @param <T> measure unit which shows progress of task
@@ -21,6 +25,8 @@ public abstract class BackgroundTask<T> {
 
     private ProgressHandler<T> progressHandler;
     private Window ownerWindow;
+
+    private volatile boolean isInterrupted = false;
 
     protected BackgroundTask(Window ownerWindow) {
         this.ownerWindow = ownerWindow;
@@ -68,5 +74,13 @@ public abstract class BackgroundTask<T> {
 
     public Window getOwnerWindow() {
         return ownerWindow;
+    }
+
+    public boolean isInterrupted() {
+        return isInterrupted;
+    }
+
+    public void setInterrupted(boolean interrupted) {
+        isInterrupted = interrupted;
     }
 }

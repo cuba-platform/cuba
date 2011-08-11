@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.gui.utils;
 
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
@@ -17,7 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -27,13 +27,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author artamonov
  */
-@SuppressWarnings("unused")
 public class DesktopBackgroundWorker implements BackgroundWorker {
 
-    private WatchDog watchDogThread;
+    private WatchDog watchDog;
 
     public DesktopBackgroundWorker() {
-        watchDogThread = new DesktopWatchDog();
+        watchDog = new DesktopWatchDog();
     }
 
     @Override
@@ -42,48 +41,58 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         // create task handler
         TaskExecutor<T> taskExecutor = new DesktopTaskExecutor<T>(task);
-        return new TaskHandler<T>(taskExecutor, watchDogThread);
+        final TaskHandler<T> taskHandler = new TaskHandler<T>(taskExecutor, watchDog);
+
+        task.getOwnerWindow().addListener(new Window.CloseListener() {
+            @Override
+            public void windowClosed(String actionId) {
+                taskHandler.cancel(true);
+            }
+        });
+
+        return taskHandler;
     }
 
     /**
      * WatchDog
      */
-    private class DesktopWatchDog extends SwingWorker<Void, TaskHandler> implements BackgroundWorker.WatchDog{
+    private class DesktopWatchDog extends SwingWorker<Void, TaskHandler> implements BackgroundWorker.WatchDog {
 
-        private static final int WATCHDOG_INTERVAL = 100;
+        private static final int WATCHDOG_INTERVAL = 2000;
 
         private boolean watching = false;
-        private ReentrantLock watchLock;
-        private Set<TaskHandler> watches;
+        private final Set<TaskHandler> watches;
 
         private DesktopWatchDog() {
-            watchLock = new ReentrantLock();
             watches = new LinkedHashSet<TaskHandler>();
         }
 
         @Override
         protected Void doInBackground() throws Exception {
+            while (watching) {
+                cleanupTasks();
+            }
+            return null;
+        }
+
+        private void cleanupTasks() throws InterruptedException {
             TimeUnit.MILLISECONDS.sleep(WATCHDOG_INTERVAL);
 
-            watchLock.lock();
+            synchronized (watches) {
+                long actualTime = TimeProvider.currentTimestamp().getTime();
 
-            long actualTime = TimeProvider.currentTimestamp().getTime();
-
-            List<TaskHandler> forRemove = new LinkedList<TaskHandler>();
-            for (TaskHandler task : watches) {
-                if (task.isCancelled() || task.isDone()) {
-                    forRemove.add(task);
-                } else if (task.checkHangup(actualTime)) {
-                    cancelTask(task);
-                    forRemove.add(task);
+                List<TaskHandler> forRemove = new LinkedList<TaskHandler>();
+                for (TaskHandler task : watches) {
+                    if (task.isCancelled() || task.isDone()) {
+                        forRemove.add(task);
+                    } else if (task.checkHangup(actualTime)) {
+                        cancelTask(task);
+                        forRemove.add(task);
+                    }
                 }
+
+                watches.removeAll(forRemove);
             }
-
-            watches.removeAll(forRemove);
-
-            watchLock.unlock();
-
-            return null;
         }
 
         private void cancelTask(TaskHandler task) {
@@ -94,7 +103,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         protected void process(List<TaskHandler> chunks) {
             for (TaskHandler task : chunks) {
                 if (task.isHangup())
-                    task.cancel(true);
+                    task.close();
             }
         }
 
@@ -104,15 +113,12 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         }
 
         public void manageTask(TaskHandler backroundTask) {
-            watchLock.lock();
-
-            watches.add(backroundTask);
-
-            if (!watching) {
-                startWatching();
+            synchronized (watches) {
+                watches.add(backroundTask);
             }
 
-            watchLock.unlock();
+            if (!watching)
+                startWatching();
         }
     }
 
@@ -125,6 +131,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         private DesktopTaskExecutor(BackgroundTask<T> runnableTask) {
             this.runnableTask = runnableTask;
+            runnableTask.setProgressHandler(this);
         }
 
         @Override
@@ -140,11 +147,19 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         @Override
         protected void done() {
-            runnableTask.done();
+            if (!runnableTask.isInterrupted())
+                runnableTask.done();
         }
 
-        public void execute(long timeout, TimeUnit unit) {
-            execute();
+        @Override
+        public boolean cancelExecution(boolean mayInterruptIfRunning) {
+            runnableTask.setInterrupted(true);
+
+            if (!isDone()) {
+                cancel(mayInterruptIfRunning);
+            }
+
+            return true;
         }
 
         @Override

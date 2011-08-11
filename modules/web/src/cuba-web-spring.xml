@@ -35,6 +35,8 @@
 
     <bean id="cuba_FileUploading" class="com.haulmont.cuba.gui.upload.FileUploading"/>
 
+    <bean id="cuba_BackgroundWorker" class="com.haulmont.cuba.web.gui.utils.WebBackgroundWorker"/>
+
     <!-- MBeans registration -->
 
     <bean id="cuba_web_MBeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">

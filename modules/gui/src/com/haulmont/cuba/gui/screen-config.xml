@@ -84,7 +84,4 @@
     <screen id="core$EntitySnapshot.view"
             template="/com/haulmont/cuba/gui/app/core/entitydiff/diff-view.xml"/>
 
-    <screen id="test$BackroundTasks.window"
-            template="/com/haulmont/cuba/gui/backgroundtasks/background-task-window.xml"/>
-
 </screen-config>

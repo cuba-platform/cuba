@@ -7,21 +7,16 @@
 package com.haulmont.cuba.web.gui.utils;
 
 import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Timer;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.WebTimer;
-import com.haulmont.cuba.web.gui.WebWindow;
-import com.vaadin.ui.Component;
 
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -31,42 +26,53 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author artamonov
  */
-public class WebBackgroundWorker implements BackgroundWorker, HttpSessionListener {
+public class WebBackgroundWorker implements BackgroundWorker {
 
     private static final int UI_TIMER_UPDATE_MS = 500;
 
-    private WatchDog watchDogThread;
+    private WatchDog watchDog;
 
     public WebBackgroundWorker() {
-        watchDogThread = new WebWatchDog();
+        watchDog = new WebWatchDog();
     }
 
     @Override
     public <T> BackgroundTaskHandler handle(final BackgroundTask<T> task) {
         checkNotNull(task);
 
+        App appInstance = App.getInstance();
+
         // UI timer
         WebTimer pingTimer = new WebTimer(UI_TIMER_UPDATE_MS, true);
 
+        // create task executor
+        final WebTaskExecutor<T> taskExecutor = new WebTaskExecutor<T>(appInstance, task, pingTimer);
+
+        // add thread to taskSet
+        appInstance.addBackgroundTask(taskExecutor);
+
         // create task handler
-        TaskExecutor<T> taskExecutor = new WebTaskExecutor<T>(task, pingTimer);
-        final TaskHandler<T> taskHandler = new TaskHandler<T>(taskExecutor, watchDogThread);
+        final TaskHandler<T> taskHandler = new TaskHandler<T>(taskExecutor, watchDog);
 
         // add timer to AppWindow for UI ping
         pingTimer.addTimerListener(new com.haulmont.cuba.gui.components.Timer.TimerListener() {
 
+            private long intentVersion = 0;
+
             @Override
             public void onTimer(Timer timer) {
+                // handle intents
+                if (!taskHandler.isCancelled()) {
+                    if (intentVersion != taskExecutor.getIntentVersion()) {
+                        intentVersion = taskExecutor.getIntentVersion();
+                        taskExecutor.handleIntents();
+                    }
+                }
+
                 // if completed
                 if (taskHandler.isDone()) {
                     task.done();
                     timer.stopTimer();
-                } else {
-                    if (!taskHandler.isCancelled()) {
-                        IFrame frame = task.getOwnerWindow().getFrame();
-                        Component webWindow = ((WebWindow) frame).getComponent();
-                        webWindow.requestRepaint();
-                    }
                 }
             }
 
@@ -75,34 +81,29 @@ public class WebBackgroundWorker implements BackgroundWorker, HttpSessionListene
                 // Do nothing
             }
         });
-        App.getInstance().addTimer(pingTimer, task.getOwnerWindow());
+        appInstance.addTimer(pingTimer, task.getOwnerWindow());
+
+        task.getOwnerWindow().addListener(new Window.CloseListener() {
+            @Override
+            public void windowClosed(String actionId) {
+                taskHandler.cancel(true);
+            }
+        });
 
         return taskHandler;
-    }
-
-    @Override
-    public void sessionCreated(HttpSessionEvent httpSessionEvent) {
-        // Do nothing
-    }
-
-    @Override
-    public void sessionDestroyed(HttpSessionEvent httpSessionEvent) {
-        // Purge session tasks and threads
     }
 
     /**
      * WatchDog
      */
-    private class WebWatchDog extends Thread implements WatchDog{
+    private class WebWatchDog extends Thread implements WatchDog {
 
-        private static final int WATCHDOG_INTERVAL = 100;
+        private static final int WATCHDOG_INTERVAL = 2000;
 
         private volatile boolean watching = false;
-        private ReentrantLock watchLock;
-        private Set<TaskHandler> watches;
+        private final Set<TaskHandler> watches;
 
         private WebWatchDog() {
-            watchLock = new ReentrantLock();
             watches = new LinkedHashSet<TaskHandler>();
         }
 
@@ -113,33 +114,32 @@ public class WebBackgroundWorker implements BackgroundWorker, HttpSessionListene
                     cleanupTasks();
                 }
             } catch (Exception ignored) {
+                throw new RuntimeException(ignored);
             }
         }
 
         private void cleanupTasks() throws Exception {
             TimeUnit.MILLISECONDS.sleep(WATCHDOG_INTERVAL);
 
-            watchLock.lock();
+            synchronized (watches) {
+                long actual = TimeProvider.currentTimestamp().getTime();
 
-            long actual = TimeProvider.currentTimestamp().getTime();
-
-            List<TaskHandler> forRemove = new LinkedList<TaskHandler>();
-            for (TaskHandler task : watches) {
-                if (task.isCancelled() || task.isDone()) {
-                    forRemove.add(task);
-                } else if (task.checkHangup(actual)) {
-                    cancelTask(task);
-                    forRemove.add(task);
+                List<TaskHandler> forRemove = new LinkedList<TaskHandler>();
+                for (TaskHandler task : watches) {
+                    if (task.isCancelled() || task.isDone()) {
+                        forRemove.add(task);
+                    } else if (task.checkHangup(actual)) {
+                        cancelTask(task);
+                        forRemove.add(task);
+                    }
                 }
+
+                watches.removeAll(forRemove);
             }
-
-            watches.removeAll(forRemove);
-
-            watchLock.unlock();
         }
 
         private void cancelTask(TaskHandler task) {
-            task.cancel(true);
+            task.close();
         }
 
         private void startWatching() {
@@ -148,15 +148,12 @@ public class WebBackgroundWorker implements BackgroundWorker, HttpSessionListene
         }
 
         public void manageTask(TaskHandler backroundTask) {
-            watchLock.lock();
-
-            watches.add(backroundTask);
-
-            if (!watching) {
-                startWatching();
+            synchronized (watches) {
+                watches.add(backroundTask);
             }
 
-            watchLock.unlock();
+            if (!watching)
+                startWatching();
         }
     }
 
@@ -165,33 +162,60 @@ public class WebBackgroundWorker implements BackgroundWorker, HttpSessionListene
      */
     private class WebTaskExecutor<T> extends Thread implements TaskExecutor<T> {
 
+        private App app;
+
         private BackgroundTask<T> runnableTask;
         private WebTimer pingTimer;
 
         private volatile boolean canceled = false;
         private volatile boolean done = false;
 
-        private WebTaskExecutor(BackgroundTask<T> runnableTask, WebTimer pingTimer) {
+        private volatile long intentVersion = 0;
+        private final List<T> intents = Collections.synchronizedList(new LinkedList<T>());
+
+        private WebTaskExecutor(App app, BackgroundTask<T> runnableTask, WebTimer pingTimer) {
             this.runnableTask = runnableTask;
             this.pingTimer = pingTimer;
+            this.app = app;
             runnableTask.setProgressHandler(this);
         }
 
         @Override
         public void run() {
+            runnableTask.setInterrupted(false);
             runnableTask.run();
-            done = true;
+            // Is done
+            if (!runnableTask.isInterrupted())
+                done = true;
+            // Remove from executions
+            app.removeBackgroundTask(this);
         }
 
         @Override
-        public void handleProgress(T ... changes) {
-            runnableTask.progress(Arrays.asList(changes));
+        public void handleProgress(T... changes) {
+            synchronized (intents) {
+                intentVersion++;
+                intents.addAll(Arrays.asList(changes));
+            }
         }
 
-        public boolean cancel(boolean mayInterruptIfRunning) {
+        public boolean cancelExecution(boolean mayInterruptIfRunning) {
+            boolean canceled = false;
+
+            runnableTask.setInterrupted(true);
+
             if (super.isAlive() && mayInterruptIfRunning) {
+                // Interrupt
                 interrupt();
-                canceled = isInterrupted();
+
+                // Check
+                canceled = isInterrupted() || isDone();
+
+                // Remove task from execution
+                if (canceled)
+                    app.removeBackgroundTask(this);
+
+                this.canceled = canceled;
             }
             if ((pingTimer != null) && canceled) {
                 pingTimer.stopTimer();
@@ -215,6 +239,16 @@ public class WebBackgroundWorker implements BackgroundWorker, HttpSessionListene
 
         public boolean isDone() {
             return done;
+        }
+
+        public long getIntentVersion() {
+            return intentVersion;
+        }
+
+        public void handleIntents() {
+            synchronized (intents) {
+                runnableTask.progress(intents);
+            }
         }
     }
 }

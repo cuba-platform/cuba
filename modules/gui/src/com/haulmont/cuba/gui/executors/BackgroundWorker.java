@@ -19,6 +19,7 @@ import static com.google.common.base.Preconditions.checkState;
  * @author artamonov
  */
 public interface BackgroundWorker {
+    String NAME = "cuba_BackgroundWorker";
 
     /**
      * Create handler for background task
@@ -39,7 +40,7 @@ public interface BackgroundWorker {
 
         void execute();
 
-        boolean cancel(boolean mayInterruptIfRunning);
+        boolean cancelExecution(boolean mayInterruptIfRunning);
 
         BackgroundTask<T> getTask();
 
@@ -97,11 +98,18 @@ public interface BackgroundWorker {
 
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
-            boolean canceled = taskExecutor.cancel(mayInterruptIfRunning);
+            boolean canceled = taskExecutor.cancelExecution(mayInterruptIfRunning);
             if (canceled) {
                 taskExecutor.getTask().canceled();
             }
             return canceled;
+        }
+
+        /**
+         * Cancel without events for tasks
+         */
+        public void close() {
+            taskExecutor.cancelExecution(true);
         }
 
         @Override

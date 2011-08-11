@@ -30,6 +30,8 @@
 
     <bean id="cuba_FileUploading" class="com.haulmont.cuba.gui.upload.FileUploading"/>
 
+    <bean id="cuba_BackgroundWorker" class="com.haulmont.cuba.desktop.gui.utils.DesktopBackgroundWorker"/>
+
     <!-- Remote stubs -->
 
     <bean id="cuba_clusterInvocationSupport" class="com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport"

@@ -6,9 +6,9 @@
 
 package com.haulmont.cuba.desktop.sys;
 
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.gui.DesktopComponentsFactory;
 import com.haulmont.cuba.desktop.gui.components.DesktopExportDisplay;
-import com.haulmont.cuba.desktop.gui.utils.DesktopBackgroundWorker;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.export.ExportDisplay;
@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 public class DesktopAppConfig extends AppConfig {
 
     private volatile ComponentsFactory componentsFactory;
-    private volatile BackgroundWorker backgroundWorker;
 
     @Override
     protected ExportDisplay __createExportDisplay() {
@@ -31,12 +30,7 @@ public class DesktopAppConfig extends AppConfig {
 
     @Override
     protected BackgroundWorker __getBackgroundWorker() {
-        if (backgroundWorker == null) {
-            synchronized (this) {
-                backgroundWorker = new DesktopBackgroundWorker();
-            }
-        }
-        return backgroundWorker;
+        return AppContext.getBean(BackgroundWorker.NAME);
     }
 
     @Override

@@ -101,6 +101,8 @@ public abstract class App extends Application
 
     private AppCookies cookies;
 
+    private BackgroundTaskManager backgroundTaskManager;
+
     protected boolean testModeRequest = false;
 
     protected String clientAddress;
@@ -124,6 +126,7 @@ public abstract class App extends Application
         };
         cookies.setCookiesEnabled(true);
         timers = new AppTimers(this);
+        backgroundTaskManager = new BackgroundTaskManager();
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -455,6 +458,22 @@ public abstract class App extends Application
         if (log.isTraceEnabled()) {
             log.trace("requestEnd: [@" + Integer.toHexString(System.identityHashCode(transactionData)) + "]");
         }
+    }
+
+    public BackgroundTaskManager getTaskManager() {
+        return backgroundTaskManager;
+    }
+
+    public void addBackgroundTask(Thread task) {
+        backgroundTaskManager.addTask(task);
+    }
+
+    public void removeBackgroundTask(Thread task) {
+        backgroundTaskManager.removeTask(task);
+    }
+
+    public void cleanupBackgroundTasks() {
+        backgroundTaskManager.cleanupTasks();
     }
 
     Window getCurrentWindow() {
