@@ -506,7 +506,7 @@ public class DesktopWindowManager extends WindowManager {
                 options,
                 options[0]
         );
-        final JDialog dialog = new JDialog(App.getInstance().getMainFrame(), title, true);
+        final JDialog dialog = new JDialog(App.getInstance().getMainFrame(), title, false);
         dialog.setContentPane(optionPane);
         dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         optionPane.addPropertyChangeListener(
@@ -520,12 +520,14 @@ public class DesktopWindowManager extends WindowManager {
                             ActionWrapper actionWrapper = (ActionWrapper) e.getNewValue();
                             actionWrapper.getAction().actionPerform(null);
 
+                            App.getInstance().enable();
                             dialog.setVisible(false);
                         }
                     }
                 });
         dialog.pack();
         dialog.setLocationRelativeTo(App.getInstance().getMainFrame());
+        App.getInstance().disable(null);
         dialog.setVisible(true);
     }
 
