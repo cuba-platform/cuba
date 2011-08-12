@@ -10,8 +10,6 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
@@ -42,7 +40,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
     }
 
     @Override
-    public <T, V> BackgroundTaskHandler handle(BackgroundTask<T, V> task) {
+    public <T, V> BackgroundTaskHandler<V> handle(BackgroundTask<T, V> task) {
         checkNotNull(task);
         checkNotNull(task.getOwnerWindow());
 
@@ -133,19 +131,15 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
     private class DesktopTaskExecutor<T, V> extends SwingWorker<V, T> implements TaskExecutor<T, V> {
 
         private BackgroundTask<T, V> runnableTask;
-        private SecurityContext securityContext;
 
         private DesktopTaskExecutor(BackgroundTask<T, V> runnableTask) {
             this.runnableTask = runnableTask;
             runnableTask.setProgressHandler(this);
-            securityContext = AppContext.getSecurityContext();
         }
 
         @Override
         protected V doInBackground() throws Exception {
-            // Set security permissions
-            AppContext.setSecurityContext(securityContext);
-
+            runnableTask.setInterrupted(false);
             V result = null;
             try {
                 result = runnableTask.run();
@@ -153,10 +147,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                 log.error(ex);
             } finally {
                 runnableTask.setResult(result);
-                // Clear security permissions
-                AppContext.setSecurityContext(null);
             }
-
             return result;
         }
 
@@ -181,7 +172,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
             runnableTask.setInterrupted(true);
 
             UUID userId = UserSessionProvider.getUserSession().getId();
-            log.info("Cancel background task for user: " + userId);
+            log.info("Cancel task. User: " + userId);
 
             if (!isDone()) {
                 return cancel(mayInterruptIfRunning);
