@@ -43,13 +43,17 @@ public class WindowConfig
             String fileName = element.attributeValue("file");
             if (!StringUtils.isBlank(fileName)) {
                 String incXml = ScriptingProvider.getResourceAsString(fileName);
+                if (incXml == null) {
+                    log.warn("File " + fileName + " not found, ignore it");
+                    continue;
+                }
                 loadConfig(incXml);
             }
         }
         for (Element element : (List<Element>) rootElem.elements("screen")) {
             String id = element.attributeValue("id");
             if (StringUtils.isBlank(id)) {
-                log.warn("Invalid screen-config: 'id' attribute not defined");
+                log.warn("Invalid window config: 'id' attribute not defined");
                 continue;
             }
             WindowInfo windowInfo = new WindowInfo(id, element);
