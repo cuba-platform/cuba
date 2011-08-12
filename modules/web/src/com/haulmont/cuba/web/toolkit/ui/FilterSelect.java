@@ -269,7 +269,7 @@ public class FilterSelect extends Select {
         super.changeVariables(source, variables);
 
         Object value = getValue();
-        if (isFirstChange && variables.containsKey("page") && value != null) {
+        if (items instanceof Ordered && isFirstChange && variables.containsKey("page") && value != null) {
             Object itemId = ((Ordered) items).firstItemId();
             int count = 1;
             for (int i = 0; i < items.size(); i++) {
