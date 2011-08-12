@@ -104,6 +104,7 @@ public interface BackgroundWorker {
         @Override
         public void execute(long timeout, TimeUnit unit) {
             checkState(!started, "Task is already started");
+            checkState(timeout >= 0, "Timeout cannot be zero or less than zero");
 
             this.started = true;
 
