@@ -31,9 +31,8 @@ import java.util.Locale;
  * @author krivopustov
  */
 public abstract class DesktopAbstractComponent<C extends JComponent>
-    implements
-        DesktopComponent, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.Expandable
-{
+        implements
+        DesktopComponent, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.Expandable {
     protected C impl;
 
     protected DesktopContainer container;
@@ -212,7 +211,8 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     }
 
     @Override
-    public void setExpanded(boolean expanded) {}
+    public void setExpanded(boolean expanded) {
+    }
 
     /**
      * Default formatter for {@link DesktopLabel} and {@link DesktopTextField}
@@ -254,6 +254,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
         /**
          * Format value for text field or lable
+         *
          * @param value Object value
          * @return Formatted string
          */
@@ -274,7 +275,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
                         } else
                             text = String.valueOf(value);
                     } else if (datatype != null) {
-                        datatype.format(value, locale);
+                        text = datatype.format(value, locale);
                     } else
                         text = String.valueOf(value);
                 }
