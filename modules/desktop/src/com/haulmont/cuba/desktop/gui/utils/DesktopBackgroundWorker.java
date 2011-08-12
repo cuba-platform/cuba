@@ -146,11 +146,17 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
             // Set security permissions
             AppContext.setSecurityContext(securityContext);
 
-            V result = runnableTask.run();
-            runnableTask.setResult(result);
+            V result = null;
+            try {
+                result = runnableTask.run();
+            } catch (Exception ex) {
+                log.error(ex);
+            } finally {
+                runnableTask.setResult(result);
+                // Clear security permissions
+                AppContext.setSecurityContext(null);
+            }
 
-            // Clear security permissions
-            AppContext.setSecurityContext(null);
             return result;
         }
 

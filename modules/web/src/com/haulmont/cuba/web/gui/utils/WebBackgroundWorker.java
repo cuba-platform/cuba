@@ -193,16 +193,22 @@ public class WebBackgroundWorker implements BackgroundWorker {
             AppContext.setSecurityContext(securityContext);
 
             runnableTask.setInterrupted(false);
-            V result = runnableTask.run();
-            runnableTask.setResult(result);
-            // Is done
-            if (!runnableTask.isInterrupted())
-                done = true;
-            // Remove from executions
-            app.removeBackgroundTask(this);
 
-            // Clear security permissions
-            AppContext.setSecurityContext(null);
+            V result = null;
+            try {
+                result = runnableTask.run();
+            } catch (Exception ex) {
+                log.error(ex);
+            } finally {
+                runnableTask.setResult(result);
+                // Is done
+                if (!runnableTask.isInterrupted())
+                    done = true;
+                // Remove from executions
+                app.removeBackgroundTask(this);
+                // Clear security permissions
+                AppContext.setSecurityContext(null);
+            }
         }
 
         @Override
