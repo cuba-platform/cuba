@@ -19,12 +19,15 @@ import java.util.List;
  * <p>$Id$</p>
  *
  * @param <T> measure unit which shows progress of task
+ * @param <V> result type
  * @author artamonov
  */
-public abstract class BackgroundTask<T> {
+public abstract class BackgroundTask<T, V> {
 
     private ProgressHandler<T> progressHandler;
     private Window ownerWindow;
+
+    private V result;
 
     private volatile boolean isInterrupted = false;
 
@@ -34,8 +37,9 @@ public abstract class BackgroundTask<T> {
 
     /**
      * Main tasks method
+     * @return Result
      */
-    public abstract void run();
+    public abstract V run();
 
     /**
      * Task completed handler
@@ -82,5 +86,13 @@ public abstract class BackgroundTask<T> {
 
     public void setInterrupted(boolean interrupted) {
         isInterrupted = interrupted;
+    }
+
+    public V getResult() {
+        return result;
+    }
+
+    public void setResult(V result) {
+        this.result = result;
     }
 }

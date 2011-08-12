@@ -10,6 +10,8 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
@@ -18,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.swing.*;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -39,13 +42,14 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
     }
 
     @Override
-    public <T> BackgroundTaskHandler handle(BackgroundTask<T> task) {
+    public <T, V> BackgroundTaskHandler handle(BackgroundTask<T, V> task) {
         checkNotNull(task);
+        checkNotNull(task.getOwnerWindow());
 
         // create task handler
-        TaskExecutor<T> taskExecutor = new DesktopTaskExecutor<T>(task);
+        TaskExecutor<T, V> taskExecutor = new DesktopTaskExecutor<T, V>(task);
 
-        return new TaskHandler<T>(taskExecutor, watchDog);
+        return new TaskHandler<T, V>(taskExecutor, watchDog);
     }
 
     /**
@@ -126,19 +130,28 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
     /**
      * Task runner
      */
-    private class DesktopTaskExecutor<T> extends SwingWorker<Void, T> implements TaskExecutor<T> {
+    private class DesktopTaskExecutor<T, V> extends SwingWorker<V, T> implements TaskExecutor<T, V> {
 
-        private BackgroundTask<T> runnableTask;
+        private BackgroundTask<T, V> runnableTask;
+        private SecurityContext securityContext;
 
-        private DesktopTaskExecutor(BackgroundTask<T> runnableTask) {
+        private DesktopTaskExecutor(BackgroundTask<T, V> runnableTask) {
             this.runnableTask = runnableTask;
             runnableTask.setProgressHandler(this);
+            securityContext = AppContext.getSecurityContext();
         }
 
         @Override
-        protected Void doInBackground() throws Exception {
-            runnableTask.run();
-            return null;
+        protected V doInBackground() throws Exception {
+            // Set security permissions
+            AppContext.setSecurityContext(securityContext);
+
+            V result = runnableTask.run();
+            runnableTask.setResult(result);
+
+            // Clear security permissions
+            AppContext.setSecurityContext(null);
+            return result;
         }
 
         @Override
@@ -171,7 +184,20 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
-        public BackgroundTask<T> getTask() {
+        public V getResult() {
+            V result;
+            try {
+                result = get();
+            } catch (InterruptedException e) {
+                return null;
+            } catch (ExecutionException e) {
+                return null;
+            }
+            return result;
+        }
+
+        @Override
+        public BackgroundTask<T, V> getTask() {
             return runnableTask;
         }
 

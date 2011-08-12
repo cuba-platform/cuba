@@ -9,11 +9,10 @@
  */
 package com.haulmont.cuba.gui.components;
 
-import org.dom4j.Element;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
+import org.dom4j.Element;
 
-import java.util.Map;
 import java.util.Collection;
 
 public class AbstractWindow extends AbstractFrame 
@@ -54,16 +53,12 @@ public class AbstractWindow extends AbstractFrame
     public void addListener(CloseListener listener) {
         if (frame instanceof Window) {
             ((Window) frame).addListener(listener);
-        } else {
-            throw new UnsupportedOperationException();
         }
     }
 
     public void removeListener(CloseListener listener) {
         if (frame instanceof Window) {
             ((Window) frame).removeListener(listener);
-        } else {
-            throw new UnsupportedOperationException();
         }
     }
 

@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author artamonov
  */
-public interface BackgroundTaskHandler {
+public interface BackgroundTaskHandler<V> {
 
     /**
      * Execute with timeout <br/>
@@ -33,6 +33,12 @@ public interface BackgroundTaskHandler {
     boolean cancel(boolean mayInterruptIfRunning);
 
     /**
+     * Synchronous get result from execution
+     * @return Result
+     */
+    V getResult();
+
+    /**
      * Done flag
      * @return True if task is already done
      */
@@ -43,4 +49,10 @@ public interface BackgroundTaskHandler {
      * @return True if task has been canceled
      */
     boolean isCancelled();
+
+    /**
+     * Alive flag
+     * @return True if task is running
+     */
+    boolean isAlive();
 }

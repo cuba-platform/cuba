@@ -13,6 +13,7 @@ package com.haulmont.cuba.core.sys;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class AppContext {
@@ -69,7 +70,7 @@ public class AppContext {
             return NO_USER_CONTEXT;
     }
 
-    public static void setSecurityContext(SecurityContext securityContext) {
+    public static void setSecurityContext(@Nullable SecurityContext securityContext) {
         securityContextHolder.set(securityContext);
     }
 

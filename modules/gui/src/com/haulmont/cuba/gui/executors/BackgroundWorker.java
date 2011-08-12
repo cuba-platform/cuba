@@ -33,7 +33,7 @@ public interface BackgroundWorker {
      * @param task heavy background task
      * @return Task handler
      */
-    <T> BackgroundTaskHandler handle(BackgroundTask<T> task);
+    <T, V> BackgroundTaskHandler<V> handle(BackgroundTask<T, V> task);
 
     interface WatchDog {
         void manageTask(TaskHandler backroundTask);
@@ -42,13 +42,15 @@ public interface BackgroundWorker {
     /**
      * Task runner
      */
-    interface TaskExecutor<T> extends ProgressHandler<T> {
+    interface TaskExecutor<T, V> extends ProgressHandler<T> {
 
         void startExecution();
 
         boolean cancelExecution(boolean mayInterruptIfRunning);
 
-        BackgroundTask<T> getTask();
+        V getResult();
+
+        BackgroundTask<T, V> getTask();
 
         boolean isCancelled();
 
@@ -58,11 +60,11 @@ public interface BackgroundWorker {
     /**
      * Task handler
      */
-    class TaskHandler<T> implements BackgroundTaskHandler {
+    class TaskHandler<T, V> implements BackgroundTaskHandler<V> {
 
         private Log log = LogFactory.getLog(BackgroundWorker.class);
 
-        private TaskExecutor<T> taskExecutor;
+        private TaskExecutor<T, V> taskExecutor;
         private WatchDog watchDog;
 
         private volatile boolean started = false;
@@ -75,7 +77,7 @@ public interface BackgroundWorker {
         private long startTimeStamp;
         private UserSession userSession;
 
-        public TaskHandler(TaskExecutor<T> taskExecutor, WatchDog watchDog) {
+        public TaskHandler(TaskExecutor<T, V> taskExecutor, WatchDog watchDog) {
             this.taskExecutor = taskExecutor;
             this.watchDog = watchDog;
             this.userSession = UserSessionProvider.getUserSession();
@@ -123,11 +125,23 @@ public interface BackgroundWorker {
 
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
-            boolean canceled = taskExecutor.cancelExecution(mayInterruptIfRunning);
-            if (canceled) {
-                taskExecutor.getTask().canceled();
+            checkState(started, "Task is not running");
+
+            boolean canceled = false;
+            if (isAlive()) {
+                canceled = taskExecutor.cancelExecution(mayInterruptIfRunning);
+                if (canceled) {
+                    taskExecutor.getTask().canceled();
+                }
             }
             return canceled;
+        }
+
+        @Override
+        public V getResult() {
+            checkState(started, "Task is not running");
+
+            return taskExecutor.getResult();
         }
 
         /**
@@ -152,7 +166,12 @@ public interface BackgroundWorker {
             return taskExecutor.isCancelled();
         }
 
-        public BackgroundTask<T> getTask() {
+        @Override
+        public boolean isAlive() {
+            return !isCancelled() && !isDone() && started;
+        }
+
+        public BackgroundTask<T, V> getTask() {
             return taskExecutor.getTask();
         }
 
