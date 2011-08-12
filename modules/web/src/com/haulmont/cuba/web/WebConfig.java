@@ -151,6 +151,16 @@ public interface WebConfig extends Config
     String getSupportEmail();
 
     /**
+     * Timeout for check changes from browser <br/>
+     * Used by BackgroundWorker for timers
+     *
+     * @return Timeout in ms
+     */
+    @Property("cuba.backgroundWorker.uiCheckInterval")
+    @DefaultInteger(1000)
+    Integer getUiCheckInterval();
+
+    /**
      * System ID. Use for identification. (Support emails)
      */
     @Property("cuba.systemId")

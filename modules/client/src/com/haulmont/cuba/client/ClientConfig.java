@@ -37,10 +37,6 @@ public interface ClientConfig extends Config {
     @DefaultInteger(2000)
     Integer getWatchDogInterval();
 
-    @Property("cuba.backgroundWorker.uiCheckInterval")
-    @DefaultInteger(1000)
-    Integer getUiCheckInterval();
-
     @Property("cuba.collectionDatasourceDbSortEnabled")
     @DefaultBoolean(true)
     boolean getCollectionDatasourceDbSortEnabled();

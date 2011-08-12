@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.WebTimer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +43,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
     public WebBackgroundWorker(ConfigProvider configProvider) {
         watchDog = new WebWatchDog(configProvider);
-        uiCheckInterval = configProvider.doGetConfig(ClientConfig.class).getUiCheckInterval();
+        uiCheckInterval = configProvider.doGetConfig(WebConfig.class).getUiCheckInterval();
     }
 
     @Override
