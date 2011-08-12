@@ -172,9 +172,9 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
             runnableTask.setInterrupted(true);
 
             UUID userId = UserSessionProvider.getUserSession().getId();
-            log.info("Cancel task. User: " + userId);
+            log.debug("Cancel task. User: " + userId);
 
-            if (!isDone()) {
+            if (!isDone() && !isCancelled()) {
                 return cancel(mayInterruptIfRunning);
             } else
                 return false;

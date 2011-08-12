@@ -9,6 +9,7 @@ package com.haulmont.cuba.web.gui.utils;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.components.Timer;
@@ -224,6 +225,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
             boolean canceled = false;
 
             runnableTask.setInterrupted(true);
+
+            UUID userId = UserSessionProvider.getUserSession().getId();
+            log.debug("Cancel task. User: " + userId);
 
             if (super.isAlive() && mayInterruptIfRunning) {
                 // Interrupt
