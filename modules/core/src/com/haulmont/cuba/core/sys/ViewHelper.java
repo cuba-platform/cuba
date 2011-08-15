@@ -156,8 +156,9 @@ public class ViewHelper
 
         views.add(view);
 
-        log.trace("Fetching instance " + instance);
+        if (log.isTraceEnabled()) log.trace("Fetching instance " + instance);
         for (ViewProperty property : view.getProperties()) {
+            if (log.isTraceEnabled()) log.trace("Fetching property " + property.getName());
             Object value = instance.getValue(property.getName());
             View propertyView = property.getView();
             if (value != null && propertyView != null) {
