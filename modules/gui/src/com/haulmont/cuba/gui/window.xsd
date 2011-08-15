@@ -957,6 +957,8 @@
                             <xs:complexType>
                                 <xs:group ref="layoutOrComponent"/>
 
+                                <xs:attribute name="flex" type="xs:float" use="optional"/>
+
                                 <xs:attributeGroup ref="hasVisibility"/>
                                 <xs:attributeGroup ref="hasAlign"/>
 
