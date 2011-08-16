@@ -298,6 +298,7 @@ configure(webModule) {
                 args('-war', widgetsetsDir.absolutePath, '-style', 'OBF', 'com.haulmont.cuba.toolkit.gwt.WidgetSet')
                 jvmArgs('-Xmx512m', '-Xss8m', '-XX:MaxPermSize=256m', '-Djava.awt.headless=true')
             }
+            ant.delete(dir: new File(widgetsetsDir, 'WEB-INF'))
         } else {
             println "Widgetsets dir exists, skip build GWT"
         }
