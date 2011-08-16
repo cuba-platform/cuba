@@ -431,6 +431,9 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     public void commited(Map<Entity, Entity> map) {
+        if (!State.VALID.equals(ds.getState()))
+            return;
+
         Collection<T> collection = __getCollection();
         if (collection != null) {
             for (T item : new ArrayList<T>(collection)) {
