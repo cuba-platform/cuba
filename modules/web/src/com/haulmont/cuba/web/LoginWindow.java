@@ -13,23 +13,25 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.FileResource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.*;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -57,6 +59,8 @@ public class LoginWindow extends Window implements Action.Handler {
     protected AbstractSelect localesSelect;
     protected Locale loc;
     protected Map<String, Locale> locales;
+    protected GlobalConfig globalConfig;
+    protected WebConfig webConfig;
 
     protected CheckBox rememberMe;
     protected boolean loginByRememberMe = false;
@@ -67,7 +71,9 @@ public class LoginWindow extends Window implements Action.Handler {
     public LoginWindow(App app, Connection connection) {
         super();
         loc = app.getLocale();
-        locales = ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales();
+        globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
+        webConfig = ConfigProvider.getConfig(WebConfig.class);
+        locales = globalConfig.getAvailableLocales();
 
         setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.caption", loc));
         this.connection = connection;
@@ -83,7 +89,7 @@ public class LoginWindow extends Window implements Action.Handler {
 
         initUI(app);
 
-        if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
+        if (globalConfig.getTestMode()) {
             WebWindowManager windowManager = app.getWindowManager();
             windowManager.setDebugId(loginField, "loginField");
             windowManager.setDebugId(passwordField, "pwdField");
@@ -188,13 +194,46 @@ public class LoginWindow extends Window implements Action.Handler {
     }
 
     protected Embedded getLogoImage(App app) {
-        String confDirPath = AppContext.getProperty("cuba.confDir");
-        String loginLogoImagePath = AppContext.getProperty("cuba.loginLogoImagePath");
-        if (confDirPath == null || loginLogoImagePath == null)
-            return null;
+        String confDirPath = globalConfig.getConfDir();
+        String loginLogoImagePath = webConfig.getLoginLogoImagePath();
+
         File file = new File(confDirPath + loginLogoImagePath);
-        if (file.exists())
-            return new Embedded(null, new FileResource(file, app));
+        if (file.exists()) {
+            FileResource resource = new FileResource(file, app);
+            return new Embedded(null, resource);
+        }
+
+        InputStream stream = getClass().getResourceAsStream(loginLogoImagePath);
+        if (stream != null) {
+            IOUtils.closeQuietly(stream);
+            ClassResource resource = new ClassResource(loginLogoImagePath, app);
+            return new Embedded(null, resource);
+        }
+
+        // TODO this must work instead of the code above
+//        final InputStream stream = ScriptingProvider.getResourceAsStream(loginLogoImagePath);
+//        if (stream != null) {
+//            WebEmbeddedApplicationResource resource = new WebEmbeddedApplicationResource(
+//                    new ExportDataProvider() {
+//                        @Override
+//                        public InputStream provide() throws ResourceException {
+//                            return stream;
+//                        }
+//
+//                        @Override
+//                        public void close() {
+//                            try {
+//                                stream.close();
+//                            } catch (IOException e) {
+//                                //
+//                            }
+//                        }
+//                    },
+//                    "loginLogoImage",
+//                    app
+//            );
+//            return new Embedded(null, resource);
+
         return null;
     }
 
@@ -252,15 +291,14 @@ public class LoginWindow extends Window implements Action.Handler {
             loginField.setValue(app.getUser() == null ? null : ((Principal) app.getUser()).getName());
             passwordField.setValue("");
         } else {
-            WebConfig config = ConfigProvider.getConfig(WebConfig.class);
 
-            String defaultUser = config.getLoginDialogDefaultUser();
+            String defaultUser = webConfig.getLoginDialogDefaultUser();
             if (!StringUtils.isBlank(defaultUser) && !"<disabled>".equals(defaultUser))
                 loginField.setValue(defaultUser);
             else
                 loginField.setValue("");
 
-            String defaultPassw = config.getLoginDialogDefaultPassword();
+            String defaultPassw = webConfig.getLoginDialogDefaultPassword();
             if (!StringUtils.isBlank(defaultPassw) && !"<disabled>".equals(defaultPassw))
                 passwordField.setValue(defaultPassw);
             else
@@ -364,7 +402,7 @@ public class LoginWindow extends Window implements Action.Handler {
     }
 
     protected Layout createUserHint(App app) {
-        boolean enableChromeFrame = ConfigProvider.getConfig(WebConfig.class).getUseChromeFramePlugin();
+        boolean enableChromeFrame = webConfig.getUseChromeFramePlugin();
         WebApplicationContext context = (WebApplicationContext) app.getContext();
         WebBrowser browser = context.getBrowser();
 

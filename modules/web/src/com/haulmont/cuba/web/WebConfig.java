@@ -166,4 +166,10 @@ public interface WebConfig extends Config
     @Property("cuba.systemId")
     @DefaultString("CUBA")
     String getSystemID();
+
+    @Property("cuba.appLogoImagePath")
+    String getAppLogoImagePath();
+
+    @Property("cuba.loginLogoImagePath")
+    String getLoginLogoImagePath();
 }

@@ -10,13 +10,15 @@
  */
 package com.haulmont.cuba.web;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.*;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.NoSuchScreenException;
+import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -30,7 +32,6 @@ import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
-import com.haulmont.cuba.web.gui.components.WebScriptHost;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
@@ -43,10 +44,12 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.*;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
 
@@ -78,6 +81,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     protected Connection connection;
+
+    protected GlobalConfig globalConfig;
+    protected WebConfig webConfig;
 
     protected com.haulmont.cuba.web.toolkit.ui.MenuBar menuBar;
     protected TabSheet tabSheet;
@@ -124,6 +130,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     public AppWindow(Connection connection) {
         super();
+
+        globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
+        webConfig = ConfigProvider.getConfig(WebConfig.class);
 
         this.connection = connection;
         setCaption(getAppCaption());
@@ -407,7 +416,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      */
     protected com.haulmont.cuba.web.toolkit.ui.MenuBar createMenuBar() {
         menuBar = new com.haulmont.cuba.web.toolkit.ui.MenuBar();
-        if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
+        if (globalConfig.getTestMode()) {
             App.getInstance().getWindowManager().setDebugId(menuBar, "appMenu");
         }
 
@@ -546,13 +555,46 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     protected Embedded getLogoImage() {
-        String confDirPath = AppContext.getProperty("cuba.confDir");
-        String logoImagePath = AppContext.getProperty("cuba.appLogoImagePath");
-        if (confDirPath == null || logoImagePath == null)
-            return null;
+        String confDirPath = globalConfig.getConfDir();
+        String logoImagePath = webConfig.getAppLogoImagePath();
+
         File file = new File(confDirPath + logoImagePath);
-        if (file.exists())
-            return new Embedded(null, new FileResource(file, App.getInstance()));
+        if (file.exists()) {
+            FileResource resource = new FileResource(file, App.getInstance());
+            return new Embedded(null, resource);
+        }
+
+        InputStream stream = getClass().getResourceAsStream(logoImagePath);
+        if (stream != null) {
+            IOUtils.closeQuietly(stream);
+            ClassResource resource = new ClassResource(logoImagePath, App.getInstance());
+            return new Embedded(null, resource);
+        }
+
+        // TODO this must work instead of the code above
+//        final InputStream stream = ScriptingProvider.getResourceAsStream(logoImagePath);
+//        if (stream != null) {
+//            WebEmbeddedApplicationResource resource = new WebEmbeddedApplicationResource(
+//                    new ExportDataProvider() {
+//                        @Override
+//                        public InputStream provide() throws ResourceException {
+//                            return stream;
+//                        }
+//
+//                        @Override
+//                        public void close() {
+//                            try {
+//                                stream.close();
+//                            } catch (IOException e) {
+//                                //
+//                            }
+//                        }
+//                    },
+//                    "logoImage",
+//                    app
+//            );
+//            return new Embedded(null, resource);
+
         return null;
     }
 
