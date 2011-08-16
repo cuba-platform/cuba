@@ -555,8 +555,11 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     protected Embedded getLogoImage() {
-        String confDirPath = globalConfig.getConfDir();
         String logoImagePath = webConfig.getAppLogoImagePath();
+        if (logoImagePath == null)
+            return null;
+
+        String confDirPath = globalConfig.getConfDir();
 
         File file = new File(confDirPath + logoImagePath);
         if (file.exists()) {

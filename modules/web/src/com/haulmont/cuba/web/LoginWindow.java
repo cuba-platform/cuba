@@ -194,8 +194,11 @@ public class LoginWindow extends Window implements Action.Handler {
     }
 
     protected Embedded getLogoImage(App app) {
-        String confDirPath = globalConfig.getConfDir();
         String loginLogoImagePath = webConfig.getLoginLogoImagePath();
+        if (loginLogoImagePath == null)
+            return null;
+
+        String confDirPath = globalConfig.getConfDir();
 
         File file = new File(confDirPath + loginLogoImagePath);
         if (file.exists()) {
