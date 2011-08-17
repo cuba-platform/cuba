@@ -35,57 +35,57 @@ public class User extends StandardEntity
     private static final long serialVersionUID = 5007187642916030394L;
 
     @Column(name = "LOGIN", length = LOGIN_FIELD_LEN)
-    private String login;
+    protected String login;
 
     @Column(name = "LOGIN_LC", length = LOGIN_FIELD_LEN)
-    private String loginLowerCase;
+    protected String loginLowerCase;
 
     @Column(name = "PASSWORD", length = 32)
-    private String password;
+    protected String password;
 
     @Column(name = "NAME", length = 100)
-    private String name = "" ;
+    protected String name = "" ;
 
     @Column(name = "FIRST_NAME", length = 100)
-    private String firstName = "";
+    protected String firstName = "";
 
     @Column(name = "LAST_NAME", length = 100)
-    private String lastName = "";
+    protected String lastName = "";
 
     @Column(name = "MIDDLE_NAME", length = 100)
-    private String middleName = "";
+    protected String middleName = "";
 
     @Column(name = "POSITION_", length = 100)
-    private String position = "";
+    protected String position = "";
 
     @Column(name = "EMAIL", length = 100)
-    private String email = "";
+    protected String email = "";
 
     @Column(name = "LANGUAGE_", length = 10)
-    private String language;
+    protected String language;
 
     @Column(name = "ACTIVE")
-    private Boolean active = true;
+    protected Boolean active = true;
 
     @ManyToOne(/*optional = false,*/ fetch = FetchType.LAZY)
     @JoinColumn(name = "GROUP_ID")
     @OnDeleteInverse(DeletePolicy.DENY)
-    private Group group;
+    protected Group group;
 
     @OneToMany(mappedBy = "user")
     @Aggregation
-    private Set<UserRole> userRoles;
+    protected Set<UserRole> userRoles;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DEFAULT_SUBSTITUTED_USER_ID")
-    private User defaultSubstitutedUser;
+    protected User defaultSubstitutedUser;
 
     @OneToMany(mappedBy = "user")
     @Aggregation
-    private Set<UserSubstitution> substitutions;
+    protected Set<UserSubstitution> substitutions;
 
     @Column(name = "IP_MASK", length = 200)
-    private String ipMask;
+    protected String ipMask;
 
     public String getLogin() {
         return login;
