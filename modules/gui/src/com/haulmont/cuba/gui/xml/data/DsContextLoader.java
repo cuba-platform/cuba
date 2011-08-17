@@ -12,7 +12,6 @@ package com.haulmont.cuba.gui.xml.data;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.data.*;
@@ -22,11 +21,8 @@ import com.haulmont.cuba.gui.filter.QueryFilter;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
-import javax.persistence.Embedded;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.List;
-import java.util.Map;
 
 public class DsContextLoader {
 
@@ -146,9 +142,17 @@ public class DsContextLoader {
         if (datasource instanceof CollectionDatasource.Suspendable)
             ((CollectionDatasource.Suspendable) datasource).setSuspended(true);
 
-        final String query = element.elementText("query");
-        if (!StringUtils.isBlank(query)) {
-            datasource.setQuery(query);
+        Element queryElem = element.element("query");
+        if (queryElem != null) {
+            Element filterElem = queryElem.element("filter");
+
+            String query = queryElem.getText();
+            if (!StringUtils.isBlank(query)) {
+                if (filterElem != null)
+                    datasource.setQuery(query, new QueryFilter(filterElem, metaClass.getName()));
+                else
+                    datasource.setQuery(query);
+            }
         }
 
         loadDatasources(element, datasource);
