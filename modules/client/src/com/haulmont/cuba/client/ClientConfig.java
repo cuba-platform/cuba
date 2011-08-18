@@ -32,6 +32,7 @@ public interface ClientConfig extends Config {
     @Property("cuba.client.maxUploadSizeMb")
     @DefaultInteger(20)
     Integer getMaxUploadSizeMb();
+    void setMaxUploadSizeMb(int value);
 
     @Property("cuba.backgroundWorker.watchDogInterval")
     @DefaultInteger(2000)
