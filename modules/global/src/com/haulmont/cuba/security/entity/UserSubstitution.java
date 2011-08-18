@@ -25,15 +25,15 @@ public class UserSubstitution extends StandardEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
-    private User user;
+    protected User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SUBSTITUTED_USER_ID")
     @OnDeleteInverse(DeletePolicy.CASCADE)
-    private User substitutedUser;
+    protected User substitutedUser;
 
     @Column(name = "END_DATE")
-    private Date endDate;
+    protected Date endDate;
 
     public User getUser() {
         return user;
