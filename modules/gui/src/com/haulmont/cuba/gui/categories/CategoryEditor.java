@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.gui.categories;
 
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -18,16 +19,16 @@ import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import org.apache.commons.lang.BooleanUtils;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import javax.swing.table.TableColumn;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * <p>$Id$</p>
@@ -64,7 +65,7 @@ public class CategoryEditor extends AbstractEditor {
         category = (Category) getItem();
         generateEntityTypeField();
         initDataTypeColumn();
-        initDefaultValueColumns();
+        initDefaultValueColumn();
         initCb();
     }
 
@@ -93,14 +94,30 @@ public class CategoryEditor extends AbstractEditor {
         });
     }
 
-    public void initDefaultValueColumns() {
-        table.removeGeneratedColumn("defaultEntityId");
-        table.addGeneratedColumn("defaultEntityId", new Table.ColumnGenerator() {
+    private void initDefaultValueColumn() {
+        table.addGeneratedColumn("defaultValue", new Table.ColumnGenerator() {
+            @Override
             public Component generateCell(Table table, Object itemId) {
-                Label defaultValueLabel = factory.createComponent(Label.NAME);
-                String labelContent = "";
+                String defaultValue = "";
+
                 CategoryAttribute attribute = (CategoryAttribute) table.getDatasource().getItem(itemId);
-                if (BooleanUtils.isTrue(attribute.getIsEntity())) {
+
+                if (BooleanUtils.isNotTrue(attribute.getIsEntity())) {
+                    RuntimePropsDatasource.PropertyType dataType = RuntimePropsDatasource.PropertyType.valueOf(attribute.getDataType());
+                    switch (dataType) {
+                        case DATE:
+                            Date date = attribute.getDefaultDate();
+                            if (date != null) {
+                                String dateTimeFormat = Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getDateTimeFormat();
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateTimeFormat);
+                                defaultValue = simpleDateFormat.format(date);
+                            }
+                            break;
+                        default:
+                            if (attribute.getDefaultValue() != null)
+                                defaultValue = attribute.getDefaultValue().toString();
+                    }
+                } else {
                     try {
                         Class clazz = Class.forName(attribute.getDataType());
                         LoadContext entitiesContext = new LoadContext(clazz);
@@ -110,17 +127,19 @@ public class CategoryEditor extends AbstractEditor {
                             query.addParameter("e", attribute.getDefaultEntityId());
                             entitiesContext.setView("_local");
                             Entity entity = dataService.load(entitiesContext);
-                            labelContent = InstanceUtils.getInstanceName(entity);
-                        } else labelContent = "";
+                            defaultValue = InstanceUtils.getInstanceName(entity);
+                        } else defaultValue = "";
                     } catch (ClassNotFoundException ex) {
-                        labelContent = "entityNotFound";
+                        defaultValue = getMessage("entityNotFound");
                     }
                 }
-                defaultValueLabel.setValue(labelContent);
+
+                Label defaultValueLabel = factory.createComponent(Label.NAME);
+                defaultValueLabel.setValue(defaultValue);
                 return defaultValueLabel;
             }
         });
-    }
+   }
 
     private void generateEntityTypeField(){
 

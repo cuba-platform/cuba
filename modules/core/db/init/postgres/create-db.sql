@@ -776,7 +776,7 @@ create table SYS_CATEGORY_ATTR(
     NAME varchar(255),
 	CATEGORY_ID uuid,
 	IS_ENTITY boolean,
-	DATA_TYPE varchar(20),
+	DATA_TYPE varchar(200),
 	DEFAULT_STRING varchar,
 	DEFAULT_INT integer,
 	DEFAULT_DOUBLE real,

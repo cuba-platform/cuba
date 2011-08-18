@@ -22,7 +22,6 @@
             <textField width="200px" id="name" datasource="categoryDs" property="name" required="true" caption="msg://name"/>
             <lookupField width="200px" id="entityType" caption="msg://entityType" required="true"/>
             <checkBox id="isDefault" caption="msg://isDefault"/>
-
         </hbox>
         <label value="msg://attributes" stylename="h2"/>
         <table id="categoryAttrsTable" presentations="true">
@@ -34,12 +33,7 @@
             <columns>
                 <column id="name"/>
                 <column id="dataType"/>
-                <column id="defaultString"/>
-                <column id="defaultInt"/>
-                <column id="defaultDouble"/>
-                <column id="defaultBoolean"/>
-                <column id="defaultDate"/>
-                <column id="defaultEntityId"/>
+                <column id="defaultValue" caption="msg://defaultValue"/>
             </columns>
             <rows datasource="attributesDs"/>
         </table>
