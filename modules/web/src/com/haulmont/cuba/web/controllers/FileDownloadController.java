@@ -15,7 +15,10 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.sys.WebSecurityUtils;
@@ -123,22 +126,20 @@ public class FileDownloadController {
     }
 
     protected UserSession getSession(HttpServletRequest request, HttpServletResponse response) {
-        App app = getExistingApplication(request, response);
-        if (app == null || !app.getConnection().isConnected()) {
-            return null;
-        }
-
         UUID sessionId;
         try {
             sessionId = UUID.fromString(request.getParameter("s"));
         } catch (Exception e) {
             return null;
         }
-        UserSession userSession = app.getConnection().getSession();
-        if (!sessionId.equals(userSession.getId())) {
-            return null;
+        AppContext.setSecurityContext(new SecurityContext(sessionId));
+        try {
+            UserSessionService uss = ServiceLocator.lookup(UserSessionService.NAME);
+            UserSession userSession = uss.getUserSession(sessionId);
+            return userSession;
+        } finally {
+            AppContext.setSecurityContext(null);
         }
-        return userSession;
     }
 
     protected String getContentType(FileDescriptor fd) {
