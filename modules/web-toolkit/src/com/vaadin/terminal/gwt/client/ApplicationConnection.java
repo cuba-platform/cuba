@@ -918,9 +918,12 @@ public class ApplicationConnection {
         }
 
         if (json.containsKey("resources")) {
-            final ValueMap resources = json.getValueMap("resources");
-            if (resources.getKeyArray().length() > 0) {
-                handleJSONMessageEx(resources, start, jsonText, json, 0);
+            ValueMap resources = json.getValueMap("resources");
+            JsArrayString keyArray = resources.getKeyArray();
+            int l = keyArray.length();
+            for (int i = 0; i < l; i++) {
+                String key = keyArray.get(i);
+                resourcesMap.put(key, resources.getAsString(key));
             }
         }
 
