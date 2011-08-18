@@ -85,7 +85,7 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
 
     @Override
     public int getColumnCount() {
-        return properties.size();
+        return columns.size();
     }
 
     @Override

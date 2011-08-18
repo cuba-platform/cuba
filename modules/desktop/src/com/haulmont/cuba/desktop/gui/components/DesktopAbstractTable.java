@@ -67,7 +67,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected CollectionDatasource datasource;
     protected ButtonsPanel buttonsPanel;
     protected RowsCount rowsCount;
-    protected Map<MetaPropertyPath, Column> columns = new HashMap<MetaPropertyPath, Column>();
+    protected Map<Object, Column> columns = new HashMap<Object, Column>();
     protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
     protected boolean sortable = true;
     protected TableSettings tableSettings;
@@ -204,7 +204,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     public void addColumn(Column column) {
-        columns.put((MetaPropertyPath) column.getId(), column);
+        columns.put(column.getId(), column);
         columnsOrder.add(column);
 
         if (tableModel != null)
@@ -215,8 +215,13 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     public void removeColumn(Column column) {
-        MetaPropertyPath metaPropertyPath = (MetaPropertyPath) column.getId();
-        String name = metaPropertyPath.getMetaProperty().getName();
+        String name;
+        if (column.getId() instanceof MetaPropertyPath) {
+            MetaPropertyPath metaPropertyPath = (MetaPropertyPath) column.getId();
+            name = metaPropertyPath.getMetaProperty().getName();
+        } else {
+            name = column.getId().toString();
+        }
 
         TableColumn tableColumn = null;
         Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
@@ -235,7 +240,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
             impl.getColumnModel().removeColumn(tableColumn);
             impl.removeColumn(tableColumn);
 
-            columns.remove(metaPropertyPath);
+            columns.remove(column.getId());
             columnsOrder.remove(column);
 
             if (tableModel != null)
@@ -252,7 +257,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
             return;
         }
 
-        final Collection<MetaPropertyPath> properties;
+        final Collection<Object> properties;
         if (this.columns.isEmpty()) {
             Collection<MetaPropertyPath> paths = MetadataHelper.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
             for (MetaPropertyPath metaPropertyPath : paths) {
@@ -287,21 +292,21 @@ public abstract class DesktopAbstractTable<C extends JTable>
             editableColumns = new LinkedList<MetaPropertyPath>();
         }
 
-        for (final MetaPropertyPath propertyPath : properties) {
-            final Table.Column column = this.columns.get(propertyPath);
+        for (final Object property : properties) {
+            final Table.Column column = this.columns.get(property);
 
             final String caption;
             if (column != null) {
-                caption = StringUtils.capitalize(column.getCaption() != null ? column.getCaption() : propertyPath.getMetaProperty().getName());
+                caption = StringUtils.capitalize(column.getCaption() != null ? column.getCaption() : getColumnCaption(property));
             } else {
-                caption = StringUtils.capitalize(propertyPath.getMetaProperty().getName());
+                caption = StringUtils.capitalize(getColumnCaption(property));
             }
 
-            setColumnHeader(propertyPath, caption);
+            setColumnHeader(property, caption);
 
             if (column != null) {
-                if (editableColumns != null && column.isEditable()) {
-                    MetaProperty colMetaProperty = propertyPath.getMetaProperty();
+                if (editableColumns != null && column.isEditable() && (property instanceof MetaPropertyPath)) {
+                    MetaProperty colMetaProperty = ((MetaPropertyPath) property).getMetaProperty();
                     MetaClass colMetaClass = colMetaProperty.getDomain();
                     if (userSession.isEntityAttrPermitted(colMetaClass, colMetaProperty.getName(), EntityAttrAccess.MODIFY)) {
                         editableColumns.add((MetaPropertyPath) column.getId());
@@ -314,14 +319,18 @@ public abstract class DesktopAbstractTable<C extends JTable>
             setEditableColumns(editableColumns);
         }
 
-        List<MetaPropertyPath> columnsOrder = new ArrayList<MetaPropertyPath>();
+        List<Object> columnsOrder = new ArrayList<Object>();
         for (Table.Column column : this.columnsOrder) {
-            MetaProperty colMetaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
-            MetaClass colMetaClass = colMetaProperty.getDomain();
-            if (userSession.isEntityOpPermitted(colMetaClass, EntityOp.READ)
-                    && userSession.isEntityAttrPermitted(
-                    colMetaClass, colMetaProperty.getName(), EntityAttrAccess.VIEW)) {
-                columnsOrder.add((MetaPropertyPath) column.getId());
+            if (column.getId() instanceof MetaPropertyPath) {
+                MetaProperty colMetaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
+                MetaClass colMetaClass = colMetaProperty.getDomain();
+                if (userSession.isEntityOpPermitted(colMetaClass, EntityOp.READ)
+                        && userSession.isEntityAttrPermitted(
+                        colMetaClass, colMetaProperty.getName(), EntityAttrAccess.VIEW)) {
+                    columnsOrder.add(column.getId());
+                }
+            } else {
+                columnsOrder.add(column.getId());
             }
         }
 
@@ -371,6 +380,13 @@ public abstract class DesktopAbstractTable<C extends JTable>
         datasource.addListener(new CollectionDsActionsNotifier(this));
     }
 
+    private String getColumnCaption(Object columnId) {
+        if (columnId instanceof MetaPropertyPath)
+            return ((MetaPropertyPath) columnId).getMetaProperty().getName();
+        else
+            return columnId.toString();
+    }
+
     private void setColumnIdentifiers() {
         Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
         int i = 0;
@@ -407,13 +423,13 @@ public abstract class DesktopAbstractTable<C extends JTable>
         );
     }
 
-    protected void setVisibleColumns(List<MetaPropertyPath> columnsOrder) {
+    protected void setVisibleColumns(List<Object> columnsOrder) {
     }
 
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
     }
 
-    protected void setColumnHeader(MetaPropertyPath propertyPath, String caption) {
+    protected void setColumnHeader(Object propertyPath, String caption) {
     }
 
     public void setRequired(Column column, boolean required, String message) {

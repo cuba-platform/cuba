@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -252,10 +253,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         final MetaClass metaClass = ds.getMetaClass();
         final MetaPropertyPath metaPropertyPath = metaClass.getPropertyPath(id);
-        if (metaPropertyPath == null)
-            throw new IllegalStateException(String.format("Property '%s' not found in entity '%s'", id, metaClass.getName()));
 
-        final Table.Column column = new Table.Column(metaPropertyPath);
+        final Table.Column column = new Table.Column(metaPropertyPath != null ? metaPropertyPath : id);
 
         String editable = element.attributeValue("editable");
         if (editable == null) {
@@ -283,11 +282,23 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         loadCaption(column, element);
         if (column.getCaption() == null) {
-            column.setCaption(MessageUtils.getPropertyCaption(metaPropertyPath.getMetaProperty()));
+            String columnCaption;
+            if (column.getId() instanceof MetaPropertyPath) {
+                columnCaption = MessageUtils.getPropertyCaption(((MetaPropertyPath) column.getId()).getMetaProperty());
+            } else {
+                Class<?> declaringClass = ds.getMetaClass().getJavaClass();
+                String className = declaringClass.getName();
+                int i = className.lastIndexOf('.');
+                if (i > -1)
+                    className = className.substring(i + 1);
+                columnCaption = MessageProvider.getMessage(declaringClass, className + "." + id);
+            }
+            column.setCaption(columnCaption);
         }
 
         column.setXmlDescriptor(element);
-        column.setType(metaPropertyPath.getRangeJavaClass());
+        if (metaPropertyPath != null)
+            column.setType(metaPropertyPath.getRangeJavaClass());
 
         String width = element.attributeValue("width");
         if (!StringUtils.isBlank(width)) {

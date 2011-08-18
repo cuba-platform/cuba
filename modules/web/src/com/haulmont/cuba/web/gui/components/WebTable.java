@@ -94,10 +94,12 @@ public class WebTable
             if (columns.isEmpty()) {
                 super.createProperties(view, metaClass);
             } else {
-                for (Map.Entry<MetaPropertyPath, Column> entry : columns.entrySet()) {
-                    final MetaPropertyPath propertyPath = entry.getKey();
-                    if (view == null || MetadataHelper.viewContainsProperty(view, propertyPath)) {
-                        properties.add(propertyPath);
+                for (Map.Entry<Object, Column> entry : columns.entrySet()) {
+                    if (entry.getKey() instanceof MetaPropertyPath) {
+                        final MetaPropertyPath propertyPath = (MetaPropertyPath) entry.getKey();
+                        if (view == null || MetadataHelper.viewContainsProperty(view, propertyPath)) {
+                            properties.add(propertyPath);
+                        }
                     }
                 }
             }
@@ -166,10 +168,12 @@ public class WebTable
             if (columns.isEmpty()) {
                 super.createProperties(view, metaClass);
             } else {
-                for (Map.Entry<MetaPropertyPath, Column> entry : columns.entrySet()) {
-                    final MetaPropertyPath propertyPath = entry.getKey();
-                    if (view == null || MetadataHelper.viewContainsProperty(view, propertyPath)) {
-                        properties.add(propertyPath);
+                for (Map.Entry<Object, Column> entry : columns.entrySet()) {
+                    if (entry.getKey() instanceof MetaPropertyPath) {
+                        final MetaPropertyPath propertyPath = (MetaPropertyPath) entry.getKey();
+                        if (view == null || MetadataHelper.viewContainsProperty(view, propertyPath)) {
+                            properties.add(propertyPath);
+                        }
                     }
                 }
             }

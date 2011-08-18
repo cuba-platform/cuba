@@ -46,7 +46,7 @@ public class DesktopComponentsHelper {
         return (JComponent) comp;
     }
 
-    @Nonnull
+    @Nullable
     public static <T extends Component> T getComponent(Component.Container comp, String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
@@ -72,7 +72,7 @@ public class DesktopComponentsHelper {
                 }
             }
         }
-        throw new IllegalStateException("Component '" + id + "' not found");
+        return null;
     }
 
     @Nullable
