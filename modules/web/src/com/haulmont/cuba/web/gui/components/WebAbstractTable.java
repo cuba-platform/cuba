@@ -495,7 +495,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             dsManager.addListener(createAggregationDatasourceListener());
         }
 
-//        setVisibleColumns(columnsOrder);
+        setVisibleColumns(getPropertyColumns());
 
         if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
@@ -521,9 +521,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     private List<MetaPropertyPath> getPropertyColumns() {
         List<MetaPropertyPath> result = new ArrayList<MetaPropertyPath>();
-        for (Object column : columns.keySet()) {
-            if (column instanceof MetaPropertyPath) {
-                result.add((MetaPropertyPath) column);
+        for (Column column : columnsOrder) {
+            if (column.getId() instanceof MetaPropertyPath) {
+                result.add((MetaPropertyPath) column.getId());
             }
         }
         return result;
@@ -531,7 +531,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected abstract CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns, DsManager dsManager);
 
-    protected void setVisibleColumns(List<Object> columnsOrder) {
+    protected void setVisibleColumns(List<?> columnsOrder) {
         component.setVisibleColumns(columnsOrder.toArray());
     }
 
