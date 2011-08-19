@@ -28,6 +28,8 @@ public interface UserSessionService
 
     UserSession getUserSession(UUID sessionId);
 
+    void updateUserSession(UUID sessionId, String address, String clientInfo);
+
     void putSessionAttribute(UUID sessionId, String name, Serializable value);
 
     Collection<UserSessionEntity> getUserSessionInfo();

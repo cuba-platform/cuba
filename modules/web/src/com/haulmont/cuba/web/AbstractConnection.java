@@ -12,6 +12,7 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.security.app.LoginService;
+import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.IpMatcher;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -95,6 +96,9 @@ public abstract class AbstractConnection implements Connection {
         session.setAddress(app.getClientAddress());
         WebBrowser browser = ((WebApplicationContext) app.getContext()).getBrowser();
         session.setClientInfo(browser.getBrowserApplication());
+
+        UserSessionService uss = ServiceLocator.lookup(UserSessionService.NAME);
+        uss.updateUserSession(session.getId(), session.getAddress(), session.getClientInfo());
 
         fireConnectionListeners();
 
