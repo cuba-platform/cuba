@@ -65,7 +65,7 @@ public class DesktopAppContextLoader {
         log.info("AppContext initialized");
     }
 
-    private void initEnvironment() {
+    protected void initEnvironment() {
         String tempPath = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
         File tempDir = new File(tempPath);
         if (!tempDir.exists()) {
@@ -79,7 +79,7 @@ public class DesktopAppContextLoader {
         }
     }
 
-    private void initLocalization() {
+    protected void initLocalization() {
         String mp = AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP);
         MessageUtils.setMessagePack(mp);
 
@@ -100,7 +100,7 @@ public class DesktopAppContextLoader {
         }
     }
 
-    private void initAppProperties() {
+    protected void initAppProperties() {
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.DESKTOP.toString());
         AppContext.setProperty(AppConfig.IMPL_PROP, DesktopAppConfig.class.getName());
         AppContext.setProperty(AppConfig.WINDOW_CONFIG_IMPL_PROP, WindowConfig.class.getName());
@@ -160,7 +160,7 @@ public class DesktopAppContextLoader {
         log.info(new StrBuilder("AppProperties:\n").appendWithSeparators(list, "\n"));
     }
 
-    private void initAppContext() {
+    protected void initAppContext() {
         String configProperty = AppContext.getProperty(SPRING_CONTEXT_CONFIG);
         if (StringUtils.isBlank(configProperty)) {
             throw new IllegalStateException("Missing " + SPRING_CONTEXT_CONFIG + " application property");
@@ -173,7 +173,7 @@ public class DesktopAppContextLoader {
         AppContext.setApplicationContext(appContext);
     }
 
-    private void initServiceLocator() {
+    protected void initServiceLocator() {
         ServiceLocator.setImplClass(ServiceLocatorImpl.class);
     }
 }

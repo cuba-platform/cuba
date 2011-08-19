@@ -74,7 +74,7 @@ public class WebAppContextLoader implements ServletContextListener {
         }
     }
 
-    private void initLocalization() {
+    protected void initLocalization() {
         String mp = AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP);
         MessageUtils.setMessagePack(mp);
 
@@ -95,7 +95,7 @@ public class WebAppContextLoader implements ServletContextListener {
         }
     }
 
-    private void initAppProperties(ServletContext sc) {
+    protected void initAppProperties(ServletContext sc) {
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
         AppContext.setProperty(AppConfig.IMPL_PROP, WebAppConfig.class.getName());
         AppContext.setProperty(AppConfig.WINDOW_CONFIG_IMPL_PROP, WebWindowConfig.class.getName());
@@ -155,7 +155,7 @@ public class WebAppContextLoader implements ServletContextListener {
         }
     }
 
-    private void initAppContext() {
+    protected void initAppContext() {
         String configProperty = AppContext.getProperty(SPRING_CONTEXT_CONFIG);
         if (StringUtils.isBlank(configProperty)) {
             throw new IllegalStateException("Missing " + SPRING_CONTEXT_CONFIG + " application property");
@@ -168,7 +168,7 @@ public class WebAppContextLoader implements ServletContextListener {
         AppContext.setApplicationContext(appContext);
     }
 
-    private void initServiceLocator() {
+    protected void initServiceLocator() {
         ServiceLocator.setImplClass(ServiceLocatorImpl.class);
     }
 

@@ -74,7 +74,7 @@ public class AppContextLoader implements ServletContextListener {
         }
     }
 
-    private void initLocalization() {
+    protected void initLocalization() {
         String mp = AppContext.getProperty("cuba.core.messagesPack");
         MessageUtils.setMessagePack(mp);
 
@@ -95,11 +95,11 @@ public class AppContextLoader implements ServletContextListener {
         }
     }
 
-    private void initMetadata() {
+    protected void initMetadata() {
         MetadataUtils.setSerializationSupportSession(MetadataProvider.getSession());
     }
 
-    private void initDatabase() {
+    protected void initDatabase() {
         if (!Boolean.valueOf(AppContext.getProperty("cuba.automaticDatabaseUpdate")))
             return;
 
@@ -107,7 +107,7 @@ public class AppContextLoader implements ServletContextListener {
         updater.updateDatabase();
     }
 
-    private void initAppProperties(ServletContext sc) {
+    protected void initAppProperties(ServletContext sc) {
         // get properties from web.xml
         String appProperties = sc.getInitParameter(APP_PROPS_PARAM);
         if (appProperties != null) {
@@ -163,7 +163,7 @@ public class AppContextLoader implements ServletContextListener {
         }
     }
 
-    private void initPersistenceConfig() {
+    protected void initPersistenceConfig() {
         String configProperty = AppContext.getProperty(PERSISTENCE_CONFIG);
         if (StringUtils.isBlank(configProperty)) {
             throw new IllegalStateException("Missing " + PERSISTENCE_CONFIG + " application property");
@@ -179,7 +179,7 @@ public class AppContextLoader implements ServletContextListener {
         processor.create();
     }
 
-    private void initAppContext() {
+    protected void initAppContext() {
         String configProperty = AppContext.getProperty(SPRING_CONTEXT_CONFIG);
         if (StringUtils.isBlank(configProperty)) {
             throw new IllegalStateException("Missing " + SPRING_CONTEXT_CONFIG + " application property");
