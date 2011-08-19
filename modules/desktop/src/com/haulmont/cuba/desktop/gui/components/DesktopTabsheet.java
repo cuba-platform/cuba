@@ -30,7 +30,7 @@ import java.util.*;
  */
 public class DesktopTabsheet
     extends DesktopAbstractComponent<JTabbedPane>
-    implements Tabsheet, Component.Container
+    implements Tabsheet, Component.Container, AutoExpanding
 {
     protected Map<Component, String> components = new HashMap<Component, String>();
 
@@ -284,6 +284,14 @@ public class DesktopTabsheet
         } else {
             impl.removeTabAt(idx);
         }
+    }
+
+    public boolean expandsWidth() {
+        return true;
+    }
+
+    public boolean expandsHeight() {
+        return false;
     }
 
     protected class TabImpl implements Tabsheet.Tab {
