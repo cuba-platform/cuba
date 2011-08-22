@@ -457,3 +457,10 @@
     height: 17px;
     line-height: 17px;
 }
+
+.v-table-row-grey .v-table-cell-content,
+.v-table-row-grey .v-table-cell-content .v-button-caption,
+.v-table-row-grey .v-table-cell-content .v-label,
+.v-table-row-grey .v-table-cell-content div {
+    color: #858585
+}
