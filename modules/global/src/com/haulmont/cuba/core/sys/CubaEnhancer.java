@@ -53,7 +53,7 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
                 }
             }
 
-            enchanceSetters();
+            enhanceSetters();
 
             _pc.declareInterface(ENHANCED_TYPE);
 
@@ -64,12 +64,12 @@ public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
         }
     }
 
-    private void enchanceSetters() throws NoSuchMethodException {
+    private void enhanceSetters() throws NoSuchMethodException {
         BCMethod[] methods = _managedType.getDeclaredMethods();
         Code code;
         for (final BCMethod method : methods) {
             final String name = method.getName();
-            if (!name.startsWith("set") || method.getReturnType() != void.class)
+            if (method.isAbstract() || !name.startsWith("set") || method.getReturnType() != void.class)
                 continue;
 
             code = method.getCode(false);

@@ -67,7 +67,7 @@ public class CubaTransientEnhancer {
         Code code;
         for (BCMethod method : methods) {
             String name = method.getName();
-            if ((!name.startsWith("set")) || (method.getReturnType() != void.class))
+            if (method.isAbstract() || (!name.startsWith("set")) || (method.getReturnType() != void.class))
                 continue;
             code = method.getCode(false);
             LocalVariableTable table =  code.getLocalVariableTable(false);
