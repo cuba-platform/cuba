@@ -16,6 +16,8 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -82,7 +84,10 @@ public class ScreenHistorySupport {
                 Object value = param.getValue();
                 if (value instanceof String /*|| value instanceof Integer || value instanceof Double*/
                         || value instanceof Boolean) {
-                    sb.append(",").append(param.getKey()).append(":").append(value.toString());
+                    try {
+                        sb.append(",").append(param.getKey()).append(":").append(URLEncoder.encode(value.toString(), "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                    }
                 }
             }
         }
