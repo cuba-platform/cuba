@@ -480,9 +480,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         if (component instanceof com.haulmont.cuba.gui.components.Field) { // do not create caption for buttons etc.
             caption = field.getCaption();
             if (caption == null) {
-                MetaProperty metaProperty = ds.getMetaClass().getProperty(field.getId());
-                if (metaProperty != null)
-                    caption = MessageUtils.getPropertyCaption(metaProperty);
+                MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(field.getId());
+                if (propertyPath != null)
+                    caption = MessageUtils.getPropertyCaption(propertyPath.getMetaClass(), field.getId());
             }
 
             if (StringUtils.isNotEmpty(((HasCaption) component).getCaption())) {
