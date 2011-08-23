@@ -65,7 +65,7 @@
     vertical-align: middle;
 }
 
-.group-box-nocollapsable.group-box-nocaption .group-box-caption {
+.group-box-nocollapsable.group-box-nocaption > fieldset > legend > .group-box-caption {
     display: none;
 }
 
