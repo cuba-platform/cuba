@@ -103,7 +103,7 @@ public class AccessControlLoader extends ContainerLoader {
             ((Component.Editable) component).setEditable(false);
         }
 
-        if (component instanceof Button && !editable) {
+        if ((component instanceof Button || component instanceof PopupButton) && !editable) {
             context.addPostInitTask(new AccessControlLoaderPostInitTask(component));
         }
 
