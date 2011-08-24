@@ -21,6 +21,10 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -44,12 +48,15 @@ public class DesktopPickerField
     protected MetaClass metaClass;
 
     protected Object prevValue;
+    protected String prevTextValue;
 
     private boolean editable = true;
 
     protected java.util.List<Action> actionsOrder = new LinkedList<Action>();
     private String caption;
     private boolean updatingInstance;
+
+    private Object nullValue = new Object();
 
     public DesktopPickerField() {
         impl = new Picker();
@@ -118,6 +125,44 @@ public class DesktopPickerField
         OpenAction action = new OpenAction(this);
         addAction(action);
         return action;
+    }
+
+    @Override
+    public void addFieldListener(final FieldListener listener) {
+        final JTextField field = (JTextField) impl.getEditor();
+        field.addFocusListener(new FocusAdapter() {
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                fireFieldListener(listener, field.getText());
+            }
+        });
+
+        field.addKeyListener(new KeyAdapter() {
+
+            protected final int ENTER_CODE = 10;
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (ENTER_CODE == e.getKeyCode()) {
+                    fireFieldListener(listener, field.getText());
+                }
+            }
+        });
+    }
+
+    private void fireFieldListener(FieldListener listener, String fieldText) {
+        if (!prevTextValue.equals(fieldText)) {
+            prevValue = nullValue;
+            prevTextValue = fieldText;
+            listener.actionPerformed(fieldText, getValue());
+        }
+    }
+
+    @Override
+    public void setFieldEditable(boolean editable) {
+        if (isEditable())
+            ((JTextField) impl.getEditor()).setEditable(editable);
     }
 
     @Override
@@ -237,6 +282,7 @@ public class DesktopPickerField
         }
 
         impl.setValue(text);
+        prevTextValue=text;
     }
 
     @Override
@@ -269,6 +315,9 @@ public class DesktopPickerField
         for (Action action : actionsOrder) {
             if (action instanceof StandardAction)
                 ((StandardAction) action).setEditable(isEditable());
+        }
+        if (!editable) {
+            ((JTextField) impl.getEditor()).setEditable(editable);
         }
     }
 

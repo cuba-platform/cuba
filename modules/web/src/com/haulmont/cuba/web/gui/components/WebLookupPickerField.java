@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Component;
 
+import java.rmi.activation.UnknownObjectException;
 import java.util.Collection;
 
 /**
@@ -72,6 +73,16 @@ public class WebLookupPickerField
         OpenAction action = new OpenAction(this);
         addAction(action);
         return action;
+    }
+
+    @Override
+    public void addFieldListener(FieldListener listener) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setFieldEditable(boolean editable) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

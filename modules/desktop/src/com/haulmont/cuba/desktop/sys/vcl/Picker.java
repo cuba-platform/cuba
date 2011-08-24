@@ -52,6 +52,10 @@ public class Picker extends JComponent {
         editor = textField;
     }
 
+    public JComponent getEditor() {
+        return editor;
+    }
+
     protected void initActionsPanel() {
         actionsPanel = new JPanel(new MigLayout("hidemode 2, ins 0 0 0 0, gap 0"));
         for (JButton button : buttons) {

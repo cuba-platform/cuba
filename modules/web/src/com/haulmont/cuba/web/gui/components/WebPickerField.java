@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
@@ -166,6 +167,13 @@ public class WebPickerField
             protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
                 return new PropertyWrapper(item, propertyPath, dsManager) {
                     @Override
+                    public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+                        if (newValue instanceof String)
+                            return;
+                        super.setValue(newValue);
+                    }
+
+                    @Override
                     public String toString() {
                         if (CaptionMode.PROPERTY.equals(captionMode)) {
                             return String.valueOf(getValue() == null ? "" : ((Instance) getValue()).getValue(captionProperty));
@@ -214,6 +222,16 @@ public class WebPickerField
         }
     }
 
+    public void addFieldListener(FieldListener listener){
+        component.addFieldListener(listener);
+    }
+
+    @Override
+    public void setFieldEditable(boolean editable) {
+        if (isEditable())
+        component.getField().setReadOnly(!editable);
+    }
+
     @Override
     public Collection<Action> getActions() {
         return Collections.unmodifiableList(actions);
@@ -257,6 +275,8 @@ public class WebPickerField
         @Override
         public void setReadOnly(boolean readOnly) {
             super.setReadOnly(readOnly);
+            if(readOnly)
+                field.setReadOnly(readOnly);
             for (Action action : owner.getActions()) {
                 if (action instanceof StandardAction) {
                     ((StandardAction) action).setEditable(!readOnly);

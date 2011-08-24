@@ -71,6 +71,16 @@ public class DesktopLookupPickerField
     }
 
     @Override
+    public void addFieldListener(FieldListener listener) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setFieldEditable(boolean editable) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void addAction(Action action) {
         pickerField.addAction(action);
     }

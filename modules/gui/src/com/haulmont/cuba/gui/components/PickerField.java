@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -45,6 +46,12 @@ public interface PickerField extends Field, Component.ActionsHolder {
     ClearAction addClearAction();
     OpenAction addOpenAction();
 
+    void addFieldListener(FieldListener listener);
+    void setFieldEditable(boolean editable);
+
+    public interface FieldListener extends Serializable {
+        public void actionPerformed(String text, Object prevValue);
+    }
 
     public static abstract class StandardAction extends AbstractAction {
 

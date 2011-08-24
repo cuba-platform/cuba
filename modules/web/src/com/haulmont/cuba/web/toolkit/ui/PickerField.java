@@ -7,6 +7,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.data.Property;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.*;
@@ -69,6 +70,7 @@ public class PickerField extends CustomComponent implements com.vaadin.ui.Field 
                 return PickerField.this.requiredError;
             }
         };
+        field.setImmediate(true);
         field.setReadOnly(true);
         ((TextField) field).setNullRepresentation("");
     }
@@ -95,6 +97,15 @@ public class PickerField extends CustomComponent implements com.vaadin.ui.Field 
     public void paintContent(PaintTarget target) throws PaintException {
         paintCommonContent(target);
         super.paintContent(target);
+    }
+
+    public void addFieldListener(final com.haulmont.cuba.gui.components.PickerField.FieldListener listener) {
+        ((TextField) field).addListener(new FieldEvents.TextChangeListener() {
+            @Override
+            public void textChange(FieldEvents.TextChangeEvent event) {
+                listener.actionPerformed(event.getText(), getValue());
+            }
+        });
     }
 
     protected void paintCommonContent(PaintTarget target) throws PaintException {
