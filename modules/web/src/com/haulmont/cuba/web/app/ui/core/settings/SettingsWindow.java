@@ -26,6 +26,9 @@ import java.util.Map;
 public class SettingsWindow extends AbstractWindow {
 
     private boolean changeThemeEnabled = true;
+    protected OptionsGroup modeOptions;
+    protected String msgTabbed;
+    protected String msgSingle;
 
     public SettingsWindow(IFrame frame) {
         super(frame);
@@ -44,10 +47,10 @@ public class SettingsWindow extends AbstractWindow {
             changeThemeEnabled = changeThemeEnabledParam;
         }
         AppWindow.Mode mode = UserSettingHelper.loadAppWindowMode();
-        final String msgTabbed = getMessage("modeTabbed");
-        final String msgSingle = getMessage("modeSingle");
+        msgTabbed = getMessage("modeTabbed");
+        msgSingle = getMessage("modeSingle");
 
-        final OptionsGroup modeOptions = getComponent("mainWindowMode");
+        modeOptions = getComponent("mainWindowMode");
         modeOptions.setOptionsList(Arrays.asList(msgTabbed, msgSingle));
         if (mode == AppWindow.Mode.TABBED)
             modeOptions.setValue(msgTabbed);
