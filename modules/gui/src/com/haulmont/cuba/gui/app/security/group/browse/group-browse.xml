@@ -52,6 +52,7 @@
                         <button action="groups.create" icon="icons/create.png"/>
                         <button action="groups.edit" icon="icons/edit.png"/>
                         <button action="groups.remove" icon="icons/remove.png"/>
+                        <button action="groups.refresh" icon="icons/refresh.png"/>
                     </buttonsPanel>
                     <tree id="groups">
                         <treechildren datasource="groups" captionProperty="name" hierarchyProperty="parent"/>

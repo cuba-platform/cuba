@@ -44,6 +44,7 @@ public class GroupBrowser extends AbstractWindow {
         tree.addAction(new CreateAction(tree, WindowManager.OpenType.DIALOG));
         tree.addAction(new EditAction(tree, WindowManager.OpenType.DIALOG));
         tree.addAction(new RemoveAction(tree));
+        ComponentsHelper.createActions(tree, EnumSet.of(ListActionType.REFRESH));
 
         final Table users = getComponent("users");
 
