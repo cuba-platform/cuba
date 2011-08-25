@@ -44,7 +44,7 @@ public class UserSessionServiceBean implements UserSessionService
         userSession.setClientInfo(clientInfo);
     }
 
-    public void putSessionAttribute(UUID sessionId, String name, Serializable value) {
+    public void setSessionAttribute(UUID sessionId, String name, Serializable value) {
         UserSession userSession = userSessionManager.getSession(sessionId);
         userSession.setAttribute(name, value);
     }

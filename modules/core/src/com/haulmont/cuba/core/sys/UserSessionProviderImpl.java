@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -33,4 +34,10 @@ public class UserSessionProviderImpl extends UserSessionProvider {
 
         return userSessionManager.getSession(sessionId);
     }
+
+    @Override
+    protected void __setSessionAttribute(String name, Serializable value) {
+        __getUserSession().setAttribute(name, value);
+    }
+
 }

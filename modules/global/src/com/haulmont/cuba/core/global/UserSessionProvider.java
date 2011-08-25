@@ -12,6 +12,7 @@ import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 
+import java.io.Serializable;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -49,7 +50,13 @@ public abstract class UserSessionProvider {
                 && userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
     }
 
+    public static void setSessionAttribute(String name, Serializable value) {
+        getInstance().__setSessionAttribute(name, value);
+    }
+
     protected abstract UserSession __getUserSession();
+
+    protected abstract void __setSessionAttribute(String name, Serializable value);
 
     private static UserSessionProvider getInstance() {
         return (UserSessionProvider) AppContext.getApplicationContext().getBean("cuba_UserSessionProvider");
