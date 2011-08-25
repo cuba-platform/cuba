@@ -254,7 +254,9 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         if (StringUtils.isBlank(alias))
             error("No alias for target entity " + targetEntity + " found");
 
-        buffer.replace(0, entityMatcher.start(), "select count(" + alias + ") from ");
+        Matcher distinctMatcher = DISTINCT_PATTERN.matcher(buffer);
+
+        buffer.replace(0, entityMatcher.start(), "select count("+ (distinctMatcher.find() ? "distinct " : "") + alias + ") from ");
 
         Matcher orderMatcher = ORDER_BY_PATTERN.matcher(buffer);
         if (orderMatcher.find()) {

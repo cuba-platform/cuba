@@ -25,6 +25,9 @@ public class QueryParserRegex implements QueryParser {
     public static final String ENTITY_PATTERN_REGEX = "(\\b[_A-Za-z]+\\$[A-Z][_A-Za-z0-9]*)(\\s+as\\b)?\\s+([a-z]+[a-z0-9]*)*\\b";
     public static final Pattern ENTITY_PATTERN = Pattern.compile(ENTITY_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
+    public static final String DISTINCT_PATTERN_REGEX = "\\bDISTINCT\\b";
+    public static final Pattern DISTINCT_PATTERN = Pattern.compile(DISTINCT_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
+
     public static final String WHERE_PATTERN_REGEX = "\\bWHERE\\b";
     public static final Pattern WHERE_PATTERN = Pattern.compile(WHERE_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
