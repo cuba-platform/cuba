@@ -26,8 +26,8 @@ import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
-import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -64,7 +64,8 @@ import org.dom4j.Element;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.List;
+
+import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 
 public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.Table>
         extends WebAbstractList<T> implements Table {
@@ -615,7 +616,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                         String visible = colElem.attributeValue("visible");
                         if (visible != null)
 //                            try {
+                        if (component.isColumnCollapsingAllowed()) { // throws exception if not
                             component.setColumnCollapsed(column, !Boolean.valueOf(visible));
+                        }
                             /*} catch (IllegalAccessException e) {
                                 // ignore
                             }*/
