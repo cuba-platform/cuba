@@ -79,6 +79,7 @@ public class ScreenHistorySupport {
         }
         Map<String, Object> params = window.getContext().getParams();
         StringBuilder sb = new StringBuilder();
+        sb.append(",openFromScreenHistory:true");
         if (params != null) {
             for (Map.Entry<String, Object> param : params.entrySet()) {
                 Object value = param.getValue();
