@@ -13,9 +13,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -298,7 +296,20 @@ public class WebActionsField
 
     @Override
     public void validate() throws ValidationException {
-        lookupField.validate();
+        if (!isVisible() || !isEditable() || !isEnabled())
+            return;
+
+        Object value = getValue();
+        if (isEmpty(value)) {
+            if (isRequired())
+                throw new RequiredValueMissingException(requiredMessage, this);
+            else
+                return;
+        }
+
+        for (Field.Validator validator : validators) {
+            validator.validate(value);
+        }
     }
 
     public WebLookupField getLookupField() {
