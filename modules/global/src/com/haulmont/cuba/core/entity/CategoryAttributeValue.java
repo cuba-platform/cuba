@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.*;
@@ -54,8 +55,6 @@ public class CategoryAttributeValue extends StandardEntity {
     public void setCategoryAttribute(CategoryAttribute categoryAttribute) {
         this.categoryAttribute = categoryAttribute;
     }
-
-
 
     public CategoryAttribute getCategoryAttribute() {
         return categoryAttribute;
@@ -115,6 +114,20 @@ public class CategoryAttributeValue extends StandardEntity {
 
     public void setDateValue(Date dateValue) {
         this.dateValue = dateValue;
+    }
+
+    public Object getValue() {
+        if (stringValue != null)
+            return stringValue;
+        else if (intValue != null)
+            return intValue;
+        else if (dateValue != null)
+            return dateValue;
+        else if (booleanValue != null)
+            return booleanValue;
+        else if (entityValue != null)
+            return entityValue;
+        return null;
     }
 
 }

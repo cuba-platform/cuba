@@ -10,6 +10,7 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.*;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.AppConfig;
@@ -20,6 +21,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.gui.data.impl.RuntimePropsDatasourceImpl;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -32,9 +35,15 @@ import java.util.*;
 public class RuntimePropertiesFrame extends AbstractWindow {
 
     private RuntimePropsDatasource rds;
-    private CollectionDatasource categories;
+    private CollectionDatasource categoriesDs;
 
     public static final String NAME = "runtimePropertiesFrame";
+    private static final String DEFAULT_FIELD_WIDTH = "100%";
+    private String rows;
+    private String cols;
+    private String fieldWidth;
+    private BoxLayout contentPane;
+    private FieldGroup categoryFieldGroup;
 
     public RuntimePropertiesFrame(IFrame frame) {
         super(frame);
@@ -43,13 +52,25 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     protected void init(Map<String, Object> params) {
         String dsId = (String) params.get("runtimeDs");
         String categoriesDsId = (String) params.get("categoriesDs");
+        rows = (String) params.get("rows");
+        cols = (String) params.get("cols");
+        fieldWidth = (String) params.get("fieldWidth");
+        if (StringUtils.isEmpty(fieldWidth))
+            fieldWidth = DEFAULT_FIELD_WIDTH;
         rds = getDsContext().get(dsId);
-        categories = getDsContext().<CollectionDatasource>get(categoriesDsId);
+        categoriesDs = getDsContext().<CollectionDatasource>get(categoriesDsId);
 
-        FieldGroup categoryFieldGroup = AppConfig.getFactory().createComponent(FieldGroup.NAME);
+        contentPane = getComponent("contentPane");
+        initCategoryField();
+        loadComponent(rds);
+    }
+
+    private void initCategoryField() {
+        categoryFieldGroup = AppConfig.getFactory().createComponent(FieldGroup.NAME);
         categoryFieldGroup.setId("categoryFieldGroup");
         categoryFieldGroup.setFrame(this.<IFrame>getFrame());
-        this.add(categoryFieldGroup);
+
+        contentPane.add(categoryFieldGroup);
         registerComponent(categoryFieldGroup);
 
         FieldGroup.Field field = new FieldGroup.Field("category");
@@ -62,15 +83,14 @@ public class RuntimePropertiesFrame extends AbstractWindow {
             public Component generateField(Datasource datasource, Object propertyId) {
                 LookupField field = AppConfig.getFactory().createComponent(LookupField.NAME);
                 field.setDatasource(rds.getMainDs(), "category");
-                field.setOptionsDatasource(categories);
-                field.setHeight("-1px");
-                field.setWidth("100%");
+                field.setOptionsDatasource(categoriesDs);
+//                field.setHeight("-1px");
+                field.setWidth(fieldWidth);
                 field.setCaptionProperty("name");
                 field.setCaption(getMessage("runtimeProperties.category"));
                 return field;
             }
         });
-        loadComponent(rds);
     }
 
     private void loadComponent(Datasource ds) {
@@ -83,20 +103,42 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                 }
                 Component runtime = getComponent("runtime");
                 final FieldGroup newRuntime = AppConfig.getFactory().createComponent(FieldGroup.NAME);
+                newRuntime.setBorderVisible(false);
                 newRuntime.setId("runtime");
                 if (runtime != null)
-                    remove(runtime);
+                    contentPane.remove(runtime);
                 newRuntime.setFrame(getFrame());
-                add(newRuntime);
+                contentPane.add(newRuntime);
                 registerComponent(newRuntime);
 
                 final java.util.List<FieldGroup.Field> fields = newRuntime.getFields();
                 for (FieldGroup.Field field : fields)
                     newRuntime.removeField(field);
 
+                int rowsPerColumn;
+                int propertiesCount = rds.getMetaClass().getProperties().size();
+                if (StringUtils.isNotBlank(cols)) {
+                    int propertiesSize = propertiesCount;
+                    if (propertiesSize % Integer.valueOf(cols) == 0)
+                        rowsPerColumn = propertiesSize / Integer.valueOf(cols);
+                    else
+                        rowsPerColumn = propertiesSize / Integer.valueOf(cols) + 1;
+                } else if (StringUtils.isNotBlank(rows)) {
+                    rowsPerColumn = Integer.valueOf(rows);
+                } else {
+                    rowsPerColumn = propertiesCount;
+                }
+
+                int columnNo = 0;
+                int fieldsCount = 0;
                 final java.util.List<FieldGroup.Field> rootFields = loadFields(newRuntime, ds);
                 for (final FieldGroup.Field field : rootFields) {
-                    newRuntime.addField(field);
+                    fieldsCount++;
+                    newRuntime.addField(field, columnNo);
+                    if (fieldsCount % rowsPerColumn == 0) {
+                        columnNo++;
+                        newRuntime.setColumns(columnNo + 1);
+                    }
                 }
                 if (!rootFields.isEmpty())
                     newRuntime.setDatasource(ds);
@@ -130,7 +172,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                                 field.setFrame(RuntimePropertiesFrame.this);
                                 field.setDatasource(rds, (String) propertyId);
                                 field.setOptionsDatasource(getDsContext().<CollectionDatasource>get((String) propertyId));
-                                field.setHeight("-1px");
+//                                field.setHeight("-1px");
                                 field.setWidth("100%");
                                 return field;
                             }
@@ -149,7 +191,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         for (MetaProperty property : metaProperties) {
             FieldGroup.Field field = new FieldGroup.Field(property.getName());
             field.setCaption(property.getName());
-            field.setWidth("100%");
+            field.setWidth(fieldWidth);
             fields.add(field);
             Range range = property.getRange();
             if (!range.isDatatype() && range.asClass().getJavaClass().equals(SetValueEntity.class))
@@ -192,4 +234,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         }
     }
 
+    public void setCategoryFieldVisible(boolean visible) {
+        categoryFieldGroup.setVisible(visible);
+    }
 }

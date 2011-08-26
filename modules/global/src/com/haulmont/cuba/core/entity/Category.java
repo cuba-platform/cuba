@@ -20,27 +20,31 @@ import java.util.List;
  */
 @javax.persistence.Entity(name = "sys$Category")
 @Table(name = "SYS_CATEGORY")
+@Inheritance(strategy=InheritanceType.JOINED)
+@DiscriminatorColumn(name = "DISCRIMINATOR", discriminatorType = DiscriminatorType.INTEGER)
+@DiscriminatorValue("0")
 @NamePattern("%s|name")
 public class Category extends StandardEntity {
 
     private static final long serialVersionUID = 7160259865207148541L;
 
     @Column(name = "NAME")
-    private String name;
+    protected String name;
 
     @Column(name = "ENTITY_TYPE")
-    private String entityType;
+    protected String entityType;
 
     @Column(name = "IS_DEFAULT")
-    private Boolean isDefault;
+    protected Boolean isDefault;
 
     @OneToMany(mappedBy = "category", targetEntity = CategoryAttribute.class)
     @OnDelete(com.haulmont.cuba.core.global.DeletePolicy.CASCADE)
+    @OrderBy("orderNo")
     @Aggregation
-    private List<CategoryAttribute> categoryAttrs;
+    protected List<CategoryAttribute> categoryAttrs;
 
     @Column(name = "SPECIAL")
-    private String special;
+    protected String special;
 
     public String getName() {
         return name;

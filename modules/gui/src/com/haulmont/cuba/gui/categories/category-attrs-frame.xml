@@ -1,0 +1,32 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.categories.CategoryAttrsFrame"
+        messagesPack="com.haulmont.cuba.gui.categories"
+        >
+
+    <dsContext>
+    </dsContext>
+
+    <layout expandLayout="true" expand="categoryAttrsTable" height="100%" spacing="true">
+        <table id="categoryAttrsTable" presentations="true">
+            <buttonsPanel>
+                <button action="categoryAttrsTable.create" icon="icons/create.png" caption="msg://categoryAttrsTable.create"/>
+                <button action="categoryAttrsTable.edit" icon="icons/edit.png" caption="msg://categoryAttrsTable.edit"/>
+                <button action="categoryAttrsTable.remove" icon="icons/remove.png" caption="msg://categoryAttrsTable.remove"/>
+                <button id="moveUp" icon="icons/up.png"/>
+                <button id="moveDown" icon="icons/down.png"/>
+            </buttonsPanel>
+            <columns>
+                <column id="name"/>
+                <column id="dataType"/>
+                <column id="defaultValue" caption="msg://defaultValue"/>
+            </columns>
+            <rows datasource="categoryAttrsDs"/>
+        </table>
+    </layout>
+</window>

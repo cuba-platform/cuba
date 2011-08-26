@@ -761,6 +761,7 @@ create table SYS_CATEGORY(
 	SPECIAL varchar(50),
 	ENTITY_TYPE varchar(30),
 	IS_DEFAULT boolean,
+	DISCRIMINATOR integer,
 	primary key (ID)
 )^
 
@@ -784,6 +785,7 @@ create table SYS_CATEGORY_ATTR(
 	DEFAULT_BOOLEAN boolean,
 	DEFAULT_ENTITY_VALUE uuid,
 	ENUMERATION varchar(500),
+	ORDER_NO integer,
 	primary key (ID)
 )^
 

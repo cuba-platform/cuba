@@ -12,31 +12,20 @@
 
     <dsContext>
         <datasource id="categoryDs" class="com.haulmont.cuba.core.entity.Category" view="category.edit">
-            <collectionDatasource id="attributesDs" property="categoryAttrs">
+            <collectionDatasource id="categoryAttrsDs" property="categoryAttrs">
             </collectionDatasource>
         </datasource>
     </dsContext>
 
-    <layout expand="categoryAttrsTable" spacing="true">
+    <layout expand="categoryAttrsFrame" spacing="true">
         <hbox id="categoryProperties" spacing="true">
             <textField width="200px" id="name" datasource="categoryDs" property="name" required="true" caption="msg://name"/>
             <lookupField width="200px" id="entityType" caption="msg://entityType" required="true"/>
             <checkBox id="isDefault" caption="msg://isDefault"/>
         </hbox>
         <label value="msg://attributes" stylename="h2"/>
-        <table id="categoryAttrsTable" presentations="true">
-            <buttonsPanel>
-                <button action="categoryAttrsTable.create" icon="icons/create.png" caption="msg://categoryAttrsTable.create"/>
-                <button action="categoryAttrsTable.edit" icon="icons/edit.png" caption="msg://categoryAttrsTable.edit"/>
-                <button action="categoryAttrsTable.remove" icon="icons/remove.png" caption="msg://categoryAttrsTable.remove"/>
-            </buttonsPanel>
-            <columns>
-                <column id="name"/>
-                <column id="dataType"/>
-                <column id="defaultValue" caption="msg://defaultValue"/>
-            </columns>
-            <rows datasource="attributesDs"/>
-        </table>
+
+        <iframe id="categoryAttrsFrame" src="/com/haulmont/cuba/gui/categories/category-attrs-frame.xml"/>
 
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
 

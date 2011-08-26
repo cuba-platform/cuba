@@ -73,7 +73,7 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
 
         CategorizedEntity entity = (CategorizedEntity) mainDs.getItem();
 
-        if (!inittedBefore && PersistenceHelper.isNew(entity)) {
+        if (!inittedBefore && PersistenceHelper.isNew(entity) && (entity.getCategory() == null)) {
             entity.setCategory(getDefaultCategory(entity));
         }
 
@@ -85,7 +85,7 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
         List<CategoryAttributeValue> entityValues = dataService.loadList(valuesContext);
 
         LoadContext attributesContext = new LoadContext(CategoryAttribute.class);
-        LoadContext.Query attributeQuery = attributesContext.setQueryString("select a from sys$CategoryAttribute a where a.category.id=:cat order by a.createTs ");
+        LoadContext.Query attributeQuery = attributesContext.setQueryString("select a from sys$CategoryAttribute a where a.category.id=:cat order by a.orderNo");
         attributeQuery.addParameter("cat", entity.getCategory());
         valuesContext.setView("_local");
         List<CategoryAttribute> attributes = dataService.loadList(attributesContext);

@@ -18,7 +18,7 @@ import java.util.*;
 
 public class RuntimePropertiesMetaClass implements MetaClass {
 
-    private Map<String, MetaProperty> properties = new HashMap<String, MetaProperty>();
+    private Map<String, MetaProperty> properties = new LinkedHashMap<String, MetaProperty>();
 
     public void addProperty(MetaProperty property) {
         properties.put(property.getName(), property);

@@ -25,7 +25,7 @@ import java.io.InputStream;
  */
 public class RuntimePropertiesFrameLoader extends IFrameLoader {
 
-    private static final String DEFAULT_DESCRIPTOR = "/com/haulmont/cuba/gui/runtimeprops/edit-runtime-properties.xml";
+    private static final String DEFAULT_DESCRIPTOR = "/com/haulmont/cuba/gui/runtimeprops/runtime-properties-frame.xml";
 
     public RuntimePropertiesFrameLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
@@ -39,6 +39,12 @@ public class RuntimePropertiesFrameLoader extends IFrameLoader {
          context.getParams().put("runtimeDs", runtimeDs);
          String categoriesDs = element.attributeValue("categoriesDs");
          context.getParams().put("categoriesDs",categoriesDs);
+         String rows = element.attributeValue("rows");
+         context.getParams().put("rows", rows);
+         String cols = element.attributeValue("cols");
+         context.getParams().put("cols", cols);
+         String fieldWidth = element.attributeValue("fieldWidth");
+         context.getParams().put("fieldWidth", fieldWidth);
 
          final LayoutLoader loader = new LayoutLoader(context, factory, LayoutLoaderConfig.getFrameLoaders());
          loader.setLocale(getLocale());
