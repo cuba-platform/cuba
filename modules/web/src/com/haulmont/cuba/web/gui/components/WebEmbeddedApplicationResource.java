@@ -20,13 +20,21 @@ import com.haulmont.cuba.web.filestorage.CloseableDownloadStream;
 public class WebEmbeddedApplicationResource implements ApplicationResource {
 
     private String filename;
+    private String mimeType;
     private Application application;
     private ExportDataProvider dataProvider;
 
-    public WebEmbeddedApplicationResource(ExportDataProvider dataProvider, String filename, Application application)
-    {
+    public WebEmbeddedApplicationResource(ExportDataProvider dataProvider, String filename, Application application) {
         this.application = application;
         this.filename = filename;
+        this.dataProvider = dataProvider;
+        application.addResource(this);
+    }
+
+    public WebEmbeddedApplicationResource(ExportDataProvider dataProvider, String filename, String mimeType, Application application) {
+        this.application = application;
+        this.filename = filename;
+        this.mimeType = mimeType;
         this.dataProvider = dataProvider;
         application.addResource(this);
     }
@@ -52,6 +60,9 @@ public class WebEmbeddedApplicationResource implements ApplicationResource {
     }
 
     public String getMIMEType() {
-        return FileTypeResolver.getMIMEType(filename);
+        if (mimeType == null)
+            return FileTypeResolver.getMIMEType(filename);
+        else
+            return mimeType;
     }
 }

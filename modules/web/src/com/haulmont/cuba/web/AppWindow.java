@@ -27,11 +27,13 @@ import com.haulmont.cuba.gui.config.MenuCommand;
 import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.config.MenuItem;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.export.ResourceDataProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
+import com.haulmont.cuba.web.gui.components.WebEmbeddedApplicationResource;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
 import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
@@ -41,6 +43,7 @@ import com.haulmont.cuba.web.toolkit.ui.RichNotification;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
+import com.vaadin.service.FileTypeResolver;
 import com.vaadin.terminal.*;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
@@ -48,7 +51,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
-import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
@@ -137,7 +139,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         this.connection = connection;
         setCaption(getAppCaption());
 
-        messagePack = AppConfig.getInstance().getMessagesPack();
+        messagePack = AppConfig.getMessagesPack();
 
         mode = UserSettingHelper.loadAppWindowMode();
 
@@ -554,50 +556,24 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         return titleLayout;
     }
 
+    @Nullable
     protected Embedded getLogoImage() {
         String logoImagePath = webConfig.getAppLogoImagePath();
         if (logoImagePath == null)
             return null;
 
-        String confDirPath = globalConfig.getConfDir();
-
-        File file = new File(confDirPath + logoImagePath);
-        if (file.exists()) {
-            FileResource resource = new FileResource(file, App.getInstance());
-            return new Embedded(null, resource);
-        }
-
-        InputStream stream = getClass().getResourceAsStream(logoImagePath);
+        ResourceDataProvider dataProvider = new ResourceDataProvider(logoImagePath);
+        InputStream stream = dataProvider.provide();
         if (stream != null) {
             IOUtils.closeQuietly(stream);
-            ClassResource resource = new ClassResource(logoImagePath, App.getInstance());
+            WebEmbeddedApplicationResource resource = new WebEmbeddedApplicationResource(
+                    dataProvider,
+                    "logoImage",
+                    FileTypeResolver.getMIMEType(logoImagePath),
+                    getApplication()
+            );
             return new Embedded(null, resource);
         }
-
-        // TODO this must work instead of the code above
-//        final InputStream stream = ScriptingProvider.getResourceAsStream(logoImagePath);
-//        if (stream != null) {
-//            WebEmbeddedApplicationResource resource = new WebEmbeddedApplicationResource(
-//                    new ExportDataProvider() {
-//                        @Override
-//                        public InputStream provide() throws ResourceException {
-//                            return stream;
-//                        }
-//
-//                        @Override
-//                        public void close() {
-//                            try {
-//                                stream.close();
-//                            } catch (IOException e) {
-//                                //
-//                            }
-//                        }
-//                    },
-//                    "logoImage",
-//                    app
-//            );
-//            return new Embedded(null, resource);
-
         return null;
     }
 
@@ -705,13 +681,15 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             foldersPane.savePosition();
             FoldersPane oldFoldersPane = foldersPane;
             foldersPane = createFoldersPane();
-            foldersPane.init(foldersSplit);
+            if (foldersPane != null) {
+                foldersPane.init(foldersSplit);
+            }
             foldersSplit.replaceComponent(oldFoldersPane, foldersPane);
         }
     }
 
     protected String getMessagesPack() {
-        return AppConfig.getInstance().getMessagesPack();
+        return AppConfig.getMessagesPack();
     }
 
     public void showRichNotification(RichNotification notification) {
