@@ -281,6 +281,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
         initTableModel(datasource);
 
+        initChangeListener();
+
         setColumnIdentifiers();
 
         impl.setRowSorter(new RowSorterImpl(tableModel));
@@ -407,6 +409,29 @@ public abstract class DesktopAbstractTable<C extends JTable>
             }
         }
         impl.repaint();
+    }
+
+    protected void initChangeListener() {
+        tableModel.addChangeListener(new AnyTableModelAdapter.DataChangeListener() {
+            private Set selection;
+
+            @Override
+            public void beforeChange() {
+                selection = getSelected();
+            }
+
+            @Override
+            public void afterChange() {
+                Set<Entity> newSelection = new HashSet<Entity>();
+                // filter selection
+                for (Object item : selection)
+                    if (tableModel.getRowIndex((Entity) item) >= 0)
+                        newSelection.add((Entity) item);
+                // apply selection
+                setSelected(newSelection);
+                selection = null;
+            }
+        });
     }
 
     protected void initSelectionListener(final CollectionDatasource datasource) {
@@ -666,7 +691,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
         for (int row : rows) {
             int modelRow = impl.convertRowIndexToModel(row);
             Object item = tableModel.getItem(modelRow);
-            set.add(item);
+            if (item != null)
+                set.add(item);
         }
         return set;
     }

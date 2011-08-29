@@ -36,6 +36,7 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
     protected List<Table.Column> columns;
     protected List<Table.Column> generatedColumns = new ArrayList<Table.Column>();
     protected boolean autoRefresh;
+    protected List<DataChangeListener> changeListeners = new ArrayList<DataChangeListener>();
 
     public TableModelAdapter(
             CollectionDatasource datasource,
@@ -62,15 +63,25 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
                 new CollectionDsListenerAdapter() {
                     @Override
                     public void collectionChanged(CollectionDatasource ds, Operation operation) {
-                        fireTableDataChanged();
+                        onDataChanged();
                     }
 
                     @Override
                     public void valueChanged(Entity source, String property, Object prevValue, Object value) {
-                        fireTableDataChanged();
+                        onDataChanged();
                     }
                 }
         );
+    }
+
+    private void onDataChanged() {
+        for (DataChangeListener changeListener : changeListeners)
+            changeListener.beforeChange();
+
+        fireTableDataChanged();
+
+        for (DataChangeListener changeListener : changeListeners)
+            changeListener.afterChange();
     }
 
     protected void createProperties(View view, MetaClass metaClass) {
@@ -206,6 +217,16 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
             properties.remove((MetaPropertyPath) column.getId());
 
         fireTableStructureChanged();
+    }
+
+    @Override
+    public void addChangeListener(DataChangeListener changeListener) {
+        changeListeners.add(changeListener);
+    }
+
+    @Override
+    public void removeChangeListener(DataChangeListener changeListener) {
+        changeListeners.remove(changeListener);
     }
 
     @Override

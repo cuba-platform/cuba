@@ -31,4 +31,12 @@ public interface AnyTableModelAdapter extends TableModel {
 
     void addColumn(Table.Column column);
     void removeColumn(Table.Column column);
+
+    void addChangeListener(DataChangeListener changeListener);
+    void removeChangeListener(DataChangeListener changeListener);
+
+    interface DataChangeListener {
+        void beforeChange();
+        void afterChange();
+    }
 }

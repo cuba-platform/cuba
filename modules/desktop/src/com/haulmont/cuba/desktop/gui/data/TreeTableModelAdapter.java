@@ -127,6 +127,14 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
     }
 
     @Override
+    public void addChangeListener(DataChangeListener changeListener) {
+    }
+
+    @Override
+    public void removeChangeListener(DataChangeListener changeListener) {
+    }
+
+    @Override
     public Object getValueAt(Object node, int column) {
         Entity entity = treeDelegate.getEntity(node);
         if (entity == null) {
