@@ -116,7 +116,7 @@ public class ObjectsCache implements ObjectsCacheInstance {
             this.lastUpdateTime = TimeProvider.currentTimestamp();
 
             if (logUpdateEvent)
-                log.info("Updated cache set in " + name + " " +
+                log.debug("Updated cache set in " + name + " " +
                         String.valueOf(lastUpdateDuration) + " millis");
         } else
             log.error("Not set cache loader for ObjectsCache:" + name);
