@@ -256,10 +256,10 @@ public class Param extends AbstractParam<Component> {
         field.setImmediate(true);
 
         field.addItem(Boolean.TRUE);
-        field.setItemCaption(Boolean.TRUE, MessageProvider.getMessage(getClass(), "Boolean.TRUE"));
+        field.setItemCaption(Boolean.TRUE, MessageProvider.getMessage("com.haulmont.cuba.gui.components.filter", "Boolean.TRUE"));
 
         field.addItem(Boolean.FALSE);
-        field.setItemCaption(Boolean.FALSE, MessageProvider.getMessage(getClass(), "Boolean.FALSE"));
+        field.setItemCaption(Boolean.FALSE, MessageProvider.getMessage("com.haulmont.cuba.gui.components.filter", "Boolean.FALSE"));
 
         field.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
