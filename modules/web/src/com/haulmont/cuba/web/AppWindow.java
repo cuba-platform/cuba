@@ -570,7 +570,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                     dataProvider,
                     "logoImage",
                     FileTypeResolver.getMIMEType(logoImagePath),
-                    getApplication()
+                    App.getInstance()
             );
             return new Embedded(null, resource);
         }
