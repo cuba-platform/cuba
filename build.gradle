@@ -49,7 +49,7 @@ def gwtServlets = [group: 'com.google.gwt', name: 'gwt-servlet', version: '2.3.0
 def validationApi = [group: 'javax.validation', name: 'validation-api', version: '1.0.0.GA']
 def groovyArtifact = [group: 'com.haulmont.thirdparty', name: 'groovy', version: '1.7.5.20101124']
 def asm = [group: 'asm', name: 'asm', version: '3.2']
-def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.6.20110527']
+def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.7.20110830']
 def postgres = [group: 'postgresql', name: 'postgresql', version: '8.3-603.jdbc4']
 def hsqldb = [group: 'hsqldb', name: 'hsqldb', version: '1.8.0.10']
 
