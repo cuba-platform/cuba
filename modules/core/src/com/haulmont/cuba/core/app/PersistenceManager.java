@@ -77,7 +77,8 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
                 softDeleteTables.clear();
                 while (rs.next()) {
                     String table = rs.getString("TABLE_NAME");
-                    softDeleteTables.add(table);
+                    if (table != null)
+                        softDeleteTables.add(table.toLowerCase());
                 }
             } finally {
                 lock.writeLock().unlock();
@@ -151,7 +152,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
             lock.readLock().lock();
         }
         try {
-            return softDeleteTables.contains(table);
+            return softDeleteTables.contains(table.toLowerCase());
         } finally {
             lock.readLock().unlock();
         }
