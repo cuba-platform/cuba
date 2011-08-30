@@ -28,16 +28,10 @@ public class UserSessionProviderImpl extends UserSessionProvider {
 
     @Override
     protected UserSession __getUserSession() {
-        UUID sessionId = ServerSecurityUtils.getSessionId();
-        if (sessionId == null)
-            throw new SecurityException("Session ID not found in security context");
+        SecurityContext securityContext = AppContext.getSecurityContext();
+        if (securityContext == null)
+            throw new SecurityException("No security context bound to the current thread");
 
-        return userSessionManager.getSession(sessionId);
+        return userSessionManager.getSession(securityContext.getSessionId());
     }
-
-    @Override
-    protected void __setSessionAttribute(String name, Serializable value) {
-        __getUserSession().setAttribute(name, value);
-    }
-
 }

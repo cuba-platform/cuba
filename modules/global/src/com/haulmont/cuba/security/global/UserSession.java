@@ -26,19 +26,19 @@ public class UserSession implements Serializable
 {
     private static final long serialVersionUID = -8248326616891177382L;
 
-    private UUID id;
-    private User user;
-    private User substitutedUser;
-    private String[] roles;
-    private Locale locale;
-    private String address;
-    private String clientInfo;
-    private boolean system;
+    protected UUID id;
+    protected User user;
+    protected User substitutedUser;
+    protected String[] roles;
+    protected Locale locale;
+    protected String address;
+    protected String clientInfo;
+    protected boolean system;
 
-    private Map<String, Integer>[] permissions;
-    private Map<String, List<String[]>> constraints;
+    protected Map<String, Integer>[] permissions;
+    protected Map<String, List<String[]>> constraints;
 
-    private final Map<String, Serializable> attributes;
+    protected final Map<String, Serializable> attributes;
 
     public static String getScreenPermissionTarget(ClientType clientType, String windowAlias) {
         return clientType.getId() + ":" + windowAlias;
@@ -80,6 +80,11 @@ public class UserSession implements Serializable
         this.id = src.id;
         this.user = src.user;
         this.substitutedUser = user;
+    }
+
+    public UserSession(UserSession src) {
+        this(src.user, src.roles, src.locale, src.system);
+        this.id = src.id;
     }
 
     /**

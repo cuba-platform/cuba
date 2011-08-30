@@ -9,7 +9,8 @@ package com.haulmont.cuba.core.controllers;
 import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.sys.ServerSecurityUtils;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.io.IOUtils;
@@ -49,7 +50,7 @@ public class FileUploadController {
         if (userSession == null)
             return;
 
-        ServerSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
+        AppContext.setSecurityContext(new SecurityContext(userSession));
         try {
             InputStream is = request.getInputStream();
             if (is == null) {
@@ -74,7 +75,7 @@ public class FileUploadController {
                 IOUtils.closeQuietly(is);
             }
         } finally {
-            ServerSecurityUtils.clearSecurityAssociation();
+            AppContext.setSecurityContext(null);
         }
     }
 

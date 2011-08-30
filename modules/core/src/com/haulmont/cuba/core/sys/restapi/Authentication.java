@@ -7,7 +7,8 @@
 package com.haulmont.cuba.core.sys.restapi;
 
 import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.sys.ServerSecurityUtils;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 
@@ -24,13 +25,12 @@ public class Authentication {
         if (userSession == null) {
             return null;
         }
-
-        ServerSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
+        AppContext.setSecurityContext(new SecurityContext(userSession));
         return new Authentication();
     }
 
     public void forget() {
-        ServerSecurityUtils.clearSecurityAssociation();
+        AppContext.setSecurityContext(null);
     }
 
     private static UserSession getSession(String sessionIdStr) {

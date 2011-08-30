@@ -13,8 +13,6 @@ package com.haulmont.cuba.security.listener;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Utils;
-import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
 import com.haulmont.cuba.security.entity.Group;

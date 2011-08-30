@@ -12,6 +12,8 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
@@ -242,7 +244,7 @@ public class CubaCommunicationManager extends CommunicationManager {
                 return;
             }
 
-            WebSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
+            AppContext.setSecurityContext(new SecurityContext(userSession));
 
             String vendor = chart.getVendor();
             ChartDataProvider dataProvider = ChartDataProviderFactory.getDataProvider(vendor);
@@ -308,7 +310,7 @@ public class CubaCommunicationManager extends CommunicationManager {
                     }
                     final Integer maxUploadSizeMb = ConfigProvider.getConfig(ClientConfig.class).getMaxUploadSizeMb();
 
-                    WebSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
+                    AppContext.setSecurityContext(new SecurityContext(userSession));
 
                     org.apache.commons.fileupload.FileItemFactory factory = new DiskFileItemFactory();
                     ServletFileUpload upload = new ServletFileUpload(factory);

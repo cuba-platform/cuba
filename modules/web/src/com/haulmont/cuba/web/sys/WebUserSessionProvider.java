@@ -11,24 +11,29 @@
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 
-import java.io.Serializable;
-
 public class WebUserSessionProvider extends UserSessionProvider
 {
     protected UserSession __getUserSession() {
-        return App.getInstance().getConnection().getSession();
-    }
+        if (App.isBound())
+            return App.getInstance().getConnection().getSession();
+        else {
+            SecurityContext securityContext = AppContext.getSecurityContext();
+            if (securityContext == null)
+                throw new IllegalStateException("No security context bound to the current thread");
 
-    @Override
-    protected void __setSessionAttribute(String name, Serializable value) {
-        UserSession userSession = __getUserSession();
-        userSession.setAttribute(name, value);
-        UserSessionService uss = ServiceLocator.lookup(UserSessionService.NAME);
-        uss.setSessionAttribute(userSession.getId(), name, value);
+            if (securityContext.getSession() != null)
+                return securityContext.getSession();
+            else {
+                UserSessionService uss = ServiceLocator.lookup(UserSessionService.NAME);
+                return uss.getUserSession(securityContext.getSessionId());
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop;
 
+import com.haulmont.cuba.client.ClientUserSession;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -37,8 +38,9 @@ public class Connection {
 
     public void login(String login, String password, Locale locale) throws LoginException {
         LoginService loginService = ServiceLocator.lookup(LoginService.NAME);
-        session = loginService.login(login, password, locale);
-        AppContext.setSecurityContext(new SecurityContext(session.getId()));
+        UserSession userSession = loginService.login(login, password, locale);
+        session = new ClientUserSession(userSession);
+        AppContext.setSecurityContext(new SecurityContext(session));
 
         connected = true;
         fireConnectionListeners();

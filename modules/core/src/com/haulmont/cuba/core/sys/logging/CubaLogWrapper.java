@@ -11,13 +11,11 @@
 package com.haulmont.cuba.core.sys.logging;
 
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.ServerSecurityUtils;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.logging.Log;
 import org.springframework.context.ApplicationContext;
-
-import java.util.UUID;
 
 public class CubaLogWrapper extends AbstractLogWrapper {
 
@@ -29,14 +27,18 @@ public class CubaLogWrapper extends AbstractLogWrapper {
     protected String getUserInfo() {
         String logUserName = AppContext.getProperty("cuba.logUserName");
         if (logUserName == null || logUserName.equals("") || Boolean.valueOf(logUserName)) {
-            UUID sessionId = ServerSecurityUtils.getSessionId();
-            if (sessionId != null) {
-                ApplicationContext context = AppContext.getApplicationContext();
-                if (context != null) {
-                    UserSessionManager usm = context.getBean(UserSessionManager.NAME, UserSessionManager.class);
-                    UserSession session = usm.findSession(sessionId);
-                    if (session != null) {
-                        return session.getUser().getLogin();
+            SecurityContext securityContext = AppContext.getSecurityContext();
+            if (securityContext != null) {
+                if (securityContext.getUser() != null)
+                    return securityContext.getUser();
+                else {
+                    ApplicationContext context = AppContext.getApplicationContext();
+                    if (context != null) {
+                        UserSessionManager usm = context.getBean(UserSessionManager.NAME, UserSessionManager.class);
+                        UserSession session = usm.findSession(securityContext.getSessionId());
+                        if (session != null) {
+                            return session.getUser().getLogin();
+                        }
                     }
                 }
             }

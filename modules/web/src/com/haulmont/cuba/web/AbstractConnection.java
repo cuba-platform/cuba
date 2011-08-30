@@ -10,23 +10,24 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.client.ClientUserSession;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.app.LoginService;
-import com.haulmont.cuba.security.app.UserSessionService;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.IpMatcher;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.web.sys.WebSecurityUtils;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
-
-import java.util.*;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Connection to the middleware.
@@ -63,7 +64,7 @@ public abstract class AbstractConnection implements Connection {
     }
 
     public void update(UserSession session) throws LoginException {
-        this.session = session;
+        this.session = new ClientUserSession(session);
         connected = true;
 
         try {
@@ -81,7 +82,7 @@ public abstract class AbstractConnection implements Connection {
     }
 
     void internalLogin() throws LoginException {
-        WebSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
+        AppContext.setSecurityContext(new SecurityContext(session));
 
         App app = App.getInstance();
 
@@ -96,9 +97,6 @@ public abstract class AbstractConnection implements Connection {
         session.setAddress(app.getClientAddress());
         WebBrowser browser = ((WebApplicationContext) app.getContext()).getBrowser();
         session.setClientInfo(browser.getBrowserApplication());
-
-        UserSessionService uss = ServiceLocator.lookup(UserSessionService.NAME);
-        uss.updateUserSession(session.getId(), session.getAddress(), session.getClientInfo());
 
         fireConnectionListeners();
 
@@ -135,7 +133,7 @@ public abstract class AbstractConnection implements Connection {
         LoginService ls = getLoginService();
         ls.logout();
 
-        WebSecurityUtils.clearSecurityAssociation();
+        AppContext.setSecurityContext(null);
 
         connected = false;
         session = null;

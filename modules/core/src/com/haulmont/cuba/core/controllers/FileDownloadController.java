@@ -11,7 +11,8 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.FileTypesHelper;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.sys.ServerSecurityUtils;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.io.IOUtils;
@@ -50,7 +51,7 @@ public class FileDownloadController {
         if (userSession == null)
             return;
 
-        ServerSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
+        AppContext.setSecurityContext(new SecurityContext(userSession));
         try {
             FileDescriptor fd = getFileDescriptor(request, response);
             if (fd == null)
@@ -87,7 +88,7 @@ public class FileDownloadController {
                 IOUtils.closeQuietly(os);
             }
         } finally {
-            ServerSecurityUtils.clearSecurityAssociation();
+            AppContext.setSecurityContext(null);
         }
     }
 

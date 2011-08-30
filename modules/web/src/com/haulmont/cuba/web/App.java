@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.app.UserSessionService;
@@ -22,7 +23,6 @@ import com.haulmont.cuba.web.exception.*;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.sys.LinkHandler;
-import com.haulmont.cuba.web.sys.WebSecurityUtils;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.vaadin.Application;
 import com.vaadin.service.ApplicationContext;
@@ -42,7 +42,10 @@ import javax.servlet.http.HttpSession;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -175,6 +178,10 @@ public abstract class App extends Application
         if (app == null)
             throw new IllegalStateException("No App bound to the current thread. This may be the result of hot-deployment.");
         return app;
+    }
+
+    public static boolean isBound() {
+        return currentApp.get() != null;
     }
 
     public static String generateWebWindowName() {
@@ -354,7 +361,7 @@ public abstract class App extends Application
         if (connection.isConnected()) {
             UserSession userSession = connection.getSession();
             if (userSession != null) {
-                WebSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
+                AppContext.setSecurityContext(new SecurityContext(userSession));
                 application.setLocale(userSession.getLocale());
             }
             requestStartTimes.put(transactionData, System.currentTimeMillis());
@@ -449,7 +456,7 @@ public abstract class App extends Application
             currentApp.remove();
         }
 
-        WebSecurityUtils.clearSecurityAssociation();
+        AppContext.setSecurityContext(null);
 
         HttpSession httpSession = ((HttpServletRequest) transactionData).getSession();
         httpSession.setAttribute(LAST_REQUEST_ACTION_ATTR, null);

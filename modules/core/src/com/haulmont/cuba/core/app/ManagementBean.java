@@ -12,21 +12,17 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
-import com.haulmont.cuba.core.sys.ServerSecurityUtils;
+import com.haulmont.cuba.security.app.LoginWorker;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.app.LoginWorker;
-
-import java.util.UUID;
-import java.util.Locale;
-
 import com.haulmont.cuba.security.sys.UserSessionManager;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.inject.Inject;
+import java.util.UUID;
 
 /**
  * Base class for MBeans.<br>
@@ -63,15 +59,15 @@ public class ManagementBean
      */
     protected void loginOnce() throws LoginException {
         // first check if a current thread session exists - may be got here from Web UI 
-        UUID currentSessionId = ServerSecurityUtils.getSessionId();
-        if (currentSessionId != null && userSessionManager.findSession(currentSessionId) != null) {
+        SecurityContext securityContext = AppContext.getSecurityContext();
+        if (securityContext != null && userSessionManager.findSession(securityContext.getSessionId()) != null) {
             return;
         }
         // no current thread session - so work with the internal session
+        UserSession session;
         if (sessionId == null || userSessionManager.findSession(sessionId) == null) {
             String name;
             String password;
-            SecurityContext securityContext = ServerSecurityUtils.getSecurityAssociation();
             if (securityContext == null || securityContext.getUser() == null || securityContext.getPassword() == null) {
                 ManagementBean.Credentials credentialsForLogin = getCredentialsForLogin();
                 name = credentialsForLogin.getUserName();
@@ -85,14 +81,13 @@ public class ManagementBean
             else
                 password = DigestUtils.md5Hex(password);
 
-            UserSession session = loginWorker.loginSystem(name, password);
+            session = loginWorker.loginSystem(name, password);
             loginPerformed.set(true);
             sessionId = session.getId();
-            ServerSecurityUtils.setSecurityAssociation(name, session.getId());
         } else {
-            UserSession session = userSessionManager.getSession(sessionId);
-            ServerSecurityUtils.setSecurityAssociation(session.getUser().getLogin(), session.getId());
+            session = userSessionManager.getSession(sessionId);
         }
+        AppContext.setSecurityContext(new SecurityContext(session));
     }
 
     /**
@@ -101,11 +96,10 @@ public class ManagementBean
      * @throws LoginException
      */
     protected void login() throws LoginException {
-        UUID sessionId = ServerSecurityUtils.getSessionId();
-        if (sessionId == null || userSessionManager.findSession(sessionId) == null) {
+        SecurityContext securityContext = AppContext.getSecurityContext();
+        if (securityContext == null || userSessionManager.findSession(securityContext.getSessionId()) == null) {
             String name;
             String password;
-            SecurityContext securityContext = ServerSecurityUtils.getSecurityAssociation();
             if (securityContext == null || securityContext.getUser() == null || securityContext.getPassword() == null) {
                 ManagementBean.Credentials credintialsForLogin = getCredentialsForLogin();
                 name = credintialsForLogin.getUserName();
@@ -120,7 +114,7 @@ public class ManagementBean
                 password = DigestUtils.md5Hex(password);
 
             UserSession session = loginWorker.loginSystem(name, password);
-            ServerSecurityUtils.setSecurityAssociation(name, session.getId());
+            AppContext.setSecurityContext(new SecurityContext(session));
             loginPerformed.set(true);
         }
     }
@@ -136,10 +130,10 @@ public class ManagementBean
     protected void logout() {
         try {
             if (BooleanUtils.isTrue(loginPerformed.get())) {
-                UUID sessionId = ServerSecurityUtils.getSessionId();
-                if (sessionId != null) {
+                SecurityContext securityContext = AppContext.getSecurityContext();
+                if (securityContext != null) {
                     loginWorker.logout();
-                    ServerSecurityUtils.clearSecurityAssociation();
+                    AppContext.setSecurityContext(null);
                 }
                 loginPerformed.remove();
             }

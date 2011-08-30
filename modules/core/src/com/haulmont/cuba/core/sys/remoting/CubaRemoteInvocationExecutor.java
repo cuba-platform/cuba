@@ -66,8 +66,8 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
                         }
                     }
                 }
+                AppContext.setSecurityContext(new SecurityContext(sessionId));
             }
-            AppContext.setSecurityContext(new SecurityContext(sessionId));
         }
         return invocation.invoke(targetObject);
     }

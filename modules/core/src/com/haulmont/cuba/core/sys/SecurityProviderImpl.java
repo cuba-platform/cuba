@@ -26,21 +26,20 @@ public class SecurityProviderImpl extends SecurityProvider
 
     @Override
     protected boolean __checkCurrentUserSession() {
-        UUID sessionId = ServerSecurityUtils.getSessionId();
-        if (sessionId == null)
+        SecurityContext securityContext = AppContext.getSecurityContext();
+        if (securityContext == null)
             return false;
 
-        UserSession userSession = userSessionManager.findSession(sessionId);
+        UserSession userSession = userSessionManager.findSession(securityContext.getSessionId());
         return userSession != null;
     }
 
     @Override
     protected UserSession __currentUserSession() {
-        UUID sessionId = ServerSecurityUtils.getSessionId();
-        if (sessionId == null)
-            throw new SecurityException("Session ID not found in security context");
+        SecurityContext securityContext = AppContext.getSecurityContext();
+        if (securityContext == null)
+            throw new SecurityException("No security context bound to the current thread");
 
-        UserSession session = userSessionManager.getSession(sessionId);
-        return session;
+        return userSessionManager.getSession(securityContext.getSessionId());
     }
 }

@@ -63,7 +63,8 @@ public class LocalServiceInvokerImpl implements LocalServiceInvoker {
                 }
             }
 
-            AppContext.setSecurityContext(new SecurityContext(invocation.getSessionId()));
+            if (invocation.getSessionId() != null)
+                AppContext.setSecurityContext(new SecurityContext(invocation.getSessionId()));
 
             Method method = target.getClass().getMethod(invocation.getMethodName(), parameterTypes);
             Serializable data = (Serializable) method.invoke(target, arguments);

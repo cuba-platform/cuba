@@ -21,7 +21,6 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.sys.WebSecurityUtils;
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import org.apache.commons.io.IOUtils;
@@ -62,7 +61,7 @@ public class FileDownloadController {
             return null;
         }
 
-        WebSecurityUtils.setSecurityAssociation(userSession.getUser().getLogin(), userSession.getId());
+        AppContext.setSecurityContext(new SecurityContext(userSession));
         try {
             UUID fileId;
             try {
@@ -109,7 +108,7 @@ public class FileDownloadController {
             }
 
         } finally {
-            WebSecurityUtils.clearSecurityAssociation();
+            AppContext.setSecurityContext(null);
         }
 
         return null;

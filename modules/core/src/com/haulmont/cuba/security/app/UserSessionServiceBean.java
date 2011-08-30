@@ -38,15 +38,19 @@ public class UserSessionServiceBean implements UserSessionService
         return userSession;
     }
 
-    public void updateUserSession(UUID sessionId, String address, String clientInfo) {
-        UserSession userSession = userSessionManager.getSession(sessionId);
-        userSession.setAddress(address);
-        userSession.setClientInfo(clientInfo);
-    }
-
     public void setSessionAttribute(UUID sessionId, String name, Serializable value) {
         UserSession userSession = userSessionManager.getSession(sessionId);
         userSession.setAttribute(name, value);
+    }
+
+    public void setSessionAddress(UUID sessionId, String address) {
+        UserSession userSession = userSessionManager.getSession(sessionId);
+        userSession.setAddress(address);
+    }
+
+    public void setSessionClientInfo(UUID sessionId, String clientInfo) {
+        UserSession userSession = userSessionManager.getSession(sessionId);
+        userSession.setClientInfo(clientInfo);
     }
 
     public Collection<UserSessionEntity> getUserSessionInfo() {
