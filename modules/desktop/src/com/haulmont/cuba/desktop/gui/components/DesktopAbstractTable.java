@@ -789,6 +789,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     private class CellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
 
         private ColumnGenerator columnGenerator;
+        private Component activeComponent;
         private Map<Integer, Component> cache = new HashMap<Integer, Component>();
 
         public CellEditor(ColumnGenerator columnGenerator) {
@@ -815,17 +816,21 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
         @Override
         public Object getCellEditorValue() {
+            if (activeComponent != null) {
+                // normally handle focus lost
+                activeComponent.dispatchEvent(new FocusEvent(activeComponent, FocusEvent.FOCUS_LOST));
+            }
             return "";
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component component = cache.get(row);
-            if (component == null) {
-                component = getCellComponent(row);
-                cache.put(row, component);
+            activeComponent = cache.get(row);
+            if (activeComponent == null) {
+                activeComponent = getCellComponent(row);
+                cache.put(row, activeComponent);
             }
-            return component;
+            return activeComponent;
         }
 
         public void clearCache() {
