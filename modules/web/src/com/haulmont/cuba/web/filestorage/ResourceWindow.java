@@ -102,14 +102,4 @@ public class ResourceWindow extends Window {
 
         return downloadStream;
     }
-
-    @Override
-    protected void close() {
-        super.close();
-        try {
-            if (dataProvider != null)
-                dataProvider.close();
-        } catch (Exception ignored) {
-        }
-    }
 }

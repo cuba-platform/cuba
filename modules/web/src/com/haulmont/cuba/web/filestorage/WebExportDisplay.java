@@ -41,7 +41,6 @@ public class WebExportDisplay implements ExportDisplay, Serializable {
      * @param newWindow  if true, show data in the same browser window;
      *                   if false, open new browser window
      */
-
     public WebExportDisplay(boolean attachment, boolean newWindow) {
         this.attachment = attachment;
         this.newWindow = newWindow;
@@ -126,7 +125,6 @@ public class WebExportDisplay implements ExportDisplay, Serializable {
             }
         }
         if (window != null) {
-            window.close();
             application.removeWindow(window);
         }
     }
