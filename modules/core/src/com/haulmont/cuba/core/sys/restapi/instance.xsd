@@ -11,18 +11,6 @@
 	attributeFormDefault="unqualified" elementFormDefault="qualified"
 	version="1.0">
 
-	<xsd:annotation>
-		<xsd:documentation><![CDATA[
-         Describes closure of managed persistence instance.
-         Each instance is described by all its loaded persistent attribute.
-         The related instances are resolved within the document root.
-         Document root represents zero or more instances.                                                                                           
-          
-         The file must be named "jest-instance.xsd".
-         ]]>
-		</xsd:documentation>
-	</xsd:annotation>
-
     <!-- The root element of the document contains zero or more instances -->
 	<xsd:element name="instances">
 		<xsd:complexType>
@@ -39,7 +27,6 @@
 	<!-- Persistent Attributes occur in order. The order is determined by the attribute category.  -->
 	<!-- Attribute category is determined by the enumerated PersistentAttributeType defined in     -->
 	<!-- javax.persistence.metamodel and then further refined by id, version, lob and enum.        -->
-	<!-- See org.apache.openjpa.persistence.jest.MetamodelHelper for further details.              -->
 	<xsd:complexType name="instance-type">
 		<xsd:sequence>
 			<xsd:element name="id"           type="basic-attr-type"      minOccurs="0" maxOccurs="unbounded"/>

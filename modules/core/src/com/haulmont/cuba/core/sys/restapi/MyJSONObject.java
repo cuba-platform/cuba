@@ -9,17 +9,6 @@ package com.haulmont.cuba.core.sys.restapi;
 import java.io.PrintWriter;
 import java.util.*;
 
-/**
- * A JSON instance for persistence.
- * <br>
- * Persistent instances have a persistent identity that extends beyond the process lifetime unlike other common
- * identity such as {@linkplain System#identityHashCode(Object) identity hash code} for a Java instance in a JVM.
- * <br>
- * A JSONObject instance must need such a persistent identity.
- *
- * @author Pinaki Poddar
- *
- */
 public class MyJSONObject implements MyJSON {
     private final String _id;
     private final boolean _ref;
@@ -59,13 +48,6 @@ public class MyJSONObject implements MyJSON {
         return buf;
     }
 
-    /**
-     * Encoding a JSON field is a quoted field name, followed by a :, followed by a value (which itself can be JSON)
-     * @param field
-     * @param value
-     * @param indent
-     * @return
-     */
     private static StringBuilder encodeField(String field, Object value, int indent) {
         return new StringBuilder()
               .append(quoteFieldName(field))
@@ -88,15 +70,6 @@ public class MyJSONObject implements MyJSON {
         return new StringBuilder().append(QUOTE).append(s).append(QUOTE);
     }
 
-    /**
-     * Creates a StringBuilder for the given value.
-     * If the value is null, outputs <code>null</code> without quote
-     * If the value is Number, outputs the value without quote
-     * If the value is JSON, outputs the string rendition of value
-     * Otherwise quoted value
-     * @param o
-     * @return
-     */
     private static StringBuilder quoteFieldValue(Object o, int indent) {
         if (o == null) return new StringBuilder(NULL_LITERAL);
         if (o instanceof Number) return new StringBuilder(o.toString());
@@ -109,12 +82,6 @@ public class MyJSONObject implements MyJSON {
         return new StringBuilder().append(QUOTE).append(o.toString()).append(QUOTE);
     }
 
-    /**
-     * An array of objects. Members can be JSON too.
-     *
-     * @author Pinaki Poddar
-     *
-     */
     public static class Array implements MyJSON {
         private List<Object> _members = new ArrayList<Object>();
 
@@ -145,13 +112,6 @@ public class MyJSONObject implements MyJSON {
         }
     }
 
-    /**
-     * A map whose key or value can be JSON.
-     * A map is encoded as JSON as an array of entries. Each entry is a key value pair separated with :
-     *
-     * @author Pinaki Poddar
-     *
-     */
     public static class KVMap implements MyJSON {
         private Map<Object,Object> _entries = new LinkedHashMap<Object,Object>();
 

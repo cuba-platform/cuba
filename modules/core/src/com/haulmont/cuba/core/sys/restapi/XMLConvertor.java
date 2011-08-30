@@ -64,12 +64,10 @@ public class XMLConvertor implements Convertor {
     public static final char DASH = '-';
     public static final char UNDERSCORE = '_';
 
-    public static final String INSTANCE_XSD = "instance.xsd";
     public static final String ROOT_ELEMENT_INSTANCE = "instances";
 
     private static DocumentBuilder _builder;
 
-    public static final String COMMIT_REQUEST_XSD = "CommitRequest.xsd";
     public static final String MAPPING_ROOT_ELEMENT_INSTANCE = "mapping";
     public static final String PAIR_ELEMENT = "pair";
 
@@ -108,12 +106,6 @@ public class XMLConvertor implements Convertor {
                     return NodeFilter.SHOW_TEXT;
                 }
             });
-
-            /*
-            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            InputStream xsd = XMLConvertor.class.getResourceAsStream(INSTANCE_XSD);
-            _instancesXsd = factory.newSchema(new StreamSource(xsd));
-            */
 
             _transformer = TransformerFactory.newInstance().newTransformer();
             _transformer.setOutputProperty(OutputKeys.METHOD, "xml");
