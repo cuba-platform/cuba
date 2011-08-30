@@ -74,8 +74,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
             public void onTimer(Timer timer) {
                 // handle intents
                 if (!taskHandler.isCancelled()) {
-                    if (intentVersion != taskExecutor.getIntentVersion()) {
-                        intentVersion = taskExecutor.getIntentVersion();
+                    long newIntent = taskExecutor.getIntentVersion();
+                    if (intentVersion != newIntent) {
+                        intentVersion = newIntent;
                         taskExecutor.handleIntents();
                     }
                 }
@@ -119,12 +120,25 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     cleanupTasks();
                 }
             } catch (Exception ex) {
-                log.error("WatchDog crashed", ex);
+                if (AppContext.isStarted())
+                    log.error("WatchDog crashed", ex);
+            } finally {
+                // cancel all
+                for (TaskHandler taskHandler : watches)
+                    cancelTask(taskHandler);
+                // clean watches
+                watches.clear();
             }
         }
 
         private void cleanupTasks() throws Exception {
             TimeUnit.MILLISECONDS.sleep(watchDogInterval);
+
+            if (!AppContext.isStarted()) {
+                // Shutdown WatchDog
+                watching = false;
+                return;
+            }
 
             synchronized (watches) {
                 long actual = TimeProvider.currentTimestamp().getTime();

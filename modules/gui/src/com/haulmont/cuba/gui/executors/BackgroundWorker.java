@@ -8,6 +8,7 @@ package com.haulmont.cuba.gui.executors;
 
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.logging.Log;
@@ -148,10 +149,12 @@ public interface BackgroundWorker {
          * Cancel without events for tasks
          */
         public void close() {
-            UUID userId = getUserSession().getId();
-            Window ownerWindow = getTask().getOwnerWindow();
-            String windowClass = ownerWindow.getClass().getCanonicalName();
-            log.debug("Task killed. User: " + userId + " Window: " + windowClass);
+            if (AppContext.isStarted()) {
+                UUID userId = getUserSession().getId();
+                Window ownerWindow = getTask().getOwnerWindow();
+                String windowClass = ownerWindow.getClass().getCanonicalName();
+                log.debug("Task killed. User: " + userId + " Window: " + windowClass);
+            }
 
             taskExecutor.cancelExecution(true);
         }
