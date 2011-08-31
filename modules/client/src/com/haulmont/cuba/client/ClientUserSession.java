@@ -19,6 +19,8 @@ import java.io.Serializable;
  */
 public class ClientUserSession extends UserSession {
 
+    private static final long serialVersionUID = -5358664165808633540L;
+
     public ClientUserSession(UserSession src) {
         super(src);
     }

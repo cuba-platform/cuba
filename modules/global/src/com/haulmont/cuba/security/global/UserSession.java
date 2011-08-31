@@ -10,14 +10,17 @@
  */
 package com.haulmont.cuba.security.global;
 
-import com.haulmont.cuba.core.global.UuidProvider;
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.security.entity.*;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.global.UuidProvider;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.PermissionType;
+import com.haulmont.cuba.security.entity.User;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.io.Serializable;
 
 /**
  * User session
@@ -38,7 +41,7 @@ public class UserSession implements Serializable
     protected Map<String, Integer>[] permissions;
     protected Map<String, List<String[]>> constraints;
 
-    protected final Map<String, Serializable> attributes;
+    protected Map<String, Serializable> attributes;
 
     public static String getScreenPermissionTarget(ClientType clientType, String windowAlias) {
         return clientType.getId() + ":" + windowAlias;
@@ -83,8 +86,14 @@ public class UserSession implements Serializable
     }
 
     public UserSession(UserSession src) {
-        this(src.user, src.roles, src.locale, src.system);
-        this.id = src.id;
+        id = src.id;
+        user = src.user;
+        system = src.system;
+        roles = src.roles;
+        locale = src.locale;
+        permissions = src.permissions;
+        constraints = src.constraints;
+        attributes = src.attributes;
     }
 
     /**
