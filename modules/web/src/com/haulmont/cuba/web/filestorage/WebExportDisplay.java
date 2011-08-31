@@ -73,7 +73,7 @@ public class WebExportDisplay implements ExportDisplay, Serializable {
         }
 
         // Try to get stream
-        ProxyDataProvider proxyDataProvider = new ProxyDataProvider(dataProvider.provide());
+        ProxyDataProvider proxyDataProvider = new ProxyDataProvider(dataProvider);
 
         final App app = App.getInstance();
         final ResourceWindow window = new ResourceWindow(proxyDataProvider, resourceName, format, attachment);

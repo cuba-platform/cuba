@@ -35,13 +35,11 @@ public class ResourceWindow extends Window {
     private ExportFormat exportFormat;
     private boolean isAttachment;
 
-    private boolean alreadyUsed = false;
-
     /**
      * @param dataProvider ExportDataprovider
      * @param resourceName Resource name for client side
      * @param format       Resource type, can be null
-     * @param attachment   If (true) then { download file } else { view }
+     * @param attachment   If true then download file else view
      */
     public ResourceWindow(ExportDataProvider dataProvider, String resourceName,
                           ExportFormat format, boolean attachment) {
@@ -55,13 +53,6 @@ public class ResourceWindow extends Window {
 
     @Override
     public DownloadStream handleURI(URL context, String relativeUri) {
-
-        if (alreadyUsed) {
-            dataProvider.close();
-            return null;
-        }
-
-        alreadyUsed = true;
 
         // Firefox trick
         boolean isFirefox = false;
@@ -103,17 +94,8 @@ public class ResourceWindow extends Window {
         else
             contentDisposition = "inline; " + fileNameParam;
 
-        downloadStream.setParameter("Cache-Control", "no-cache");
-        downloadStream.setParameter("Pragma", "no-cache");
-        downloadStream.setParameter("Expires", "-1");
-
         downloadStream.setParameter("Content-Disposition", contentDisposition);
 
         return downloadStream;
-    }
-
-    @Override
-    protected void close() {
-        dataProvider.close();
     }
 }

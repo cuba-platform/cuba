@@ -6,8 +6,6 @@
 
 package com.haulmont.cuba.gui.export;
 
-import org.apache.commons.io.IOUtils;
-
 import java.io.InputStream;
 
 /**
@@ -18,10 +16,13 @@ import java.io.InputStream;
 public class ProxyDataProvider implements ExportDataProvider {
 
     private boolean closed = false;
-    private InputStream dataInputStream;
 
-    public ProxyDataProvider(InputStream dataInputStream) {
-        this.dataInputStream = dataInputStream;
+    private InputStream dataInputStream = null;
+    private ExportDataProvider dataProvider = null;
+
+    public ProxyDataProvider(ExportDataProvider dataProvider) {
+        this.dataProvider = dataProvider;
+        this.dataInputStream = dataProvider.provide();
     }
 
     @Override
@@ -35,7 +36,8 @@ public class ProxyDataProvider implements ExportDataProvider {
     @Override
     public void close() {
         if (!closed) {
-            IOUtils.closeQuietly(dataInputStream);
+            if (dataProvider != null)
+                dataProvider.close();
             closed = true;
         }
     }
