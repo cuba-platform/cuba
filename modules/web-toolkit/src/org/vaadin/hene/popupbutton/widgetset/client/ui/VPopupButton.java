@@ -1,13 +1,10 @@
 package org.vaadin.hene.popupbutton.widgetset.client.ui;
 
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Document;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -32,9 +29,10 @@ public class VPopupButton extends VButton implements Container,
 	/** Set the CSS class name to allow styling. */
 	public static final String CLASSNAME = "v-popupbutton";
 
-	public static final String POPUP_INDICATOR_CLASSNAME = "v-popup-indicator";
+    public static final String POPUP_INDICATOR_CLASSNAME = "v-popup-indicator";
+    private static final String CONSTRUCTED_POPUP_CLASSNAME = "popupList";
 
-	private final LayoutPopup popup = new LayoutPopup();
+    private final LayoutPopup popup = new LayoutPopup();
 
 	private boolean popupVisible = false;
 
@@ -51,6 +49,9 @@ public class VPopupButton extends VButton implements Container,
 	 * Called whenever an update is received from the server
 	 */
 	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
+        com.google.gwt.user.client.Element containerElement = popup.getContainerElement();
+        containerElement.removeClassName(CONSTRUCTED_POPUP_CLASSNAME);
+
 		super.updateFromUIDL(uidl, client);
 		if (client.updateComponent(this, uidl, false)) {
 			hidePopup();
@@ -91,28 +92,39 @@ public class VPopupButton extends VButton implements Container,
 	}
 
 	private void showPopup() {
-		DeferredCommand.addCommand(new Command() {
+        Scheduler.get().scheduleDeferred(new Command() {
+            public void execute() {
+                int extra = 20;
+                int left = getAbsoluteLeft();
+                int top = getAbsoluteTop() + getOffsetHeight();
+                int browserWindowWidth = Window.getClientWidth()
+                        + Window.getScrollLeft();
+                int browserWindowHeight = Window.getClientHeight()
+                        + Window.getScrollTop();
+                if (left + popup.getOffsetWidth() > browserWindowWidth - extra) {
+                    left = getAbsoluteLeft()
+                            - (popup.getOffsetWidth() - getOffsetWidth());
+                }
+                if (top + popup.getOffsetHeight() > browserWindowHeight - extra) {
+                    top = getAbsoluteTop() - popup.getOffsetHeight() - 2;
+                }
 
-			public void execute() {
-				int extra = 20;
-				int left = getAbsoluteLeft();
-				int top = getAbsoluteTop() + getOffsetHeight();
-				int browserWindowWidth = Window.getClientWidth()
-						+ Window.getScrollLeft();
-				int browserWindowHeight = Window.getClientHeight()
-						+ Window.getScrollTop();
-				if (left + popup.getOffsetWidth() > browserWindowWidth - extra) {
-					left = getAbsoluteLeft()
-							- (popup.getOffsetWidth() - getOffsetWidth());
-				}
-				if (top + popup.getOffsetHeight() > browserWindowHeight - extra) {
-					top = getAbsoluteTop() - popup.getOffsetHeight() - 2;
-				}
-				popup.setPopupPosition(left, top);
-				popup.setVisible(true);
-			}
-		});
+                adjustPopupWidth();
+
+                popup.setPopupPosition(left, top);
+                popup.setVisible(true);
+            }
+        });
 	}
+
+    /**
+     * Expand items in popup after size calculation
+     */
+    private void adjustPopupWidth() {
+        // calculate width for items
+        com.google.gwt.user.client.Element containerElement = popup.getContainerElement();
+        containerElement.addClassName(CONSTRUCTED_POPUP_CLASSNAME);
+    }
 
 	private void hidePopup() {
 		popup.setVisible(false);
@@ -145,8 +157,7 @@ public class VPopupButton extends VButton implements Container,
 				return;
 			}
 
-			Paintable newPopupComponent = client.getPaintable(uidl
-					.getChildUIDL(0));
+			Paintable newPopupComponent = client.getPaintable(uidl.getChildUIDL(0));
 			if (!newPopupComponent.equals(getPaintable())) {
 				if (getPaintable() != null) {
 					client.unregisterPaintable(getPaintable());
@@ -290,10 +301,8 @@ public class VPopupButton extends VButton implements Container,
 						.synchronizeContentToServer();
 			} else if (popupComponentWidget2 instanceof HasWidgets) {
 				HasWidgets hw = (HasWidgets) popupComponentWidget2;
-				Iterator<Widget> iterator = hw.iterator();
-				while (iterator.hasNext()) {
-					checkForRTE(iterator.next());
-				}
+                for (Object aHw : hw)
+                    checkForRTE((Widget) aHw);
 			}
 		}
 
@@ -319,7 +328,7 @@ public class VPopupButton extends VButton implements Container,
 	/**
 	 * Calculate extra space taken by the popup decorations
 	 *
-	 * @return
+	 * @return Size
 	 */
 	protected Size calculatePopupExtra() {
 		Element pe = popup.getElement();

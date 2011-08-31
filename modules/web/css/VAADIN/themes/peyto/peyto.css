@@ -272,6 +272,13 @@
     text-decoration: none;
 }
 
+/*
+ *  Workaround for vertical layout in popup button
+ */
+.popupList .v-verticallayout-popupmenu div div div {
+    width: 100%;
+}
+
 .popupmenu .v-button:hover,
 .popupmenu .v-button:active,
 .popupmenu .v-button.v-pressed .v-button-wrap,

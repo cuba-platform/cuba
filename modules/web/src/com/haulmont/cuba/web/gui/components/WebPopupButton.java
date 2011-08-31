@@ -41,7 +41,7 @@ public class WebPopupButton
 
         vPopupComponent = new VerticalLayout();
         vPopupComponent.addStyleName("popupmenu");
-        ((VerticalLayout) vPopupComponent).setMargin(true);
+        ((VerticalLayout) vPopupComponent).setMargin(false);
         vPopupComponent.setSizeUndefined();
         component.setComponent(vPopupComponent);
     }
