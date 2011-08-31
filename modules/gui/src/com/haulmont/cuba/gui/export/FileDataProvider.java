@@ -100,7 +100,6 @@ public class FileDataProvider implements ExportDataProvider {
                 fileDescriptor = null;
                 connectionManager = null;
             }
-        } else
-            throw new RuntimeException("DataProvider is closed");
+        }
     }
 }

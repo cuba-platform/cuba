@@ -35,6 +35,8 @@ public class ResourceWindow extends Window {
     private ExportFormat exportFormat;
     private boolean isAttachment;
 
+    private boolean alreadyUsed = false;
+
     /**
      * @param dataProvider ExportDataprovider
      * @param resourceName Resource name for client side
@@ -53,6 +55,13 @@ public class ResourceWindow extends Window {
 
     @Override
     public DownloadStream handleURI(URL context, String relativeUri) {
+
+        if (alreadyUsed) {
+            dataProvider.close();
+            return null;
+        }
+
+        alreadyUsed = true;
 
         // Firefox trick
         boolean isFirefox = false;
@@ -101,5 +110,10 @@ public class ResourceWindow extends Window {
         downloadStream.setParameter("Content-Disposition", contentDisposition);
 
         return downloadStream;
+    }
+
+    @Override
+    protected void close() {
+        dataProvider.close();
     }
 }

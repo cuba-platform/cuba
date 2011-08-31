@@ -34,7 +34,9 @@ public class ProxyDataProvider implements ExportDataProvider {
 
     @Override
     public void close() {
-        IOUtils.closeQuietly(dataInputStream);
-        closed = true;
+        if (!closed) {
+            IOUtils.closeQuietly(dataInputStream);
+            closed = true;
+        }
     }
 }

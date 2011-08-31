@@ -14,6 +14,7 @@ import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Allows to show exported data in web browser or download it
@@ -81,11 +82,12 @@ public class WebExportDisplay implements ExportDisplay, Serializable {
         app.addWindow(window);
 
         JavaScriptHost webScriptHost = app.getAppWindow().getScriptHost();
+        UUID cacheKey = UUID.randomUUID();
 
         if (newWindow) {
-            webScriptHost.viewDocument(window.getURL().toString());
+            webScriptHost.viewDocument(window.getURL().toString() + "?" + cacheKey);
         } else {
-            webScriptHost.getResource(window.getURL().toString());
+            webScriptHost.getResource(window.getURL().toString() + "?" + cacheKey);
         }
     }
 

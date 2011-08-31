@@ -30,7 +30,9 @@ public class ByteArrayDataProvider implements ExportDataProvider {
     }
 
     public void close() {
-        closed = true;
-        data = null;
+        if (!closed) {
+            closed = true;
+            data = null;
+        }
     }
 }
