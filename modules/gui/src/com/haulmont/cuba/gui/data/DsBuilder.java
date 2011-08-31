@@ -322,6 +322,7 @@ public class DsBuilder {
         if (master == null && property == null) {
             if (dsClass == null) {
                 datasource = new HierarchicalDatasourceImpl(dsContext, dataService, id, metaClass, view, softDeletion);
+                ((HierarchicalDatasourceImpl) datasource).setRefreshMode(refreshMode);
             } else {
                 try {
                     Constructor constructor = dsClass.getConstructor(
@@ -357,6 +358,7 @@ public class DsBuilder {
         if (master == null && property == null) {
             if (dsClass == null) {
                 datasource = new GroupDatasourceImpl(dsContext, dataService, id, metaClass, view, softDeletion);
+                ((GroupDatasourceImpl) datasource).setRefreshMode(refreshMode);
             } else {
                 try {
                     Constructor constructor = dsClass.getConstructor(

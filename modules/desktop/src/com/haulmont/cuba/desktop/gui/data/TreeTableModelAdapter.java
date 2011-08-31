@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 
 import javax.swing.*;
@@ -26,14 +27,17 @@ import java.util.List;
  */
 public class TreeTableModelAdapter extends AbstractTreeTableModel implements AnyTableModelAdapter {
 
+    private JXTreeTable treeTable;
     private TreeModelAdapter treeDelegate;
     private TableModelAdapter tableDelegate;
 
     public TreeTableModelAdapter(
+            JXTreeTable treeTable,
             HierarchicalDatasource datasource,
             List<Table.Column> columns,
             boolean autoRefresh)
     {
+        this.treeTable = treeTable;
         treeDelegate = new TreeModelAdapter(datasource, CaptionMode.ITEM, null, autoRefresh);
         tableDelegate = new TableModelAdapter(datasource, columns, autoRefresh);
 
@@ -100,7 +104,8 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
 
     @Override
     public Entity getItem(int rowIndex) {
-        throw new UnsupportedOperationException();
+        TreePath treePath = treeTable.getPathForRow(rowIndex);
+        return treeDelegate.getEntity(treePath.getLastPathComponent());
     }
 
     @Override
@@ -169,5 +174,10 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
 
     public Entity getEntity(Object object) {
         return treeDelegate.getEntity(object);
+    }
+
+    @Override
+    public Class<?> getColumnClass(int column) {
+        return tableDelegate.getColumnClass(column);
     }
 }

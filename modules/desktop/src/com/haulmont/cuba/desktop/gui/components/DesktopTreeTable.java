@@ -16,10 +16,12 @@ import org.jdesktop.swingx.JXTreeTable;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.awt.*;
+import java.util.*;
 
 /**
  * <p>$Id$</p>
@@ -32,10 +34,27 @@ public class DesktopTreeTable
 {
     private String hierarchyProperty;
 
+    protected Map<Integer,CellRenderer> cellRenderers = new HashMap<Integer, CellRenderer>();
+
     public DesktopTreeTable() {
-        impl = new JXTreeTable();
+        impl = new JXTreeTable() {
+            @Override
+            public TableCellRenderer getCellRenderer(int row, int column) {
+                CellRenderer cellRenderer = cellRenderers.get(column);
+                if (cellRenderer != null)
+                    return cellRenderer;
+                else
+                    return super.getCellRenderer(row, column);
+            }
+
+            @Override
+            public TreeCellRenderer getTreeCellRenderer() {
+                return super.getTreeCellRenderer();
+            }
+        };
         impl.setRootVisible(false);
         impl.setColumnControlVisible(true);
+        impl.setEditable(false);
         initComponent();
 
         tableSettings = new SwingXTableSettings(impl, columnsOrder);
@@ -44,6 +63,7 @@ public class DesktopTreeTable
     @Override
     protected void initTableModel(CollectionDatasource datasource) {
         tableModel = new TreeTableModelAdapter(
+                impl,
                 ((HierarchicalDatasource) datasource),
                 columnsOrder,
                 true
@@ -178,5 +198,42 @@ public class DesktopTreeTable
     @Override
     public void packRows() {
         // not supported on JXTreeTable
+    }
+
+    @Override
+    public void addGeneratedColumn(String columnId, ColumnGenerator generator) {
+        if (columnId == null)
+            throw new IllegalArgumentException("columnId is null");
+        if (generator == null)
+            throw new IllegalArgumentException("generator is null");
+
+        Column col = getColumn(columnId);
+        tableModel.addGeneratedColumn(col);
+        TableColumnModel columnModel = impl.getColumnModel();
+        int columnIndex = columnModel.getColumnIndex(col);
+        if (columnIndex == 0)
+            throw new UnsupportedOperationException("Unable to add cell renderer for hierarchical column in TreeTable");
+        cellRenderers.put(columnIndex, new CellRenderer(generator));
+    }
+
+    protected class CellRenderer implements TableCellRenderer {
+
+        private ColumnGenerator columnGenerator;
+
+        public CellRenderer(ColumnGenerator generator) {
+            this.columnGenerator = generator;
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Entity item = tableModel.getItem(row);
+            com.haulmont.cuba.gui.components.Component component = columnGenerator.generateCell(DesktopTreeTable.this, item.getId());
+            Component comp;
+            if (component == null)
+                comp = new ComponentWrapper(new JLabel(""));
+            else
+                comp = new ComponentWrapper(DesktopComponentsHelper.getComposition(component));
+            return comp;
+        }
     }
 }

@@ -1124,6 +1124,7 @@
 
         <xs:attribute name="query" type="xs:string" use="optional"/>
         <xs:attribute name="hierarchyProperty" type="xs:string" use="optional"/>
+        <xs:attribute name="refreshMode" type="refreshMode" use="optional"/>
         <xs:attribute name="softDeletion" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
@@ -1146,6 +1147,7 @@
         <xs:attributeGroup ref="isDatasource"/>
 
         <xs:attribute name="query" type="xs:string" use="optional"/>
+        <xs:attribute name="refreshMode" type="refreshMode" use="optional"/>
         <xs:attribute name="softDeletion" type="xs:boolean" use="optional"/>
     </xs:complexType>
 

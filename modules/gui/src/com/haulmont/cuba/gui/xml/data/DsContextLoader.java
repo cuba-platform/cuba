@@ -132,7 +132,9 @@ public class DsContextLoader {
             datasource = builder.setDsClass(aClass).buildHierarchicalDatasource();
         } else {
             CollectionDatasource.FetchMode fetchMode = getFetchMode(element);
-            datasource = builder.setFetchMode(fetchMode).buildHierarchicalDatasource();
+            CollectionDatasource.RefreshMode refreshMode = getRefreshMode(element);
+
+            datasource = builder.setFetchMode(fetchMode).setRefreshMode(refreshMode).buildHierarchicalDatasource();
         }
 
         if (!StringUtils.isEmpty(hierarchyProperty)) {
@@ -182,7 +184,9 @@ public class DsContextLoader {
             datasource = builder.setDsClass(aClass).buildGroupDatasource();
         } else {
             final CollectionDatasource.FetchMode fetchMode = getFetchMode(element);
-            datasource = builder.setFetchMode(fetchMode).buildGroupDatasource();
+            final CollectionDatasource.RefreshMode refreshMode = getRefreshMode(element);
+
+            datasource = builder.setFetchMode(fetchMode).setRefreshMode(refreshMode).buildGroupDatasource();
         }
 
         if (datasource instanceof CollectionDatasource.Suspendable)

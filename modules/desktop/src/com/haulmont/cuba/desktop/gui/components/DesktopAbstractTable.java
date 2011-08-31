@@ -777,8 +777,9 @@ public abstract class DesktopAbstractTable<C extends JTable>
         }
     }
 
-    private class ComponentWrapper extends JPanel {
-        private ComponentWrapper(Component component) {
+    protected class ComponentWrapper extends JPanel {
+        protected ComponentWrapper(Component component) {
+            setOpaque(true);
             setLayout(new BorderLayout());
             setBorder(new EmptyBorder(HEIGHT_MARGIN_FOR_ROWS, WIDTH_MARGIN_FOR_CELL,
                     HEIGHT_MARGIN_FOR_ROWS, WIDTH_MARGIN_FOR_CELL));
@@ -786,7 +787,9 @@ public abstract class DesktopAbstractTable<C extends JTable>
         }
     }
 
-    private class CellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
+    protected class CellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
+
+        private static final long serialVersionUID = 5217563286634642347L;
 
         private ColumnGenerator columnGenerator;
         private Component activeComponent;
@@ -796,7 +799,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
             this.columnGenerator = columnGenerator;
         }
 
-        private Component getCellComponent(int row) {
+        protected Component getCellComponent(int row) {
             Entity item = tableModel.getItem(row);
             com.haulmont.cuba.gui.components.Component component = columnGenerator.generateCell(DesktopAbstractTable.this, item.getId());
             Component comp;
