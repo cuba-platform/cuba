@@ -167,7 +167,10 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
             return false;
         }
 
-        saveSettings();
+        if (delegate.getWrapper() != null)
+            delegate.getWrapper().saveSettings();
+        else
+            saveSettings();
 
         windowManager.close(this);
         boolean res = onClose(actionId);

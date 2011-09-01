@@ -643,7 +643,12 @@ public class WebWindowManager extends WindowManager {
             if (!disableSavingScreenHistory) {
                 screenHistorySupport.saveScreenHistory(window, getWindowOpenMode().get(window).getOpenType());
             }
-            window.saveSettings();
+
+            if (window instanceof WrappedWindow && ((WrappedWindow) window).getWrapper() != null)
+                ((WrappedWindow) window).getWrapper().saveSettings();
+            else
+                window.saveSettings();
+
             if (window.getDsContext() != null && window.getDsContext().isModified()) {
                 modified = true;
             }

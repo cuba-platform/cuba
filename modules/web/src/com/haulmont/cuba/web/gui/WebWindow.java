@@ -534,7 +534,10 @@ public class WebWindow
             return false;
         }
 
-        saveSettings();
+        if (delegate.getWrapper() != null)
+            delegate.getWrapper().saveSettings();
+        else
+            saveSettings();
 
         windowManager.close(this);
         boolean res = onClose(actionId);
