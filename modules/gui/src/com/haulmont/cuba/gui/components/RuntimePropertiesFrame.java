@@ -10,8 +10,10 @@ import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.*;
+import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
@@ -19,6 +21,7 @@ import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.RuntimePropertiesEntity;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.RuntimePropsDatasourceImpl;
@@ -147,7 +150,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
                 for (final FieldGroup.Field field : newRuntime.getFields()) {
                     loadValidators(newRuntime, field);
-                    //loadRequired(component, field);
+                    loadRequired(newRuntime, field);
                     //loadEditable(component, field);
                     //loadEnabled(component, field);
                 }
@@ -155,29 +158,55 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         });
     }
 
-    protected void addCustomFields(FieldGroup component, java.util.List<FieldGroup.Field> fields, Datasource ds) {
+    protected void addCustomFields(FieldGroup component, java.util.List<FieldGroup.Field> fields, final Datasource ds) {
         MetaClass meta = ds.getMetaClass();
         Collection<MetaProperty> metaProperties = meta.getProperties();
-        for (MetaProperty property : metaProperties) {
+        for (final MetaProperty property : metaProperties) {
             Range range = property.getRange();
-            if (!range.isDatatype() && range.asClass().getJavaClass().equals(SetValueEntity.class)) {
-                for (FieldGroup.Field field : fields) {
-                    if (field.getId().equals(property.getName())) {
-                        field.setCustom(true);
-                        component.addCustomField(property.getName(), new FieldGroup.CustomFieldGenerator() {
+            if (!range.isDatatype()) {
+                if (range.asClass().getJavaClass().equals(SetValueEntity.class)) {
+                    for (FieldGroup.Field field : fields) {
+                        if (field.getId().equals(property.getName())) {
+                            field.setCustom(true);
+                            component.addCustomField(property.getName(), new FieldGroup.CustomFieldGenerator() {
 
-                            @Override
-                            public Component generateField(Datasource datasource, Object propertyId) {
-                                LookupField field = AppConfig.getFactory().createComponent(LookupField.NAME);
-                                field.setFrame(RuntimePropertiesFrame.this);
-                                field.setDatasource(rds, (String) propertyId);
-                                field.setOptionsDatasource(getDsContext().<CollectionDatasource>get((String) propertyId));
+                                @Override
+                                public Component generateField(Datasource datasource, Object propertyId) {
+                                    LookupField field = AppConfig.getFactory().createComponent(LookupField.NAME);
+                                    field.setFrame(RuntimePropertiesFrame.this);
+                                    field.setDatasource(rds, (String) propertyId);
+                                    field.setOptionsDatasource(getDsContext().<CollectionDatasource>get((String) propertyId));
 //                                field.setHeight("-1px");
-                                field.setWidth("100%");
-                                return field;
-                            }
-                        });
+                                    field.setWidth("100%");
+                                    return field;
+                                }
+                            });
+                        }
                     }
+                } else {
+                    component.addCustomField(property.getName(), new FieldGroup.CustomFieldGenerator() {
+                        @Override
+                        public Component generateField(Datasource datasource, Object propertyId) {
+                            //todo move field generation to generator previous to this block (upper)
+                            final PickerField pickerField = AppConfig.getFactory().createComponent(PickerField.NAME);
+                            pickerField.setMetaClass(ds.getMetaClass());
+                            pickerField.setFrame(RuntimePropertiesFrame.this);
+                            pickerField.setDatasource(ds, (String) propertyId);
+                            pickerField.addOpenAction();
+
+                            PickerField.LookupAction lookupAction = (PickerField.LookupAction) pickerField.getAction(PickerField.LookupAction.NAME);
+                            if (lookupAction != null) {
+                                RuntimePropertiesEntity runtimePropertiesEntity = (RuntimePropertiesEntity) ds.getItem();
+                                CategoryAttributeValue categoryAttributeValue = runtimePropertiesEntity.getCategoryValue(property.getName());
+                                if (categoryAttributeValue != null) {
+                                    String screen = categoryAttributeValue.getCategoryAttribute().getScreen();
+                                    if (StringUtils.isNotBlank(screen))
+                                        lookupAction.setLookupScreen(screen);
+                                }
+                            }
+                            return pickerField;
+                        }
+                    });
                 }
             }
         }
@@ -186,7 +215,6 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     protected java.util.List<FieldGroup.Field> loadFields(FieldGroup component, Datasource ds) {
         MetaClass meta = ds.getMetaClass();
         Collection<MetaProperty> metaProperties = meta.getProperties();
-
         java.util.List<FieldGroup.Field> fields = new ArrayList<FieldGroup.Field>();
         for (MetaProperty property : metaProperties) {
             FieldGroup.Field field = new FieldGroup.Field(property.getName());
@@ -194,7 +222,8 @@ public class RuntimePropertiesFrame extends AbstractWindow {
             field.setWidth(fieldWidth);
             fields.add(field);
             Range range = property.getRange();
-            if (!range.isDatatype() && range.asClass().getJavaClass().equals(SetValueEntity.class))
+//            if (!range.isDatatype() && range.asClass().getJavaClass().equals(SetValueEntity.class))
+            if (!range.isDatatype())
                 field.setCustom(true);
         }
         return fields;
@@ -232,6 +261,17 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                 newRuntime.addValidator(field, validator);
             }
         }
+    }
+
+    protected void loadRequired(FieldGroup fieldGroup, FieldGroup.Field field) {
+        RuntimePropertiesEntity runtimePropertiesEntity = (RuntimePropertiesEntity) rds.getItem();
+        CategoryAttributeValue categoryAttributeValue = runtimePropertiesEntity.getCategoryValue(field.getId());
+        String requiredMessage = MessageProvider.formatMessage(
+                AppConfig.getMessagesPack(),
+                "validation.required.defaultMsg",
+                field.getId()
+        );
+        fieldGroup.setRequired(field, categoryAttributeValue.getCategoryAttribute().getRequired(), requiredMessage);
     }
 
     public void setCategoryFieldVisible(boolean visible) {

@@ -61,8 +61,14 @@ public class CategoryAttribute extends StandardEntity {
     @Persistent
     private UUID defaultEntityId;
 
-    @Column(name="ORDER_NO")
+    @Column(name = "ORDER_NO")
     private Integer orderNo;
+
+    @Column(name = "SCREEN")
+    private String screen;
+
+    @Column(name = "REQUIRED")
+    private Boolean required = false;
 
     public void setCategory(Category entityType) {
         this.category = entityType;
@@ -171,5 +177,21 @@ public class CategoryAttribute extends StandardEntity {
 
     public void setOrderNo(Integer orderNo) {
         this.orderNo = orderNo;
+    }
+
+    public String getScreen() {
+        return screen;
+    }
+
+    public void setScreen(String screen) {
+        this.screen = screen;
+    }
+
+    public Boolean getRequired() {
+        return required;
+    }
+
+    public void setRequired(Boolean required) {
+        this.required = required;
     }
 }

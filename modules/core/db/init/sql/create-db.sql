@@ -844,6 +844,8 @@ create table SYS_CATEGORY_ATTR(
 	DEFAULT_ENTITY_VALUE varchar(36),
 	ENUMERATION varchar(500),
     ORDER_NO integer,
+	SCREEN varchar(255),
+	REQUIRED boolean,
 	primary key (ID)
 );
 

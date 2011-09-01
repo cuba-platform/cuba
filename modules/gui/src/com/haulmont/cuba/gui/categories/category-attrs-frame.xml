@@ -24,6 +24,7 @@
             <columns>
                 <column id="name"/>
                 <column id="dataType"/>
+                <column id="required"/>
                 <column id="defaultValue" caption="msg://defaultValue"/>
             </columns>
             <rows datasource="categoryAttrsDs"/>

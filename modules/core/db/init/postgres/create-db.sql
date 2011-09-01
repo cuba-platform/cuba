@@ -786,6 +786,8 @@ create table SYS_CATEGORY_ATTR(
 	DEFAULT_ENTITY_VALUE uuid,
 	ENUMERATION varchar(500),
 	ORDER_NO integer,
+	SCREEN varchar(255),
+	REQUIRED boolean,
 	primary key (ID)
 )^
 
