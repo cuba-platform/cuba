@@ -422,11 +422,14 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
             @Override
             public void afterChange() {
-                Set<Entity> newSelection = new HashSet<Entity>();
-                // filter selection
-                for (Object item : selection)
-                    if (tableModel.getRowIndex((Entity) item) >= 0)
-                        newSelection.add((Entity) item);
+                Set<Entity> newSelection = null;
+                if (selection != null) {
+                    newSelection = new HashSet<Entity>();
+                    // filter selection
+                    for (Object item : selection)
+                        if (tableModel.getRowIndex((Entity) item) >= 0)
+                            newSelection.add((Entity) item);
+                }
                 // apply selection
                 setSelected(newSelection);
                 selection = null;

@@ -172,20 +172,22 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
     @Override
     public int getRowIndex(Entity entity) {
         int idx = 0;
-        if (datasource instanceof CollectionDatasource.Ordered) {
-            Object id = ((CollectionDatasource.Ordered) datasource).firstItemId();
-            while (id != null) {
-                if (entity.equals(datasource.getItem(id)))
-                    return idx;
-                id = ((CollectionDatasource.Ordered) datasource).nextItemId(id);
-                idx++;
-            }
-        } else {
-            Collection itemIds = datasource.getItemIds();
-            for (Object id : itemIds) {
-                if (entity.equals(datasource.getItem(id)))
-                    return idx;
-                idx++;
+        if (entity != null) {
+            if (datasource instanceof CollectionDatasource.Ordered) {
+                Object id = ((CollectionDatasource.Ordered) datasource).firstItemId();
+                while (id != null) {
+                    if (entity.equals(datasource.getItem(id)))
+                        return idx;
+                    id = ((CollectionDatasource.Ordered) datasource).nextItemId(id);
+                    idx++;
+                }
+            } else {
+                Collection itemIds = datasource.getItemIds();
+                for (Object id : itemIds) {
+                    if (entity.equals(datasource.getItem(id)))
+                        return idx;
+                    idx++;
+                }
             }
         }
         return -1;
