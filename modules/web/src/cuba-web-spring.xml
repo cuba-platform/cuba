@@ -35,10 +35,6 @@
 
     <bean id="cuba_FileUploading" class="com.haulmont.cuba.gui.upload.FileUploading"/>
 
-    <bean id="cuba_BackgroundWorker" class="com.haulmont.cuba.web.gui.utils.WebBackgroundWorker">
-        <constructor-arg index="0" ref="cuba_ConfigProvider"/>
-    </bean>
-
     <!-- MBeans registration -->
 
     <bean id="cuba_web_MBeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
@@ -107,5 +103,29 @@
     <task:scheduled-tasks scheduler="scheduler">
         <task:scheduled ref="cuba_FileUploading" method="clearTempDirectory" cron="0 0 0 * * 2,4,6"/>
     </task:scheduled-tasks>
+
+    <!-- Background Tasks -->
+
+    <bean id="cuba_BackgroundWorker_WatchDog" class="com.haulmont.cuba.gui.executors.TasksWatchDog"/>
+
+    <bean id="cuba_BackgroundWorker" class="com.haulmont.cuba.web.gui.utils.WebBackgroundWorker">
+        <constructor-arg index="0" ref="cuba_ConfigProvider"/>
+        <constructor-arg index="1" ref="cuba_BackgroundWorker_WatchDog"/>
+    </bean>
+
+    <!--
+
+    For use BackgroundWorker in project add to {app}-web-spring.xml this sheduler definition:
+
+    <bean id="backgroundWorkerScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+        <property name="daemon" value="true"/>
+        <property name="poolSize" value="1"/>
+    </bean>
+
+    <task:scheduled-tasks scheduler="backgroundWorkerScheduler">
+        <task:scheduled ref="cuba_BackgroundWorker_WatchDog" method="cleanupTasks" fixed-delay="2000"/>
+    </task:scheduled-tasks>
+
+    -->
 
 </beans>

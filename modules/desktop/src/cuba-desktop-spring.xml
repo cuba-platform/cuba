@@ -2,8 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
         >
 
     <bean class="com.haulmont.cuba.core.sys.CubaPropertyPlaceholderConfigurer"/>
@@ -29,10 +29,6 @@
     </bean>
 
     <bean id="cuba_FileUploading" class="com.haulmont.cuba.gui.upload.FileUploading"/>
-
-    <bean id="cuba_BackgroundWorker" class="com.haulmont.cuba.desktop.gui.utils.DesktopBackgroundWorker">
-        <constructor-arg index="0" ref="cuba_ConfigProvider"/>
-    </bean>
 
     <!-- Remote stubs -->
 
@@ -68,5 +64,28 @@
             </map>
         </property>
     </bean>
+
+    <!-- Background Tasks -->
+
+    <bean id="cuba_BackgroundWorker_WatchDog" class="com.haulmont.cuba.gui.executors.TasksWatchDog"/>
+
+    <bean id="cuba_BackgroundWorker" class="com.haulmont.cuba.desktop.gui.utils.DesktopBackgroundWorker">
+        <constructor-arg index="0" ref="cuba_BackgroundWorker_WatchDog"/>
+    </bean>
+
+    <!--
+
+    For use BackgroundWorker in project add to {app}-desktop-spring.xml this sheduler definition:
+
+    <bean id="backgroundWorkerScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+        <property name="daemon" value="true"/>
+        <property name="poolSize" value="1"/>
+    </bean>
+
+    <task:scheduled-tasks scheduler="backgroundWorkerScheduler">
+        <task:scheduled ref="cuba_BackgroundWorker_WatchDog" method="cleanupTasks" fixed-delay="2000"/>
+    </task:scheduled-tasks>
+
+    -->
 
 </beans>

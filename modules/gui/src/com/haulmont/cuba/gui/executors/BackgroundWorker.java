@@ -36,10 +36,6 @@ public interface BackgroundWorker {
      */
     <T, V> BackgroundTaskHandler<V> handle(BackgroundTask<T, V> task);
 
-    interface WatchDog {
-        void manageTask(TaskHandler backroundTask);
-    }
-
     /**
      * Task runner
      */

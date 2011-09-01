@@ -6,20 +6,18 @@
 
 package com.haulmont.cuba.desktop.gui.utils;
 
-import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
+import com.haulmont.cuba.gui.executors.WatchDog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.swing.*;
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -35,8 +33,8 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
     private WatchDog watchDog;
 
-    public DesktopBackgroundWorker(ConfigProvider configProvider) {
-        watchDog = new DesktopWatchDog(configProvider);
+    public DesktopBackgroundWorker(WatchDog watchDog) {
+        this.watchDog = watchDog;
     }
 
     @Override
@@ -51,86 +49,12 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
     }
 
     /**
-     * WatchDog
-     */
-    private class DesktopWatchDog extends SwingWorker<Void, TaskHandler> implements BackgroundWorker.WatchDog {
-
-        private boolean watching = false;
-        private final Set<TaskHandler> watches;
-
-        private final Integer watchDogInterval;
-
-        private DesktopWatchDog(ConfigProvider configProvider) {
-            watches = new LinkedHashSet<TaskHandler>();
-            watchDogInterval = configProvider.doGetConfig(ClientConfig.class).getWatchDogInterval();
-        }
-
-        @Override
-        protected Void doInBackground() {
-            try {
-                while (watching) {
-                    cleanupTasks();
-                }
-            } catch (Exception ex) {
-                log.error("WatchDog crashed", ex);
-            }
-            return null;
-        }
-
-        private void cleanupTasks() throws InterruptedException {
-            TimeUnit.MILLISECONDS.sleep(watchDogInterval);
-
-            synchronized (watches) {
-                long actualTime = TimeProvider.currentTimestamp().getTime();
-
-                List<TaskHandler> forRemove = new LinkedList<TaskHandler>();
-                for (TaskHandler task : watches) {
-                    if (task.isCancelled() || task.isDone()) {
-                        forRemove.add(task);
-                    } else if (task.checkHangup(actualTime)) {
-                        cancelTask(task);
-                        forRemove.add(task);
-                    }
-                }
-
-                watches.removeAll(forRemove);
-            }
-        }
-
-        private void cancelTask(TaskHandler task) {
-            publish(task);
-        }
-
-        @Override
-        protected void process(List<TaskHandler> chunks) {
-            for (TaskHandler task : chunks) {
-                if (task.isHangup()) {
-                    task.close();
-                }
-            }
-        }
-
-        private void startWatching() {
-            watching = true;
-            execute();
-        }
-
-        public void manageTask(TaskHandler backroundTask) {
-            synchronized (watches) {
-                watches.add(backroundTask);
-            }
-
-            if (!watching)
-                startWatching();
-        }
-    }
-
-    /**
      * Task runner
      */
     private class DesktopTaskExecutor<T, V> extends SwingWorker<V, T> implements TaskExecutor<T, V> {
 
         private BackgroundTask<T, V> runnableTask;
+        private V result;
 
         private DesktopTaskExecutor(BackgroundTask<T, V> runnableTask) {
             this.runnableTask = runnableTask;
@@ -140,13 +64,10 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         @Override
         protected V doInBackground() throws Exception {
             runnableTask.setInterrupted(false);
-            V result = null;
             try {
                 result = runnableTask.run();
             } catch (Exception ex) {
                 log.error(ex);
-            } finally {
-                runnableTask.setResult(result);
             }
             return result;
         }
@@ -159,7 +80,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         @Override
         protected void done() {
             if (!runnableTask.isInterrupted())
-                runnableTask.done();
+                runnableTask.done(result);
         }
 
         @Override
@@ -199,7 +120,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
-        public void handleProgress(T ... changes) {
+        public void handleProgress(T... changes) {
             publish(changes);
         }
     }

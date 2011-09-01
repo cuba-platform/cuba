@@ -10,8 +10,6 @@ import com.haulmont.cuba.gui.AppConfig;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * <p>$Id$</p>
  *
@@ -34,8 +32,7 @@ public class BackgroundTaskWrapper<T, V> {
     }
 
     public void restart() {
-        if (taskHandler != null)
-            taskHandler.cancel(true);
+        cancel();
 
         taskHandler = backgroundWorker.handle(task);
         taskHandler.execute(timeout, timeUnit);
@@ -46,5 +43,10 @@ public class BackgroundTaskWrapper<T, V> {
             return taskHandler.getResult();
         else
             return null;
+    }
+
+    public void cancel() {
+        if (taskHandler != null)
+            taskHandler.cancel(true);
     }
 }

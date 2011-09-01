@@ -27,8 +27,6 @@ public abstract class BackgroundTask<T, V> {
     private ProgressHandler<T> progressHandler;
     private Window ownerWindow;
 
-    private V result;
-
     private volatile boolean isInterrupted = false;
 
     protected BackgroundTask(Window ownerWindow) {
@@ -43,8 +41,9 @@ public abstract class BackgroundTask<T, V> {
 
     /**
      * Task completed handler
+     * @param result of execution
      */
-    public void done() {
+    public void done(V result) {
     }
 
     /**
@@ -86,13 +85,5 @@ public abstract class BackgroundTask<T, V> {
 
     public void setInterrupted(boolean interrupted) {
         isInterrupted = interrupted;
-    }
-
-    public V getResult() {
-        return result;
-    }
-
-    public void setResult(V result) {
-        this.result = result;
     }
 }

@@ -6,9 +6,7 @@
 
 package com.haulmont.cuba.web.gui.utils;
 
-import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
@@ -16,6 +14,7 @@ import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
+import com.haulmont.cuba.gui.executors.WatchDog;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.WebTimer;
@@ -23,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -41,9 +39,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
     private WatchDog watchDog;
 
-    public WebBackgroundWorker(ConfigProvider configProvider) {
-        watchDog = new WebWatchDog(configProvider);
-        uiCheckInterval = configProvider.doGetConfig(WebConfig.class).getUiCheckInterval();
+    public WebBackgroundWorker(ConfigProvider configProvider, WatchDog watchDog) {
+        this.watchDog = watchDog;
+        this.uiCheckInterval = configProvider.doGetConfig(WebConfig.class).getUiCheckInterval();
     }
 
     @Override
@@ -83,7 +81,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
                 // if completed
                 if (taskHandler.isDone()) {
-                    task.done();
+                    task.done(taskExecutor.getExecutionResult());
                     timer.stopTimer();
                 }
             }
@@ -96,84 +94,6 @@ public class WebBackgroundWorker implements BackgroundWorker {
         appInstance.addTimer(pingTimer, task.getOwnerWindow());
 
         return taskHandler;
-    }
-
-    /**
-     * WatchDog
-     */
-    private class WebWatchDog extends Thread implements WatchDog {
-
-        private volatile boolean watching = false;
-        private final Set<TaskHandler> watches;
-
-        private final Integer watchDogInterval;
-
-        private WebWatchDog(ConfigProvider configProvider) {
-            watches = new LinkedHashSet<TaskHandler>();
-            watchDogInterval = configProvider.doGetConfig(ClientConfig.class).getWatchDogInterval();
-        }
-
-        @Override
-        public void run() {
-            try {
-                while (watching) {
-                    cleanupTasks();
-                }
-            } catch (Exception ex) {
-                if (AppContext.isStarted())
-                    log.error("WatchDog crashed", ex);
-            } finally {
-                // cancel all
-                for (TaskHandler taskHandler : watches)
-                    cancelTask(taskHandler);
-                // clean watches
-                watches.clear();
-            }
-        }
-
-        private void cleanupTasks() throws Exception {
-            TimeUnit.MILLISECONDS.sleep(watchDogInterval);
-
-            if (!AppContext.isStarted()) {
-                // Shutdown WatchDog
-                watching = false;
-                return;
-            }
-
-            synchronized (watches) {
-                long actual = TimeProvider.currentTimestamp().getTime();
-
-                List<TaskHandler> forRemove = new LinkedList<TaskHandler>();
-                for (TaskHandler task : watches) {
-                    if (task.isCancelled() || task.isDone()) {
-                        forRemove.add(task);
-                    } else if (task.checkHangup(actual)) {
-                        cancelTask(task);
-                        forRemove.add(task);
-                    }
-                }
-
-                watches.removeAll(forRemove);
-            }
-        }
-
-        private void cancelTask(TaskHandler task) {
-            task.close();
-        }
-
-        private void startWatching() {
-            watching = true;
-            start();
-        }
-
-        public void manageTask(TaskHandler backroundTask) {
-            synchronized (watches) {
-                watches.add(backroundTask);
-            }
-
-            if (!watching)
-                startWatching();
-        }
     }
 
     /**
@@ -193,6 +113,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         private final List<T> intents = Collections.synchronizedList(new LinkedList<T>());
 
         private SecurityContext securityContext;
+        private V result = null;
 
         private WebTaskExecutor(App app, BackgroundTask<T, V> runnableTask, WebTimer pingTimer) {
             this.runnableTask = runnableTask;
@@ -216,7 +137,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
             } catch (Exception ex) {
                 log.error(ex);
             } finally {
-                runnableTask.setResult(result);
+                this.result = result;
                 // Is done
                 if (!runnableTask.isInterrupted())
                     done = true;
@@ -275,12 +196,16 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 if (this.isAlive()) {
                     this.join();
                     stopTimer(true);
-                    runnableTask.done();
+                    runnableTask.done(result);
                 }
             } catch (InterruptedException e) {
                 return null;
             }
-            return runnableTask.getResult();
+            return result;
+        }
+
+        public V getExecutionResult() {
+            return result;
         }
 
         @Override
