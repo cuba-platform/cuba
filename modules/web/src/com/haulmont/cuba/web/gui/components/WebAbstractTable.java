@@ -635,7 +635,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             // if the table contains only one column, always show it
             if (newColumns.size() == 1) {
 //                try {
-                component.setColumnCollapsed(newColumns.get(0), false);
+                if (component.isColumnCollapsingAllowed()) { // throws exception if not
+                    component.setColumnCollapsed(newColumns.get(0), false);
+                }
                 /*} catch (IllegalAccessException e) {
                     //
                 }*/
