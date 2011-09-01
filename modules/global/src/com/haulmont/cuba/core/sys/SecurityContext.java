@@ -30,38 +30,18 @@ public class SecurityContext {
         this.sessionId = sessionId;
     }
 
+    public SecurityContext(UUID sessionId, String user) {
+        this(sessionId);
+        this.user = user;
+    }
+
     public SecurityContext(UserSession session) {
         if (session == null)
             throw new IllegalArgumentException("session is null");
+        this.session = session;
         this.sessionId = session.getId();
         this.user = session.getUser().getLogin();
-        this.password = session.getUser().getPassword();
-    }
-
-    public SecurityContext setSession(UserSession session) {
-        if (session != null) {
-            if (!session.getId().equals(sessionId))
-                throw new IllegalArgumentException("Invalid session ID");
-            this.user = session.getUser().getLogin();
-            this.password = session.getUser().getPassword();
-        }
-        this.session = session;
-        return this;
-    }
-
-    public SecurityContext setUser(String user) {
-        this.user = user;
-        return this;
-    }
-
-    public SecurityContext setPassword(String password) {
-        this.password = password;
-        return this;
-    }
-
-    @Nullable
-    public String getPassword() {
-        return password;
+        this.password = "md5:" + session.getUser().getPassword();
     }
 
     @Nonnull
@@ -73,12 +53,17 @@ public class SecurityContext {
     }
 
     @Nullable
+    public UserSession getSession() {
+        return session;
+    }
+
+    @Nullable
     public String getUser() {
         return user;
     }
 
     @Nullable
-    public UserSession getSession() {
-        return session;
+    public String getPassword() {
+        return password;
     }
 }

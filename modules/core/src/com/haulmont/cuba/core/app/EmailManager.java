@@ -60,6 +60,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
         try {
             int delay = getDelayCallCount();
             if (callCount >= delay) {
+                log.debug("Queueing Emails");
                 loginOnce();
                 List<SendingMessage> loadedMessages = loadEmailsToSend();
                 List<SendingMessage> updatedMessages = updateSendingMessagesStatus(loadedMessages);

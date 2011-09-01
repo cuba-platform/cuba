@@ -33,7 +33,8 @@ public class AppContext {
 
     private static volatile boolean started;
 
-    public static final SecurityContext NO_USER_CONTEXT = new SecurityContext(UUID.fromString("23dce942-d13f-11df-88cd-b3d32fd1e595")).setUser("server");
+    public static final SecurityContext NO_USER_CONTEXT =
+            new SecurityContext(UUID.fromString("23dce942-d13f-11df-88cd-b3d32fd1e595"), "server");
 
     public static ApplicationContext getApplicationContext() {
         return context;

@@ -32,23 +32,15 @@ public class ManagementBean
 {
     private Log log = LogFactory.getLog(getClass());
 
+    @Inject
     private LoginWorker loginWorker;
 
+    @Inject
     private UserSessionManager userSessionManager;
 
     private ThreadLocal<Boolean> loginPerformed = new ThreadLocal<Boolean>();
 
     protected UUID sessionId;
-
-    @Inject
-    public void setLoginWorker(LoginWorker loginWorker) {
-        this.loginWorker = loginWorker;
-    }
-
-    @Inject
-    public void setUserSessionManager(UserSessionManager userSessionManager) {
-        this.userSessionManager = userSessionManager;
-    }
 
     /**
      * Performs login with credentials set in cuba-app.properties<br>
@@ -63,19 +55,13 @@ public class ManagementBean
         if (securityContext != null && userSessionManager.findSession(securityContext.getSessionId()) != null) {
             return;
         }
-        // no current thread session - so work with the internal session
+        // no current thread session or it is expired - so work with the internal session
         UserSession session;
         if (sessionId == null || userSessionManager.findSession(sessionId) == null) {
-            String name;
-            String password;
-            if (securityContext == null || securityContext.getUser() == null || securityContext.getPassword() == null) {
-                ManagementBean.Credentials credentialsForLogin = getCredentialsForLogin();
-                name = credentialsForLogin.getUserName();
-                password = credentialsForLogin.getPassword();
-            } else {
-                name = securityContext.getUser();
-                password = securityContext.getPassword();
-            }
+            // internal session doesn't exist or expired
+            ManagementBean.Credentials credentialsForLogin = getCredentialsForLogin();
+            String name = credentialsForLogin.getUserName();
+            String password = credentialsForLogin.getPassword();
             if (password.startsWith("md5:"))
                 password = password.substring("md5:".length(), password.length());
             else
@@ -96,18 +82,13 @@ public class ManagementBean
      * @throws LoginException
      */
     protected void login() throws LoginException {
+        // first check if a current thread session exists - may be got here from Web UI
         SecurityContext securityContext = AppContext.getSecurityContext();
         if (securityContext == null || userSessionManager.findSession(securityContext.getSessionId()) == null) {
-            String name;
-            String password;
-            if (securityContext == null || securityContext.getUser() == null || securityContext.getPassword() == null) {
-                ManagementBean.Credentials credintialsForLogin = getCredentialsForLogin();
-                name = credintialsForLogin.getUserName();
-                password = credintialsForLogin.getPassword();
-            } else {
-                name = securityContext.getUser();
-                password = securityContext.getPassword();
-            }
+            // no current thread session or it is expired
+            ManagementBean.Credentials credintialsForLogin = getCredentialsForLogin();
+            String name = credintialsForLogin.getUserName();
+            String password = credintialsForLogin.getPassword();
             if (password.startsWith("md5:"))
                 password = password.substring("md5:".length(), password.length());
             else
@@ -161,5 +142,4 @@ public class ManagementBean
             return password;
         }
     }
-
 }
