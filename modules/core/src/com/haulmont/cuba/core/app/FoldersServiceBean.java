@@ -78,11 +78,10 @@ public class FoldersServiceBean implements FoldersService {
     private <T> T runScript(String script, Binding binding) {
         Object result;
         script = StringUtils.trim(script);
-        if (script.indexOf(".groovy") == script.length() - ".groovy".length()) {
-            result = ScriptingProvider.runGroovyScript(script, binding);
-        } else {
-            result = ScriptingProvider.evaluateGroovy(ScriptingProvider.Layer.CORE, script, binding);
+        if (script.endsWith(".groovy")) {
+            script = ScriptingProvider.getResourceAsString(script);
         }
+        result = ScriptingProvider.evaluateGroovy(ScriptingProvider.Layer.CORE, script, binding);
         return (T) result;
     }
 
