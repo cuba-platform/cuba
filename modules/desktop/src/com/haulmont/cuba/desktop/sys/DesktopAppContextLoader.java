@@ -93,6 +93,7 @@ public class DesktopAppContextLoader {
                             MessageProvider.getMessage(mp, "doubleFormat", locale),
                             MessageProvider.getMessage(mp, "dateFormat", locale),
                             MessageProvider.getMessage(mp, "dateTimeFormat", locale),
+                            MessageProvider.getMessage(mp, "timeFormat", locale),
                             MessageProvider.getMessage(mp, "trueString", locale),
                             MessageProvider.getMessage(mp, "falseString", locale)
                     )

@@ -868,15 +868,15 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 if (fieldConf != null) {
                     initTextField((TextField) field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
                 }
-            } else if (field instanceof DateField) {
+            } else if (cubaField instanceof WebDateField) {
                 if (getFormatter(propertyPath) != null) {
                     String format = getFormat(propertyPath);
                     if (format != null) {
-                        ((DateField) field).setDateFormat(format);
+                        ((WebDateField) cubaField).setDateFormat(format);
                     }
                 }
                 if (fieldConf != null) {
-                    initDateField((DateField) field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
+                    initDateField(field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
                 }
             } else if (field instanceof CheckBox) {
                 ((CheckBox) field).setLayoutCaption(true);

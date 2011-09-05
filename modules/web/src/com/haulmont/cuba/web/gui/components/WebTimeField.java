@@ -11,8 +11,12 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.base.Preconditions;
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.AbstractPropertyWrapper;
@@ -27,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -36,20 +41,36 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
 {
     private boolean showSeconds;
 
-    private String mask = "##:##";
-    private String placeholder = "__:__";
+    private String mask;
+    private String placeholder;
+    private String timeFormat;
 
-    private String timeFormat = "HH:mm";
+    private DateField.Resolution resolution;
 
     private Log log = LogFactory.getLog(WebTimeField.class);
 
     public WebTimeField() {
+        timeFormat = Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getTimeFormat();
         component = new MaskedTextField();
         component.setImmediate(true);
-        component.setMask(mask);
-        component.setNullRepresentation(placeholder);
+        setShowSeconds(timeFormat.contains("ss"));
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
+        component.addValidator(new com.vaadin.data.Validator() {
+            @Override
+            public void validate(Object value) throws InvalidValueException {
+                if (!isValid(value)) {
+                    component.requestRepaint();
+                    throw new InvalidValueException("Unable to parse value: " + value);
+                }
+            }
+
+            @Override
+            public boolean isValid(Object value) {
+
+                return (!(value instanceof String) || checkStringValue((String) value));
+            }
+        });
         attachListener(component);
 
         final Property p = new AbstractPropertyWrapper() {
@@ -75,11 +96,6 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
                     public Object parse(String formattedValue) throws Exception {
                         if (StringUtils.isNotEmpty(formattedValue) && !formattedValue.equals(placeholder)) {
                             try {
-                                if (!checkStringValue(formattedValue)) {
-                                    component.setComponentError(new com.vaadin.data.Validator.InvalidValueException("Invalid value"));
-                                    return null;
-                                }
-
                                 SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
                                 Date date = sdf.parse(formattedValue);
                                 if (component.getComponentError() != null)
@@ -97,21 +113,21 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
         );
     }
 
-    private boolean checkStringValue(String value) throws NumberFormatException {
-        String[] parts = value.split(":");
-        int hours = Integer.parseInt(parts[0]);
-        int mins = Integer.parseInt(parts[1]);
+    public boolean isAmPmUsed() {
+        return timeFormat.contains("a");
+    }
 
-        if (hours > 23 || mins > 59)
+    private boolean checkStringValue(String value) {
+        if (value.equals(placeholder) || StringUtils.isEmpty(value))
+            return true;
+        SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
+        sdf.setLenient(false);
+        try {
+            sdf.parse(value);
+            return true;
+        } catch (ParseException e) {
             return false;
-        else {
-            if (parts.length > 2) {
-                int secs = Integer.parseInt(parts[2]);
-                if (secs > 59)
-                    return false;
-            }
         }
-        return true;
     }
 
     @Override
@@ -143,11 +159,49 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
         return showSeconds;
     }
 
+    public void setFormat(String format) {
+        timeFormat = format;
+        updateTimeFormat();
+    }
+
+    public void setResolution(DateField.Resolution resolution) {
+        this.resolution = resolution;
+        if (resolution.ordinal() <= DateField.Resolution.SEC.ordinal()) {
+            setShowSeconds(true);
+        } else if (resolution.ordinal() <= DateField.Resolution.MIN.ordinal()) {
+            setShowSeconds(false);
+        } else if (resolution.ordinal() <= DateField.Resolution.HOUR.ordinal()) {
+            StringBuilder builder = new StringBuilder(timeFormat);
+            int minutesIndex = builder.indexOf(":mm");
+            builder.delete(minutesIndex, minutesIndex + 3);
+            timeFormat = builder.toString();
+            setShowSeconds(false);
+        }
+    }
+
     public void setShowSeconds(boolean showSeconds) {
         this.showSeconds = showSeconds;
-        mask = showSeconds ? "##:##:##" : "##:##";
-        placeholder = showSeconds ? "__:__:__" : "__:__";
-        timeFormat = showSeconds ? "HH:mm:ss" : "HH:mm";
+        if (showSeconds) {
+            if (!timeFormat.contains(":ss")) {
+                int minutesIndex = timeFormat.indexOf("mm");
+                StringBuilder builder = new StringBuilder(timeFormat);
+                builder.insert(minutesIndex + 2, ":ss");
+                timeFormat = builder.toString();
+            }
+        } else {
+            if (timeFormat.contains(":ss")) {
+                int secondsIndex = timeFormat.indexOf(":ss");
+                StringBuilder builder = new StringBuilder(timeFormat);
+                builder.delete(secondsIndex, secondsIndex + 3);
+                timeFormat = builder.toString();
+            }
+        }
+        updateTimeFormat();
+    }
+
+    private void updateTimeFormat() {
+        mask = StringUtils.replaceChars(timeFormat, "Hhmsa", "####U");
+        placeholder = StringUtils.replaceChars(mask, "#U", "__");
         component.setMask(mask);
         component.setNullRepresentation(placeholder);
     }
@@ -176,10 +230,6 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
                         if (newValue instanceof String) {
                             if (StringUtils.isNotEmpty((String) newValue) && !newValue.equals(placeholder)) {
                                 try {
-                                    if (!checkStringValue((String) newValue)) {
-                                        component.setComponentError(new com.vaadin.data.Validator.InvalidValueException("Invalid value"));
-                                        return null;
-                                    }
                                     SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
                                     Date date = sdf.parse((String) newValue);
                                     if (component.getComponentError() != null)

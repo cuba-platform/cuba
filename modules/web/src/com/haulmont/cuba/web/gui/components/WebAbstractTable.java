@@ -1202,8 +1202,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 initTextField((com.vaadin.ui.TextField) field, metaProperty, column.getXmlDescriptor());
             }
 
-            if (field instanceof com.vaadin.ui.DateField) {
-                initDateField((com.vaadin.ui.DateField) field, metaProperty, column.getXmlDescriptor());
+            if (cubaField instanceof WebDateField) {
+                initDateField(field, metaProperty, column.getXmlDescriptor());
             }
             
             if (field instanceof CheckBox) {

@@ -32,8 +32,10 @@ public class VMaskedTextField extends VTextField {
 
     private KeyPressHandler keyPressHandler = new KeyPressHandler() {
 		public void onKeyPress(KeyPressEvent e) {
+            if (isReadOnly())
+                return;
             debug("keyPressHandler.onKeyPress: " + e.toDebugString());
-			if (e.getCharCode() == KeyCodes.KEY_BACKSPACE
+            if (e.getCharCode() == KeyCodes.KEY_BACKSPACE
 					|| e.getCharCode() == KeyCodes.KEY_DELETE
 					|| e.getCharCode() == KeyCodes.KEY_END
 					|| e.getCharCode() == KeyCodes.KEY_ENTER
@@ -44,7 +46,9 @@ public class VMaskedTextField extends VTextField {
 					|| e.getCharCode() == KeyCodes.KEY_PAGEUP
 					|| e.getCharCode() == KeyCodes.KEY_RIGHT
 					|| e.getCharCode() == KeyCodes.KEY_TAB
-					|| e.isAnyModifierKeyDown()) {
+					|| e.isAltKeyDown() 
+                    || e.isControlKeyDown()
+                    || e.isMetaKeyDown()) {
                 debug("keyPressHandler.onKeyPress: return immediately");
                 e.preventDefault(); // KK: otherwise incorrectly handles combinations like Shift+'='
                 return;
@@ -70,7 +74,9 @@ public class VMaskedTextField extends VTextField {
 	
 	private KeyDownHandler keyDownHandler = new KeyDownHandler() {
 		public void onKeyDown(KeyDownEvent event) {
-			if (event.getNativeKeyCode() == KeyCodes.KEY_BACKSPACE) {
+			if (isReadOnly())
+                return;
+            if (event.getNativeKeyCode() == KeyCodes.KEY_BACKSPACE) {
 				int pos = getPreviousPos(getCursorPos());
 				Mask m = maskTest.get(pos);
 				if (m != null) {
@@ -108,6 +114,8 @@ public class VMaskedTextField extends VTextField {
 	private FocusHandler focusHandler = new FocusHandler() {
 		
 		public void onFocus(FocusEvent event) {
+            if (isReadOnly())
+                return;
             debug("focusHandler.onFocus");
 			if (getValue().isEmpty())
 				setMask(mask);
@@ -119,6 +127,8 @@ public class VMaskedTextField extends VTextField {
 	private BlurHandler blurHandler = new BlurHandler() {
 		
 		public void onBlur(BlurEvent event) {
+            if (isReadOnly())
+                return;
             debug("blurHandler.onBlur");
 			for (int i = 0; i < string.length(); i++) {
 				char c = string.charAt(i);
@@ -150,7 +160,11 @@ public class VMaskedTextField extends VTextField {
 	
 	public void setText(String value) {
         debug("setText: " + value);
-		string = new StringBuilder(value);
+		if("".equals(value)){
+            setMask(mask);
+            return;
+        }
+        string = new StringBuilder(value);
 		super.setText(value);
 	}
 
@@ -195,7 +209,7 @@ public class VMaskedTextField extends VTextField {
 				string.append(c);
 			}				
 		}
-		setValue(string.toString());
+		setText(string.toString());
 //		updateCursor(0); // KK: commented out because leads to grab focus
 	}
 	
@@ -230,34 +244,34 @@ public class VMaskedTextField extends VTextField {
 		return pos;
 	}
 	
-	private interface Mask {
+	public static interface Mask {
 		boolean isValid(char c);
 
 		char getChar(char c);
 	}
 
-	private abstract class AbstractMask implements Mask {
+	public static abstract class AbstractMask implements Mask {
 		
 		public char getChar(char c) {
 			return c;
 		}
 	}
 
-	private class NumericMask extends AbstractMask {
+	public static class NumericMask extends AbstractMask {
 		
 		public boolean isValid(char c) {
 			return Character.isDigit(c);
 		}
 	}
 
-	private class LetterMask extends AbstractMask {
+	public static class LetterMask extends AbstractMask {
 		
 		public boolean isValid(char c) {
 			return Character.isLetter(c);
 		}
 	}
 
-	private class LowerCaseMask implements Mask {
+	public static class LowerCaseMask implements Mask {
 		
 		public boolean isValid(char c) {
 			return Character.isLetter(getChar(c));
@@ -269,7 +283,7 @@ public class VMaskedTextField extends VTextField {
 		}
 	}
 
-	private class UpperCaseMask implements Mask {
+	public static class UpperCaseMask implements Mask {
 		
 		public boolean isValid(char c) {
 			return Character.isLetter(getChar(c));
@@ -281,21 +295,21 @@ public class VMaskedTextField extends VTextField {
 		}
 	}
 	
-	private class AlphanumericMask extends AbstractMask {
+	public static class AlphanumericMask extends AbstractMask {
 		
 		public boolean isValid(char c) {
 			return Character.isLetter(c) || Character.isDigit(c);
 		}
 	}
 	
-	private class WildcardMask extends AbstractMask {
+	public static class WildcardMask extends AbstractMask {
 		
 		public boolean isValid(char c) {
 			return true;
 		}
 	}
 	
-	private class SignMask extends AbstractMask {
+	public static class SignMask extends AbstractMask {
 		
 		public boolean isValid(char c) {
 			return c == '-' || c == '+';
@@ -305,7 +319,7 @@ public class VMaskedTextField extends VTextField {
 	/**
      * Represents a hex character, 0-9a-fA-F. a-f is mapped to A-F
      */
-    private class HexMask implements Mask {
+    public static class HexMask implements Mask {
         public boolean isValid(char c) {
             return ((c == '0' || c == '1' ||
                      c == '2' || c == '3' ||

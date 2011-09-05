@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.gui;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateDatatype;
+import com.haulmont.chile.core.datatypes.impl.TimeDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -30,9 +31,9 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.toolkit.ui.CheckBox;
+import com.haulmont.cuba.web.toolkit.ui.DateFieldWrapper;
 import com.vaadin.data.Item;
 import com.vaadin.data.Validator;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.TextField;
@@ -101,7 +102,9 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                     if (Boolean.class.isAssignableFrom(type)) {
                         field = new CheckBox();
                     } else if (Date.class.isAssignableFrom(type)) {
-                        if ("timeField".equals(fieldType(propertyPath))) {
+                        Datatype datatype = range.asDatatype();
+                        String dataTypeName = datatype.getName();
+                        if (TimeDatatype.NAME.equals(dataTypeName) || "timeField".equals(fieldType(propertyPath))) {
                             final WebTimeField timeField = new WebTimeField();
                             //todo gorodnov: support field own datasource
                             timeField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
@@ -109,7 +112,10 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                             cubaField = timeField;
                             field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(timeField);
                         } else {
-                            field = new com.haulmont.cuba.web.toolkit.ui.DateField();
+                            WebDateField dateField = new WebDateField();
+                            dateField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
+                            cubaField = dateField;
+                            field = new DateFieldWrapper(dateField);
                         }
                     } else {
                         field = super.createField(item, propertyId, uiContext);
@@ -223,10 +229,10 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
         if (field instanceof TextField) {
             ((TextField) field).setNullRepresentation("");
             field.setWidth("100%");
-        } else if (field instanceof DateField && getFormatter(propertyPath) != null) {
+        } else if (cubaField instanceof WebDateField && getFormatter(propertyPath) != null) {
             String format = getFormat(propertyPath);
             if (format != null) {
-                ((DateField) field).setDateFormat(format);
+                ((WebDateField) cubaField).setDateFormat(format);
             }
         } else if (field instanceof Select) {
             field.setWidth("100%");
@@ -275,7 +281,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
     }
 
     protected void initTextField(com.vaadin.ui.TextField field, MetaProperty metaProperty, Element xmlDescriptor) {
-        if (xmlDescriptor==null)
+        if (xmlDescriptor == null)
             return;
         final String cols = xmlDescriptor.attributeValue("cols");
         if (!StringUtils.isEmpty(cols)) {
@@ -296,7 +302,8 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
         }
     }
 
-    protected void initDateField(com.vaadin.ui.DateField field, MetaProperty metaProperty, Element xmlDescriptor) {
+    protected void initDateField(com.vaadin.ui.Field field, MetaProperty metaProperty, Element xmlDescriptor) {
+        WebDateField cubaField = ((DateFieldWrapper) field).getCubaField();
         TemporalType tt = null;
         if (metaProperty != null) {
             if (metaProperty.getRange().asDatatype().equals(Datatypes.get(DateDatatype.NAME)))
@@ -310,9 +317,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
 
         if (!StringUtils.isEmpty(resolution)) {
             com.haulmont.cuba.gui.components.DateField.Resolution res = com.haulmont.cuba.gui.components.DateField.Resolution.valueOf(resolution);
-            field.setResolution(WebComponentsHelper.convertDateFieldResolution(
-                    com.haulmont.cuba.gui.components.DateField.Resolution.valueOf(resolution)
-            ));
+            cubaField.setResolution(res);
 
             if (dateFormat == null) {
                 if (res == com.haulmont.cuba.gui.components.DateField.Resolution.DAY) {
@@ -323,7 +328,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
             }
 
         } else if (tt == TemporalType.DATE) {
-            field.setResolution(WebComponentsHelper.convertDateFieldResolution(com.haulmont.cuba.gui.components.DateField.Resolution.DAY));
+            cubaField.setResolution(com.haulmont.cuba.gui.components.DateField.Resolution.DAY);
         }
 
         if (!StringUtils.isEmpty(dateFormat)) {
@@ -331,7 +336,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                 dateFormat = MessageProvider.getMessage(
                         AppConfig.getInstance().getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
             }
-            field.setDateFormat(dateFormat);
+            cubaField.setDateFormat(dateFormat);
         } else {
             String formatStr;
             if (tt == TemporalType.DATE) {
@@ -341,7 +346,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                 formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
                         "dateTimeFormat");
             }
-            field.setDateFormat(formatStr);
+            cubaField.setDateFormat(formatStr);
         }
     }
 

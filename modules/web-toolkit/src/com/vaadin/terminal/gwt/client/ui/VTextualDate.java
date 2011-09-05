@@ -384,6 +384,10 @@ public class VTextualDate extends VDateField implements Paintable, Field,
         }
     }
 
+    public TextBox getTextBox() {
+        return text;
+    }
+
     /**
      * Returns pixels in x-axis reserved for other than textfield content.
      * 

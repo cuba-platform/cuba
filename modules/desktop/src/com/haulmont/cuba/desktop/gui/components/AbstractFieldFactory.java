@@ -46,6 +46,8 @@ public abstract class AbstractFieldFactory {
                     return createBooleanField(datasource, property);
                 } else if (typeName.equals(DateDatatype.NAME) || typeName.equals(DateTimeDatatype.NAME)) {
                     return createDateField(datasource, property, mpp);
+                } else if (typeName.equals(TimeDatatype.NAME)) {
+                    return createTimeField(datasource, property, mpp);
                 } else if (datatype instanceof NumberDatatype) {
                     return createNumberField(datasource, property);
                 }
@@ -100,6 +102,12 @@ public abstract class AbstractFieldFactory {
             dateField.setResolution(DateField.Resolution.DAY);
         }
         return dateField;
+    }
+
+    private Component createTimeField(Datasource datasource, String property, MetaPropertyPath mpp) {
+        DesktopTimeField timeField = new DesktopTimeField();
+        timeField.setDatasource(datasource, property);
+        return timeField;
     }
 
     private Component createEntityField(Datasource datasource, String property) {

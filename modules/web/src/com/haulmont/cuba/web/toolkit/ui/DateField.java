@@ -10,20 +10,29 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.toolkit.gwt.client.ui.VMaskedPopupCalendar;
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.gwt.client.ui.VPopupCalendar;
 import com.vaadin.ui.ClientWidget;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
 
 @SuppressWarnings("serial")
-@ClientWidget(VPopupCalendar.class)
+@ClientWidget(VMaskedPopupCalendar.class)
 public class
         DateField extends com.vaadin.ui.DateField {
 
     protected boolean closeWhenDateSelected = false;
+
+    protected String mask;
+
+    private final Date MARKER_DATE = new Date(0);
+
+    protected Object prevValue;
 
     public DateField() {
     }
@@ -44,24 +53,48 @@ public class
         super(caption, value);
     }
 
+    protected void setValue(Object newValue, boolean repaintIsNotNeeded) {
+        if (newValue == MARKER_DATE) {
+            super.setValue(prevValue);
+            throw new Validator.InvalidValueException("Unable to parse date");
+        }
+        prevValue = newValue;
+        super.setValue(newValue, repaintIsNotNeeded);
+    }
+
+    public void setDateFormat(String dateFormat) {
+        super.setDateFormat(dateFormat);
+        setMask(StringUtils.replaceChars(dateFormat, "dDMYy", "#####"));
+        requestRepaint();
+    }
+
+    public void setMask(String mask) {
+        this.mask = mask;
+        requestRepaint();
+    }
+
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
-        if (isCloseWhenDateSelected()){
+        if (isCloseWhenDateSelected()) {
             target.addAttribute("closeWhenDateSelected", true);
+        }
+        if (mask != null) {
+            target.addAttribute("mask", mask);
         }
     }
 
     @Override
     protected Date handleUnparsableDateString(String dateString) throws ConversionException {
         requestRepaint();
-        return null;
+        return MARKER_DATE;
     }
 
     @Override
     protected boolean isEmpty() {
         return getValue() == null;
     }
+        
 
     public boolean isCloseWhenDateSelected() {
         return closeWhenDateSelected;

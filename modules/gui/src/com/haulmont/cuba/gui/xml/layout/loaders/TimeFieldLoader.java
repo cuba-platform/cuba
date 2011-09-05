@@ -27,9 +27,12 @@ public class TimeFieldLoader extends AbstractFieldLoader {
         TimeField timeField = (TimeField) super.loadComponent(factory, element, parent);
 
         String s = element.attributeValue("showSeconds");
-        if (Boolean.valueOf(s)) {
+        if (s == null) {
+            return timeField;
+        } else if (Boolean.valueOf(s)) {
             timeField.setShowSeconds(true);
-        }
+        } else
+            timeField.setShowSeconds(false);
 
         return timeField;
     }

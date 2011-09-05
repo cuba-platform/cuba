@@ -9,6 +9,9 @@ package com.haulmont.cuba.desktop.sys.vcl.DatePicker;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.IFrame;
 import org.apache.commons.lang.ObjectUtils;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.calendar.DatePickerFormatter;
@@ -41,7 +44,6 @@ public class DatePicker extends JXDatePicker {
     }
 
     public void setEditor(final JFormattedTextField editor) {
-
         editor.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -63,8 +65,8 @@ public class DatePicker extends JXDatePicker {
 
         if (format == null) {
             setFormats(Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getDateFormat());
-        }
-        editor.setDocument(new DatePickerDocument(editor, format, getMask(format), PLACE_HOLDER));
+        } else
+            setFormats(format);
     }
 
     public void setLinkDay(Date linkDay) {
@@ -79,6 +81,7 @@ public class DatePicker extends JXDatePicker {
         format = formats[0];
         if (getEditor() != null)
             getEditor().setText(getMask(format));
+        getEditor().setDocument(new DatePickerDocument(getEditor(), format, getMask(format), PLACE_HOLDER));
     }
 
     public void setFormats(DateFormat... formats) {
@@ -115,6 +118,14 @@ public class DatePicker extends JXDatePicker {
 
     public class CustomDatePickerFormatter extends DatePickerFormatter {
         public void install(final JFormattedTextField ftf) {
+            try {
+                if (valueToString(ftf.getValue()) == null && format != null) {
+                    ftf.setText(getMask(format));
+                    return;
+                }
+            } catch (ParseException e) {
+                ftf.setText(getMask(format));
+            }
             super.install(ftf);
             ftf.setCaretPosition(0);
         }
@@ -127,7 +138,15 @@ public class DatePicker extends JXDatePicker {
             if (text == null || text.trim().length() == 0 || ObjectUtils.equals(getMask(format), text)) {
                 return null;
             }
-            return super.stringToValue(text);
+            try {
+                return super.stringToValue(text);
+            } catch (ParseException e) {
+                App.getInstance().showNotificationPopup(
+                        MessageProvider.getMessage(AppConfig.getMessagesPack(), "validationFail"),
+                        IFrame.NotificationType.TRAY
+                );
+                throw e;
+            }
         }
     }
 
