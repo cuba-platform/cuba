@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Maksim Tulupov
- * Created: 18.05.2009 17:18:45
- *
- * $Id$
  */
 package com.haulmont.cuba.core.config.type;
 
