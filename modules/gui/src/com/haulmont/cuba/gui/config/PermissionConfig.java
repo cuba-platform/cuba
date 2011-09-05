@@ -152,7 +152,7 @@ public class PermissionConfig {
 
     private void walkMenu(MenuItem info, Node<Target> node) {
         String id = info.getId();
-        String caption = MenuConfig.getMenuItemCaption(id).replaceAll("<.+?>", "");
+        String caption = MenuConfig.getMenuItemCaption(id).replaceAll("<.+?>", "").replaceAll("&gt;","");
         caption = StringEscapeUtils.unescapeHtml(caption);
 
         if (info.getChildren() != null && !info.getChildren().isEmpty()) {
