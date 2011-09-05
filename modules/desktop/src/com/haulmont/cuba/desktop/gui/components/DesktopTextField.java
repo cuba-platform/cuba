@@ -203,6 +203,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
 
     private void updateComponent(Object value) {
         getImpl().setText(valueFormatter.formatValue(value));
+        getImpl().setCaretPosition(0);
     }
 
     private Object validateRawValue(String rawValue) {

@@ -84,4 +84,7 @@
     <screen id="core$EntitySnapshot.view"
             template="/com/haulmont/cuba/gui/app/core/entitydiff/diff-view.xml"/>
 
+    <screen id="license"
+            template="/com/haulmont/cuba/gui/app/core/credits/license-window.xml"/>
+
 </screen-config>
