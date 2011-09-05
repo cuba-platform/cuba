@@ -302,7 +302,7 @@ public class AttributeEditor extends AbstractEditor {
                 attribute.setScreen(value != null ? value.toString() : null);
             }
         });
-        entityTypeField.setValue(entityType);
+        screenField.setValue(attribute.getScreen());
     }
 
     private void fillEntities(LookupField entityField, Class clazz) {
@@ -346,6 +346,7 @@ public class AttributeEditor extends AbstractEditor {
 
         attribute = (CategoryAttribute) getItem();
         nameField.setValue(attribute.getName());
+        requiredField.setValue(attribute.getRequired());
         if (BooleanUtils.isTrue(attribute.getIsEntity())) {
             dataTypeField.setValue(RuntimePropsDatasource.PropertyType.ENTITY);
         } else {
