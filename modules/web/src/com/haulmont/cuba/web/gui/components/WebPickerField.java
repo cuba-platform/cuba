@@ -22,6 +22,7 @@ import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.AbstractProperty;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
@@ -56,6 +57,33 @@ public class WebPickerField
         component.setImmediate(true);
         component.setInvalidAllowed(false);
         component.setInvalidCommitted(true);
+        component.setPropertyDataSource(new AbstractProperty() {
+            @Override
+            public Object getValue() {
+                return value;
+            }
+
+            @Override
+            public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+            }
+
+            @Override
+            public Class<?> getType() {
+                return String.class;
+            }
+
+            @Override
+            public String toString() {
+                if (CaptionMode.PROPERTY.equals(getCaptionMode()) && (value instanceof Instance)) {
+
+                    return String.valueOf(value == null ? ""
+                            : ((Instance) value).getValue(getCaptionProperty()));
+                } else {
+                    return super.toString();
+                }
+            }
+        });
+
         attachListener(component);
         addLookupAction();
         addClearAction();

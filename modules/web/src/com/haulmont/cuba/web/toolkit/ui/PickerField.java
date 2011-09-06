@@ -7,6 +7,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.data.Property;
+import com.vaadin.data.util.AbstractProperty;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
@@ -103,6 +104,8 @@ public class PickerField extends CustomComponent implements com.vaadin.ui.Field 
         ((TextField) field).addListener(new FieldEvents.TextChangeListener() {
             @Override
             public void textChange(FieldEvents.TextChangeEvent event) {
+                if (getValue() != null && event.getText().equals(getValue().toString()))
+                    return;
                 listener.actionPerformed(event.getText(), getValue());
             }
         });

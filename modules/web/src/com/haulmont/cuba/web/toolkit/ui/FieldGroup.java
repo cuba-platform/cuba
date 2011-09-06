@@ -127,7 +127,7 @@ public class FieldGroup extends Form {
                 final Field f = fieldFactory.createField(itemDatasource, id,
                         this);
                 if (f != null) {
-                    if (f.getPropertyDataSource() == null) f.setPropertyDataSource(property);
+                    f.setPropertyDataSource(property);
                     addField(id, f);
                 }
             }

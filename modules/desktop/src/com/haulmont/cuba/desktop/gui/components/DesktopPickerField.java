@@ -152,7 +152,7 @@ public class DesktopPickerField
     }
 
     private void fireFieldListener(FieldListener listener, String fieldText) {
-        if (!prevTextValue.equals(fieldText)) {
+        if (!(ObjectUtils.equals(prevTextValue,fieldText))) {
             prevValue = nullValue;
             prevTextValue = fieldText;
             listener.actionPerformed(fieldText, getValue());
