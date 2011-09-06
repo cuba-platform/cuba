@@ -44,6 +44,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     private int rows;
     private int cols;
     private boolean editable = true;
+    private boolean enabled = true;
     private boolean borderVisible = false;
 
     private Map<String, Field> fields = new LinkedHashMap<String, Field>();
@@ -55,6 +56,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     private AbstractFieldFactory fieldFactory = new FieldFactory();
 
     private Set<Field> readOnlyFields = new HashSet<Field>();
+    private Set<Field> disabledFields = new HashSet<Field>();
 
     private CollapsiblePanel collapsiblePanel;
 
@@ -305,6 +307,15 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     public void setEnabled(Field field, boolean enabled) {
+        doSetEnabled(field, enabled);
+
+        if (enabled)
+            disabledFields.remove(field);
+        else
+            disabledFields.add(field);
+    }
+
+    private void doSetEnabled(Field field, boolean enabled) {
         Component component = fieldComponents.get(field);
         if (component != null)
             component.setEnabled(enabled);
@@ -322,6 +333,14 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         Field field = fields.get(fieldId);
         if (field != null)
             setEnabled(field, enabled);
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+
+        for (FieldGroup.Field field : fields.values()) {
+            doSetEnabled(field, enabled && !disabledFields.contains(field));
+        }
     }
 
     public boolean isVisible(Field field) {
