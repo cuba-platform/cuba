@@ -199,10 +199,10 @@ public class WebDateField
     }
 
     protected void __setResolution(Resolution resolution) {
-        if (resolution.ordinal() <= Resolution.DAY.ordinal()) {
-            dateField.setResolution(WebComponentsHelper.convertDateFieldResolution(resolution));
-        } else {
+        if (resolution.ordinal() < Resolution.DAY.ordinal()) {
             timeField.setResolution(resolution);
+        } else {
+            dateField.setResolution(WebComponentsHelper.convertDateFieldResolution(resolution));
         }
     }
 
