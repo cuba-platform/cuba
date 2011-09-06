@@ -47,6 +47,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     private String fieldWidth;
     private BoxLayout contentPane;
     private FieldGroup categoryFieldGroup;
+    private boolean requiredControlEnabled = true;
 
     public RuntimePropertiesFrame(IFrame frame) {
         super(frame);
@@ -193,7 +194,6 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                             pickerField.setFrame(RuntimePropertiesFrame.this);
                             pickerField.setDatasource(ds, (String) propertyId);
                             pickerField.addOpenAction();
-
                             PickerField.LookupAction lookupAction = (PickerField.LookupAction) pickerField.getAction(PickerField.LookupAction.NAME);
                             if (lookupAction != null) {
                                 RuntimePropertiesEntity runtimePropertiesEntity = (RuntimePropertiesEntity) ds.getItem();
@@ -271,10 +271,24 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                 "validation.required.defaultMsg",
                 field.getId()
         );
-        fieldGroup.setRequired(field, categoryAttributeValue.getCategoryAttribute().getRequired(), requiredMessage);
+        fieldGroup.setRequired(field, categoryAttributeValue.getCategoryAttribute().getRequired() && requiredControlEnabled, requiredMessage);
     }
 
     public void setCategoryFieldVisible(boolean visible) {
         categoryFieldGroup.setVisible(visible);
+    }
+
+    public boolean isRequiredControlEnabled() {
+        return requiredControlEnabled;
+    }
+
+    public void setRequiredControlEnabled(boolean requiredControlEnabled) {
+        this.requiredControlEnabled = requiredControlEnabled;
+        FieldGroup newRuntime = getComponent("runtime");
+        if (newRuntime != null) {
+            for (final FieldGroup.Field field : newRuntime.getFields()) {
+                loadRequired(newRuntime, field);
+            }
+        }
     }
 }
