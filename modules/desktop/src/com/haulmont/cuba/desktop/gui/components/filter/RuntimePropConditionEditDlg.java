@@ -66,17 +66,10 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
             JPanel mainPanel = new JPanel(new MigLayout("wrap 2"));
             add(mainPanel, "wrap");
 
-            mainPanel.add(DesktopComponentsHelper.unwrap(nameLabel));
-            JTextField nameField = (JTextField) DesktopComponentsHelper.unwrap(conditionName);
-            Dimension size = nameField.getSize();
-            size.width = FIELD_WIDTH;
-            nameField.setPreferredSize(size);
-            mainPanel.add(nameField);
-
             mainPanel.add(DesktopComponentsHelper.unwrap(categoryLabel));
             JComboBox categories = (JComboBox) DesktopComponentsHelper.unwrap(categorySelect);
             DesktopComponentsHelper.adjustSize(categories);
-            size = categories.getSize();
+            Dimension size = categories.getSize();
             size.width = FIELD_WIDTH;
             categories.setPreferredSize(size);
 

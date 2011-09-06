@@ -12,11 +12,14 @@ package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.AbstractCustomCondition;
+import com.haulmont.cuba.gui.components.filter.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 
 public class CustomCondition extends AbstractCustomCondition<Param> {
+
+    private OperationEditor operationEditor;
 
     public CustomCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
         super(element, messagesPack, filterComponentName, datasource);
@@ -29,7 +32,13 @@ public class CustomCondition extends AbstractCustomCondition<Param> {
 
     @Override
     public OperationEditor createOperationEditor() {
-        return new CustomOperationEditor(this);
+        operationEditor = new CustomOperationEditor(this);
+        return operationEditor;
+    }
+
+    @Override
+    public AbstractOperationEditor getOperationEditor() {
+        return operationEditor;
     }
 
     @Override

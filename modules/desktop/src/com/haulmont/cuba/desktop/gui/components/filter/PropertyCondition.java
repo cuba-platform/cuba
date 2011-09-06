@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.gui.components.filter;
 
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
+import com.haulmont.cuba.gui.components.filter.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.AbstractPropertyCondition;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -18,6 +19,9 @@ import org.dom4j.Element;
  * @author devyatkin
  */
 public class PropertyCondition extends AbstractPropertyCondition<Param> {
+
+    private OperationEditor operationEditor;
+
     public PropertyCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
         super(element, messagesPack, filterComponentName, datasource);
     }
@@ -28,7 +32,13 @@ public class PropertyCondition extends AbstractPropertyCondition<Param> {
 
     @Override
     public OperationEditor createOperationEditor() {
-        return new PropertyOperationEditor(this);
+        operationEditor = new PropertyOperationEditor(this);
+        return operationEditor;
+    }
+
+    @Override
+    public AbstractOperationEditor getOperationEditor() {
+        return operationEditor;
     }
 
     @Override

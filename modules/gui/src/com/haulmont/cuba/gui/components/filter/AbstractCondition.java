@@ -269,5 +269,7 @@ public abstract class AbstractCondition<T extends AbstractParam> {
 
     public abstract AbstractOperationEditor createOperationEditor();
 
+    public abstract AbstractOperationEditor getOperationEditor();
+
     protected abstract ParamFactory<T> getParamFactory();
 }

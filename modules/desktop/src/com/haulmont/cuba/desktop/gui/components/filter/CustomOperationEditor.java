@@ -12,6 +12,7 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
+import com.haulmont.cuba.gui.components.filter.HasAction;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -22,7 +23,7 @@ import java.awt.event.ActionListener;
  *
  * @author devyatkin
  */
-public class CustomOperationEditor extends OperationEditor {
+public class CustomOperationEditor extends OperationEditor implements HasAction{
     public CustomOperationEditor(AbstractCondition condition) {
         super(condition);
     }
@@ -36,11 +37,16 @@ public class CustomOperationEditor extends OperationEditor {
         btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                final CustomConditionEditDlg dlg = new CustomConditionEditDlg((CustomCondition) condition);
-                App.getInstance().disable(null);
-                dlg.getImpl().setVisible(true);
+                doAction();
             }
         });
         impl = btn;
+    }
+
+    @Override
+    public void doAction() {
+        final CustomConditionEditDlg dlg = new CustomConditionEditDlg((CustomCondition) condition);
+        App.getInstance().disable(null);
+        dlg.getImpl().setVisible(true);
     }
 }

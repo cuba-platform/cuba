@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
+import org.jdesktop.swingx.JXHyperlink;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,9 +52,9 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                         }
                     }
             );
-            impl.getCountLabel().addMouseListener(new MouseAdapter() {
+            impl.getCountButton().addActionListener(new ActionListener(){
                 @Override
-                public void mouseClicked(MouseEvent e) {
+                public void actionPerformed(ActionEvent e) {
                     onLinkClick();
                 }
             });
@@ -106,7 +107,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         String countValue;
         switch (state) {
             case FIRST_COMPLETE:
-                impl.getCountLabel().setVisible(false);
+                impl.getCountButton().setVisible(false);
                 impl.getPrevButton().setVisible(false);
                 impl.getNextButton().setVisible(false);
                 if (size % 100 > 10 && size % 100 < 20) {
@@ -128,21 +129,21 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                 countValue = String.valueOf(size);
                 break;
             case FIRST_INCOMPLETE:
-                impl.getCountLabel().setVisible(true);
+                impl.getCountButton().setVisible(true);
                 impl.getPrevButton().setVisible(false);
                 impl.getNextButton().setVisible(true);
                 msgKey = "table.rowsCount.msg1";
                 countValue = "1-" + size;
                 break;
             case MIDDLE:
-                impl.getCountLabel().setVisible(true);
+                impl.getCountButton().setVisible(true);
                 impl.getPrevButton().setVisible(true);
                 impl.getNextButton().setVisible(true);
                 msgKey = "table.rowsCount.msg1";
                 countValue = (start + 1) + "-" + (start + size);
                 break;
             case LAST:
-                impl.getCountLabel().setVisible(false);
+                impl.getCountButton().setVisible(false);
                 impl.getPrevButton().setVisible(true);
                 impl.getNextButton().setVisible(false);
                 msgKey = "table.rowsCount.msg2Plural2";
@@ -155,8 +156,8 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         String messagesPack = AppConfig.getInstance().getMessagesPack();
         impl.getLabel().setText(MessageProvider.formatMessage(messagesPack, msgKey, countValue));
 
-        if (impl.getCountLabel().isVisible() && !refreshing) {
-            impl.getCountLabel().setText(MessageProvider.getMessage(messagesPack, "table.rowsCount.msg3"));
+        if (impl.getCountButton().isVisible() && !refreshing) {
+            impl.getCountButton().setText(MessageProvider.getMessage(messagesPack, "table.rowsCount.msg3"));
         }
         impl.repaint();
         impl.revalidate();
@@ -167,7 +168,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
             return;
 
         int count = ((CollectionDatasource.SupportsPaging) datasource).getCount();
-        impl.getCountLabel().setText(String.valueOf(count));
+        impl.getCountButton().setText(String.valueOf(count));
     }
 
     private void onNextClick() {
@@ -212,7 +213,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         private JButton prevButton;
         private JButton nextButton;
         private JLabel label;
-        private JLabel countLabel;
+        private JButton countButton;
         private MigLayout layout;
 
         private final Dimension size = new Dimension(35, 25);
@@ -235,10 +236,9 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
             label = new JLabel();
             add(label);
 
-            countLabel = new JLabel("[?]");
-            countLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            countLabel.setForeground(Color.blue);
-            add(countLabel);
+            countButton = new JXHyperlink();
+            countButton.setText("[?]");
+            add(countButton);
 
             nextButton = new JButton(">");
             add(nextButton);
@@ -250,8 +250,8 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
             return label;
         }
 
-        public JLabel getCountLabel() {
-            return countLabel;
+        public JButton getCountButton() {
+            return countButton;
         }
 
         public JButton getPrevButton() {

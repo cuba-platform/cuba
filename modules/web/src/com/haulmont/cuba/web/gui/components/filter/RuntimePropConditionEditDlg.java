@@ -64,12 +64,6 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
             grid.setMargin(true, false, true, false);
             grid.setRows(4);
 
-            grid.addComponent(WebComponentsHelper.unwrap(nameLabel), 0, 0);
-
-            grid.setComponentAlignment(WebComponentsHelper.unwrap(nameLabel), Alignment.MIDDLE_RIGHT);
-
-            grid.addComponent(WebComponentsHelper.unwrap(conditionName), 1, 0);
-
             grid.addComponent(WebComponentsHelper.unwrap(categoryLabel), 0, 1);
             grid.setComponentAlignment(WebComponentsHelper.unwrap(categoryLabel), Alignment.MIDDLE_RIGHT);
 

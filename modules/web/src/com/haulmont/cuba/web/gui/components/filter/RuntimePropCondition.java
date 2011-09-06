@@ -7,6 +7,7 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
+import com.haulmont.cuba.gui.components.filter.AbstractOperationEditor;
 import com.haulmont.cuba.gui.components.filter.AbstractRuntimePropCondition;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -18,6 +19,8 @@ import org.dom4j.Element;
  * @author devyatkin
  */
 public class RuntimePropCondition extends AbstractRuntimePropCondition<Param> {
+
+    private OperationEditor operationEditor;
 
     public RuntimePropCondition(AbstractConditionDescriptor descriptor, String where, String join, String entityAlias) {
         super(descriptor, where, join, entityAlias);
@@ -31,7 +34,13 @@ public class RuntimePropCondition extends AbstractRuntimePropCondition<Param> {
 
     @Override
     public OperationEditor createOperationEditor() {
-        return new RuntimePropOperationEditor(this);
+        operationEditor = new RuntimePropOperationEditor(this);
+        return operationEditor;
+    }
+
+    @Override
+    public AbstractOperationEditor getOperationEditor() {
+        return operationEditor;
     }
 
     @Override

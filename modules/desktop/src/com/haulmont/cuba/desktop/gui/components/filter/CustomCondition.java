@@ -22,6 +22,8 @@ public class CustomCondition extends AbstractCustomCondition<Param>{
         super(element, messagesPack, filterComponentName, datasource);
     }
 
+    private OperationEditor operationEditor;
+
     public CustomCondition(AbstractConditionDescriptor descriptor, String where, String join, String entityAlias) {
         super(descriptor, where, join, entityAlias);
     }
@@ -29,7 +31,12 @@ public class CustomCondition extends AbstractCustomCondition<Param>{
 
     @Override
     public OperationEditor createOperationEditor() {
-        return new CustomOperationEditor(this);
+        operationEditor = new CustomOperationEditor(this);
+        return operationEditor;
+    }
+
+    public OperationEditor getOperationEditor() {
+        return operationEditor;
     }
 
     @Override

@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.RuntimePropertiesHelper;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -36,13 +37,11 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
     protected AbstractRuntimePropCondition condition;
     protected String messagesPack;
     private DataService dataService;
-    protected TextField conditionName;
     protected LookupField categorySelect;
     protected LookupField attributeSelect;
     protected LookupField operationSelect;
     protected Button btnOk;
     protected Button btnCancel;
-    protected Label nameLabel;
     protected Label categoryLabel;
     protected Label attributeLabel;
     protected Label operationLabel;
@@ -53,18 +52,12 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
         this.condition = condition;
         messagesPack = AppConfig.getMessagesPack();
 
-        nameLabel = factory.createComponent(Label.NAME);
-        nameLabel.setValue(MessageProvider.getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.nameLabel"));
-
-        conditionName = factory.createComponent(TextField.NAME);
-        conditionName.setWidth(FIELD_WIDTH);
-        conditionName.setValue(condition.getLocCaption());
-
         categoryLabel = factory.createComponent(Label.NAME);
         categoryLabel.setValue(MessageProvider.getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.categoryLabel"));
 
         categorySelect = factory.createComponent(LookupField.NAME);
         categorySelect.setWidth(FIELD_WIDTH);
+        categorySelect.setRequired(true);
         categorySelect.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
@@ -78,6 +71,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
 
         attributeSelect = factory.createComponent(LookupField.NAME);
         attributeSelect.setWidth(FIELD_WIDTH);
+        attributeSelect.setRequired(true);
         attributeSelect.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
@@ -91,6 +85,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
 
         operationSelect = factory.createComponent(LookupField.NAME);
         operationSelect.setWidth(FIELD_WIDTH);
+        operationSelect.setRequired(true);
 
         btnOk = factory.createComponent(Button.NAME);
         btnOk.setIcon("icons/ok.png");
@@ -116,9 +111,6 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
     }
 
     protected String checkCondition() {
-        if (StringUtils.trimToNull(conditionName.<String>getValue()) == null) {
-            return "RuntimePropConditionEditDlg.enterName";
-        }
         if (categorySelect.getValue() == null) {
             return "RuntimePropConditionEditDlg.selectCategory";
         }
@@ -138,7 +130,9 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
             return false;
         }
 
-        condition.setLocCaption(conditionName.<String>getValue());
+        CategoryAttribute attribute = attributeSelect.getValue();
+
+        condition.setLocCaption(attribute.getName());
         String alias = condition.getEntityAlias();
         condition.setJoin("join " + alias + ".category.categoryAttrs ca, sys$CategoryAttributeValue cav ");
 
@@ -146,7 +140,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
         String categoryAttrParamName = condition.createParamName();
         String operation = operationSelect.<Op>getValue().getText();
         Op op = operationSelect.getValue();
-        CategoryAttribute attribute = attributeSelect.getValue();
+
         Class javaClass = RuntimePropertiesHelper.getAttributeClass(attribute);
         String valueFieldName = "stringValue";
 
@@ -217,15 +211,26 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
         UUID catId = condition.getCategoryId();
         Category selectedCategory = null;
         Map<String, Object> categoriesMap = new HashMap<String, Object>();
-        for (Category category : categories) {
+        if (categories.size() == 1 && (catId == null || ObjectUtils.equals(catId, categories.get(0).getId()))) {
+            Category category = categories.get(0);
+            categorySelect.setVisible(false);
+            categoryLabel.setVisible(false);
             categoriesMap.put(category.getName(), category);
-            if (category.getId().equals(catId)) {
-                selectedCategory = category;
+            categorySelect.setOptionsMap(categoriesMap);
+            categorySelect.setValue(category);
+            fillAttributeSelect(categories.get(0));
+        } else {
+            categorySelect.setVisible(true);
+            categoryLabel.setVisible(true);
+            for (Category category : categories) {
+                categoriesMap.put(category.getName(), category);
+                if (category.getId().equals(catId)) {
+                    selectedCategory = category;
+                }
             }
+            categorySelect.setOptionsMap(categoriesMap);
+            categorySelect.setValue(selectedCategory);
         }
-        categorySelect.setOptionsMap(categoriesMap);
-        categorySelect.setValue(selectedCategory);
-
     }
 
     protected void fillAttributeSelect(Category category) {

@@ -17,6 +17,8 @@ import org.dom4j.Element;
  */
 public class RuntimePropCondition extends AbstractRuntimePropCondition<Param> {
 
+    private OperationEditor operationEditor;
+
     public RuntimePropCondition(AbstractConditionDescriptor descriptor, String where, String join, String entityAlias) {
         super(descriptor, where, join, entityAlias);
         paramFactory = new ParamFactoryImpl();
@@ -28,7 +30,12 @@ public class RuntimePropCondition extends AbstractRuntimePropCondition<Param> {
 
     @Override
     public OperationEditor createOperationEditor() {
-        return new RuntimePropOperationEditor(this);
+        operationEditor = new RuntimePropOperationEditor(this);
+        return operationEditor;
+    }
+
+    public OperationEditor getOperationEditor() {
+        return operationEditor;
     }
 
     @Override

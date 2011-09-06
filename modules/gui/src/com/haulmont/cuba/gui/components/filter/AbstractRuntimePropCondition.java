@@ -84,4 +84,11 @@ public abstract class AbstractRuntimePropCondition<T extends AbstractParam> exte
         categoryId = id;
     }
 
+    @Override
+    public String getOperationCaption() {
+        if (getOperator() != null)
+            return MessageProvider.getMessage(getOperator());
+        else return super.getOperationCaption();
+    }
+
 }

@@ -359,6 +359,13 @@ public class FilterEditor extends AbstractFilterEditor {
         table.repaint();
 
         updateControls();
+
+        AbstractOperationEditor editor = condition.getOperationEditor();
+        if (editor == null)
+            editor = condition.createOperationEditor();
+        if (editor instanceof HasAction) {
+            ((HasAction) editor).doAction();
+        }
     }
 
     public JPanel getPanel() {
@@ -683,7 +690,11 @@ public class FilterEditor extends AbstractFilterEditor {
     protected class OperationCell extends AbstractCell {
 
         protected JComponent getComponent(final Object value) {
-            JComponent component = (JComponent) ((AbstractCondition<Param>) value).createOperationEditor().getImpl();
+            AbstractOperationEditor editor = ((AbstractCondition<Param>) value).getOperationEditor();
+            if (editor == null) {
+                editor = ((AbstractCondition<Param>) value).createOperationEditor();
+            }
+            JComponent component = (JComponent) editor.getImpl();
             setComponentWidth(component, OPERATION_COLUMN_WIDTH);
             if (component instanceof JComboBox) {
                 ((JComboBox) component).addActionListener(new ActionListener() {

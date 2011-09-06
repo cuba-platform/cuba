@@ -352,6 +352,9 @@ public class FilterEditor extends AbstractFilterEditor {
         );
 
         updateControls();
+        if (operationEditor instanceof HasAction) {
+            ((HasAction) operationEditor).doAction();
+        }
     }
 
     private void deleteCondition(AbstractCondition condition) {
