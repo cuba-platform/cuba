@@ -57,7 +57,6 @@
                 <entry key="cuba_FileStorageService" value="com.haulmont.cuba.core.app.FileStorageService"/>
                 <entry key="cuba_UniqueNumbersService" value="com.haulmont.cuba.core.app.UniqueNumbersService"/>
                 <entry key="cuba_LocalizedMessageService" value="com.haulmont.cuba.core.app.LocalizedMessageService"/>
-                <entry key="cuba_ReportService" value="com.haulmont.cuba.core.app.JasperReportService"/>
                 <entry key="report_ReportService" value="com.haulmont.cuba.report.app.ReportService"/>
                 <entry key="cuba_ResourceService" value="com.haulmont.cuba.core.app.ResourceService"/>
                 <entry key="cuba_TestingService" value="com.haulmont.cuba.core.app.TestingService"/>

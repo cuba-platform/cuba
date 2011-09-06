@@ -1,9 +1,6 @@
 package com.haulmont.cuba.web.toolkit.ui.charts;
 
 import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import net.sf.jasperreports.engine.base.JRVirtualPrintPage;
 
 import java.util.Collection;
 
