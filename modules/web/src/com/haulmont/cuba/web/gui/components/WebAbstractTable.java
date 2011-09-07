@@ -283,6 +283,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                     datasource.setItem((Entity) selected.iterator().next());
                 } else {
                     //noinspection unchecked
+                    datasource.setItem(null);
                     datasource.setItem((Entity) selected.iterator().next());
                 }
             }
