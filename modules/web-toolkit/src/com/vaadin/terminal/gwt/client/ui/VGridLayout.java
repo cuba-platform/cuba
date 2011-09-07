@@ -465,10 +465,12 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
             canvasHeight = y - spacingPixelsVertical;
         } else {
             canvasHeight = getOffsetHeight() - marginTopAndBottom;
-            if (canvasHeight < 0) {
-                canvasHeight = 0;
-            }
         }
+
+        if (canvasHeight < 0) {
+            canvasHeight = 0;
+        }
+
         canvas.setHeight(canvasHeight + "px");
     }
 
