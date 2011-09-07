@@ -14,7 +14,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 
-public interface RuntimePropertyGridLayout extends GridLayout, Component.HasCaption{
+public interface RuntimePropertyGridLayout extends GridLayout, Component.HasCaption, Component.Editable {
 
     String NAME = "runtimePropertyGrid";
 

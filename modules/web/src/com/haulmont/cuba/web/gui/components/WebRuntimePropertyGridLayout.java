@@ -72,6 +72,8 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
     private String[] attributePropertyArr;
     private String[] typePropertyArr;
 
+    private boolean editable = true;
+
     public void setMainDs(Datasource ds) {
         this.mainDs = ds;
 
@@ -289,7 +291,8 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
                     field = new WebTextField();
                     setListenerToField(field, instance, Double.class);
                     field.addValidator(new DoubleValidator());
-                    field.setValue(Datatypes.getInstance().get(Double.class).parse(val));
+                    //field.setValue(Datatypes.getInstance().get(Double.class).parse(val));
+                    field.setValue(val);
                     break;
                 }
                 case STRING: {
@@ -324,6 +327,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
             if (BooleanUtils.isTrue(value.getMandatory())) {
                 field.setRequired(true);
             }
+            field.setEditable(editable);
             return field;
         } catch (ParseException e) {
             throw new RuntimeException(e);
@@ -480,4 +484,18 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
         return sb.toString();
     }
 
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        if (this.editable != editable) {
+            this.editable = editable;
+            for (Component component : getComponents()) {
+                if (component instanceof Editable) {
+                    ((Editable) component).setEditable(editable);
+                }
+            }
+        }
+    }
 }

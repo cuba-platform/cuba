@@ -1000,6 +1000,7 @@
         <xs:attributeGroup ref="hasVisibility"/>
         <xs:attributeGroup ref="hasSpacingMargin"/>
 
+        <xs:attributeGroup ref="hasEditable"/>
         <xs:attributeGroup ref="hasCaptionProp"/>
         <xs:attributeGroup ref="hasDatasourceProp"/>
         <xs:attributeGroup ref="hasExpandapleProp"/>

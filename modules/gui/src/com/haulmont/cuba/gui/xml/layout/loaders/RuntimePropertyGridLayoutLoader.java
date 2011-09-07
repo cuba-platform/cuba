@@ -65,6 +65,7 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
         loadWidth(component, element);
         loadHeight(component, element);
 
+        loadEditable(component, element);
         loadExpandable(component, element);
         loadAttributeProperty(component, element);
         loadAttributePropertyOrder(component, element);
@@ -86,6 +87,14 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
             Datasource ds = context.getDsContext().get(s);
             propertyGridLayout.setMainDs(ds);
         }
+    }
+
+    protected void loadEditable(RuntimePropertyGridLayout propertyGridLayout, Element element) {
+        String s = element.attributeValue("editable");
+        if (!StringUtils.isEmpty(s)){
+            propertyGridLayout.setEditable(BooleanUtils.toBoolean(s));
+        }
+
     }
 
     protected void loadAttributeProperty(RuntimePropertyGridLayout propertyGridLayout, Element element) {
