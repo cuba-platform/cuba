@@ -237,10 +237,18 @@ public class WebDateField
     @Override
     public void setValue(Object value) {
         prevValue = getValue();
-        if (dateField.isReadOnly())
+        if (!editable)
             return;
         dateField.setValue(value);
         timeField.setValue(value);
+    }
+
+    private void setValueFromDs(Object value) {
+        boolean isEditable = editable;
+        if (!editable)
+            setEditable(true);
+        setValue(value);
+        setEditable(isEditable);
     }
 
     private boolean isHourUsed() {
@@ -336,7 +344,7 @@ public class WebDateField
                         if (updatingInstance)
                             return;
                         Date value = InstanceUtils.getValueEx(item, metaPropertyPath.getPath());
-                        setValue(value);
+                        setValueFromDs(value);
                         fireValueChanged(value);
                     }
 
@@ -345,12 +353,21 @@ public class WebDateField
                         if (updatingInstance)
                             return;
                         if (property.equals(metaPropertyPath.toString())) {
-                            setValue(value);
+                           setValueFromDs(value);
                             fireValueChanged(value);
                         }
                     }
                 }
         );
+
+        if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
+            if (property.equals(metaPropertyPath.toString())) {
+                Date value = InstanceUtils.getValueEx(datasource.getItem(), metaPropertyPath.getPath());
+                setValueFromDs(value);
+                fireValueChanged(value);
+            }
+        }
+
 
         setRequired(metaProperty.isMandatory());
     }
@@ -413,6 +430,8 @@ public class WebDateField
 
     @Override
     public void setEditable(boolean editable) {
+        if (this.editable == editable)
+            return;
         this.editable = editable;
         timeField.setEditable(editable);
         dateField.setReadOnly(!editable);

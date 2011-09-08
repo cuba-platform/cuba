@@ -134,7 +134,6 @@ public class VMaskedTextField extends VTextField {
 				char c = string.charAt(i);
 
 				if (maskTest.get(i) != null && c == placeholder) {
-					setValue("");
 					valueChange(true);
 					return;
 				}

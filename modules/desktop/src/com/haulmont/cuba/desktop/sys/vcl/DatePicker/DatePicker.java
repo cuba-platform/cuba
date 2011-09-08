@@ -79,9 +79,13 @@ public class DatePicker extends JXDatePicker {
     public void setFormats(String... formats) {
         super.setFormats(formats);
         format = formats[0];
-        if (getEditor() != null)
+        Object prevVal = getEditor().getValue();
+        if (prevVal == null) {
             getEditor().setText(getMask(format));
+        }
         getEditor().setDocument(new DatePickerDocument(getEditor(), format, getMask(format), PLACE_HOLDER));
+        if (prevVal != null)
+            getEditor().setValue(prevVal);
     }
 
     public void setFormats(DateFormat... formats) {

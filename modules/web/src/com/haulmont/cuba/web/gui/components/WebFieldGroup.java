@@ -858,7 +858,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         @Override
         protected void initCommon(com.vaadin.ui.Field field, com.haulmont.cuba.gui.components.Field cubaField, MetaPropertyPath propertyPath) {
             final Field fieldConf = getField(propertyPath.toString());
-            if ("timeField".equals(fieldType(propertyPath))) {
+            if ("timeField".equals(fieldType(propertyPath))||(cubaField instanceof WebTimeField)) {
                 String s = fieldConf.getXmlDescriptor().attributeValue("showSeconds");
                 if (Boolean.valueOf(s)) {
                     ((TimeField) cubaField).setShowSeconds(true);

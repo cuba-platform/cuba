@@ -85,14 +85,20 @@ public class DateFieldWrapper extends CustomComponent implements Field {
     public void setInvalidCommitted(boolean isCommitted) {
     }
 
+    public void setReadOnly(boolean readOnly) {
+        dateField.setEditable(!readOnly);
+    }
+
+    public boolean isReadOnly() {
+        return dateField.isEditable();
+    }
+
     @Override
     public void commit() throws SourceException, Validator.InvalidValueException {
-        System.out.println();
     }
 
     @Override
     public void discard() throws SourceException {
-        System.out.println();
     }
 
     @Override
@@ -138,7 +144,6 @@ public class DateFieldWrapper extends CustomComponent implements Field {
 
     @Override
     public Collection<Validator> getValidators() {
-        System.out.println();
         return null;
     }
 
