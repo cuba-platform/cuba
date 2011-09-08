@@ -132,6 +132,11 @@ public class VFieldGroupLayout extends VGridLayout {
         } else {
             canvasHeight = getOffsetHeight() - marginTopAndBottom;
         }
+
+        if (canvasHeight < 0) {
+            canvasHeight = 0;
+        }
+
         canvas.setHeight(canvasHeight + "px");
     }
 
