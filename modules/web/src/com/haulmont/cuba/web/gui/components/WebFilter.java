@@ -610,28 +610,29 @@ public class WebFilter
 
     public String getCurrentFilterCaption() {
         String name;
-        if (filterEntity != null)
+        if (filterEntity != null) {
             if (filterEntity.getCode() == null)
                 name = InstanceUtils.getInstanceName(filterEntity);
             else {
                 name = MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode());
             }
-        else
-            name = "";
-        AbstractSearchFolder folder = filterEntity.getFolder();
-        if (folder != null) {
-            if (!StringUtils.isBlank(folder.getTabName()))
-                name = MessageProvider.getMessage(mainMessagesPack, folder.getTabName());
-            else if (!StringUtils.isBlank(folder.getName())) {
-                name = MessageProvider.getMessage(mainMessagesPack, folder.getName());
+            AbstractSearchFolder folder = filterEntity.getFolder();
+            if (folder != null) {
+                if (!StringUtils.isBlank(folder.getTabName()))
+                    name = MessageProvider.getMessage(mainMessagesPack, folder.getTabName());
+                else if (!StringUtils.isBlank(folder.getName())) {
+                    name = MessageProvider.getMessage(mainMessagesPack, folder.getName());
+                }
+                if (BooleanUtils.isTrue(filterEntity.getIsSet()))
+                    name = MessageProvider.getMessage(MESSAGES_PACK, "setPrefix") + " " + name;
+                else
+                    name = MessageProvider.getMessage(MESSAGES_PACK, "folderPrefix") + " " + name;
             }
-            if (BooleanUtils.isTrue(filterEntity.getIsSet()))
-                name = MessageProvider.getMessage(MESSAGES_PACK, "setPrefix") + " " + name;
-            else
-                name = MessageProvider.getMessage(MESSAGES_PACK, "folderPrefix") + " " + name;
-        }
+        } else
+            name = "";
         return name;
     }
+
 
     public List<AbstractCondition> getConditions() {
         return Collections.unmodifiableList(conditions);
