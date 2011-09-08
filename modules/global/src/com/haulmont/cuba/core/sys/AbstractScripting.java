@@ -212,7 +212,7 @@ public abstract class AbstractScripting implements Scripting {
     @Override
     public <T> T runGroovyScript(String name, Map<String, Object> context) {
         Binding binding = createBinding(context);
-        return runGroovyScript(name, binding);
+        return (T) runGroovyScript(name, binding);
     }
 
     @Override
