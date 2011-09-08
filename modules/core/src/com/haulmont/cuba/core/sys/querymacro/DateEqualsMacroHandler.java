@@ -13,11 +13,15 @@ package com.haulmont.cuba.core.sys.querymacro;
 import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.cuba.core.sys.QueryMacroHandler;
 import org.apache.commons.lang.time.DateUtils;
+import org.springframework.context.annotation.Scope;
 
+import javax.annotation.ManagedBean;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@ManagedBean("cuba_DateEqualsQueryMacroHandler")
+@Scope("prototype")
 public class DateEqualsMacroHandler implements QueryMacroHandler {
 
     protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateEquals\\(([^\\)]+)\\)");

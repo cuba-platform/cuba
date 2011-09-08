@@ -20,7 +20,9 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.CaptionMode;
@@ -47,10 +49,11 @@ import java.util.Date;
 
 public abstract class AbstractFieldFactory extends DefaultFieldFactory {
 
+    private Security security = AppContext.getBean(Security.NAME);
+
     /**
      * Creates fields for the Form
      */
-
     @Override
     public com.vaadin.ui.Field createField(Item item, Object propertyId, com.vaadin.ui.Component uiContext) {
         if (item != null && propertyId != null) {
@@ -201,7 +204,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
         initField(field, cubaField, propertyPath, false);
 
         if (!field.isReadOnly()) {
-            field.setReadOnly(!UserSessionClient.isEditPermitted(propertyPath.getMetaProperty()));
+            field.setReadOnly(!security.isEntityAttrModificationPermitted(propertyPath.getMetaProperty()));
         }
 
         return field;

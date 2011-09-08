@@ -10,15 +10,13 @@
  */
 package com.haulmont.cuba.core.app;
 
-import org.apache.openjpa.persistence.*;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.datacache.QueryCache;
 import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
-import com.haulmont.cuba.core.sys.EntityManagerFactoryImpl;
-import com.haulmont.cuba.core.PersistenceProvider;
+import org.apache.openjpa.datacache.QueryCache;
+import org.apache.openjpa.persistence.*;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.util.Collection;
 
 /**
@@ -30,14 +28,19 @@ import java.util.Collection;
 @ManagedBean(DataCacheAPI.NAME)
 public class DataCache implements DataCacheAPI, DataCacheMBean {
 
+    private OpenJPAEntityManagerFactorySPI jpaEmf;
+
+    @Inject
+    public void setJpaEmf(OpenJPAEntityManagerFactory jpaEmf) {
+        this.jpaEmf = (OpenJPAEntityManagerFactorySPI) jpaEmf;
+    }
+
     private StoreCache getStoreCache() {
-        return ((EntityManagerFactoryImpl) PersistenceProvider.getEntityManagerFactory())
-                .getDelegate().getStoreCache();
+        return jpaEmf.getStoreCache();
     }
 
     private QueryResultCache getQueryCache() {
-        return ((EntityManagerFactoryImpl) PersistenceProvider.getEntityManagerFactory())
-                .getDelegate().getQueryResultCache();
+        return jpaEmf.getQueryResultCache();
     }
 
     public DataCacheAPI getAPI() {
@@ -45,18 +48,12 @@ public class DataCache implements DataCacheAPI, DataCacheMBean {
     }
 
     public boolean isStoreCacheEnabled() {
-        EntityManagerFactoryImpl emf = (EntityManagerFactoryImpl) PersistenceProvider.getEntityManagerFactory();
-        OpenJPAConfiguration configuration =
-                ((OpenJPAEntityManagerFactorySPI) emf.getDelegate()).getConfiguration();
-        String s = configuration.getDataCache();
+        String s = jpaEmf.getConfiguration().getDataCache();
         return s != null && !s.startsWith("false");
     }
 
     public boolean isQueryCacheEnabled() {
-        EntityManagerFactoryImpl emf = (EntityManagerFactoryImpl) PersistenceProvider.getEntityManagerFactory();
-        OpenJPAConfiguration configuration =
-                ((OpenJPAEntityManagerFactorySPI) emf.getDelegate()).getConfiguration();
-        String s = configuration.getQueryCache();
+        String s = jpaEmf.getConfiguration().getQueryCache();
         return s != null && !s.startsWith("false");
     }
 
@@ -64,8 +61,7 @@ public class DataCache implements DataCacheAPI, DataCacheMBean {
         if (!isStoreCacheEnabled())
             return 0;
 
-        EntityManagerFactoryImpl emf = (EntityManagerFactoryImpl) PersistenceProvider.getEntityManagerFactory();
-        org.apache.openjpa.datacache.DataCache cache = ((StoreCacheImpl) emf.getDelegate().getStoreCache()).getDelegate();
+        org.apache.openjpa.datacache.DataCache cache = ((StoreCacheImpl) jpaEmf.getStoreCache()).getDelegate();
         if (cache instanceof ConcurrentDataCache) {
             return ((ConcurrentDataCache) cache).getCacheMap().size();
         } else {
@@ -77,8 +73,7 @@ public class DataCache implements DataCacheAPI, DataCacheMBean {
         if (!isStoreCacheEnabled())
             return 0;
 
-        EntityManagerFactoryImpl emf = (EntityManagerFactoryImpl) PersistenceProvider.getEntityManagerFactory();
-        org.apache.openjpa.datacache.DataCache cache = ((StoreCacheImpl) emf.getDelegate().getStoreCache()).getDelegate();
+        org.apache.openjpa.datacache.DataCache cache = ((StoreCacheImpl) jpaEmf.getStoreCache()).getDelegate();
         if (cache instanceof ConcurrentDataCache) {
             return ((ConcurrentDataCache) cache).getCacheSize();
         } else {
@@ -90,8 +85,7 @@ public class DataCache implements DataCacheAPI, DataCacheMBean {
         if (!isQueryCacheEnabled())
             return 0;
 
-        EntityManagerFactoryImpl emf = (EntityManagerFactoryImpl) PersistenceProvider.getEntityManagerFactory();
-        QueryCache cache = ((QueryResultCacheImpl) emf.getDelegate().getQueryResultCache()).getDelegate();
+        QueryCache cache = ((QueryResultCacheImpl) jpaEmf.getQueryResultCache()).getDelegate();
         if (cache instanceof ConcurrentQueryCache) {
             return ((ConcurrentQueryCache) cache).getCacheMap().size();
         } else {
@@ -103,8 +97,7 @@ public class DataCache implements DataCacheAPI, DataCacheMBean {
         if (!isQueryCacheEnabled())
             return 0;
 
-        EntityManagerFactoryImpl emf = (EntityManagerFactoryImpl) PersistenceProvider.getEntityManagerFactory();
-        QueryCache cache = ((QueryResultCacheImpl) emf.getDelegate().getQueryResultCache()).getDelegate();
+        QueryCache cache = ((QueryResultCacheImpl) jpaEmf.getQueryResultCache()).getDelegate();
         if (cache instanceof ConcurrentQueryCache) {
             return ((ConcurrentQueryCache) cache).getCacheSize();
         } else {

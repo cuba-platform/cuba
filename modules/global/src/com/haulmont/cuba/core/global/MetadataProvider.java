@@ -12,52 +12,44 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.sys.AppContext;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
 
 /**
- * Entry point to the metadata functionality.<br>
- * Use static methods.
+ * Utility class to provide metadata functionality in static context.<br>
+ * <p>Injected {@link Metadata} interface should be used instead of this class wherever possible.</p>
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 public abstract class MetadataProvider
 {
-    public static final String METADATA_CONFIG = "cuba.metadataConfig";
-    protected static final String DEFAULT_METADATA_CONFIG = "cuba-metadata.xml";
-
-    private static MetadataProvider getInstance() {
-        return AppContext.getApplicationContext().getBean("cuba_MetadataProvider", MetadataProvider.class);
+    private static Metadata getMetadata() {
+        return AppContext.getApplicationContext().getBean(Metadata.NAME, Metadata.class);
     }
 
     /**
      * Get current metadata session
+     * @return metadata session instance
      */
     public static Session getSession() {
-        return getInstance().__getSession();
+        return getMetadata().getSession();
     }
 
     /**
      * Get the view repository
+     * @return view repository instance
      */
     public static ViewRepository getViewRepository() {
-        return getInstance().__getViewRepository();
-    }
-
-    public static Map<Class, Class> getReplacedEntities() {
-        return getInstance().__getReplacedEntities();
+        return getMetadata().getViewRepository();
     }
 
     /**
-     * Get the location of non-persistent metadata descriptor
+     * Get the entity classes replacement map defined in metadata configuration
+     * @return entity classes replacement map
      */
-    public static String getMetadataConfig() {
-        String xmlPath = AppContext.getProperty(METADATA_CONFIG);
-        if (StringUtils.isBlank(xmlPath))
-            xmlPath = DEFAULT_METADATA_CONFIG;
-        return xmlPath;
+    public static Map<Class, Class> getReplacedEntities() {
+        return getMetadata().getReplacedEntities();
     }
-
-    protected abstract Session __getSession();
-    protected abstract ViewRepository __getViewRepository();
-    protected abstract Map<Class,Class> __getReplacedEntities();
 }

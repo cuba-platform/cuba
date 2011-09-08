@@ -151,7 +151,7 @@ public class UpdateDetachedTest extends CubaTestCase
 
     public void testDataService() {
         Permission p;
-        DataService ds = Locator.lookupLocal(DataService.JNDI_NAME);
+        DataService ds = Locator.lookup(DataService.JNDI_NAME);
 
         LoadContext ctx = new LoadContext(Permission.class);
         ctx.setId(permissionId);

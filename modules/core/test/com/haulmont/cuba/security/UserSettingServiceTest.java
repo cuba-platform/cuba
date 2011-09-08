@@ -11,8 +11,8 @@
 package com.haulmont.cuba.security;
 
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.sys.TestSecurityProvider;
 import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.sys.TestUserSessionSource;
 import com.haulmont.cuba.security.app.UserSettingService;
 
 public class UserSettingServiceTest extends CubaTestCase
@@ -29,7 +29,7 @@ public class UserSettingServiceTest extends CubaTestCase
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             Query q = em.createNativeQuery("delete from SEC_USER_SETTING where USER_ID = ?");
-            q.setParameter(1, TestSecurityProvider.USER_ID);
+            q.setParameter(1, TestUserSessionSource.USER_ID);
             q.executeUpdate();
             tx.commit();
         } finally {

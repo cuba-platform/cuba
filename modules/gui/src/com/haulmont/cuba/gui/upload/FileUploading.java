@@ -17,6 +17,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import javax.annotation.ManagedBean;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -30,6 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author artamonov
  */
+@ManagedBean("cuba_FileUploading")
 public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     private static final int HTTP_OK = 200;

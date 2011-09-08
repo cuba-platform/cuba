@@ -16,10 +16,9 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
@@ -81,6 +80,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     private Item itemWrapper;
 
     private DsManager dsManager;
+
+    private Security security = AppContext.getBean(Security.NAME);
 
     public WebFieldGroup() {
         component = new FieldGroup(fieldFactory) {
@@ -383,7 +384,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             MetaProperty metaProperty = dsComponent.getMetaProperty();
 
             if (metaProperty != null) {
-                dsComponent.setEditable(UserSessionProvider.isEditPermitted(metaProperty)
+                dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaProperty)
                         && dsComponent.isEditable());
             }
         }
@@ -394,7 +395,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         if (propertyPath != null) {
             MetaProperty metaProperty = propertyPath.getMetaProperty();
 
-            setEditable(fieldConf, UserSessionProvider.isEditPermitted(metaProperty)
+            setEditable(fieldConf, security.isEntityAttrModificationPermitted(metaProperty)
                     && isEditable(fieldConf));
         }
     }

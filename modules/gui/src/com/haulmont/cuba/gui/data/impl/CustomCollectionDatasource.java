@@ -13,6 +13,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.TemplateHelper;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -53,7 +54,7 @@ public class CustomCollectionDatasource<T extends Entity<K>, K>
         final Map<String, Object> parameters = getQueryParameters(params);
 
         Collection<T> entities = ScriptingProvider.evaluateGroovy(
-                ScriptingProvider.Layer.GUI, getGroovyScript(query, parameters), parameters);
+                Scripting.Layer.GUI, getGroovyScript(query, parameters), parameters);
 
         for (T entity : entities) {
             data.put(entity.getId(), entity);

@@ -15,20 +15,15 @@ import com.haulmont.cuba.core.sys.AppContext;
 import java.util.UUID;
 
 /**
- * Global UUID provider. Must be used everywhere instead of <code>UUID.randomUUID()</code>
+ * Global UUID provider for static context. Must be used everywhere instead of <code>UUID.randomUUID()</code>
+ * Consider use of {@link UuidSource} directly.
  */
 public abstract class UuidProvider
 {
-    private static UuidProvider getInstance() {
-        return AppContext.getApplicationContext().getBean("cuba_UuidProvider", UuidProvider.class);
-    }
-
     public static UUID createUuid() {
         if (AppContext.getApplicationContext() == null)
             return UUID.randomUUID();
 
-        return getInstance().__createUuid();
+        return AppContext.getBean(UuidSource.NAME, UuidSource.class).createUuid();
     }
-
-    protected abstract UUID __createUuid();
 }

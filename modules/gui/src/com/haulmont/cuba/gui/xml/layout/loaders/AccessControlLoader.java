@@ -13,6 +13,7 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
@@ -145,7 +146,7 @@ public class AccessControlLoader extends ContainerLoader {
         String script = accessElement.getText();
         if (!StringUtils.isBlank(script)) {
             return BooleanUtils.isTrue(
-                    ScriptingProvider.<Boolean>evaluateGroovy(ScriptingProvider.Layer.GUI, script, context.getBinding()));
+                    ScriptingProvider.<Boolean>evaluateGroovy(Scripting.Layer.GUI, script, context.getBinding()));
         } else {
             String scriptName = accessElement.attributeValue("script");
             if (!StringUtils.isBlank(scriptName)) {

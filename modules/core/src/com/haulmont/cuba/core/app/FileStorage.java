@@ -12,10 +12,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.FileDescriptor;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.FileStorageException;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.io.*;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -33,6 +31,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 @ManagedBean(FileStorageAPI.NAME)
 public class FileStorage implements FileStorageMBean, FileStorageAPI {
+
+    @Inject
+    private UserSessionSource userSessionSource;
 
     private Log log = LogFactory.getLog(FileStorage.class);
 
@@ -79,7 +80,7 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
 
         StringBuilder sb = new StringBuilder();
         sb.append(df.format(TimeProvider.currentTimestamp())).append(" ");
-        sb.append("[").append(SecurityProvider.currentUserSession().getUser()).append("] ");
+        sb.append("[").append(userSessionSource.getUserSession().getUser()).append("] ");
         sb.append("CREATE").append(" ");
         sb.append("\"").append(file.getAbsolutePath()).append("\" ");
         sb.append("\"").append(fileDescr.getName()).append("\"\n");

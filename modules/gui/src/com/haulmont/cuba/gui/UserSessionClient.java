@@ -10,7 +10,6 @@
  */
 package com.haulmont.cuba.gui;
 
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.security.global.UserSession;
 
@@ -30,10 +29,5 @@ public abstract class UserSessionClient
     @Deprecated
     public static UUID currentOrSubstitutedUserId() {
         return UserSessionProvider.currentOrSubstitutedUserId();
-    }
-
-    @Deprecated
-    public static boolean isEditPermitted(MetaProperty metaProperty) {
-        return UserSessionProvider.isEditPermitted(metaProperty);
     }
 }

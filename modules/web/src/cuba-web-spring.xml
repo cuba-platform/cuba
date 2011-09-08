@@ -10,30 +10,13 @@
 
     <bean class="com.haulmont.cuba.core.sys.CubaPropertyPlaceholderConfigurer"/>
 
-    <!-- Global Providers -->
+    <!-- Annotation-based beans -->
 
-    <bean id="cuba_ConfigProvider" class="com.haulmont.cuba.client.sys.ConfigProviderClientImpl"/>
+    <context:component-scan base-package="com.haulmont.cuba"/>
 
-    <bean id="cuba_UserSessionProvider" class="com.haulmont.cuba.web.sys.WebUserSessionProvider"/>
+    <!-- Various beans with non-standard configuration -->
 
-    <bean id="cuba_MessageProvider" class="com.haulmont.cuba.client.sys.MessageProviderClientImpl"/>
-
-    <bean id="cuba_TimeProvider" class="com.haulmont.cuba.client.sys.TimeProviderClientImpl"/>
-
-    <bean id="cuba_UuidProvider" class="com.haulmont.cuba.client.sys.UuidProviderClientImpl"/>
-
-    <bean id="cuba_MetadataProvider" class="com.haulmont.cuba.client.sys.MetadataProviderClientImpl">
-        <property name="deployerService" ref="cuba_DeployerService"/>
-    </bean>
-
-    <bean id="cuba_ScriptingProvider" class="com.haulmont.cuba.client.sys.ScriptingProviderClientImpl">
-        <constructor-arg index="0" ref="cuba_ConfigProvider"/>
-    </bean>
-
-    <bean id="cuba_web_Configuration" class="com.haulmont.cuba.web.jmx.Configuration"/>
-    <bean id="cuba_web_Caching" class="com.haulmont.cuba.web.jmx.Caching"/>
-
-    <bean id="cuba_FileUploading" class="com.haulmont.cuba.gui.upload.FileUploading"/>
+    <bean id="cuba_UserSession" factory-bean="cuba_UserSessionSource" factory-method="getUserSession" scope="prototype"/>
 
     <!-- MBeans registration -->
 
@@ -108,7 +91,7 @@
     <bean id="cuba_BackgroundWorker_WatchDog" class="com.haulmont.cuba.gui.executors.TasksWatchDog"/>
 
     <bean id="cuba_BackgroundWorker" class="com.haulmont.cuba.web.gui.utils.WebBackgroundWorker">
-        <constructor-arg index="0" ref="cuba_ConfigProvider"/>
+        <constructor-arg index="0" ref="cuba_Configuration"/>
         <constructor-arg index="1" ref="cuba_BackgroundWorker_WatchDog"/>
     </bean>
 

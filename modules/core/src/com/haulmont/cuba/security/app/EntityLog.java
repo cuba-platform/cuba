@@ -16,10 +16,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -54,8 +50,11 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
     private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Inject
-    public EntityLog(ConfigProvider configProvider) {
-        config = configProvider.doGetConfig(EntityLogConfig.class);
+    private UserSessionSource userSessionSource;
+
+    @Inject
+    public EntityLog(Configuration configuration) {
+        config = configuration.getConfig(EntityLogConfig.class);
     }
 
     public synchronized boolean isEnabled() {
@@ -163,7 +162,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             }
             Date ts = TimeProvider.currentTimestamp();
             EntityManager em = PersistenceProvider.getEntityManager();
-            User user = em.getReference(User.class, SecurityProvider.currentUserId());
+            User user = em.getReference(User.class, userSessionSource.getUserSession().getUser().getId());
 
             EntityLogItem item = new EntityLogItem();
             item.setEventTs(ts);
@@ -207,7 +206,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             }
             Date ts = TimeProvider.currentTimestamp();
             EntityManager em = PersistenceProvider.getEntityManager();
-            User user = em.getReference(User.class, SecurityProvider.currentUserId());
+            User user = em.getReference(User.class, userSessionSource.getUserSession().getUser().getId());
             Set<String> dirty = PersistenceProvider.getDirtyFields(entity);
 
             EntityLogItem item = null;
@@ -256,7 +255,7 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             }
             Date ts = TimeProvider.currentTimestamp();
             EntityManager em = PersistenceProvider.getEntityManager();
-            User user = em.getReference(User.class, SecurityProvider.currentUserId());
+            User user = em.getReference(User.class, userSessionSource.getUserSession().getUser().getId());
 
             EntityLogItem item = new EntityLogItem();
             item.setEventTs(ts);

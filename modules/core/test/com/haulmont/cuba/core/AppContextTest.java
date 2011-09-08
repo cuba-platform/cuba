@@ -10,16 +10,12 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.app.PersistenceManagerAPI;
 import com.haulmont.cuba.core.sys.AppContext;
 
 public class AppContextTest extends CubaTestCase {
 
     public void test() {
-        Locator locator = AppContext.getApplicationContext().getBean("cuba_Locator", Locator.class);
-        assertNotNull(locator);
-
-        PersistenceManagerAPI pc = AppContext.getApplicationContext().getBean(PersistenceManagerAPI.NAME, PersistenceManagerAPI.class);
-        assertNotNull(pc);
+        Persistence persistence = AppContext.getBean(Persistence.NAME, Persistence.class);
+        assertNotNull(persistence);
     }
 }

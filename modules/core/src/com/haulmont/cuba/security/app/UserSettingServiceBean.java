@@ -12,8 +12,9 @@ package com.haulmont.cuba.security.app;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.global.EntityFactory;
 import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.global.EntityFactory;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.*;
 import org.dom4j.Attribute;
@@ -21,7 +22,11 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Service providing current user settings functionality:
@@ -31,6 +36,9 @@ import java.util.*;
 @Service(UserSettingService.NAME)
 public class UserSettingServiceBean implements UserSettingService
 {
+    @Inject
+    private UserSessionSource userSessionSource;
+
     public String loadSetting(String name) {
         return loadSetting(null, name);
     }
@@ -43,7 +51,7 @@ public class UserSettingServiceBean implements UserSettingService
 
             Query q = em.createQuery(
                     "select s from sec$UserSetting s where s.user.id = ?1 and s.name =?2 and s.clientType = ?3");
-            q.setParameter(1, SecurityProvider.currentUserId());
+            q.setParameter(1, userSessionSource.getUserSession().getUser().getId());
             q.setParameter(2, name);
             q.setParameter(3, clientType == null ? null : clientType.getId());
             q.setView(new View(UserSetting.class, false).addProperty("value"));
@@ -71,7 +79,7 @@ public class UserSettingServiceBean implements UserSettingService
 
             Query q = em.createQuery(
                     "select s from sec$UserSetting s where s.user.id = ?1 and s.name =?2 and s.clientType = ?3");
-            q.setParameter(1, SecurityProvider.currentUserId());
+            q.setParameter(1, userSessionSource.getUserSession().getUser().getId());
             q.setParameter(2, name);
             q.setParameter(3, clientType == null ? null : clientType.getId());
             q.setView(new View(UserSetting.class, false).addProperty("value"));
@@ -80,7 +88,7 @@ public class UserSettingServiceBean implements UserSettingService
             if (list.isEmpty()) {
                 UserSetting us = new UserSetting();
                 em.setView(new View(User.class, false));
-                us.setUser(em.find(User.class, SecurityProvider.currentUserSession().getUser().getId()));
+                us.setUser(em.find(User.class, userSessionSource.getUserSession().getUser().getId()));
                 us.setName(name);
                 us.setClientType(clientType);
                 us.setValue(value);

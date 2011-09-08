@@ -13,7 +13,7 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.EntityStatistics;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.QueryParser;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
@@ -57,11 +57,14 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
     @Inject
     private DbUpdater dbUpdater;
 
+    @Inject
+    private PersistenceSecurity security;
+
     private PersistenceConfig config;
 
     @Inject
-    public void setConfigProvider(ConfigProvider configProvider) {
-        config = configProvider.doGetConfig(PersistenceConfig.class);
+    public void setConfigProvider(Configuration configuration) {
+        config = configuration.getConfig(PersistenceConfig.class);
     }
 
     private void initDbMetadata() {
@@ -223,7 +226,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
                 QueryParser parser = QueryTransformerFactory.createParser(queryString);
                 Set<String> paramNames = parser.getParamNames();
                 for (String paramName : paramNames) {
-                    SecurityProvider.setQueryParam(query, paramName);
+                    security.setQueryParam(query, paramName);
                 }
                 List resultList = query.getResultList();
                 tx.commit();

@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -47,8 +48,8 @@ public class ResourceRepository implements ResourceRepositoryMBean, ResourceRepo
     private static final String MSG_UNABLE_TO_LOAD_RESOURCE = "Unable to load resource %s";
 
     @Inject
-    public ResourceRepository(ConfigProvider configProvider) {
-        String confDir = configProvider.doGetConfig(GlobalConfig.class).getConfDir();
+    public ResourceRepository(Configuration configuration) {
+        String confDir = configuration.getConfig(GlobalConfig.class).getConfDir();
         rootPath = confDir + "/";
     }
 

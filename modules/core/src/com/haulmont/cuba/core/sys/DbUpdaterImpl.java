@@ -16,7 +16,8 @@ import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Scripting;
 import groovy.lang.Binding;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -43,6 +44,9 @@ public class DbUpdaterImpl implements DbUpdater {
     private interface FileHandler {
         void run(File file);
     }
+
+    @Inject
+    private Scripting scripting;
 
     private boolean changelogTableExists;
 
@@ -72,8 +76,8 @@ public class DbUpdaterImpl implements DbUpdater {
     private Log log = LogFactory.getLog(DbUpdaterImpl.class);
 
     @Inject
-    public void setConfigProvider(ConfigProvider cp) {
-        String dbDirName = cp.doGetConfig(ServerConfig.class).getDbDir();
+    public void setConfigProvider(Configuration configuration) {
+        String dbDirName = configuration.getConfig(ServerConfig.class).getDbDir();
         if (dbDirName != null)
             dbDir = new File(dbDirName);
     }
@@ -312,7 +316,7 @@ public class DbUpdaterImpl implements DbUpdater {
 
     private void executeGroovyScript(File file) {
         Binding bind = new Binding();
-        ScriptingProviderImpl.runGroovyScript(getScriptName(file), bind);
+        scripting.runGroovyScript(getScriptName(file), bind);
     }
 
     private void executeScript(File file) {

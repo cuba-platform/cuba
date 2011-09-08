@@ -8,10 +8,8 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
@@ -62,6 +60,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     private List<ExpandListener> expandListeners = null;
     private List<CollapseListener> collapseListeners = null;
+
+    private Security security = AppContext.getBean(Security.NAME);
+
     public DesktopFieldGroup() {
         LC lc = new LC();
         lc.hideMode(3); // Invisible components will not participate in the layout at all and it will for instance not take up a grid cell.
@@ -534,7 +535,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             MetaProperty metaProperty = dsComponent.getMetaProperty();
 
             if (metaProperty != null) {
-                dsComponent.setEditable(UserSessionProvider.isEditPermitted(metaProperty)
+                dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaProperty)
                         && dsComponent.isEditable());
             }
         }

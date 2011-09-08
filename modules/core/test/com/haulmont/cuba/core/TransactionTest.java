@@ -11,11 +11,7 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.Server;
-import com.haulmont.cuba.core.sys.JtaTransaction;
 
-import javax.transaction.TransactionManager;
-import javax.transaction.SystemException;
-import javax.naming.NamingException;
 import java.util.List;
 import java.util.UUID;
 

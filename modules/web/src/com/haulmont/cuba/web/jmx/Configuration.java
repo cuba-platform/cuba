@@ -9,6 +9,7 @@ package com.haulmont.cuba.web.jmx;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.text.StrBuilder;
 
+import javax.annotation.ManagedBean;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
  *
  * @author krivopustov
  */
+@ManagedBean("cuba_web_Configuration")
 public class Configuration implements ConfigurationMBean {
 
     @Override

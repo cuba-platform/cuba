@@ -37,18 +37,13 @@ public class QueryImpl implements Query
     private boolean isNative;
     private String queryString;
 
-    private List<QueryMacroHandler> macroHandlers = new ArrayList<QueryMacroHandler>();
+    private QueryMacroHandler[] macroHandlers;
 
-    public QueryImpl(EntityManagerImpl entityManager, boolean isNative) {
+    public QueryImpl(EntityManagerImpl entityManager, boolean isNative, QueryMacroHandler[] macroHandlers) {
         this.em = entityManager;
         this.emDelegate = entityManager.getDelegate();
         this.isNative = isNative;
-
-        macroHandlers.add(Locator.<QueryMacroHandler>lookup("cuba_TimeBetweenQueryMacroHandler"));
-        macroHandlers.add(Locator.<QueryMacroHandler>lookup("cuba_TimeTodayQueryMacroHandler"));
-        macroHandlers.add(Locator.<QueryMacroHandler>lookup("cuba_DateEqualsQueryMacroHandler"));
-        macroHandlers.add(Locator.<QueryMacroHandler>lookup("cuba_DateBeforeQueryMacroHandler"));
-        macroHandlers.add(Locator.<QueryMacroHandler>lookup("cuba_DateAfterQueryMacroHandler"));
+        this.macroHandlers = macroHandlers;
     }
 
     private OpenJPAQuery getQuery() {
@@ -92,17 +87,21 @@ public class QueryImpl implements Query
 
     private String expandMacros() {
         String result = queryString;
-        for (QueryMacroHandler handler : macroHandlers) {
-            result = handler.expandMacro(result);
+        if (macroHandlers != null) {
+            for (QueryMacroHandler handler : macroHandlers) {
+                result = handler.expandMacro(result);
+            }
         }
         return result;
     }
 
     private void addMacroParams(OpenJPAQuery jpaQuery) {
-        for (QueryMacroHandler handler : macroHandlers) {
-            handler.setQueryParams(getQuery().getNamedParameters());
-            for (Map.Entry<String, Object> entry : handler.getParams().entrySet()) {
-                jpaQuery.setParameter(entry.getKey(), entry.getValue());
+        if (macroHandlers != null) {
+            for (QueryMacroHandler handler : macroHandlers) {
+                handler.setQueryParams(getQuery().getNamedParameters());
+                for (Map.Entry<String, Object> entry : handler.getParams().entrySet()) {
+                    jpaQuery.setParameter(entry.getKey(), entry.getValue());
+                }
             }
         }
     }

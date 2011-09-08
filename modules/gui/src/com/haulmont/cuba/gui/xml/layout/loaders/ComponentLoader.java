@@ -15,9 +15,8 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.Component;
@@ -44,10 +43,13 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected String messagesPack;
     protected Context context;
 
+    protected Security security;
+
     private static Log log = LogFactory.getLog(ComponentLoader.class);
 
     protected ComponentLoader(Context context) {
         this.context = context;
+        this.security = AppContext.getBean(Security.NAME);
     }
 
     public Context getContext() {
@@ -98,7 +100,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             if (component instanceof DatasourceComponent
                     && ((DatasourceComponent) component).getDatasource() != null)
             {
-                if (!UserSessionClient.isEditPermitted(((DatasourceComponent) component).getMetaProperty())) {
+                if (!security.isEntityAttrModificationPermitted(((DatasourceComponent) component).getMetaProperty())) {
                     ((Component.Editable) component).setEditable(false);
                     return;
                 }
@@ -263,7 +265,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             value = Boolean.valueOf(expression);
         } else {
             value = ScriptingProvider.evaluateGroovy(
-                    ScriptingProvider.Layer.GUI, expression, context.getBinding());
+                    Scripting.Layer.GUI, expression, context.getBinding());
         }
         return value;
     }

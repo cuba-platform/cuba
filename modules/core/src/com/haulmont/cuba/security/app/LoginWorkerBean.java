@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
@@ -40,6 +41,9 @@ public class LoginWorkerBean implements LoginWorker
 
     @Inject
     private UserSessionManager userSessionManager;
+
+    @Inject
+    private UserSessionSource userSessionSource;
 
     private User loadUser(String login, String password, Locale locale)
             throws LoginException
@@ -140,7 +144,7 @@ public class LoginWorkerBean implements LoginWorker
 
     public void logout() {
         try {
-            UserSession session = SecurityProvider.currentUserSession();
+            UserSession session = userSessionSource.getUserSession();
             userSessionManager.removeSession(session);
             log.info("Logged out: " + session);
         }
@@ -153,7 +157,7 @@ public class LoginWorkerBean implements LoginWorker
     }
 
     public UserSession substituteUser(User substitutedUser) {
-        UserSession currentSession = SecurityProvider.currentUserSession();
+        UserSession currentSession = userSessionSource.getUserSession();
 
         Transaction tx = Locator.createTransaction();
         try {

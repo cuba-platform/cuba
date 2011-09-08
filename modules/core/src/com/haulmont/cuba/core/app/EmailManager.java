@@ -9,10 +9,7 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.SendingAttachment;
 import com.haulmont.cuba.core.entity.SendingMessage;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.SendingStatus;
-import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -44,11 +41,18 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
 
     @Inject
     private ThreadPoolTaskExecutor mailSendTaskExecutor;
+
+    @Inject
+    private UserSessionSource userSessionSource;
+
+    @Inject
+    private TimeSource timeSource;
+
     private EmailerConfig config;
 
     @Inject
-    public void setConfig(ConfigProvider configProvider) {
-        this.config = configProvider.doGetConfig(EmailerConfig.class);
+    public void setConfig(Configuration configuration) {
+        this.config = configuration.getConfig(EmailerConfig.class);
     }
 
     @Override
@@ -100,7 +104,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
             em.createQuery(updateQueryStr.toString())
                     .setParameter("status", status.getId())
                     .setParameter("list", messages)
-                    .setParameter("currentTime", TimeProvider.currentTimestamp())
+                    .setParameter("currentTime", timeSource.currentTimestamp())
                     .executeUpdate();
             tx.commit();
         } finally {
@@ -109,7 +113,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
     }
 
     private boolean needToSetStatusNotSent(SendingMessage sendingMessage) {
-        if (sendingMessage.getDeadline() != null && sendingMessage.getDeadline().getTime() < TimeProvider.currentTimestamp().getTime())
+        if (sendingMessage.getDeadline() != null && sendingMessage.getDeadline().getTime() < timeSource.currentTimestamp().getTime())
             return true;
         else if (sendingMessage.getAttemptsCount() != null && sendingMessage.getAttemptsMade() != null && sendingMessage.getAttemptsMade() >= sendingMessage.getAttemptsCount())
             return true;
@@ -153,7 +157,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
                     "\t or (sm.status = :statusSending and sm.updateTs<:time)" +
                     "\t order by sm.createTs")
                     .setParameter("statusQueue", SendingStatus.QUEUE.getId())
-                    .setParameter("time", DateUtils.addSeconds(TimeProvider.currentTimestamp(), -MAX_SENDING_TIME_SEC))
+                    .setParameter("time", DateUtils.addSeconds(timeSource.currentTimestamp(), -MAX_SENDING_TIME_SEC))
                     .setParameter("statusSending", SendingStatus.SENDING.getId());
             List<SendingMessage> res = query.setMaxResults(getMessageQueueCapacity()).getResultList();
             tx.commit();
@@ -178,8 +182,8 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
                         "\t where sm.id =:id and sm.version=:version";
                 Query query = em.createQuery(queryStr);
                 query.setParameter("status", SendingStatus.SENDING.getId());
-                query.setParameter("currentTime", TimeProvider.currentTimestamp());
-                query.setParameter("user", SecurityProvider.currentUserSession().getUser().getLogin());
+                query.setParameter("currentTime", timeSource.currentTimestamp());
+                query.setParameter("user", userSessionSource.getUserSession().getUser().getLogin());
                 query.setParameter("version", msg.getVersion());
                 query.setParameter("version1", msg.getVersion() + 1);
                 query.setParameter("id", msg.getId());
@@ -217,7 +221,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
     private void updateSendingMessageStatus(SendingMessage sendingMessage, SendingStatus status) {
         if (sendingMessage != null) {
             boolean increaseAttemptsMade = !status.equals(SendingStatus.SENDING);
-            Date currentTimestamp = TimeProvider.currentTimestamp();
+            Date currentTimestamp = timeSource.currentTimestamp();
 
             Transaction tx = Locator.createTransaction();
             try {
@@ -232,7 +236,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
                         .setParameter("status", status.getId())
                         .setParameter("id", sendingMessage.getId())
                         .setParameter("updateTs", currentTimestamp)
-                        .setParameter("updatedBy", SecurityProvider.currentUserSession().getUser().getLogin());
+                        .setParameter("updatedBy", userSessionSource.getUserSession().getUser().getLogin());
                 if (status.equals(SendingStatus.SENT))
                     query.setParameter("dateSent", currentTimestamp);
                 query.executeUpdate();

@@ -14,28 +14,45 @@ import com.haulmont.bali.util.StringHelper;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.PersistenceSecurity;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ViewHelper;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.PermissionType;
-import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.*;
 
 @Service(DataService.NAME)
 public class DataServiceBean implements DataService {
-    private volatile static Boolean storeCacheEnabled;
+
+    @Inject
+    private Metadata metadata;
+
+    @Inject
+    private Configuration configuration;
+
+    @Inject
+    private Persistence persistence;
+
+    @Inject
+    private PersistenceSecurity security;
+
+    @Inject
+    private DataCacheAPI dataCacheAPI;
 
     private Log log = LogFactory.getLog(DataServiceBean.class);
 
     public DbDialect getDbDialect() {
-        return PersistenceProvider.getDbDialect();
+        return persistence.getDbDialect();
     }
 
     public Map<Entity, Entity> commit(CommitContext<Entity> context) {
@@ -45,9 +62,9 @@ public class DataServiceBean implements DataService {
 
         final Map<Entity, Entity> res = new HashMap<Entity, Entity>();
 
-        Transaction tx = Locator.getTransaction();
+        Transaction tx = persistence.getTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             checkPermissions(context);
 
             if (!context.isSoftDeletion())
@@ -96,9 +113,9 @@ public class DataServiceBean implements DataService {
 
         final Map<Entity, Entity> res = new HashMap<Entity, Entity>();
 
-        Transaction tx = Locator.getTransaction();
+        Transaction tx = persistence.getTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             checkPermissions(context);
 
             if (!context.isSoftDeletion())
@@ -107,7 +124,7 @@ public class DataServiceBean implements DataService {
             // persist new or merge detached
             Set newInstanceIdSet = new HashSet(context.getNewInstanceIds());
             for (Entity entity : context.getCommitInstances()) {
-                MetaClass metaClass = MetadataProvider.getSession().getClass(entity.getClass());
+                MetaClass metaClass = metadata.getSession().getClass(entity.getClass());
                 if (newInstanceIdSet.contains(metaClass.getName() + "-" + entity.getId().toString())) {
                     em.persist(entity);
                     res.put(entity, entity);
@@ -126,7 +143,7 @@ public class DataServiceBean implements DataService {
             for (Map.Entry<Entity, Entity> entry : res.entrySet()) {
                 View view = context.getViews().get(entry.getKey());
                 if (view != null) {
-                    ViewHelper.fetchInstance((Instance) entry.getValue(), view);
+                    ViewHelper.fetchInstance(entry.getValue(), view);
                 }
             }
 
@@ -142,21 +159,21 @@ public class DataServiceBean implements DataService {
         if (log.isDebugEnabled())
             log.debug("load: metaClass=" + context.getMetaClass() + ", id=" + context.getId() + ", view=" + context.getView());
 
-        final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
+        final MetaClass metaClass = metadata.getSession().getClass(context.getMetaClass());
 
-        if (!SecurityProvider.currentUserSession().isEntityOpPermitted(metaClass, EntityOp.READ)) {
+        if (!security.isEntityOpPermitted(metaClass, EntityOp.READ)) {
             log.debug("reading of " + metaClass + " not permitted, returning null");
             return null;
         }
 
         Object result;
 
-        Transaction tx = Locator.getTransaction();
+        Transaction tx = persistence.getTransaction();
         try {
-            final EntityManager em = PersistenceProvider.getEntityManager();
+            final EntityManager em = persistence.getEntityManager();
 
             // Set view only if StoreCache is disabled
-            if (!isStoreCacheEnabled() && context.getView() != null) {
+            if (!dataCacheAPI.isStoreCacheEnabled() && context.getView() != null) {
                 em.setView(context.getView());
             }
 
@@ -190,24 +207,24 @@ public class DataServiceBean implements DataService {
                     + (context.getQuery() == null || context.getQuery().getFirstResult() == 0 ? "" : ", first=" + context.getQuery().getFirstResult())
                     + (context.getQuery() == null || context.getQuery().getMaxResults() == 0 ? "" : ", max=" + context.getQuery().getMaxResults()));
 
-        final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
+        final MetaClass metaClass = metadata.getSession().getClass(context.getMetaClass());
 
-        if (!SecurityProvider.currentUserSession().isEntityOpPermitted(metaClass, EntityOp.READ)) {
+        if (!security.isEntityOpPermitted(metaClass, EntityOp.READ)) {
             log.debug("reading of " + metaClass + " not permitted, returning empty list");
             return Collections.emptyList();
         }
 
         List resultList;
 
-        Transaction tx = Locator.getTransaction();
+        Transaction tx = persistence.getTransaction();
         try {
-            final EntityManager em = PersistenceProvider.getEntityManager();
+            final EntityManager em = persistence.getEntityManager();
             em.setSoftDeletion(context.isSoftDeletion());
             com.haulmont.cuba.core.Query query = createQuery(em, context);
             resultList = query.getResultList();
 
             // Fetch if StoreCache is enabled or there are lazy properties in the view
-            if (context.getView() != null && (isStoreCacheEnabled() || ViewHelper.hasLazyProperties(context.getView()))) {
+            if (context.getView() != null && (dataCacheAPI.isStoreCacheEnabled() || ViewHelper.hasLazyProperties(context.getView()))) {
                 em.setView(null);
                 for (Object entity : resultList) {
                     ViewHelper.fetchInstance((Instance) entity, context.getView());
@@ -228,7 +245,7 @@ public class DataServiceBean implements DataService {
 
         String str = StringHelper.removeExtraSpaces(query.replace("\n", " "));
 
-        if (ConfigProvider.getConfig(ServerConfig.class).getCutLoadListQueries()) {
+        if (configuration.getConfig(ServerConfig.class).getCutLoadListQueries()) {
             str = StringUtils.abbreviate(str.replaceAll("[\\n\\r]", " "), 50);
         }
 
@@ -240,7 +257,7 @@ public class DataServiceBean implements DataService {
                 && context.getId() == null)
             throw new IllegalArgumentException("QueryString is empty");
 
-        final MetaClass metaClass = MetadataProvider.getSession().getClass(context.getMetaClass());
+        final MetaClass metaClass = metadata.getSession().getClass(context.getMetaClass());
 
         String queryString;
         Map<String, Object> queryParams;
@@ -256,7 +273,7 @@ public class DataServiceBean implements DataService {
         com.haulmont.cuba.core.Query query = em.createQuery(queryString);
 
         if (context.isUseSecurityConstraints()) {
-            boolean constraintsApplied = SecurityProvider.applyConstraints(query, metaClass.getName());
+            boolean constraintsApplied = security.applyConstraints(query, metaClass.getName());
             if (constraintsApplied)
                 log.debug("Constraints applyed: " + printQuery(query.getQueryString()));
         }
@@ -308,9 +325,8 @@ public class DataServiceBean implements DataService {
     }
 
     protected void checkPermission(MetaClass metaClass, EntityOp operation) {
-        String target = UserSession.getEntityOpPermissionTarget(metaClass, operation);
-        if (!SecurityProvider.currentUserSession().isPermitted(PermissionType.ENTITY_OP, target))
-            throw new AccessDeniedException(PermissionType.ENTITY_OP, target);
+        if (!security.isEntityOpPermitted(metaClass, operation))
+            throw new AccessDeniedException(PermissionType.ENTITY_OP, metaClass.getName());
     }
 
     protected void checkPermissions(CommitContext<Entity> context) {
@@ -342,13 +358,5 @@ public class DataServiceBean implements DataService {
             return;
         checkPermission(metaClass, operation);
         cache.add(metaClass);
-    }
-
-    private static boolean isStoreCacheEnabled() {
-        if (storeCacheEnabled == null) {
-            DataCacheAPI bean = Locator.lookup(DataCacheAPI.NAME);
-            storeCacheEnabled = bean.isStoreCacheEnabled();
-        }
-        return storeCacheEnabled;
     }
 }

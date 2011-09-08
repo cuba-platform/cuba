@@ -15,20 +15,15 @@ import com.haulmont.cuba.core.sys.AppContext;
 import java.util.Date;
 
 /**
- * Global time provider. Must be used everywhere instead of <code>new Date()</code
+ * Global time provider for static context. Must be used everywhere instead of <code>new Date()</code.<br/>
+ * Consider use of {@link TimeSource} directly.
  */
 public abstract class TimeProvider
 {
-    private static TimeProvider getInstance() {
-        return AppContext.getApplicationContext().getBean("cuba_TimeProvider", TimeProvider.class);
-    }
-
     public static Date currentTimestamp() {
         if (AppContext.getApplicationContext() == null)
             return null;
 
-        return getInstance().__currentTimestamp();
+        return AppContext.getBean(TimeSource.NAME, TimeSource.class).currentTimestamp();
     }
-
-    protected abstract Date __currentTimestamp();
 }

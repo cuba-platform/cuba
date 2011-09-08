@@ -58,7 +58,6 @@ public class DesktopAppContextLoader {
         initAppProperties();
         initAppContext();
         initLocalization();
-        initServiceLocator();
         initEnvironment();
 
         AppContext.startContext();
@@ -172,9 +171,5 @@ public class DesktopAppContextLoader {
 
         ApplicationContext appContext = new ClassPathXmlApplicationContext(locations);
         AppContext.setApplicationContext(appContext);
-    }
-
-    protected void initServiceLocator() {
-        ServiceLocator.setImplClass(ServiceLocatorImpl.class);
     }
 }

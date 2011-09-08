@@ -12,24 +12,21 @@ package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.core.app.ClusterListener;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
-import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.entity.UserSessionEntity;
-import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.app.Heartbeat;
-
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.haulmont.cuba.core.app.ServerConfig;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.security.entity.UserSessionEntity;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * UserSessions MBean implementation.
@@ -70,8 +67,8 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
     }
 
     @Inject
-    public void setConfigProvider(ConfigProvider configProvider) {
-        ServerConfig config = configProvider.doGetConfig(ServerConfig.class);
+    public void setConfigProvider(Configuration configuration) {
+        ServerConfig config = configuration.getConfig(ServerConfig.class);
         setExpirationTimeoutSec(config.getUserSessionExpirationTimeoutSec());
     }
 

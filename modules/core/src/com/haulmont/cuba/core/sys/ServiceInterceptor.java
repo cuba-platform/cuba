@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.cuba.core.SecurityProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,6 +18,12 @@ import org.aspectj.lang.ProceedingJoinPoint;
 
 public class ServiceInterceptor
 {
+    private UserSessionSource userSessionSource;
+
+    public void setUserSessionSource(UserSessionSource userSessionSource) {
+        this.userSessionSource = userSessionSource;
+    }
+
     private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
         Log log = LogFactory.getLog(ctx.getTarget().getClass());
 
@@ -30,7 +36,7 @@ public class ServiceInterceptor
             }
         }
 
-        UserSession userSession = SecurityProvider.currentUserSession();
+        UserSession userSession = userSessionSource.getUserSession();
         if (log.isTraceEnabled())
             log.trace("Invoking: " + ctx.getSignature() + ", session=" + userSession);
 

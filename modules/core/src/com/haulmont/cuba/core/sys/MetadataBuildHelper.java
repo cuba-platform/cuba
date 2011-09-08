@@ -7,14 +7,13 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.global.MetadataProvider;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.core.io.Resource;
+import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,12 +29,30 @@ import java.util.List;
  */
 public class MetadataBuildHelper {
 
+    public static final String METADATA_CONFIG = "cuba.metadataConfig";
+    public static final String DEFAULT_METADATA_CONFIG = "cuba-metadata.xml";
+
+    /**
+     * Get the location of non-persistent metadata descriptor
+     */
+    public static String getMetadataConfig() {
+        String xmlPath = AppContext.getProperty(METADATA_CONFIG);
+        if (StringUtils.isBlank(xmlPath))
+            xmlPath = DEFAULT_METADATA_CONFIG;
+        return xmlPath;
+    }
+
+    public static List<String> getPersistentClassNames() {
+        Object emfBean = AppContext.getApplicationContext().getBean("entityManagerFactory");
+        return ((EntityManagerFactoryInfo) emfBean).getPersistenceUnitInfo().getManagedClassNames();
+    }
+
     public static Collection<String> getPersistentEntitiesPackages() {
-        return getPackages(PersistenceProvider.getPersistentClassNames());
+        return getPackages(getPersistentClassNames());
     }
 
     public static Collection<String> getTransientEntitiesPackages() {
-        String config = MetadataProvider.getMetadataConfig();
+        String config = getMetadataConfig();
         Collection<String> packages = new ArrayList<String>();
         StrTokenizer tokenizer = new StrTokenizer(config);
         for (String fileName : tokenizer.getTokenArray()) {

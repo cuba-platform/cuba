@@ -10,9 +10,7 @@
  */
 package com.haulmont.cuba.core.sys.persistence;
 
-import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.SecurityProvider;
 import com.haulmont.cuba.core.app.FtsSender;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.FtsChangeType;
@@ -21,6 +19,7 @@ import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FtsConfig;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 import com.haulmont.cuba.core.sys.listener.EntityListenerType;
@@ -31,20 +30,20 @@ import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.AbstractLifecycleListener;
 import org.apache.openjpa.event.LifecycleEvent;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.util.Date;
 
+@ManagedBean("cuba_EntityLifecycleListener")
 public class EntityLifecycleListener extends AbstractLifecycleListener
 {
     private static Log log = LogFactory.getLog(EntityLifecycleListener.class);
 
+    @Inject
     private EntityLogAPI entityLog;
 
-    private EntityLogAPI getEntityLog() {
-        if (entityLog == null) {
-            entityLog = Locator.lookup(EntityLogAPI.NAME);
-        }
-        return entityLog;
-    }
+    @Inject
+    private UserSessionSource userSessionSource;
 
     public void beforePersist(LifecycleEvent event) {
         if (!(event.getSource() instanceof BaseEntity))
@@ -61,24 +60,24 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
         BaseEntity entity = (BaseEntity) event.getSource();
 
         if (((PersistenceCapable) entity).pcIsNew()) {
-            getEntityLog().registerCreate(entity, true);
+            entityLog.registerCreate(entity, true);
             EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_INSERT);
             enqueueForFts(entity, FtsChangeType.INSERT);
         } else {
             if (entity instanceof Updatable) {
                 __beforeUpdate((Updatable) event.getSource());
                 if ((entity instanceof SoftDelete) && justDeleted((SoftDelete) entity)) {
-                    getEntityLog().registerDelete(entity, true);
+                    entityLog.registerDelete(entity, true);
                     processDeletePolicy(entity);
                     EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_DELETE);
                     enqueueForFts(entity, FtsChangeType.DELETE);
                 } else {
-                    getEntityLog().registerModify(entity, true);
+                    entityLog.registerModify(entity, true);
                     EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_UPDATE);
                     enqueueForFts(entity, FtsChangeType.UPDATE);
                 }
             } else {
-                getEntityLog().registerModify(entity, true);
+                entityLog.registerModify(entity, true);
                 EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_UPDATE);
                 enqueueForFts(entity, FtsChangeType.UPDATE);
             }
@@ -113,7 +112,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
             return;
 
         BaseEntity entity = (BaseEntity) event.getSource();
-        getEntityLog().registerDelete(entity, true);
+        entityLog.registerDelete(entity, true);
         EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_DELETE);
         enqueueForFts(entity, FtsChangeType.DELETE);
     }
@@ -137,7 +136,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
     }
 
     private void __beforePersist(BaseEntity entity) {
-        entity.setCreatedBy(SecurityProvider.currentUserSession().getUser().getLogin());
+        entity.setCreatedBy(userSessionSource.getUserSession().getUser().getLogin());
         Date ts = TimeProvider.currentTimestamp();
         entity.setCreateTs(ts);
 
@@ -147,7 +146,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
     }
 
     private void __beforeUpdate(Updatable entity) {
-        entity.setUpdatedBy(SecurityProvider.currentUserSession().getUser().getLogin());
+        entity.setUpdatedBy(userSessionSource.getUserSession().getUser().getLogin());
         entity.setUpdateTs(TimeProvider.currentTimestamp());
     }
 

@@ -9,121 +9,89 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.app.ResourceRepositoryAPI;
 import com.haulmont.cuba.core.sys.AppContext;
 
 import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 
 /**
- * Locator helps to find EJBs, MBeans and some widely used services.<br>
- * Also serves as Transaction factory.<p>
- * Must be used from inside middleware only.
+ * Locator to find beans and other objects in static context.
+ * <p>Consider use of injection instead.</p>
  */
 public abstract class Locator
 {
-    public static Locator getInstance() {
-        return AppContext.getApplicationContext().getBean("cuba_Locator", Locator.class);
-    }
+    private static Context jndiContext;
 
-    /** Lookups bean */
+    /**
+     * Lookups bean
+     * @param name  bean name
+     * @return      bean instance
+     */
     public static <T> T lookup(String name) {
-        return (T) getInstance().__lookup(name);
-    }
-
-    /** Lookups JDBC DataSource */
-    public static DataSource getDataSource() {
-        return getInstance().__getDataSource();
-    }
-
-    /** Returns current JNDI context */
-    public static Context getJndiContext() {
-        return getInstance().__getJndiContextImpl();
+        return (T) AppContext.getBean(name);
     }
 
     /**
-     * Lookups local EJB by name (without /local suffix)
-     * <p>DEPRECATED - use {@link #lookup(String)} instead
+     * Lookups JDBC DataSource
+     * @return      datasource
+     */
+    public static DataSource getDataSource() {
+        return (DataSource) AppContext.getBean("dataSource");
+    }
+
+    /**
+     * Returns current JNDI context
+     * @return      context
+     */
+    public static Context getJndiContext() {
+        if (jndiContext == null) {
+            try {
+                jndiContext = new InitialContext();
+            } catch (NamingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return jndiContext;
+    }
+
+    /**
+     * This is obsolete method.<br/>
+     * Use injected {@link Persistence} interface or {@link PersistenceProvider} class instead.
+     * <p/>
+     * Creates a new transaction.<br>
+     * If there is an active transaction, it will be suspended.
+     * @return      new transaction
      */
     @Deprecated
-    public static <T> T lookupLocal(String name) {
-        return (T) getInstance().__lookupLocal(name);
-    }
-
-    /**
-     * Lookups MBean by interface and object name
-     * <p>DEPRECATED - use {@link #lookup(String)} instead
-     *
-     * @param mbeanClass management interface class
-     * @param objecName JMX object name
-    */
-    @Deprecated
-    public static <T> T lookupMBean(Class<T> mbeanClass, String objecName) {
-        return (T) getInstance().__lookupMBean(mbeanClass, objecName);
-    }
-
-    /**
-     * Lookups MBean by interface. Object name should be declared in OBJECT_NAME constant of the interface.
-     * <p>DEPRECATED - use {@link #lookup(String)} instead
-     *
-     * @param mbeanClass management interface class
-    */
-    @Deprecated
-    public static <T> T lookupMBean(Class<T> mbeanClass) {
-        String objectName;
-        try {
-            Field field = mbeanClass.getDeclaredField("OBJECT_NAME");
-            objectName = (String) field.get(null);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException("No OBJECT_NAME field found in " + mbeanClass);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
-        return (T) getInstance().__lookupMBean(mbeanClass, objectName);
-    }
-
-    /**
-     * Creates a new JTA transaction.<br>
-     * If there is an active transaction, it will be suspended.
-    */
     public static Transaction createTransaction() {
-        return getInstance().__createTransaction();
+        return AppContext.getBean(Persistence.NAME, Persistence.class).createTransaction();
     }
 
     /**
-     * Creates a new JTA transaction if there is no one.<br>
+     * This is obsolete method.<br/>
+     * Use injected {@link Persistence} interface or {@link PersistenceProvider} class instead.
+     * <p/>
+     * Creates a new JTA transaction if there is no one at the moment.<br>
      * If a JTA transaction exists, does nothing: subsequent invocations
      * of commit() and end() do not affect the transaction.
-    */
+     * @return      new or existing transaction
+     */
+    @Deprecated
     public static Transaction getTransaction() {
-        return getInstance().__getTransaction();
+        return AppContext.getBean(Persistence.NAME, Persistence.class).getTransaction();
     }
 
-    /** True if a JTA transaction is now active */
+    /**
+     * This is obsolete method.<br/>
+     * Use injected {@link Persistence} interface or {@link PersistenceProvider} class instead.
+     * <p/>
+     * Current transaction status
+     * @return      true if currently in a transaction
+     */
+    @Deprecated
     public static boolean isInTransaction() {
-        return getInstance().__isInTransaction();
+        return AppContext.getBean(Persistence.NAME, Persistence.class).isInTransaction();
     }
-
-    /** Returns reference to ResourceRepositoryAPI */
-    public static ResourceRepositoryAPI getResourceRepository() {
-        return (ResourceRepositoryAPI) getInstance().__lookup(ResourceRepositoryAPI.NAME);
-    }
-
-    protected abstract Object __lookup(String name);
-
-    protected abstract DataSource __getDataSource();
-
-    protected abstract Context __getJndiContextImpl();
-
-    protected abstract Object __lookupLocal(String name);
-
-    protected abstract <T> T __lookupMBean(Class<T> mbeanClass, String objectName);
-
-    protected abstract Transaction __createTransaction();
-
-    protected abstract Transaction __getTransaction();
-
-    protected abstract boolean __isInTransaction();
 }

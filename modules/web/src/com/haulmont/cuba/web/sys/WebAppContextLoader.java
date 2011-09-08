@@ -15,7 +15,6 @@ import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.WebAppConfig;
 import com.haulmont.cuba.web.WebWindowConfig;
 import org.apache.commons.io.IOUtils;
@@ -64,7 +63,6 @@ public class WebAppContextLoader implements ServletContextListener {
 
             initAppContext();
             initLocalization();
-            initServiceLocator();
 
             AppContext.startContext();
             log.info("AppContext initialized");
@@ -167,10 +165,6 @@ public class WebAppContextLoader implements ServletContextListener {
 
         ApplicationContext appContext = new ClassPathXmlApplicationContext(locations);
         AppContext.setApplicationContext(appContext);
-    }
-
-    protected void initServiceLocator() {
-        ServiceLocator.setImplClass(ServiceLocatorImpl.class);
     }
 
     public void contextDestroyed(ServletContextEvent servletContextEvent) {

@@ -14,13 +14,13 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.sys.AppContext;
 
 /**
- * Entry point to configuration parameters functionality.<br>
- * Use static methods. 
+ * Utility class to provide configuration interfaces in static context.
+ * <p>Injected {@link Configuration} interface should be used instead of this class wherever possible.</p>
  */
 public abstract class ConfigProvider
 {
-    private static ConfigProvider getInstance() {
-        return AppContext.getApplicationContext().getBean("cuba_ConfigProvider", ConfigProvider.class);
+    private static Configuration getConfiguration() {
+        return AppContext.getApplicationContext().getBean(Configuration.NAME, Configuration.class);
     }
 
     /**
@@ -29,8 +29,6 @@ public abstract class ConfigProvider
      * @return  the interface implementation which can be used to get/set parameters
      */
     public static <T extends Config> T getConfig(Class<T> configInterface) {
-        return getInstance().doGetConfig(configInterface);
+        return getConfiguration().getConfig(configInterface);
     }
-
-    public abstract <T extends Config> T doGetConfig(Class<T> configInterface);
 }

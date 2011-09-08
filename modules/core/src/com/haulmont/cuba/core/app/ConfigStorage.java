@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,27 +35,26 @@ import java.util.concurrent.ConcurrentHashMap;
 @ManagedBean(ConfigStorageAPI.NAME)
 public class ConfigStorage extends ManagementBean implements ConfigStorageMBean, ConfigStorageAPI
 {
+    @Inject
+    private Persistence persistence;
+
     private Log log = LogFactory.getLog(ConfigStorageService.class);
 
     private Map<String, String> cache = new ConcurrentHashMap<String, String>();
 
     private String nullValue = new String();
 
-    public ConfigStorageAPI getAPI() {
-        return this;
-    }
-
     public String printDbProperties() {
         return printDbProperties(null);
     }
 
     public String printDbProperties(String prefix) {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             login();
             StringBuilder sb = new StringBuilder();
 
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             String s = String.format("select c from core$Config c %s",
                     (prefix == null ? "" : "where c.name like ?1"));
             Query query = em.createQuery(s);
@@ -100,10 +100,10 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
     }
 
     public String removeDbProperty(String name) {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             login();
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query query = em.createQuery("delete from core$Config c where c.name = ?1");
             query.setParameter(1, name);
             query.executeUpdate();
@@ -153,7 +153,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
         else if (value != null)
             return value;
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             Config instance = getConfigInstance(name);
             if (instance == null) {
@@ -175,9 +175,9 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
     }
 
     public void setConfigProperty(String name, String value) {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Config instance = getConfigInstance(name);
             if (value != null) {
                 if (instance == null) {
@@ -203,7 +203,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
     }
 
     private Config getConfigInstance(String name) {
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
         Query query = em.createQuery("select c from core$Config c where c.name = ?1");
         query.setParameter(1, name);
         query.setView(null);

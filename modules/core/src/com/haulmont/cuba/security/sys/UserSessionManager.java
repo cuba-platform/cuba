@@ -12,6 +12,7 @@ package com.haulmont.cuba.security.sys;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
@@ -35,7 +36,11 @@ public class UserSessionManager
 {
     public static final String NAME = "cuba_UserSessionManager";
 
+    @Inject
     private UserSessionsAPI sessions;
+
+    @Inject
+    private UserSessionSource userSessionSource;
 
     private UserSession NO_USER_SESSION;
 
@@ -50,11 +55,6 @@ public class UserSessionManager
                 return AppContext.NO_USER_CONTEXT.getSessionId();
             }
         };
-    }
-
-    @Inject
-    public void setSessions(UserSessionsAPI sessions) {
-        this.sessions = sessions;
     }
 
     public UserSession createSession(User user, Locale locale, boolean system) {
@@ -187,7 +187,7 @@ public class UserSessionManager
                 }
             }
             UserSession session = new UserSession(
-                    user, roleNames.toArray(new String[roleNames.size()]), SecurityProvider.currentUserSession().getLocale(), false);
+                    user, roleNames.toArray(new String[roleNames.size()]), userSessionSource.getLocale(), false);
             compilePermissions(session, roles);
             result = session.getPermissionValue(permissionType, target);
             tx.commit();

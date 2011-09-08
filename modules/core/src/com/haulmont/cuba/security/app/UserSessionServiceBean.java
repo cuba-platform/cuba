@@ -11,7 +11,7 @@
 package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.SecurityProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
@@ -32,6 +32,9 @@ public class UserSessionServiceBean implements UserSessionService
 {
     @Inject
     private UserSessionManager userSessionManager;
+
+    @Inject
+    private UserSessionSource userSessionSource;
 
     public UserSession getUserSession(UUID sessionId) {
         UserSession userSession = userSessionManager.getSession(sessionId);
@@ -65,7 +68,7 @@ public class UserSessionServiceBean implements UserSessionService
     }
 
     public void pingSession() {
-        SecurityProvider.currentUserSession();
+        userSessionSource.getUserSession();
     }
 
     public Integer getPermissionValue(User user, PermissionType permissionType, String target) {

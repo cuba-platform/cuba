@@ -48,6 +48,14 @@ public class AppContext {
         return (T) context.getBean(name);
     }
 
+    public static <T> T getBean(String name, Class<T> beanType) {
+        return context.getBean(name, beanType);
+    }
+
+    public static <T> T getBean(Class<T> beanType) {
+        return context.getBean(beanType);
+    }
+
     public static String[] getPropertyNames() {
         return properties.keySet().toArray(new String[properties.size()]);
     }

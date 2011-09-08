@@ -12,7 +12,9 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.AppFolder;
+import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import groovy.lang.Binding;
 import org.apache.commons.lang.BooleanUtils;
@@ -21,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +31,9 @@ import java.util.List;
 public class FoldersServiceBean implements FoldersService {
 
     private Log log = LogFactory.getLog(FoldersServiceBean.class);
+
+    @Inject
+    private UserSessionSource userSessionSource;
 
     public List<AppFolder> loadAppFolders() {
         log.debug("Loading AppFolders");
@@ -81,7 +87,7 @@ public class FoldersServiceBean implements FoldersService {
         if (script.endsWith(".groovy")) {
             script = ScriptingProvider.getResourceAsString(script);
         }
-        result = ScriptingProvider.evaluateGroovy(ScriptingProvider.Layer.CORE, script, binding);
+        result = ScriptingProvider.evaluateGroovy(Scripting.Layer.CORE, script, binding);
         return (T) result;
     }
 
@@ -126,7 +132,7 @@ public class FoldersServiceBean implements FoldersService {
                     "left join fetch f.presentation " +
                     "where (f.user.id = ?1 or f.user is null) " +
                     "order by f.sortOrder, f.name");
-            q.setParameter(1, SecurityProvider.currentOrSubstitutedUserId());
+            q.setParameter(1, userSessionSource.currentOrSubstitutedUserId());
             List<SearchFolder> list = q.getResultList();
             // fetch parents
             for (SearchFolder folder : list) {

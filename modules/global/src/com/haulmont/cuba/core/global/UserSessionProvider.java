@@ -5,19 +5,15 @@
  */
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 
-import java.io.Serializable;
 import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Provides access to the current user session
+ * Provides access to the current user session in static context.<br>
+ * <p>Injected {@link UserSessionSource} interface should be used instead of this class wherever possible.</p>
  *
  * <p>$Id$</p>
  *
@@ -25,34 +21,23 @@ import java.util.UUID;
  */
 public abstract class UserSessionProvider {
 
+    private static UserSessionSource getSource() {
+        return AppContext.getBean(UserSessionSource.NAME, UserSessionSource.class);
+    }
+
     /**
      * Current user session
+     * @return current user session instance
      */
     public static UserSession getUserSession() {
-        return getInstance().__getUserSession();
+        return getSource().getUserSession();
     }
 
     public static UUID currentOrSubstitutedUserId() {
-        UserSession us = getInstance().__getUserSession();
-        return us.getSubstitutedUser() != null ? us.getSubstitutedUser().getId() : us.getUser().getId();
+        return getSource().currentOrSubstitutedUserId();
     }
 
     public static Locale getLocale() {
-        return getInstance().__getUserSession().getLocale();
-    }
-
-    public static boolean isEditPermitted(MetaProperty metaProperty) {
-        MetaClass metaClass = metaProperty.getDomain();
-
-        UserSession userSession = getUserSession();
-        return (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
-                                || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
-                && userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
-    }
-
-    protected abstract UserSession __getUserSession();
-
-    private static UserSessionProvider getInstance() {
-        return (UserSessionProvider) AppContext.getApplicationContext().getBean("cuba_UserSessionProvider");
+        return getSource().getLocale();
     }
 }

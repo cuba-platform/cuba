@@ -11,7 +11,7 @@
 package com.haulmont.cuba.report.formatters.oo;
 
 import com.haulmont.cuba.core.app.ServerConfig;
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Configuration;
 import com.sun.star.comp.helper.BootstrapException;
 import com.sun.star.uno.XComponentContext;
 import ooo.connector.BootstrapSocketConnector;
@@ -19,8 +19,6 @@ import ooo.connector.server.OOoServer;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -29,8 +27,8 @@ public class OOOConnector {
     public static final String NAME = "report_OOOConnector";
 
     @Inject
-    public void setConfig(ConfigProvider configProvider) {
-        String ports = configProvider.doGetConfig(ServerConfig.class).getOpenOfficePorts();
+    public void setConfig(Configuration configuration) {
+        String ports = configuration.getConfig(ServerConfig.class).getOpenOfficePorts();
         for (String port : ports.split("\\|")) {
             this.freePorts.add(Integer.valueOf(port));
         }

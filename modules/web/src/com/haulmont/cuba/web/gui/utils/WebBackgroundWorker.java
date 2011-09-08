@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.web.gui.utils;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
@@ -39,9 +39,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
     private WatchDog watchDog;
 
-    public WebBackgroundWorker(ConfigProvider configProvider, WatchDog watchDog) {
+    public WebBackgroundWorker(Configuration configuration, WatchDog watchDog) {
         this.watchDog = watchDog;
-        this.uiCheckInterval = configProvider.doGetConfig(WebConfig.class).getUiCheckInterval();
+        this.uiCheckInterval = configuration.getConfig(WebConfig.class).getUiCheckInterval();
     }
 
     @Override

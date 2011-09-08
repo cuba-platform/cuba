@@ -56,6 +56,12 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
     @Inject
     private EmailManagerAPI emailManager;
 
+    @Inject
+    private UserSessionSource userSessionSource;
+
+    @Inject
+    private TimeSource timeSource;
+
     private static final String EMAIL_SMTP_HOST_PROPERTY_NAME = "cuba.email.smtpHost";
     private static final String EMAIL_DEFAULT_FROM_ADDRESS_PROPERTY_NAME = "cuba.email.fromAddress";
 
@@ -65,8 +71,8 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
     }
 
     @Inject
-    public void setConfig(ConfigProvider configProvider) {
-        this.config = configProvider.doGetConfig(EmailerConfig.class);
+    public void setConfig(Configuration configuration) {
+        this.config = configuration.getConfig(EmailerConfig.class);
     }
 
     @Deprecated
@@ -202,7 +208,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
     private void updateSendingMessageStatus(SendingMessage sendingMessage, SendingStatus status) {
         if (sendingMessage != null) {
             boolean increaseAttemptsMade = !status.equals(SendingStatus.SENDING);
-            Date currentTimestamp = TimeProvider.currentTimestamp();
+            Date currentTimestamp = timeSource.currentTimestamp();
 
             Transaction tx = Locator.createTransaction();
             try {
@@ -217,7 +223,7 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
                         .setParameter("status", status.getId())
                         .setParameter("id", sendingMessage.getId())
                         .setParameter("updateTs", currentTimestamp)
-                        .setParameter("updatedBy", SecurityProvider.currentUserSession().getUser().getLogin());
+                        .setParameter("updatedBy", userSessionSource.getUserSession().getUser().getLogin());
                 if (status.equals(SendingStatus.SENT))
                     query.setParameter("dateSent", currentTimestamp);
                 query.executeUpdate();

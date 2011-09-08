@@ -15,13 +15,17 @@ import com.haulmont.cuba.core.entity.LockDescriptor;
 import com.haulmont.cuba.core.global.LockInfo;
 import com.haulmont.cuba.core.global.LockNotSupported;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ManagedBean(LockManagerAPI.NAME)
@@ -63,6 +67,9 @@ public class LockManager implements LockManagerAPI, LockManagerMBean, ClusterLis
     private volatile Map<String, LockDescriptor> config;
 
     private Map<LockKey, LockInfo> locks = new ConcurrentHashMap<LockKey, LockInfo>();
+
+    @Inject
+    private UserSessionSource userSessionSource;
 
     private ClusterManagerAPI clusterManager;
 
@@ -109,7 +116,7 @@ public class LockManager implements LockManagerAPI, LockManagerMBean, ClusterLis
             return new LockNotSupported();
         }
 
-        lockInfo = new LockInfo(SecurityProvider.currentUserSession().getCurrentOrSubstitutedUser(), name, id);
+        lockInfo = new LockInfo(userSessionSource.getUserSession().getCurrentOrSubstitutedUser(), name, id);
         locks.put(key, lockInfo);
         log.debug("Locked " + name + "/" + id);
 

@@ -32,9 +32,21 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
+    <!-- Annotation-based beans -->
+
+    <context:component-scan base-package="com.haulmont.cuba"/>
+
+    <!-- Various beans with non-standard configuration -->
+
+    <bean id="cuba_Security" name="cuba_PersistenceSecurity" class="com.haulmont.cuba.core.sys.PersistenceSecurityImpl">
+        <property name="userSessionSource" ref="cuba_UserSessionSource"/>
+    </bean>
+
     <!-- AOP setup -->
 
-    <bean id="serviceInterceptor" class="com.haulmont.cuba.core.sys.ServiceInterceptor"/>
+    <bean id="serviceInterceptor" class="com.haulmont.cuba.core.sys.ServiceInterceptor">
+        <property name="userSessionSource" ref="cuba_UserSessionSource"/>
+    </bean>
 
     <bean id="mbeanInterceptor" class="com.haulmont.cuba.core.sys.MBeanInterceptor"/>
 
@@ -47,63 +59,6 @@
             <aop:around method="aroundInvoke" pointcut="execution(* com.haulmont..*MBean.*(..))"/>
         </aop:aspect>
     </aop:config>
-
-    <!-- Global Providers -->
-
-    <bean id="cuba_ConfigProvider" class="com.haulmont.cuba.core.sys.ConfigProviderImpl"/>
-
-    <bean id="cuba_MessageProvider" class="com.haulmont.cuba.core.sys.MessageProviderImpl"/>
-
-    <bean id="cuba_MetadataProvider" class="com.haulmont.cuba.core.sys.MetadataProviderImpl"/>
-
-    <bean id="cuba_ScriptingProvider" class="com.haulmont.cuba.core.sys.ScriptingProviderImpl">
-        <constructor-arg index="0" ref="cuba_ConfigProvider"/>
-    </bean>
-
-    <bean id="cuba_TimeProvider" class="com.haulmont.cuba.core.sys.TimeProviderImpl"/>
-
-    <bean id="cuba_UuidProvider" class="com.haulmont.cuba.core.sys.UuidProviderImpl"/>
-
-    <!-- Middleware Providers -->
-
-    <bean id="cuba_Locator" class="com.haulmont.cuba.core.sys.LocatorImpl">
-        <property name="transactionManager" ref="transactionManager"/>
-        <property name="persistenceProvider" ref="cuba_PersistenceProvider"/>
-    </bean>
-
-    <bean id="cuba_PersistenceProvider" class="com.haulmont.cuba.core.sys.SpringPersistenceProvider">
-        <property name="jpaEmf" ref="entityManagerFactory"/>
-    </bean>
-
-    <bean id="cuba_SecurityProvider" class="com.haulmont.cuba.core.sys.SecurityProviderImpl">
-        <property name="userSessionManager" ref="cuba_UserSessionManager"/>
-    </bean>
-
-    <bean id="cuba_UserSessionProvider" class="com.haulmont.cuba.core.sys.UserSessionProviderImpl">
-        <property name="userSessionManager" ref="cuba_UserSessionManager"/>
-    </bean>
-
-    <!-- Various beans -->
-
-    <bean id="cuba_TimeBetweenQueryMacroHandler"
-          class="com.haulmont.cuba.core.sys.querymacro.TimeBetweenQueryMacroHandler"
-          scope="prototype"/>
-
-    <bean id="cuba_TimeTodayQueryMacroHandler" class="com.haulmont.cuba.core.sys.querymacro.TimeTodayQueryMacroHandler"
-          scope="prototype"/>
-
-    <bean id="cuba_DateEqualsQueryMacroHandler" class="com.haulmont.cuba.core.sys.querymacro.DateEqualsMacroHandler"
-          scope="prototype"/>
-
-    <bean id="cuba_DateBeforeQueryMacroHandler" class="com.haulmont.cuba.core.sys.querymacro.DateBeforeMacroHandler"
-          scope="prototype"/>
-
-    <bean id="cuba_DateAfterQueryMacroHandler" class="com.haulmont.cuba.core.sys.querymacro.DateAfterMacroHandler"
-          scope="prototype"/>
-
-    <!-- Annotation-based beans -->
-
-    <context:component-scan base-package="com.haulmont.cuba"/>
 
     <!-- MBeans registration -->
 
@@ -123,7 +78,7 @@
                 <entry key="${cuba.webContextName}.cuba:service=LockManager" value-ref="cuba_LockManager"/>
                 <entry key="${cuba.webContextName}.cuba:service=CachingFacade" value-ref="cuba_CachingFacade"/>
                 <entry key="${cuba.webContextName}.cuba:service=ClusterManager" value-ref="cuba_ClusterManager"/>
-                <entry key="${cuba.webContextName}.cuba:service=Scripting" value-ref="cuba_Scripting"/>
+                <entry key="${cuba.webContextName}.cuba:service=ScriptingManager" value-ref="cuba_ScriptingManager"/>
                 <entry key="${cuba.webContextName}.cuba:service=CubaDeployer" value-ref="cuba_CubaDeployer"/>
                 <entry key="${cuba.webContextName}.cuba:service=EmailManager" value-ref="cuba_EmailManager"/>
             </map>
@@ -145,7 +100,7 @@
                         <entry key="cuba_LockManager" value="com.haulmont.cuba.core.app.LockManagerMBean"/>
                         <entry key="cuba_CachingFacade" value="com.haulmont.cuba.core.app.CachingFacadeMBean"/>
                         <entry key="cuba_ClusterManager" value="com.haulmont.cuba.core.app.ClusterManagerMBean"/>
-                        <entry key="cuba_Scripting" value="com.haulmont.cuba.core.app.ScriptingMBean"/>
+                        <entry key="cuba_ScriptingManager" value="com.haulmont.cuba.core.app.ScriptingManagerMBean"/>
                         <entry key="cuba_CubaDeployer" value="com.haulmont.cuba.core.app.CubaDeployerMBean"/>
                         <entry key="cuba_EmailManager" value="com.haulmont.cuba.core.app.EmailManagerMBean"/>
                     </map>
