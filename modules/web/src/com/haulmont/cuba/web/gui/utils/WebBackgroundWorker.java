@@ -114,6 +114,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         private SecurityContext securityContext;
         private V result = null;
+        protected UUID userId;
 
         private WebTaskExecutor(App app, BackgroundTask<T, V> runnableTask, WebTimer pingTimer) {
             this.runnableTask = runnableTask;
@@ -122,6 +123,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
             runnableTask.setProgressHandler(this);
 
             securityContext = AppContext.getSecurityContext();
+            userId = UserSessionProvider.getUserSession().getId();
         }
 
         @Override
@@ -163,10 +165,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
             runnableTask.setInterrupted(true);
 
-            UUID userId = UserSessionProvider.getUserSession().getId();
-            log.debug("Cancel task. User: " + userId);
-
             if (super.isAlive() && mayInterruptIfRunning) {
+                log.debug("Cancel task. User: " + userId);
+
                 // Interrupt
                 interrupt();
 
