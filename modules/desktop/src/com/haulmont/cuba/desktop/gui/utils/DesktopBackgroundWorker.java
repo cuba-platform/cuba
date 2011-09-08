@@ -56,9 +56,12 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         private BackgroundTask<T, V> runnableTask;
         private V result;
 
+        private UUID userId;
+
         private DesktopTaskExecutor(BackgroundTask<T, V> runnableTask) {
             this.runnableTask = runnableTask;
             runnableTask.setProgressHandler(this);
+            userId = UserSessionProvider.getUserSession().getId();
         }
 
         @Override
@@ -92,10 +95,8 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         public boolean cancelExecution(boolean mayInterruptIfRunning) {
             runnableTask.setInterrupted(true);
 
-            UUID userId = UserSessionProvider.getUserSession().getId();
-            log.debug("Cancel task. User: " + userId);
-
             if (!isDone() && !isCancelled()) {
+                log.debug("Cancel task. User: " + userId);
                 return cancel(mayInterruptIfRunning);
             } else
                 return false;

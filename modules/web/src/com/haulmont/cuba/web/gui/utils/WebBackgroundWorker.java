@@ -145,9 +145,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     done = true;
                 // Remove from executions
                 app.removeBackgroundTask(this);
-                // Clear security permissions
-                // todo perhaps should not clear security context there because getResult() joins to this point
-                AppContext.setSecurityContext(null);
+                // Set null security permissions
+                securityContext = null;
             }
         }
 
