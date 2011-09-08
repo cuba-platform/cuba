@@ -10,6 +10,9 @@ import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * <p>$Id$</p>
@@ -35,6 +38,19 @@ public class ParamEditor extends JPanel implements AbstractCondition.Listener {
             }
         }
         condition.addListener(this);
+        //for composite components
+        addPropertyChangeListener("background", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                updateBackground();
+            }
+        });
+    }
+
+    private void updateBackground() {
+        if (field instanceof JPanel) {
+            field.setBackground(new Color(getBackground().getRed(), getBackground().getGreen(), getBackground().getBlue(), 255));
+        }
     }
 
     @Override
@@ -48,6 +64,7 @@ public class ParamEditor extends JPanel implements AbstractCondition.Listener {
             remove(field);
         }
         field = condition.getParam().createEditComponent();
+        updateBackground();
         add(field);
 
     }

@@ -23,7 +23,7 @@ import java.awt.event.ActionListener;
  *
  * @author devyatkin
  */
-public class CustomOperationEditor extends OperationEditor implements HasAction{
+public class CustomOperationEditor extends OperationEditor {
     public CustomOperationEditor(AbstractCondition condition) {
         super(condition);
     }
@@ -37,16 +37,12 @@ public class CustomOperationEditor extends OperationEditor implements HasAction{
         btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                doAction();
+                final CustomConditionEditDlg dlg = new CustomConditionEditDlg((CustomCondition) condition);
+                App.getInstance().disable(null);
+                dlg.getImpl().setVisible(true);
             }
         });
         impl = btn;
     }
 
-    @Override
-    public void doAction() {
-        final CustomConditionEditDlg dlg = new CustomConditionEditDlg((CustomCondition) condition);
-        App.getInstance().disable(null);
-        dlg.getImpl().setVisible(true);
-    }
 }

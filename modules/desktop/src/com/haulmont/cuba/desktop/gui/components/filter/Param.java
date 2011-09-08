@@ -67,7 +67,7 @@ public class Param extends AbstractParam<JComponent> {
 
         switch (type) {
             case DATATYPE:
-                component = createDatatypeField(Datatypes.getInstance().get(javaClass));
+                component = createDatatypeField(Datatypes.get(javaClass));
                 break;
             case ENTITY:
                 component = createEntityLookup();

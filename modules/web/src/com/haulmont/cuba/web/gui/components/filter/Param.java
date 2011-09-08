@@ -12,18 +12,15 @@ package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.filter.AbstractParam;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -32,14 +29,18 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebPickerField;
+import com.haulmont.cuba.web.toolkit.ui.DateFieldWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.ui.*;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.Element;
 
 import javax.persistence.TemporalType;
 import java.text.ParseException;
@@ -172,10 +173,9 @@ public class Param extends AbstractParam<Component> {
             return component;
         }
 
-        final AbstractField field = new com.haulmont.cuba.web.toolkit.ui.DateField();
-        field.setImmediate(true);
+        final WebDateField dateField = new WebDateField();
 
-        int resolution;
+        com.haulmont.cuba.gui.components.DateField.Resolution resolution;
         String formatStr;
         boolean dateOnly = false;
         if (property != null) {
@@ -185,23 +185,25 @@ public class Param extends AbstractParam<Component> {
             dateOnly = true;
         }
         if (dateOnly) {
-            resolution = DateField.RESOLUTION_DAY;
+            resolution = com.haulmont.cuba.gui.components.DateField.Resolution.DAY;
             formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateFormat");
         } else {
-            resolution = DateField.RESOLUTION_MIN;
+            resolution = com.haulmont.cuba.gui.components.DateField.Resolution.MIN;
             formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateTimeFormat");
         }
-        ((DateField) field).setResolution(resolution);
-        ((DateField) field).setDateFormat(formatStr);
+        dateField.setResolution(resolution);
+        dateField.setDateFormat(formatStr);
 
-        field.addListener(new Property.ValueChangeListener() {
-            public void valueChange(Property.ValueChangeEvent event) {
-                setValue(field.getValue());
+
+        dateField.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                setValue(value);
             }
         });
 
-        field.setValue(value);
-        return field;
+        dateField.setValue(value);
+        return new DateFieldWrapper(dateField);
     }
 
     private AbstractField createNumberField(final Datatype datatype) {

@@ -46,7 +46,7 @@ public class WebDateField
     private Resolution resolution;
 
     private Object prevValue = null;
-    private boolean editable;
+    private boolean editable = true;
     private boolean updatingInstance;
     private boolean valid;
 

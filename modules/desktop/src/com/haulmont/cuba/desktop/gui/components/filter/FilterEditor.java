@@ -49,9 +49,9 @@ import static org.apache.commons.lang.BooleanUtils.isTrue;
 public class FilterEditor extends AbstractFilterEditor {
 
     private static final int NAME_COLUMN_WIDTH = 110;
-    private static final int OPERATION_COLUMN_WIDTH = 130;
-    private static final int PARAM_COLUMN_WIDTH = 130;
-    private static final int HIDDEN_COLUMN_WIDTH = 75;
+    private static final int OPERATION_COLUMN_WIDTH = 127;
+    private static final int PARAM_COLUMN_WIDTH = 138;
+    private static final int HIDDEN_COLUMN_WIDTH = 70;
     private static final int DELETE_COLUMN_WIDTH = 38;
 
     private JPanel panel;

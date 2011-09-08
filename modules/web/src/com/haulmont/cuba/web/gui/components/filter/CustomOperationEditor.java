@@ -21,7 +21,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
-public class CustomOperationEditor extends OperationEditor implements HasAction {
+public class CustomOperationEditor extends OperationEditor {
 
     public CustomOperationEditor(final AbstractCondition condition) {
         super(condition);
@@ -34,22 +34,19 @@ public class CustomOperationEditor extends OperationEditor implements HasAction 
 
         btn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
-                doAction();
+                final CustomConditionEditDlg dlg = new CustomConditionEditDlg((CustomCondition) condition);
+                dlg.getImpl().addListener(new Window.CloseListener() {
+                    public void windowClose(Window.CloseEvent e) {
+                        App.getInstance().getAppWindow().removeWindow(dlg.getImpl());
+                    }
+                });
+                App.getInstance().getAppWindow().addWindow(dlg.getImpl());
+                dlg.getImpl().center();
             }
         });
 
         layout.addComponent(btn);
     }
 
-    @Override
-    public void doAction() {
-        final CustomConditionEditDlg dlg = new CustomConditionEditDlg((CustomCondition) condition);
-        dlg.getImpl().addListener(new Window.CloseListener() {
-            public void windowClose(Window.CloseEvent e) {
-                App.getInstance().getAppWindow().removeWindow(dlg.getImpl());
-            }
-        });
-        App.getInstance().getAppWindow().addWindow(dlg.getImpl());
-        dlg.getImpl().center();
-    }
+
 }

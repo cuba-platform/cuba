@@ -164,6 +164,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
     @Override
     public com.vaadin.ui.Field createField(com.vaadin.data.Container container, Object itemId, Object propertyId, com.vaadin.ui.Component uiContext) {
         final com.vaadin.ui.Field field;
+        com.haulmont.cuba.gui.components.Field cubaField = null;
         MetaPropertyPath propertyPath = (MetaPropertyPath) propertyId;
 
         final Range range = propertyPath.getRange();
@@ -187,7 +188,8 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                 if (Boolean.class.isAssignableFrom(type)) {
                     field = new CheckBox();
                 } else if (Date.class.isAssignableFrom(type)) {
-                    field = new com.haulmont.cuba.web.toolkit.ui.DateField();
+                    cubaField = new WebDateField();
+                    field = new DateFieldWrapper((WebDateField) cubaField);
                 } else {
                     field = super.createField(container, itemId, propertyId, uiContext);
                 }
@@ -196,7 +198,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
             field = super.createField(container, itemId, propertyId, uiContext);
         }
 
-        initField(field, null, propertyPath, false);
+        initField(field, cubaField, propertyPath, false);
 
         if (!field.isReadOnly()) {
             field.setReadOnly(!UserSessionClient.isEditPermitted(propertyPath.getMetaProperty()));
