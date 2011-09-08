@@ -13,7 +13,6 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.export.ResourceDataProvider;
 import com.haulmont.cuba.security.global.LoginException;
@@ -322,7 +321,10 @@ public class LoginWindow extends Window implements Action.Handler {
                 login(login, passwd, locale);
             }
         } catch (LoginException e) {
-            showNotification(MessageProvider.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc), e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+            showNotification(
+                    MessageProvider.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc),
+                    e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
+
             if (loginByRememberMe) {
                 loginByRememberMe = false;
                 loginField.removeListener(loginChangeListener);

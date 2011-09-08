@@ -84,12 +84,6 @@ public class ApplicationConnection {
 
     public static final String UIDL_SECURITY_TOKEN_ID = "Vaadin-Security-Key";
 
-    /**
-     * @deprecated use UIDL_SECURITY_TOKEN_ID instead
-     */
-    @Deprecated
-    public static final String UIDL_SECURITY_HEADER = UIDL_SECURITY_TOKEN_ID;
-
     public static final String PARAM_UNLOADBURST = "onunloadburst";
 
     public static final String ATTRIBUTE_DESCRIPTION = "description";
@@ -797,15 +791,17 @@ public class ApplicationConnection {
         // Initialize other timers
 
         if (blockUI) {
-            blockUITimer = new Timer() {
-                @Override
-                public void run() {
-                    uiBlocked = true;
-                    blockUI();
-                }
-            };
-            // Block UI after 1.5 sec delay
-            blockUITimer.schedule(1500);
+            if (configuration.useUiBlocking()) {
+                blockUITimer = new Timer() {
+                    @Override
+                    public void run() {
+                        uiBlocked = true;
+                        blockUI(configuration.getBlockUiMessage());
+                    }
+                };
+                // Block UI after 1.5 sec delay
+                blockUITimer.schedule(1500);
+            }
         }
 
         for (HasIndicator component: indicators) {
@@ -838,9 +834,19 @@ public class ApplicationConnection {
         }
     }
 
-    private native void blockUI()
+    private native void blockUI(String blockMessage)
     /*-{
-        $wnd.jQuery.blockUI({ message: 'Please wait', css: {border: '3px solid #292929', background: '#333333', color: '#fff', padding: '10px' }});
+        $wnd.jQuery.blockUI(
+                {
+                    message: blockMessage,
+                    css: {
+                        border: '3px solid #292929',
+                        background: '#333333',
+                        color: '#fff',
+                        padding: '10px',
+                        top: '16px'
+                    }
+                });
     }-*/;
 
 

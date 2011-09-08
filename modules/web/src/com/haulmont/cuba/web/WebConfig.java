@@ -96,6 +96,10 @@ public interface WebConfig extends Config
     @DefaultInt(25)
     int getMainTabCaptionLength();
 
+    @Property("cuba.web.useUiBlocking")
+    @DefaultBoolean(true)
+    boolean getUseUiBlocking();
+
     @Default("peyto")
     @Property("cuba.AppConfig.themeName")
     String getAppWindowTheme();

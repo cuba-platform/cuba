@@ -21,6 +21,7 @@ import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.*;
 import com.vaadin.ui.Window;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 
 import javax.servlet.ServletException;
@@ -260,9 +261,9 @@ public class CubaApplicationServlet extends ApplicationServlet {
                 + ".nocache.js?" + new Date().getTime();
 
         // Get system messages
-        Application.SystemMessages systemMessages = null;
+        App.CubaSystemMessages systemMessages;
         try {
-            systemMessages = getSystemMessages();
+            systemMessages = (App.CubaSystemMessages) getSystemMessages();
         } catch (SystemMessageException e) {
             // failing to get the system messages is always a problem
             throw new ServletException("CommunicationError!", e);
@@ -277,10 +278,9 @@ public class CubaApplicationServlet extends ApplicationServlet {
         if (!isProductionMode()) {
             page.write("vaadin.debug = true;\n");
         }
-        page
-                .write("document.write('<iframe tabIndex=\"-1\" id=\"__gwt_historyFrame\" "
-                        + "style=\"position:absolute;width:0;height:0;border:0;overflow:"
-                        + "hidden;\" src=\"javascript:false\"></iframe>');\n");
+        page.write("document.write('<iframe tabIndex=\"-1\" id=\"__gwt_historyFrame\" "
+                + "style=\"position:absolute;width:0;height:0;border:0;overflow:"
+                + "hidden;\" src=\"javascript:false\"></iframe>');\n");
         page.write("document.write(\"<script language='javascript' src='"
                 + widgetsetFilePath + "'><\\/script>\");\n}\n");
 
@@ -311,6 +311,13 @@ public class CubaApplicationServlet extends ApplicationServlet {
             page.write("useDebugIdInDom: true,\n");
         }
 
+        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+        page.write("\n\"uiBlocking\" : {");
+        page.write(" \"blockUiMessage\" : \"" + systemMessages.getUiBlockingMessage() + "\" ,");
+        page.write(" \"useUiBlocking\" : \"" +
+                BooleanUtils.toString(webConfig.getUseUiBlocking(), "true", "false") + "\"");
+        page.write("} ,\n");
+
         if (systemMessages != null) {
             // Write the CommunicationError -message to client
             String caption = systemMessages.getCommunicationErrorCaption();
@@ -334,19 +341,17 @@ public class CubaApplicationServlet extends ApplicationServlet {
 
         if (themeName != null) {
             injectThemeScript(themeName, page, themeUri);
-
         }
 
         // Warn if the widgetset has not been loaded after 15 seconds on
         // inactivity
         page.write("<script type=\"text/javascript\">\n");
         page.write("//<![CDATA[\n");
-        page
-                .write("setTimeout('if (typeof "
-                        + widgetset.replace('.', '_')
-                        + " == \"undefined\") {alert(\"Failed to load the widgetset: "
-                        + widgetsetFilePath + "\")};',15000);\n"
-                        + "//]]>\n</script>\n");
+        page.write("setTimeout('if (typeof "
+                + widgetset.replace('.', '_')
+                + " == \"undefined\") {alert(\"Failed to load the widgetset: "
+                + widgetsetFilePath + "\")};',15000);\n"
+                + "//]]>\n</script>\n");
     }
 
     @Override

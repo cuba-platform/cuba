@@ -150,6 +150,23 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         initStartupLayout();
 
         initStaticComponents();
+
+        updateClientSystemMessages();
+    }
+
+    private void updateClientSystemMessages() {
+        Map<String, String> localeMessages = new HashMap<String, String>();
+        App.CubaSystemMessages systemMessages = App.compileSystemMessages(App.getInstance().getLocale());
+
+        localeMessages.put("communicationErrorCaption", systemMessages.getCommunicationErrorCaption());
+        localeMessages.put("communicationErrorMessage", systemMessages.getCommunicationErrorMessage());
+
+        localeMessages.put("authorizationErrorCaption", systemMessages.getAuthenticationErrorCaption());
+        localeMessages.put("authorizationErrorMessage", systemMessages.getCommunicationErrorMessage());
+
+        localeMessages.put("blockUiMessage",systemMessages.getUiBlockingMessage());
+
+        getScriptHost().updateLocale(localeMessages);
     }
 
     private void initStaticComponents() {

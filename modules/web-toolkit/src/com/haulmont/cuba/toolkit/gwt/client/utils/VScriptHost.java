@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.ValueMap;
 
 /**
  * Component for evaluate custom JavaScript from server
@@ -21,12 +22,17 @@ import com.vaadin.terminal.gwt.client.UIDL;
 public class VScriptHost extends SimplePanel implements Paintable {
     public static final String COMMAND_PARAM_KEY = "command";
 
+    // System commands
     public static final String SCRIPT_COMMAND = "script";
+    public static final String LOCALE_COMMAND = "locale";
+
+    // File commands
     public static final String VIEW_COMMAND = "view";
     public static final String GET_COMMAND = "get";
 
     public static final String SCRIPT_PARAM_KEY = "script";
     public static final String URL_PARAM_KEY = "url";
+    public static final String LOCALE_PARAM_KEY = "messages";
 
     public VScriptHost() {
         getElement().getStyle().setDisplay(Style.Display.NONE);
@@ -35,7 +41,6 @@ public class VScriptHost extends SimplePanel implements Paintable {
 
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         String paintableId = uidl.getId();
-//        String jSessionId = client.getConfiguration().getSessionId();
 
         this.getElement().setId("scriptHost_" + paintableId);
 
@@ -52,10 +57,12 @@ public class VScriptHost extends SimplePanel implements Paintable {
         } else if (GET_COMMAND.equals(command)) {
             // download file
             String url = uidl.getStringAttribute(URL_PARAM_KEY);
-            if (url != null) {
-//                url = url + "&jsessionid=" + jSessionId;
+            if (url != null)
                 getResource(url);
-            }
+        } else if (LOCALE_COMMAND.equals(command)) {
+            // update locale and system messages in ApplicationConfiguration
+            ValueMap localeMessages = uidl.getMapAttribute(LOCALE_PARAM_KEY);
+            client.getConfiguration().updateSystemMessages(localeMessages);
         }
     }
 

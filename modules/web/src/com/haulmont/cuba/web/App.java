@@ -13,6 +13,7 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.AppConfig;
@@ -42,10 +43,7 @@ import javax.servlet.http.HttpSession;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -152,11 +150,52 @@ public abstract class App extends Application
     }
 
     public static Application.SystemMessages getSystemMessages() {
+        return compileSystemMessages(Locale.getDefault());
+    }
+
+    public static CubaSystemMessages compileSystemMessages(Locale locale) {
+        CubaSystemMessages msgs = new CubaSystemMessages();
+
         String webContext = AppContext.getProperty("cuba.webContextName");
-        Application.CustomizedSystemMessages msgs = new Application.CustomizedSystemMessages();
+
+        if (AppContext.isStarted()) {
+            String messagePack = AppConfig.getMessagesPack();
+
+            msgs.setSessionExpiredCaption(MessageProvider.getMessage(
+                    messagePack, "sessionExpiredCaption", locale));
+            msgs.setSessionExpiredMessage(MessageProvider.getMessage(
+                    messagePack, "sessionExpiredMessage", locale));
+
+            msgs.setCommunicationErrorCaption(MessageProvider.getMessage(
+                    messagePack, "communicationErrorCaption", locale));
+            msgs.setCommunicationErrorMessage(MessageProvider.getMessage(
+                    messagePack, "communicationErrorMessage", locale));
+
+            msgs.setInternalErrorCaption(MessageProvider.getMessage(
+                    messagePack, "internalErrorCaption", locale));
+            msgs.setInternalErrorMessage(MessageProvider.getMessage(
+                    messagePack, "internalErrorMessage", locale));
+
+            msgs.setUiBlockingMessage(MessageProvider.getMessage(
+                    messagePack, "uiBlockingMessage", locale));
+        }
+
         msgs.setInternalErrorURL("/" + webContext + "?restartApp");
         msgs.setOutOfSyncNotificationEnabled(false);
         return msgs;
+    }
+
+    public static class CubaSystemMessages extends Application.CustomizedSystemMessages {
+
+        private String uiBlockingMessage = "";
+
+        public String getUiBlockingMessage() {
+            return uiBlockingMessage;
+        }
+
+        public void setUiBlockingMessage(String uiBlockingMessage) {
+            this.uiBlockingMessage = uiBlockingMessage;
+        }
     }
 
     protected abstract boolean loginOnStart(HttpServletRequest request);

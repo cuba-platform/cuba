@@ -15,6 +15,7 @@ import com.vaadin.ui.ClientWidget;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Component for evaluate custom JavaScript from server
@@ -26,7 +27,7 @@ import java.util.Map;
 public class JavaScriptHost extends AbstractComponent {
     private static final long serialVersionUID = -136425458030091656L;
 
-    private ValueProvider valueProvider = new ValueProvider() {
+    private static class ScriptValueProvider implements ValueProvider {
         private static final long serialVersionUID = 2379677116434150730L;
         Map<String, Object> params = new HashMap<String, Object>();
 
@@ -37,15 +38,34 @@ public class JavaScriptHost extends AbstractComponent {
         public Map<String, Object> getParameters() {
             return params;
         }
-    };
+
+        public Set<Map.Entry<String, Object>> getEntrySet() {
+            return params.entrySet();
+        }
+
+        public void putParam(String key, Object value) {
+            params.put(key, value);
+        }
+
+        public void removeParam(String key) {
+            params.remove(key);
+        }
+    }
+
+    private ScriptValueProvider valueProvider = new ScriptValueProvider();
 
     public JavaScriptHost() {
     }
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
-        for (Map.Entry<String, Object> paramEntry : valueProvider.getParameters().entrySet()) {
-            target.addAttribute(paramEntry.getKey(), String.valueOf(paramEntry.getValue()));
+        for (Map.Entry<String, Object> paramEntry : valueProvider.getEntrySet()) {
+            Object value = paramEntry.getValue();
+            String key = paramEntry.getKey();
+            if (value instanceof Map)
+                target.addAttribute(key, (Map<?, ?>) value);
+            else
+                target.addAttribute(key, String.valueOf(value));
         }
         cleanCommand();
     }
@@ -54,11 +74,20 @@ public class JavaScriptHost extends AbstractComponent {
         return valueProvider;
     }
 
+    public void updateLocale(Map localeMap) {
+        cleanCommand();
+
+        valueProvider.putParam(VScriptHost.COMMAND_PARAM_KEY, VScriptHost.LOCALE_COMMAND);
+        valueProvider.putParam(VScriptHost.LOCALE_PARAM_KEY, localeMap);
+
+        requestRepaint();
+    }
+
     public void evaluateScript(String script) {
         cleanCommand();
 
-        valueProvider.getParameters().put(VScriptHost.COMMAND_PARAM_KEY, VScriptHost.SCRIPT_COMMAND);
-        valueProvider.getParameters().put(VScriptHost.SCRIPT_PARAM_KEY, script);
+        valueProvider.putParam(VScriptHost.COMMAND_PARAM_KEY, VScriptHost.SCRIPT_COMMAND);
+        valueProvider.putParam(VScriptHost.SCRIPT_PARAM_KEY, script);
 
         requestRepaint();
     }
@@ -66,8 +95,8 @@ public class JavaScriptHost extends AbstractComponent {
     public void viewDocument(String documentUrl) {
         cleanCommand();
 
-        valueProvider.getParameters().put(VScriptHost.COMMAND_PARAM_KEY, VScriptHost.VIEW_COMMAND);
-        valueProvider.getParameters().put(VScriptHost.URL_PARAM_KEY, documentUrl);
+        valueProvider.putParam(VScriptHost.COMMAND_PARAM_KEY, VScriptHost.VIEW_COMMAND);
+        valueProvider.putParam(VScriptHost.URL_PARAM_KEY, documentUrl);
 
         requestRepaint();
     }
@@ -75,14 +104,14 @@ public class JavaScriptHost extends AbstractComponent {
     public void getResource(String resourceUrl) {
         cleanCommand();
 
-        valueProvider.getParameters().put(VScriptHost.COMMAND_PARAM_KEY, VScriptHost.GET_COMMAND);
-        valueProvider.getParameters().put(VScriptHost.URL_PARAM_KEY, resourceUrl);
+        valueProvider.putParam(VScriptHost.COMMAND_PARAM_KEY, VScriptHost.GET_COMMAND);
+        valueProvider.putParam(VScriptHost.URL_PARAM_KEY, resourceUrl);
 
         requestRepaint();
     }
 
     private void cleanCommand() {
-        valueProvider.getParameters().remove(VScriptHost.SCRIPT_PARAM_KEY);
-        valueProvider.getParameters().remove(VScriptHost.COMMAND_PARAM_KEY);
+        valueProvider.removeParam(VScriptHost.SCRIPT_PARAM_KEY);
+        valueProvider.removeParam(VScriptHost.COMMAND_PARAM_KEY);
     }
 }

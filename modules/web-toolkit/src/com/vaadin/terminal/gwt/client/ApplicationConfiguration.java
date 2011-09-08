@@ -51,12 +51,18 @@ public class ApplicationConfiguration implements EntryPoint {
     private String windowName;
     private String sessionId;
     private boolean standalone;
+
     private String communicationErrorCaption;
     private String communicationErrorMessage;
     private String communicationErrorUrl;
+
     private String authorizationErrorCaption;
     private String authorizationErrorMessage;
     private String authorizationErrorUrl;
+
+    private String blockUiMessage = "Please wait";
+    private boolean useUiBlocking = false;
+
     private String requiredWidgetset;
     private boolean useDebugIdInDom = true;
     private boolean usePortletURLs = false;
@@ -112,6 +118,23 @@ public class ApplicationConfiguration implements EntryPoint {
     }
 
     /**
+     * Update system messages after User has logged
+     * @param localeMessages Messages map
+     */
+    public void updateSystemMessages(ValueMap localeMessages) {
+        if (!localeMessages.getKeySet().isEmpty()) {
+            // Update all system messages
+            communicationErrorCaption = localeMessages.getString("communicationErrorCaption");
+            communicationErrorMessage = localeMessages.getString("communicationErrorMessage");
+
+            authorizationErrorCaption = localeMessages.getString("authorizationErrorCaption");
+            authorizationErrorMessage = localeMessages.getString("authorizationErrorMessage");
+
+            blockUiMessage = localeMessages.getString("blockUiMessage");
+        }
+    }
+
+    /**
      * @return true if the application is served by std. Vaadin servlet and is
      *         considered to be the only or main content of the host page.
      */
@@ -159,6 +182,14 @@ public class ApplicationConfiguration implements EntryPoint {
         return requiredWidgetset;
     }
 
+    public String getBlockUiMessage() {
+        return blockUiMessage;
+    }
+
+    public boolean useUiBlocking() {
+        return useUiBlocking;
+    }
+
     private native void loadFromDOM()
     /*-{
 
@@ -190,6 +221,10 @@ public class ApplicationConfiguration implements EntryPoint {
                 this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::authorizationErrorCaption = jsobj.authErrMsg.caption;
                 this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::authorizationErrorMessage = jsobj.authErrMsg.message;
                 this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::authorizationErrorUrl = jsobj.authErrMsg.url;
+            }
+            if (jsobj.uiBlocking) {
+                this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::useUiBlocking = jsobj.uiBlocking.useUiBlocking;
+                this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::blockUiMessage = jsobj.uiBlocking.blockUiMessage;
             }
             if (jsobj.usePortletURLs) {
                 this.@com.vaadin.terminal.gwt.client.ApplicationConfiguration::usePortletURLs = jsobj.usePortletURLs;
