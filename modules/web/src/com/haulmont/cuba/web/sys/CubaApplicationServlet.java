@@ -314,8 +314,8 @@ public class CubaApplicationServlet extends ApplicationServlet {
         WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
         page.write("\n\"uiBlocking\" : {");
         page.write(" \"blockUiMessage\" : \"" + systemMessages.getUiBlockingMessage() + "\" ,");
-        page.write(" \"useUiBlocking\" : \"" +
-                BooleanUtils.toString(webConfig.getUseUiBlocking(), "true", "false") + "\"");
+        page.write(" \"useUiBlocking\" : " +
+                BooleanUtils.toString(webConfig.getUseUiBlocking(), "true", "false") + "");
         page.write("} ,\n");
 
         if (systemMessages != null) {
