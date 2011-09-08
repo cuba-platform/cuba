@@ -33,6 +33,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
@@ -979,6 +980,14 @@ public class WebWindowManager extends WindowManager {
                         .toString();
                 log.warn(msg);
                 mainWindow.removeWindow(childWindow);
+                Set<Map.Entry<Window, WindowOpenMode>> openModeSet = getWindowOpenMode().entrySet();
+                for (Map.Entry<Window, WindowOpenMode> entry : openModeSet) {
+                    WindowOpenMode openMode = entry.getValue();
+                    if (ObjectUtils.equals(openMode.data, childWindow)) {
+                        getWindowOpenMode().remove(entry.getKey());
+                        return;
+                    }
+                }
             }
         }
     }
