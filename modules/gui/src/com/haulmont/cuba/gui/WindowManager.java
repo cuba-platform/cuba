@@ -12,8 +12,6 @@ package com.haulmont.cuba.gui;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
@@ -38,11 +36,11 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -506,10 +504,7 @@ public abstract class WindowManager implements Serializable {
         loader.setLocale(getLocale());
         loader.setMessagesPack(window.getMessagesPack());
 
-        InputStream stream = null;
-        if (ConfigProvider.getConfig(GlobalConfig.class).isGroovyClassLoaderEnabled()) {
-            stream = ScriptingProvider.getResourceAsStream(src);
-        }
+        InputStream stream = ScriptingProvider.getResourceAsStream(src);
         if (stream == null) {
             stream = getClass().getResourceAsStream(src);
             if (stream == null) {

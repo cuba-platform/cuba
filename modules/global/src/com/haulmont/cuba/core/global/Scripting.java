@@ -39,6 +39,8 @@ public interface Scripting {
 
     <T> T runGroovyScript(String name, Map<String, Object> context);
 
+    ClassLoader getClassLoader();
+
     Class loadClass(String name);
 
     @Nullable

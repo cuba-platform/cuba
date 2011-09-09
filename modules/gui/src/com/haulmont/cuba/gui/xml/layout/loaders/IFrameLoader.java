@@ -9,8 +9,6 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -51,10 +49,7 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
         loader.setLocale(getLocale());
         loader.setMessagesPack(getMessagesPack());
 
-        InputStream stream = null;
-        if (ConfigProvider.getConfig(GlobalConfig.class).isGroovyClassLoaderEnabled()) {
-            stream = ScriptingProvider.getResourceAsStream(src);
-        }
+        InputStream stream = ScriptingProvider.getResourceAsStream(src);
         if (stream == null) {
             stream = getClass().getResourceAsStream(src);
             if (stream == null) {

@@ -71,13 +71,6 @@ public interface GlobalConfig extends Config {
     boolean getTestMode();
 
     /**
-     * Enable class and resource loading by Groovy
-     */
-    @Property("cuba.groovyClassLoaderEnabled")
-    @DefaultBoolean(true)
-    boolean isGroovyClassLoaderEnabled();
-
-    /**
      * Used to show alternative locales on user login
      */
     @Property("cuba.availableLocales")

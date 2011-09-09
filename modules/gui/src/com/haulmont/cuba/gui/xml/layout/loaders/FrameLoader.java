@@ -10,9 +10,10 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.FrameContext;
-import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -22,17 +23,16 @@ import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class FrameLoader extends ContainerLoader implements ComponentLoader {
 
@@ -116,10 +116,7 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             try {
-                Class<Window> aClass = null;
-                if (ConfigProvider.getConfig(GlobalConfig.class).isGroovyClassLoaderEnabled()) {
-                    aClass = ScriptingProvider.loadClass(screenClass);
-                }
+                Class<Window> aClass = ScriptingProvider.loadClass(screenClass);
                 if (aClass == null)
                     aClass = ReflectionHelper.getClass(screenClass);
                 res = ((WrappedFrame) frame).wrapBy(aClass);

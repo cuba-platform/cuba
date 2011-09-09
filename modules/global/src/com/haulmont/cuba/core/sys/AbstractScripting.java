@@ -216,6 +216,11 @@ public abstract class AbstractScripting implements Scripting {
     }
 
     @Override
+    public ClassLoader getClassLoader() {
+        return getGroovyClassLoader();
+    }
+
+    @Override
     public Class loadClass(String name) {
         try {
             File file = new File(confPath, name.replace(".", "/") + ".java");

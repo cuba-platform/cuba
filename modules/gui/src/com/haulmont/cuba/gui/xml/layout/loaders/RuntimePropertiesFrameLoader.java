@@ -6,13 +6,13 @@
 
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.xml.layout.*;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Element;
 
@@ -50,10 +50,7 @@ public class RuntimePropertiesFrameLoader extends IFrameLoader {
          loader.setLocale(getLocale());
          loader.setMessagesPack(getMessagesPack());
 
-         InputStream stream = null;
-         if (ConfigProvider.getConfig(GlobalConfig.class).isGroovyClassLoaderEnabled()) {
-             stream = ScriptingProvider.getResourceAsStream(src);
-         }
+         InputStream stream = ScriptingProvider.getResourceAsStream(src);
          if (stream == null) {
              stream = getClass().getResourceAsStream(src);
              if (stream == null) {
