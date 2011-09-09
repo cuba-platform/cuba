@@ -42,6 +42,10 @@ public abstract class ScriptingProvider {
         return (T) getScripting().runGroovyScript(name, context);
     }
 
+    public static ClassLoader getClassLoader() {
+        return getScripting().getClassLoader();
+    }
+
     public static Class loadClass(String name) {
         return getScripting().loadClass(name);
     }
