@@ -35,6 +35,10 @@ public interface GlobalConfig extends Config {
     @DefaultString("cuba")
     String getWebContextName();
 
+    @Property("cuba.webAppUrl")
+    @DefaultString("http://localhost:8080/cuba")
+    String getWebAppUrl();
+
     /**
      * Config directory. Root of all not deployable application configuration and logic.
      * Does not end with "/"
