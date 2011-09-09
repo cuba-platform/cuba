@@ -286,10 +286,15 @@ public class Param extends AbstractParam<Component> {
                     if (inExpr) {
                         List list = new ArrayList();
                         String[] parts = ((String) value).split(",");
-                        for (String part : parts) {
-                            list.add(UUID.fromString(part.trim()));
+                        try {
+                            for (String part : parts) {
+                                list.add(UUID.fromString(part.trim()));
+                            }
+                            setValue(list);
+                        } catch (IllegalArgumentException ie) {
+                            App.getInstance().getAppWindow().showNotification(MessageProvider.getMessage(this.getClass(),
+                                    "Param.uuid.Err"), Window.Notification.TYPE_TRAY_NOTIFICATION);
                         }
-                        setValue(list);
                     } else {
                         try{
                             setValue(UUID.fromString((String) value));
