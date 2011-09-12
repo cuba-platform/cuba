@@ -212,7 +212,6 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
     public void setDatasource(Datasource datasource) {
         this.datasource = datasource;
-
         if (this.fields.isEmpty() && datasource != null) {
             //collect fields by entity view
             Collection<MetaPropertyPath> fieldsMetaProps = MetadataHelper.getViewPropertyPaths(datasource.getView(), datasource.getMetaClass());
@@ -468,6 +467,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     private void createFields() {
+        impl.removeAll();
         for (Field field : fields.values()) {
             if (field.isCustom()) {
                 continue; // custom field is generated in another method
