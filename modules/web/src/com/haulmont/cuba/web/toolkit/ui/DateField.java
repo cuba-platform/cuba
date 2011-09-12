@@ -10,7 +10,6 @@
  */
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.toolkit.gwt.client.ui.VMaskedPopupCalendar;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;

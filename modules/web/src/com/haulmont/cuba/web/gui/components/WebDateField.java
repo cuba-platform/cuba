@@ -9,8 +9,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.datatypes.Datatype;
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
@@ -32,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.text.ParseException;
 import java.util.*;
 
 public class WebDateField
@@ -247,7 +244,9 @@ public class WebDateField
         boolean isEditable = editable;
         if (!editable)
             setEditable(true);
+        updatingInstance = true;
         setValue(value);
+        updatingInstance = false;
         setEditable(isEditable);
     }
 
@@ -268,17 +267,7 @@ public class WebDateField
             if (datasource != null && metaPropertyPath != null) {
                 Date value = constructDate();
                 if (datasource.getItem() != null) {
-                    Object obj = value;
-                    Datatype<Object> datatype = metaProperty.getRange().asDatatype();
-                    if (!datatype.getJavaClass().equals(Date.class)) {
-                        String str = Datatypes.get(Date.class).format(value);
-                        try {
-                            obj = datatype.parse(str);
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), obj);
+                    InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
                 }
             }
             valid = true;
@@ -367,7 +356,6 @@ public class WebDateField
                 fireValueChanged(value);
             }
         }
-
 
         setRequired(metaProperty.isMandatory());
     }
