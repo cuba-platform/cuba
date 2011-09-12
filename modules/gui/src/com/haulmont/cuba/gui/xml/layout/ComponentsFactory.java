@@ -15,6 +15,8 @@ import com.haulmont.cuba.gui.components.Timer;
 
 public interface ComponentsFactory {
 
+    String NAME = "cuba_ComponentsFactory";
+
     <T extends Component> T createComponent(String name);
 
     <T extends Timer> T createTimer();

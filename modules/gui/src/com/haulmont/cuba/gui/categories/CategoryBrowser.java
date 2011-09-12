@@ -7,9 +7,7 @@
 package com.haulmont.cuba.gui.categories;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Category;
-import com.haulmont.cuba.core.global.EntityFactory;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.gui.AppConfig;
@@ -35,7 +33,7 @@ public class CategoryBrowser extends AbstractLookup{
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         categoriesDs=getDsContext().get("categoriesDs");
         table = getComponent("categoryTable");
         table.addAction(new CreateAction());
@@ -69,7 +67,7 @@ public class CategoryBrowser extends AbstractLookup{
 
         @Override
         public void actionPerform(Component component) {
-            Category category = EntityFactory.create(Category.class);
+            Category category = MetadataProvider.create(Category.class);
             CategoryEditor editor = openEditor("sys$Category.edit", category, WindowManager.OpenType.THIS_TAB);
             editor.addListener(new CloseListener() {
                 @Override

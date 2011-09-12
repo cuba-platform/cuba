@@ -11,11 +11,13 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.config.MenuItem;
-import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.config.MenuConfig;
+import com.haulmont.cuba.gui.config.MenuItem;
+import com.haulmont.cuba.gui.config.WindowConfig;
+import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.security.global.UserSession;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.Tree;
@@ -23,7 +25,6 @@ import com.vaadin.ui.Window;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.MissingResourceException;
 
 public class Navigator extends Window
 {
@@ -37,14 +38,14 @@ public class Navigator extends Window
             throw new IllegalArgumentException("parentWindow must not be null");
         }
         this.parentWindow = parentWindow;
-        messagePack = AppConfig.getInstance().getMessagesPack();
+        messagePack = AppConfig.getMessagesPack();
         initUI();
     }
 
     private void initUI() {
         tree = new Tree();
 
-        final MenuConfig menuConfig = AppConfig.getInstance().getMenuConfig();
+        final MenuConfig menuConfig = AppContext.getBean(MenuConfig.class);
         List<MenuItem> rootItems = menuConfig.getRootItems();
         for (MenuItem menuItem : rootItems) {
             createTreeItem(menuItem, null);
@@ -56,7 +57,7 @@ public class Navigator extends Window
             public void itemClick(ItemClickEvent event) {
                 MenuItem menuItem = (MenuItem) event.getItemId();
                 String caption = MenuConfig.getMenuItemCaption(menuItem.getId());
-                final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+                final WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
                 WindowInfo windowInfo = windowConfig.getWindowInfo(menuItem.getId());
                 App.getInstance().getWindowManager().openWindow(
                         windowInfo,

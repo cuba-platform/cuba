@@ -29,7 +29,7 @@ public class CopySettings extends AbstractWindow {
         super(frame);
     }
 
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         usersDs = getDsContext().get("users");
         users =(Set<User>) params.get("users");
         copyBtn = getComponent("copyBtn");

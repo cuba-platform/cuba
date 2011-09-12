@@ -35,7 +35,7 @@ public class CreditsFrame extends AbstractFrame {
     }
 
     @Override
-    protected void init(final Map<String, Object> params) {
+    public void init(final Map<String, Object> params) {
         scrollBox = getComponent("scroll");
         companion = getCompanion();
 

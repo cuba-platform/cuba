@@ -14,15 +14,11 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.app.EmailService;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.gui.WebWindow;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -117,7 +113,7 @@ public class FeedbackWindow extends AbstractWindow {
         return result;
     }
 
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
 
         ((LookupField) getComponent("reason")).setOptionsList(Arrays.asList(bugReportReason, featureRequestReason, otherReason));
         getComponent("reasonFreeText").setVisible(false);

@@ -191,7 +191,7 @@ public class WebRowsCount
                 throw new UnsupportedOperationException();
         }
 
-        String messagesPack = AppConfig.getInstance().getMessagesPack();
+        String messagesPack = AppConfig.getMessagesPack();
         component.getLabel().setValue(MessageProvider.formatMessage(messagesPack, msgKey, countValue));
 
         if (component.getCountButton().isVisible() && !refreshing) {

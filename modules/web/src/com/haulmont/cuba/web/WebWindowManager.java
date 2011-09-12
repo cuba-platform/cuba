@@ -12,20 +12,16 @@ package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.gui.components.WebFilter;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
-import com.vaadin.event.*;
-import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
@@ -38,12 +34,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Element;
 
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
 import java.util.*;
-import java.util.List;
 
 public class WebWindowManager extends WindowManager {
 
@@ -806,7 +799,7 @@ public class WebWindowManager extends WindowManager {
 
 //    @Override
 //    protected void initCompanion(Element companionsElem, AbstractWindow window) {
-//        Element element = companionsElem.element(AppConfig.getInstance().getClientType().toString().toLowerCase());
+//        Element element = companionsElem.element(AppConfig.getClientType().toString().toLowerCase());
 //        if (element != null) {
 //            String className = element.attributeValue("class");
 //            if (!StringUtils.isBlank(className)) {
@@ -1067,7 +1060,7 @@ public class WebWindowManager extends WindowManager {
             int maxCount = ConfigProvider.getConfig(WebConfig.class).getMaxTabCount();
             if (maxCount > 0 && maxCount <= getCurrentWindowData().tabs.size()) {
                 app.getAppWindow().showNotification(
-                        MessageProvider.formatMessage(AppConfig.getInstance().getMessagesPack(),"tooManyOpenTabs.message",maxCount),
+                        MessageProvider.formatMessage(AppConfig.getMessagesPack(),"tooManyOpenTabs.message",maxCount),
                         com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE);
                 throw new SilentException();
             }

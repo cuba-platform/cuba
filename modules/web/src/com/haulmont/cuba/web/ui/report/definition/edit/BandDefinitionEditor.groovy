@@ -50,7 +50,7 @@ public class BandDefinitionEditor extends AbstractEditor implements Suggester {
     private BandDefinition parentDefinition
     private Integer position
 
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
         parentDefinition = params['param$parentDefinition']
         position = (Integer) params['param$position']

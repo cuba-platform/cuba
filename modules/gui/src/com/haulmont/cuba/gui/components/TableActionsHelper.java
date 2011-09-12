@@ -94,7 +94,7 @@ public class TableActionsHelper extends ListActionsHelper<Table> {
         }
 
         public String getCaption() {
-            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            final String messagesPackage = AppConfig.getMessagesPack();
             return MessageProvider.getMessage(messagesPackage, actionMessage);
         }
 
@@ -170,7 +170,7 @@ public class TableActionsHelper extends ListActionsHelper<Table> {
         }
 
         public String getCaption() {
-            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            final String messagesPackage = AppConfig.getMessagesPack();
             return MessageProvider.getMessage(messagesPackage, "actions.Excel");
         }
 
@@ -190,7 +190,7 @@ public class TableActionsHelper extends ListActionsHelper<Table> {
         }
 
         public String getCaption() {
-            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            final String messagesPackage = AppConfig.getMessagesPack();
             return MessageProvider.getMessage(messagesPackage, "actions.Excel");
         }
 

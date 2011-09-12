@@ -81,7 +81,7 @@ public class TemplateEditor extends BasicEditor {
 
     @Override
     @SuppressWarnings({"serial", "unchecked"})
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
 
         deletedContainer = (java.util.Map) params.get("param$deletedContainer");

@@ -177,7 +177,7 @@ public class AccessControlLoader extends ContainerLoader {
 
         public void execute(Context context, IFrame window) {
 
-            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            final String messagesPackage = AppConfig.getMessagesPack();
             component.setEnabled(false);
             if (component instanceof Component.ActionOwner) {
                 Action action = ((Component.ActionOwner) component).getAction();

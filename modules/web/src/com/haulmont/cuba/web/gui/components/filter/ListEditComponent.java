@@ -487,7 +487,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             bottomLayout.setMargin(true, false, true, false);
             bottomLayout.setSpacing(true);
 
-            Button okBtn = new Button(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Ok"));
+            Button okBtn = new Button(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
             okBtn.setIcon(new ThemeResource("icons/ok.png"));
             okBtn.setStyleName(WebButton.ICON_STYLE);
             okBtn.addListener(
@@ -499,7 +499,7 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
             );
             bottomLayout.addComponent(okBtn);
 
-            Button cancelBtn = new Button(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Cancel"));
+            Button cancelBtn = new Button(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
             cancelBtn.setIcon(new ThemeResource("icons/cancel.png"));
             cancelBtn.setStyleName(WebButton.ICON_STYLE);
             cancelBtn.addListener(

@@ -45,7 +45,7 @@ public class SettingsImpl implements Settings, Serializable {
 
     private void checkLoaded() {
         if (root == null) {
-            String xml = getService().loadSetting(AppConfig.getInstance().getClientType(), name);
+            String xml = getService().loadSetting(AppConfig.getClientType(), name);
             if (StringUtils.isBlank(xml)) {
                 root = DocumentHelper.createDocument().addElement("settings");
             } else {
@@ -84,7 +84,7 @@ public class SettingsImpl implements Settings, Serializable {
     public void commit() {
         if (modified && root != null) {
             String xml = Dom4j.writeDocument(root.getDocument(), true);
-            getService().saveSetting(AppConfig.getInstance().getClientType(), name, xml);
+            getService().saveSetting(AppConfig.getClientType(), name, xml);
             modified = false;
         }
     }

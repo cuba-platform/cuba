@@ -20,6 +20,8 @@ import javax.annotation.Nullable;
  */
 public interface ExportDisplay
 {
+    String NAME = "cuba_ExportDisplay";
+
     void show(ExportDataProvider dataProvider, String resourceName, @Nullable ExportFormat format);
 
     void show(ExportDataProvider dataProvider, String resourceName);

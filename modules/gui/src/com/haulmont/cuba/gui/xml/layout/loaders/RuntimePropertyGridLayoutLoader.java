@@ -144,7 +144,7 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
         if (!StringUtils.isEmpty(dateFormat)) {
             if (dateFormat.startsWith("msg://")) {
                 dateFormat = MessageProvider.getMessage(
-                        AppConfig.getInstance().getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
+                        AppConfig.getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
             }
             propertyGridLayout.setDateFormat(dateFormat);
         } else {

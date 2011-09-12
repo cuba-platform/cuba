@@ -36,7 +36,7 @@ public class ExcelExportBrowser extends AbstractWindow {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
         table = (Table) params.get("param$table");
         exportDisplay = (ExportDisplay) params.get("param$exportDisplay");

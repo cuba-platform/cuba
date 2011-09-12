@@ -64,7 +64,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
 
     public AbstractCustomConditionEditDlg(final AbstractCustomCondition condition) {
         this.condition = condition;
-        this.messagesPack = AppConfig.getInstance().getMessagesPack();
+        this.messagesPack = AppConfig.getMessagesPack();
         entityAlias = condition.getEntityAlias();
 
         nameLab = factory.createComponent(Label.NAME);

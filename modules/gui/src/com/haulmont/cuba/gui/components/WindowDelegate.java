@@ -7,7 +7,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
@@ -22,7 +22,9 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * <p>$Id$</p>
@@ -36,6 +38,8 @@ public class WindowDelegate {
     protected Window wrapper;
     protected Settings settings;
 
+    protected WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
+
     private Log log = LogFactory.getLog(getClass());
 
     public WindowDelegate(Window window, WindowManager windowManager) {
@@ -45,14 +49,25 @@ public class WindowDelegate {
 
     public Window wrapBy(Class<Window> wrapperClass) {
         try {
-            Constructor<?> constructor;
+            Constructor<?> constructor = null;
+            // First try to find an old-style constructor with IFrame parameter
             try {
                 constructor = wrapperClass.getConstructor(Window.class);
             } catch (NoSuchMethodException e) {
-                constructor = wrapperClass.getConstructor(IFrame.class);
+                try {
+                    constructor = wrapperClass.getConstructor(IFrame.class);
+                } catch (NoSuchMethodException e1) {
+                    //
+                }
             }
-
-            wrapper = (Window) constructor.newInstance(window);
+            if (constructor != null) {
+                wrapper = (Window) constructor.newInstance(window);
+            } else {
+                // If not found, get the default constructor
+                constructor = wrapperClass.getConstructor();
+                wrapper = (Window) constructor.newInstance();
+                ((AbstractFrame) wrapper).setWrappedFrame(window);
+            }
             return wrapper;
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -156,61 +171,51 @@ public class WindowDelegate {
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return windowManager.<T>openWindow(windowInfo, openType, params);
     }
 
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return windowManager.<T>openWindow(windowInfo, openType);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return windowManager.<T>openEditor(windowInfo, item, openType, params, parentDs);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return windowManager.<T>openEditor(windowInfo, item, openType, params);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return windowManager.<T>openEditor(windowInfo, item, openType, parentDs);
     }
 
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return windowManager.<T>openEditor(windowInfo, item, openType);
     }
 
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return windowManager.<T>openLookup(windowInfo, handler, openType, params);
     }
 
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return windowManager.<T>openLookup(windowInfo, handler, openType);
     }
 
     public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return windowManager.<T>openFrame(wrapper, parent, windowInfo);
     }
 
     public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
-        final WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return windowManager.<T>openFrame(wrapper, parent, windowInfo, params);
     }

@@ -67,7 +67,7 @@ public class ReportEditor extends AbstractEditor {
     private Datasource treeDs
     private deletedFiles = [:]
 
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
         initGeneral()
         initTemplates()

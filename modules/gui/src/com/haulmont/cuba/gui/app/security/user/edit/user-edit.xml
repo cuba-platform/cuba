@@ -6,7 +6,7 @@
 
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        datasource="user"
+        datasource="userDs"
         caption="msg://caption"
         class="com.haulmont.cuba.gui.app.security.user.edit.UserEditor"
         messagesPack="com.haulmont.cuba.gui.app.security.user.edit"
@@ -18,26 +18,18 @@
 
     <dsContext>
         <datasource
-                id="user"
+                id="userDs"
                 class="com.haulmont.cuba.security.entity.User"
                 view="user.edit">
-            <collectionDatasource id="roles" property="userRoles"/>
-            <collectionDatasource id="substitutions" property="substitutions"/>
+            <collectionDatasource id="rolesDs" property="userRoles"/>
+            <collectionDatasource id="substitutionsDs" property="substitutions"/>
         </datasource>
-
-        <collectionDatasource
-                id="groups"
-                class="com.haulmont.cuba.security.entity.Group"
-                view="group.lookup"
-                >
-            <query>select g from sec$Group g</query>
-        </collectionDatasource>
     </dsContext>
 
     <#assign width=250>
     <layout>
         <vbox expand="split" spacing="true">
-            <fieldGroup id="fields" width="100%" datasource="user" collapsable="false" border="visible">
+            <fieldGroup id="fieldGroup" width="100%" datasource="userDs" collapsable="false" border="visible">
                 <column flex="1" width="250px">
                     <field id="login" required="true" requiredMessage="msg://loginMsg"/>
                     <field id="passw" custom="true" visible="PersistenceHelper.isNew(param_item)"
@@ -63,30 +55,30 @@
             </fieldGroup>
 
             <split id="split" orientation="horizontal" pos="50">
-                <vbox id="roles-panel" expand="roles" spacing="true" margin="false;true;false;false">
+                <vbox id="roles-panel" expand="rolesTable" spacing="true" margin="false;true;false;false">
                     <label value="msg://roles" stylename="h2"/>
                     <buttonsPanel>
-                        <button action="roles.add" icon="icons/add.png"/>
-                        <button action="roles.edit" icon="icons/edit.png"/>
-                        <button action="roles.remove" icon="icons/remove.png"/>
+                        <button action="rolesTable.add" icon="icons/add.png"/>
+                        <button action="rolesTable.edit" icon="icons/edit.png"/>
+                        <button action="rolesTable.remove" icon="icons/remove.png"/>
                     </buttonsPanel>
-                    <table id="roles" editable="false">
+                    <table id="rolesTable" editable="false">
                         <columns>
                             <column id="role" caption="msg://roleName" captionProperty="name"/>
                             <column id="role.locName" caption="msg://localizedRoleName"/>
                         </columns>
-                        <rows datasource="roles"/>
+                        <rows datasource="rolesDs"/>
                     </table>
                 </vbox>
 
-                <vbox id="subst-panel" expand="subst" spacing="true" margin="false;false;false;true">
+                <vbox id="subst-panel" expand="substTable" spacing="true" margin="false;false;false;true">
                     <label value="msg://substUsers" stylename="h2"/>
                     <buttonsPanel>
-                        <button action="subst.add" icon="icons/add.png"/>
-                        <button action="subst.edit" icon="icons/edit.png"/>
-                        <button action="subst.remove" icon="icons/remove.png"/>
+                        <button action="substTable.add" icon="icons/add.png"/>
+                        <button action="substTable.edit" icon="icons/edit.png"/>
+                        <button action="substTable.remove" icon="icons/remove.png"/>
                     </buttonsPanel>
-                    <table id="subst" editable="false">
+                    <table id="substTable" editable="false">
                         <columns>
                             <column id="substitutedUser.login" caption="msg://login"/>
                             <column id="substitutedUser.name" caption="msg://name"/>
@@ -95,7 +87,7 @@
                                            format="dd/MM/yyyy"/>
                             </column>
                         </columns>
-                        <rows datasource="substitutions"/>
+                        <rows datasource="substitutionsDs"/>
                     </table>
                 </vbox>
             </split>

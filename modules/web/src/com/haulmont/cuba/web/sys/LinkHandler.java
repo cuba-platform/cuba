@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AccessDeniedException;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -53,7 +54,7 @@ public class LinkHandler implements Serializable {
                 return;
             }
 
-            WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+            WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
             WindowInfo windowInfo = windowConfig.getWindowInfo(screenName);
             if (windowInfo == null) {
                 log.warn("WindowInfo not found for screen: " + screenName);

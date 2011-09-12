@@ -41,7 +41,7 @@ public class FileEditor extends AbstractEditor {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         ds = getDsContext().get("fileDs");
 
         okBtn = getComponent("windowActions.windowCommit");

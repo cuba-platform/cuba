@@ -41,7 +41,7 @@ public class DoubleValidator implements Field.Validator {
     }
 
     public DoubleValidator() {
-        this.message = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "validation.invalidNumber");
+        this.message = MessageProvider.getMessage(AppConfig.getMessagesPack(), "validation.invalidNumber");
     }
 
     public void validate(Object value) throws ValidationException {

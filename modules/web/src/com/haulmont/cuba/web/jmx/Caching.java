@@ -19,7 +19,7 @@ import javax.inject.Inject;
  *
  * @author Alexander Budarov
  */
-@ManagedBean("cuba_web_Caching")
+@ManagedBean("cuba_CachingMBean")
 public class Caching implements CachingMBean {
 
     private Log log = LogFactory.getLog(getClass());

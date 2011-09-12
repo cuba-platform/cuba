@@ -50,7 +50,7 @@ public class WebFileUploadField
 
     public WebFileUploadField() {
         fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
-        String caption = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "Upload");
+        String caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "Upload");
         component = new Upload(
                 /* Fixes caption rendering.
                 * If caption == "", the VerticalLayout reserves an empty space */

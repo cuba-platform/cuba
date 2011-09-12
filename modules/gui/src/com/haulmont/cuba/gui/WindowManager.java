@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.DataService;
@@ -28,7 +29,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoader;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
-import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -71,7 +71,8 @@ public abstract class WindowManager implements Serializable {
     }
 
     private transient DataService defaultDataService;
-    private transient UserSettingService settingService;
+
+    protected Scripting scripting = AppContext.getBean(Scripting.NAME);
 
     private DialogParams dialogParams;
 
@@ -86,13 +87,6 @@ public abstract class WindowManager implements Serializable {
             defaultDataService = createDefaultDataService();
         }
         return defaultDataService;
-    }
-
-    public synchronized UserSettingService getSettingService() {
-        if (settingService == null) {
-            settingService = ServiceLocator.lookup(UserSettingService.NAME);
-        }
-        return settingService;
     }
 
     protected DataService createDefaultDataService() {
@@ -110,7 +104,7 @@ public abstract class WindowManager implements Serializable {
 
         String templatePath = windowInfo.getTemplate();
 
-        InputStream stream = ScriptingProvider.getResourceAsStream(templatePath);
+        InputStream stream = scripting.getResourceAsStream(templatePath);
         if (stream == null) {
             stream = getClass().getResourceAsStream(templatePath);
             if (stream == null) {
@@ -163,7 +157,7 @@ public abstract class WindowManager implements Serializable {
 
     private void checkPermission(WindowInfo windowInfo) {
         boolean permitted = UserSessionProvider.getUserSession().isScreenPermitted(
-                AppConfig.getInstance().getClientType(),
+                AppConfig.getClientType(),
                 windowInfo.getId()
         );
         if (!permitted)
@@ -504,7 +498,7 @@ public abstract class WindowManager implements Serializable {
         loader.setLocale(getLocale());
         loader.setMessagesPack(window.getMessagesPack());
 
-        InputStream stream = ScriptingProvider.getResourceAsStream(src);
+        InputStream stream = scripting.getResourceAsStream(src);
         if (stream == null) {
             stream = getClass().getResourceAsStream(src);
             if (stream == null) {
@@ -615,39 +609,41 @@ public abstract class WindowManager implements Serializable {
     }
 
     protected Window wrapByCustomClass(Window window, Element element, Map<String, Object> params) {
-        Window res = window;
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
-            Class<Window> aClass;
-            aClass = ScriptingProvider.loadClass(screenClass);
+            Class<Window> aClass = scripting.loadClass(screenClass);
             if (aClass == null)
                 aClass = ReflectionHelper.getClass(screenClass);
-            res = ((WrappedWindow) window).wrapBy(aClass);
 
-            if (res instanceof AbstractWindow) {
+            Window wrappingWindow = ((WrappedWindow) window).wrapBy(aClass);
+
+            if (wrappingWindow instanceof AbstractWindow) {
                 Element companionsElem = element.element("companions");
                 if (companionsElem != null) {
-                    initCompanion(companionsElem, (AbstractWindow) res);
+                    initCompanion(companionsElem, (AbstractWindow) wrappingWindow);
                 }
             }
 
+            ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingWindow);
+            dependencyInjector.inject();
+
             try {
-                ReflectionHelper.invokeMethod(res, "init", params);
+                ReflectionHelper.invokeMethod(wrappingWindow, "init", params);
             } catch (NoSuchMethodException e) {
                 // do nothing
             }
-            return res;
+            return wrappingWindow;
         } else {
-            return res;
+            return window;
         }
     }
 
     protected void initCompanion(Element companionsElem, AbstractWindow window) {
-        Element element = companionsElem.element(AppConfig.getInstance().getClientType().toString().toLowerCase());
+        Element element = companionsElem.element(AppConfig.getClientType().toString().toLowerCase());
         if (element != null) {
             String className = element.attributeValue("class");
             if (!StringUtils.isBlank(className)) {
-                Class aClass = ScriptingProvider.loadClass(className);
+                Class aClass = scripting.loadClass(className);
                 Object companion;
                 try {
                     if (AbstractCompanion.class.isAssignableFrom(aClass)) {

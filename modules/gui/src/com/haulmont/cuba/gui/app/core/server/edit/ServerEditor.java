@@ -30,7 +30,7 @@ public class ServerEditor extends AbstractEditor {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         //
     }
 }

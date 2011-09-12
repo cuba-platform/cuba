@@ -9,7 +9,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionsLookup;
@@ -18,9 +17,11 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
@@ -28,41 +29,64 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
+import javax.inject.Inject;
 import java.util.*;
-import java.util.List;
 
 public class UserEditor extends AbstractEditor {
 
+    @Inject
+    protected DsContext dsContext;
+
+    @Inject
+    protected DataService dataService;
+
+    @Inject
     protected Datasource<User> userDs;
+
+    @Inject
+    protected CollectionDatasource<UserRole, UUID> rolesDs;
+
+    @Inject
+    protected CollectionDatasource<UserSubstitution, UUID> substitutionsDs;
+
+    @Inject
     protected Table rolesTable;
+
+    @Inject
     protected Table substTable;
+
+    @Inject
+    protected FieldGroup fieldGroup;
+
     protected TextField passwField;
     protected TextField confirmPasswField;
     protected LookupField languageLookup;
     protected PopupButton popupButton;
+
+    @Inject
     protected Companion companion;
+
+    @Inject
+    protected UserSession userSession;
+
+    @Inject
+    protected ComponentsFactory factory;
+
+    @Inject
+    protected Configuration configuration;
 
     public interface Companion {
         void initPasswordField(TextField passwordField);
         void initLanguageLook(LookupField languageLook);
     }
 
-    public UserEditor(Window frame) {
-        super(frame);
-    }
+    public void init(Map<String, Object> params) {
+        userDs.addListener(new NameBuilderListener(fieldGroup));
 
-    protected void init(Map<String, Object> params) {
-        companion = getCompanion();
-
-        userDs = getDsContext().get("user");
-        userDs.addListener(new NameBuilderListener((FieldGroup) getComponent("fields")));
-
-        rolesTable = getComponent("roles");
         rolesTable.addAction(new AddRoleAction());
         rolesTable.addAction(new EditRoleAction());
         rolesTable.addAction(new RemoveRoleAction(rolesTable, false));
 
-        substTable = getComponent("subst");
         substTable.addAction(new AddSubstitutedAction());
         substTable.addAction(new EditSubstitutedAction());
         substTable.addAction(new RemoveAction(substTable, false));
@@ -74,19 +98,18 @@ public class UserEditor extends AbstractEditor {
 
         initCustomFields();
 
-        getDsContext().addListener(
+        dsContext.addListener(
                 new DsContext.CommitListener() {
                     public void beforeCommit(CommitContext<Entity> context) {
                     }
 
                     public void afterCommit(CommitContext<Entity> context, Map<Entity, Entity> result) {
-                        UserSession us = UserSessionProvider.getUserSession();
                         for (Map.Entry<Entity, Entity> entry : result.entrySet()) {
-                            if (entry.getKey().equals(us.getUser())) {
-                                us.setUser((User) entry.getValue());
+                            if (entry.getKey().equals(userSession.getUser())) {
+                                userSession.setUser((User) entry.getValue());
                             }
-                            if (entry.getKey().equals(us.getSubstitutedUser())) {
-                                us.setSubstitutedUser((User) entry.getValue());
+                            if (entry.getKey().equals(userSession.getSubstitutedUser())) {
+                                userSession.setSubstitutedUser((User) entry.getValue());
                             }
                         }
                     }
@@ -100,47 +123,44 @@ public class UserEditor extends AbstractEditor {
         if (PersistenceHelper.isNew(item)) {
             addDefaultRoles();
 
-            languageLookup.setValue(UserSessionProvider.getUserSession().getLocale().getLanguage());
+            languageLookup.setValue(userSession.getLocale().getLanguage());
         }
     }
 
     private void addDefaultRoles() {
-        CollectionDatasource<UserRole, UUID> ds = rolesTable.getDatasource();
         LoadContext ctx = new LoadContext(Role.class);
         ctx.setQueryString("select r from sec$Role r where r.defaultRole = true");
-        List<Role> defaultRoles = getDsContext().getDataService().loadList(ctx);
+        List<Role> defaultRoles = dataService.loadList(ctx);
 
         for (Role role : defaultRoles) {
-            final MetaClass metaClass = ds.getMetaClass();
-            UserRole userRole = ds.getDataService().newInstance(metaClass);
+            final MetaClass metaClass = rolesDs.getMetaClass();
+            UserRole userRole = dataService.newInstance(metaClass);
             userRole.setRole(role);
             userRole.setUser(userDs.getItem());
-            ds.addItem(userRole);
+            rolesDs.addItem(userRole);
         }
     }
 
     private void initCustomFields() {
-        final FieldGroup fields = getComponent("fields");
-
-        FieldGroup.Field f = fields.getField("permissionsLookupField");
-        fields.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
+        FieldGroup.Field f = fieldGroup.getField("permissionsLookupField");
+        fieldGroup.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
             public Component generateField(Datasource datasource, Object propertyId) {
-                popupButton = AppConfig.getFactory().createComponent(PopupButton.NAME);
+                popupButton = factory.createComponent(PopupButton.NAME);
                 popupButton.setCaption(getMessage("permissions"));
-                popupButton.addAction(new PermissionLookupAction("screens",getMessage("screens"),"show-screens"));
-                popupButton.addAction(new PermissionLookupAction("entities",getMessage("entities"),"show-entities"));
-                popupButton.addAction(new PermissionLookupAction("properties",getMessage("properties"),"show-properties"));
-                popupButton.addAction(new PermissionLookupAction("specific",getMessage("specific"),"show-specific"));
+                popupButton.addAction(new PermissionLookupAction("screens", getMessage("screens"), "show-screens"));
+                popupButton.addAction(new PermissionLookupAction("entities", getMessage("entities"), "show-entities"));
+                popupButton.addAction(new PermissionLookupAction("properties", getMessage("properties"), "show-properties"));
+                popupButton.addAction(new PermissionLookupAction("specific", getMessage("specific"), "show-specific"));
 
                 return popupButton;
             }
         });
 
-        f = fields.getField("passw");
+        f = fieldGroup.getField("passw");
         if (f != null) {
-            fields.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
+            fieldGroup.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
                 public Component generateField(Datasource datasource, Object propertyId) {
-                    passwField = AppConfig.getFactory().createComponent(TextField.NAME);
+                    passwField = factory.createComponent(TextField.NAME);
                     passwField.setRequiredMessage(getMessage("passwMsg"));
                     passwField.setSecret(true);
                     if (companion != null)
@@ -150,11 +170,11 @@ public class UserEditor extends AbstractEditor {
             });
         }
 
-        f = fields.getField("confirmPassw");
+        f = fieldGroup.getField("confirmPassw");
         if (f != null) {
-            fields.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
+            fieldGroup.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
                 public Component generateField(Datasource datasource, Object propertyId) {
-                    confirmPasswField = AppConfig.getFactory().createComponent(TextField.NAME);
+                    confirmPasswField = factory.createComponent(TextField.NAME);
                     confirmPasswField.setSecret(true);
                     confirmPasswField.setRequiredMessage(getMessage("confirmPasswMsg"));
                     if (companion != null)
@@ -164,14 +184,14 @@ public class UserEditor extends AbstractEditor {
             });
         }
 
-        f = fields.getField("language");
-        fields.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
+        f = fieldGroup.getField("language");
+        fieldGroup.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
             public Component generateField(Datasource datasource, Object propertyId) {
-                languageLookup = AppConfig.getFactory().createComponent(LookupField.NAME);
+                languageLookup = factory.createComponent(LookupField.NAME);
 
                 languageLookup.setDatasource(datasource, (String) propertyId);
 
-                Map<String, Locale> locales = ConfigProvider.getConfig(GlobalConfig.class).getAvailableLocales();
+                Map<String, Locale> locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
                 TreeMap<String, Object> options = new TreeMap<String, Object>();
                 for (Map.Entry<String, Locale> entry : locales.entrySet()) {
                     options.put(entry.getKey(), entry.getValue().getLanguage());
@@ -227,16 +247,17 @@ public class UserEditor extends AbstractEditor {
     }
 
     private boolean _commit() {
-        DatasourceImplementation rolesDs = (DatasourceImplementation) rolesTable.getDatasource();
-        if (rolesTable.getDatasource().isModified()) {
-            CommitContext ctx = new CommitContext(Collections.emptyList(), rolesDs.getItemsToDelete());
-            getDsContext().getDataService().commit(ctx);
+        if (rolesDs.isModified()) {
+            DatasourceImplementation rolesDsImpl = (DatasourceImplementation) rolesDs;
 
-            ArrayList modifiedRoles = new ArrayList(rolesDs.getItemsToCreate());
-            modifiedRoles.addAll(rolesDs.getItemsToUpdate());
-            rolesDs.commited(Collections.<Entity, Entity>emptyMap());
+            CommitContext ctx = new CommitContext(Collections.emptyList(), rolesDsImpl.getItemsToDelete());
+            dataService.commit(ctx);
+
+            ArrayList modifiedRoles = new ArrayList(rolesDsImpl.getItemsToCreate());
+            modifiedRoles.addAll(rolesDsImpl.getItemsToUpdate());
+            rolesDsImpl.commited(Collections.<Entity, Entity>emptyMap());
             for (Object userRole : modifiedRoles) {
-                rolesDs.modified((Entity) userRole);
+                rolesDsImpl.modified((Entity) userRole);
             }
         }
 
@@ -249,7 +270,7 @@ public class UserEditor extends AbstractEditor {
                 return false;
             } else {
                 if (ObjectUtils.equals(passw, confPassw)) {
-                    ClientConfig passwordPolicyConfig = ConfigProvider.getConfig(ClientConfig.class);
+                    ClientConfig passwordPolicyConfig = configuration.getConfig(ClientConfig.class);
                     if (passwordPolicyConfig.getPasswordPolicyEnabled()) {
                         String regExp = passwordPolicyConfig.getPasswordPolicyRegExp();
                         if (passw.matches(regExp)) {
@@ -285,7 +306,6 @@ public class UserEditor extends AbstractEditor {
     }
 
     public void initCopy() {
-        CollectionDatasource<UserRole, UUID> rolesDs = getDsContext().get("roles");
         for (UUID id : rolesDs.getItemIds()) {
             ((DatasourceImplementation)rolesDs).modified(rolesDs.getItem(id));
         }
@@ -299,7 +319,6 @@ public class UserEditor extends AbstractEditor {
 
         public void actionPerform(Component component) {
             Map<String, Object> lookupParams = Collections.<String, Object>singletonMap("windowOpener", "sec$User.edit");
-            final CollectionDatasource<UserRole, UUID> ds = rolesTable.getDatasource();
             openLookup("sec$Role.browse", new Lookup.Handler() {
                 public void handleLookup(Collection items) {
                     Collection<String> existingRoleNames = getExistingRoleNames();
@@ -307,12 +326,12 @@ public class UserEditor extends AbstractEditor {
                         Role role = (Role)item;
                         if (existingRoleNames.contains(role.getName())) continue;
 
-                        final MetaClass metaClass = ds.getMetaClass();
-                        UserRole userRole = ds.getDataService().newInstance(metaClass);
+                        final MetaClass metaClass = rolesDs.getMetaClass();
+                        UserRole userRole = dataService.newInstance(metaClass);
                         userRole.setRole(role);
                         userRole.setUser(userDs.getItem());
 
-                        ds.addItem(userRole);
+                        rolesDs.addItem(userRole);
                         existingRoleNames.add(role.getName());
                     }
                 }
@@ -340,14 +359,13 @@ public class UserEditor extends AbstractEditor {
         }
 
         public void actionPerform(Component component) {
-            Map<String, Object> lookupParams = Collections.<String, Object>singletonMap("windowOpener", "sec$User.edit");
-            final CollectionDatasource<UserRole, UUID> ds = rolesTable.getDatasource();
-            if (ds.getItem() == null) return;
-            Window window = openEditor("sec$Role.edit", ds.getItem().getRole(), WindowManager.OpenType.THIS_TAB);
+            if (rolesDs.getItem() == null)
+                return;
+            Window window = openEditor("sec$Role.edit", rolesDs.getItem().getRole(), WindowManager.OpenType.THIS_TAB);
             window.addListener(new CloseListener() {
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        ds.refresh();
+                        rolesDs.refresh();
                     }
                 }
             });
@@ -397,17 +415,15 @@ public class UserEditor extends AbstractEditor {
         }
 
         public void actionPerform(Component component) {
-            final UserSubstitution substitution = EntityFactory.create(UserSubstitution.class);
+            final UserSubstitution substitution = MetadataProvider.create(UserSubstitution.class);
             substitution.setUser(userDs.getItem());
-
-            final CollectionDatasource<UserSubstitution, UUID> usDs = getDsContext().get("substitutions");
 
             Map<String, Object> params = new HashMap();
 
-            if (!usDs.getItemIds().isEmpty()) {
+            if (!substitutionsDs.getItemIds().isEmpty()) {
                 List<UUID> list = new ArrayList();
-                for (UUID usId : usDs.getItemIds()) {
-                    list.add(usDs.getItem(usId).getSubstitutedUser().getId());
+                for (UUID usId : substitutionsDs.getItemIds()) {
+                    list.add(substitutionsDs.getItem(usId).getSubstitutedUser().getId());
                 }
                 params.put("existingIds", list);
             }
@@ -415,7 +431,7 @@ public class UserEditor extends AbstractEditor {
             getDialogParams().setWidth(500);
 
             openEditor("sec$UserSubstitution.edit", substitution,
-                    WindowManager.OpenType.DIALOG, params, usDs);
+                    WindowManager.OpenType.DIALOG, params, substitutionsDs);
         }
     }
 
@@ -425,13 +441,11 @@ public class UserEditor extends AbstractEditor {
         }
 
         public void actionPerform(Component component) {
-            final CollectionDatasource<UserSubstitution, UUID> usDs = substTable.getDatasource();
-
             getDialogParams().setWidth(450);
 
-            if (usDs.getItem() != null)
-                openEditor("sec$UserSubstitution.edit", usDs.getItem(),
-                        WindowManager.OpenType.DIALOG, usDs);
+            if (substitutionsDs.getItem() != null)
+                openEditor("sec$UserSubstitution.edit", substitutionsDs.getItem(),
+                        WindowManager.OpenType.DIALOG, substitutionsDs);
         }
     }
 

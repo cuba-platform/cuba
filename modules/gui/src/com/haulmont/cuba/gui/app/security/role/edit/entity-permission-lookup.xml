@@ -36,11 +36,10 @@
             <datasourceClass>com.haulmont.cuba.gui.data.impl.CustomCollectionDatasource</datasourceClass>
             <query>
                 <![CDATA[
-                import com.haulmont.cuba.gui.AppConfig
-                import com.haulmont.cuba.gui.UserSessionClient
+                import com.haulmont.cuba.core.sys.AppContext
+                import com.haulmont.cuba.gui.config.PermissionConfig
 
-                config = AppConfig.getInstance().getPermissionConfig(UserSessionClient.getUserSession().getLocale())
-                return config.getEntityOperations(:ds$entities);
+                return AppContext.getBean(PermissionConfig.class).getEntityOperations(:ds$entities)
                 ]]>
             </query>
         </collectionDatasource>

@@ -40,7 +40,7 @@ public class DateValidator implements Field.Validator {
     }
 
     public DateValidator() {
-        this.message = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "validation.invalidDate");
+        this.message = MessageProvider.getMessage(AppConfig.getMessagesPack(), "validation.invalidDate");
     }
 
     public void validate(Object value) throws ValidationException {

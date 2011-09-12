@@ -42,7 +42,7 @@ public class DialogAction extends AbstractAction {
 
     @Override
     public String getCaption() {
-        return MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), type.msgKey);
+        return MessageProvider.getMessage(AppConfig.getMessagesPack(), type.msgKey);
     }
 
     @Override

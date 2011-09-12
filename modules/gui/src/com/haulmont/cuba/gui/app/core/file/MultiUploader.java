@@ -18,7 +18,6 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImpl;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 
@@ -43,7 +42,7 @@ public class MultiUploader extends AbstractEditor {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         uploadsTable = getComponent("uploadsTable");
 
         filesDs = uploadsTable.getDatasource();

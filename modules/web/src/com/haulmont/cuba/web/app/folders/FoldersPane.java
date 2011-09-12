@@ -18,12 +18,14 @@ import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.security.app.UserSettingService;
@@ -49,7 +51,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
-import java.util.List;
+
+import com.haulmont.cuba.web.toolkit.Timer;
 
 @SuppressWarnings("serial")
 public class FoldersPane extends VerticalLayout {
@@ -83,7 +86,7 @@ public class FoldersPane extends VerticalLayout {
 
     public FoldersPane(MenuBar menuBar, AppWindow appWindow) {
         this.menuBar = menuBar;
-        messagesPack = AppConfig.getInstance().getMessagesPack();
+        messagesPack = AppConfig.getMessagesPack();
         parentAppWindow = appWindow;
 
         setHeight(100, Sizeable.UNITS_PERCENTAGE);
@@ -463,7 +466,7 @@ public class FoldersPane extends VerticalLayout {
         String[] strings = ValuePathHelper.parse(folder.getFilterComponentId());
         String screenId = strings[0];
 
-        WindowInfo windowInfo = AppConfig.getInstance().getWindowConfig().getWindowInfo(screenId);
+        WindowInfo windowInfo = AppContext.getBean(WindowConfig.class).getWindowInfo(screenId);
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("disableAutoRefresh", true);

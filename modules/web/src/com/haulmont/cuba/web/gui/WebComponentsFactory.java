@@ -16,10 +16,12 @@ import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreePieChart;
 import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreeXYLineChart;
 import com.haulmont.cuba.web.toolkit.ui.charts.jfree.JFreeChart;
 
+import javax.annotation.ManagedBean;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+@ManagedBean(ComponentsFactory.NAME)
 public class WebComponentsFactory implements ComponentsFactory, Serializable {
 
     private static Map<String, Class<? extends Component>> classes = new HashMap<String, Class<?extends Component>>();

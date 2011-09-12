@@ -103,7 +103,7 @@ public class WebFilter
     private static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
     private static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
 
-    private String mainMessagesPack = AppConfig.getInstance().getMessagesPack();
+    private String mainMessagesPack = AppConfig.getMessagesPack();
 
     private FilterEntity noFilter;
 
@@ -992,7 +992,7 @@ public class WebFilter
                     //                            if (ObjectUtils.equals(existingFolder.getName(), folder.getName())) {
                     //                                found = true;
                     //                                App.getInstance().getWindowManager().showOptionDialog(
-                    //                                        MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dialogs.Confirmation"),
+                    //                                        MessageProvider.getMessage(AppConfig.getMessagesPack(), "dialogs.Confirmation"),
                     //                                        MessageProvider.getMessage(MESSAGES_PACK, "saveAsFolderConfirmUpdate"),
                     //                                        IFrame.MessageType.CONFIRMATION,
                     //                                        new Action[] {

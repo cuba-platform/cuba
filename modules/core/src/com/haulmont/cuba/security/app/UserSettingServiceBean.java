@@ -13,7 +13,7 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.EntityFactory;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.*;
@@ -38,6 +38,9 @@ public class UserSettingServiceBean implements UserSettingService
 {
     @Inject
     private UserSessionSource userSessionSource;
+
+    @Inject
+    private Metadata metadata;
 
     public String loadSetting(String name) {
         return loadSetting(null, name);
@@ -122,7 +125,7 @@ public class UserSettingServiceBean implements UserSettingService
             q.setParameter(1, fromUser);
             List<UserSetting> fromUserSettings = q.getResultList();
             for (UserSetting currSetting : fromUserSettings) {
-                UserSetting newSetting = EntityFactory.create(UserSetting.class);
+                UserSetting newSetting = metadata.create(UserSetting.class);
                 newSetting.setUser(toUser);
                 newSetting.setClientType(currSetting.getClientType());
                 newSetting.setName(currSetting.getName());
@@ -181,7 +184,7 @@ public class UserSettingServiceBean implements UserSettingService
             selectQuery.setParameter(1, fromUser);
             List<Presentation> presentations = selectQuery.getResultList();
             for (Presentation presentation : presentations) {
-                Presentation newPresentation = EntityFactory.create(Presentation.class);
+                Presentation newPresentation = metadata.create(Presentation.class);
                 newPresentation.setUser(toUser);
                 newPresentation.setComponentId(presentation.getComponentId());
                 newPresentation.setAutoSave(presentation.getAutoSave());
@@ -229,7 +232,7 @@ public class UserSettingServiceBean implements UserSettingService
         newFolder = copiedFolders.get(searchFolder);
         if (newFolder != null)
             return null;
-        newFolder = EntityFactory.create(SearchFolder.class);
+        newFolder = metadata.create(SearchFolder.class);
         newFolder.setUser(toUser);
         newFolder.setApplyDefault(searchFolder.getApplyDefault());
         newFolder.setFilterComponentId(searchFolder.getFilterComponentId());
@@ -286,7 +289,7 @@ public class UserSettingServiceBean implements UserSettingService
             List<FilterEntity> fromUserFilters = q.getResultList();
 
             for (FilterEntity filter : fromUserFilters) {
-                FilterEntity newFilter = EntityFactory.create(FilterEntity.class);
+                FilterEntity newFilter = metadata.create(FilterEntity.class);
                 newFilter.setUser(toUser);
                 newFilter.setCode(filter.getCode());
                 newFilter.setName(filter.getName());

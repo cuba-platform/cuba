@@ -6,17 +6,23 @@
 
 package com.haulmont.cuba.gui.app.security.user.browse;
 
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.Window;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 public class UserLookup extends AbstractLookup {
+
+    @Resource(name = "users")
+    protected Table table;
+
     public UserLookup(Window frame) {
         super(frame);
     }
 
-    protected void init(Map<String, Object> params) {
-        final Table table  = getComponent("users");
+    public void init(Map<String, Object> params) {
         setHeight("400px");
         String multiSelect = (String) params.get("param$multiSelect");
         if ("true".equals(multiSelect)) {

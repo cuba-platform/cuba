@@ -29,7 +29,7 @@ public class ShowLinkAction extends AbstractAction {
 
     public ShowLinkAction(CollectionDatasource ds, Handler handler) {
         super(ACTION_ID);
-        mp = AppConfig.getInstance().getMessagesPack();
+        mp = AppConfig.getMessagesPack();
         this.ds = ds;
         this.handler = handler;
     }

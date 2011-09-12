@@ -10,7 +10,6 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
@@ -56,7 +55,7 @@ public class ScreenHistorySupport {
                     caption = MessageUtils.getEntityCaption(entity.getMetaClass()) + " " + entity.getInstanceName();
                 }
             }
-            ScreenHistoryEntity screenHistoryEntity = EntityFactory.create(ScreenHistoryEntity.class);
+            ScreenHistoryEntity screenHistoryEntity = MetadataProvider.create(ScreenHistoryEntity.class);
             screenHistoryEntity.setCaption(StringUtils.abbreviate(caption, 255));
             screenHistoryEntity.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
             screenHistoryEntity.setUrl(makeLink(window));

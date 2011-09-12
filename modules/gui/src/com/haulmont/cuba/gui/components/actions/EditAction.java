@@ -56,7 +56,7 @@ public class EditAction extends AbstractAction implements CollectionDatasourceLi
     }
 
     public String getCaption() {
-        final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+        final String messagesPackage = AppConfig.getMessagesPack();
         if (UserSessionProvider.getUserSession().isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.UPDATE))
             return MessageProvider.getMessage(messagesPackage, "actions.Edit");
         else

@@ -13,6 +13,7 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ControllerDependencyInjector;
 import com.haulmont.cuba.gui.FrameContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -112,35 +113,37 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
     protected IFrame wrapByCustomClass(IFrame frame, Element element, Map<String, Object> params,
                                        ComponentLoaderContext parentContext)
     {
-        IFrame res = frame;
         final String screenClass = element.attributeValue("class");
         if (!StringUtils.isBlank(screenClass)) {
             try {
                 Class<Window> aClass = ScriptingProvider.loadClass(screenClass);
                 if (aClass == null)
                     aClass = ReflectionHelper.getClass(screenClass);
-                res = ((WrappedFrame) frame).wrapBy(aClass);
+                IFrame wrappingFrame = ((WrappedFrame) frame).wrapBy(aClass);
 
-                if (res instanceof AbstractFrame) {
+                if (wrappingFrame instanceof AbstractFrame) {
                     Element companionsElem = element.element("companions");
                     if (companionsElem != null) {
-                        initCompanion(companionsElem, (AbstractFrame) res);
+                        initCompanion(companionsElem, (AbstractFrame) wrappingFrame);
                     }
                 }
-                parentContext.addPostInitTask(new FrameLoaderPostInitTask(res, params, true));
+                parentContext.addPostInitTask(new FrameLoaderPostInitTask(wrappingFrame, params, true));
 
-                return res;
+                ControllerDependencyInjector dependencyInjector = new ControllerDependencyInjector(wrappingFrame);
+                dependencyInjector.inject();
+
+                return wrappingFrame;
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
         } else {
-            parentContext.addPostInitTask(new FrameLoaderPostInitTask(res, params, false));
-            return res;
+            parentContext.addPostInitTask(new FrameLoaderPostInitTask(frame, params, false));
+            return frame;
         }
     }
 
     protected void initCompanion(Element companionsElem, AbstractFrame frame) {
-        Element element = companionsElem.element(AppConfig.getInstance().getClientType().toString().toLowerCase());
+        Element element = companionsElem.element(AppConfig.getClientType().toString().toLowerCase());
         if (element != null) {
             String className = element.attributeValue("class");
             if (!StringUtils.isBlank(className)) {

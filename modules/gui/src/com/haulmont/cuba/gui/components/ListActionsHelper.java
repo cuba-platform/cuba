@@ -263,7 +263,7 @@ public abstract class ListActionsHelper<T extends ListComponent> implements Seri
         }
 
         public String getCaption() {
-            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            final String messagesPackage = AppConfig.getMessagesPack();
             if (userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
                 return MessageProvider.getMessage(messagesPackage, "actions.Edit");
             else
@@ -339,7 +339,7 @@ public abstract class ListActionsHelper<T extends ListComponent> implements Seri
         }
 
         public String getCaption() {
-            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            final String messagesPackage = AppConfig.getMessagesPack();
             return MessageProvider.getMessage(messagesPackage, "actions.Refresh");
         }
 
@@ -363,7 +363,7 @@ public abstract class ListActionsHelper<T extends ListComponent> implements Seri
         }
 
         public String getCaption() {
-            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            final String messagesPackage = AppConfig.getMessagesPack();
             return MessageProvider.getMessage(messagesPackage, "actions.Remove");
         }
 
@@ -379,7 +379,7 @@ public abstract class ListActionsHelper<T extends ListComponent> implements Seri
             if(!isEnabled()) return;
             final Set selected = ListActionsHelper.this.component.getSelected();
             if (!selected.isEmpty()) {
-                final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                final String messagesPackage = AppConfig.getMessagesPack();
                 frame.showOptionDialog(
                         MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation"),
                         MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove"),
@@ -455,7 +455,7 @@ public abstract class ListActionsHelper<T extends ListComponent> implements Seri
         }
 
         public String getCaption() {
-            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            final String messagesPackage = AppConfig.getMessagesPack();
             return MessageProvider.getMessage(messagesPackage, "actions.Exclude");
         }
 
@@ -472,7 +472,7 @@ public abstract class ListActionsHelper<T extends ListComponent> implements Seri
             final Set selected = ListActionsHelper.this.component.getSelected();
             if (!selected.isEmpty()) {
                 if (confirm) {
-                    final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                    final String messagesPackage = AppConfig.getMessagesPack();
                     frame.showOptionDialog(
                             MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation"),
                             MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove"),
@@ -547,7 +547,7 @@ public abstract class ListActionsHelper<T extends ListComponent> implements Seri
         }
 
         public String getCaption() {
-            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            final String messagesPackage = AppConfig.getMessagesPack();
             return MessageProvider.getMessage(messagesPackage, "actions.Apply");
         }
 
@@ -566,7 +566,7 @@ public abstract class ListActionsHelper<T extends ListComponent> implements Seri
         }
 
         public String getCaption() {
-            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            final String messagesPackage = AppConfig.getMessagesPack();
             return MessageProvider.getMessage(messagesPackage, "actions.Clear");
         }
 
@@ -606,7 +606,7 @@ public abstract class ListActionsHelper<T extends ListComponent> implements Seri
         }
 
         public String getCaption() {
-            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            final String messagesPackage = AppConfig.getMessagesPack();
             return MessageProvider.getMessage(messagesPackage, captionKey == null ? "actions.Add" : captionKey);
         }
 

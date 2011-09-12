@@ -41,7 +41,7 @@ public class IntegerValidator implements Field.Validator {
     }
 
     public IntegerValidator() {
-        this.message = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "validation.invalidNumber");
+        this.message = MessageProvider.getMessage(AppConfig.getMessagesPack(), "validation.invalidNumber");
     }
 
     private boolean checkIntegerOnPositive(Integer value) {

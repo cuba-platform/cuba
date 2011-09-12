@@ -339,16 +339,16 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
         if (!StringUtils.isEmpty(dateFormat)) {
             if (dateFormat.startsWith("msg://")) {
                 dateFormat = MessageProvider.getMessage(
-                        AppConfig.getInstance().getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
+                        AppConfig.getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
             }
             cubaField.setDateFormat(dateFormat);
         } else {
             String formatStr;
             if (tt == TemporalType.DATE) {
-                formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(),
                         "dateFormat");
             } else {
-                formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(),
                         "dateTimeFormat");
             }
             cubaField.setDateFormat(formatStr);

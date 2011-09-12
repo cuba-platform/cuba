@@ -338,14 +338,14 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             Datatypes datatypes = Datatypes.getInstance();
             if (dt.equals(datatypes.get(IntegerDatatype.NAME)) || dt.equals(datatypes.get(LongDatatype.NAME))) {
                 validator = new IntegerValidator(
-                        MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                        MessageProvider.getMessage(AppConfig.getMessagesPack(),
                                 "validation.invalidNumber"));
             } else if (dt.equals(datatypes.get(DoubleDatatype.NAME)) || dt.equals(datatypes.get(BigDecimalDatatype.NAME))) {
                 validator = new DoubleValidator(
-                        MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                        MessageProvider.getMessage(AppConfig.getMessagesPack(),
                                 "validation.invalidNumber"));
             } else if (dt.equals(datatypes.get(DateDatatype.NAME))) {
-                validator = new DateValidator(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                validator = new DateValidator(MessageProvider.getMessage(AppConfig.getMessagesPack(),
                         "validation.invalidDate"));
             }
         }

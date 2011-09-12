@@ -23,13 +23,14 @@ import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
 
+import javax.inject.Inject;
 import java.util.*;
 import java.util.List;
 
@@ -47,7 +48,13 @@ public class AttributeEditor extends AbstractEditor {
     private CategoryAttribute attribute;
     private boolean dataTypeFieldInited = false;
     private DataService dataService;
-    private ComponentsFactory factory = AppConfig.getFactory();
+
+    @Inject
+    private ComponentsFactory factory;
+
+    @Inject
+    private WindowConfig windowConfig;
+
     private static final String FIELD_WIDTH = "200px";
 
     public AttributeEditor(IFrame frame) {
@@ -150,7 +157,7 @@ public class AttributeEditor extends AbstractEditor {
             dateField.setId("defaultValue");
             dateField.setCaption(getMessage("defaultValue"));
             fieldsContainer.add(dateField);
-            dateField.addValidator(new DateValidator(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "validation.invalidDate")));
+            dateField.addValidator(new DateValidator(MessageProvider.getMessage(AppConfig.getMessagesPack(), "validation.invalidDate")));
             dateField.addListener(new ValueListener() {
                 @Override
                 public void valueChanged(Object source, String property, Object prevValue, Object value) {
@@ -163,7 +170,7 @@ public class AttributeEditor extends AbstractEditor {
             TextField textField = factory.createComponent(TextField.NAME);
             textField.setId("defaultValue");
             textField.setCaption(getMessage("defaultValue"));
-            textField.addValidator(new IntegerValidator(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+            textField.addValidator(new IntegerValidator(MessageProvider.getMessage(AppConfig.getMessagesPack(),
                     "validation.invalidNumber")));
             textField.setDatatype(Datatypes.get(Integer.class));
             textField.setWidth(FIELD_WIDTH);
@@ -183,7 +190,7 @@ public class AttributeEditor extends AbstractEditor {
             textField.setDatatype(Datatypes.get(Double.class));
             textField.setWidth(FIELD_WIDTH);
             textField.addValidator(new DoubleValidator(
-                    MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                    MessageProvider.getMessage(AppConfig.getMessagesPack(),
                             "validation.invalidNumber")));
             textField.addListener(new ValueListener() {
                 @Override
@@ -289,7 +296,7 @@ public class AttributeEditor extends AbstractEditor {
         screenField.setWidth(FIELD_WIDTH);
         fieldsContainer.add(screenField);
 
-        Collection<WindowInfo> windowInfoCollection = AppConfig.getInstance().getWindowConfig().getWindows();
+        Collection<WindowInfo> windowInfoCollection = windowConfig.getWindows();
         List screensList = new ArrayList();
         for (WindowInfo windowInfo : windowInfoCollection) {
             screensList.add(windowInfo.getId());

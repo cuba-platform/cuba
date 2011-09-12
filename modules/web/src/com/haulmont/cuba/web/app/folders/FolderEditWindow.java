@@ -54,7 +54,7 @@ public class FolderEditWindow extends Window {
         this.folder = folder;
         this.commitHandler = commitHandler;
 
-        messagesPack = AppConfig.getInstance().getMessagesPack();
+        messagesPack = AppConfig.getMessagesPack();
         setCaption(adding ? getMessage("folders.folderEditWindow.adding") : getMessage("folders.folderEditWindow"));
 
         setWidth(300, Sizeable.UNITS_PIXELS);

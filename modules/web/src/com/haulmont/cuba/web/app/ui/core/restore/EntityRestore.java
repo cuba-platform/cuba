@@ -46,7 +46,7 @@ public class EntityRestore extends AbstractWindow{
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
         entities = getComponent("entities");
         //entitiesDs = getDsContext().get("entitiesDs");

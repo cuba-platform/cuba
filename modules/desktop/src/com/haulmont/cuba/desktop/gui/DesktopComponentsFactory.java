@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.charts.Chart;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
+import javax.annotation.ManagedBean;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import java.util.Map;
  *
  * @author krivopustov
  */
+@ManagedBean(ComponentsFactory.NAME)
 public class DesktopComponentsFactory implements ComponentsFactory {
 
     private static Map<String, Class<? extends Component>> classes = new HashMap<String, Class<?extends Component>>();

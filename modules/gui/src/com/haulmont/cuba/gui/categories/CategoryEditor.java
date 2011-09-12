@@ -6,29 +6,16 @@
 
 package com.haulmont.cuba.gui.categories;
 
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.RefreshAction;
-import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import org.apache.commons.lang.BooleanUtils;
 
 
-import javax.swing.table.TableColumn;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -45,7 +32,7 @@ public class CategoryEditor extends AbstractEditor {
         super(frame);
     }
 
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         dataService = getDsContext().getDataService();
         cb = getComponent("isDefault");
 

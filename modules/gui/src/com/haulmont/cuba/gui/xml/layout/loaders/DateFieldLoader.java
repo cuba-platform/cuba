@@ -59,15 +59,15 @@ public class DateFieldLoader extends AbstractFieldLoader {
         if (!StringUtils.isEmpty(dateFormat)) {
                if (dateFormat.startsWith("msg://")) {
                 dateFormat = MessageProvider.getMessage(
-                        AppConfig.getInstance().getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
+                        AppConfig.getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
             }
             component.setDateFormat(dateFormat);
         } else {
             String formatStr;
             if (tt == TemporalType.DATE) {
-                formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateFormat");
+                formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(), "dateFormat");
             } else {
-                formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateTimeFormat");
+                formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
             }
             component.setDateFormat(formatStr);
         }

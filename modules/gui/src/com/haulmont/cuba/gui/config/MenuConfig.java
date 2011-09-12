@@ -10,19 +10,26 @@
  */
 package com.haulmont.cuba.gui.config;
 
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.gui.xml.layout.loaders.util.ComponentLoaderHelper;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.springframework.core.io.Resource;
 
+import javax.annotation.ManagedBean;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -30,15 +37,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.MissingResourceException;
 
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.core.global.MessageProvider;
-
 /**
  * GenericUI class holding information about main menu structure.
  * <br>Reference can be obtained via {@link com.haulmont.cuba.gui.AppConfig#getMenuConfig()}
  */
+@ManagedBean("cuba_MenuConfig")
 public class MenuConfig implements Serializable
 {
+    public static final String MENU_CONFIG_XML_PROP = "cuba.menuConfig";
+
     private static Log log = LogFactory.getLog(MenuConfig.class);
     
     private List<MenuItem> rootItems = new ArrayList<MenuItem>();
@@ -55,6 +62,29 @@ public class MenuConfig implements Serializable
             return MessageProvider.getMessage(messagePack, "menu-config." + id);
         } catch (MissingResourceException e) {
             return id;
+        }
+    }
+
+    public MenuConfig() {
+        final String configName = AppContext.getProperty(MENU_CONFIG_XML_PROP);
+
+        ConfigurationResourceLoader resourceLoader = new ConfigurationResourceLoader();
+        StrTokenizer tokenizer = new StrTokenizer(configName);
+        for (String location : tokenizer.getTokenArray()) {
+            Resource resource = resourceLoader.getResource(location);
+            if (resource.exists()) {
+                InputStream stream = null;
+                try {
+                    stream = resource.getInputStream();
+                    loadConfig(stream);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    IOUtils.closeQuietly(stream);
+                }
+            } else {
+                log.warn("Resource " + location + " not found, ignore it");
+            }
         }
     }
 

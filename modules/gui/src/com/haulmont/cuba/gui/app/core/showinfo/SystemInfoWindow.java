@@ -33,7 +33,7 @@ public class SystemInfoWindow extends AbstractWindow {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
 
         paramsDs = getDsContext().get("paramsDs");

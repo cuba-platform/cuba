@@ -16,6 +16,10 @@ import com.haulmont.cuba.gui.data.Datasource;
  * Base class for editor screen controllers
  */
 public class AbstractEditor extends AbstractWindow implements Window.Editor {
+
+    public AbstractEditor() {
+    }
+
     public AbstractEditor(IFrame frame) {
         super(frame);
     }

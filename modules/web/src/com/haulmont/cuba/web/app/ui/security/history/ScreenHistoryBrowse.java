@@ -31,7 +31,7 @@ public class ScreenHistoryBrowse extends AbstractWindow{
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         DialogParams dialogParams = getDialogParams();
         dialogParams.setHeight(480);
         dialogParams.setWidth(500);

@@ -15,7 +15,9 @@ import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.export.FileDataProvider;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.Scope;
 
+import javax.annotation.ManagedBean;
 import javax.swing.*;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,6 +29,8 @@ import java.io.InputStream;
  *
  * @author artamonov
  */
+@ManagedBean(ExportDisplay.NAME)
+@Scope("prototype")
 public class DesktopExportDisplay implements ExportDisplay {
 
     private final JFileChooser fileChooser = new JFileChooser();

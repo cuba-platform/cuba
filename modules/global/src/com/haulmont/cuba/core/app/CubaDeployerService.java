@@ -26,9 +26,6 @@ public interface CubaDeployerService {
 
     String NAME = "cuba_DeployerService";
 
-    @Deprecated
-    String JNDI_NAME = NAME;
-
     String getReleaseNumber();
 
     String getReleaseTimestamp();

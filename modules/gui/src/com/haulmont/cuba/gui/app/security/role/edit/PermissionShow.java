@@ -7,8 +7,6 @@
 package com.haulmont.cuba.gui.app.security.role.edit;
 
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TextField;
 
 import java.util.Map;
@@ -22,7 +20,7 @@ public class PermissionShow extends AbstractWindow{
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
         setHeight("400px");
         String message = (String)params.get("message");

@@ -10,39 +10,76 @@
  */
 package com.haulmont.cuba.gui.config;
 
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
+import com.haulmont.cuba.gui.NoSuchScreenException;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.springframework.core.io.Resource;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Collection;
-
-import com.haulmont.cuba.gui.NoSuchScreenException;
 
 /**
  * GenericUI class holding information about all registered screens.
- * <br>Reference can be obtained via {@link com.haulmont.cuba.gui.AppConfig#getWindowConfig()}
  */
+@ManagedBean("cuba_WindowConfig")
 public class WindowConfig
 {
+    public static final String WINDOW_CONFIG_XML_PROP = "cuba.windowConfig";
+
     protected Map<String, WindowInfo> screens = new HashMap<String, WindowInfo>();
 
     private static Log log = LogFactory.getLog(WindowConfig.class);
+
+    private Scripting scripting;
+
+    @Inject
+    public WindowConfig(Scripting scripting) {
+        this.scripting = scripting;
+
+        final String configName = AppContext.getProperty(WINDOW_CONFIG_XML_PROP);
+
+        ConfigurationResourceLoader resourceLoader = new ConfigurationResourceLoader();
+        StrTokenizer tokenizer = new StrTokenizer(configName);
+        for (String location : tokenizer.getTokenArray()) {
+            Resource resource = resourceLoader.getResource(location);
+            if (resource.exists()) {
+                InputStream stream = null;
+                try {
+                    stream = resource.getInputStream();
+                    loadConfig(stream);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    IOUtils.closeQuietly(stream);
+                }
+            } else {
+                log.warn("Resource " + location + " not found, ignore it");
+            }
+        }
+    }
 
     public void loadConfig(Element rootElem) {
         for (Element element : (List<Element>) rootElem.elements("include")) {
             String fileName = element.attributeValue("file");
             if (!StringUtils.isBlank(fileName)) {
-                String incXml = ScriptingProvider.getResourceAsString(fileName);
+                String incXml = scripting.getResourceAsString(fileName);
                 if (incXml == null) {
                     log.warn("File " + fileName + " not found, ignore it");
                     continue;

@@ -56,7 +56,7 @@ public class RoleEditor extends AbstractEditor {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
 
         screenPermissionsGrants = getDsContext().get("screen-permissions");
         screenPermissionsTree = getComponent("screen-permissions-tree");

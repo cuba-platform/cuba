@@ -43,6 +43,8 @@ public abstract class AbstractScripting implements Scripting {
 
     private Log log = LogFactory.getLog(getClass());
 
+    private JavaClassLoader javaClassLoader;
+
     protected String confPath;
 
     protected String groovyClassPath;
@@ -55,7 +57,9 @@ public abstract class AbstractScripting implements Scripting {
 
     protected Map<Layer, GenericKeyedObjectPool> pools = new HashMap<Layer, GenericKeyedObjectPool>();
 
-    public AbstractScripting(Configuration configuration) {
+    public AbstractScripting(JavaClassLoader javaClassLoader, Configuration configuration) {
+        this.javaClassLoader = javaClassLoader;
+
         confPath = configuration.getConfig(GlobalConfig.class).getConfDir() + File.pathSeparator;
         groovyClassPath = confPath;
 
@@ -95,7 +99,7 @@ public abstract class AbstractScripting implements Scripting {
                 if (gse == null) {
                     final String[] rootPath = getScriptEngineRootPath();
                     try {
-                        gse = new GroovyScriptEngine(rootPath, JavaClassLoader.getInstance());
+                        gse = new GroovyScriptEngine(rootPath, javaClassLoader);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -112,7 +116,7 @@ public abstract class AbstractScripting implements Scripting {
                     CompilerConfiguration cc = new CompilerConfiguration();
                     cc.setClasspath(groovyClassPath);
                     cc.setRecompileGroovySource(true);
-                    gcl = new GroovyClassLoader(JavaClassLoader.getInstance(), cc);
+                    gcl = new GroovyClassLoader(javaClassLoader, cc);
                 }
             }
         }
@@ -143,7 +147,7 @@ public abstract class AbstractScripting implements Scripting {
                             CompilerConfiguration cc = new CompilerConfiguration();
                             cc.setClasspath(groovyClassPath);
                             cc.setRecompileGroovySource(true);
-                            GroovyShell shell = new GroovyShell(JavaClassLoader.getInstance(), new Binding(), cc);
+                            GroovyShell shell = new GroovyShell(javaClassLoader, new Binding(), cc);
                             Script script = shell.parse(sb.toString());
                             return script;
                         }
@@ -225,7 +229,7 @@ public abstract class AbstractScripting implements Scripting {
         try {
             File file = new File(confPath, name.replace(".", "/") + ".java");
             if (file.exists())
-                return JavaClassLoader.getInstance().loadClass(name);
+                return javaClassLoader.loadClass(name);
             else
                 return getGroovyClassLoader().loadClass(name, true, false);
         } catch (ClassNotFoundException e) {
@@ -266,6 +270,6 @@ public abstract class AbstractScripting implements Scripting {
     @Override
     public void clearCache() {
         getGroovyClassLoader().clearCache();
-        JavaClassLoader.getInstance().clearCache();
+        javaClassLoader.clearCache();
     }
 }

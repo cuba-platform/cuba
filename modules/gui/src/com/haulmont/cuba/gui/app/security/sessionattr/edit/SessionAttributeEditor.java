@@ -25,7 +25,7 @@ public class SessionAttributeEditor extends AbstractEditor {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         datasource = getDsContext().get("attribute");
 
         FieldGroup fields = getComponent("fields");

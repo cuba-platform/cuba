@@ -807,7 +807,7 @@ public class WebWindow
             okbar.setMargin(true, false, false, false);
             okbar.setSpacing(true);
 
-            final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+            final String messagesPackage = AppConfig.getMessagesPack();
             selectButton = WebComponentsHelper.createButton();
             selectButton.setCaption(MessageProvider.getMessage(messagesPackage, "actions.Select"));
             selectButton.setIcon(new ThemeResource("icons/ok.png"));

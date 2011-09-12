@@ -29,7 +29,7 @@ public class GroupBrowser extends AbstractWindow {
         super(frame);
     }
 
-    protected void init(final Map<String, Object> params) {
+    public void init(final Map<String, Object> params) {
         tree = getComponent("groups");
 
         final CollectionDatasource treeDS = tree.getDatasource();
@@ -128,7 +128,7 @@ public class GroupBrowser extends AbstractWindow {
 
                     @Override
                     public String getCaption() {
-                        String mp = AppConfig.getInstance().getMessagesPack();
+                        String mp = AppConfig.getMessagesPack();
                         return MessageProvider.getMessage(mp, "actions.Create");
                     }
 
@@ -172,7 +172,7 @@ public class GroupBrowser extends AbstractWindow {
 
                     @Override
                     public String getCaption() {
-                        String mp = AppConfig.getInstance().getMessagesPack();
+                        String mp = AppConfig.getMessagesPack();
                         return MessageProvider.getMessage(mp, "actions.Create");
                     }
 

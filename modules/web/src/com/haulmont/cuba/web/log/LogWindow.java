@@ -65,7 +65,7 @@ public class LogWindow extends Window
     }
 
     private String getVersionString() {
-        CubaDeployerService service = ServiceLocator.lookup(CubaDeployerService.JNDI_NAME);
+        CubaDeployerService service = ServiceLocator.lookup(CubaDeployerService.NAME);
         String releaseNumber = service.getReleaseNumber();
         String releaseTimestamp = service.getReleaseTimestamp();
         String str = MessageProvider.formatMessage(getClass(), "logWindow.versionString", releaseNumber, releaseTimestamp);

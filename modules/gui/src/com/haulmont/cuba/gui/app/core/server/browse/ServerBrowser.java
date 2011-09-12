@@ -25,7 +25,7 @@ public class ServerBrowser extends AbstractWindow {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         Table table = getComponent("table");
         ComponentsHelper.createActions(table);
     }

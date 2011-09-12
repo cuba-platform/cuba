@@ -20,7 +20,7 @@ public class ReportRun extends AbstractLookup {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
         reportsTable = getComponent("table");
         Button runReport = getComponent("runReport");

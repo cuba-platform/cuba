@@ -6,10 +6,7 @@
 
 package com.haulmont.cuba.web.app.folders;
 
-import com.haulmont.cuba.core.global.EntityFactory;
-import com.haulmont.cuba.core.global.QueryParser;
-import com.haulmont.cuba.core.global.QueryTransformerFactory;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
@@ -83,7 +80,7 @@ public class SaveSetWindow extends AbstractWindow {
             QueryParser parser = QueryTransformerFactory.createParser(query);
             String entityAlias = parser.getEntityAlias(entityType);
             String filterXml = WebFilter.UserSetHelper.generateSetFilter(ids,entityClass,componentId,entityAlias);
-            final SearchFolder folder = EntityFactory.create(SearchFolder.class);
+            final SearchFolder folder = MetadataProvider.create(SearchFolder.class);
             folder.setUser(UserSessionProvider.getUserSession().getUser());
             folder.setName("");
             folder.setFilterXml(filterXml);

@@ -37,7 +37,7 @@ public class ConstraintEditor extends AbstractEditor {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
         entityName = getComponent("entityName");
         // casts to concrete classes !

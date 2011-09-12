@@ -34,7 +34,7 @@ public class FilterApplyAction extends AbstractAction {
     }
 
     public String getCaption() {
-        final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+        final String messagesPackage = AppConfig.getMessagesPack();
         return MessageProvider.getMessage(messagesPackage, "actions.Apply");
     }
 

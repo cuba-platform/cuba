@@ -13,11 +13,9 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.EntityFactory;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
@@ -113,7 +111,7 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
 
     public MetaClass getMetaClass() {
         MetaClass metaClass = metaProperty.getRange().asClass();
-        Class replacedClass = EntityFactory.getReplacedClass(metaClass);
+        Class replacedClass = MetadataProvider.getReplacedClass(metaClass);
         return replacedClass != null ? MetadataProvider.getSession().getClass(replacedClass) : metaClass;
     }
 

@@ -153,7 +153,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                 throw new UnsupportedOperationException();
         }
 
-        String messagesPack = AppConfig.getInstance().getMessagesPack();
+        String messagesPack = AppConfig.getMessagesPack();
         impl.getLabel().setText(MessageProvider.formatMessage(messagesPack, msgKey, countValue));
 
         if (impl.getCountButton().isVisible() && !refreshing) {

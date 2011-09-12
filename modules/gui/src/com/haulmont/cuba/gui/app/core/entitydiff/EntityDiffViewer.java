@@ -51,7 +51,7 @@ public class EntityDiffViewer extends AbstractFrame {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
 
         entityDiffDs = getDsContext().get("entityDiffDs");

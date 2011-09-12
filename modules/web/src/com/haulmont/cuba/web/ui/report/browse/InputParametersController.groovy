@@ -65,7 +65,7 @@ public class InputParametersController extends AbstractWindow {
     private int number = 0
     private HashMap<String, Field> parameterComponents = new HashMap<String, Field>()
 
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
         report = (Report) params['param$report']
         linkedEntity = (Entity) params['param$entity']

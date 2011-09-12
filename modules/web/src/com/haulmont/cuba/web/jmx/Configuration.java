@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author krivopustov
  */
-@ManagedBean("cuba_web_Configuration")
+@ManagedBean("cuba_ConfigurationMBean")
 public class Configuration implements ConfigurationMBean {
 
     @Override

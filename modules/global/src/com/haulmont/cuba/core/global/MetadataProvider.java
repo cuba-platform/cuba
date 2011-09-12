@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.sys.AppContext;
 
@@ -51,5 +52,29 @@ public abstract class MetadataProvider
      */
     public static Map<Class, Class> getReplacedEntities() {
         return getMetadata().getReplacedEntities();
+    }
+
+    public static <T> T create(Class<T> entityClass) {
+        return (T) getMetadata().create(entityClass);
+    }
+
+    public static <T> T create(MetaClass metaClass) {
+        return (T) getMetadata().create(metaClass.getJavaClass());
+    }
+
+    public static <T> T create(String entityName) {
+        return (T) getMetadata().create(entityName);
+    }
+
+    public static <T> Class<T> getReplacedClass(Class<T> entityClass) {
+        return getMetadata().getReplacedClass(entityClass);
+    }
+
+    public static <T> Class<T> getReplacedClass(MetaClass metaClass) {
+        return getMetadata().getReplacedClass(metaClass.getJavaClass());
+    }
+
+    public static <T> Class<T> getReplacedClass(String entityName) {
+        return getMetadata().getReplacedClass(entityName);
     }
 }

@@ -73,7 +73,7 @@ public class MenuItem implements Serializable
         if (StringUtils.isEmpty(id)) {
              return true;
         } else {
-            boolean screenPermitted = session.isScreenPermitted(AppConfig.getInstance().getClientType(), id);
+            boolean screenPermitted = session.isScreenPermitted(AppConfig.getClientType(), id);
             if (screenPermitted) {
                 Element permissionsElem = descriptor.element("permissions");
                 if (permissionsElem != null) {

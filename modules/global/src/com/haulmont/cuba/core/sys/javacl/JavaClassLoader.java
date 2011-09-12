@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.core.sys.javacl;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.javacl.compiler.CharSequenceCompiler;
@@ -18,6 +18,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 import java.io.File;
@@ -30,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@ManagedBean("cuba_JavaClassLoader")
 public class JavaClassLoader extends URLClassLoader {
     private static final String PATH_SEPARATOR = System.getProperty("path.separator");
     private static final String IMPORT_PATTERN = "import .+?;";
@@ -95,19 +98,11 @@ public class JavaClassLoader extends URLClassLoader {
 
     private Map<String, Boolean> importedClasses = new ConcurrentHashMap<String, Boolean>();
 
-    private final static JavaClassLoader jcl = new JavaClassLoader(
-            Thread.currentThread().getContextClassLoader(),
-            ConfigProvider.getConfig(GlobalConfig.class).getConfDir() + "/"
-    );
-
-    public static JavaClassLoader getInstance() {
-        return jcl;
-    }
-
-    private JavaClassLoader(ClassLoader parent, String rootDir) {
-        super(new URL[0], parent);
-        dcl = new DummyClassLoader(parent, compiled);
-        this.rootDir = rootDir;
+    @Inject
+    public JavaClassLoader(Configuration configuration) {
+        super(new URL[0], Thread.currentThread().getContextClassLoader());
+        dcl = new DummyClassLoader(Thread.currentThread().getContextClassLoader(), compiled);
+        this.rootDir = configuration.getConfig(GlobalConfig.class).getConfDir() + "/";
         classPath = buildClasspath();
     }
 

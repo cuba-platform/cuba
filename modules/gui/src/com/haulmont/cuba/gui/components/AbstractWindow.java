@@ -18,6 +18,9 @@ import java.util.Collection;
 public class AbstractWindow extends AbstractFrame 
         implements Window, Component.HasXmlDescriptor, Window.Wrapper {
 
+    public AbstractWindow() {
+    }
+
     public AbstractWindow(IFrame frame) {
         super(frame);
     }

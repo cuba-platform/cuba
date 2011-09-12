@@ -187,7 +187,7 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
 //        String entityName = ds.getMetaClass().getName();
 //        if (ds.size() >= persistenceManager.getMaxFetchUI(entityName)) {
 //            log.debug("MaxFetchUI threshold exceeded for " + entityName);
-//            String msg = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "maxFetchUIExceeded");
+//            String msg = MessageProvider.getMessage(AppConfig.getMessagesPack(), "maxFetchUIExceeded");
 //            App app = App.getInstance();
 //            app.getAppLog().debug(entityName + ": " + msg);
 //            app.getWindowManager().showNotification(msg, IFrame.NotificationType.HUMANIZED);

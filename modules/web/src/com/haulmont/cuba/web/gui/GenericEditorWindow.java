@@ -68,7 +68,7 @@ public class GenericEditorWindow
 
         HorizontalLayout buttonsContainer = new HorizontalLayout();
 
-        final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+        final String messagesPackage = AppConfig.getMessagesPack();
 
         commitButton = new Button(MessageProvider.getMessage(messagesPackage, "actions.Ok"),
                 new Button.ClickListener() {

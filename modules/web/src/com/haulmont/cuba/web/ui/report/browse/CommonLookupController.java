@@ -33,7 +33,7 @@ public class CommonLookupController extends AbstractLookup {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
         WebVBoxLayout vbox = getComponent("vbox");
         final MetaClass metaClass = (MetaClass) params.get("param$class");

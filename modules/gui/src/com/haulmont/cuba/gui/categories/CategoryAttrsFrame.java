@@ -13,17 +13,19 @@ import com.haulmont.cuba.core.entity.Category;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RefreshAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionPropertyDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
 
+import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -33,27 +35,34 @@ import java.util.*;
  * @author gorbunkov
  */
 public class CategoryAttrsFrame extends AbstractFrame {
-    private Table table;
-    private Datasource categoryDs;
-    private CollectionPropertyDatasourceImpl<CategoryAttribute, UUID> categoryAttrsDs;
 
-    public CategoryAttrsFrame(IFrame frame) {
-        super(frame);
-    }
+    @Inject
+    protected Metadata metadata;
+
+    @Inject
+    protected ComponentsFactory factory;
+
+    @Inject
+    protected DataService dataService;
+
+    @Inject
+    private Table categoryAttrsTable;
+
+    @Inject
+    protected Datasource categoryDs;
+
+    @Inject
+    protected CollectionPropertyDatasourceImpl<CategoryAttribute, UUID> categoryAttrsDs;
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
-        table = getComponent("categoryAttrsTable");
-        table.addAction(new CategoryAttributeCreateAction());
-        table.addAction(new CategoryAttributeEditAction());
-        table.addAction(new RemoveAction(table,false));
-        table.addAction(new RefreshAction(table));
+        categoryAttrsTable.addAction(new CategoryAttributeCreateAction());
+        categoryAttrsTable.addAction(new CategoryAttributeEditAction());
+        categoryAttrsTable.addAction(new RemoveAction(categoryAttrsTable,false));
+        categoryAttrsTable.addAction(new RefreshAction(categoryAttrsTable));
 
-        categoryDs = getDsContext().get("categoryDs");
-        categoryAttrsDs = getDsContext().get("categoryAttrsDs");
-
-        table.getDatasource().addListener(new DsListenerAdapter() {
+        categoryAttrsDs.addListener(new DsListenerAdapter() {
             @Override
             public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
                 if (state != Datasource.State.VALID) return;
@@ -69,7 +78,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
         ((Button)getComponent("moveUp")).setAction(new AbstractAction("moveUp") {
             @Override
             public void actionPerform(Component component) {
-                Set selected = table.getSelected();
+                Set selected = categoryAttrsTable.getSelected();
                 if (selected.isEmpty())
                     return;
 
@@ -95,7 +104,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
         AbstractAction action = new AbstractAction("moveDown") {
             @Override
             public void actionPerform(Component component) {
-                Set selected = table.getSelected();
+                Set selected = categoryAttrsTable.getSelected();
                 if (selected.isEmpty())
                     return;
 
@@ -122,14 +131,14 @@ public class CategoryAttrsFrame extends AbstractFrame {
     }
 
     private void sortTableByOrderNo() {
-        table.sortBy(categoryAttrsDs.getMetaClass().getPropertyPath("orderNo"), true);
+        categoryAttrsTable.sortBy(categoryAttrsDs.getMetaClass().getPropertyPath("orderNo"), true);
     }
 
     private void initDataTypeColumn() {
-        table.removeGeneratedColumn("dataType");
-        table.addGeneratedColumn("dataType", new Table.ColumnGenerator() {
+        categoryAttrsTable.removeGeneratedColumn("dataType");
+        categoryAttrsTable.addGeneratedColumn("dataType", new Table.ColumnGenerator() {
             public Component generateCell(Table table, Object itemId) {
-                Label dataTypeLabel = AppConfig.getFactory().createComponent(Label.NAME);
+                Label dataTypeLabel = factory.createComponent(Label.NAME);
                 String labelContent;
                 CategoryAttribute attribute = (CategoryAttribute) table.getDatasource().getItem(itemId);
                 if (BooleanUtils.isTrue(attribute.getIsEntity())) {
@@ -151,7 +160,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
     }
 
     private void initDefaultValueColumn() {
-        table.addGeneratedColumn("defaultValue", new Table.ColumnGenerator() {
+        categoryAttrsTable.addGeneratedColumn("defaultValue", new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Table table, Object itemId) {
                 String defaultValue = "";
@@ -182,7 +191,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                             LoadContext.Query query = entitiesContext.setQueryString("select a from " + entityClassName + " a where a.id =:e");
                             query.addParameter("e", attribute.getDefaultEntityId());
                             entitiesContext.setView("_local");
-                            Entity entity = getDsContext().getDataService().load(entitiesContext);
+                            Entity entity = dataService.load(entitiesContext);
                             defaultValue = InstanceUtils.getInstanceName(entity);
                         } else defaultValue = "";
                     } catch (ClassNotFoundException ex) {
@@ -190,7 +199,7 @@ public class CategoryAttrsFrame extends AbstractFrame {
                     }
                 }
 
-                Label defaultValueLabel = AppConfig.getFactory().createComponent(Label.NAME);
+                Label defaultValueLabel = factory.createComponent(Label.NAME);
                 defaultValueLabel.setValue(defaultValue);
                 return defaultValueLabel;
             }
@@ -223,16 +232,16 @@ public class CategoryAttrsFrame extends AbstractFrame {
 
         @Override
         public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-            if (!table.getSelected().isEmpty()) {
+            if (!categoryAttrsTable.getSelected().isEmpty()) {
                 AttributeEditor editor = openEditor(
                         "sys$CategoryAttribute.edit",
-                        (CategoryAttribute) table.getSelected().iterator().next(),
+                        (CategoryAttribute) categoryAttrsTable.getSelected().iterator().next(),
                         WindowManager.OpenType.DIALOG,
-                        table.getDatasource());
+                        categoryAttrsTable.getDatasource());
                 editor.addListener(new Window.CloseListener() {
                     @Override
                     public void windowClosed(String actionId) {
-                        table.getDatasource().refresh();
+                        categoryAttrsTable.getDatasource().refresh();
                     }
                 });
             }
@@ -251,18 +260,18 @@ public class CategoryAttrsFrame extends AbstractFrame {
 
         @Override
         public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-            final CategoryAttribute attribute = EntityFactory.create(CategoryAttribute.class);
+            final CategoryAttribute attribute = metadata.create(CategoryAttribute.class);
             attribute.setCategory((Category) categoryDs.getItem());
             assignNextOrderNo(attribute);
             AttributeEditor editor = openEditor(
                     "sys$CategoryAttribute.edit",
                     attribute,
                     WindowManager.OpenType.DIALOG,
-                    table.getDatasource());
+                    categoryAttrsTable.getDatasource());
             editor.addListener(new Window.CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {
-                    table.getDatasource().refresh();
+                    categoryAttrsTable.getDatasource().refresh();
                 }
             });
         }

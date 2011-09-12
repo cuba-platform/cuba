@@ -28,7 +28,7 @@ public class CustomOperationEditor extends OperationEditor {
 
         Button btn = WebComponentsHelper.createButton();
         btn.setStyleName(BaseTheme.BUTTON_LINK);
-        btn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Edit"));
+        btn.setCaption(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Edit"));
 
         btn.setEnabled(UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions"));
 

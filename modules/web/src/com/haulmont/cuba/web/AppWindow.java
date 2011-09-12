@@ -23,10 +23,7 @@ import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
-import com.haulmont.cuba.gui.config.MenuCommand;
-import com.haulmont.cuba.gui.config.MenuConfig;
-import com.haulmont.cuba.gui.config.MenuItem;
-import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.gui.export.ResourceDataProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
@@ -422,7 +419,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("searchTerm", searchTerm);
 
-        WindowInfo windowInfo = AppConfig.getInstance().getWindowConfig().getWindowInfo("fts$Search");
+        WindowInfo windowInfo = AppContext.getBean(WindowConfig.class).getWindowInfo("fts$Search");
         App.getInstance().getWindowManager().openWindow(
                 windowInfo,
                 WindowManager.OpenType.NEW_TAB,
@@ -440,7 +437,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         }
 
         final UserSession session = connection.getSession();
-        final MenuConfig menuConfig = AppConfig.getInstance().getMenuConfig();
+        final MenuConfig menuConfig = AppContext.getBean(MenuConfig.class);
         List<MenuItem> rootItems = menuConfig.getRootItems();
         for (MenuItem menuItem : rootItems) {
             if (menuItem.isPermitted(session)) {
@@ -653,7 +650,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     private MenuBar.Command createMenuBarCommand(final MenuItem item) {
         final WindowInfo windowInfo;
-        final com.haulmont.cuba.gui.config.WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+        final WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
         try {
             windowInfo = windowConfig.getWindowInfo(item.getId());
         } catch (NoSuchScreenException e) {
@@ -956,7 +953,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         }
 
         protected String getMessagesPack() {
-            return AppConfig.getInstance().getMessagesPack();
+            return AppConfig.getMessagesPack();
         }
 
         public void closeAllTabs() {

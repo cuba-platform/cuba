@@ -31,7 +31,7 @@ public class ReportBrowser extends BasicBrowser {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
 
         final Table reportsTable = getComponent("table");

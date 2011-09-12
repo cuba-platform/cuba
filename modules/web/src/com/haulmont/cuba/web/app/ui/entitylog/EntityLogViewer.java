@@ -35,7 +35,7 @@ public class EntityLogViewer extends AbstractWindow {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
 
         ((LookupField) getComponent("filter.object")).setOptionsMap(getTargets());

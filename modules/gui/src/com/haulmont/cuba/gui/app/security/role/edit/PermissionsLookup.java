@@ -43,7 +43,7 @@ public class PermissionsLookup extends AbstractLookup {
     }
 
     @Override
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
         companion = getCompanion();
 

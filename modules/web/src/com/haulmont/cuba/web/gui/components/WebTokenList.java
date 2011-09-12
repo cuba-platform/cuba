@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -33,7 +34,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.*;
 
 import java.util.*;
-import java.util.List;
 
 public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImpl> implements TokenList {
 
@@ -388,7 +388,7 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
                             windowAlias = getDatasource().getMetaClass().getName() + ".browse";
                         }
 
-                        WindowConfig windowConfig = AppConfig.getInstance().getWindowConfig();
+                        WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
                         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
 
                         Map<String, Object> params = new HashMap<String, Object>();
@@ -471,7 +471,7 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             label.addListener(new TokenListLabel.RemoveTokenListener() {
                 public void removeToken(final TokenListLabel source) {
                     if (isEditable()) {
-                        final String messagesPackage = AppConfig.getInstance().getMessagesPack();
+                        final String messagesPackage = AppConfig.getMessagesPack();
                         App.getInstance().getWindowManager().showOptionDialog(
                                 MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation"),
                                 MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove"),

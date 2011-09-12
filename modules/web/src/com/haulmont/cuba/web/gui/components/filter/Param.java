@@ -186,10 +186,10 @@ public class Param extends AbstractParam<Component> {
         }
         if (dateOnly) {
             resolution = com.haulmont.cuba.gui.components.DateField.Resolution.DAY;
-            formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateFormat");
+            formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(), "dateFormat");
         } else {
             resolution = com.haulmont.cuba.gui.components.DateField.Resolution.MIN;
-            formatStr = MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "dateTimeFormat");
+            formatStr = MessageProvider.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
         }
         dateField.setResolution(resolution);
         dateField.setDateFormat(formatStr);

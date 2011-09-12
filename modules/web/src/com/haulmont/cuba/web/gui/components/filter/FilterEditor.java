@@ -114,7 +114,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         // Save button
         saveBtn = WebComponentsHelper.createButton("icons/ok.png");
-        saveBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Ok"));
+        saveBtn.setCaption(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
         saveBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 if (commit())
@@ -127,7 +127,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
         // Cancel button
         Button cancelBtn = WebComponentsHelper.createButton("icons/cancel.png");
-        cancelBtn.setCaption(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(), "actions.Cancel"));
+        cancelBtn.setCaption(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
         cancelBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 ((WebFilter) filter).editorCancelled();

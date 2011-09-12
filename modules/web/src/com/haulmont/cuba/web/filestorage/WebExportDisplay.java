@@ -12,13 +12,17 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
+import org.springframework.context.annotation.Scope;
 
+import javax.annotation.ManagedBean;
 import java.io.Serializable;
 import java.util.UUID;
 
 /**
  * Allows to show exported data in web browser or download it
  */
+@ManagedBean(ExportDisplay.NAME)
+@Scope("prototype")
 public class WebExportDisplay implements ExportDisplay, Serializable {
     private static final long serialVersionUID = -5284064787054836702L;
 

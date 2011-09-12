@@ -13,10 +13,7 @@ package com.haulmont.cuba.gui.config;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.chile.core.annotations.*;
 import com.haulmont.chile.core.model.*;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Updatable;
@@ -35,15 +32,19 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.core.io.Resource;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
 /**
  * GenericUI class holding information about all permission targets.
- * <br>Reference can be obtained via {@link com.haulmont.cuba.gui.AppConfig#getPermissionConfig(java.util.Locale)}
  */
+@ManagedBean("cuba_PermissionConfig")
 public class PermissionConfig {
+
+    public static final String PERMISSION_CONFIG_XML_PROP = "cuba.permissionConfig";
 
     /**
      * Non-persistent entity to show permission targets in UI
@@ -112,174 +113,200 @@ public class PermissionConfig {
 
     }
 
+    private class Item {
+        private Locale locale;
+
+        private Tree<Target> screens;
+        private Tree<Target> entities;
+        private Tree<Target> specific;
+
+        private Item(Locale locale) {
+            this.locale = locale;
+
+            compileScreens();
+            compileEntities();
+            compileSpecific();
+        }
+
+        private String getMessage(String key) {
+            return MessageProvider.getMessage(messagePack, key, locale);
+        }
+
+        private void compileScreens() {
+            Node<Target> root = new Node<Target>(
+                    new Target("menu", getMessage("permissionConfig.screenRoot"), null)
+            );
+            screens = new Tree<Target>(root);
+
+            walkMenu(root);
+        }
+
+        private void walkMenu(Node<Target> node) {
+            for (MenuItem info : menuConfig.getRootItems()) {
+                walkMenu(info, node);
+            }
+        }
+
+        private void walkMenu(MenuItem info, Node<Target> node) {
+            String id = info.getId();
+            String caption = MenuConfig.getMenuItemCaption(id).replaceAll("<.+?>", "").replaceAll("&gt;","");
+            caption = StringEscapeUtils.unescapeHtml(caption);
+
+            if (info.getChildren() != null && !info.getChildren().isEmpty()) {
+                Node<Target> n = new Node<Target>(new Target("category:" + id, caption, UserSession.getScreenPermissionTarget(clientType, id)));
+                node.addChild(n);
+                for (MenuItem item : info.getChildren()) {
+                    walkMenu(item, n);
+                }
+            } else {
+                if (!"-".equals(info.getId())) {
+                    Node<Target> n = new Node<Target>(
+                            new Target("item:" + id, caption, UserSession.getScreenPermissionTarget(clientType, id)));
+                    node.addChild(n);
+                }
+            }
+        }
+
+        private void compileEntities() {
+            Node<Target> root = new Node<Target>(new Target("session", getMessage("permissionConfig.entityRoot"), null));
+            entities = new Tree<Target>(root);
+
+            Session session = MetadataProvider.getSession();
+            List<MetaModel> modelList = new ArrayList<MetaModel>(session.getModels());
+            Collections.sort(modelList, new MetadataObjectAlphabetComparator());
+
+            for (MetaModel model : modelList) {
+                Node<Target> modelNode = new Node<Target>(new Target("model:" + model.getName(), model.getName(), null));
+                root.addChild(modelNode);
+
+                List<MetaClass> classList = new ArrayList<MetaClass>(model.getClasses());
+                Collections.sort(classList, new MetadataObjectAlphabetComparator());
+
+                for (MetaClass metaClass : classList) {
+                    String name = metaClass.getName();
+                    if (name.contains("$")) {
+                        String caption = name + " (" + MessageUtils.getEntityCaption(metaClass) + ")";
+                        Node<Target> node = new Node<Target>(new Target("entity:" + name, caption, name));
+                        modelNode.addChild(node);
+                    }
+                }
+            }
+        }
+
+        private void compileSpecific() {
+            Node<Target> root = new Node<Target>(new Target("specific", getMessage("permissionConfig.specificRoot"), null));
+            specific = new Tree<Target>(root);
+
+            final String configName = AppContext.getProperty(PERMISSION_CONFIG_XML_PROP);
+            ConfigurationResourceLoader resourceLoader = new ConfigurationResourceLoader();
+            StrTokenizer tokenizer = new StrTokenizer(configName);
+            for (String location : tokenizer.getTokenArray()) {
+                Resource resource = resourceLoader.getResource(location);
+                if (resource.exists()) {
+                    InputStream stream = null;
+                    try {
+                        stream = resource.getInputStream();
+                        String xml = IOUtils.toString(stream);
+                        compileSpecific(xml, root);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } finally {
+                        IOUtils.closeQuietly(stream);
+                    }
+                } else {
+                    log.warn("Resource " + location + " not found, ignore it");
+                }
+            }
+        }
+
+        private void compileSpecific(String xml, Node<Target> root) {
+            Document doc = Dom4j.readDocument(xml);
+            Element rootElem = doc.getRootElement();
+
+            for (Element element : Dom4j.elements(rootElem, "include")) {
+                String fileName = element.attributeValue("file");
+                if (!StringUtils.isBlank(fileName)) {
+                    String incXml = ScriptingProvider.getResourceAsString(fileName);
+                    if (incXml == null)
+                        throw new RuntimeException("Config file not found: " + fileName);
+
+                    compileSpecific(incXml, root);
+                }
+            }
+
+            Element specElem = rootElem.element("specific");
+            if (specElem == null)
+                return;
+
+            walkSpecific(specElem, root);
+        }
+
+        private void walkSpecific(Element element, Node<Target> node) {
+            //noinspection unchecked
+            for (Element elem : (List<Element>) element.elements()) {
+                String id = elem.attributeValue("id");
+                String caption = getMessage("permission-config." + id);
+                if ("category".equals(elem.getName())) {
+                    Node<Target> n = new Node<Target>(new Target("category:" + id, caption, null));
+                    node.addChild(n);
+                    walkSpecific(elem, n);
+                } else if ("permission".equals(elem.getName())) {
+                    Node<Target> n = new Node<Target>(new Target("permission:" + id, caption, id));
+                    node.addChild(n);
+                }
+            }
+        }
+    }
+
+    @Inject
+    private MenuConfig menuConfig;
+
     private ClientType clientType;
     private String messagePack;
-    private Locale locale;
 
-    private Tree<Target> screens;
-    private Tree<Target> entities;
-    private Tree<Target> specific;
+    private List<Item> items = new ArrayList<Item>();
 
     private Log log = LogFactory.getLog(PermissionConfig.class);
 
     public PermissionConfig() {
-        this.clientType = AppConfig.getInstance().getClientType();
-        this.messagePack = AppConfig.getInstance().getMessagesPack();
+        this.clientType = AppConfig.getClientType();
+        this.messagePack = AppConfig.getMessagesPack();
     }
 
-    public void compile(Locale locale) {
-        this.locale = locale;
-        compileScreens();
-        compileEntities();
-        compileSpecific();
-    }
-
-    private void compileScreens() {
-        Node<Target> root = new Node<Target>(
-                new Target("menu", getMessage("permissionConfig.screenRoot"), null)
-        );
-        screens = new Tree<Target>(root);
-
-        final MenuConfig config = AppConfig.getInstance().getMenuConfig();
-        walkMenu(config, root);
-    }
-
-    private void walkMenu(MenuConfig config, Node<Target> node) {
-        for (MenuItem info : config.getRootItems()) {
-            walkMenu(info, node);
+    private Item getItem(Locale locale) {
+        for (Item item : items) {
+            if (item.locale.equals(locale))
+                return item;
         }
-    }
-
-    private void walkMenu(MenuItem info, Node<Target> node) {
-        String id = info.getId();
-        String caption = MenuConfig.getMenuItemCaption(id).replaceAll("<.+?>", "").replaceAll("&gt;","");
-        caption = StringEscapeUtils.unescapeHtml(caption);
-
-        if (info.getChildren() != null && !info.getChildren().isEmpty()) {
-            Node<Target> n = new Node<Target>(new Target("category:" + id, caption, UserSession.getScreenPermissionTarget(clientType, id)));
-            node.addChild(n);
-            for (MenuItem item : info.getChildren()) {
-                walkMenu(item, n);
-            }
-        } else {
-            if (!"-".equals(info.getId())) {
-                Node<Target> n = new Node<Target>(
-                        new Target("item:" + id, caption, UserSession.getScreenPermissionTarget(clientType, id)));
-                node.addChild(n);
-            }
-        }
-    }
-
-    private void compileEntities() {
-        Node<Target> root = new Node<Target>(new Target("session", getMessage("permissionConfig.entityRoot"), null));
-        entities = new Tree<Target>(root);
-
-        Session session = MetadataProvider.getSession();
-        List<MetaModel> modelList = new ArrayList<MetaModel>(session.getModels());
-        Collections.sort(modelList, new MetadataObjectAlphabetComparator());
-
-        for (MetaModel model : modelList) {
-            Node<Target> modelNode = new Node<Target>(new Target("model:" + model.getName(), model.getName(), null));
-            root.addChild(modelNode);
-
-            List<MetaClass> classList = new ArrayList<MetaClass>(model.getClasses());
-            Collections.sort(classList, new MetadataObjectAlphabetComparator());
-
-            for (MetaClass metaClass : classList) {
-                String name = metaClass.getName();
-                if (name.contains("$")) {
-                    String caption = name + " (" + MessageUtils.getEntityCaption(metaClass) + ")";
-                    Node<Target> node = new Node<Target>(new Target("entity:" + name, caption, name));
-                    modelNode.addChild(node);
-                }
-            }
-        }
-    }
-
-    private void compileSpecific() {
-        Node<Target> root = new Node<Target>(new Target("specific", getMessage("permissionConfig.specificRoot"), null));
-        specific = new Tree<Target>(root);
-
-        final String configName = AppContext.getProperty(AppConfig.PERMISSION_CONFIG_XML_PROP);
-        ConfigurationResourceLoader resourceLoader = new ConfigurationResourceLoader();
-        StrTokenizer tokenizer = new StrTokenizer(configName);
-        for (String location : tokenizer.getTokenArray()) {
-            Resource resource = resourceLoader.getResource(location);
-            if (resource.exists()) {
-                InputStream stream = null;
-                try {
-                    stream = resource.getInputStream();
-                    String xml = IOUtils.toString(stream);
-                    compileSpecific(xml, root);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    IOUtils.closeQuietly(stream);
-                }
-            } else {
-                log.warn("Resource " + location + " not found, ignore it");
-            }
-        }
-    }
-
-    private void compileSpecific(String xml, Node<Target> root) {
-        Document doc = Dom4j.readDocument(xml);
-        Element rootElem = doc.getRootElement();
-
-        for (Element element : Dom4j.elements(rootElem, "include")) {
-            String fileName = element.attributeValue("file");
-            if (!StringUtils.isBlank(fileName)) {
-                String incXml = ScriptingProvider.getResourceAsString(fileName);
-                if (incXml == null)
-                    throw new RuntimeException("Config file not found: " + fileName);
-
-                compileSpecific(incXml, root);
-            }
-        }
-
-        Element specElem = rootElem.element("specific");
-        if (specElem == null)
-            return;
-
-        walkSpecific(specElem, root);
-    }
-
-    private void walkSpecific(Element element, Node<Target> node) {
-        //noinspection unchecked
-        for (Element elem : (List<Element>) element.elements()) {
-            String id = elem.attributeValue("id");
-            String caption = getMessage("permission-config." + id);
-            if ("category".equals(elem.getName())) {
-                Node<Target> n = new Node<Target>(new Target("category:" + id, caption, null));
-                node.addChild(n);
-                walkSpecific(elem, n);
-            } else if ("permission".equals(elem.getName())) {
-                Node<Target> n = new Node<Target>(new Target("permission:" + id, caption, id));
-                node.addChild(n);
-            }
-        }
-    }
-
-    private String getMessage(String key) {
-        return MessageProvider.getMessage(messagePack, key, locale);
+        Item item = new Item(locale);
+        items.add(item);
+        return item;
     }
 
     /**
      * All registered screens
      */
-    public Tree<Target> getScreens() {
-        return screens;
+    public Tree<Target> getScreens(Locale locale) {
+        return getItem(locale).screens;
     }
 
     /**
      * All registered entities
      */
-    public Tree<Target> getEntities() {
-        return entities;
+    public Tree<Target> getEntities(Locale locale) {
+        return getItem(locale).entities;
+    }
+
+    /**
+     * All specific permissions
+     */
+    public Tree<Target> getSpecific(Locale locale) {
+        return getItem(locale).specific;
     }
 
     /**
      * Entity operations for specified target
+     * @return list of {@link Target} objects
      */
     public List<Target> getEntityOperations(Target entityTarget) {
         if (entityTarget == null) return Collections.emptyList();
@@ -311,6 +338,7 @@ public class PermissionConfig {
 
     /**
      * Entity attributes for specified target
+     * @return list of {@link Target} objects
      */
     public List<Target> getEntityAttributes(Target entityTarget) {
         if (entityTarget == null) return Collections.emptyList();
@@ -333,13 +361,6 @@ public class PermissionConfig {
         }
 
         return result;
-    }
-
-    /**
-     * All specific permissions
-     */
-    public Tree<Target> getSpecific() {
-        return specific;
     }
 
     private class MetadataObjectAlphabetComparator implements Comparator<MetadataObject> {

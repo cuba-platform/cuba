@@ -7,35 +7,48 @@
 package com.haulmont.cuba.gui.app.security.user.browse;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.EntityFactory;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ExcelAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.collections.map.SingletonMap;
 import org.apache.commons.lang.BooleanUtils;
 
+import javax.annotation.Resource;
+import javax.inject.Inject;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class UserBrowser extends AbstractLookup {
 
+    @Resource(name = "users")
+    protected Table table;
+
+    @Inject
+    protected UserSession userSession;
+
+    @Inject
+    protected Metadata metadata;
+
+    @Inject
+    protected DataService dataService;
+
     public UserBrowser(Window frame) {
         super(frame);
     }
 
-    protected void init(Map<String, Object> params) {
-        final Table table  = getComponent("users");
-
+    public void init(Map<String, Object> params) {
         ComponentsHelper.createActions(table);
 
         final Action removeAction = table.getAction(RemoveAction.ACTION_ID);
@@ -45,19 +58,18 @@ public class UserBrowser extends AbstractLookup {
                 super.itemChanged(ds, prevItem, item);
                 User user = (User) item;
                 if (removeAction != null)
-                    removeAction.setEnabled(!(UserSessionProvider.getUserSession().getUser().equals(user) ||
-                            UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser().equals(user)));
+                    removeAction.setEnabled(!(userSession.getUser().equals(user) ||
+                            userSession.getCurrentOrSubstitutedUser().equals(user)));
             }
         });
 
         table.addAction(new ExcelAction(table));
 
         table.addAction(
-                new AbstractAction("changePassw")
-                {
-                    public void actionPerform(Component component)  {
+                new AbstractAction("changePassw") {
+                    public void actionPerform(Component component) {
                         if (!table.getSelected().isEmpty()) {
-                            openEditor (
+                            openEditor(
                                     "sec$User.changePassw",
                                     (Entity) table.getSelected().iterator().next(),
                                     WindowManager.OpenType.DIALOG
@@ -73,16 +85,16 @@ public class UserBrowser extends AbstractLookup {
         }
 
         table.addAction(
-                new AbstractAction("copy"){
-                    public void actionPerform(Component component){
-                        if (!table.getSelected().isEmpty()){
+                new AbstractAction("copy") {
+                    public void actionPerform(Component component) {
+                        if (!table.getSelected().isEmpty()) {
                             User selectedUser = (User) table.getSelected().iterator().next();
-                            selectedUser = getDsContext().getDataService().reload(selectedUser, "user.edit");
-                            User newUser = EntityFactory.create(User.class);
-                            if(selectedUser.getUserRoles()!=null){
+                            selectedUser = dataService.reload(selectedUser, "user.edit");
+                            User newUser = metadata.create(User.class);
+                            if (selectedUser.getUserRoles() != null) {
                                 Set<UserRole> userRoles = new HashSet<UserRole>();
                                 for (UserRole oldUserRole : selectedUser.getUserRoles()) {
-                                    Role oldRole = getDsContext().getDataService().reload(oldUserRole.getRole(), "_local");
+                                    Role oldRole = dataService.reload(oldUserRole.getRole(), "_local");
                                     if (BooleanUtils.isTrue(oldRole.getDefaultRole()))
                                         continue;
                                     UserRole role = new UserRole();

@@ -29,7 +29,7 @@ public class RoleBrowser extends AbstractLookup {
         super(frame);
     }
 
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         table = getComponent("roles");
 
         ComponentsHelper.createActions(table, EnumSet.allOf(ListActionType.class));

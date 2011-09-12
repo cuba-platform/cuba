@@ -7,6 +7,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.chile.core.loader.MetadataLoader;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.ViewRepository;
@@ -63,15 +64,60 @@ public abstract class AbstractMetadata implements Metadata {
         return replacedEntities;
     }
 
+    protected void loadMetadata(MetadataLoader loader, Collection<String> packages) {
+        for (String p : packages) {
+            loader.loadPackage(p, p);
+        }
+    }
+    protected <T> T __create(Class<T> entityClass) {
+        Class<T> replace = getReplacedEntities().get(entityClass);
+        if (replace == null)
+            replace = entityClass;
+        try {
+            T obj = replace.newInstance();
+            return obj;
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected <T> Class<T> __getReplacedClass(Class<T> clazz) {
+        Class replacedClass = getReplacedEntities().get(clazz);
+        return replacedClass == null ? clazz : replacedClass;
+    }
+
+    public <T> T create(Class<T> entityClass) {
+        return (T) __create(entityClass);
+    }
+
+    public <T> T create(MetaClass metaClass) {
+        return (T) __create(metaClass.getJavaClass());
+    }
+
+    public <T> T create(String entityName) {
+        MetaClass metaClass = getSession().getClass(entityName);
+        return (T) __create(metaClass.getJavaClass());
+    }
+
+    public <T> Class<T> getReplacedClass(Class<T> entityClass) {
+        return __getReplacedClass(entityClass);
+    }
+
+    public <T> Class<T> getReplacedClass(MetaClass metaClass) {
+        return __getReplacedClass(metaClass.getJavaClass());
+    }
+
+    public <T> Class<T> getReplacedClass(String entityName) {
+        MetaClass metaClass = getSession().getClass(entityName);
+        return __getReplacedClass(metaClass.getJavaClass());
+    }
+
     protected abstract Session initMetadata();
 
     protected abstract ViewRepository initViews();
 
     protected abstract Map<Class,Class> initReplacedEntities();
 
-    protected void loadMetadata(MetadataLoader loader, Collection<String> packages) {
-        for (String p : packages) {
-            loader.loadPackage(p, p);
-        }
-    }
 }

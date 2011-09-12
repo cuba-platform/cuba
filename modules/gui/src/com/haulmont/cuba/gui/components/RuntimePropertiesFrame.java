@@ -11,9 +11,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
@@ -24,7 +22,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropertiesEntity;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.cuba.gui.data.impl.RuntimePropsDatasourceImpl;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
@@ -53,7 +50,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         super(frame);
     }
 
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         String dsId = (String) params.get("runtimeDs");
         String categoriesDsId = (String) params.get("categoriesDs");
         rows = (String) params.get("rows");
@@ -236,14 +233,14 @@ public class RuntimePropertiesFrame extends AbstractWindow {
 
             if (dt.equals(Datatypes.get(IntegerDatatype.NAME)) || dt.equals(Datatypes.get(LongDatatype.NAME))) {
                 validator = new IntegerValidator(
-                        MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                        MessageProvider.getMessage(AppConfig.getMessagesPack(),
                                 "validation.invalidNumber"));
             } else if (dt.equals(Datatypes.get(DoubleDatatype.NAME)) || dt.equals(Datatypes.get(BigDecimalDatatype.NAME))) {
                 validator = new DoubleValidator(
-                        MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                        MessageProvider.getMessage(AppConfig.getMessagesPack(),
                                 "validation.invalidNumber"));
             } else if (dt.equals(Datatypes.get(DateDatatype.NAME))) {
-                validator = new DateValidator(MessageProvider.getMessage(AppConfig.getInstance().getMessagesPack(),
+                validator = new DateValidator(MessageProvider.getMessage(AppConfig.getMessagesPack(),
                         "validation.invalidDate"));
             }
         }

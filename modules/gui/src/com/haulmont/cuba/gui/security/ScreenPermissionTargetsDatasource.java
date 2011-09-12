@@ -13,7 +13,7 @@ package com.haulmont.cuba.gui.security;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -33,7 +33,6 @@ public class ScreenPermissionTargetsDatasource extends AbstractTreeDatasource {
     }
 
     protected Tree<PermissionConfig.Target> loadTree(Map params) {
-        return AppConfig.getInstance()
-                .getPermissionConfig(UserSessionProvider.getUserSession().getLocale()).getScreens();
+        return AppContext.getBean(PermissionConfig.class).getScreens(UserSessionProvider.getLocale());
     }
 }

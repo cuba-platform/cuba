@@ -13,16 +13,17 @@ package com.haulmont.cuba.web.ui.report.parameter.edit;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.LookupField;
+import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.report.ParameterType;
 import com.haulmont.cuba.report.ReportInputParameter;
 
+import javax.inject.Inject;
 import java.util.*;
 
 public class ParameterEditor extends AbstractEditor {
@@ -45,6 +46,9 @@ public class ParameterEditor extends AbstractEditor {
     private Map<String, Class> enumNamesToEnumClass = new HashMap<String, Class>();
     private Map<String, String> enumClassToEnumNames = new HashMap<String, String>();
 
+    @Inject
+    private WindowConfig windowConfig;
+
     @Override
     public void setItem(Entity item) {
         super.setItem(item);
@@ -58,7 +62,7 @@ public class ParameterEditor extends AbstractEditor {
 
     @Override
     @SuppressWarnings({"unchecked", "serial"})
-    protected void init(Map<String, Object> params) {
+    public void init(Map<String, Object> params) {
         super.init(params);
 
         LookupField type = getComponent("type");
@@ -100,7 +104,7 @@ public class ParameterEditor extends AbstractEditor {
             }
         });
 
-        Collection<WindowInfo> windowInfoCollection = AppConfig.getInstance().getWindowConfig().getWindows();
+        Collection<WindowInfo> windowInfoCollection = windowConfig.getWindows();
         List screensList = new ArrayList();
         for (WindowInfo windowInfo : windowInfoCollection) {
             screensList.add(windowInfo.getId());
