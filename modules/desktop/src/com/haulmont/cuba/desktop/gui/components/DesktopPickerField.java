@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -316,8 +317,8 @@ public class DesktopPickerField
             if (action instanceof StandardAction)
                 ((StandardAction) action).setEditable(isEditable());
         }
-        if (!editable) {
-            ((JTextField) impl.getEditor()).setEditable(editable);
+        if (!editable && impl.getEditor() instanceof JTextComponent) {
+            ((JTextComponent) impl.getEditor()).setEditable(editable);
         }
     }
 
