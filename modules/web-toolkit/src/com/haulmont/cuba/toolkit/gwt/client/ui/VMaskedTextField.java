@@ -46,7 +46,7 @@ public class VMaskedTextField extends VTextField {
 					|| e.getCharCode() == KeyCodes.KEY_PAGEUP
 					|| e.getCharCode() == KeyCodes.KEY_RIGHT
 					|| e.getCharCode() == KeyCodes.KEY_TAB
-					|| e.isAltKeyDown() 
+					|| e.isAltKeyDown()
                     || e.isControlKeyDown()
                     || e.isMetaKeyDown()) {
                 debug("keyPressHandler.onKeyPress: return immediately");
@@ -71,7 +71,7 @@ public class VMaskedTextField extends VTextField {
 			e.preventDefault();
 		}
 	};
-	
+
 	private KeyDownHandler keyDownHandler = new KeyDownHandler() {
 		public void onKeyDown(KeyDownEvent event) {
 			if (isReadOnly())
@@ -123,9 +123,9 @@ public class VMaskedTextField extends VTextField {
 				setCursorPos(getPreviousPos(0));
 		}
 	};
-	
+
 	private BlurHandler blurHandler = new BlurHandler() {
-		
+
 		public void onBlur(BlurEvent event) {
             if (isReadOnly())
                 return;
@@ -152,29 +152,26 @@ public class VMaskedTextField extends VTextField {
 
 	public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         debug("updateFromUIDL: " + uidl);
-		setMask(uidl.getStringAttribute("mask"));
-		super.updateFromUIDL(uidl, client);
-	}
-	
-	
-	public void setText(String value) {
-        debug("setText: " + value);
-		if("".equals(value)){
-            setMask(mask);
-            return;
-        }
-        string = new StringBuilder(value);
-		super.setText(value);
-	}
+        if (!(uidl.getBooleanAttribute("readonly")))
+            setMask(uidl.getStringAttribute("mask"));
+        super.updateFromUIDL(uidl, client);
+    }
 
-	private void setMask(String mask) {
+
+    public void setText(String value) {
+        debug("setText: " + value);
+        string = new StringBuilder(value);
+        super.setText(value);
+    }
+
+    private void setMask(String mask) {
         debug("setMask: " + mask);
-		this.mask = mask;
-		string = new StringBuilder();
-		maskTest = new ArrayList<Mask>();
-		
-		for (int i = 0; i < mask.length(); i++) {
-			char c = mask.charAt(i);
+        this.mask = mask;
+        string = new StringBuilder();
+        maskTest = new ArrayList<Mask>();
+
+        for (int i = 0; i < mask.length(); i++) {
+            char c = mask.charAt(i);
 
 			if (c == '\'') {
 				maskTest.add(null);
@@ -206,14 +203,14 @@ public class VMaskedTextField extends VTextField {
 			} else {
 				maskTest.add(null);
 				string.append(c);
-			}				
+			}
 		}
 		setText(string.toString());
 //		updateCursor(0); // KK: commented out because leads to grab focus
 	}
-	
+
 	/*
-	
+
 	public String getValue() {
 		StringBuilder result = new StringBuilder();
 
@@ -228,7 +225,7 @@ public class VMaskedTextField extends VTextField {
 	*/
 
 	private void updateCursor(int pos) {
-		setCursorPos(getNextPos(pos));	
+		setCursorPos(getNextPos(pos));
 	}
 
 	private int getNextPos(int pos) {
@@ -242,7 +239,7 @@ public class VMaskedTextField extends VTextField {
 			return getNextPos(pos);
 		return pos;
 	}
-	
+
 	public static interface Mask {
 		boolean isValid(char c);
 
@@ -250,71 +247,71 @@ public class VMaskedTextField extends VTextField {
 	}
 
 	public static abstract class AbstractMask implements Mask {
-		
+
 		public char getChar(char c) {
 			return c;
 		}
 	}
 
 	public static class NumericMask extends AbstractMask {
-		
+
 		public boolean isValid(char c) {
 			return Character.isDigit(c);
 		}
 	}
 
 	public static class LetterMask extends AbstractMask {
-		
+
 		public boolean isValid(char c) {
 			return Character.isLetter(c);
 		}
 	}
 
 	public static class LowerCaseMask implements Mask {
-		
+
 		public boolean isValid(char c) {
 			return Character.isLetter(getChar(c));
 		}
 
-		
+
 		public char getChar(char c) {
 			return Character.toLowerCase(c);
 		}
 	}
 
 	public static class UpperCaseMask implements Mask {
-		
+
 		public boolean isValid(char c) {
 			return Character.isLetter(getChar(c));
 		}
 
-		
+
 		public char getChar(char c) {
 			return Character.toUpperCase(c);
 		}
 	}
-	
+
 	public static class AlphanumericMask extends AbstractMask {
-		
+
 		public boolean isValid(char c) {
 			return Character.isLetter(c) || Character.isDigit(c);
 		}
 	}
-	
+
 	public static class WildcardMask extends AbstractMask {
-		
+
 		public boolean isValid(char c) {
 			return true;
 		}
 	}
-	
+
 	public static class SignMask extends AbstractMask {
-		
+
 		public boolean isValid(char c) {
 			return c == '-' || c == '+';
 		}
 	}
-	
+
 	/**
      * Represents a hex character, 0-9a-fA-F. a-f is mapped to A-F
      */

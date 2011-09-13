@@ -16,9 +16,11 @@ import com.vaadin.data.Validator;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.ClientWidget;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 @ClientWidget(VMaskedPopupCalendar.class)
@@ -28,6 +30,10 @@ public class
     protected boolean closeWhenDateSelected = false;
 
     protected String mask;
+
+    protected String lastInvalidDateString;
+
+    protected String dateString;
 
     private final Date MARKER_DATE = new Date(0);
 
@@ -54,11 +60,21 @@ public class
 
     protected void setValue(Object newValue, boolean repaintIsNotNeeded) {
         if (newValue == MARKER_DATE) {
-            super.setValue(prevValue);
-            throw new Validator.InvalidValueException("Unable to parse date");
+            if (ObjectUtils.equals(lastInvalidDateString, StringUtils.replaceChars(mask, "#U", "__"))) {
+                newValue = null;
+            } else {
+                super.setValue(prevValue);
+                throw new Validator.InvalidValueException("Unable to parse date");
+            }
         }
         prevValue = newValue;
         super.setValue(newValue, repaintIsNotNeeded);
+    }
+
+    public void changeVariables(Object source, Map<String, Object> variables) {
+        lastInvalidDateString = (String) variables.get("lastInvalidDateString");
+        dateString = (String) variables.get("dateString");
+        super.changeVariables(source, variables);
     }
 
     public void setDateFormat(String dateFormat) {

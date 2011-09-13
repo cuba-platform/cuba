@@ -13,6 +13,8 @@ public class MaskedTextField extends TextField {
 
 	private String mask;
 
+    private String prevNullRepresentation;
+
 	public MaskedTextField() {
 	}
 
@@ -37,7 +39,18 @@ public class MaskedTextField extends TextField {
 		this.mask = mask;
 		requestRepaint();
 	}
-	
+
+    public void setReadOnly(boolean readOnly) {
+        if (readOnly == isReadOnly())
+            return;
+        if (readOnly) {
+            prevNullRepresentation = getNullRepresentation();
+            setNullRepresentation("");
+        } else
+            setNullRepresentation(prevNullRepresentation);
+        super.setReadOnly(readOnly);
+    }
+
 	@Override
 	public void paintContent(PaintTarget target) throws PaintException {
 		super.paintContent(target);

@@ -154,14 +154,6 @@ public class WebDateField
         component.addComponent(dateField);
         component.setExpandRatio(dateField, 1.0f);
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
-            int width = timeField.isAmPmUsed() ? 23 : 0;
-
-            if (isHourUsed() && !isMinUsed()) {
-                timeField.setWidth((23 + width) + "px");
-            } else if (isHourUsed() && isMinUsed()) {
-                timeField.setResolution(resolution);
-                timeField.setWidth((46 + width) + "px");
-            }
             component.addComponent(timeField.<com.vaadin.ui.Component>getComponent());
         }
     }

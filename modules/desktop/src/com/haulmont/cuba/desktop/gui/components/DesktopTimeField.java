@@ -59,6 +59,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
 
     public DesktopTimeField() {
         timeFormat = Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getTimeFormat();
+        resolution = DateField.Resolution.MIN;
         formatter = new MaskFormatter();
         formatter.setPlaceholderCharacter('_');
         impl = new JFormattedTextField(formatter);
@@ -133,6 +134,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
             }
         }
         updateTimeFormat();
+        updateWidth();
     }
 
     private void updateTimeFormat() {
@@ -281,6 +283,22 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
                 InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
         } finally {
             updatingInstance = false;
+        }
+    }
+
+    private void updateWidth() {
+        int width = isAmPmUsed() ? 23 : 0;
+        if (showSeconds) {
+            width = width + 23;
+        }
+        int height = impl.getPreferredSize().height;
+
+        switch (resolution) {
+            case HOUR:
+                impl.setMinimumSize(new Dimension(23 + width, height));
+                break;
+            case MIN:
+                impl.setMinimumSize(new Dimension(46 + width, height));
         }
     }
 

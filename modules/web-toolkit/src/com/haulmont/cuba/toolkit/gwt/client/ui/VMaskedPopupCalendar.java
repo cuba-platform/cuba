@@ -168,14 +168,16 @@ public class VMaskedPopupCalendar extends VPopupCalendar {
 
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         debug("updateFromUIDL: " + uidl);
-        setMask(uidl.getStringAttribute("mask"));
+        if (!uidl.getBooleanAttribute("readonly")) {
+            setMask(uidl.getStringAttribute("mask"));
+        }
         super.updateFromUIDL(uidl, client);
     }
 
 
     public void setText(String value) {
         debug("setText: " + value);
-        if ("".equals(value)) {
+        if ("".equals(value) && !readonly) {
             setMask(mask);
             prevString = getText();
             return;

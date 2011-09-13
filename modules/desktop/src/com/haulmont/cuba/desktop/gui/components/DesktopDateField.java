@@ -112,13 +112,8 @@ public class DesktopDateField
     private void updateLayout() {
         impl.removeAll();
         impl.add(datePicker, "growx, w 100%");
-        int width = timeField.isAmPmUsed() ? 22 : 0;
-        if (isHourUsed() && !isMinUsed()) {
-            timeField.setResolution(resolution);
-            impl.add(timeField.getImpl(), "w " + (22 + width) + "px!");
-        } else if (isHourUsed() && isMinUsed()) {
-            timeField.setResolution(resolution);
-            impl.add(timeField.getImpl(), "w " + (44 + width) + "px!");
+        if (resolution.ordinal() < Resolution.DAY.ordinal()) {
+            impl.add(timeField.getImpl());
         }
     }
 

@@ -25,13 +25,11 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.MaskedTextField;
 import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
 import com.vaadin.data.util.PropertyFormatter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -51,6 +49,7 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
 
     public WebTimeField() {
         timeFormat = Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getTimeFormat();
+        resolution = DateField.Resolution.MIN;
         component = new MaskedTextField();
         component.setImmediate(true);
         setShowSeconds(timeFormat.contains("ss"));
@@ -115,6 +114,21 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
 
     public boolean isAmPmUsed() {
         return timeFormat.contains("a");
+    }
+
+    private void updateWidth() {
+        int width = isAmPmUsed() ? 23 : 0;
+        if (showSeconds) {
+            width = width + 23;
+        }
+        switch (resolution) {
+            case HOUR:
+                component.setWidth((23 + width) + "px");
+                break;
+            case MIN:
+                component.setWidth((46 + width) + "px");
+
+        }
     }
 
     private boolean checkStringValue(String value) {
@@ -197,6 +211,7 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
             }
         }
         updateTimeFormat();
+        updateWidth();
     }
 
     private void updateTimeFormat() {
