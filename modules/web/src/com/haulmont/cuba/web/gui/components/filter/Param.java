@@ -282,24 +282,28 @@ public class Param extends AbstractParam<Component> {
                 Object value = field.getValue();
                 if (value == null || value instanceof UUID)
                     setValue(value);
-                else if (value instanceof String && !StringUtils.isBlank((String) value))
+                else if ((value instanceof String  && !StringUtils.isBlank((String) value)) || value instanceof List)
                     if (inExpr) {
                         List list = new ArrayList();
-                        String[] parts = ((String) value).split(",");
-                        try {
-                            for (String part : parts) {
-                                list.add(UUID.fromString(part.trim()));
+                        if (value instanceof List) {
+                            list = (List) value;
+                        } else {
+                            String[] parts = ((String) value).split(",");
+                            try {
+                                for (String part : parts) {
+                                    list.add(UUID.fromString(part.trim()));
+                                }
+                            } catch (IllegalArgumentException ie) {
+                                App.getInstance().getAppWindow().showNotification(MessageProvider.getMessage("com.haulmont.cuba.gui.components.filter",
+                                        "Param.uuid.Err"), Window.Notification.TYPE_TRAY_NOTIFICATION);
                             }
-                            setValue(list);
-                        } catch (IllegalArgumentException ie) {
-                            App.getInstance().getAppWindow().showNotification(MessageProvider.getMessage(this.getClass(),
-                                    "Param.uuid.Err"), Window.Notification.TYPE_TRAY_NOTIFICATION);
                         }
+                        setValue(list);
                     } else {
                         try{
                             setValue(UUID.fromString((String) value));
                         }catch(IllegalArgumentException ie){
-                            App.getInstance().getAppWindow().showNotification(MessageProvider.getMessage(this.getClass(),
+                            App.getInstance().getAppWindow().showNotification(MessageProvider.getMessage("com.haulmont.cuba.gui.components.filter",
                                     "Param.uuid.Err"), Window.Notification.TYPE_TRAY_NOTIFICATION);
                         }
                     }
