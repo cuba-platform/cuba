@@ -1,9 +1,9 @@
 /*
- * Author: Konstantin Krivopustov
- * Created: 22.11.2009 18:05:54
- * 
- * $Id$
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
  */
+
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.cuba.core.config.Config;
@@ -20,68 +20,94 @@ import com.haulmont.cuba.core.sys.AvailableLocalesFactory;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * Configuration parameters interface used by all layers: CORE, WEB, DESKTOP.
+ *
+ * <p>$Id</p>
+ *
+ * @author krivopustov
+ */
 @Source(type = SourceType.APP)
 public interface GlobalConfig extends Config {
 
+    /**
+     * @return This web application host name. Makes sense for CORE and WEB modules.
+     */
     @Property("cuba.webHostName")
     @DefaultString("localhost")
     String getWebHostName();
 
+    /**
+     * @return This web application port. Makes sense for CORE and WEB modules.
+     */
     @Property("cuba.webPort")
     @DefaultString("8080")
     String getWebPort();
 
+    /**
+     * @return This web application context name. Makes sense for CORE and WEB modules.
+     */
     @Property("cuba.webContextName")
     @DefaultString("cuba")
     String getWebContextName();
 
+    /**
+     * @return Web-client connection URL. Used for making external links to the application screens and for other purposes.
+     */
     @Property("cuba.webAppUrl")
     @DefaultString("http://localhost:8080/cuba")
     String getWebAppUrl();
 
     /**
-     * Config directory. Root of all not deployable application configuration and logic.
-     * Does not end with "/"
+     * @return Configuration directory. {@link Scripting} searches for dynamic resources here.
+     * Must not end with "/"
      */
     @Property("cuba.confDir")
     String getConfDir();
 
     /**
-     * Logs directory. Place app-specific log files here.
-     * Does not end with "/"
+     * @return Logs directory. Place app-specific log files here.
+     * Must not end with "/"
      */
     @Property("cuba.logDir")
     String getLogDir();
 
     /**
-     * Temporary files directory. Place app-specific temp files under this directory.
-     * Does not end with "/"
+     * @return Temporary files directory. Place app-specific temp files here.
+     * Must not end with "/"
      */
     @Property("cuba.tempDir")
     String getTempDir();
 
     /**
-     * Data directory. Place persistent app-specific data files under this directory.
-     * Does not end with "/"
+     * @return Data directory. Place persistent app-specific data files here.
+     * Must not end with "/"
      */
     @Property("cuba.dataDir")
     String getDataDir();
 
     /**
-     * Used to support automatic testing
+     * Automatic testing mode indication.
+     * @return true if in test mode
      */
     @Property("cuba.testMode")
     @DefaultBoolean(false)
     boolean getTestMode();
 
     /**
-     * Used to show alternative locales on user login
+     * Supported locales. List of locales is shown on user login.
+     * @return map of labels to locales
      */
     @Property("cuba.availableLocales")
     @Factory(factory = AvailableLocalesFactory.class)
     @Default("English|en;Russian|ru")
     Map<String, Locale> getAvailableLocales();
 
+    /**
+     * Whether to use {@link com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased} instead of
+     * {@link QueryTransformerRegex}
+     * @return true or false
+     */
     @Property("cuba.useAstBasedJpqlTransformer")
     @DefaultBoolean(false)
     boolean getUseAstBasedJpqlTransformer();

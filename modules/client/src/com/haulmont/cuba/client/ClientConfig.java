@@ -16,6 +16,8 @@ import com.haulmont.cuba.core.config.defaults.DefaultInteger;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 
 /**
+ * Configuration parameters interface used by the WEB and DESKTOP layers.
+ *
  * <p>$Id$</p>
  *
  * @author krivopustov
@@ -23,39 +25,69 @@ import com.haulmont.cuba.core.config.defaults.DefaultString;
 @Source(type = SourceType.APP)
 public interface ClientConfig extends Config {
 
+    /**
+     * @return Middleware connection URL
+     */
     @Property("cuba.connectionUrl")
     String getConnectionUrl();
 
+    /**
+     * @return Context of the middleware file download controller.<br/>
+     * Usually <code>/remoting/download</code>
+     */
     @Property("cuba.fileDownloadContext")
     String getFileDownloadContext();
 
+    /**
+     * @return Maximum size of uploaded file in megabytes.
+     */
     @Property("cuba.client.maxUploadSizeMb")
     @DefaultInteger(20)
     Integer getMaxUploadSizeMb();
     void setMaxUploadSizeMb(int value);
 
+    /**
+     * @return Whether to enable sorting of datasource data on DB (using separate SELECT with ORDER BY clause).
+     */
     @Property("cuba.collectionDatasourceDbSortEnabled")
     @DefaultBoolean(true)
     boolean getCollectionDatasourceDbSortEnabled();
 
+    /**
+     * @return List of screen aliases for which saving screen history is enabled.
+     */
     @Property("cuba.screenIdsToSaveHistory")
     @Default("sec$User.edit,sec$Group.edit,sec$Role.edit")
     String getScreenIdsToSaveHistory();
 
+    /**
+     * @return Whether to enable password policy. If true, all new passwords will be checked for the compliance with
+     * <code>cuba.passwordPolicyRegExp</code>
+     */
     @Property("cuba.passwordPolicyEnabled")
     @DefaultBoolean(false)
     public boolean getPasswordPolicyEnabled();
 
+    /**
+     * @return The regular expression which is used by password policy (see also <code>cuba.passwordPolicyEnabled<code/>).
+     */
     @Property("cuba.passwordPolicyRegExp")
     @DefaultString("((?=.*\\d)(?=.*\\p{javaLowerCase})(?=.*\\p{javaUpperCase}).{6,20})")
     public String getPasswordPolicyRegExp();
 
+    /**
+     * @return If true, all generic filters will require explicit Apply after screen opening. Empty connected table
+     * is shown.<br/>
+     * If false, the filter will be applied automatically, refreshing the table immediately after the screen opening.
+     */
     @Property("cuba.gui.genericFilterManualApplyRequired")
     @DefaultBoolean(true)
     boolean getGenericFilterManualApplyRequired();
 
     /**
-     * If true, then check filter conditions(empty or not) before apply filter
+     * @return If true, then check filter conditions (empty or not) before applying filter. If all conditions are empty
+     * (no parameters entered), the filter doesn't apply and special message to user is shown.<br/>
+     * If false, no checks are performed and the filter applyes, refreshing connected table.
      */
     @Property("cuba.gui.genericFilterChecking")
     @DefaultBoolean(true)

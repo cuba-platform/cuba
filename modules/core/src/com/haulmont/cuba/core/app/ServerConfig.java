@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 04.07.2009 12:34:03
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
@@ -21,27 +16,34 @@ import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 
 /**
- * Common server configuration parameters
+ * Configuration parameters interface used by the CORE layer.
+ *
+ * <p>$Id</p>
+ *
+ * @author krivopustov
  */
 @Source(type = SourceType.APP)
 public interface ServerConfig extends Config {
 
     /**
-     * URL of user session provider - usually the main application core.
-     * Used by modules which don't login themselves but get existing sessions from main app.
+     * @return URL of user session provider - usually the main application core.
+     * This URL is used by modules which don't login themselves but get existing sessions from main app.
      */
     @Property("cuba.userSessionProviderUrl")
     String getUserSessionProviderUrl();
 
     /**
-     * Password to use LoginService.loginTrusted() method
+     * @return Password used by LoginService.loginTrusted() method.
+     * Trusted client may login without providing a user password. This is used by ActiveDirectory integration.
+     *
+     * <p>Must be equal to password set for the same property on the client.</p>
      */
     @Property("cuba.trustedClientPassword")
     @DefaultString("")
     String getTrustedClientPassword();
 
     /**
-     * User session expiration timeout in seconds.
+     * @return User session expiration timeout in seconds.
      * Not the same as HTTP session timeout, but should have the same value.
      */
     @Property("cuba.userSessionExpirationTimeoutSec")
@@ -50,43 +52,55 @@ public interface ServerConfig extends Config {
     void setUserSessionExpirationTimeoutSec(int timeout);
 
     /**
-     * DB scripts directory.
+     * @return DB scripts directory.
      * Does not end with "/"
      */
     @Property("cuba.dbDir")
     String getDbDir();
 
     /**
-     * Whether the server will try to init/update database on each start
+     * @return Whether the server should try to init/update database on each startup.
      */
     @Property("cuba.automaticDatabaseUpdate")
     @DefaultBoolean(false)
     boolean getAutomaticDatabaseUpdate();
 
     /**
-     * returns path to installed Open Office 
+     * @return Path to the installed OpenOffice
      */
     @Property("cuba.reporting.openoffice.path")
     String getOpenOfficePath();
 
+    /**
+     * @return The list of ports to start OpenOffice on.
+     */
     @Property("cuba.reporting.openoffice.ports")
     @DefaultString("8100|8101|8102|8103")
     String getOpenOfficePorts();
 
+    /**
+     * @return Request to OpenOffice timeout in seconds.
+     */
     @Property("cuba.reporting.openoffice.docFormatterTimeout")
     @DefaultInteger(20)
     Integer getDocFormatterTimeout();
 
-    /*
-     * Set it to true if you're using openoffice reporting formatter on a *nix server without X server running
+    /**
+     * @return Has to be true if using OpenOffice reporting formatter on a *nix server without X server running
      */
     @Property("cuba.reporting.displayDeviceUnavailable")
     @DefaultBoolean(false)
     boolean getDisplayDeviceUnavailable();
 
+    /**
+     * @return {@link FileStorageAPI} storage directory. If not set, <code>cuba.dataDir/filestorage</code> will be used.
+     */
     @Property("cuba.fileStorageDir")
     String getFileStorageDir();
 
+    /**
+     * @return Whether to cut query text when logging it.
+     */
     @Property("cuba.log.cutLoadListQueries")
     @DefaultBoolean(false)
     boolean getCutLoadListQueries();

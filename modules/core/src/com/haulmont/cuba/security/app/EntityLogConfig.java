@@ -18,11 +18,18 @@ import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 
 /**
  * {@link com.haulmont.cuba.security.app.EntityLog} configuration parameters
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 @Prefix("cuba.security.EntityLog.")
 @Source(type = SourceType.DATABASE)
 public interface EntityLogConfig extends Config
 {
+    /**
+     * @return Whether the EntityLog is enabled
+     */
     @DefaultBoolean(true)
     boolean getEnabled();
     void setEnabled(boolean value);
