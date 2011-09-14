@@ -267,7 +267,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
             try {
                 delayCallCount = Integer.valueOf(delayCallCountStr);
             } catch (Exception e) {
-                delayCallCount = config.getMessageQueueCapacity();
+                delayCallCount = config.getDelayCallCount();
             }
         delayCallCount = delayCallCount == 0 ? config.getDelayCallCount() : delayCallCount;
         return delayCallCount;

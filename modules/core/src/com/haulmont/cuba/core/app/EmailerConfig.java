@@ -36,13 +36,14 @@ public interface EmailerConfig extends Config
     String getSmtpHost();
 
     /**
-     * @return
+     * Used in server startup.
+     * Sending emails will be started after delayCallCount cron ticks (used to not overload server in startup)
      */
     @Default("2")
     int getDelayCallCount();
 
     /**
-     * @return
+     * MaxResults query limit for load messages from DB in one tick
      */
     @Default("100")
     int getMessageQueueCapacity();

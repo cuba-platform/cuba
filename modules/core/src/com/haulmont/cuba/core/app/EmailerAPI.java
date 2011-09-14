@@ -53,6 +53,13 @@ public interface EmailerAPI {
     void sendEmail(EmailInfo info, boolean sync) throws EmailException;
 
 
+    /**
+     * @param info
+     * @param attemptsCount  -  count of attempts to send (1 attempt = 1 emailer cron tick)
+     * @param deadline  -  Emailer tries to send message till deadline.
+     *              If deadline has come and message has not been sent, status of this message will changed to SendingStatus.NOTSENT
+     * @throws EmailException
+     */
     void sendEmailAsync(EmailInfo info, Integer attemptsCount,Date deadline) throws EmailException;
 
     /**
