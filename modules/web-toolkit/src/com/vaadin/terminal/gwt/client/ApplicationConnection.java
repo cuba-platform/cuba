@@ -853,7 +853,7 @@ public class ApplicationConnection {
 
     private native void unBlockUI()
     /*-{
-        //$wnd.jQuery.unblockUI();
+        $wnd.jQuery.unblockUI();
     }-*/;
 
     /**
