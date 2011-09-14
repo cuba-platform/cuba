@@ -150,7 +150,16 @@ public abstract class App extends Application
     }
 
     public static Application.SystemMessages getSystemMessages() {
-        return compileSystemMessages(Locale.getDefault());
+        Locale defaultLocale;
+        if (!AppContext.isStarted())
+            defaultLocale = Locale.getDefault();
+        else {
+            GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
+            Set<Map.Entry<String, Locale>> localeSet = globalConfig.getAvailableLocales().entrySet();
+            Map.Entry<String, Locale> localeEntry = localeSet.iterator().next();
+            defaultLocale = localeEntry.getValue();
+        }
+        return compileSystemMessages(defaultLocale);
     }
 
     public static CubaSystemMessages compileSystemMessages(Locale locale) {

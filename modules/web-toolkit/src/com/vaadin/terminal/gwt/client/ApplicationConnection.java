@@ -836,9 +836,11 @@ public class ApplicationConnection {
 
     private native void blockUI(String blockMessage)
     /*-{
+        var closeBtnHtml = "<div onclick=\"jQuery.unblockUI()\" class=\"blockUiCloseBtn\"></div>";
+        var messageHtml = "<div>" + blockMessage + "</div>" + closeBtnHtml;
         $wnd.jQuery.blockUI(
                 {
-                    message: blockMessage,
+                    message: messageHtml,
                     css: {
                         border: '3px solid #292929',
                         background: '#333333',
@@ -849,10 +851,9 @@ public class ApplicationConnection {
                 });
     }-*/;
 
-
     private native void unBlockUI()
     /*-{
-        $wnd.jQuery.unblockUI();
+        //$wnd.jQuery.unblockUI();
     }-*/;
 
     /**

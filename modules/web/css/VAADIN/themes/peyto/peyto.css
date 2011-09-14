@@ -5,6 +5,18 @@
 *:focus {outline: 1px dotted #4D7AB2;}
 
 /*
+ * JQuery unblock UI button
+ */
+.blockUiCloseBtn {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    background: url('images/cross.png') no-repeat top left;
+    width: 24px;
+    height: 24px;
+}
+
+/*
  * Menu bar
  */
 
