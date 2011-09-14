@@ -15,6 +15,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -49,9 +50,9 @@ public class LinkColumnHelper {
                     final Object value = (nestedEntity == null) ? null : nestedEntity.getValue(props[props.length - 1]);
                     if (value != null) {
                         String str;
-                        Datatype datatype = Datatypes.getInstance().get(value.getClass());
+                        Datatype datatype = Datatypes.get(value.getClass());
                         if (datatype != null) {
-                            str = datatype.format(value);
+                            str = datatype.format(value, UserSessionProvider.getLocale());
                         } else {
                             str = value.toString();
                         }
