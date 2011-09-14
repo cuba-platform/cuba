@@ -264,8 +264,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         if (isBoolean(expression)) {
             value = Boolean.valueOf(expression);
         } else {
-            value = ScriptingProvider.evaluateGroovy(
-                    Scripting.Layer.GUI, expression, context.getBinding());
+            value = ScriptingProvider.evaluateGroovy(expression, context.getBinding());
         }
         return value;
     }

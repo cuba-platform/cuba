@@ -36,6 +36,6 @@ public class GroovyDataLoader implements DataLoader {
         params.put("dataSet", dataSet);
         params.put("parentBand", parentBand);
         params.put("params", this.params);
-        return ScriptingProvider.evaluateGroovy(Scripting.Layer.CORE, script, params);
+        return ScriptingProvider.evaluateGroovy(script, params);
     }
 }

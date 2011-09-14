@@ -87,7 +87,7 @@ public class FoldersServiceBean implements FoldersService {
         if (script.endsWith(".groovy")) {
             script = ScriptingProvider.getResourceAsString(script);
         }
-        result = ScriptingProvider.evaluateGroovy(Scripting.Layer.CORE, script, binding);
+        result = ScriptingProvider.evaluateGroovy(script, binding);
         return (T) result;
     }
 

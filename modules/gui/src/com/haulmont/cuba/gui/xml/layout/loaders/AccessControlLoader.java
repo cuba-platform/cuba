@@ -146,7 +146,7 @@ public class AccessControlLoader extends ContainerLoader {
         String script = accessElement.getText();
         if (!StringUtils.isBlank(script)) {
             return BooleanUtils.isTrue(
-                    ScriptingProvider.<Boolean>evaluateGroovy(Scripting.Layer.GUI, script, context.getBinding()));
+                    ScriptingProvider.<Boolean>evaluateGroovy(script, context.getBinding()));
         } else {
             String scriptName = accessElement.attributeValue("script");
             if (!StringUtils.isBlank(scriptName)) {

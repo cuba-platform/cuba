@@ -11,7 +11,6 @@
 package com.haulmont.cuba.gui.components.validators;
 
 import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
@@ -62,7 +61,7 @@ public class ScriptValidator implements Field.Validator {
             params.put("value", value);
         }
         if (innerScript) {
-            isValid = ScriptingProvider.evaluateGroovy(Scripting.Layer.GUI, script, params);
+            isValid = ScriptingProvider.evaluateGroovy(script, params);
         } else if (scriptPath != null) {
             isValid = ScriptingProvider.runGroovyScript(scriptPath, params);
         }

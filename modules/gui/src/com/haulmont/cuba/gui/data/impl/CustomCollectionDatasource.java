@@ -53,8 +53,7 @@ public class CustomCollectionDatasource<T extends Entity<K>, K>
 
         final Map<String, Object> parameters = getQueryParameters(params);
 
-        Collection<T> entities = ScriptingProvider.evaluateGroovy(
-                Scripting.Layer.GUI, getGroovyScript(query, parameters), parameters);
+        Collection<T> entities = ScriptingProvider.evaluateGroovy(getGroovyScript(query, parameters), parameters);
 
         for (T entity : entities) {
             data.put(entity.getId(), entity);

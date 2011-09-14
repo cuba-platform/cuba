@@ -23,13 +23,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool.BaseKeyedPoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPool;
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -45,23 +45,20 @@ public abstract class AbstractScripting implements Scripting {
 
     private JavaClassLoader javaClassLoader;
 
-    protected String confPath;
-
     protected String groovyClassPath;
 
-    protected Map<Layer, Set<String>> imports = new HashMap<Layer, Set<String>>();
+    protected Set<String> imports = new HashSet<String>();
 
     protected volatile GroovyScriptEngine gse;
 
     protected GroovyClassLoader gcl;
 
-    protected Map<Layer, GenericKeyedObjectPool> pools = new HashMap<Layer, GenericKeyedObjectPool>();
+    protected GenericKeyedObjectPool pool;
 
     public AbstractScripting(JavaClassLoader javaClassLoader, Configuration configuration) {
         this.javaClassLoader = javaClassLoader;
 
-        confPath = configuration.getConfig(GlobalConfig.class).getConfDir() + File.pathSeparator;
-        groovyClassPath = confPath;
+        groovyClassPath = configuration.getConfig(GlobalConfig.class).getConfDir() + File.pathSeparator;
 
         String classPathProp = AppContext.getProperty("cuba.groovyClassPath");
         if (StringUtils.isNotBlank(classPathProp)) {
@@ -73,20 +70,11 @@ public abstract class AbstractScripting implements Scripting {
 
         }
 
-        for (Layer layer : Layer.values()) {
-            String importProp = AppContext.getProperty("cuba.groovyEvaluatorImport." + layer);
-            if (StringUtils.isNotBlank(importProp)) {
-                String[] strings = importProp.split(";");
-                for (String string : strings) {
-                    Set<String> set = imports.get(layer);
-                    if (set == null) {
-                        set = new HashSet<String>();
-                        imports.put(layer, set);
-                    }
-                    if (!set.contains(string.trim())) {
-                        set.add(string.trim());
-                    }
-                }
+        String importProp = AppContext.getProperty("cuba.groovyEvaluatorImport");
+        if (StringUtils.isNotBlank(importProp)) {
+            String[] strings = importProp.split("[,;]");
+            for (String string : strings) {
+                imports.add(string.trim());
             }
         }
     }
@@ -116,15 +104,74 @@ public abstract class AbstractScripting implements Scripting {
                     CompilerConfiguration cc = new CompilerConfiguration();
                     cc.setClasspath(groovyClassPath);
                     cc.setRecompileGroovySource(true);
-                    gcl = new GroovyClassLoader(javaClassLoader, cc);
+                    gcl = new GroovyClassLoader(javaClassLoader, cc) {
+                        // This overridden method is almost identical to super, but prefers Groovy source over parent classloader class
+                        @Override
+                        public Class loadClass(String name, boolean lookupScriptFiles, boolean preferClassOverScript, boolean resolve) throws ClassNotFoundException, CompilationFailedException {
+                            // look into cache
+                            Class cls = getClassCacheEntry(name);
+
+                            // enable recompilation?
+                            boolean recompile = isRecompilable(cls);
+                            if (!recompile) return cls;
+
+                            ClassNotFoundException last = null;
+
+                            // prefer class if no recompilation
+                            if (cls != null && preferClassOverScript) return cls;
+
+                            // we want to recompile if needed
+                            if (lookupScriptFiles) {
+                                // try groovy file
+                                try {
+                                    // check if recompilation already happened.
+                                    final Class classCacheEntry = getClassCacheEntry(name);
+                                    if (classCacheEntry != cls) return classCacheEntry;
+                                    URL source = getResourceLoader().loadGroovySource(name);
+                                    // if recompilation fails, we want cls==null
+                                    Class oldClass = cls;
+                                    cls = null;
+                                    cls = recompile(source, name, oldClass);
+                                } catch (IOException ioe) {
+                                    last = new ClassNotFoundException("IOException while opening groovy source: " + name, ioe);
+                                } finally {
+                                    if (cls == null) {
+                                        removeClassCacheEntry(name);
+                                    } else {
+                                        setClassCacheEntry(cls);
+                                    }
+                                }
+                            }
+
+                            if (cls == null) {
+                                // try parent loader
+                                try {
+                                    Class parentClassLoaderClass = super.loadClass(name, false, true, resolve);
+                                    // return if the parent loader was successful
+                                    if (cls != parentClassLoaderClass) return parentClassLoaderClass;
+                                } catch (ClassNotFoundException cnfe) {
+                                    last = cnfe;
+                                } catch (NoClassDefFoundError ncdfe) {
+                                    if (ncdfe.getMessage().indexOf("wrong name") > 0) {
+                                        last = new ClassNotFoundException(name);
+                                    } else {
+                                        throw ncdfe;
+                                    }
+                                }
+                                // no class found, there should have been an exception before now
+                                if (last == null) throw new AssertionError(true);
+                                throw last;
+                            }
+                            return cls;
+                        }
+                    };
                 }
             }
         }
         return gcl;
     }
 
-    private synchronized GenericKeyedObjectPool getPool(final Layer layer) {
-        GenericKeyedObjectPool pool = pools.get(layer);
+    private synchronized GenericKeyedObjectPool getPool() {
         if (pool == null) {
             GenericKeyedObjectPool.Config poolConfig = new GenericKeyedObjectPool.Config();
             poolConfig.maxActive = -1;
@@ -136,11 +183,8 @@ public abstract class AbstractScripting implements Scripting {
                             String text = ((String) key);
 
                             StringBuilder sb = new StringBuilder();
-                            Set<String> strings = imports.get(layer);
-                            if (strings != null) {
-                                for (String importItem : strings) {
-                                    sb.append("import ").append(importItem).append("\n");
-                                }
+                            for (String importItem : imports) {
+                                sb.append("import ").append(importItem).append("\n");
                             }
                             sb.append(text);
 
@@ -154,7 +198,6 @@ public abstract class AbstractScripting implements Scripting {
                     },
                     poolConfig
             );
-            pools.put(layer, pool);
         }
         return pool;
     }
@@ -169,15 +212,15 @@ public abstract class AbstractScripting implements Scripting {
     }
 
     @Override
-    public <T> T evaluateGroovy(Layer layer, String text, Binding binding) {
+    public <T> T evaluateGroovy(String text, Binding binding) {
         Script script = null;
         try {
-            script = (Script) getPool(layer).borrowObject(text);
+            script = (Script) getPool().borrowObject(text);
             script.setBinding(binding);
             return (T) script.run();
         } catch (Exception e) {
             try {
-                getPool(layer).invalidateObject(text, script);
+                getPool().invalidateObject(text, script);
             } catch (Exception e1) {
                 log.warn("Error invalidating object in the pool", e1);
             }
@@ -189,7 +232,7 @@ public abstract class AbstractScripting implements Scripting {
             if (script != null)
                 try {
                     script.setBinding(null); // free memory
-                    getPool(layer).returnObject(text, script);
+                    getPool().returnObject(text, script);
                 } catch (Exception e) {
                     log.warn("Error returning object into the pool", e);
                 }
@@ -197,9 +240,9 @@ public abstract class AbstractScripting implements Scripting {
     }
 
     @Override
-    public <T> T evaluateGroovy(Layer layer, String text, Map<String, Object> context) {
+    public <T> T evaluateGroovy(String text, Map<String, Object> context) {
         Binding binding = createBinding(context);
-        return (T) evaluateGroovy(layer, text, binding);
+        return (T) evaluateGroovy(text, binding);
     }
 
     @Override
@@ -227,11 +270,7 @@ public abstract class AbstractScripting implements Scripting {
     @Override
     public Class loadClass(String name) {
         try {
-            File file = new File(confPath, name.replace(".", "/") + ".java");
-            if (file.exists())
-                return javaClassLoader.loadClass(name);
-            else
-                return getGroovyClassLoader().loadClass(name, true, false);
+            return getGroovyClassLoader().loadClass(name, true, false);
         } catch (ClassNotFoundException e) {
             return null;
         }
@@ -240,16 +279,7 @@ public abstract class AbstractScripting implements Scripting {
     @Override
     public InputStream getResourceAsStream(String name) {
         String s = name.startsWith("/") ? name.substring(1) : name;
-        File file = new File(confPath, s);
-        if (file.exists()) {
-            try {
-                return new FileInputStream(file);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            return getGroovyClassLoader().getResourceAsStream(s);
-        }
+        return getGroovyClassLoader().getResourceAsStream(s);
     }
 
     @Override
