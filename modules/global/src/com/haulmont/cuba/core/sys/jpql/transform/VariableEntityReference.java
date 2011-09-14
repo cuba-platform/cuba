@@ -36,4 +36,11 @@ public class VariableEntityReference implements EntityReference {
     public boolean isJoinableTo(IdentificationVariableNode node) {
         return entityName.equals(node.getEntityName());
     }
+
+
+    public PathEntityReference addFieldPath(String fieldPath) {
+        PathNode pathNode = new PathNode(JPALexer.T_SELECTED_FIELD, entityVariableName);
+        pathNode.addDefaultChildren(fieldPath);
+        return new PathEntityReference(pathNode, entityName);
+    }
 }

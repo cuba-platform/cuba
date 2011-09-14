@@ -68,6 +68,12 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         throw new RuntimeException("Join mixing failed. Cannot find selected entity with name " + entityRef);
     }
 
+    public void addSelectionSource(CommonTree selectionSource) {
+        CommonTree from = (CommonTree) tree.getFirstChildWithType(JPALexer.T_SOURCES);
+        from.addChild(selectionSource);
+        from.freshenParentAndChildIndexes();
+    }
+
     public void replaceWithCount(EntityReference entityRef) {
         Tree selectedItems = tree.getFirstChildWithType(JPALexer.T_SELECTED_ITEMS);
         boolean isDistinct = "DISTINCT".equalsIgnoreCase(selectedItems.getChild(0).getText());
@@ -91,34 +97,49 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
         tree.freshenParentAndChildIndexes();
     }
 
-    public void replaceOrderBy(String newOrderingField, boolean desc) {
+    public void replaceOrderBy(PathEntityReference orderingFieldRef, boolean desc) {
         CommonTree orderBy = (CommonTree) tree.getFirstChildWithType(JPALexer.T_ORDER_BY);
+        OrderByFieldNode orderByField;
         if (orderBy == null) {
-            throw new IllegalStateException("No order by clause found");
+            orderByField = new OrderByFieldNode(JPALexer.T_ORDER_BY_FIELD);
+
+            orderBy = new OrderByNode(JPALexer.T_ORDER_BY);
+            orderBy.addChild(new CommonTree(new CommonToken(JPALexer.ORDER, "order")));
+            orderBy.addChild(new CommonTree(new CommonToken(JPALexer.BY, "by")));
+            orderBy.addChild(orderByField);
+            tree.addChild(orderBy);
+        } else {
+            orderByField = (OrderByFieldNode) orderBy.getFirstChildWithType(JPALexer.T_ORDER_BY_FIELD);
+            if (orderByField == null)
+                throw new IllegalStateException("No ordering field found");
+
+            if (!(orderByField.getChildCount() == 1 || orderByField.getChildCount() == 2)) {
+                throw new IllegalStateException("Invalid order by field node children count: " + orderByField.getChildCount());
+            }
+
+            orderByField.deleteChild(0);
         }
 
-        OrderByFieldNode orderByField = (OrderByFieldNode) orderBy.getFirstChildWithType(JPALexer.T_ORDER_BY_FIELD);
-        if (orderByField == null)
-            throw new IllegalStateException("No ordering field found");
+        PathNode pathNode = orderingFieldRef.getPathNode();
+        if (pathNode.getChildCount() > 1) {
+            CommonTree lastNode = (CommonTree) pathNode.deleteChild(pathNode.getChildCount() - 1);
+            String variableName = pathNode.asPathString('_');
 
-        if (!(orderByField.getChildCount() == 1 || orderByField.getChildCount() == 2)) {
-            throw new IllegalStateException("Invalid order by field node children count: " + orderByField.getChildCount());
+            PathNode orderingNode = new PathNode(JPALexer.T_SELECTED_FIELD, variableName);
+            orderingNode.addDefaultChild(lastNode.getText());
+            orderByField.addChild(orderingNode);
+
+            JoinVariableNode joinNode = new JoinVariableNode(JPALexer.T_JOIN_VAR, "left join", variableName);
+            joinNode.addChild(pathNode);
+
+            CommonTree from = (CommonTree) tree.getFirstChildWithType(JPALexer.T_SOURCES);
+            from.getChild(0).addChild(joinNode); // assumption
+        } else {
+            orderByField.addChild(orderingFieldRef.createNode());
         }
 
-        PathNode orderingField = (PathNode) orderByField.getChild(0);
-        orderingField.changeField(newOrderingField);
-
-        if (orderByField.getChildCount() == 2) {
-            orderByField.deleteChild(1);
-        }
-
-        String text;
-        int type;
         if (desc) {
-            text = "DESC";
-            type = JPALexer.DESC;
-            CommonTree node = new CommonTree(new CommonToken(type, text));
-            orderByField.addChild(node);
+            orderByField.addChild(new CommonTree(new CommonToken(JPALexer.DESC, "DESC")));
         }
         orderByField.freshenParentAndChildIndexes();
     }
@@ -137,3 +158,4 @@ public class QueryTreeTransformer extends QueryTreeAnalyzer {
     }
 
 }
+

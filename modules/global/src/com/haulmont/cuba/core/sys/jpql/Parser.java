@@ -46,4 +46,11 @@ public class Parser {
         TokenStream tstream = new CommonTokenStream(lexer);
         return new JPAParser(tstream);
     }
+
+    public static CommonTree parseSelectionSource(String input) throws RecognitionException {
+        JPAParser parser = createParser(input);
+        JPAParser.identification_variable_or_collection_declaration_return aReturn =
+                parser.identification_variable_or_collection_declaration();
+        return (CommonTree) aReturn.getTree();
+    }
 }

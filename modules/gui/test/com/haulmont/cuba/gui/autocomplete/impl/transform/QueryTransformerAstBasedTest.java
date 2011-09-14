@@ -15,7 +15,6 @@ import java.util.Date;
 import java.util.Set;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Author: Alexander Chevelev
@@ -482,6 +481,7 @@ public class QueryTransformerAstBasedTest {
         builder.addStringAttribute("group");
         builder.addStringAttribute("createdBy");
         builder.addReferenceAttribute("parent", "sec$GroupHierarchy");
+        builder.addReferenceAttribute("other", "sec$GroupHierarchy");
         builder.addCollectionReferenceAttribute("constraints", "sec$Constraint");
         Entity groupHierarchy = builder.produce();
 
@@ -615,6 +615,19 @@ public class QueryTransformerAstBasedTest {
     }
 
     @Test
+    public void testJoin_WithComma() throws RecognitionException {
+        DomainModel model = prepareDomainModel();
+
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "select c from sec$GroupHierarchy h where h.group = :par", "sec$GroupHierarchy");
+        transformer.addJoinAndWhere("join h.parent.constraints pco, sec$Constraint sc", "1 = 1");
+        String res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints pco, sec$Constraint sc where h.group = :par and 1 = 1",
+                res);
+    }
+
+    @Test
     public void join_with_in_collections() throws RecognitionException {
         EntityBuilder builder = new EntityBuilder();
 
@@ -728,6 +741,24 @@ public class QueryTransformerAstBasedTest {
                         "group by h.level having h.level > 0 order by h.group DESC",
                 res);
     }
+    @Test
+    public void testOrderByAssociatedProperty() throws RecognitionException {
+        DomainModel model = prepareDomainModel();
+        QueryTransformerAstBased transformer = new QueryTransformerAstBased(model,
+                "select h from sec$GroupHierarchy h", "sec$GroupHierarchy");
+        transformer.replaceOrderBy("parent.group", false);
+        String res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h left join h.parent h_parent order by h_parent.group",
+                res);
+        transformer.reset();
+
+        transformer.replaceOrderBy("parent.other.group", true);
+        res = transformer.getResult();
+        assertEquals(
+                "select h from sec$GroupHierarchy h left join h.parent.other h_parent_other order by h_parent_other.group DESC",
+                res);
+    }
 
     @Test
     public void transformationsUsingSelectedEntity() throws RecognitionException {
@@ -783,7 +814,7 @@ public class QueryTransformerAstBasedTest {
 
         res = transformer.getResult();
         assertEquals(
-                "select c.colour from sec$Car c where c.colour.createdBy = :p order by c.colour.version DESC",
+                "select c.colour from sec$Car c left join c.colour c_colour where c.colour.createdBy = :p order by c_colour.version DESC",
                 res);
 
 

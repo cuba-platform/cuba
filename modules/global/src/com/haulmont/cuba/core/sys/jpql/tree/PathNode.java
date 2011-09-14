@@ -1,11 +1,11 @@
 package com.haulmont.cuba.core.sys.jpql.tree;
 
 import com.haulmont.cuba.core.sys.jpql.*;
+import com.haulmont.cuba.core.sys.jpql.antlr.JPALexer;
 import com.haulmont.cuba.core.sys.jpql.pointer.Pointer;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.Tree;
 
 import java.util.Collections;
 import java.util.List;
@@ -67,11 +67,15 @@ public class PathNode extends BaseCustomNode {
     }
 
     public String asPathString() {
+        return asPathString('.');
+    }
+
+    public String asPathString(char separator) {
         String result = "";
         result += entityVariableName;
         if (children != null) {
             for (Object child : children) {
-                result += '.' + child.toString();
+                result += separator + child.toString();
             }
         }
         return result;
@@ -81,8 +85,14 @@ public class PathNode extends BaseCustomNode {
         entityVariableName = newVariableName;
     }
 
-    public void changeField(String newField) {
-        CommonTree lastChild = (CommonTree) getChild(getChildCount() - 1);
-        lastChild.getToken().setText(newField);
+    public void addDefaultChildren(String fieldPath) {
+        String[] strings = fieldPath.split("\\.");
+        for (String string : strings) {
+            addChild(new CommonTree(new CommonToken(JPALexer.WORD, string)));
+        }
+    }
+
+    public void addDefaultChild(String field) {
+        addChild(new CommonTree(new CommonToken(JPALexer.WORD, field)));
     }
 }

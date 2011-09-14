@@ -1,6 +1,5 @@
 package com.haulmont.cuba.core.sys.jpql.transform;
 
-import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
 import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
 import org.antlr.runtime.tree.Tree;
@@ -15,12 +14,10 @@ import java.util.List;
  */
 public class PathEntityReference implements EntityReference {
     private PathNode pathNode;
-    private String entityName;
-    private Entity pathStartingEntity;
+    private String pathStartingEntityName;
 
-    public PathEntityReference(String entityName, PathNode pathNode, Entity pathStartingEntity) {
-        this.entityName = entityName;
-        this.pathStartingEntity = pathStartingEntity;
+    public PathEntityReference(PathNode pathNode, String pathStartingEntityName) {
+        this.pathStartingEntityName = pathStartingEntityName;
         this.pathNode = pathNode.dupNode();
     }
 
@@ -42,7 +39,17 @@ public class PathEntityReference implements EntityReference {
     }
 
     public boolean isJoinableTo(IdentificationVariableNode node) {
-        return pathStartingEntity.getName().equals(node.getEntityName()) &&
+        return pathStartingEntityName.equals(node.getEntityName()) &&
                 pathNode.getEntityVariableName().equals(node.getVariableName());
+    }
+
+    public PathEntityReference addFieldPath(String fieldPath) {
+        PathNode newPathNode = pathNode.dupNode();
+        newPathNode.addDefaultChildren(fieldPath);
+        return new PathEntityReference(newPathNode, pathStartingEntityName);
+    }
+
+    public PathNode getPathNode() {
+        return pathNode.dupNode();
     }
 }

@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.sys.jpql.Parser;
 import com.haulmont.cuba.core.sys.jpql.antlr.JPALexer;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
+import com.haulmont.cuba.core.sys.jpql.transform.PathEntityReference;
 import com.haulmont.cuba.core.sys.jpql.transform.QueryTreeTransformer;
 import com.haulmont.cuba.core.sys.jpql.transform.VariableEntityReference;
 import com.haulmont.cuba.core.sys.jpql.tree.*;
@@ -157,7 +158,9 @@ public class QueryAnalyzerTest {
         assertEquals("c", pathNode.getEntityVariableName());
         assertEquals("model", pathNode.getChild(0).getText());
 
-        qa.replaceOrderBy("regNumber", true);
+        pathNode = new PathNode(JPALexer.T_SELECTED_FIELD, "c");
+        pathNode.addDefaultChild("regNumber");
+        qa.replaceOrderBy(new PathEntityReference(pathNode, "Car"), true);
 
         assertEquals(2, orderByField.getChildCount());
         pathNode = (PathNode) orderByField.getChild(0);

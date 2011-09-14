@@ -17,4 +17,6 @@ public interface EntityReference {
     Tree createNode();
 
     boolean isJoinableTo(IdentificationVariableNode node);
+
+    PathEntityReference addFieldPath(String fieldPath);
 }

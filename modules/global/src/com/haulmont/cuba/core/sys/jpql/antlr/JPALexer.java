@@ -1,19 +1,16 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 JPA.g 2011-04-13 18:38:36
+// $ANTLR 3.3 Nov 30, 2010 12:50:56 JPA.g 2011-09-15 00:27:09
 
 package com.haulmont.cuba.core.sys.jpql.antlr;
 
 
-import org.antlr.runtime.*;
 
+import org.antlr.runtime.*;
 import java.util.Stack;
 import java.util.List;
 import java.util.ArrayList;
 
 public class JPALexer extends Lexer {
     public static final int EOF=-1;
-    public static final int T__49=49;
-    public static final int T__50=50;
-    public static final int T__51=51;
     public static final int T__52=52;
     public static final int T__53=53;
     public static final int T__54=54;
@@ -115,16 +112,19 @@ public class JPALexer extends Lexer {
     public static final int INNER=36;
     public static final int JOIN=37;
     public static final int FETCH=38;
-    public static final int INT_NUMERAL=39;
-    public static final int ESCAPE_CHARACTER=40;
-    public static final int STRINGLITERAL=41;
-    public static final int TRIM_CHARACTER=42;
-    public static final int WORD=43;
-    public static final int NAMED_PARAMETER=44;
-    public static final int RUSSIAN_SYMBOLS=45;
-    public static final int WS=46;
-    public static final int COMMENT=47;
-    public static final int LINE_COMMENT=48;
+    public static final int ORDER=39;
+    public static final int GROUP=40;
+    public static final int BY=41;
+    public static final int INT_NUMERAL=42;
+    public static final int ESCAPE_CHARACTER=43;
+    public static final int STRINGLITERAL=44;
+    public static final int TRIM_CHARACTER=45;
+    public static final int WORD=46;
+    public static final int NAMED_PARAMETER=47;
+    public static final int RUSSIAN_SYMBOLS=48;
+    public static final int WS=49;
+    public static final int COMMENT=50;
+    public static final int LINE_COMMENT=51;
 
     // delegates
     // delegators
@@ -515,15 +515,15 @@ public class JPALexer extends Lexer {
     }
     // $ANTLR end "FETCH"
 
-    // $ANTLR start "T__49"
-    public final void mT__49() throws RecognitionException {
+    // $ANTLR start "ORDER"
+    public final void mORDER() throws RecognitionException {
         try {
-            int _type = T__49;
+            int _type = ORDER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:26:7: ( 'SELECT' )
-            // JPA.g:26:9: 'SELECT'
+            // JPA.g:26:7: ( 'ORDER' )
+            // JPA.g:26:9: 'ORDER'
             {
-            match("SELECT");
+            match("ORDER");
 
 
             }
@@ -534,17 +534,17 @@ public class JPALexer extends Lexer {
         finally {
         }
     }
-    // $ANTLR end "T__49"
+    // $ANTLR end "ORDER"
 
-    // $ANTLR start "T__50"
-    public final void mT__50() throws RecognitionException {
+    // $ANTLR start "GROUP"
+    public final void mGROUP() throws RecognitionException {
         try {
-            int _type = T__50;
+            int _type = GROUP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:27:7: ( 'FROM' )
-            // JPA.g:27:9: 'FROM'
+            // JPA.g:27:7: ( 'GROUP' )
+            // JPA.g:27:9: 'GROUP'
             {
-            match("FROM");
+            match("GROUP");
 
 
             }
@@ -555,17 +555,18 @@ public class JPALexer extends Lexer {
         finally {
         }
     }
-    // $ANTLR end "T__50"
+    // $ANTLR end "GROUP"
 
-    // $ANTLR start "T__51"
-    public final void mT__51() throws RecognitionException {
+    // $ANTLR start "BY"
+    public final void mBY() throws RecognitionException {
         try {
-            int _type = T__51;
+            int _type = BY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:28:7: ( ',' )
-            // JPA.g:28:9: ','
+            // JPA.g:28:4: ( 'BY' )
+            // JPA.g:28:6: 'BY'
             {
-            match(',');
+            match("BY");
+
 
             }
 
@@ -575,17 +576,17 @@ public class JPALexer extends Lexer {
         finally {
         }
     }
-    // $ANTLR end "T__51"
+    // $ANTLR end "BY"
 
     // $ANTLR start "T__52"
     public final void mT__52() throws RecognitionException {
         try {
             int _type = T__52;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:29:7: ( 'AS' )
-            // JPA.g:29:9: 'AS'
+            // JPA.g:29:7: ( 'SELECT' )
+            // JPA.g:29:9: 'SELECT'
             {
-            match("AS");
+            match("SELECT");
 
 
             }
@@ -603,10 +604,10 @@ public class JPALexer extends Lexer {
         try {
             int _type = T__53;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:30:7: ( '(SELECT' )
-            // JPA.g:30:9: '(SELECT'
+            // JPA.g:30:7: ( 'FROM' )
+            // JPA.g:30:9: 'FROM'
             {
-            match("(SELECT");
+            match("FROM");
 
 
             }
@@ -624,10 +625,10 @@ public class JPALexer extends Lexer {
         try {
             int _type = T__54;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:31:7: ( '.' )
-            // JPA.g:31:9: '.'
+            // JPA.g:31:7: ( ',' )
+            // JPA.g:31:9: ','
             {
-            match('.');
+            match(',');
 
             }
 
@@ -644,10 +645,10 @@ public class JPALexer extends Lexer {
         try {
             int _type = T__55;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:32:7: ( 'IN' )
-            // JPA.g:32:9: 'IN'
+            // JPA.g:32:7: ( 'AS' )
+            // JPA.g:32:9: 'AS'
             {
-            match("IN");
+            match("AS");
 
 
             }
@@ -665,10 +666,10 @@ public class JPALexer extends Lexer {
         try {
             int _type = T__56;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:33:7: ( 'OBJECT' )
-            // JPA.g:33:9: 'OBJECT'
+            // JPA.g:33:7: ( '(SELECT' )
+            // JPA.g:33:9: '(SELECT'
             {
-            match("OBJECT");
+            match("(SELECT");
 
 
             }
@@ -686,11 +687,10 @@ public class JPALexer extends Lexer {
         try {
             int _type = T__57;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:34:7: ( 'NEW' )
-            // JPA.g:34:9: 'NEW'
+            // JPA.g:34:7: ( '.' )
+            // JPA.g:34:9: '.'
             {
-            match("NEW");
-
+            match('.');
 
             }
 
@@ -707,10 +707,10 @@ public class JPALexer extends Lexer {
         try {
             int _type = T__58;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:35:7: ( 'WHERE' )
-            // JPA.g:35:9: 'WHERE'
+            // JPA.g:35:7: ( 'IN' )
+            // JPA.g:35:9: 'IN'
             {
-            match("WHERE");
+            match("IN");
 
 
             }
@@ -728,10 +728,10 @@ public class JPALexer extends Lexer {
         try {
             int _type = T__59;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:36:7: ( 'GROUP' )
-            // JPA.g:36:9: 'GROUP'
+            // JPA.g:36:7: ( 'OBJECT' )
+            // JPA.g:36:9: 'OBJECT'
             {
-            match("GROUP");
+            match("OBJECT");
 
 
             }
@@ -749,10 +749,10 @@ public class JPALexer extends Lexer {
         try {
             int _type = T__60;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:37:7: ( 'BY' )
-            // JPA.g:37:9: 'BY'
+            // JPA.g:37:7: ( 'NEW' )
+            // JPA.g:37:9: 'NEW'
             {
-            match("BY");
+            match("NEW");
 
 
             }
@@ -770,10 +770,10 @@ public class JPALexer extends Lexer {
         try {
             int _type = T__61;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:38:7: ( 'ORDER' )
-            // JPA.g:38:9: 'ORDER'
+            // JPA.g:38:7: ( 'WHERE' )
+            // JPA.g:38:9: 'WHERE'
             {
-            match("ORDER");
+            match("WHERE");
 
 
             }
@@ -1959,8 +1959,8 @@ public class JPALexer extends Lexer {
         try {
             int _type = TRIM_CHARACTER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:440:2: ( '\\'.\\'' )
-            // JPA.g:440:4: '\\'.\\''
+            // JPA.g:448:2: ( '\\'.\\'' )
+            // JPA.g:448:4: '\\'.\\''
             {
             match("'.'");
 
@@ -1980,11 +1980,11 @@ public class JPALexer extends Lexer {
         try {
             int _type = STRINGLITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:443:2: ( '\\'' (~ ( '\\'' | '\"' ) )* '\\'' )
-            // JPA.g:443:4: '\\'' (~ ( '\\'' | '\"' ) )* '\\''
+            // JPA.g:451:2: ( '\\'' (~ ( '\\'' | '\"' ) )* '\\'' )
+            // JPA.g:451:4: '\\'' (~ ( '\\'' | '\"' ) )* '\\''
             {
             match('\'');
-            // JPA.g:443:9: (~ ( '\\'' | '\"' ) )*
+            // JPA.g:451:9: (~ ( '\\'' | '\"' ) )*
             loop1:
             do {
                 int alt1=2;
@@ -1997,7 +1997,7 @@ public class JPALexer extends Lexer {
 
                 switch (alt1) {
             	case 1 :
-            	    // JPA.g:443:10: ~ ( '\\'' | '\"' )
+            	    // JPA.g:451:10: ~ ( '\\'' | '\"' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -2034,8 +2034,8 @@ public class JPALexer extends Lexer {
         try {
             int _type = WORD;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:446:4: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* )
-            // JPA.g:446:6: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+            // JPA.g:454:4: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* )
+            // JPA.g:454:6: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
             {
             if ( (input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z') ) {
                 input.consume();
@@ -2046,7 +2046,7 @@ public class JPALexer extends Lexer {
                 recover(mse);
                 throw mse;}
 
-            // JPA.g:446:30: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+            // JPA.g:454:30: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
             loop2:
             do {
                 int alt2=2;
@@ -2095,8 +2095,8 @@ public class JPALexer extends Lexer {
         try {
             int _type = RUSSIAN_SYMBOLS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:449:4: ( ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' ) )
-            // JPA.g:449:6: ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' )
+            // JPA.g:457:4: ( ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' ) )
+            // JPA.g:457:6: ( '\\u0400' .. '\\u04FF' | '\\u0500' .. '\\u052F' )
             {
             if ( (input.LA(1)>='\u0400' && input.LA(1)<='\u052F') ) {
                 input.consume();
@@ -2124,8 +2124,8 @@ public class JPALexer extends Lexer {
         try {
             int _type = NAMED_PARAMETER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:452:4: ( ':' ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )* )
-            // JPA.g:452:6: ':' ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
+            // JPA.g:460:4: ( ':' ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )* )
+            // JPA.g:460:6: ':' ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
             {
             match(':');
             if ( (input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z') ) {
@@ -2137,7 +2137,7 @@ public class JPALexer extends Lexer {
                 recover(mse);
                 throw mse;}
 
-            // JPA.g:452:33: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+            // JPA.g:460:33: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
             loop3:
             do {
                 int alt3=2;
@@ -2170,7 +2170,7 @@ public class JPALexer extends Lexer {
                 }
             } while (true);
 
-            // JPA.g:452:71: ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
+            // JPA.g:460:71: ( ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+ )*
             loop5:
             do {
                 int alt5=2;
@@ -2183,16 +2183,16 @@ public class JPALexer extends Lexer {
 
                 switch (alt5) {
             	case 1 :
-            	    // JPA.g:452:72: ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
+            	    // JPA.g:460:72: ( '.' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
             	    {
-            	    // JPA.g:452:72: ( '.' )
-            	    // JPA.g:452:73: '.'
+            	    // JPA.g:460:72: ( '.' )
+            	    // JPA.g:460:73: '.'
             	    {
             	    match('.');
 
             	    }
 
-            	    // JPA.g:452:78: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
+            	    // JPA.g:460:78: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )+
             	    int cnt4=0;
             	    loop4:
             	    do {
@@ -2255,8 +2255,8 @@ public class JPALexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:454:5: ( ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' ) )
-            // JPA.g:454:7: ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' )
+            // JPA.g:462:5: ( ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' ) )
+            // JPA.g:462:7: ( ' ' | '\\r' | '\\t' | '\\u000C' | '\\n' )
             {
             if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||(input.LA(1)>='\f' && input.LA(1)<='\r')||input.LA(1)==' ' ) {
                 input.consume();
@@ -2284,12 +2284,12 @@ public class JPALexer extends Lexer {
         try {
             int _type = COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:458:5: ( '/*' ( . )* '*/' )
-            // JPA.g:458:7: '/*' ( . )* '*/'
+            // JPA.g:466:5: ( '/*' ( . )* '*/' )
+            // JPA.g:466:7: '/*' ( . )* '*/'
             {
             match("/*");
 
-            // JPA.g:458:12: ( . )*
+            // JPA.g:466:12: ( . )*
             loop6:
             do {
                 int alt6=2;
@@ -2314,7 +2314,7 @@ public class JPALexer extends Lexer {
 
                 switch (alt6) {
             	case 1 :
-            	    // JPA.g:458:12: .
+            	    // JPA.g:466:12: .
             	    {
             	    matchAny();
 
@@ -2345,12 +2345,12 @@ public class JPALexer extends Lexer {
         try {
             int _type = LINE_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:461:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
-            // JPA.g:461:7: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+            // JPA.g:469:5: ( '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
+            // JPA.g:469:7: '//' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
             {
             match("//");
 
-            // JPA.g:461:12: (~ ( '\\n' | '\\r' ) )*
+            // JPA.g:469:12: (~ ( '\\n' | '\\r' ) )*
             loop7:
             do {
                 int alt7=2;
@@ -2363,7 +2363,7 @@ public class JPALexer extends Lexer {
 
                 switch (alt7) {
             	case 1 :
-            	    // JPA.g:461:12: ~ ( '\\n' | '\\r' )
+            	    // JPA.g:469:12: ~ ( '\\n' | '\\r' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -2383,7 +2383,7 @@ public class JPALexer extends Lexer {
                 }
             } while (true);
 
-            // JPA.g:461:26: ( '\\r' )?
+            // JPA.g:469:26: ( '\\r' )?
             int alt8=2;
             int LA8_0 = input.LA(1);
 
@@ -2392,7 +2392,7 @@ public class JPALexer extends Lexer {
             }
             switch (alt8) {
                 case 1 :
-                    // JPA.g:461:26: '\\r'
+                    // JPA.g:469:26: '\\r'
                     {
                     match('\r');
 
@@ -2419,12 +2419,12 @@ public class JPALexer extends Lexer {
         try {
             int _type = ESCAPE_CHARACTER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:464:2: ( '\\'' (~ ( '\\'' | '\\\\' ) ) '\\'' )
-            // JPA.g:464:4: '\\'' (~ ( '\\'' | '\\\\' ) ) '\\''
+            // JPA.g:472:2: ( '\\'' (~ ( '\\'' | '\\\\' ) ) '\\'' )
+            // JPA.g:472:4: '\\'' (~ ( '\\'' | '\\\\' ) ) '\\''
             {
             match('\'');
-            // JPA.g:464:9: (~ ( '\\'' | '\\\\' ) )
-            // JPA.g:464:10: ~ ( '\\'' | '\\\\' )
+            // JPA.g:472:9: (~ ( '\\'' | '\\\\' ) )
+            // JPA.g:472:10: ~ ( '\\'' | '\\\\' )
             {
             if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                 input.consume();
@@ -2455,10 +2455,10 @@ public class JPALexer extends Lexer {
         try {
             int _type = INT_NUMERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // JPA.g:467:2: ( ( '0' .. '9' )* )
-            // JPA.g:467:4: ( '0' .. '9' )*
+            // JPA.g:475:2: ( ( '0' .. '9' )* )
+            // JPA.g:475:4: ( '0' .. '9' )*
             {
-            // JPA.g:467:4: ( '0' .. '9' )*
+            // JPA.g:475:4: ( '0' .. '9' )*
             loop9:
             do {
                 int alt9=2;
@@ -2471,7 +2471,7 @@ public class JPALexer extends Lexer {
 
                 switch (alt9) {
             	case 1 :
-            	    // JPA.g:467:5: '0' .. '9'
+            	    // JPA.g:475:5: '0' .. '9'
             	    {
             	    matchRange('0','9');
 
@@ -2495,7 +2495,7 @@ public class JPALexer extends Lexer {
     // $ANTLR end "INT_NUMERAL"
 
     public void mTokens() throws RecognitionException {
-        // JPA.g:1:8: ( HAVING | ASC | DESC | AVG | MAX | MIN | SUM | COUNT | OR | AND | LPAREN | RPAREN | DISTINCT | LEFT | OUTER | INNER | JOIN | FETCH | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | T__116 | T__117 | TRIM_CHARACTER | STRINGLITERAL | WORD | RUSSIAN_SYMBOLS | NAMED_PARAMETER | WS | COMMENT | LINE_COMMENT | ESCAPE_CHARACTER | INT_NUMERAL )
+        // JPA.g:1:8: ( HAVING | ASC | DESC | AVG | MAX | MIN | SUM | COUNT | OR | AND | LPAREN | RPAREN | DISTINCT | LEFT | OUTER | INNER | JOIN | FETCH | ORDER | GROUP | BY | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | T__116 | T__117 | TRIM_CHARACTER | STRINGLITERAL | WORD | RUSSIAN_SYMBOLS | NAMED_PARAMETER | WS | COMMENT | LINE_COMMENT | ESCAPE_CHARACTER | INT_NUMERAL )
         int alt10=97;
         alt10 = dfa10.predict(input);
         switch (alt10) {
@@ -2626,553 +2626,553 @@ public class JPALexer extends Lexer {
                 }
                 break;
             case 19 :
-                // JPA.g:1:106: T__49
+                // JPA.g:1:106: ORDER
                 {
-                mT__49();
+                mORDER();
 
                 }
                 break;
             case 20 :
-                // JPA.g:1:112: T__50
+                // JPA.g:1:112: GROUP
                 {
-                mT__50();
+                mGROUP();
 
                 }
                 break;
             case 21 :
-                // JPA.g:1:118: T__51
+                // JPA.g:1:118: BY
                 {
-                mT__51();
+                mBY();
 
                 }
                 break;
             case 22 :
-                // JPA.g:1:124: T__52
+                // JPA.g:1:121: T__52
                 {
                 mT__52();
 
                 }
                 break;
             case 23 :
-                // JPA.g:1:130: T__53
+                // JPA.g:1:127: T__53
                 {
                 mT__53();
 
                 }
                 break;
             case 24 :
-                // JPA.g:1:136: T__54
+                // JPA.g:1:133: T__54
                 {
                 mT__54();
 
                 }
                 break;
             case 25 :
-                // JPA.g:1:142: T__55
+                // JPA.g:1:139: T__55
                 {
                 mT__55();
 
                 }
                 break;
             case 26 :
-                // JPA.g:1:148: T__56
+                // JPA.g:1:145: T__56
                 {
                 mT__56();
 
                 }
                 break;
             case 27 :
-                // JPA.g:1:154: T__57
+                // JPA.g:1:151: T__57
                 {
                 mT__57();
 
                 }
                 break;
             case 28 :
-                // JPA.g:1:160: T__58
+                // JPA.g:1:157: T__58
                 {
                 mT__58();
 
                 }
                 break;
             case 29 :
-                // JPA.g:1:166: T__59
+                // JPA.g:1:163: T__59
                 {
                 mT__59();
 
                 }
                 break;
             case 30 :
-                // JPA.g:1:172: T__60
+                // JPA.g:1:169: T__60
                 {
                 mT__60();
 
                 }
                 break;
             case 31 :
-                // JPA.g:1:178: T__61
+                // JPA.g:1:175: T__61
                 {
                 mT__61();
 
                 }
                 break;
             case 32 :
-                // JPA.g:1:184: T__62
+                // JPA.g:1:181: T__62
                 {
                 mT__62();
 
                 }
                 break;
             case 33 :
-                // JPA.g:1:190: T__63
+                // JPA.g:1:187: T__63
                 {
                 mT__63();
 
                 }
                 break;
             case 34 :
-                // JPA.g:1:196: T__64
+                // JPA.g:1:193: T__64
                 {
                 mT__64();
 
                 }
                 break;
             case 35 :
-                // JPA.g:1:202: T__65
+                // JPA.g:1:199: T__65
                 {
                 mT__65();
 
                 }
                 break;
             case 36 :
-                // JPA.g:1:208: T__66
+                // JPA.g:1:205: T__66
                 {
                 mT__66();
 
                 }
                 break;
             case 37 :
-                // JPA.g:1:214: T__67
+                // JPA.g:1:211: T__67
                 {
                 mT__67();
 
                 }
                 break;
             case 38 :
-                // JPA.g:1:220: T__68
+                // JPA.g:1:217: T__68
                 {
                 mT__68();
 
                 }
                 break;
             case 39 :
-                // JPA.g:1:226: T__69
+                // JPA.g:1:223: T__69
                 {
                 mT__69();
 
                 }
                 break;
             case 40 :
-                // JPA.g:1:232: T__70
+                // JPA.g:1:229: T__70
                 {
                 mT__70();
 
                 }
                 break;
             case 41 :
-                // JPA.g:1:238: T__71
+                // JPA.g:1:235: T__71
                 {
                 mT__71();
 
                 }
                 break;
             case 42 :
-                // JPA.g:1:244: T__72
+                // JPA.g:1:241: T__72
                 {
                 mT__72();
 
                 }
                 break;
             case 43 :
-                // JPA.g:1:250: T__73
+                // JPA.g:1:247: T__73
                 {
                 mT__73();
 
                 }
                 break;
             case 44 :
-                // JPA.g:1:256: T__74
+                // JPA.g:1:253: T__74
                 {
                 mT__74();
 
                 }
                 break;
             case 45 :
-                // JPA.g:1:262: T__75
+                // JPA.g:1:259: T__75
                 {
                 mT__75();
 
                 }
                 break;
             case 46 :
-                // JPA.g:1:268: T__76
+                // JPA.g:1:265: T__76
                 {
                 mT__76();
 
                 }
                 break;
             case 47 :
-                // JPA.g:1:274: T__77
+                // JPA.g:1:271: T__77
                 {
                 mT__77();
 
                 }
                 break;
             case 48 :
-                // JPA.g:1:280: T__78
+                // JPA.g:1:277: T__78
                 {
                 mT__78();
 
                 }
                 break;
             case 49 :
-                // JPA.g:1:286: T__79
+                // JPA.g:1:283: T__79
                 {
                 mT__79();
 
                 }
                 break;
             case 50 :
-                // JPA.g:1:292: T__80
+                // JPA.g:1:289: T__80
                 {
                 mT__80();
 
                 }
                 break;
             case 51 :
-                // JPA.g:1:298: T__81
+                // JPA.g:1:295: T__81
                 {
                 mT__81();
 
                 }
                 break;
             case 52 :
-                // JPA.g:1:304: T__82
+                // JPA.g:1:301: T__82
                 {
                 mT__82();
 
                 }
                 break;
             case 53 :
-                // JPA.g:1:310: T__83
+                // JPA.g:1:307: T__83
                 {
                 mT__83();
 
                 }
                 break;
             case 54 :
-                // JPA.g:1:316: T__84
+                // JPA.g:1:313: T__84
                 {
                 mT__84();
 
                 }
                 break;
             case 55 :
-                // JPA.g:1:322: T__85
+                // JPA.g:1:319: T__85
                 {
                 mT__85();
 
                 }
                 break;
             case 56 :
-                // JPA.g:1:328: T__86
+                // JPA.g:1:325: T__86
                 {
                 mT__86();
 
                 }
                 break;
             case 57 :
-                // JPA.g:1:334: T__87
+                // JPA.g:1:331: T__87
                 {
                 mT__87();
 
                 }
                 break;
             case 58 :
-                // JPA.g:1:340: T__88
+                // JPA.g:1:337: T__88
                 {
                 mT__88();
 
                 }
                 break;
             case 59 :
-                // JPA.g:1:346: T__89
+                // JPA.g:1:343: T__89
                 {
                 mT__89();
 
                 }
                 break;
             case 60 :
-                // JPA.g:1:352: T__90
+                // JPA.g:1:349: T__90
                 {
                 mT__90();
 
                 }
                 break;
             case 61 :
-                // JPA.g:1:358: T__91
+                // JPA.g:1:355: T__91
                 {
                 mT__91();
 
                 }
                 break;
             case 62 :
-                // JPA.g:1:364: T__92
+                // JPA.g:1:361: T__92
                 {
                 mT__92();
 
                 }
                 break;
             case 63 :
-                // JPA.g:1:370: T__93
+                // JPA.g:1:367: T__93
                 {
                 mT__93();
 
                 }
                 break;
             case 64 :
-                // JPA.g:1:376: T__94
+                // JPA.g:1:373: T__94
                 {
                 mT__94();
 
                 }
                 break;
             case 65 :
-                // JPA.g:1:382: T__95
+                // JPA.g:1:379: T__95
                 {
                 mT__95();
 
                 }
                 break;
             case 66 :
-                // JPA.g:1:388: T__96
+                // JPA.g:1:385: T__96
                 {
                 mT__96();
 
                 }
                 break;
             case 67 :
-                // JPA.g:1:394: T__97
+                // JPA.g:1:391: T__97
                 {
                 mT__97();
 
                 }
                 break;
             case 68 :
-                // JPA.g:1:400: T__98
+                // JPA.g:1:397: T__98
                 {
                 mT__98();
 
                 }
                 break;
             case 69 :
-                // JPA.g:1:406: T__99
+                // JPA.g:1:403: T__99
                 {
                 mT__99();
 
                 }
                 break;
             case 70 :
-                // JPA.g:1:412: T__100
+                // JPA.g:1:409: T__100
                 {
                 mT__100();
 
                 }
                 break;
             case 71 :
-                // JPA.g:1:419: T__101
+                // JPA.g:1:416: T__101
                 {
                 mT__101();
 
                 }
                 break;
             case 72 :
-                // JPA.g:1:426: T__102
+                // JPA.g:1:423: T__102
                 {
                 mT__102();
 
                 }
                 break;
             case 73 :
-                // JPA.g:1:433: T__103
+                // JPA.g:1:430: T__103
                 {
                 mT__103();
 
                 }
                 break;
             case 74 :
-                // JPA.g:1:440: T__104
+                // JPA.g:1:437: T__104
                 {
                 mT__104();
 
                 }
                 break;
             case 75 :
-                // JPA.g:1:447: T__105
+                // JPA.g:1:444: T__105
                 {
                 mT__105();
 
                 }
                 break;
             case 76 :
-                // JPA.g:1:454: T__106
+                // JPA.g:1:451: T__106
                 {
                 mT__106();
 
                 }
                 break;
             case 77 :
-                // JPA.g:1:461: T__107
+                // JPA.g:1:458: T__107
                 {
                 mT__107();
 
                 }
                 break;
             case 78 :
-                // JPA.g:1:468: T__108
+                // JPA.g:1:465: T__108
                 {
                 mT__108();
 
                 }
                 break;
             case 79 :
-                // JPA.g:1:475: T__109
+                // JPA.g:1:472: T__109
                 {
                 mT__109();
 
                 }
                 break;
             case 80 :
-                // JPA.g:1:482: T__110
+                // JPA.g:1:479: T__110
                 {
                 mT__110();
 
                 }
                 break;
             case 81 :
-                // JPA.g:1:489: T__111
+                // JPA.g:1:486: T__111
                 {
                 mT__111();
 
                 }
                 break;
             case 82 :
-                // JPA.g:1:496: T__112
+                // JPA.g:1:493: T__112
                 {
                 mT__112();
 
                 }
                 break;
             case 83 :
-                // JPA.g:1:503: T__113
+                // JPA.g:1:500: T__113
                 {
                 mT__113();
 
                 }
                 break;
             case 84 :
-                // JPA.g:1:510: T__114
+                // JPA.g:1:507: T__114
                 {
                 mT__114();
 
                 }
                 break;
             case 85 :
-                // JPA.g:1:517: T__115
+                // JPA.g:1:514: T__115
                 {
                 mT__115();
 
                 }
                 break;
             case 86 :
-                // JPA.g:1:524: T__116
+                // JPA.g:1:521: T__116
                 {
                 mT__116();
 
                 }
                 break;
             case 87 :
-                // JPA.g:1:531: T__117
+                // JPA.g:1:528: T__117
                 {
                 mT__117();
 
                 }
                 break;
             case 88 :
-                // JPA.g:1:538: TRIM_CHARACTER
+                // JPA.g:1:535: TRIM_CHARACTER
                 {
                 mTRIM_CHARACTER();
 
                 }
                 break;
             case 89 :
-                // JPA.g:1:553: STRINGLITERAL
+                // JPA.g:1:550: STRINGLITERAL
                 {
                 mSTRINGLITERAL();
 
                 }
                 break;
             case 90 :
-                // JPA.g:1:567: WORD
+                // JPA.g:1:564: WORD
                 {
                 mWORD();
 
                 }
                 break;
             case 91 :
-                // JPA.g:1:572: RUSSIAN_SYMBOLS
+                // JPA.g:1:569: RUSSIAN_SYMBOLS
                 {
                 mRUSSIAN_SYMBOLS();
 
                 }
                 break;
             case 92 :
-                // JPA.g:1:588: NAMED_PARAMETER
+                // JPA.g:1:585: NAMED_PARAMETER
                 {
                 mNAMED_PARAMETER();
 
                 }
                 break;
             case 93 :
-                // JPA.g:1:604: WS
+                // JPA.g:1:601: WS
                 {
                 mWS();
 
                 }
                 break;
             case 94 :
-                // JPA.g:1:607: COMMENT
+                // JPA.g:1:604: COMMENT
                 {
                 mCOMMENT();
 
                 }
                 break;
             case 95 :
-                // JPA.g:1:615: LINE_COMMENT
+                // JPA.g:1:612: LINE_COMMENT
                 {
                 mLINE_COMMENT();
 
                 }
                 break;
             case 96 :
-                // JPA.g:1:628: ESCAPE_CHARACTER
+                // JPA.g:1:625: ESCAPE_CHARACTER
                 {
                 mESCAPE_CHARACTER();
 
                 }
                 break;
             case 97 :
-                // JPA.g:1:645: INT_NUMERAL
+                // JPA.g:1:642: INT_NUMERAL
                 {
                 mINT_NUMERAL();
 
@@ -3186,99 +3186,99 @@ public class JPALexer extends Lexer {
 
     protected DFA10 dfa10 = new DFA10(this);
     static final String DFA10_eotS =
-        "\1\51\7\45\1\104\1\uffff\4\45\2\uffff\4\45\3\uffff\2\45\1\uffff"+
+        "\1\51\7\45\1\104\1\uffff\6\45\2\uffff\2\45\3\uffff\2\45\1\uffff"+
         "\1\136\1\140\1\uffff\1\143\2\45\1\51\1\uffff\2\45\6\uffff\2\45\1"+
-        "\160\22\45\1\u0089\2\45\1\u008c\2\uffff\3\45\1\u0094\1\u0095\10"+
-        "\45\1\u009f\2\45\3\uffff\4\45\10\uffff\2\45\1\uffff\2\45\4\uffff"+
-        "\2\45\1\u00b0\1\uffff\1\u00b1\1\u00b2\1\u00b3\1\u00b4\1\u00b5\2"+
-        "\45\1\u00b8\1\u00b9\1\u00bb\1\45\1\u00bd\1\45\1\u00bf\12\45\1\uffff"+
-        "\2\45\1\uffff\7\45\2\uffff\3\45\1\u00d6\1\u00d7\1\u00d8\3\45\1\uffff"+
+        "\160\22\45\1\u0089\2\45\1\u008c\2\uffff\3\45\1\u0094\1\u0095\4\45"+
+        "\1\u009a\6\45\3\uffff\4\45\10\uffff\2\45\1\uffff\2\45\4\uffff\2"+
+        "\45\1\u00b0\1\uffff\1\u00b1\1\u00b2\1\u00b3\1\u00b4\1\u00b5\2\45"+
+        "\1\u00b8\1\u00b9\1\u00bb\1\45\1\u00bd\1\45\1\u00bf\12\45\1\uffff"+
+        "\2\45\1\uffff\7\45\2\uffff\4\45\1\uffff\2\45\1\u00d9\1\u00da\1\u00db"+
         "\2\45\1\uffff\11\45\2\uffff\1\45\1\u00ea\6\uffff\1\u00eb\1\45\2"+
         "\uffff\1\45\1\uffff\1\45\1\uffff\1\45\1\uffff\3\45\1\u00f3\1\u00f4"+
-        "\1\u00f5\6\45\1\u00fc\2\45\1\u00ff\3\45\1\u0103\1\45\1\u0105\3\uffff"+
-        "\1\u0106\3\45\1\u010a\1\uffff\1\u010c\3\45\1\u0110\2\45\1\u0113"+
-        "\1\45\1\uffff\1\45\2\uffff\2\45\1\u0118\4\45\3\uffff\1\u011d\2\45"+
-        "\1\u0120\1\u0121\1\45\1\uffff\2\45\1\uffff\1\45\1\u0126\1\u0127"+
-        "\1\uffff\1\u0128\2\uffff\1\u0129\1\u012a\1\45\3\uffff\1\45\1\u0130"+
-        "\1\45\1\uffff\1\45\1\u0133\1\uffff\1\u0134\1\u0135\1\45\1\u0137"+
-        "\1\uffff\1\u0138\1\45\1\u013a\1\u013b\1\uffff\1\u013c\1\45\2\uffff"+
-        "\1\u013e\1\u013f\1\45\1\u0141\5\uffff\1\45\3\uffff\1\u0143\1\uffff"+
-        "\1\u0144\1\45\3\uffff\1\45\2\uffff\1\45\3\uffff\1\45\2\uffff\1\u0149"+
-        "\1\uffff\1\u014a\2\uffff\1\45\1\u014c\2\45\2\uffff\1\u0150\1\uffff"+
-        "\1\u0151\2\45\2\uffff\4\45\1\u0158\1\u015a\1\uffff\1\45\1\uffff"+
-        "\3\45\1\u015f\1\uffff";
+        "\1\u00f5\6\45\1\u00fc\2\45\1\u00ff\3\45\1\u0103\1\45\1\u0105\2\45"+
+        "\1\u0108\3\uffff\1\u0109\1\45\1\uffff\1\u010c\3\45\1\u0110\2\45"+
+        "\1\u0113\1\45\1\uffff\1\45\2\uffff\2\45\1\u0118\4\45\3\uffff\1\u011d"+
+        "\2\45\1\u0120\1\u0121\1\45\1\uffff\2\45\1\uffff\1\45\1\u0126\1\u0127"+
+        "\1\uffff\1\u0128\1\uffff\1\u0129\1\45\2\uffff\1\u012b\2\uffff\1"+
+        "\45\1\u0130\1\45\1\uffff\1\45\1\u0133\1\uffff\1\u0134\1\u0135\1"+
+        "\45\1\u0137\1\uffff\1\u0138\1\45\1\u013a\1\u013b\1\uffff\1\u013c"+
+        "\1\45\2\uffff\1\u013e\1\u013f\1\45\1\u0141\4\uffff\1\45\4\uffff"+
+        "\1\u0143\1\uffff\1\u0144\1\45\3\uffff\1\45\2\uffff\1\45\3\uffff"+
+        "\1\45\2\uffff\1\u0149\1\uffff\1\u014a\2\uffff\1\45\1\u014c\2\45"+
+        "\2\uffff\1\u0150\1\uffff\1\u0151\2\45\2\uffff\4\45\1\u0158\1\u015a"+
+        "\1\uffff\1\45\1\uffff\3\45\1\u015f\1\uffff";
     static final String DFA10_eofS =
         "\u0160\uffff";
     static final String DFA10_minS =
         "\1\11\1\101\1\102\2\101\1\105\1\117\1\102\1\123\1\uffff\1\105\1"+
-        "\116\1\117\1\105\2\uffff\1\105\1\110\1\122\1\105\1\102\2\uffff\1"+
+        "\116\1\117\1\105\1\122\1\105\2\uffff\1\105\1\110\1\102\2\uffff\1"+
         "\105\1\115\1\uffff\2\75\1\uffff\1\52\1\122\1\120\1\170\1\uffff\1"+
         "\162\1\141\1\0\5\uffff\1\126\1\125\1\44\1\107\1\104\1\114\3\123"+
         "\1\131\1\130\1\116\1\104\1\115\1\102\1\103\1\115\1\122\1\132\1\116"+
         "\1\122\1\44\1\124\1\112\1\44\2\uffff\1\101\1\113\1\103\2\44\1\111"+
-        "\1\124\1\117\1\127\1\124\1\114\1\105\1\117\1\44\2\124\1\uffff\1"+
-        "\101\1\uffff\1\101\1\103\1\120\1\111\10\uffff\1\101\1\120\1\uffff"+
-        "\1\165\1\154\2\0\2\uffff\1\111\1\122\1\44\1\uffff\5\44\1\103\1\124"+
-        "\3\44\1\124\1\44\1\102\1\44\1\123\1\105\1\117\1\105\1\124\1\105"+
-        "\1\116\1\103\1\122\1\105\1\uffff\2\105\1\uffff\1\124\1\107\1\104"+
-        "\1\105\1\101\2\105\2\uffff\1\116\1\103\1\115\3\44\1\114\1\122\1"+
-        "\125\1\uffff\1\127\1\110\1\124\1\122\1\101\1\124\1\123\1\115\1\111"+
-        "\1\105\1\145\1\163\2\uffff\1\116\1\44\6\uffff\1\44\1\111\2\uffff"+
-        "\1\124\1\uffff\1\110\1\uffff\1\105\1\uffff\1\124\1\103\1\116\3\44"+
-        "\1\124\1\101\1\105\2\122\1\103\1\44\1\124\1\111\1\44\1\124\2\122"+
-        "\1\44\1\110\1\44\3\uffff\1\44\1\105\1\120\1\105\1\44\1\105\1\44"+
-        "\1\120\1\131\1\124\1\44\1\114\1\122\1\44\1\145\1\uffff\1\107\2\uffff"+
-        "\1\116\1\105\1\44\2\122\1\124\1\104\3\uffff\1\44\1\124\1\116\2\44"+
-        "\1\124\1\uffff\1\110\1\116\1\uffff\1\105\2\44\1\uffff\1\44\2\uffff"+
-        "\2\44\1\105\1\uffff\1\101\1\uffff\1\105\1\44\1\123\1\uffff\1\111"+
+        "\1\124\2\117\1\44\2\124\1\127\1\124\1\114\1\105\1\uffff\1\101\1"+
+        "\uffff\1\101\1\103\1\120\1\111\10\uffff\1\101\1\120\1\uffff\1\165"+
+        "\1\154\2\0\2\uffff\1\111\1\122\1\44\1\uffff\5\44\1\103\1\124\3\44"+
+        "\1\124\1\44\1\102\1\44\1\123\1\105\1\117\1\105\1\124\1\105\1\116"+
+        "\1\103\1\122\1\105\1\uffff\2\105\1\uffff\1\124\1\107\1\104\1\105"+
+        "\1\101\2\105\2\uffff\1\116\1\103\1\115\1\125\1\uffff\1\127\1\110"+
+        "\3\44\1\114\1\122\1\124\1\122\1\101\1\124\1\123\1\115\1\111\1\105"+
+        "\1\145\1\163\2\uffff\1\116\1\44\6\uffff\1\44\1\111\2\uffff\1\124"+
+        "\1\uffff\1\110\1\uffff\1\105\1\uffff\1\124\1\103\1\116\3\44\1\124"+
+        "\1\101\1\105\2\122\1\103\1\44\1\124\1\111\1\44\1\124\2\122\1\44"+
+        "\1\110\1\44\1\120\1\105\1\44\3\uffff\1\44\2\105\1\44\1\120\1\131"+
+        "\1\124\1\44\1\114\1\122\1\44\1\145\1\uffff\1\107\2\uffff\1\116\1"+
+        "\105\1\44\2\122\1\124\1\104\3\uffff\1\44\1\124\1\116\2\44\1\124"+
+        "\1\uffff\1\110\1\116\1\uffff\1\105\2\44\1\uffff\1\44\1\uffff\1\44"+
+        "\1\105\2\uffff\1\44\1\101\1\uffff\1\105\1\44\1\123\1\uffff\1\111"+
         "\1\44\1\uffff\2\44\1\103\1\44\1\uffff\1\44\1\111\2\44\1\uffff\1"+
-        "\44\1\124\2\uffff\2\44\1\107\1\44\5\uffff\1\116\3\uffff\1\44\1\uffff"+
+        "\44\1\124\2\uffff\2\44\1\107\1\44\4\uffff\1\116\4\uffff\1\44\1\uffff"+
         "\1\44\1\116\3\uffff\1\124\2\uffff\1\116\3\uffff\1\137\2\uffff\1"+
         "\44\1\uffff\1\44\2\uffff\1\107\1\44\1\107\1\104\2\uffff\1\44\1\uffff"+
         "\1\44\1\101\1\111\2\uffff\1\124\1\115\2\105\2\44\1\uffff\1\124\1"+
         "\uffff\1\101\1\115\1\120\1\44\1\uffff";
     static final String DFA10_maxS =
         "\1\u052f\1\117\1\126\1\111\1\117\3\125\1\123\1\uffff\1\117\1\123"+
-        "\1\117\1\122\2\uffff\1\125\1\110\1\122\1\131\1\124\2\uffff\1\105"+
-        "\1\130\1\uffff\1\76\1\75\1\uffff\1\57\1\122\1\120\1\170\1\uffff"+
-        "\1\162\1\141\1\uffff\5\uffff\1\126\1\125\1\172\1\107\1\131\1\114"+
-        "\3\123\1\131\1\130\2\116\2\115\1\114\1\115\1\122\1\132\1\125\1\122"+
-        "\1\172\1\124\1\112\1\172\2\uffff\1\116\1\113\1\127\2\172\1\111\1"+
-        "\124\1\117\2\127\1\114\1\105\1\117\1\172\2\124\1\uffff\1\101\1\uffff"+
-        "\1\101\1\103\1\120\1\111\10\uffff\1\111\1\120\1\uffff\1\165\1\154"+
-        "\2\uffff\2\uffff\1\111\1\122\1\172\1\uffff\5\172\1\103\1\124\3\172"+
-        "\1\124\1\172\1\102\1\172\1\123\1\105\1\117\1\105\1\124\1\105\1\116"+
-        "\1\103\1\122\1\105\1\uffff\2\105\1\uffff\1\124\1\107\1\104\1\105"+
-        "\1\101\2\105\2\uffff\1\116\1\103\1\115\3\172\1\114\1\122\1\125\1"+
-        "\uffff\1\127\1\110\1\124\1\122\1\101\1\124\1\123\1\115\1\111\1\105"+
-        "\1\145\1\163\2\uffff\1\116\1\172\6\uffff\1\172\1\111\2\uffff\1\124"+
-        "\1\uffff\1\110\1\uffff\1\105\1\uffff\1\124\1\103\1\116\3\172\1\124"+
-        "\1\101\1\105\2\122\1\103\1\172\1\124\1\111\1\172\1\124\2\122\1\172"+
-        "\1\110\1\172\3\uffff\1\172\1\105\1\120\1\105\1\172\1\105\1\172\1"+
-        "\120\1\131\1\124\1\172\1\114\1\122\1\172\1\145\1\uffff\1\107\2\uffff"+
-        "\1\116\1\105\1\172\2\122\1\124\1\104\3\uffff\1\172\1\124\1\116\2"+
-        "\172\1\124\1\uffff\1\110\1\116\1\uffff\1\105\2\172\1\uffff\1\172"+
-        "\2\uffff\2\172\1\105\1\uffff\1\105\1\uffff\1\105\1\172\1\123\1\uffff"+
+        "\1\117\2\122\1\131\2\uffff\1\125\1\110\1\124\2\uffff\1\105\1\130"+
+        "\1\uffff\1\76\1\75\1\uffff\1\57\1\122\1\120\1\170\1\uffff\1\162"+
+        "\1\141\1\uffff\5\uffff\1\126\1\125\1\172\1\107\1\131\1\114\3\123"+
+        "\1\131\1\130\2\116\2\115\1\114\1\115\1\122\1\132\1\125\1\122\1\172"+
+        "\1\124\1\112\1\172\2\uffff\1\116\1\113\1\127\2\172\1\111\1\124\2"+
+        "\117\1\172\2\124\2\127\1\114\1\105\1\uffff\1\101\1\uffff\1\101\1"+
+        "\103\1\120\1\111\10\uffff\1\111\1\120\1\uffff\1\165\1\154\2\uffff"+
+        "\2\uffff\1\111\1\122\1\172\1\uffff\5\172\1\103\1\124\3\172\1\124"+
+        "\1\172\1\102\1\172\1\123\1\105\1\117\1\105\1\124\1\105\1\116\1\103"+
+        "\1\122\1\105\1\uffff\2\105\1\uffff\1\124\1\107\1\104\1\105\1\101"+
+        "\2\105\2\uffff\1\116\1\103\1\115\1\125\1\uffff\1\127\1\110\3\172"+
+        "\1\114\1\122\1\124\1\122\1\101\1\124\1\123\1\115\1\111\1\105\1\145"+
+        "\1\163\2\uffff\1\116\1\172\6\uffff\1\172\1\111\2\uffff\1\124\1\uffff"+
+        "\1\110\1\uffff\1\105\1\uffff\1\124\1\103\1\116\3\172\1\124\1\101"+
+        "\1\105\2\122\1\103\1\172\1\124\1\111\1\172\1\124\2\122\1\172\1\110"+
+        "\1\172\1\120\1\105\1\172\3\uffff\1\172\2\105\1\172\1\120\1\131\1"+
+        "\124\1\172\1\114\1\122\1\172\1\145\1\uffff\1\107\2\uffff\1\116\1"+
+        "\105\1\172\2\122\1\124\1\104\3\uffff\1\172\1\124\1\116\2\172\1\124"+
+        "\1\uffff\1\110\1\116\1\uffff\1\105\2\172\1\uffff\1\172\1\uffff\1"+
+        "\172\1\105\2\uffff\1\172\1\105\1\uffff\1\105\1\172\1\123\1\uffff"+
         "\1\111\1\172\1\uffff\2\172\1\103\1\172\1\uffff\1\172\1\111\2\172"+
-        "\1\uffff\1\172\1\124\2\uffff\2\172\1\107\1\172\5\uffff\1\116\3\uffff"+
+        "\1\uffff\1\172\1\124\2\uffff\2\172\1\107\1\172\4\uffff\1\116\4\uffff"+
         "\1\172\1\uffff\1\172\1\116\3\uffff\1\124\2\uffff\1\116\3\uffff\1"+
         "\137\2\uffff\1\172\1\uffff\1\172\2\uffff\1\107\1\172\1\107\1\124"+
         "\2\uffff\1\172\1\uffff\1\172\1\101\1\111\2\uffff\1\124\1\115\2\105"+
         "\2\172\1\uffff\1\124\1\uffff\1\101\1\115\1\120\1\172\1\uffff";
     static final String DFA10_acceptS =
-        "\11\uffff\1\14\4\uffff\1\25\1\30\5\uffff\1\43\1\44\2\uffff\1\73"+
+        "\11\uffff\1\14\6\uffff\1\30\1\33\3\uffff\1\43\1\44\2\uffff\1\73"+
         "\2\uffff\1\101\4\uffff\1\125\3\uffff\1\132\1\133\1\134\1\135\1\141"+
-        "\31\uffff\1\27\1\13\20\uffff\1\41\1\uffff\1\56\4\uffff\1\74\1\100"+
+        "\31\uffff\1\32\1\13\20\uffff\1\41\1\uffff\1\56\4\uffff\1\74\1\100"+
         "\1\77\1\76\1\75\1\136\1\137\1\102\2\uffff\1\124\4\uffff\1\131\1"+
-        "\140\3\uffff\1\26\30\uffff\1\11\2\uffff\1\66\7\uffff\1\31\1\62\11"+
-        "\uffff\1\36\14\uffff\1\130\1\131\2\uffff\1\2\1\4\1\12\1\71\1\70"+
-        "\1\105\2\uffff\1\47\1\5\1\uffff\1\6\1\uffff\1\107\1\uffff\1\7\26"+
-        "\uffff\1\33\1\40\1\42\17\uffff\1\130\1\uffff\1\50\1\3\7\uffff\1"+
+        "\140\3\uffff\1\31\30\uffff\1\11\2\uffff\1\66\7\uffff\1\34\1\62\4"+
+        "\uffff\1\25\21\uffff\1\130\1\131\2\uffff\1\2\1\4\1\12\1\71\1\70"+
+        "\1\105\2\uffff\1\47\1\5\1\uffff\1\6\1\uffff\1\107\1\uffff\1\7\31"+
+        "\uffff\1\36\1\40\1\42\14\uffff\1\130\1\uffff\1\50\1\3\7\uffff\1"+
         "\72\1\106\1\110\6\uffff\1\16\2\uffff\1\60\3\uffff\1\21\1\uffff\1"+
-        "\24\1\63\3\uffff\1\123\1\uffff\1\45\3\uffff\1\116\2\uffff\1\126"+
-        "\4\uffff\1\46\4\uffff\1\10\2\uffff\1\37\1\17\4\uffff\1\117\1\20"+
-        "\1\22\1\34\1\35\1\uffff\1\53\1\54\1\55\1\uffff\1\64\2\uffff\1\120"+
-        "\1\127\1\1\1\uffff\1\51\1\65\1\uffff\1\23\1\52\1\114\1\uffff\1\32"+
+        "\27\2\uffff\1\123\1\63\2\uffff\1\45\3\uffff\1\116\2\uffff\1\126"+
+        "\4\uffff\1\46\4\uffff\1\10\2\uffff\1\23\1\17\4\uffff\1\117\1\20"+
+        "\1\22\1\24\1\uffff\1\37\1\53\1\54\1\55\1\uffff\1\64\2\uffff\1\120"+
+        "\1\127\1\1\1\uffff\1\51\1\65\1\uffff\1\26\1\52\1\114\1\uffff\1\35"+
         "\1\103\1\uffff\1\104\1\uffff\1\61\1\67\4\uffff\1\121\1\57\1\uffff"+
         "\1\15\3\uffff\1\122\1\115\6\uffff\1\111\1\uffff\1\112\4\uffff\1"+
         "\113";
@@ -3286,9 +3286,9 @@ public class JPALexer extends Lexer {
         "\44\uffff\1\2\104\uffff\1\1\1\0\u00f5\uffff}>";
     static final String[] DFA10_transitionS = {
             "\2\50\1\uffff\2\50\22\uffff\1\50\6\uffff\1\44\1\10\1\11\1\34"+
-            "\1\25\1\16\1\26\1\17\1\35\1\40\11\uffff\1\47\1\uffff\1\32\1"+
-            "\31\1\33\1\41\1\24\1\2\1\23\1\6\1\3\1\30\1\15\1\22\1\1\1\13"+
-            "\1\14\1\45\1\12\1\4\1\20\1\7\3\45\1\5\1\36\1\37\1\45\1\21\1"+
+            "\1\25\1\20\1\26\1\21\1\35\1\40\11\uffff\1\47\1\uffff\1\32\1"+
+            "\31\1\33\1\41\1\24\1\2\1\17\1\6\1\3\1\30\1\15\1\16\1\1\1\13"+
+            "\1\14\1\45\1\12\1\4\1\22\1\7\3\45\1\5\1\36\1\37\1\45\1\23\1"+
             "\45\1\27\1\45\4\uffff\1\45\1\uffff\5\45\1\43\15\45\1\42\6\45"+
             "\u0385\uffff\u0130\46",
             "\1\52\15\uffff\1\53",
@@ -3304,12 +3304,12 @@ public class JPALexer extends Lexer {
             "\1\110\4\uffff\1\111",
             "\1\112",
             "\1\113\14\uffff\1\114",
+            "\1\115",
+            "\1\117\11\uffff\1\120\11\uffff\1\116",
             "",
             "",
-            "\1\115\11\uffff\1\116\5\uffff\1\117",
-            "\1\120",
-            "\1\121",
-            "\1\123\11\uffff\1\124\11\uffff\1\122",
+            "\1\121\11\uffff\1\122\5\uffff\1\123",
+            "\1\124",
             "\1\125\1\uffff\1\126\17\uffff\1\127",
             "",
             "",
@@ -3373,12 +3373,12 @@ public class JPALexer extends Lexer {
             "\1\u0097",
             "\1\u0098",
             "\1\u0099",
-            "\1\u009a\2\uffff\1\u009b",
-            "\1\u009c",
-            "\1\u009d",
-            "\1\u009e",
             "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
             "\45",
+            "\1\u009b",
+            "\1\u009c",
+            "\1\u009d",
+            "\1\u009e\2\uffff\1\u009f",
             "\1\u00a0",
             "\1\u00a1",
             "",
@@ -3460,16 +3460,16 @@ public class JPALexer extends Lexer {
             "\1\u00d3",
             "\1\u00d4",
             "\1\u00d5",
-            "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
-            "\45",
-            "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
-            "\45",
-            "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
-            "\45",
-            "\1\u00d9",
-            "\1\u00da",
-            "\1\u00db",
+            "\1\u00d6",
             "",
+            "\1\u00d7",
+            "\1\u00d8",
+            "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
+            "\45",
+            "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
+            "\45",
+            "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
+            "\45",
             "\1\u00dc",
             "\1\u00dd",
             "\1\u00de",
@@ -3533,16 +3533,16 @@ public class JPALexer extends Lexer {
             "\1\u0104",
             "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
             "\45",
-            "",
-            "",
-            "",
-            "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
-            "\45",
+            "\1\u0106",
             "\1\u0107",
-            "\1\u0108",
-            "\1\u0109",
             "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
             "\45",
+            "",
+            "",
+            "",
+            "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
+            "\45",
+            "\1\u010a",
             "\1\u010b",
             "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
             "\45",
@@ -3593,13 +3593,13 @@ public class JPALexer extends Lexer {
             "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
             "\45",
             "",
+            "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
+            "\45",
+            "\1\u012a",
+            "",
             "",
             "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
             "\45",
-            "\1\45\13\uffff\12\45\7\uffff\32\45\4\uffff\1\45\1\uffff\32"+
-            "\45",
-            "\1\u012b",
-            "",
             "\1\u012d\1\u012c\2\uffff\1\u012e",
             "",
             "\1\u012f",
@@ -3643,8 +3643,8 @@ public class JPALexer extends Lexer {
             "",
             "",
             "",
-            "",
             "\1\u0142",
+            "",
             "",
             "",
             "",
@@ -3739,7 +3739,7 @@ public class JPALexer extends Lexer {
             this.transition = DFA10_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( HAVING | ASC | DESC | AVG | MAX | MIN | SUM | COUNT | OR | AND | LPAREN | RPAREN | DISTINCT | LEFT | OUTER | INNER | JOIN | FETCH | T__49 | T__50 | T__51 | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | T__116 | T__117 | TRIM_CHARACTER | STRINGLITERAL | WORD | RUSSIAN_SYMBOLS | NAMED_PARAMETER | WS | COMMENT | LINE_COMMENT | ESCAPE_CHARACTER | INT_NUMERAL );";
+            return "1:1: Tokens : ( HAVING | ASC | DESC | AVG | MAX | MIN | SUM | COUNT | OR | AND | LPAREN | RPAREN | DISTINCT | LEFT | OUTER | INNER | JOIN | FETCH | ORDER | GROUP | BY | T__52 | T__53 | T__54 | T__55 | T__56 | T__57 | T__58 | T__59 | T__60 | T__61 | T__62 | T__63 | T__64 | T__65 | T__66 | T__67 | T__68 | T__69 | T__70 | T__71 | T__72 | T__73 | T__74 | T__75 | T__76 | T__77 | T__78 | T__79 | T__80 | T__81 | T__82 | T__83 | T__84 | T__85 | T__86 | T__87 | T__88 | T__89 | T__90 | T__91 | T__92 | T__93 | T__94 | T__95 | T__96 | T__97 | T__98 | T__99 | T__100 | T__101 | T__102 | T__103 | T__104 | T__105 | T__106 | T__107 | T__108 | T__109 | T__110 | T__111 | T__112 | T__113 | T__114 | T__115 | T__116 | T__117 | TRIM_CHARACTER | STRINGLITERAL | WORD | RUSSIAN_SYMBOLS | NAMED_PARAMETER | WS | COMMENT | LINE_COMMENT | ESCAPE_CHARACTER | INT_NUMERAL );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             IntStream input = _input;

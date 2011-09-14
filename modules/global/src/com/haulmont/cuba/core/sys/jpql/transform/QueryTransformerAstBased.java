@@ -124,9 +124,15 @@ public class QueryTransformerAstBased implements QueryTransformer {
         if (join.contains("{E}")) {
             join = ref.replaceEntries(join, "\\{E\\}");
         }
+        String[] strings = join.split(",");
+        join = strings[0];
         try {
             CommonTree joinClause = Parser.parseJoinClause(join);
             queryAnalyzer.mixinJoinIntoTree(joinClause, ref, true);
+            for (int i = 1; i < strings.length; i++) {
+                CommonTree selectionSource = Parser.parseSelectionSource(strings[i]);
+                queryAnalyzer.addSelectionSource(selectionSource);
+            }
             CommonTree whereTree = Parser.parseWhereClause("where " + where);
             addWhere(whereTree, ref, false);
         } catch (RecognitionException e) {
@@ -149,8 +155,10 @@ public class QueryTransformerAstBased implements QueryTransformer {
         queryAnalyzer.replaceWithCount(ref);
     }
 
-    public void replaceOrderBy(String newOrderingField, boolean desc) {
-        queryAnalyzer.replaceOrderBy(newOrderingField, desc);
+    public void replaceOrderBy(String newOrderingFieldPath, boolean desc) {
+        EntityReferenceInferer inferer = new EntityReferenceInferer(entityName);
+        EntityReference ref = inferer.infer(queryAnalyzer);
+        queryAnalyzer.replaceOrderBy(ref.addFieldPath(newOrderingFieldPath), desc);
     }
 
     public void reset() {

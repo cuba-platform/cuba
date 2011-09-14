@@ -29,7 +29,7 @@ public class EntityReferenceInferer {
         if (!(entity instanceof VirtualEntity) && entity.getName().equals(entityName)) {
             Entity pathStartingEntity = queryAnalyzer.getRootQueryVariableContext().
                     getEntityByVariableName(path.getEntityVariableName());
-            return new PathEntityReference(entityName, path, pathStartingEntity);
+            return new PathEntityReference(path, pathStartingEntity.getName());
         }
         throw new RuntimeException("No variable or selected field of entity " + entityName + " found in query");
 

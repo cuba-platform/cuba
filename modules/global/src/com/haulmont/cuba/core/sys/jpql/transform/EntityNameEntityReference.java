@@ -37,4 +37,9 @@ public class EntityNameEntityReference implements EntityReference {
     public boolean isJoinableTo(IdentificationVariableNode node) {
         return entityName.equals(node.getEntityName());
     }
+
+    @Override
+    public PathEntityReference addFieldPath(String fieldPath) {
+        throw new UnsupportedOperationException();
+    }
 }
