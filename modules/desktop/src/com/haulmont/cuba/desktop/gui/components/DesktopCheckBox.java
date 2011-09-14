@@ -41,7 +41,8 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        fireValueChanged(!impl.isSelected(), impl.isSelected());
+                        updateInstance();
+                        fireChangeListeners(impl.isSelected());
                     }
                 }
         );
