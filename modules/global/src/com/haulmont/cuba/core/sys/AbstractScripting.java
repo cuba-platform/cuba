@@ -33,6 +33,8 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>$Id$</p>
@@ -42,6 +44,8 @@ import java.util.Set;
 public abstract class AbstractScripting implements Scripting {
 
     private Log log = LogFactory.getLog(getClass());
+
+    private static final Pattern IMPORT_PATTERN = Pattern.compile("\\bimport\\b\\s+");
 
     private JavaClassLoader javaClassLoader;
 
@@ -186,13 +190,22 @@ public abstract class AbstractScripting implements Scripting {
                             for (String importItem : imports) {
                                 sb.append("import ").append(importItem).append("\n");
                             }
-                            sb.append(text);
+
+                            Matcher matcher = IMPORT_PATTERN.matcher(text);
+                            String result;
+                            if (matcher.find()) {
+                                StringBuffer s = new StringBuffer();
+                                matcher.appendReplacement(s, sb + "$0");
+                                result = matcher.appendTail(s).toString();
+                            } else {
+                                result = sb.append(text).toString();
+                            }
 
                             CompilerConfiguration cc = new CompilerConfiguration();
                             cc.setClasspath(groovyClassPath);
                             cc.setRecompileGroovySource(true);
                             GroovyShell shell = new GroovyShell(javaClassLoader, new Binding(), cc);
-                            Script script = shell.parse(sb.toString());
+                            Script script = shell.parse(result);
                             return script;
                         }
                     },
