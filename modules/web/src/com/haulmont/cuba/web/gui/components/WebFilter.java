@@ -288,7 +288,7 @@ public class WebFilter
     }
 
     private void applyDatasourceFilter() {
-        if (filterEntity != null) {
+        if (filterEntity != null && filterEntity.getXml() != null) {
             Element element = Dom4j.readDocument(filterEntity.getXml()).getRootElement();
             QueryFilter queryFilter = new QueryFilter(element, datasource.getMetaClass().getName());
 
