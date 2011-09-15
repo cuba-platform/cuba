@@ -287,18 +287,20 @@ public class Param extends AbstractParam<Component> {
                         List list = new ArrayList();
                         if (value instanceof List) {
                             list = (List) value;
+                            setValue(list);
                         } else {
                             String[] parts = ((String) value).split(",");
                             try {
                                 for (String part : parts) {
                                     list.add(UUID.fromString(part.trim()));
                                 }
+                                setValue(list);
                             } catch (IllegalArgumentException ie) {
                                 App.getInstance().getAppWindow().showNotification(MessageProvider.getMessage("com.haulmont.cuba.gui.components.filter",
                                         "Param.uuid.Err"), Window.Notification.TYPE_TRAY_NOTIFICATION);
+                                setValue(null);
                             }
                         }
-                        setValue(list);
                     } else {
                         try{
                             setValue(UUID.fromString((String) value));
