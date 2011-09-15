@@ -16,6 +16,10 @@
     height: 24px;
 }
 
+.blockUI {
+    z-index: 15000 !important;
+}
+
 /*
  * Menu bar
  */
