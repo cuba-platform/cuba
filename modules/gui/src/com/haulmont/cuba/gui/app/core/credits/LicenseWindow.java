@@ -30,6 +30,7 @@ public class LicenseWindow extends AbstractWindow {
         if (licenseText != null) {
             TextField textField = getComponent("text");
             textField.setValue(licenseText);
+            textField.setEditable(false);
         }
     }
 }
