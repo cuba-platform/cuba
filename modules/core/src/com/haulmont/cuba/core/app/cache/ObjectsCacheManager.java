@@ -56,13 +56,13 @@ public class ObjectsCacheManager extends ManagementBean implements ObjectsCacheM
     }
 
     public String printActiveCaches() {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
         Collection<ObjectsCacheInstance> instancesList = instances.values();
         for (ObjectsCacheInstance cache : instancesList) {
             int size = cache.getStatistics().getObjectsCount();
-            stringBuffer.append(cache.getName()).append(String.format(" [%s]\n", size));
+            stringBuilder.append(cache.getName()).append(String.format(" [%s]\n", size));
         }
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 
     public String printStatsByName(String cacheName) {

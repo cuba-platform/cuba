@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.core.app.cache;
 
-import com.haulmont.cuba.core.app.ManagementBean;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

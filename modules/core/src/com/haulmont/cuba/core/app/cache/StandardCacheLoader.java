@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -24,7 +25,11 @@ import java.util.List;
  *
  * @author artamonov
  */
+@SuppressWarnings({"unused"})
 public class StandardCacheLoader implements CacheLoader {
+
+    @Inject
+    private Persistence persistence;
 
     private static Log log = LogFactory.getLog(ObjectsCache.class);
 
@@ -73,14 +78,14 @@ public class StandardCacheLoader implements CacheLoader {
         MetaClass metaClass = MetadataProvider.getSession().getClass(metaClassName);
         View view = MetadataProvider.getViewRepository().getView(metaClass, viewName);
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
 
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             em.setView(view);
             Query query = em.createQuery(dbQuery);
 
-            List resultList = query.getResultList();
+            List<Object> resultList = query.getResultList();
             cacheSet = new CacheSet(resultList);
             tx.commit();
         } catch (Exception e) {

@@ -81,6 +81,9 @@
                 <entry key="${cuba.webContextName}.cuba:service=ScriptingManager" value-ref="cuba_ScriptingManager"/>
                 <entry key="${cuba.webContextName}.cuba:service=CubaDeployer" value-ref="cuba_CubaDeployer"/>
                 <entry key="${cuba.webContextName}.cuba:service=EmailManager" value-ref="cuba_EmailManager"/>
+
+                <entry key="${cuba.webContextName}.cuba:service=ObjectsCacheManager"
+                       value-ref="cuba_ObjectsCacheManager"/>
             </map>
         </property>
         <property name="assembler">
@@ -103,6 +106,9 @@
                         <entry key="cuba_ScriptingManager" value="com.haulmont.cuba.core.app.ScriptingManagerMBean"/>
                         <entry key="cuba_CubaDeployer" value="com.haulmont.cuba.core.app.CubaDeployerMBean"/>
                         <entry key="cuba_EmailManager" value="com.haulmont.cuba.core.app.EmailManagerMBean"/>
+
+                        <entry key="${cuba.webContextName}.cuba:service=ObjectsCacheManager"
+                               value="com.haulmont.cuba.core.app.cache.ObjectsCacheManagerMBean"/>
                     </map>
                 </property>
             </bean>
