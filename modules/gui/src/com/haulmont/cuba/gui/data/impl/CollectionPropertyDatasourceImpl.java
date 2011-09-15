@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -306,8 +307,12 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     public synchronized void clear() throws UnsupportedOperationException {
         checkState();
-
-        for (Object obj : __getCollection()) {
+        // Get items
+        Collection<Object> collectionItems = new LinkedList<Object>(__getCollection());
+        // Clear collection
+        __getCollection().clear();
+        // Notify listeners
+        for (Object obj : collectionItems) {
             T item = (T) obj;
 
             MetaProperty inverseProperty = metaProperty.getInverse();
@@ -321,7 +326,6 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
             forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
         }
-        __getCollection().clear();
     }
 
     public void revert() throws UnsupportedOperationException {

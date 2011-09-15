@@ -137,7 +137,12 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
 
     public synchronized void clear() throws UnsupportedOperationException {
         checkState();
-        for (Object obj : data.values()) {
+        // Get items
+        Collection<Object> collectionItems = new LinkedList<Object>(data.values());
+        // Clear
+        data.clear();
+        // Notify listeners
+        for (Object obj : collectionItems) {
             T item = (T) obj;
             detachListener(item);
 
@@ -146,7 +151,6 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
 
             forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
         }
-        data.clear();
     }
 
     public void revert() throws UnsupportedOperationException {
