@@ -52,7 +52,7 @@ public class CubaApplicationContext extends WebApplicationContext {
         super.endTransaction(application, request);
     }
 
-    public AbstractCommunicationManager getCommunicationManager(Application application) {
-        return applicationToAjaxAppMgrMap.get(application);
+    public CommunicationManager getCommunicationManager(Application application) {
+        return (CommunicationManager) applicationToAjaxAppMgrMap.get(application);
     }
 }
