@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.vaadin.terminal.gwt.server.AbstractCommunicationManager;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.CommunicationManager;
 import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
@@ -49,5 +50,9 @@ public class CubaApplicationContext extends WebApplicationContext {
     @Override
     protected void endTransaction(Application application, Object request) {
         super.endTransaction(application, request);
+    }
+
+    public AbstractCommunicationManager getCommunicationManager(Application application) {
+        return applicationToAjaxAppMgrMap.get(application);
     }
 }

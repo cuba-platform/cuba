@@ -16,7 +16,6 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
 import com.haulmont.cuba.web.toolkit.ui.charts.Chart;
@@ -37,7 +36,6 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
@@ -261,6 +259,9 @@ public class CubaCommunicationManager extends CommunicationManager {
         }
     }
 
+    public VariableOwner getVariableComponent(String variable) {
+        return super.getVariableOwner(variable);
+    }
 
     /**
      * Set response status to SC_UNAUTHORIZED
