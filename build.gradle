@@ -187,6 +187,16 @@ configure(clientModule) {
     dependencies {
         compile(globalModule)
     }
+
+    task testsJar(dependsOn: testClasses, type: Jar) {
+        from sourceSets.main.classesDir
+        from sourceSets.test.classesDir
+        classifier = 'tests'
+    }
+
+    artifacts {
+        archives testsJar
+    }
 }
 
 configure(guiModule) {
