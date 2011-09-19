@@ -28,5 +28,7 @@ public interface Security {
 
     boolean isEntityAttrModificationPermitted(MetaProperty metaProperty);
 
+    boolean isEntityAttrModificationPermitted(MetaClass metaClass, MetaProperty metaProperty);
+
     boolean isSpecificPermitted(String name);
 }

@@ -98,9 +98,10 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     protected void loadEditable(Component component, Element element) {
         if (component instanceof Component.Editable) {
             if (component instanceof DatasourceComponent
-                    && ((DatasourceComponent) component).getDatasource() != null)
-            {
-                if (!security.isEntityAttrModificationPermitted(((DatasourceComponent) component).getMetaProperty())) {
+                    && ((DatasourceComponent) component).getDatasource() != null) {
+                DatasourceComponent dsComponent = (DatasourceComponent) component;
+                if (!security.isEntityAttrModificationPermitted(dsComponent.getDatasource().getMetaClass(),
+                        dsComponent.getMetaProperty())) {
                     ((Component.Editable) component).setEditable(false);
                     return;
                 }

@@ -45,10 +45,19 @@ public class SecurityImpl implements Security {
 
     @Override
     public boolean isEntityAttrModificationPermitted(MetaProperty metaProperty) {
-        MetaClass metaClass = metaProperty.getDomain();
+        return isEntityAttrModificationPermitted(metaProperty.getDomain(), metaProperty);
+    }
 
-        return (isEntityOpPermitted(metaClass, EntityOp.CREATE) || isEntityOpPermitted(metaClass, EntityOp.UPDATE))
-                && isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
+    @Override
+    public boolean isEntityAttrModificationPermitted(MetaClass metaClass, MetaProperty metaProperty) {
+        MetaClass domain = metaProperty.getDomain();
+        MetaClass mClass = domain;
+
+        if (domain.getDescendants() != null && domain.getDescendants().contains(metaClass))
+            mClass = metaClass;
+
+        return (isEntityOpPermitted(mClass, EntityOp.CREATE) || isEntityOpPermitted(mClass, EntityOp.UPDATE))
+                && isEntityAttrPermitted(mClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
     }
 
     @Override

@@ -535,7 +535,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             MetaProperty metaProperty = dsComponent.getMetaProperty();
 
             if (metaProperty != null) {
-                dsComponent.setEditable(security.isEntityAttrModificationPermitted(metaProperty)
+                dsComponent.setEditable(security.isEntityAttrModificationPermitted(getDatasource().getMetaClass(), metaProperty)
                         && dsComponent.isEditable());
             }
         }
