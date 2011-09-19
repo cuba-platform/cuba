@@ -6,7 +6,7 @@
 
 allprojects {
     artifactGroup = 'com.haulmont.cuba'
-    artifactVersion = '3.0'
+    artifactVersion = '3.1'
     isSnapshot = true
     //tomcatDir = rootDir.absolutePath + '/../tomcat'
 }
@@ -61,9 +61,9 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
     apply(plugin: 'cuba')
 
     dependencies {
-        compile(group: 'com.haulmont.bali', name: 'bali', version: '3.0-SNAPSHOT')
-        compile(group: 'com.haulmont.chile', name: 'chile-core', version: '3.0-SNAPSHOT')
-        compile(group: 'com.haulmont.chile', name: 'chile-jpa', version: '3.0-SNAPSHOT')
+        compile(group: 'com.haulmont.bali', name: 'bali', version: '3.1-SNAPSHOT')
+        compile(group: 'com.haulmont.chile', name: 'chile-core', version: '3.1-SNAPSHOT')
+        compile(group: 'com.haulmont.chile', name: 'chile-jpa', version: '3.1-SNAPSHOT')
 
         compile(group: 'antlr', name: 'antlr', version: '2.7.7')
         compile(group: 'aopalliance', name: 'aopalliance', version: '1.0')
