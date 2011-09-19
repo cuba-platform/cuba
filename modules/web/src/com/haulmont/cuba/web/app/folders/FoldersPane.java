@@ -361,8 +361,14 @@ public class FoldersPane extends VerticalLayout {
 
         List<AppFolder> folders = new ArrayList(appFoldersTree.getItemIds());
         FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
-        service.reloadAppFolders(folders);
-        for (AppFolder folder : folders) {
+        List<AppFolder> updateFolders = service.reloadAppFolders(folders);
+        for (AppFolder folder : updateFolders) {
+            int index = updateFolders.indexOf(folder);
+            AppFolder f = folders.get(index);
+            if (f != null) {
+                f.setItemStyle(folder.getItemStyle());
+                f.setQuantity(folder.getQuantity());
+            }
             appFoldersTree.setItemCaption(folder, folder.getCaption());
         }
     }
