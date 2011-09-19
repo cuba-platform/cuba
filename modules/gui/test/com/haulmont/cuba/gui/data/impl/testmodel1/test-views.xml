@@ -1,0 +1,22 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<views xmlns="http://www.haulmont.com/schema/cuba/view.xsd">
+
+    <view class="com.haulmont.cuba.gui.data.impl.testmodel1.TestMasterEntity" name="withDetails" extends="_local">
+        <property name="details" view="withParts"/>
+    </view>
+
+    <view class="com.haulmont.cuba.gui.data.impl.testmodel1.TestDetailEntity" name="withParts" extends="_local">
+        <property name="embeddable" view="_local"/>
+        <property name="parts" view="_local"/>
+    </view>
+
+    <view class="com.haulmont.cuba.gui.data.impl.testmodel1.TestMasterEntity" name="withDetail" extends="_local">
+        <property name="detail" view="_local"/>
+    </view>
+
+</views>

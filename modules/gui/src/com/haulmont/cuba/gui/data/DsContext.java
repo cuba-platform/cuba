@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Datasources context. Provides access to datasources
@@ -73,15 +74,16 @@ public interface DsContext {
     public interface CommitListener extends Serializable {
         /**
          * Invoked before sending data to the middleware
+         * @param context   commit context
          */
         void beforeCommit(CommitContext<Entity> context);
 
         /**
-         * Invoked after succesfull commit by middleware
-         * @param context initial context
-         * @param result map from initial to resulting committed entity
+         * Invoked after succesfull commit to middleware
+         * @param context   commit context
+         * @param result    set of committed entities returning from the middleware service
          */
-        void afterCommit(CommitContext<Entity> context, Map<Entity, Entity> result);
+        void afterCommit(CommitContext<Entity> context, Set<Entity> result);
     }
 }
 

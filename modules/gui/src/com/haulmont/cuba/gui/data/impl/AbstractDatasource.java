@@ -20,6 +20,7 @@ import com.haulmont.chile.core.model.Instance;
 import java.io.Serializable;
 import java.util.*;
 
+import com.haulmont.cuba.gui.data.NestedDatasource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -104,6 +105,28 @@ public abstract class AbstractDatasource<T extends Entity>
 
     public void setParent(Datasource datasource) {
         parentDs = datasource;
+        commitMode = parentDs != null ? CommitMode.PARENT : CommitMode.DATASTORE;
+        addParentsToNested();
+    }
+
+    protected void addParentsToNested() {
+        if (parentDs == null || getDsContext() == parentDs.getDsContext())
+            return;
+
+        // Iterate through all datasources in the same DsContext
+        for (Datasource sibling : getDsContext().getAll()) {
+            // If the datasource is a property datasource of the Child
+            if (sibling instanceof NestedDatasource && ((NestedDatasource) sibling).getMaster().equals(this)) {
+                // Look for corresponding property datasource in the Parent's DsContext
+                for (Datasource siblingOfParent : parentDs.getDsContext().getAll()) {
+                    if (siblingOfParent instanceof NestedDatasource &&
+                            ((NestedDatasource) siblingOfParent).getProperty().equals(((NestedDatasource) sibling).getProperty())) {
+                        // If such corresponding datasource found, set it as a parent for our property datasource
+                        ((DatasourceImplementation) sibling).setParent(siblingOfParent);
+                    }
+                }
+            }
+        }
     }
 
     public void addListener(DatasourceListener<T> listener) {
@@ -132,13 +155,13 @@ public abstract class AbstractDatasource<T extends Entity>
         item.removeListener(listener);
     }
 
-    protected void forceItemChanged(Object prevItem) {
+    protected void fireItemChanged(Object prevItem) {
         for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
             dsListener.itemChanged(this, (Entity) prevItem, getItem());
         }
     }
 
-    protected void forceStateChanged(State prevStatus) {
+    protected void fireStateChanged(State prevStatus) {
         for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {
             dsListener.stateChanged(this, prevStatus, getState());
         }

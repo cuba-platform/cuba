@@ -89,11 +89,11 @@ public class ReportEditor extends AbstractEditor {
                 }
             }
 
-            void afterCommit(CommitContext<Entity> context, Map<Entity, Entity> result) {
+            void afterCommit(CommitContext<Entity> context, Set<Entity> result) {
                 FileStorageService storageService = ServiceLocator.lookup(FileStorageService.NAME)
 
                 for (Entity entity: context.commitInstances) {
-                    if (ReportTemplate.isInstance(entity) && result.containsKey(entity)) {
+                    if (ReportTemplate.isInstance(entity) && result.contains(entity)) {
                         java.util.List deletedFilesList = (java.util.List) deletedFiles.get(entity)
                         for (FileDescriptor fileDescriptor: deletedFilesList) {
                             removeQuietly(storageService, fileDescriptor)
@@ -102,7 +102,7 @@ public class ReportEditor extends AbstractEditor {
                 }
 
                 for (Entity entity: context.removeInstances) {
-                    if (ReportTemplate.isInstance(entity) && result.containsKey(entity)) {
+                    if (ReportTemplate.isInstance(entity) && result.contains(entity)) {
                         java.util.List deletedFilesList = (java.util.List) deletedFiles.get(entity)
                         for (FileDescriptor fileDescriptor: deletedFilesList) {
                             removeQuietly(storageService, fileDescriptor)

@@ -55,12 +55,12 @@ public class DataServiceBean implements DataService {
         return persistence.getDbDialect();
     }
 
-    public Map<Entity, Entity> commit(CommitContext<Entity> context) {
+    public Set<Entity> commit(CommitContext<Entity> context) {
         if (log.isDebugEnabled())
             log.debug("commit: commitInstances=" + context.getCommitInstances()
                     + ", removeInstances=" + context.getRemoveInstances());
 
-        final Map<Entity, Entity> res = new HashMap<Entity, Entity>();
+        final Set<Entity> res = new HashSet<Entity>();
 
         Transaction tx = persistence.getTransaction();
         try {
@@ -74,27 +74,27 @@ public class DataServiceBean implements DataService {
             for (Entity entity : context.getCommitInstances()) {
                 if (PersistenceHelper.isNew(entity)) {
                     em.persist(entity);
-                    res.put(entity, entity);
+                    res.add(entity);
                 }
             }
             // merge detached
             for (Entity entity : context.getCommitInstances()) {
                 if (PersistenceHelper.isDetached(entity)) {
                     Entity e = em.merge(entity);
-                    res.put(entity, e);
+                    res.add(e);
                 }
             }
             // remove
             for (Entity entity : context.getRemoveInstances()) {
                 Entity e = em.merge(entity);
                 em.remove(e);
-                res.put(entity, e);
+                res.add(e);
             }
 
-            for (Map.Entry<Entity, Entity> entry : res.entrySet()) {
-                View view = context.getViews().get(entry.getKey());
+            for (Entity entity : res) {
+                View view = context.getViews().get(entity);
                 if (view != null) {
-                    ViewHelper.fetchInstance(entry.getValue(), view);
+                    ViewHelper.fetchInstance(entity, view);
                 }
             }
 

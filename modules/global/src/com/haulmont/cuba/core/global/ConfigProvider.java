@@ -20,7 +20,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 public abstract class ConfigProvider
 {
     private static Configuration getConfiguration() {
-        return AppContext.getApplicationContext().getBean(Configuration.NAME, Configuration.class);
+        return AppContext.getBean(Configuration.NAME, Configuration.class);
     }
 
     /**

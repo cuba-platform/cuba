@@ -179,13 +179,7 @@ public class EditorWindowDelegate extends WindowDelegate {
 
     public void setParentDs(Datasource parentDs) {
         Datasource ds = getDatasource();
-
-        if (parentDs == null) {
-            ((DatasourceImplementation) ds).setCommitMode(Datasource.CommitMode.DATASTORE);
-        } else {
-            ((DatasourceImplementation) ds).setCommitMode(Datasource.CommitMode.PARENT);
-            ((DatasourceImplementation) ds).setParent(parentDs);
-        }
+        ((DatasourceImplementation) ds).setParent(parentDs);
     }
 
     public void commit() {

@@ -24,7 +24,7 @@ import java.util.UUID;
 public class BasicServiceTest extends CubaTestCase
 {
     public void test() {
-        DataService bs = Locator.lookup(DataService.JNDI_NAME);
+        DataService bs = Locator.lookup(DataService.NAME);
 
         Server server = new Server();
         UUID id = server.getId();
@@ -45,7 +45,7 @@ public class BasicServiceTest extends CubaTestCase
     }
 
     public void testLoad() {
-        DataService bs = Locator.lookup(DataService.JNDI_NAME);
+        DataService bs = Locator.lookup(DataService.NAME);
 
         Server server = new Server();
         UUID id = server.getId();
@@ -63,7 +63,7 @@ public class BasicServiceTest extends CubaTestCase
     }
 
     public void testLoadList() {
-        DataService bs = Locator.lookup(DataService.JNDI_NAME);
+        DataService bs = Locator.lookup(DataService.NAME);
 
         Server server = new Server();
         server.setName("localhost");

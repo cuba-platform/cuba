@@ -137,7 +137,8 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
 
         final Map<DataService, Collection<Datasource<Entity>>> commitData = collectCommitData();
 
-        if (commitData.isEmpty()) return;
+        if (commitData.isEmpty())
+            return;
 
         final DataService dataservice = getDataService();
         final Set<DataService> services = commitData.keySet();
@@ -149,17 +150,17 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
 
             fireBeforeCommit(context);
 
-            final Map<Entity, Entity> commitedMap = dataservice.commit(context);
+            final Set<Entity> committedEntities = dataservice.commit(context);
 
-            fireAfterCommit(context, commitedMap);
+            fireAfterCommit(context, committedEntities);
 
-            notifyAllDsCommited(dataservice, commitedMap);
+            notifyAllDsCommited(dataservice, committedEntities);
         } else {
             throw new UnsupportedOperationException();
         }
     }
 
-    private void notifyAllDsCommited(DataService dataservice, Map<Entity, Entity> commitedMap) {
+    private void notifyAllDsCommited(DataService dataservice, Set<Entity> committedEntities) {
         // Notify all datasources in context
         Collection<Datasource> datasources = new LinkedList<Datasource>();
         for (DsContext childDsContext : children) {
@@ -173,7 +174,7 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
                 datasources.add(ds);
 
         for (Datasource datasource : datasources) {
-            ((DatasourceImplementation) datasource).commited(commitedMap);
+            ((DatasourceImplementation) datasource).committed(committedEntities);
         }
     }
 
@@ -183,9 +184,9 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
         }
     }
 
-    private void fireAfterCommit(CommitContext<Entity> context, Map<Entity, Entity> result) {
+    private void fireAfterCommit(CommitContext<Entity> context, Set<Entity> committedEntities) {
         for (CommitListener commitListener : commitListeners) {
-            commitListener.afterCommit(context, result);
+            commitListener.afterCommit(context, committedEntities);
         }
     }
 

@@ -78,7 +78,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 }
                 this.item = item;
 
-                forceItemChanged(prevItem);
+                fireItemChanged(prevItem);
             }
         }
     }
@@ -375,9 +375,9 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                 context.getViews().put(entity, getView());
             }
 
-            final Map<Entity, Entity> map = service.commit(context);
+            final Set<Entity> committed = service.commit(context);
 
-            commited(map);
+            committed(committed);
         } else {
             throw new UnsupportedOperationException();
         }

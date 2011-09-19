@@ -705,8 +705,13 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         if (filterEntity.getFolder() == null) {
             DataService ds = ServiceLocator.getDataService();
             CommitContext ctx = new CommitContext(Collections.singletonList(filterEntity));
-            Map<Entity, Entity> result = ds.commit(ctx);
-            filterEntity = (FilterEntity) result.get(filterEntity);
+            Set<Entity> result = ds.commit(ctx);
+            for (Entity entity : result) {
+                if (entity.equals(filterEntity)) {
+                    filterEntity = (FilterEntity) entity;
+                    break;
+                }
+            }
             filterEntity.setApplyDefault(applyDefault);
             filterEntity.setIsDefault(isDefault);
 

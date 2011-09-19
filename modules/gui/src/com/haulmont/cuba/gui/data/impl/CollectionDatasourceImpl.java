@@ -137,7 +137,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             State prevState = state;
             if (!prevState.equals(State.VALID)) {
                 state = State.VALID;
-                forceStateChanged(prevState);
+                fireStateChanged(prevState);
             }
 
             if (prevIds != null && this.item != null && !prevIds.contains(this.item.getId())) {
@@ -369,11 +369,11 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         return data.containsKey(itemId);
     }
 
-    public void commited(Map<Entity, Entity> map) {
-        if (map.containsKey(item)) {
-            item = (T) map.get(item);
-        }
-        for (Entity newEntity : map.values()) {
+    public void committed(Set<Entity> entities) {
+        for (Entity newEntity : entities) {
+            if (newEntity.equals(item))
+                item = (T) newEntity;
+
             updateItem((T) newEntity);
         }
 

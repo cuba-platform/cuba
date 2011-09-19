@@ -68,9 +68,13 @@ public class GenericDataService implements DataService, Serializable {
         if (view != null)
             context.getViews().put(instance, view);
 
-        final Map res = commit(context);
+        final Set<Entity> res = commit(context);
 
-        return (A) res.get(instance);
+        for (Entity entity : res) {
+            if (entity.equals(instance))
+                return (A) entity;
+        }
+        return null;
     }
 
     public void remove(Entity entity) {
@@ -85,9 +89,9 @@ public class GenericDataService implements DataService, Serializable {
         return ServiceLocator.getDataService().getDbDialect();
     }
 
-    public Map<Entity, Entity> commit(CommitContext<Entity> context) {
+    public Set<Entity> commit(CommitContext<Entity> context) {
         try {
-            Map<Entity, Entity> result = ServiceLocator.getDataService().commit(context);
+            Set<Entity> result = ServiceLocator.getDataService().commit(context);
             return result;
         } catch (RuntimeException e) {
             for (Entity entity : context.getCommitInstances()) {

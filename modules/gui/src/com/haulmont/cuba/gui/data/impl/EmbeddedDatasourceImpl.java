@@ -30,24 +30,24 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
         implements
         Datasource<T>, DatasourceImplementation<T>, EmbeddedDatasource<T> {
 
-    protected Datasource ds;
+    protected Datasource masterDs;
     protected MetaProperty metaProperty;
 
-    public EmbeddedDatasourceImpl(String id, Datasource ds, String property) {
+    public EmbeddedDatasourceImpl(String id, Datasource masterDs, String property) {
         super(id);
-        this.ds = ds;
-        metaProperty = ds.getMetaClass().getProperty(property);
+        this.masterDs = masterDs;
+        metaProperty = masterDs.getMetaClass().getProperty(property);
         initParentDsListeners();
     }
 
     protected void initParentDsListeners() {
-        ds.addListener(new DatasourceListener<Entity>() {
+        masterDs.addListener(new DatasourceListener<Entity>() {
 
             public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
                 Entity prevValue = getItem(prevItem);
                 Entity newValue = getItem(item);
                 reattachListeners(prevValue, newValue);
-                forceItemChanged(prevValue);
+                fireItemChanged(prevValue);
             }
 
             public void stateChanged(Datasource ds, State prevState, State state) {
@@ -59,12 +59,12 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                 if (property.equals(metaProperty.getName()) && !ObjectUtils.equals(prevValue, value)) {
                     reattachListeners((Entity) prevValue, (Entity) value);
-                    forceItemChanged(prevValue);
+                    fireItemChanged(prevValue);
                 }
             }
 
             private void reattachListeners(Entity prevItem, Entity item) {
-                if (!ObjectUtils.equals(prevItem, item)) {
+                if (prevItem != item) {
                     detachListener(prevItem);
                     attachListener(item);
                 }
@@ -73,23 +73,22 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
     }
 
     public DsContext getDsContext() {
-        return ds.getDsContext();
+        return masterDs.getDsContext();
     }
 
     public DataService getDataService() {
-        return ds.getDataService();
+        return masterDs.getDataService();
     }
 
     public void commit() {
-        throw new UnsupportedOperationException();
     }
 
     public State getState() {
-        return ds.getState();
+        return masterDs.getState();
     }
 
     public T getItem() {
-        final Instance item = ds.getItem();
+        final Instance item = masterDs.getItem();
         return getItem(item);
     }
 
@@ -102,11 +101,11 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
             InstanceUtils.copy(item, getItem());
             itemToUpdate.add(item);
         } else {
-            final Instance parentItem = ds.getItem();
+            final Instance parentItem = masterDs.getItem();
             parentItem.setValue(metaProperty.getName(), item);
         }
         setModified(true);
-        ((DatasourceImplementation) ds).modified(ds.getItem());
+        ((DatasourceImplementation) masterDs).modified(masterDs.getItem());
     }
 
     public MetaClass getMetaClass() {
@@ -116,23 +115,23 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
     }
 
     public View getView() {
-        final ViewProperty property = ds.getView().getProperty(metaProperty.getName());
+        final ViewProperty property = masterDs.getView().getProperty(metaProperty.getName());
         return property == null ? null : MetadataProvider.getViewRepository().getView(getMetaClass(), property.getView().getName());
     }
 
-    public void commited(Map<Entity, Entity> map) {
-        Instance item = ds.getItem();
+    public void committed(Set<Entity> entities) {
+        Entity item = masterDs.getItem();
 
         Entity newItem = null;
         Entity previousItem = null;
 
         if (item != null) {
-            Iterator<Map.Entry<Entity, Entity>> commitIter = map.entrySet().iterator();
+            Iterator<Entity> commitIter = entities.iterator();
             while (commitIter.hasNext() && (previousItem == null) && (newItem == null)) {
-                Map.Entry<Entity, Entity> commitItem = commitIter.next();
-                if (commitItem.getKey().equals(item)) {
-                    previousItem = commitItem.getKey();
-                    newItem = commitItem.getValue();
+                Entity commitItem = commitIter.next();
+                if (commitItem.equals(item)) {
+                    previousItem = item;
+                    newItem = commitItem;
                 }
             }
             if (previousItem != null) {
@@ -147,8 +146,15 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
         clearCommitLists();
     }
 
+
+    @Override
+    public Datasource getMaster() {
+        return masterDs;
+    }
+
+    @Override
     public MetaProperty getProperty() {
-        return null;
+        return metaProperty;
     }
 
     public void invalidate() {
@@ -166,7 +172,7 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
     @Override
     public void modified(T item) {
         super.modified(item);
-        ((DatasourceImplementation) ds).modified(ds.getItem());
+        ((DatasourceImplementation) masterDs).modified(masterDs.getItem());
     }
 
     @Override

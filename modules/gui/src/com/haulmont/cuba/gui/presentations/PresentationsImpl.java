@@ -189,23 +189,22 @@ public class PresentationsImpl implements Presentations, Serializable {
                     Collections.unmodifiableSet(needToUpdate),
                     Collections.unmodifiableSet(needToRemove)
             );
-            Map<Entity, Entity> commitResult = ds.commit(ctx);
+            Set<Entity> commitResult = ds.commit(ctx);
             commited(commitResult);
 
             clearCommitList();
         }
     }
 
-    public void commited(Map<Entity, Entity> map) {
-        if (map.containsKey(def)) {
-            setDefault((Presentation) map.get(def));
-        }
-        if (map.containsKey(current)) {
-            current = (Presentation) map.get(current);
-        }
-        for (final Entity e : map.values()) {
-            if (presentations.containsKey(e.getId())) {
-                presentations.put(e.getId(), (Presentation) e);
+    public void commited(Set<Entity> entities) {
+        for (Entity entity : entities) {
+            if (entity.equals(def))
+                setDefault((Presentation) entity);
+            else if (entity.equals(current))
+                current = (Presentation) entity;
+
+            if (presentations.containsKey(entity.getId())) {
+                presentations.put(entity.getId(), (Presentation) entity);
             }
         }
     }

@@ -18,17 +18,15 @@ import com.haulmont.cuba.core.global.NotDetachedCommitContext;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface DataService
 {
     String NAME = "cuba_DataService";
 
-    @Deprecated
-    String JNDI_NAME = NAME;
-
     DbDialect getDbDialect();
 
-    Map<Entity, Entity> commit(CommitContext<Entity> context);
+    Set<Entity> commit(CommitContext<Entity> context);
 
     Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext<Entity> context);
 

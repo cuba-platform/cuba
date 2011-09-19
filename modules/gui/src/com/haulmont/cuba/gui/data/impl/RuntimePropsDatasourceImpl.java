@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.*;
@@ -16,7 +15,6 @@ import com.haulmont.cuba.gui.data.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -303,7 +301,7 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
         if (State.NOT_INITIALIZED != this.state) {
             final State prevStatus = this.state;
             this.state = State.INVALID;
-            forceStateChanged(prevStatus);
+            fireStateChanged(prevStatus);
         }
         modified = false;
         clearCommitLists();
@@ -324,25 +322,26 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
     public void initialized() {
         final State prev = state;
         state = State.INVALID;
-        forceStateChanged(prev);
+        fireStateChanged(prev);
     }
 
     public void valid() {
         final State prev = state;
         state = State.VALID;
-        forceStateChanged(prev);
+        fireStateChanged(prev);
     }
 
-    public void commited(Map<Entity, Entity> map) {
-        if (map.containsKey(item)) {
-            item = (RuntimePropertiesEntity) map.get(item);
-            attachListener(item);
+    public void committed(Set<Entity> entities) {
+        for (Entity entity : entities) {
+            if (entity.equals(item)) {
+                detachListener(item);
+                item = (RuntimePropertiesEntity) entity;
+                attachListener(item);
+            }
         }
         modified = false;
         clearCommitLists();
-
     }
-
 
     private void setMainDs(String name) {
         mainDs = dsContext.get(name);

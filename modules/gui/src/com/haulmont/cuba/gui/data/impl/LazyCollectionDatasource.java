@@ -396,7 +396,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         State prevState = state;
         if (!prevState.equals(State.VALID)) {
             state = State.VALID;
-            forceStateChanged(prevState);
+            fireStateChanged(prevState);
         }
 
         sw.stop();
@@ -440,11 +440,11 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
     }
 
     @Override
-    public synchronized void commited(Map<Entity, Entity> map) {
-        if (map.containsKey(item)) {
-            item = (T) map.get(item);
-        }
-        for (Entity newEntity : map.values()) {
+    public synchronized void committed(Set<Entity> entities) {
+        for (Entity newEntity : entities) {
+            if (newEntity.equals(item))
+                item = (T) newEntity;
+
             updateItem((T) newEntity);
         }
 

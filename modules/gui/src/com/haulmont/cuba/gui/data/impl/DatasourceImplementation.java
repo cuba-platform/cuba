@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 
 import java.util.Map;
 import java.util.Collection;
+import java.util.Set;
 
 public interface DatasourceImplementation<T extends Entity> {
     void initialized();
@@ -31,5 +32,5 @@ public interface DatasourceImplementation<T extends Entity> {
     void modified(T item);
     void deleted(T item);
 
-    void commited(Map<Entity, Entity> map);
+    void committed(Set<Entity> entities);
 }

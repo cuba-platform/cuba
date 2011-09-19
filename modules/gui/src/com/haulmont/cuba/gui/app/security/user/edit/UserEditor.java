@@ -103,13 +103,13 @@ public class UserEditor extends AbstractEditor {
                     public void beforeCommit(CommitContext<Entity> context) {
                     }
 
-                    public void afterCommit(CommitContext<Entity> context, Map<Entity, Entity> result) {
-                        for (Map.Entry<Entity, Entity> entry : result.entrySet()) {
-                            if (entry.getKey().equals(userSession.getUser())) {
-                                userSession.setUser((User) entry.getValue());
+                    public void afterCommit(CommitContext<Entity> context, Set<Entity> result) {
+                        for (Entity entity : result) {
+                            if (entity.equals(userSession.getUser())) {
+                                userSession.setUser((User) entity);
                             }
-                            if (entry.getKey().equals(userSession.getSubstitutedUser())) {
-                                userSession.setSubstitutedUser((User) entry.getValue());
+                            if (entity.equals(userSession.getSubstitutedUser())) {
+                                userSession.setSubstitutedUser((User) entity);
                             }
                         }
                     }
@@ -255,7 +255,7 @@ public class UserEditor extends AbstractEditor {
 
             ArrayList modifiedRoles = new ArrayList(rolesDsImpl.getItemsToCreate());
             modifiedRoles.addAll(rolesDsImpl.getItemsToUpdate());
-            rolesDsImpl.commited(Collections.<Entity, Entity>emptyMap());
+            rolesDsImpl.committed(Collections.<Entity>emptySet());
             for (Object userRole : modifiedRoles) {
                 rolesDsImpl.modified((Entity) userRole);
             }

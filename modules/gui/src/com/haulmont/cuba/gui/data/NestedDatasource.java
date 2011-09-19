@@ -20,6 +20,13 @@ import com.haulmont.cuba.core.entity.Entity;
  */
 public interface NestedDatasource<T extends Entity> extends Datasource<T>{
 
-    /** Bind to this property of the parent datasource */
+    /**
+     * @return Master datasource.
+     */
+    Datasource getMaster();
+
+    /**
+     * @return Property of the master datasource which this datasource is bound to.
+     */
     MetaProperty getProperty();
 }

@@ -18,7 +18,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.*;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Map;
+import java.util.Set;
 
 public class DatasourceImpl<T extends Entity>
     extends
@@ -129,8 +129,8 @@ public class DatasourceImpl<T extends Entity>
             __setItem(item);
             state = State.VALID;
 
-            forceStateChanged(prevStatus);
-            forceItemChanged(prevItem);
+            fireStateChanged(prevStatus);
+            fireItemChanged(prevItem);
         }
     }
 
@@ -163,7 +163,7 @@ public class DatasourceImpl<T extends Entity>
         if (State.NOT_INITIALIZED != this.state) {
             final State prevStatus = this.state;
             this.state = State.INVALID;
-            forceStateChanged(prevStatus);
+            fireStateChanged(prevStatus);
         }
         modified = false;
         clearCommitLists();
@@ -177,10 +177,13 @@ public class DatasourceImpl<T extends Entity>
         state = State.VALID;
     }
 
-    public void commited(Map<Entity, Entity> map) {
-        if (map.containsKey(item)) {
-            item = (T) map.get(item);
-            attachListener(item);
+    public void committed(Set<Entity> entities) {
+        for (Entity entity : entities) {
+            if (entity.equals(item)) {
+                detachListener(item);
+                item = (T) entity;
+                attachListener(item);
+            }
         }
 
         modified = false;

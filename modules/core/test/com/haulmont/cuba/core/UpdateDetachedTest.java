@@ -10,20 +10,19 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.security.entity.PermissionType;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
-
-import java.util.UUID;
-import java.util.Collections;
-import java.util.Map;
-
+import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.security.entity.Permission;
+import com.haulmont.cuba.security.entity.PermissionType;
+import com.haulmont.cuba.security.entity.Role;
 import org.apache.openjpa.enhance.PersistenceCapable;
+
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
 
 public class UpdateDetachedTest extends CubaTestCase
 {
@@ -151,7 +150,7 @@ public class UpdateDetachedTest extends CubaTestCase
 
     public void testDataService() {
         Permission p;
-        DataService ds = Locator.lookup(DataService.JNDI_NAME);
+        DataService ds = Locator.lookup(DataService.NAME);
 
         LoadContext ctx = new LoadContext(Permission.class);
         ctx.setId(permissionId);
@@ -167,12 +166,16 @@ public class UpdateDetachedTest extends CubaTestCase
         p.setTarget("newTarget");
 
         CommitContext commitCtx = new CommitContext(Collections.singleton(p));
-        Map<Entity,Entity> map = ds.commit(commitCtx);
+        Set<Entity> entities = ds.commit(commitCtx);
 
-        p = (Permission) map.get(p);
-        assertNotNull(((PersistenceCapable) p).pcGetDetachedState());
-        assertNotNull(p.getRole());
-        assertNotNull(((PersistenceCapable) p.getRole()).pcGetDetachedState());
+        Permission result = null;
+        for (Entity entity : entities) {
+            if (entity.equals(p))
+                result = (Permission) entity;
+        }
+        assertNotNull(((PersistenceCapable) result).pcGetDetachedState());
+        assertNotNull(result.getRole());
+        assertNotNull(((PersistenceCapable) result.getRole()).pcGetDetachedState());
     }
 
     public void testUpdateNotLoaded() {

@@ -35,7 +35,6 @@ public interface Datasource<T extends Entity> extends Serializable {
 
     /** Where to commit changes */
     enum CommitMode {
-        NOT_SUPPORTED,
         DATASTORE,
         PARENT
     }

@@ -533,8 +533,12 @@ public class FoldersPane extends VerticalLayout {
 
     public Folder saveFolder(Folder folder) {
         CommitContext commitContext = new CommitContext(Collections.singleton(folder));
-        Map<Entity, Entity> res = ServiceLocator.getDataService().commit(commitContext);
-        return (Folder) res.get(folder);
+        Set<Entity> res = ServiceLocator.getDataService().commit(commitContext);
+        for (Entity entity : res) {
+            if (entity.equals(folder))
+                return (Folder) entity;
+        }
+        return null;
     }
 
     public void removeFolder(Folder folder) {

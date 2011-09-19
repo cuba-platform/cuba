@@ -23,31 +23,32 @@ import org.apache.commons.lang.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Set;
 
 public class PropertyDatasourceImpl<T extends Entity>
         extends
         AbstractDatasource<T>
         implements
         Datasource<T>, DatasourceImplementation<T>, PropertyDatasource<T> {
-    protected Datasource ds;
+
+    protected Datasource masterDs;
     protected MetaProperty metaProperty;
 
     public PropertyDatasourceImpl(String id, Datasource ds, String property) {
         super(id);
-        this.ds = ds;
+        this.masterDs = ds;
         metaProperty = ds.getMetaClass().getProperty(property);
         initParentDsListeners();
     }
 
     protected void initParentDsListeners() {
-        ds.addListener(new DatasourceListener<Entity>() {
+        masterDs.addListener(new DatasourceListener<Entity>() {
 
             public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
                 Entity prevValue = getItem(prevItem);
                 Entity newValue = getItem(item);
                 reattachListeners(prevValue, newValue);
-                forceItemChanged(prevValue);
+                fireItemChanged(prevValue);
             }
 
             public void stateChanged(Datasource ds, State prevState, State state) {
@@ -59,15 +60,12 @@ public class PropertyDatasourceImpl<T extends Entity>
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                 if (property.equals(metaProperty.getName()) && !ObjectUtils.equals(prevValue, value)) {
                     reattachListeners((Entity) prevValue, (Entity) value);
-                    forceItemChanged(prevValue);
+                    fireItemChanged(prevValue);
                 }
             }
 
             private void reattachListeners(Entity prevItem, Entity item) {
-//                Entity prevValue = getItem((Instance) prevItem);
-//                Entity newValue = getItem((Instance) item);
-
-                if (!ObjectUtils.equals(prevItem, item)) {
+                if (prevItem != item) {
                     detachListener(prevItem);
                     attachListener(item);
                 }
@@ -76,11 +74,11 @@ public class PropertyDatasourceImpl<T extends Entity>
     }
 
     public State getState() {
-        return ds.getState();
+        return masterDs.getState();
     }
 
     public T getItem() {
-        final Instance item = ds.getItem();
+        final Instance item = masterDs.getItem();
         return getItem(item);
     }
 
@@ -95,20 +93,39 @@ public class PropertyDatasourceImpl<T extends Entity>
     }
 
     public View getView() {
-        final ViewProperty property = ds.getView().getProperty(metaProperty.getName());
+        final ViewProperty property = masterDs.getView().getProperty(metaProperty.getName());
         return property == null ? null : MetadataProvider.getViewRepository().getView(getMetaClass(), property.getView().getName());
     }
 
     public DsContext getDsContext() {
-        return ds.getDsContext();
+        return masterDs.getDsContext();
     }
 
     public DataService getDataService() {
-        return ds.getDataService();
+        return masterDs.getDataService();
     }
 
     public void commit() {
-        throw new UnsupportedOperationException();
+        if (Datasource.CommitMode.PARENT.equals(getCommitMode())) {
+            if (parentDs == null)
+                throw new IllegalStateException("parentDs is null while commitMode=PARENT");
+
+            if (parentDs instanceof CollectionDatasource) {
+                for (Object item : itemToCreate) {
+                    ((CollectionDatasource) parentDs).addItem((Entity) item);
+                }
+                for (Object item : itemToUpdate) {
+                    ((CollectionDatasource) parentDs).modifyItem((Entity) item);
+                }
+                for (Object item : itemToDelete) {
+                    ((CollectionDatasource) parentDs).removeItem((Entity) item);
+                }
+            } else {
+                // ??? No idea what to do here
+            }
+            clearCommitLists();
+            modified = false;
+        }
     }
 
     public void refresh() {
@@ -119,7 +136,7 @@ public class PropertyDatasourceImpl<T extends Entity>
             InstanceUtils.copy(item, getItem());
             itemToUpdate.add(item);
         } else {
-            final Instance parentItem = ds.getItem();
+            final Instance parentItem = masterDs.getItem();
             parentItem.setValue(metaProperty.getName(), item);
         }
         setModified(true);
@@ -135,34 +152,44 @@ public class PropertyDatasourceImpl<T extends Entity>
     public void valid() {
     }
 
-    public void commited(Map<Entity, Entity> map) {
-        Instance parentItem = ds.getItem();
+    public void committed(Set<Entity> entities) {
+        Entity parentItem = masterDs.getItem();
 
-        // If commitedMap countains previousItem
-        if ((parentItem != null) && map.containsKey(getItem())) {
+        T prevItem = getItem();
+        T newItem = null;
+        for (Entity entity : entities) {
+            if (entity.equals(prevItem)) {
+                newItem = prevItem;
+                break;
+            }
+        }
+
+        // If committed set contains previousItem
+        if ((parentItem != null) && newItem != null) {
             // Value changed
-            T newItem = (T) map.get(getItem());
 
-            boolean isModified = ds.isModified();
+            boolean isModified = masterDs.isModified();
 
             AbstractInstance parentInstance = (AbstractInstance) parentItem;
             parentInstance.setValue(metaProperty.getName(), newItem, false);
-            detachListener(parentItem);
+            detachListener(prevItem);
             attachListener(newItem);
 
-            ((DatasourceImplementation) ds).setModified(isModified);
+            fireItemChanged(prevItem);
+
+            ((DatasourceImplementation) masterDs).setModified(isModified);
         } else {
             if (parentItem != null) {
                 Entity newParentItem = null;
                 Entity previousParentItem = null;
 
                 // Find previous and new parent items
-                Iterator<Map.Entry<Entity, Entity>> commitIter = map.entrySet().iterator();
+                Iterator<Entity> commitIter = entities.iterator();
                 while (commitIter.hasNext() && (previousParentItem == null) && (newParentItem == null)) {
-                    Map.Entry<Entity, Entity> commitItem = commitIter.next();
-                    if (commitItem.getKey().equals(parentItem)) {
-                        previousParentItem = commitItem.getKey();
-                        newParentItem = commitItem.getValue();
+                    Entity commitItem = commitIter.next();
+                    if (commitItem.equals(parentItem)) {
+                        previousParentItem = parentItem;
+                        newParentItem = commitItem;
                     }
                 }
                 if (previousParentItem != null) {
@@ -177,6 +204,12 @@ public class PropertyDatasourceImpl<T extends Entity>
         clearCommitLists();
     }
 
+    @Override
+    public Datasource getMaster() {
+        return masterDs;
+    }
+
+    @Override
     public MetaProperty getProperty() {
         return metaProperty;
     }

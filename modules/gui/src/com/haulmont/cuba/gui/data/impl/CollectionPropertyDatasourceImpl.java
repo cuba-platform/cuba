@@ -12,15 +12,14 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.components.AggregationInfo;
-import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
-import org.apache.commons.collections.CollectionUtils;
+import com.haulmont.cuba.gui.filter.QueryFilter;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,7 +61,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     @Override
     protected void initParentDsListeners() {
-        ds.addListener(new DatasourceListener<Entity>() {
+        masterDs.addListener(new DatasourceListener<Entity>() {
 
             public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
                 log.trace("itemChanged: prevItem=" + prevItem + ", item=" + item);
@@ -140,7 +139,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     public Collection<K> getItemIds() {
-        if (State.NOT_INITIALIZED.equals(ds.getState())) {
+        if (State.NOT_INITIALIZED.equals(masterDs.getState())) {
             return Collections.emptyList();
         } else {
             Collection<T> items = __getCollection();
@@ -178,7 +177,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
                 }
                 this.item = item;
 
-                forceItemChanged(prevItem);
+                fireItemChanged(prevItem);
             }
         }
     }
@@ -189,7 +188,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     public int size() {
-        if (State.NOT_INITIALIZED.equals(ds.getState())) {
+        if (State.NOT_INITIALIZED.equals(masterDs.getState())) {
             return 0;
         } else {
             final Collection<T> collection = __getCollection();
@@ -198,7 +197,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected Collection<T> __getCollection() {
-        final Instance master = ds.getItem();
+        final Instance master = masterDs.getItem();
         return master == null ? null : (Collection<T>) master.getValue(metaProperty.getName());
     }
 
@@ -223,8 +222,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
         modified = true;
         if (cascadeProperty) {
-            final Entity parentItem = ds.getItem();
-            ((DatasourceImplementation) ds).modified(parentItem);
+            final Entity parentItem = masterDs.getItem();
+            ((DatasourceImplementation) masterDs).modified(parentItem);
         }
         if (metaProperty != null && metaProperty.getRange() != null && metaProperty.getRange().getCardinality() != null
                 && metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_MANY
@@ -239,7 +238,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     private void initCollection() {
-        Instance item = ds.getItem();
+        Instance item = masterDs.getItem();
         if (item == null)
             throw new IllegalStateException("Item is null");
 
@@ -264,8 +263,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
         modified = true;
         if (cascadeProperty) {
-            final Entity parentItem = ds.getItem();
-            ((DatasourceImplementation) ds).modified(parentItem);
+            final Entity parentItem = masterDs.getItem();
+            ((DatasourceImplementation) masterDs).modified(parentItem);
         } else {
             deleted(item);
         }
@@ -339,8 +338,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
                 modified = true;
                 if (cascadeProperty) {
-                    final Entity parentItem = ds.getItem();
-                    ((DatasourceImplementation) ds).modified(parentItem);
+                    final Entity parentItem = masterDs.getItem();
+                    ((DatasourceImplementation) masterDs).modified(parentItem);
                 } else {
                     modified(t);
                 }
@@ -434,30 +433,33 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     @Override
-    public void commited(Map<Entity, Entity> map) {
-        if (!State.VALID.equals(ds.getState()))
+    public void committed(Set<Entity> entities) {
+        if (!State.VALID.equals(masterDs.getState()))
             return;
 
         Collection<T> collection = __getCollection();
         if (collection != null) {
             for (T item : new ArrayList<T>(collection)) {
-                Entity committedItem = map.get(item);
-                if (committedItem != null) {
-                    if (collection instanceof List) {
-                        List list = (List) collection;
-                        list.set(list.indexOf(item), committedItem);
-                    } else if (collection instanceof Set) {
-                        Set set = (Set) collection;
-                        set.remove(item);
-                        set.add(committedItem);
+                for (Entity entity : entities) {
+                    if (entity.equals(item)) {
+                        if (collection instanceof List) {
+                            List list = (List) collection;
+                            list.set(list.indexOf(item), entity);
+                        } else if (collection instanceof Set) {
+                            Set set = (Set) collection;
+                            set.remove(item);
+                            set.add(entity);
+                        }
+                        attachListener(entity);
                     }
-                    attachListener(committedItem);
                 }
             }
         }
 
-        if (map.containsKey(this.item)) {
-            this.item = (T) map.get(this.item);
+        for (Entity entity : entities) {
+            if (entity.equals(item)) {
+                item = (T) entity;
+            }
         }
 
         modified = false;

@@ -27,7 +27,7 @@ import java.util.Map;
 public abstract class MetadataProvider
 {
     private static Metadata getMetadata() {
-        return AppContext.getApplicationContext().getBean(Metadata.NAME, Metadata.class);
+        return AppContext.getBean(Metadata.NAME, Metadata.class);
     }
 
     /**
