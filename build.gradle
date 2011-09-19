@@ -220,7 +220,6 @@ configure(guiModule) {
     test {
         scanForTestClasses = false
         includes = ['**/*Test.class']
-        excludes = ['**/QueryFilterTest.class'] // until we implement client testing infrastructure
     }
 }
 

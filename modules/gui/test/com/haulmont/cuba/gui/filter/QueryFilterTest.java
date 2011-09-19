@@ -11,14 +11,35 @@
 package com.haulmont.cuba.gui.filter;
 
 import com.haulmont.bali.util.Dom4j;
-import junit.framework.TestCase;
+import com.haulmont.cuba.client.testsupport.CubaClientTestCase;
+import com.haulmont.cuba.core.global.GlobalConfig;
+import mockit.NonStrictExpectations;
 import org.dom4j.Document;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.InputStream;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
-public class QueryFilterTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class QueryFilterTest extends CubaClientTestCase {
+
+    @Before
+    public void setUp() {
+        addEntityPackage("com.haulmont.cuba.core.entity");
+        setupInfrastructure();
+
+        new NonStrictExpectations() {
+            GlobalConfig globalConfig;
+            {
+                configuration.getConfig(GlobalConfig.class); result = globalConfig;
+
+                globalConfig.getUseAstBasedJpqlTransformer(); result = false;
+            }
+        };
+    }
 
     private QueryFilter createFilter(String name) {
         InputStream stream = QueryFilterTest.class.getResourceAsStream("/com/haulmont/cuba/gui/filter/" + name);
@@ -26,6 +47,7 @@ public class QueryFilterTest extends TestCase {
         return new QueryFilter(doc.getRootElement(), "saneco$GenDoc");
     }
 
+    @Test
     public void test1() {
         QueryFilter filter = createFilter("filter1.xml");
 
@@ -35,6 +57,7 @@ public class QueryFilterTest extends TestCase {
         assertEquals("select distinct d from saneco$GenDoc d where d.processState <> 'Version'", s);
     }
 
+    @Test
     public void test2() {
         QueryFilter filter = createFilter("filter2.xml");
 
@@ -48,6 +71,7 @@ public class QueryFilterTest extends TestCase {
         assertEquals("select distinct d from saneco$GenDoc d where d.processState = :custom$filter_state", s);
     }
 
+    @Test
     public void test3() {
         QueryFilter filter = createFilter("filter3.xml");
 
@@ -65,6 +89,7 @@ public class QueryFilterTest extends TestCase {
         assertEquals("select distinct d from saneco$GenDoc d where (d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode)", s);
     }
 
+    @Test
     public void test4() {
         QueryFilter filter = createFilter("filter4.xml");
 
@@ -86,6 +111,7 @@ public class QueryFilterTest extends TestCase {
         assertEquals("select distinct d from saneco$GenDoc d where ((d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode) or d.processState <> :custom$filter_notSigned)", s);
     }
 
+    @Test
     public void test5() {
         QueryFilter filter = createFilter("filter5.xml");
 
@@ -107,6 +133,7 @@ public class QueryFilterTest extends TestCase {
         assertEquals("select distinct d from saneco$GenDoc d where 1=1 and ((d.processState = :custom$filter_state and d.barCode like :custom$filter_barCode) or d.processState <> :custom$filter_notSigned)", s);
     }
 
+    @Test
     public void test6() {
         QueryFilter filter = createFilter("filter6.xml");
 
