@@ -68,7 +68,7 @@ public class BandDefinitionEditor extends AbstractEditor implements Suggester {
                     table.datasource.addItem(dataset)
                 },
                 getCaption: {
-                    MessageProvider.getMessage(AppConfig.instance.messagesPack, 'actions.Create')
+                    MessageProvider.getMessage(AppConfig.messagesPack, 'actions.Create')
                 },
                 isEnabled: {
                     UserSessionClient.userSession.isEntityOpPermitted(table.datasource.metaClass, EntityOp.CREATE)
