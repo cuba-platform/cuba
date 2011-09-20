@@ -18,10 +18,6 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
-import com.haulmont.cuba.web.toolkit.ui.charts.Chart;
-import com.haulmont.cuba.web.toolkit.ui.charts.ChartDataProvider;
-import com.haulmont.cuba.web.toolkit.ui.charts.ChartDataProviderFactory;
-import com.haulmont.cuba.web.toolkit.ui.charts.ChartException;
 import com.vaadin.Application;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.VariableOwner;
@@ -210,52 +206,6 @@ public class CubaCommunicationManager extends CommunicationManager {
         for (final Timer.Listener listener : listeners) {
             listener.onStopTimer(timer);
             timer.removeListener(listener);
-        }
-    }
-
-    public void handleChartRequest(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            App app) {
-        try {
-            if (request.getSession() == null) {
-                accessDenied(response);
-                return;
-            }
-
-            String chartId = request.getParameter("id");
-            if (chartId == null) {
-                badRequest(response);
-                return;
-            }
-
-            UserSession userSession = app.getConnection().getSession();
-            if (userSession == null) {
-                internalError(response);
-                return;
-            }
-
-            Chart chart = (Chart)idPaintableMap.get(chartId);
-            if (chart == null) {
-                log.warn(String.format("Non-existent chart component, VAR_PID=%s", chartId));
-                internalError(response);
-                return;
-            }
-
-            AppContext.setSecurityContext(new SecurityContext(userSession));
-
-            String vendor = chart.getVendor();
-            ChartDataProvider dataProvider = ChartDataProviderFactory.getDataProvider(vendor);
-
-            dataProvider.handleDataRequest(request, response, chart);
-
-            response.setStatus(HttpServletResponse.SC_OK);
-        } catch(ChartException e) {
-            log.error("Unable to handle data request: ", e);
-            internalError(response);
-        } catch (Exception e) {
-            log.error("Unexpected error: ", e);
-            internalError(response);
         }
     }
 

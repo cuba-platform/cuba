@@ -122,35 +122,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
 
     private void doService(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         RequestType requestType = getRequestType(request);
-        if (requestType == RequestType.OTHER && isChartRequest(request)) {
-            Application application = null;
-            CubaApplicationContext webApplicationContext = null;
-
-            try {
-                application = findApplicationInstance(request, requestType);
-                if (application == null) {
-                    return;
-                }
-
-                webApplicationContext = getApplicationContext(request.getSession());
-                webApplicationContext.startTransaction(application, request);
-
-                CommunicationManager applicationManager = webApplicationContext
-                        .getApplicationManager(application, this);
-
-                if (applicationManager instanceof CubaCommunicationManager) {
-                    ((CubaCommunicationManager) applicationManager).handleChartRequest(request, response, (App)application);
-                    return;
-                }
-
-            } catch (SessionExpiredException e) {
-                handleServiceException(request, response, application, e);
-            } finally {
-                if (webApplicationContext != null && application != null) {
-                    webApplicationContext.endTransaction(application, request);
-                }
-            }
-        } else if ((requestType == RequestType.FILE_UPLOAD) &&
+        if ((requestType == RequestType.FILE_UPLOAD) &&
                 ("POST".equals(request.getMethod())) &&
                 (request.getParameter("multiupload") != null)) {
             Application application = null;
@@ -185,18 +157,6 @@ public class CubaApplicationServlet extends ApplicationServlet {
 
     private boolean isMultiUpload(HttpServletRequest request) {
         return ServletFileUpload.isMultipartContent(request);
-    }
-
-    private boolean isChartRequest(HttpServletRequest request) {
-        String pathInfo = request.getPathInfo();
-
-        if (pathInfo == null) {
-            return false;
-        }
-
-        String compare = "/chart";
-
-        return pathInfo.startsWith(compare + "/") || pathInfo.endsWith(compare);
     }
 
     private void testSessionSerialization(HttpSession session) {

@@ -10,7 +10,6 @@ import com.haulmont.cuba.desktop.gui.components.*;
 import com.haulmont.cuba.desktop.gui.components.filter.DesktopFilter;
 import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.charts.Chart;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 
 import javax.annotation.ManagedBean;
@@ -99,10 +98,5 @@ public class DesktopComponentsFactory implements ComponentsFactory {
     @Override
     public <T extends Timer> T createTimer() {
         return (T) new DesktopTimer();
-    }
-
-    @Override
-    public <T extends Chart> T createChart(String vendor, String name) {
-        return null;
     }
 }

@@ -7,16 +7,8 @@ package com.haulmont.cuba.web.gui;
 
 import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.charts.*;
-import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.*;
-import com.haulmont.cuba.web.gui.components.charts.WebXYChartRow;
-import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreeBarChart;
-import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreeLineChart;
-import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreePieChart;
-import com.haulmont.cuba.web.gui.components.charts.jfree.WebJFreeXYLineChart;
-import com.haulmont.cuba.web.toolkit.ui.charts.jfree.JFreeChart;
 
 import javax.annotation.ManagedBean;
 import java.io.Serializable;
@@ -79,13 +71,6 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put(WidgetsTree.NAME, WebWidgetsTree.class);
         classes.put(TwinColumn.NAME, WebTwinColumn.class);
         classes.put(RowsCount.NAME, WebRowsCount.class);
-
-        //JFree charts
-        /*classes.put(PieChart.NAME + "@" + JFreeChart.VENDOR, WebJFreePieChart.class);
-        classes.put(BarChart.NAME + "@" + JFreeChart.VENDOR, WebJFreeBarChart.class);
-        classes.put(LineChart.NAME + "@" + JFreeChart.VENDOR, WebJFreeLineChart.class);
-        classes.put(XYLineChart.NAME + "@" + JFreeChart.VENDOR, WebJFreeXYLineChart.class);
-        classes.put(XYChartRow.NAME, WebXYChartRow.class);*/
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {
@@ -117,20 +102,5 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
 
     public <T extends Timer> T createTimer() {
         return (T) new WebTimer();
-    }
-
-    public <T extends Chart> T createChart(String vendor, String name) {
-        final Class<Chart> chartClass = (Class<Chart>) classes.get(name + "@" + vendor);
-        if (chartClass == null) {
-            throw new IllegalStateException(String.format("Can't find chart class for '%s', vendor is %s",
-                    name, vendor));
-        }
-        try {
-            return (T) chartClass.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

@@ -11,9 +11,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
-import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.toolkit.ui.charts.Chart;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.Table;
@@ -24,12 +22,10 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.DateField;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.util.*;
-import java.util.List;
 
 public class WebComponentsHelper {
 
@@ -322,50 +318,6 @@ public class WebComponentsHelper {
             case LEFT:
             default:
                 return FieldGroupLayout.CAPTION_ALIGN_LEFT;
-        }
-    }
-
-    public static Chart.Orientation convertChartOrientation(com.haulmont.cuba.gui.components.charts.Chart.Orientation orientation) {
-        switch (orientation) {
-            case VERTICAL:
-                return Chart.Orientation.VERTICAL;
-            case HORIZONTAL:
-                return Chart.Orientation.HORIZONTAL;
-            default:
-                throw new IllegalArgumentException("Unknown chart orientation: " + orientation);
-        }
-    }
-
-    public static com.haulmont.cuba.gui.components.charts.Chart.Orientation convertChartOrientation(Chart.Orientation orientation) {
-        switch (orientation) {
-            case VERTICAL:
-                return com.haulmont.cuba.gui.components.charts.Chart.Orientation.VERTICAL;
-            case HORIZONTAL:
-                return com.haulmont.cuba.gui.components.charts.Chart.Orientation.HORIZONTAL;
-            default:
-                throw new IllegalArgumentException("Unknown chart orientation: " + orientation);
-        }
-    }
-
-    public static Chart.AxisType convertChartAxisType(com.haulmont.cuba.gui.components.charts.Chart.AxisType axisType) {
-        switch (axisType) {
-            case NUMBER:
-                return Chart.AxisType.NUMBER;
-            case DATE:
-                return Chart.AxisType.DATE;
-            default:
-                throw new IllegalArgumentException("Unknown chart axis type: " + axisType);
-        }
-    }
-
-    public static com.haulmont.cuba.gui.components.charts.Chart.AxisType convertChartAxisType(Chart.AxisType axisType) {
-        switch (axisType) {
-            case NUMBER:
-                return com.haulmont.cuba.gui.components.charts.Chart.AxisType.NUMBER;
-            case DATE:
-                return com.haulmont.cuba.gui.components.charts.Chart.AxisType.DATE;
-            default:
-                throw new IllegalArgumentException("Unknown chart axis type: " + axisType);
         }
     }
 

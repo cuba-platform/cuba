@@ -9,7 +9,6 @@
  */
 package com.haulmont.cuba.gui.xml.layout;
 
-import com.haulmont.cuba.gui.components.charts.Chart;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
 
@@ -20,6 +19,4 @@ public interface ComponentsFactory {
     <T extends Component> T createComponent(String name);
 
     <T extends Timer> T createTimer();
-
-    <T extends Chart> T createChart(String vendor, String name);
 }
