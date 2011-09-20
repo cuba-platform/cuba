@@ -33,7 +33,7 @@ public class GenericDataService implements DataService, Serializable {
             com.haulmont.cuba.core.app.DataService.NAME, com.haulmont.cuba.core.app.DataService.class);
 
     public <A extends Entity> A newInstance(MetaClass metaClass) {
-        return metadata.create(metaClass);
+        return (A) metadata.create(metaClass);
     }
 
     public <A extends Entity> A reload(A entity, String viewName) {
@@ -57,7 +57,7 @@ public class GenericDataService implements DataService, Serializable {
         context.setId(entity.getId());
         context.setView(view);
 
-        return (A)load(context);
+        return (A) load(context);
     }
 
     public <A extends Entity> A commit(A instance, View view) {
