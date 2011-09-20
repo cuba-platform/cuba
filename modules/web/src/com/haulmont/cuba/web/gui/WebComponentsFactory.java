@@ -5,8 +5,10 @@
  */
 package com.haulmont.cuba.web.gui;
 
+import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.charts.*;
+import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.gui.components.charts.WebXYChartRow;
@@ -79,15 +81,24 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put(RowsCount.NAME, WebRowsCount.class);
 
         //JFree charts
-        classes.put(PieChart.NAME + "@" + JFreeChart.VENDOR, WebJFreePieChart.class);
+        /*classes.put(PieChart.NAME + "@" + JFreeChart.VENDOR, WebJFreePieChart.class);
         classes.put(BarChart.NAME + "@" + JFreeChart.VENDOR, WebJFreeBarChart.class);
         classes.put(LineChart.NAME + "@" + JFreeChart.VENDOR, WebJFreeLineChart.class);
         classes.put(XYLineChart.NAME + "@" + JFreeChart.VENDOR, WebJFreeXYLineChart.class);
-        classes.put(XYChartRow.NAME, WebXYChartRow.class);
+        classes.put(XYChartRow.NAME, WebXYChartRow.class);*/
     }
 
     public static void registerComponent(String element, Class<? extends Component> componentClass) {
         classes.put(element, componentClass);
+    }
+
+    public static void registerComponents(ComponentPalette ... palettes) {
+        for (ComponentPalette palette : palettes) {
+            Map<String, Class<? extends Component>> loaders = palette.getComponents();
+            for (Map.Entry<String, Class<? extends Component>> loaderEntry : loaders.entrySet()) {
+                classes.put(loaderEntry.getKey(), loaderEntry.getValue());
+            }
+        }
     }
 
     public <T extends Component> T createComponent(String name) {

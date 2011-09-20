@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout;
 
+import com.haulmont.cuba.gui.ComponentPalette;
 import com.haulmont.cuba.gui.xml.layout.loaders.*;
 import com.haulmont.cuba.gui.xml.layout.loaders.charts.BarChartLoader;
 import com.haulmont.cuba.gui.xml.layout.loaders.charts.LineChartLoader;
@@ -94,16 +95,25 @@ public class LayoutLoaderConfig implements Serializable {
         config.register("twinColumn", TwinColumnLoader.class);
 
         //charts
-        config.register("pieChart", PieChartLoader.class);
+        /*config.register("pieChart", PieChartLoader.class);
         config.register("barChart", BarChartLoader.class);
         config.register("lineChart", LineChartLoader.class);
-        config.register("xyLineChart", XYLineChartLoader.class);
+        config.register("xyLineChart", XYLineChartLoader.class);*/
 
         config.register("scriptHost", ScriptHostLoader.class);
     }
 
     public static void registerLoader(String tagName, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> aClass) {
         customLoaders.put(tagName, aClass);
+    }
+
+    public static void registerLoaders(ComponentPalette ... palettes) {
+        for (ComponentPalette palette : palettes) {
+            Map<String, Class<? extends ComponentLoader>> loaders = palette.getLoaders();
+            for (Map.Entry<String, Class<? extends ComponentLoader>> loaderEntry : loaders.entrySet()) {
+                customLoaders.put(loaderEntry.getKey(), loaderEntry.getValue());
+            }
+        }
     }
 
     public static LayoutLoaderConfig getWindowLoaders() {
