@@ -25,6 +25,7 @@ public class Picker extends JComponent {
     protected JPanel contentPanel;
     protected JComponent editor;
     protected JPanel actionsPanel;
+    protected boolean enabled = true;
 
     protected List<JButton> buttons = new ArrayList<JButton>();
 
@@ -88,5 +89,17 @@ public class Picker extends JComponent {
 
     public void setValue(Object value) {
         ((JTextField) editor).setText((String) value);
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        editor.setEnabled(enabled);
+        for (JButton btn : getButtons()) {
+            btn.setEnabled(enabled);
+        }
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 }
