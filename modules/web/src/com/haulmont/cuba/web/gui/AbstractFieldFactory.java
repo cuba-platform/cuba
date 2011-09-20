@@ -118,7 +118,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                             WebDateField dateField = new WebDateField();
                             dateField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
                             cubaField = dateField;
-                            field = new DateFieldWrapper(dateField);
+                            field = dateField.getComponent();
                         }
                     } else {
                         field = super.createField(item, propertyId, uiContext);
@@ -192,7 +192,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                     field = new CheckBox();
                 } else if (Date.class.isAssignableFrom(type)) {
                     cubaField = new WebDateField();
-                    field = new DateFieldWrapper((WebDateField) cubaField);
+                    field = ((WebDateField) cubaField).getComponent();
                 } else {
                     field = super.createField(container, itemId, propertyId, uiContext);
                 }

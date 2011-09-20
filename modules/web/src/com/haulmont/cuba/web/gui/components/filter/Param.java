@@ -203,7 +203,7 @@ public class Param extends AbstractParam<Component> {
         });
 
         dateField.setValue(value);
-        return new DateFieldWrapper(dateField);
+        return dateField.getComponent();
     }
 
     private AbstractField createNumberField(final Datatype datatype) {

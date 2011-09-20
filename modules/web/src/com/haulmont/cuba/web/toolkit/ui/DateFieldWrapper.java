@@ -21,16 +21,15 @@ import java.util.Date;
  *
  * @author devyatkin
  */
-public class DateFieldWrapper extends CustomComponent implements Field {
+public class DateFieldWrapper extends CustomField {
 
     private WebDateField dateField;
-    private int tabIndex;
 
-    public DateFieldWrapper(WebDateField dateField) {
+    public DateFieldWrapper(WebDateField dateField, Layout composition) {
         this.dateField = dateField;
-        dateField.getComposition().setWidth("100%");
+        composition.setWidth("100%");
         setSizeUndefined();
-        setCompositionRoot(dateField.getComposition());
+        setCompositionRoot(composition);
     }
 
     public WebDateField getCubaField() {
@@ -56,138 +55,12 @@ public class DateFieldWrapper extends CustomComponent implements Field {
         return Date.class;
     }
 
-    @Override
-    public boolean isRequired() {
+    public boolean isRequired(){
         return dateField.isRequired();
     }
 
-    @Override
     public void setRequired(boolean required) {
         dateField.setRequired(required);
-    }
-
-    @Override
-    public void setRequiredError(String requiredMessage) {
-        dateField.setRequiredMessage(requiredMessage);
-    }
-
-    @Override
-    public String getRequiredError() {
-        return dateField.getRequiredMessage();
-    }
-
-    @Override
-    public boolean isInvalidCommitted() {
-        return true;
-    }
-
-    @Override
-    public void setInvalidCommitted(boolean isCommitted) {
-    }
-
-    public void setReadOnly(boolean readOnly) {
-        dateField.setEditable(!readOnly);
-    }
-
-    public boolean isReadOnly() {
-        return dateField.isEditable();
-    }
-
-    @Override
-    public void commit() throws SourceException, Validator.InvalidValueException {
-    }
-
-    @Override
-    public void discard() throws SourceException {
-    }
-
-    @Override
-    public boolean isWriteThrough() {
-        return false;
-    }
-
-    @Override
-    public void setWriteThrough(boolean writeThrough) throws SourceException, Validator.InvalidValueException {
-    }
-
-    @Override
-    public boolean isReadThrough() {
-        return false;
-    }
-
-    @Override
-    public void setReadThrough(boolean readThrough) throws SourceException {
-    }
-
-    @Override
-    public boolean isModified() {
-        return (dateField.getDateField().isModified() || dateField.getTimeField().<Field>getComponent().isModified());
-    }
-
-    @Override
-    public int getTabIndex() {
-        return tabIndex;
-    }
-
-    @Override
-    public void setTabIndex(int tabIndex) {
-        this.tabIndex = tabIndex;
-    }
-
-    @Override
-    public void addValidator(Validator validator) {
-    }
-
-    @Override
-    public void removeValidator(Validator validator) {
-    }
-
-    @Override
-    public Collection<Validator> getValidators() {
-        return null;
-    }
-
-    @Override
-    public boolean isValid() {
-        return dateField.isValid();
-    }
-
-    @Override
-    public void validate() throws Validator.InvalidValueException {
-        try {
-            dateField.validate();
-        } catch (ValidationException e) {
-            throw new Validator.InvalidValueException(e.getMessage());
-        }
-    }
-
-    @Override
-    public boolean isInvalidAllowed() {
-        return true;
-    }
-
-    @Override
-    public void setInvalidAllowed(boolean invalidValueAllowed) throws UnsupportedOperationException {
-    }
-
-    @Override
-    public void valueChange(Property.ValueChangeEvent event) {
-    }
-
-    @Override
-    public void addListener(ValueChangeListener listener) {
-    }
-
-    @Override
-    public void removeListener(ValueChangeListener listener) {
-    }
-
-    @Override
-    public void setPropertyDataSource(Property newDataSource) {
-    }
-
-    @Override
-    public Property getPropertyDataSource() {
-        return null;
+        super.setRequired(required);
     }
 }

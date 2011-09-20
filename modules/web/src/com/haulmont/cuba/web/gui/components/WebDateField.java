@@ -34,7 +34,7 @@ import java.util.*;
 
 public class WebDateField
         extends
-        WebAbstractComponent<HorizontalLayout>
+        WebAbstractComponent<DateFieldWrapper>
         implements
         DateField, Component.Wrapper {
 
@@ -53,6 +53,8 @@ public class WebDateField
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
     protected List<Field.Validator> validators = new ArrayList<Field.Validator>();
 
+    protected HorizontalLayout composition;
+
     private Datasource datasource;
     private DsManager dsManager;
     private MetaPropertyPath metaPropertyPath;
@@ -69,10 +71,9 @@ public class WebDateField
     private String timeFormat;
 
     public WebDateField() {
-        component = new HorizontalLayout();
-        component.setWidth("150px");
+        composition = new HorizontalLayout();
 
-        component.setSpacing(true);
+        composition.setSpacing(true);
         dateField = new com.haulmont.cuba.web.toolkit.ui.DateField();
         dateField.setResolution(com.haulmont.cuba.web.toolkit.ui.DateField.RESOLUTION_DAY);
         dateField.setWidth("100%");
@@ -96,10 +97,7 @@ public class WebDateField
             }
         });
 
-        /*component.addComponent(dateField);
-        component.setExpandRatio(dateField, 1.0f);*/
         timeField = new WebTimeField();
-        /*component.addComponent(timeField.<com.vaadin.ui.Component>getComponent());*/
 
         dateField.setImmediate(true);
         dateField.setInvalidCommitted(true);
@@ -124,7 +122,8 @@ public class WebDateField
         if (ConfigProvider.getConfig(WebConfig.class).getCloseCalendarWhenDateSelected()) {
             setCloseWhenDateSelected(true);
         }
-
+        component = new DateFieldWrapper(this,composition);
+        component.setWidth("150px");
     }
 
     public com.haulmont.cuba.web.toolkit.ui.DateField getDateField() {
@@ -150,11 +149,11 @@ public class WebDateField
     }
 
     public void updateLayout() {
-        component.removeAllComponents();
-        component.addComponent(dateField);
-        component.setExpandRatio(dateField, 1.0f);
+        composition.removeAllComponents();
+        composition.addComponent(dateField);
+        composition.setExpandRatio(dateField, 1.0f);
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
-            component.addComponent(timeField.<com.vaadin.ui.Component>getComponent());
+            composition.addComponent(timeField.<com.vaadin.ui.Component>getComponent());
         }
     }
 

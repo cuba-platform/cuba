@@ -12,16 +12,20 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.AbstractProperty;
+import com.vaadin.data.util.PropertyFormatter;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
@@ -29,10 +33,7 @@ import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class WebPickerField
         extends
@@ -181,9 +182,43 @@ public class WebPickerField
 
         component.setPropertyDataSource(itemProperty);
 
+        datasource.addListener(
+                new DsListenerAdapter() {
+                    @Override
+                    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
+
+                        Object prevValue = value;
+                        Object newValue = InstanceUtils.getValueEx(item, propertyPath.getPath());
+                        setValue(newValue);
+                        fireValueChanged(prevValue, newValue);
+                    }
+
+                    @Override
+                    public void valueChanged(Entity source, String property, Object prevValue, Object value) {
+
+                        if (property.equals(propertyPath.toString())) {
+                            setValue(value);
+                            fireValueChanged(prevValue, value);
+                        }
+                    }
+                }
+        );
+
+        if (datasource.getState() == Datasource.State.VALID && datasource.getItem() != null) {
+            if (property.equals(propertyPath.toString())) {
+                Object prevValue = value;
+                Object newValue = InstanceUtils.getValueEx(datasource.getItem(), propertyPath.getPath());
+                setValue(newValue);
+                fireValueChanged(prevValue, newValue);
+            }
+        }
+
+
         setRequired(metaProperty.isMandatory());
-        
+
         this.metaClass = metaProperty.getRange().asClass();
+
+
     }
 
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {
@@ -191,10 +226,15 @@ public class WebPickerField
             @Override
             protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
                 return new PropertyWrapper(item, propertyPath, dsManager) {
+                     public Object getValue(){
+                        return value;
+                    }
+
                     @Override
                     public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
                         if (newValue instanceof String)
                             return;
+
                         super.setValue(newValue);
                     }
 

@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author krivopustov
  */
-public class PickerField extends CustomComponent implements com.vaadin.ui.Field  {
+public class PickerField extends CustomField {
 
     public static final int DEFAULT_WIDTH = 250;
 
@@ -94,12 +94,6 @@ public class PickerField extends CustomComponent implements com.vaadin.ui.Field 
         return field;
     }
 
-    @Override
-    public void paintContent(PaintTarget target) throws PaintException {
-        paintCommonContent(target);
-        super.paintContent(target);
-    }
-
     public void addFieldListener(final com.haulmont.cuba.gui.components.PickerField.FieldListener listener) {
         ((TextField) field).addListener(new FieldEvents.TextChangeListener() {
             @Override
@@ -109,60 +103,6 @@ public class PickerField extends CustomComponent implements com.vaadin.ui.Field 
                 listener.actionPerformed(event.getText(), getValue());
             }
         });
-    }
-
-    protected void paintCommonContent(PaintTarget target) throws PaintException {
-        // If the field is modified, but not committed, set modified attribute
-        if (isModified()) {
-            target.addAttribute("modified", true);
-        }
-
-        // Adds the required attribute
-        if (!isReadOnly() && isRequired()) {
-            target.addAttribute("required", true);
-        }
-
-        // Hide the error indicator if needed
-        if (isRequired() && getValue() == null && getComponentError() == null
-                && getErrorMessage() != null) {
-            target.addAttribute("hideErrors", true);
-        }
-    }
-
-    public boolean isInvalidCommitted() {
-        return field.isInvalidCommitted();
-    }
-
-    public void setInvalidCommitted(boolean isCommitted) {
-        field.setInvalidCommitted(isCommitted);
-    }
-
-    public void commit() throws SourceException, com.vaadin.data.Validator.InvalidValueException {
-        field.commit();
-    }
-
-    public void discard() throws SourceException {
-        field.discard();
-    }
-
-    public boolean isModified() {
-        return field.isModified();
-    }
-
-    public boolean isWriteThrough() {
-        return field.isWriteThrough();
-    }
-
-    public void setWriteThrough(boolean writeTrough) throws SourceException, com.vaadin.data.Validator.InvalidValueException {
-        field.setWriteThrough(writeTrough);
-    }
-
-    public boolean isReadThrough() {
-        return field.isReadThrough();
-    }
-
-    public void setReadThrough(boolean readTrough) throws SourceException {
-        field.setReadThrough(readTrough);
     }
 
     public Object getValue() {
@@ -192,81 +132,5 @@ public class PickerField extends CustomComponent implements com.vaadin.ui.Field 
         field.setPropertyDataSource(newDataSource);
     }
 
-    public void addValidator(com.vaadin.data.Validator validator) {
-        field.addValidator(validator);
-    }
-
-    public Collection getValidators() {
-        return field.getValidators();
-    }
-
-    public void removeValidator(com.vaadin.data.Validator validator) {
-        field.removeValidator(validator);
-    }
-
-    public boolean isValid() {
-        return field.isValid();
-    }
-
-    public void validate() throws com.vaadin.data.Validator.InvalidValueException {
-        if (field.getValue() == null) {
-            if (isRequired()) {
-                throw new com.vaadin.data.Validator.EmptyValueException(requiredError);
-            } else {
-                return;
-            }
-        }
-        field.validate();
-    }
-
-    public boolean isInvalidAllowed() {
-        return field.isInvalidAllowed();
-    }
-
-    public void setInvalidAllowed(boolean invalidAllowed) throws UnsupportedOperationException {
-        field.setInvalidAllowed(invalidAllowed);
-    }
-
-    public void addListener(ValueChangeListener listener) {
-        field.addListener(listener);
-    }
-
-    public void removeListener(ValueChangeListener listener) {
-        field.removeListener(listener);
-    }
-
-    public void valueChange(Property.ValueChangeEvent event) {
-        field.valueChange(event);
-    }
-
-    public void focus() {
-        field.focus();
-    }
-
-    public int getTabIndex() {
-        return field.getTabIndex();
-    }
-
-    public void setTabIndex(int tabIndex) {
-        field.setTabIndex(tabIndex);
-    }
-
-    public boolean isRequired() {
-        return required;
-    }
-
-    public void setRequired(boolean required) {
-        this.required = required;
-        requestRepaint();
-    }
-
-    public void setRequiredError(String requiredMessage) {
-        this.requiredError = requiredMessage;
-        requestRepaint();
-    }
-
-    public String getRequiredError() {
-        return requiredError;
-    }
 }
 
