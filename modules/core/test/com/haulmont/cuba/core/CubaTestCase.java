@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 04.11.2008 10:29:29
- * $Id$
  */
 package com.haulmont.cuba.core;
 
@@ -39,6 +35,22 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.*;
 
+/**
+ * Base class for middleware integration tests.
+ * <p>This class provides full-functional middleware environment without web container, including:
+ * <ul>
+ *     <li>Connection to the database</li>
+ *     <li>Spring container with all project beans inside</li>
+ *     <li>All middleware infrastructure interfaces</li>
+ * </ul>
+ * </p>
+ * <p>Descendant classes must override methods <code>initDataSources()</code> and <code>getTestAppProperties()</code>
+ * to supply project-specific properties.</p>
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public abstract class CubaTestCase extends TestCase
 {
     private Log log = LogFactory.getLog(CubaTestCase.class);

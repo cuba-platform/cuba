@@ -31,49 +31,82 @@ public abstract class MetadataProvider
     }
 
     /**
-     * Get current metadata session
-     * @return metadata session instance
+     * Get Metadata session - interface providing access to MetaClasses and MetaProperties
+     * @return  current metadata session
      */
     public static Session getSession() {
         return getMetadata().getSession();
     }
 
     /**
-     * Get the view repository
-     * @return view repository instance
+     * Get {@link ViewRepository} singleton instance
+     * @return  ViewRepository instance
      */
     public static ViewRepository getViewRepository() {
         return getMetadata().getViewRepository();
     }
 
     /**
-     * Get the entity classes replacement map defined in metadata configuration
-     * @return entity classes replacement map
+     * Get map of entity classes, that are replaced with descendants in an extension project.
+     * <p>This map allows the platform to instantiate entity classes, defined in high-level projects, instead of
+     * its own entities.</p>
+     * <p>Replacing entities may be registered through <em>*-metadata.xml</em> files.</p>
+     * @return  map of classes where key is descendant and value is an ascendant class that must be instatiated.
      */
     public static Map<Class, Class> getReplacedEntities() {
         return getMetadata().getReplacedEntities();
     }
 
+    /**
+     * Instantiate an entity, taking into account replaced entities - see {@link #getReplacedEntities()}
+     * @param entityClass   entity class
+     * @return              entity instance
+     */
     public static <T> T create(Class<T> entityClass) {
         return (T) getMetadata().create(entityClass);
     }
 
+    /**
+     * Instantiate an entity, taking into account replaced entities - see {@link #getReplacedEntities()}
+     * @param metaClass     entity MetaClass
+     * @return              entity instance
+     */
     public static <T> T create(MetaClass metaClass) {
         return (T) getMetadata().create(metaClass.getJavaClass());
     }
 
+    /**
+     * Instantiate an entity, taking into account replaced entities - see {@link #getReplacedEntities()}
+     * @param entityName    entity name
+     * @return              entity instance
+     */
     public static <T> T create(String entityName) {
         return (T) getMetadata().create(entityName);
     }
 
+    /**
+     * Get replacing ancestor class if exists. See {@link #getReplacedEntities()}.
+     * @param entityClass   entity class
+     * @return              replacing ancestor class, or the passed class, if no replacement rgistered.
+     */
     public static <T> Class<T> getReplacedClass(Class<T> entityClass) {
         return getMetadata().getReplacedClass(entityClass);
     }
 
+    /**
+     * Get replacing ancestor class if exists. See {@link #getReplacedEntities()}.
+     * @param metaClass     entity MetaClass
+     * @return              replacing ancestor class, or the passed class, if no replacement rgistered.
+     */
     public static <T> Class<T> getReplacedClass(MetaClass metaClass) {
         return getMetadata().getReplacedClass(metaClass.getJavaClass());
     }
 
+    /**
+     * Get replacing ancestor class if exists. See {@link #getReplacedEntities()}.
+     * @param entityName    entity name
+     * @return              replacing ancestor class, or the passed class, if no replacement rgistered.
+     */
     public static <T> Class<T> getReplacedClass(String entityName) {
         return getMetadata().getReplacedClass(entityName);
     }

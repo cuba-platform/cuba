@@ -28,6 +28,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
@@ -155,6 +157,7 @@ public class DataServiceBean implements DataService {
         return res;
     }
 
+    @Nullable
     public <A extends Entity> A load(LoadContext context) {
         if (log.isDebugEnabled())
             log.debug("load: metaClass=" + context.getMetaClass() + ", id=" + context.getId() + ", view=" + context.getView());
@@ -200,6 +203,7 @@ public class DataServiceBean implements DataService {
         return (A) result;
     }
 
+    @Nonnull
     public <A extends Entity> List<A> loadList(LoadContext context) {
         if (log.isDebugEnabled())
             log.debug("loadList: metaClass=" + context.getMetaClass() + ", view=" + context.getView()

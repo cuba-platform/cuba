@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.data.DataService;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
@@ -58,6 +59,7 @@ public class TestDataService implements DataService {
     }
 
     @Override
+    @Nonnull
     public <A extends Entity> List<A> loadList(LoadContext context) {
         return null;
     }
@@ -83,7 +85,7 @@ public class TestDataService implements DataService {
     }
 
     @Override
-    public <A extends Entity> A reload(A entity, View view, MetaClass metaClass, boolean useSecurityCostraints) {
+    public <A extends Entity> A reload(A entity, View view, MetaClass metaClass, boolean useSecurityConstraints) {
         return null;
     }
 

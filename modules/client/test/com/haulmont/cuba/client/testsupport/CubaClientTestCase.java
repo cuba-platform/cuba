@@ -40,14 +40,27 @@ public class CubaClientTestCase {
 
     protected TestMetadataClient metadata;
 
+    /**
+     * Add entities package to build metadata from. Should be invoked by concrete test classes in their @Before method.
+     * @param pack  package FQN, e.g. <code>com.haulmont.cuba.core.entity</code>
+     */
     protected void addEntityPackage(String pack) {
         entityPackages.add(pack);
     }
 
+    /**
+     * Set path to Views configuration file to build ViewRepository from it. Should be invoked by concrete test classes
+     * once in their @Before method.
+     * @param viewConfigPath    configuration resource FQN, e.g. <code>/com/haulmont/cuba/gui/data/impl/testmodel1/test-views.xml</code>
+     */
     protected void setViewConfig(String viewConfigPath) {
         viewConfig = viewConfigPath;
     }
 
+    /**
+     * Set up {@link Metadata} and other infrastructure objects before running test. Should be invoked by concrete test classes
+     * once in their @Before method.
+     */
     protected void setupInfrastructure() {
         metadata = new TestMetadataClient(entityPackages, viewConfig);
 

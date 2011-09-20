@@ -9,35 +9,35 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.data.DataService;
-import org.apache.openjpa.util.Proxy;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class GenericDataService implements DataService, Serializable {
 
     private static final long serialVersionUID = -2688273748125419411L;
-    
+
+    private Metadata metadata = AppContext.getBean(Metadata.NAME, Metadata.class);
+
+    private com.haulmont.cuba.core.app.DataService dataService = AppContext.getBean(
+            com.haulmont.cuba.core.app.DataService.NAME, com.haulmont.cuba.core.app.DataService.class);
+
     public <A extends Entity> A newInstance(MetaClass metaClass) {
-        try {
-            final Class aClass = metaClass.getJavaClass();
-            return (A) aClass.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        return metadata.create(metaClass);
     }
 
     public <A extends Entity> A reload(A entity, String viewName) {
-        return reload(entity, MetadataProvider.getViewRepository().getView(entity.getClass(), viewName));
+        return reload(entity, metadata.getViewRepository().getView(entity.getClass(), viewName));
     }
 
     public <A extends Entity> A reload(A entity, View view) {
@@ -48,12 +48,12 @@ public class GenericDataService implements DataService, Serializable {
         return reload(entity, view, metaClass, true);
     }
 
-    public <A extends Entity> A reload(A entity, View view, MetaClass metaClass, boolean useSecurityCostraints) {
+    public <A extends Entity> A reload(A entity, View view, MetaClass metaClass, boolean useSecurityConstraints) {
         if (metaClass == null) {
-            metaClass = MetadataProvider.getSession().getClass(entity.getClass());
+            metaClass = metadata.getSession().getClass(entity.getClass());
         }
         final LoadContext context = new LoadContext(metaClass);
-        context.setUseSecurityConstraints(useSecurityCostraints);
+        context.setUseSecurityConstraints(useSecurityConstraints);
         context.setId(entity.getId());
         context.setView(view);
 
@@ -86,52 +86,24 @@ public class GenericDataService implements DataService, Serializable {
     }
 
     public DbDialect getDbDialect() {
-        return ServiceLocator.getDataService().getDbDialect();
+        return dataService.getDbDialect();
     }
 
     public Set<Entity> commit(CommitContext<Entity> context) {
-        try {
-            Set<Entity> result = ServiceLocator.getDataService().commit(context);
-            return result;
-        } catch (RuntimeException e) {
-            for (Entity entity : context.getCommitInstances()) {
-                MetadataHelper.walkProperties(entity, new RefiningPropertyVisitor());
-            }
-            for (Entity entity : context.getRemoveInstances()) {
-                MetadataHelper.walkProperties(entity, new RefiningPropertyVisitor());
-            }
-            throw e;
-        }
+        return dataService.commit(context);
     }
 
     public Map<Entity, Entity> commitNotDetached(NotDetachedCommitContext<Entity> context) {
-        return ServiceLocator.getDataService().commitNotDetached(context);
+        return dataService.commitNotDetached(context);
     }
 
+    @Nullable
     public <A extends Entity> A load(LoadContext context) {
-        return ServiceLocator.getDataService().<A>load(context);
+        return dataService.<A>load(context);
     }
 
+    @Nonnull
     public <A extends Entity> List<A> loadList(LoadContext context) {
-        return ServiceLocator.getDataService().<A>loadList(context);
-    }
-
-    private static class RefiningPropertyVisitor implements PropertyVisitor {
-
-        public void visit(Instance instance, MetaProperty property) {
-            Object value = instance.getValue(property.getName());
-            if (value != null && value instanceof Proxy) {
-                Object newValue;
-                if (value instanceof Set) {
-                    newValue = new HashSet(((Set) value));
-                } else if (value instanceof List) {
-                    newValue = new ArrayList(((List) value));
-                } else if (value instanceof Date) {
-                    newValue = new Date(((Date) value).getTime());
-                } else
-                    throw new UnsupportedOperationException("Unsupported proxy type: " + value.getClass());
-                instance.setValue(property.getName(), newValue);
-            }
-        }
+        return dataService.<A>loadList(context);
     }
 }
