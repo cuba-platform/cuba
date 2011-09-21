@@ -16,13 +16,10 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
 import com.haulmont.cuba.gui.components.ValueProvider;
-import com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload;
 import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
-import com.vaadin.ui.ClientWidget;
 
 import java.util.*;
 
-@ClientWidget(VSwfUpload.class)
 public class WebFileMultiUploadField extends
         WebAbstractComponent<MultiUpload>
         implements

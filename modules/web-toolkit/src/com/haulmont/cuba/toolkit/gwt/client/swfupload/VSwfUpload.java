@@ -16,7 +16,6 @@ import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.haulmont.cuba.toolkit.gwt.client.Properties;
 import com.haulmont.cuba.toolkit.gwt.client.ResourcesLoader;
