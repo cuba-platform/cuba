@@ -100,7 +100,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
     checkstyleProperties.checkstyleConfigDir = checkstyleConfigFile.parentFile // Required for suppressions.xml linking
     checkstyleMain << {
         def checkstyleDir = "${project.buildDir}/checkstyle".toString()
-        ant.xslt(basedir: checkstyleDir, destdir: checkstyleDir, style: "$checkstyleConfigDir/checkstyle.xsl")
+        ant.xslt('in': "$checkstyleDir/main.xml", out: "$checkstyleDir/$project.name-checkstyle.html", style: "$checkstyleConfigDir/checkstyle.xsl")
     }
 }
 
