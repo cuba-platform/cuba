@@ -120,6 +120,18 @@ public class PickerField extends CustomField {
         field.setReadOnly(readOnly);
     }
 
+    public void addListener(ValueChangeListener listener) {
+        field.addListener(listener);
+    }
+
+    public void removeListener(ValueChangeListener listener) {
+        field.removeListener(listener);
+    }
+
+    public void valueChange(Property.ValueChangeEvent event) {
+        field.valueChange(event);
+    }
+
     public Class getType() {
         return field.getType();
     }
