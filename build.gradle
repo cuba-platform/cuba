@@ -58,6 +58,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
+    apply(plugin: 'code-quality')
     apply(plugin: 'cuba')
 
     dependencies {
@@ -92,6 +93,14 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
 
     artifacts {
         archives sourceJar
+    }
+
+    String checkstyleConfigDir = '../../config/checkstyle'
+    checkstyleConfigFileName = "$checkstyleConfigDir/checkstyle.xml"
+    checkstyleProperties.checkstyleConfigDir = checkstyleConfigFile.parentFile // Required for suppressions.xml linking
+    checkstyleMain << {
+        def checkstyleDir = "${project.buildDir}/checkstyle".toString()
+        ant.xslt(basedir: checkstyleDir, destdir: checkstyleDir, style: "$checkstyleConfigDir/checkstyle.xsl")
     }
 }
 

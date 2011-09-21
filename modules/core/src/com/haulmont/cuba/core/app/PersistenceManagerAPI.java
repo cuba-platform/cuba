@@ -11,24 +11,48 @@
 package com.haulmont.cuba.core.app;
 
 /**
- * API of {@link PersistenceManager} MBean.<br>
+ * API to {@link PersistenceManager}.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 public interface PersistenceManagerAPI
 {
     String NAME = "cuba_PersistenceManager";
 
-    /** True if this database table supports soft deletion */
+    /**
+     * Whether this database table supports soft deletion.
+     * @param table table name
+     * @return      true if this database table supports soft deletion
+     */
     boolean isSoftDeleteFor(String table);
 
-    /** Whether to use a lazy collection datasource for this entity, based on current statistics */
+    /**
+     * Whether to use a lazy collection datasource for this entity, based on current statistics.
+     * @param entityName    entity name
+     * @return              true if lazy collection datasource should be used for this entity
+     */
     boolean useLazyCollection(String entityName);
 
-    /** Whether to use a lookup screen or a dropdown for this entity, based on current statistics */
+    /**
+     * Whether to use a lookup screen or a dropdown for this entity, based on current statistics.
+     * @param entityName    entity name
+     * @return              true if lookup screen should be used
+     */
     boolean useLookupScreen(String entityName);
 
-    /** Limit rows fetched for UI components in 'normal' conditions */
+    /**
+     * Return a limit of rows fetched for UI components in 'normal' conditions
+     * @param entityName    entity name
+     * @return              maximum number of rows
+     */
     int getFetchUI(String entityName);
 
-    /** The absolute maximum number of rows that can be fetched for UI components */
+    /**
+     * Return the absolute maximum number of rows that can be fetched for UI components
+     * @param entityName    entity name
+     * @return              maximum number of rows
+     */
     int getMaxFetchUI(String entityName);
 }

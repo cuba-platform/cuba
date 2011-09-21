@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Central interface to provide persistence functionality
+ * Central interface to provide persistence functionality.
  *
  * <p>$Id$</p>
  *
@@ -26,7 +26,7 @@ public interface Persistence {
     String NAME = "cuba_Persistence";
 
     /**
-     * The DB dialect instance
+     * The DB dialect instance.
      * @return  dialect
      */
     DbDialect getDbDialect();
@@ -47,7 +47,7 @@ public interface Persistence {
     Transaction getTransaction();
 
     /**
-     * Current transaction status
+     * Current transaction status.
      * @return  true if currently in a transaction
      */
     boolean isInTransaction();
@@ -61,14 +61,14 @@ public interface Persistence {
     EntityManager getEntityManager();
 
     /**
-     * Returns the set of dirty fields (fields changed since last load from DB)
+     * Returns the set of dirty fields (fields changed since last load from DB).
      * @param entity    entity instance
      * @return          dirty field names
      */
     Set<String> getDirtyFields(BaseEntity entity);
 
     /**
-     * Returns an ID of directly referenced entity without loading it from DB
+     * Returns an ID of directly referenced entity without loading it from DB.
      * @param entity    master entity
      * @param property  name of reference property
      * @return          UUID of the referenced entity
@@ -77,7 +77,7 @@ public interface Persistence {
     UUID getReferenceId(Object entity, String property);
 
     /**
-     * Checks if the property is loaded from DB
+     * Checks if the property is loaded from DB.
      * @param entity    entity
      * @param property  name of the property
      * @return          true if loaded

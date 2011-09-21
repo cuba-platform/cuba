@@ -25,14 +25,15 @@ public interface PersistenceSecurity extends Security {
     String CONSTRAINT_PARAM_USER_GROUP_ID = "userGroupId";
 
     /**
-     * Modifies the query depending on current user's security constraints
+     * Modifies the query depending on current user's security constraints.
      * @param query         query to modify
      * @param entityName    name of entity which is quering
+     * @return              true if any constraints have been applied
      */
     boolean applyConstraints(Query query, String entityName);
 
     /**
-     * Sets the query param to a value provided by user session (see constants above)
+     * Sets the query param to a value provided by user session (see constants above).
      * @param query         Query instance
      * @param paramName     parameter to set
      */

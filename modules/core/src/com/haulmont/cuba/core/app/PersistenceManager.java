@@ -13,10 +13,7 @@ package com.haulmont.cuba.core.app;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.EntityStatistics;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.QueryParser;
-import com.haulmont.cuba.core.global.QueryTransformerFactory;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.DbUpdater;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -38,10 +35,11 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * PersistentConfig MBean implementation.
- * <p>
- * This MBean is intended for reading on startup and caching database metadata information,
- * mainly to support soft delete functionality and entity statistics
+ * Class that caches database metadata information and entity statistics.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 @ManagedBean(PersistenceManagerAPI.NAME)
 public class PersistenceManager extends ManagementBean implements PersistenceManagerMBean, PersistenceManagerAPI
@@ -52,7 +50,13 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
 
     private ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    private volatile Map<String, EntityStatistics> statisticsCache;
+    private Map<String, EntityStatistics> statisticsCache;
+
+    @Inject
+    private Persistence persistence;
+
+    @Inject
+    private Metadata metadata;
 
     @Inject
     private DbUpdater dbUpdater;
@@ -74,7 +78,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         try {
             conn = datasource.getConnection();
             DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet rs = metaData.getColumns(null, null, null, PersistenceProvider.getDbDialect().getDeleteTsColumn());
+            ResultSet rs = metaData.getColumns(null, null, null, persistence.getDbDialect().getDeleteTsColumn());
             lock.writeLock().lock();
             try {
                 softDeleteTables.clear();
@@ -97,38 +101,47 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         metadataLoaded = true;
     }
 
+    @Override
     public int getDefaultLookupScreenThreshold() {
         return config.getDefaultLookupScreenThreshold();
     }
 
+    @Override
     public void setDefaultLookupScreenThreshold(int value) {
         config.setDefaultLookupScreenThreshold(value);
     }
 
+    @Override
     public int getDefaultLazyCollectionThreshold() {
         return config.getDefaultLazyCollectionThreshold();
     }
 
+    @Override
     public void setDefaultLazyCollectionThreshold(int value) {
         config.setDefaultLazyCollectionThreshold(value);
     }
 
+    @Override
     public int getDefaultFetchUI() {
         return config.getDefaultFetchUI();
     }
 
+    @Override
     public void setDefaultFetchUI(int value) {
         config.setDefaultFetchUI(value);
     }
 
+    @Override
     public int getDefaultMaxFetchUI() {
         return config.getDefaultMaxFetchUI();
     }
 
+    @Override
     public void setDefaultMaxFetchUI(int value) {
         config.setDefaultMaxFetchUI(value);
     }
 
+    @Override
     public String printSoftDeleteTables() {
         lock.readLock().lock();
         if (!metadataLoaded) {
@@ -147,6 +160,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         }
     }
 
+    @Override
     public boolean isSoftDeleteFor(String table) {
         lock.readLock().lock();
         if (!metadataLoaded) {
@@ -161,6 +175,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         }
     }
 
+    @Override
     public boolean useLazyCollection(String entityName) {
         EntityStatistics es = getStatisticsCache().get(entityName);
         if (es == null || es.getInstanceCount() == null)
@@ -171,6 +186,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         }
     }
 
+    @Override
     public boolean useLookupScreen(String entityName) {
         EntityStatistics es = getStatisticsCache().get(entityName);
         if (es == null || es.getInstanceCount() == null)
@@ -181,6 +197,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         }
     }
 
+    @Override
     public int getFetchUI(String entityName) {
         EntityStatistics es = getStatisticsCache().get(entityName);
         if (es != null && es.getFetchUI() != null)
@@ -189,6 +206,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
             return config.getDefaultFetchUI();
     }
 
+    @Override
     public int getMaxFetchUI(String entityName) {
         EntityStatistics es = getStatisticsCache().get(entityName);
         if (es != null && es.getMaxFetchUI() != null)
@@ -197,6 +215,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
             return config.getDefaultMaxFetchUI();
     }
 
+    @Override
     public String updateDatabase() {
         try {
             dbUpdater.updateDatabase();
@@ -206,6 +225,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         }
     }
 
+    @Override
     public String findUpdateDatabaseScripts() {
         try {
             List<String> list = dbUpdater.findUpdateDatabaseScripts();
@@ -217,11 +237,12 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         }
     }
 
+    @Override
     public String jpqlLoadList(String queryString) {
         try {
-            Transaction tx = Locator.createTransaction();
+            Transaction tx = persistence.createTransaction();
             try {
-                EntityManager em = PersistenceProvider.getEntityManager();
+                EntityManager em = persistence.getEntityManager();
                 Query query = em.createQuery(queryString);
                 QueryParser parser = QueryTransformerFactory.createParser(queryString);
                 Set<String> paramNames = parser.getParamNames();
@@ -243,12 +264,13 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         }
     }
 
+    @Override
     public String jpqlExecuteUpdate(String queryString, boolean softDeletion) {
         try {
             login();
-            Transaction tx = Locator.createTransaction();
+            Transaction tx = persistence.createTransaction();
             try {
-                EntityManager em = PersistenceProvider.getEntityManager();
+                EntityManager em = persistence.getEntityManager();
                 em.setSoftDeletion(softDeletion);
                 Query query = em.createQuery(queryString);
                 int count = query.executeUpdate();
@@ -266,23 +288,19 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         }
     }
 
-    private Map<String, EntityStatistics> getStatisticsCache() {
+    private synchronized Map<String, EntityStatistics> getStatisticsCache() {
         if (statisticsCache == null) {
-            synchronized (this) {
-                if (statisticsCache == null) {
-                    statisticsCache = new ConcurrentHashMap<String, EntityStatistics>();
-                    internalLoadStatisticsCache();
-                }
-            }
+            statisticsCache = new ConcurrentHashMap<String, EntityStatistics>();
+            internalLoadStatisticsCache();
         }
         return statisticsCache;
     }
 
     private void internalLoadStatisticsCache() {
         log.info("Loading statistics cache");
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query q = em.createQuery("select s from core$EntityStatistics s");
             List<EntityStatistics> list = q.getResultList();
             for (EntityStatistics es : list) {
@@ -294,23 +312,24 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         }
     }
 
-    public String loadStatisticsCache() {
+    @Override
+    public synchronized String flushStatisticsCache() {
         try {
-            getStatisticsCache();
-            internalLoadStatisticsCache();
+            statisticsCache = null;
             return "Done";
         } catch (Exception e) {
-            log.error("loadStatisticsCache error", e);
+            log.error("flushStatisticsCache error", e);
             return ExceptionUtils.getStackTrace(e);
         }
     }
 
+    @Override
     public String refreshStatistics(String entityName) {
         try {
             log.info("Refreshing statistics");
             login();
             if (StringUtils.isBlank(entityName)) {
-                for (MetaClass metaClass : MetadataProvider.getSession().getClasses()) {
+                for (MetaClass metaClass : metadata.getSession().getClasses()) {
                     Class javaClass = metaClass.getJavaClass();
                     Table annotation = (Table) javaClass.getAnnotation(Table.class);
                     if (annotation != null) {
@@ -318,7 +337,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
                     }
                 }
             } else {
-                MetaClass metaClass = MetadataProvider.getSession().getClass(entityName);
+                MetaClass metaClass = metadata.getSession().getClass(entityName);
                 if (metaClass == null)
                     return "MetaClass not found: " + entityName;
                 Class javaClass = metaClass.getJavaClass();
@@ -336,6 +355,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         }
     }
 
+    @Override
     public String showStatistics(String entityName) {
         try {
             if (StringUtils.isBlank(entityName)) {
@@ -359,9 +379,9 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
 
     private void refreshStatisticsForEntity(String name) {
         log.debug("Refreshing statistics for entity " + name);
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
 
             Query q = em.createQuery("select count(e) from " + name + " e");
             Long count = (Long) q.getSingleResult();

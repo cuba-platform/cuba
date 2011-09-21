@@ -17,8 +17,8 @@ import java.sql.Connection;
 /**
 * Interface used to interact with the persistence context.
 */
-public interface EntityManager
-{
+public interface EntityManager {
+
     /**
      * Make an instance managed and persistent.
      * @param entity
@@ -107,7 +107,7 @@ public interface EntityManager
     Query createNativeQuery(String sqlString);
 
     /**
-     * Set View for this EntityManager instance
+     * Set View for this EntityManager instance.
      * @param view view instance. May be null, in this case eager fetching will be performed according to JPA mappings.
      */
     void setView(View view);
@@ -121,7 +121,6 @@ public interface EntityManager
 
     /**
      * Synchronize the persistence context to the underlying database.
-     * @throws PersistenceException if the flush fails
      */
     void flush();
 
@@ -139,22 +138,26 @@ public interface EntityManager
     void close();
 
     /**
-     * Check whether the EntityManager is closed
+     * Check whether the EntityManager is closed.
+     * @return  true if the EntityManager is closed
      */
     boolean isClosed();
 
     /**
-     * Determine whether the EntityManager is in SoftDeletion mode
+     * Determine whether the EntityManager is in SoftDeletion mode.
+     * @return  true if the EntityManager is in SoftDeletion mode
      */
     boolean isSoftDeletion();
 
     /**
      * Set SoftDeletion mode for this EntityManager
+     * @param softDeletion  mode
      */
     void setSoftDeletion(boolean softDeletion);
 
     /**
-     * @return java.sql.Connection
+     * Return current database connection
+     * @return connection
      */
     Connection getConnection();
 }

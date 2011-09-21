@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+    <!-- Tone down the checking for test code -->
+    <!--<suppress checks="EmptyBlock" files=".*[\\/]src[\\/]tests[\\/]"/>-->
+    <!--<suppress checks="ImportControl" files=".*[\\/]src[\\/]tests[\\/]"/>-->
+    <!--<suppress checks="Javadoc" files=".*[\\/]src[\\/]tests[\\/]"/>-->
+    <!--<suppress checks="MagicNumber" files=".*[\\/]src[\\/]tests[\\/]"/>-->
+    <!--<suppress checks="MethodCount" files="[\\/]IndentationCheckTest.java$"/>-->
+    <!--<suppress checks="EqualsAvoidNull" files="[\\/]Int.*FilterTest.java$"/>-->
+
+    <!-- suppressions to remove over time -->
+    <!--<suppress checks="FinalLocalVariable" files=".*[\\/]src[\\/]tests[\\/]"/>-->
+    <!--<suppress checks="LineLength" files=".*[\\/]src[\\/]tests[\\/]"/>-->
+    <!--<suppress checks="Name" files=".*[\\/]src[\\/]tests[\\/]"/>    -->
+
+    <!--
+      Turn off all checks for Generated and Test code.
+      -->
+    <suppress checks="." files=".*\.tokens"/>
+    <suppress checks="." files=".*JPALexer\.java"/>
+    <suppress checks="." files=".*JPAParser\.java"/>
+    <!--<suppress checks="." files=".*[\\/]grammars[\\/]Generated[a-zA-Z]*\.java"/>-->
+    <!--<suppress checks="." files=".*[\\/]checkstyle[\\/]gui[\\/]"/>-->
+</suppressions>

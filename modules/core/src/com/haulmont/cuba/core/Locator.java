@@ -20,12 +20,12 @@ import javax.sql.DataSource;
  * Locator to find beans and other objects in static context.
  * <p>Consider use of injection instead.</p>
  */
-public abstract class Locator
-{
+public abstract class Locator {
+
     private static Context jndiContext;
 
     /**
-     * Lookups bean
+     * Lookup bean.
      * @param name  bean name
      * @return      bean instance
      */
@@ -34,7 +34,7 @@ public abstract class Locator
     }
 
     /**
-     * Lookups JDBC DataSource
+     * Lookup JDBC DataSource.
      * @return      datasource
      */
     public static DataSource getDataSource() {
@@ -42,7 +42,7 @@ public abstract class Locator
     }
 
     /**
-     * Returns current JNDI context
+     * Return current JNDI context.
      * @return      context
      */
     public static Context getJndiContext() {

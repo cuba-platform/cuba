@@ -17,12 +17,20 @@ import java.util.List;
 import java.util.Date;
 
 /**
-* Interface used to control query execution.
+* Interface to control query execution.
 */
-public interface Query
-{
+public interface Query {
+
+    /**
+     * Get the query string.
+     * @return  query string
+     */
     String getQueryString();
-    
+
+    /**
+     * Set the query string.
+     * @param queryString   query string
+     */
     void setQueryString(String queryString);
 
     /**
@@ -108,7 +116,7 @@ public interface Query
     Query setParameter(int position, Date value, TemporalType temporalType);
 
     /**
-     * Set View for this Query instance
+     * Set View for this Query instance.
      * @param view view instance. May be null, in this case eager fetching will be performed according to JPA mappings.
      * @return the same query instance
      */

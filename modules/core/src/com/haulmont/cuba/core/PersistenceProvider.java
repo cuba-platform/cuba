@@ -13,10 +13,8 @@ import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.EntityManagerContext;
-import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -28,14 +26,14 @@ import java.util.UUID;
  *
  * @author krivopustov
  */
-public abstract class PersistenceProvider
-{
+public abstract class PersistenceProvider {
+
     private static Persistence getPersistence() {
         return AppContext.getBean(Persistence.NAME, Persistence.class);
     }
 
     /**
-     * The DB dialect instance
+     * The DB dialect instance.
      * @return  dialect
      */
     public static DbDialect getDbDialect() {
@@ -62,7 +60,7 @@ public abstract class PersistenceProvider
     }
 
     /**
-     * Current transaction status
+     * Current transaction status.
      * @return  true if currently in a transaction
      */
     public static boolean isInTransaction() {
@@ -80,7 +78,7 @@ public abstract class PersistenceProvider
     }
 
     /**
-     * Returns the set of dirty fields (fields changed since last load from DB)
+     * Returns the set of dirty fields (fields changed since last load from DB).
      * @param entity    entity instance
      * @return          dirty field names
      */
@@ -89,7 +87,7 @@ public abstract class PersistenceProvider
     }
 
     /**
-     * Returns an ID of directly referenced entity without loading it from DB
+     * Returns an ID of directly referenced entity without loading it from DB.
      * @param entity    master entity
      * @param property  name of reference property
      * @return          UUID of the referenced entity
@@ -100,7 +98,7 @@ public abstract class PersistenceProvider
     }
 
     /**
-     * Checks if the property is loaded from DB
+     * Checks if the property is loaded from DB.
      * @param entity    entity
      * @param property  name of the property
      * @return          true if loaded
