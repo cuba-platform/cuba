@@ -37,13 +37,13 @@ public class QueryImpl implements Query
     private boolean isNative;
     private String queryString;
 
-    private QueryMacroHandler[] macroHandlers;
+    private Collection<QueryMacroHandler> macroHandlers;
 
-    public QueryImpl(EntityManagerImpl entityManager, boolean isNative, QueryMacroHandler[] macroHandlers) {
+    public QueryImpl(EntityManagerImpl entityManager, boolean isNative) {
         this.em = entityManager;
         this.emDelegate = entityManager.getDelegate();
         this.isNative = isNative;
-        this.macroHandlers = macroHandlers;
+        this.macroHandlers = AppContext.getBeansOfType(QueryMacroHandler.class).values();
     }
 
     private OpenJPAQuery getQuery() {

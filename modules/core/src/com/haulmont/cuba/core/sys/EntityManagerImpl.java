@@ -40,8 +40,6 @@ public class EntityManagerImpl implements EntityManager
 
     private UserSession userSession;
 
-    private QueryMacroHandler[] queryMacroHandlers;
-
     private boolean closed;
     private Set<CloseListener> closeListeners = new HashSet<CloseListener>();
 
@@ -51,10 +49,9 @@ public class EntityManagerImpl implements EntityManager
 
     private List<Entity> entitiesToEvict;
 
-    EntityManagerImpl(OpenJPAEntityManager jpaEntityManager, UserSession userSession, QueryMacroHandler[] queryMacroHandlers) {
+    EntityManagerImpl(OpenJPAEntityManager jpaEntityManager, UserSession userSession) {
         this.delegate = jpaEntityManager;
         this.userSession = userSession;
-        this.queryMacroHandlers = queryMacroHandlers;
     }
 
     private static boolean isStoreCacheEnabled() {
@@ -112,21 +109,21 @@ public class EntityManagerImpl implements EntityManager
     }
 
     public Query createQuery() {
-        return new QueryImpl(this, false, queryMacroHandlers);
+        return new QueryImpl(this, false);
     }
 
     public Query createQuery(String qlStr) {
-        QueryImpl query = new QueryImpl(this, false, queryMacroHandlers);
+        QueryImpl query = new QueryImpl(this, false);
         query.setQueryString(qlStr);
         return query;
     }
 
     public Query createNativeQuery() {
-        return new QueryImpl(this, true, queryMacroHandlers);
+        return new QueryImpl(this, true);
     }
 
     public Query createNativeQuery(String sql) {
-        QueryImpl query = new QueryImpl(this, true, queryMacroHandlers);
+        QueryImpl query = new QueryImpl(this, true);
         query.setQueryString(sql);
         return query;
     }

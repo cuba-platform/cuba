@@ -56,6 +56,10 @@ public class AppContext {
         return context.getBean(beanType);
     }
 
+    public static <T> Map<String, T> getBeansOfType(Class<T> beanType) {
+        return context.getBeansOfType(beanType);
+    }
+
     public static String[] getPropertyNames() {
         return properties.keySet().toArray(new String[properties.size()]);
     }

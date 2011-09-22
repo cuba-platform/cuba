@@ -71,9 +71,6 @@ public class PersistenceImpl implements Persistence {
     private EntityLifecycleListener entityLifecycleListener;
 
     @Inject
-    private QueryMacroHandler[] queryMacroHandlers;
-
-    @Inject
     public void setFactory(OpenJPAEntityManagerFactory jpaEmf, EntityLifecycleListener entityLifecycleListener) {
         this.jpaEmf = jpaEmf;
         ((OpenJPAEntityManagerFactorySPI) jpaEmf).addLifecycleListener(entityLifecycleListener, null);
@@ -123,7 +120,7 @@ public class PersistenceImpl implements Persistence {
                 EntityManagerFactoryUtils.doGetTransactionalEntityManager(jpaEmf, null);
 
         UserSession userSession = userSessionSource.checkCurrentUserSession() ? userSessionSource.getUserSession() : null;
-        EntityManagerImpl impl = new EntityManagerImpl(jpaEm, userSession, queryMacroHandlers);
+        EntityManagerImpl impl = new EntityManagerImpl(jpaEm, userSession);
         EntityManagerContext ctx = contextHolder.get();
         if (ctx != null) {
             impl.setSoftDeletion(ctx.isSoftDeletion());
