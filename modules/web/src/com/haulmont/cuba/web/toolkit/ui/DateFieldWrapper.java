@@ -47,7 +47,7 @@ public class DateFieldWrapper extends CustomField {
     }
 
     public void focus() {
-        dateField.requestFocus();
+        dateField.getDateField().focus();
     }
 
     @Override
