@@ -8,6 +8,7 @@ package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
@@ -23,6 +24,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -156,11 +158,23 @@ public abstract class AbstractParam<T> {
                 Datatype datatype = Datatypes.get(javaClass);
                 if (datatype == null)
                     throw new UnsupportedOperationException("Unsupported parameter class: " + javaClass);
-
-                try {
-                    value = datatype.parse(text);
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
+                //hardcode for compatibility with old datatypes
+                if (datatype instanceof DateTimeDatatype) {
+                    try {
+                        value = datatype.parse(text);
+                    } catch (ParseException e) {
+                        try {
+                            value = new SimpleDateFormat("dd/MM/yyyy HH:mm").parse(text);
+                        } catch (ParseException exception) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                } else {
+                    try {
+                        value = datatype.parse(text);
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
                 break;
 
