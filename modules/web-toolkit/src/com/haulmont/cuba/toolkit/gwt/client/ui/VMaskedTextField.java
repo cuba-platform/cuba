@@ -18,9 +18,15 @@ import com.vaadin.terminal.gwt.client.ui.VTextField;
 
 public class VMaskedTextField extends VTextField {
 
+    public static final String CLASSNAME = "v-maskedfield";
+
+    private static final String MASKED_FIELD_CLASS = "v-maskedfield-onlymask";
+
     private char placeholder = '_';
 
     private StringBuilder string;
+
+    private String nullRepresentation;
 
     protected String mask;
 
@@ -161,6 +167,11 @@ public class VMaskedTextField extends VTextField {
     public void setText(String value) {
         debug("setText: " + value);
         string = new StringBuilder(value);
+        if (value.equals(nullRepresentation)) {
+            getElement().addClassName(MASKED_FIELD_CLASS);
+        } else {
+            getElement().removeClassName(MASKED_FIELD_CLASS);
+        }
         super.setText(value);
     }
 
@@ -205,6 +216,7 @@ public class VMaskedTextField extends VTextField {
 				string.append(c);
 			}
 		}
+        nullRepresentation = string.toString();
 		setText(string.toString());
 //		updateCursor(0); // KK: commented out because leads to grab focus
 	}

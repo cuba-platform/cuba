@@ -22,6 +22,8 @@ import java.util.List;
  */
 public class VMaskedPopupCalendar extends VPopupCalendar {
 
+    private static final String MASKED_FIELD_CLASS = "v-maskedfield-onlymask";
+
     private char placeholder = '_';
 
     private StringBuilder string;
@@ -29,6 +31,8 @@ public class VMaskedPopupCalendar extends VPopupCalendar {
     protected String mask;
 
     private String prevString;
+
+    private String nullRepresentation;
 
     private List<VMaskedTextField.Mask> maskTest;
 
@@ -130,7 +134,6 @@ public class VMaskedPopupCalendar extends VPopupCalendar {
                 setMask(mask);
             else
                 textBox.setCursorPos(getPreviousPos(0));
-
         }
     };
 
@@ -139,13 +142,17 @@ public class VMaskedPopupCalendar extends VPopupCalendar {
         public void onBlur(BlurEvent event) {
             if (isReadonly())
                 return;
-            if (string.toString().equals(prevString))
-                return;
+            if (!string.toString().equals(nullRepresentation)){
+                textBox.getElement().removeClassName(MASKED_FIELD_CLASS);
+            }
             debug("blurHandler.onBlur");
             for (int i = 0; i < string.length(); i++) {
                 char c = string.charAt(i);
 
                 if (maskTest.get(i) != null && c == placeholder) {
+                    if (string.toString().equals(prevString)) {
+                        return;
+                    }
                     prevString = getText();
                     onChange(null);
                     return;
@@ -177,6 +184,11 @@ public class VMaskedPopupCalendar extends VPopupCalendar {
 
     public void setText(String value) {
         debug("setText: " + value);
+        if (value.equals(nullRepresentation)||value.equals("")) {
+            textBox.getElement().addClassName(MASKED_FIELD_CLASS);
+        } else {
+            textBox.getElement().removeClassName(MASKED_FIELD_CLASS);
+        }
         if ("".equals(value) && !readonly) {
             setMask(mask);
             prevString = getText();
@@ -211,6 +223,7 @@ public class VMaskedPopupCalendar extends VPopupCalendar {
                 string.append(c);
             }
         }
+        nullRepresentation = string.toString();
         textBox.setText(string.toString());
     }
 
