@@ -246,7 +246,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         if (List.class.isAssignableFrom(type)) {
             item.setValue(metaProperty.getName(), new ArrayList());
         } else if (Set.class.isAssignableFrom(type)) {
-            item.setValue(metaProperty.getName(), new HashSet());
+            item.setValue(metaProperty.getName(), new LinkedHashSet());
         } else {
             throw new UnsupportedOperationException("Type " + type + " not supported, should implement List or Set");
         }

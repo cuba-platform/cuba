@@ -64,7 +64,7 @@
                     </buttonsPanel>
                     <table id="rolesTable" editable="false">
                         <columns>
-                            <column id="role" caption="msg://roleName" captionProperty="name"/>
+                            <column id="role.name" caption="msg://roleName"/>
                             <column id="role.locName" caption="msg://localizedRoleName"/>
                         </columns>
                         <rows datasource="rolesDs"/>
