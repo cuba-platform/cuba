@@ -24,7 +24,7 @@ public interface Filter
 
     void setFilterEntity(FilterEntity filterEntity);
 
-    void apply(boolean isNewWindow);
+    boolean apply(boolean isNewWindow);
 
     /**
      * Low-level method, don't invoke from application code

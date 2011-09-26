@@ -247,7 +247,7 @@ public class WebFilter
         }
     }
 
-    public void apply(boolean isNewWindow) {
+    public boolean apply(boolean isNewWindow) {
         if (clientConfig.getGenericFilterChecking()) {
             if (filterEntity != null) {
                 boolean haveCorrectCondition = false;
@@ -264,7 +264,7 @@ public class WebFilter
                         App.getInstance().getWindowManager().showNotification
                                 (MessageProvider.getMessage(mainMessagesPack, "filter.emptyConditions"), IFrame.NotificationType.ERROR);
                     }
-                    return;
+                    return false;
                 } else
                     applyDatasourceFilter();
             } else
@@ -285,6 +285,7 @@ public class WebFilter
             ((CollectionDatasource.SupportsPaging) datasource).setFirstResult(0);
 
         datasource.refresh();
+        return true;
     }
 
     private void applyDatasourceFilter() {
