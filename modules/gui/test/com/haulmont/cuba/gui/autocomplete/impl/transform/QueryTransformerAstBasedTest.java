@@ -625,6 +625,15 @@ public class QueryTransformerAstBasedTest {
         assertEquals(
                 "select c from sec$GroupHierarchy h join h.parent.constraints pco, sec$Constraint sc where h.group = :par and 1 = 1",
                 res);
+
+
+        transformer.reset();
+        transformer.addJoinAsIs("join h.parent.constraints pco, sec$Constraint sc");
+        res = transformer.getResult();
+        assertEquals(
+                "select c from sec$GroupHierarchy h join h.parent.constraints pco, sec$Constraint sc where h.group = :par",
+                res);
+        
     }
 
     @Test

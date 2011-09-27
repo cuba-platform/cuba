@@ -141,9 +141,15 @@ public class QueryTransformerAstBased implements QueryTransformer {
     }
 
     public void addJoinAsIs(String join) {
+        String[] strings = join.split(",");
+        join = strings[0];
         try {
             CommonTree joinClause = Parser.parseJoinClause(join);
             queryAnalyzer.mixinJoinIntoTree(joinClause, new EntityNameEntityReference(entityName), false);
+            for (int i = 1; i < strings.length; i++) {
+                CommonTree selectionSource = Parser.parseSelectionSource(strings[i]);
+                queryAnalyzer.addSelectionSource(selectionSource);
+            }
         } catch (RecognitionException e) {
             throw new RuntimeException(e);
         }
