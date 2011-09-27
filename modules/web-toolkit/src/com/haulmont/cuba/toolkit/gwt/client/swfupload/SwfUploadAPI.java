@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.toolkit.gwt.client.swfupload;
 
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.VConsole;
 
 public class SwfUploadAPI {
     public static native void onReady(Runnable r) /*-{
@@ -31,9 +31,8 @@ public class SwfUploadAPI {
             try {
                 r.run();
             } catch (Throwable e) {
-                ApplicationConnection.getConsole().log(e.toString());
+                VConsole.log(e.toString());
             }
         }
     }
-
 }
