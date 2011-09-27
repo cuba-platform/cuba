@@ -498,8 +498,10 @@ public class FoldersPane extends VerticalLayout {
             filterEntity.setComponentId(folder.getFilterComponentId());
             if (folder instanceof AppFolder)
                 filterEntity.setName(((AppFolder) folder).getLocName());
-            else
+            else {
                 filterEntity.setName(folder.getName());
+                filterEntity.setCode(folder.getName());
+            }
             filterEntity.setXml(folder.getFilterXml());
             filterEntity.setApplyDefault(folder.getApplyDefault());
             if (folder instanceof SearchFolder) {
