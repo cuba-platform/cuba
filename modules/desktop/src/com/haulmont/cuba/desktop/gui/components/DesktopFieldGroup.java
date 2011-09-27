@@ -525,7 +525,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         }
         MigLayoutHelper.applyWidth(cell, (int) component.getWidth(), component.getWidthUnits(), false);
         MigLayoutHelper.applyHeight(cell, (int) component.getHeight(), component.getHeightUnits(), false);
-
+        jComponent.putClientProperty(getSwingPropertyId(), field.getId());
         impl.add(jComponent, cell);
     }
 

@@ -33,6 +33,7 @@ import java.util.Locale;
 public abstract class DesktopAbstractComponent<C extends JComponent>
         implements
         DesktopComponent, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.Expandable {
+
     protected C impl;
 
     protected DesktopContainer container;
@@ -47,8 +48,14 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     protected Log log = LogFactory.getLog(getClass());
 
+    protected final String swingPropertyId = "cubaId";
+
     protected C getImpl() {
         return impl;
+    }
+
+    protected String getSwingPropertyId() {
+        return swingPropertyId;
     }
 
     @Override
@@ -80,6 +87,9 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     @Override
     public void setId(String id) {
         this.id = id;
+        if (this.getImpl() != null) {
+            impl.putClientProperty(getSwingPropertyId(), id);
+        }
     }
 
     @Override

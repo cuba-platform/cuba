@@ -115,6 +115,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         TextFieldListener listener = new TextFieldListener();
         impl.addKeyListener(listener);
         impl.addFocusListener(listener);
+        impl.putClientProperty(getSwingPropertyId(), getId());
     }
 
     @Override
