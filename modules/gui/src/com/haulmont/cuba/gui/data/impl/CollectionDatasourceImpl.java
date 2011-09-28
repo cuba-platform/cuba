@@ -118,6 +118,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             refresh(savedParameters);
     }
 
+    @Override
     public void refresh(Map<String, Object> parameters) {
         if (inRefresh)
             return;
@@ -155,6 +156,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             refreshOnResumeRequired = false;
 
             forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+
+            checkDataLoadError();
         } finally {
             inRefresh = false;
         }
@@ -397,6 +400,12 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         return true;
     }
 
+    /**
+     * Load data from middleware into {@link #data} field.
+     * <p>This method can be overridden in descendants to provide specific load functionality.</p>
+     * <p>In case of error sets {@link #dataLoadError} field to the exception object.</p>
+     * @param params    datasource parameters, as described in {@link CollectionDatasource#refresh(java.util.Map)}
+     */
     protected void loadData(Map<String, Object> params) {
         StopWatch sw = new Log4JStopWatch("CDS " + id);
 
@@ -433,11 +442,16 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             context.setView(view);
             context.setSoftDeletion(isSoftDeletion());
 
-            final Collection<T> entities = dataservice.loadList(context);
+            dataLoadError = null;
+            try {
+                final Collection<T> entities = dataservice.loadList(context);
 
-            for (T entity : entities) {
-                data.put(entity.getId(), entity);
-                attachListener(entity);
+                for (T entity : entities) {
+                    data.put(entity.getId(), entity);
+                    attachListener(entity);
+                }
+            } catch (Throwable e) {
+                dataLoadError = e;
             }
         }
 

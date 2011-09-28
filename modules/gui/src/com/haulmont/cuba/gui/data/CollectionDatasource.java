@@ -141,7 +141,8 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
     /**
      * Refresh datasource passing specified parameters to the query.
-     * These parameters may be referenced in the query text by "custom$" prefix.
+     * <p>These parameters may be referenced in the query text by "custom$" prefix.</p>
+     * @param parameters    parameters map
      */
     void refresh(Map<String, Object> parameters);
 

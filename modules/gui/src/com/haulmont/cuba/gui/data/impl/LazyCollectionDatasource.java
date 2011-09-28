@@ -224,6 +224,8 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
             refreshOnResumeRequired = false;
 
             getSize();
+            checkDataLoadError();
+
             if (!State.VALID.equals(state))
                 loadNextChunk(false);
 
@@ -231,6 +233,8 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
                 sortInMemory();
 
             forceCollectionChanged(CollectionDatasourceListener.Operation.REFRESH);
+
+            checkDataLoadError();
         } finally {
             inRefresh = false;
         }
@@ -376,10 +380,16 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
                 } else
                     ctx.getQuery().setMaxResults(chunk);
 
-                List<T> res = dataservice.loadList(ctx);
-                for (T t : res) {
-                    data.put(t.getId(), t);
-                    attachListener(t);
+                dataLoadError = null;
+                List<T> res = null;
+                try {
+                    res = dataservice.loadList(ctx);
+                    for (T t : res) {
+                        data.put(t.getId(), t);
+                        attachListener(t);
+                    }
+                } catch (Throwable e) {
+                    dataLoadError = e;
                 }
 
                 if (res.size() < chunk || (maxResults > 0 && data.size() >= maxResults)) {

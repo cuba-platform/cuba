@@ -50,6 +50,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     private boolean refreshOnComponentValueChange;
     protected Sortable.SortInfo<MetaPropertyPath>[] sortInfos;
     protected Map<String, Object> savedParameters;
+    protected Throwable dataLoadError;
 
     private static Log log = LogFactory.getLog(AbstractCollectionDatasource.class);
 
@@ -428,6 +429,12 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         return q;
     }
 
+    /**
+     * Return number of rows for the current query set in the datasource.
+     * <p>This method transforms the current query to "select count()" query with the same conditions, and sends it
+     * to the middleware.</p>
+     * @return  number of rows. In case of error returns 0 and sets {@link #dataLoadError} field to the exception object
+     */
     public int getCount() {
         LoadContext context = new LoadContext(metaClass);
         LoadContext.Query q = createLoadContextQuery(context, savedParameters == null ? Collections.<String, Object>emptyMap() : savedParameters);
@@ -439,10 +446,23 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         String jpqlQuery = transformer.getResult();
         q.setQueryString(jpqlQuery);
 
-        List res = dataservice.loadList(context);
-        int count = res.isEmpty() ? 0 : ((Long) res.get(0)).intValue();
+        dataLoadError = null;
+        try {
+            List res = dataservice.loadList(context);
+            return res.isEmpty() ? 0 : ((Long) res.get(0)).intValue();
+        } catch (Throwable e) {
+            dataLoadError = e;
+        }
+        return 0;
+    }
 
-        return count;
+    protected void checkDataLoadError() {
+        if (dataLoadError != null) {
+            if (dataLoadError instanceof RuntimeException)
+                throw (RuntimeException) dataLoadError;
+            else
+                throw new RuntimeException(dataLoadError);
+        }
     }
 
     private class ComponentValueListener implements ValueListener {
