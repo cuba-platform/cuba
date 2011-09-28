@@ -124,7 +124,7 @@ public class DsContextLoader {
         final Element datasourceClassElement = element.element("datasourceClass");
 
         if (datasourceClassElement != null) {
-            final String datasourceClass = datasourceClassElement.getText();
+            final String datasourceClass = datasourceClassElement.getTextTrim();
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
@@ -176,7 +176,7 @@ public class DsContextLoader {
         final Element datasourceClassElement = element.element("datasourceClass");
 
         if (datasourceClassElement != null) {
-            final String datasourceClass = datasourceClassElement.getText();
+            final String datasourceClass = datasourceClassElement.getTextTrim();
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
@@ -222,7 +222,7 @@ public class DsContextLoader {
         final Element datasourceClassElement = element.element("datasourceClass");
 
         if (datasourceClassElement != null) {
-            final String datasourceClass = datasourceClassElement.getText();
+            final String datasourceClass = datasourceClassElement.getTextTrim();
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
@@ -318,7 +318,7 @@ public class DsContextLoader {
         final Element datasourceClassElement = element.element("datasourceClass");
 
         if (datasourceClassElement != null) {
-            final String datasourceClass = datasourceClassElement.getText();
+            final String datasourceClass = datasourceClassElement.getTextTrim();
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
@@ -350,7 +350,7 @@ public class DsContextLoader {
         final Element datasourceClassElement = element.element("datasourceClass");
 
         if (datasourceClassElement != null) {
-            final String datasourceClass = datasourceClassElement.getText();
+            final String datasourceClass = datasourceClassElement.getTextTrim();
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
@@ -383,7 +383,7 @@ public class DsContextLoader {
         final Element datasourceClassElement = element.element("datasourceClass");
         GroupDatasource datasource;
         if (datasourceClassElement != null) {
-            final String datasourceClass = datasourceClassElement.getText();
+            final String datasourceClass = datasourceClassElement.getTextTrim();
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
@@ -426,7 +426,7 @@ public class DsContextLoader {
 
         final CollectionDatasource datasource;
         if (datasourceClassElement != null) {
-            final String datasourceClass = datasourceClassElement.getText();
+            final String datasourceClass = datasourceClassElement.getTextTrim();
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
@@ -499,7 +499,7 @@ public class DsContextLoader {
         final Element datasourceClassElement = element.element("datasourceClass");
 
         if (datasourceClassElement != null) {
-            final String datasourceClass = datasourceClassElement.getText();
+            final String datasourceClass = datasourceClassElement.getTextTrim();
             if (StringUtils.isEmpty(datasourceClass))
                 throw new IllegalStateException("Datasource class is not specified");
 
