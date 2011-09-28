@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -16,6 +15,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -225,12 +225,13 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
 
     @Override
     public String getDescription() {
-        return description;
+        return impl.getToolTipText();
     }
 
     @Override
     public void setDescription(String description) {
-        this.description = description;
+        impl.setToolTipText(description);
+        DesktopToolTipManager.getInstance().registerTooltip(impl);
     }
 
     @Override

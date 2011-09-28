@@ -90,7 +90,7 @@ public class VTabsheet extends VTabsheetBase {
 
         @Override
         public void onBrowserEvent(Event event) {
-            client.handleTooltipEvent(event, VTabsheet.this, getElement());
+            //client.handleTooltipEvent(event, VTabsheet.this, getElement());
             if (closable && event.getTypeInt() == Event.ONCLICK
                     && event.getEventTarget().cast() == closeButton) {
 //                final String tabKey = tabKeys.get(tb.getTabIndex(this))
@@ -117,7 +117,7 @@ public class VTabsheet extends VTabsheetBase {
                 }
                 updateTabScroller();
             }
-            client.handleTooltipEvent(event, VTabsheet.this, getElement());
+            //client.handleTooltipEvent(event, VTabsheet.this, getElement());
         }
 
         private void showContextMenu(Event event) {
@@ -523,7 +523,7 @@ public class VTabsheet extends VTabsheetBase {
 
     /**
      * Find the next visible tab. Returns -1 if none is found.
-     * 
+     *
      * @param i
      * @return
      */
@@ -542,7 +542,7 @@ public class VTabsheet extends VTabsheetBase {
 
     /**
      * Find the previous visible tab. Returns -1 if none is found.
-     * 
+     *
      * @param i
      * @return
      */
@@ -558,7 +558,7 @@ public class VTabsheet extends VTabsheetBase {
     /**
      * Checks if the tab with the selected index has been scrolled out of the
      * view (on the left side).
-     * 
+     *
      * @param index
      * @return
      */

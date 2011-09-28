@@ -11,6 +11,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -147,11 +148,13 @@ public class DesktopCheckBox extends DesktopAbstractField<JCheckBox> implements 
 
     @Override
     public String getDescription() {
-        return null;
+        return impl.getToolTipText();
     }
 
     @Override
     public void setDescription(String description) {
+        impl.setToolTipText(description);
+        DesktopToolTipManager.getInstance().registerTooltip(impl);
     }
 
     @Override

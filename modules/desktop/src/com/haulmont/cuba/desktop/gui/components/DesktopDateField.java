@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigBoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.DatePicker.DatePicker;
@@ -309,12 +310,14 @@ public class DesktopDateField
 
     @Override
     public String getDescription() {
-        return description;
+        return datePicker.getToolTipText();
     }
 
     @Override
     public void setDescription(String description) {
-        this.description = description;
+        datePicker.getEditor().setToolTipText(description);
+        timeField.setDescription(description);
+        DesktopToolTipManager.getInstance().registerTooltip(datePicker.getEditor());
     }
 
     private void updateInstance() {

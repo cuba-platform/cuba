@@ -420,7 +420,7 @@ public class WebWindowManager extends WindowManager {
                 getTabs().put(layout, (WindowBreadCrumbs) components[0]);
             }
             newTab.setCaption(formatTabCaption(caption, description));
-            newTab.setDescription(formatTabDescription(caption, description));
+            //newTab.setDescription(formatTabDescription(caption, description));
             if (tabSheet instanceof AppWindow.AppTabSheet) {
                 newTab.setClosable(true);
                 ((AppWindow.AppTabSheet) tabSheet).setTabCloseHandler(
@@ -545,7 +545,6 @@ public class WebWindowManager extends WindowManager {
             TabSheet tabSheet = appWindow.getTabSheet();
             TabSheet.Tab tab = tabSheet.getTab(layout);
             tab.setCaption(formatTabCaption(caption, description));
-            tab.setDescription(formatTabDescription(caption, description));
         } else
             appWindow.getMainLayout().requestRepaintAll();
 
@@ -763,7 +762,6 @@ public class WebWindowManager extends WindowManager {
                     TabSheet tabSheet = app.getAppWindow().getTabSheet();
                     TabSheet.Tab tab = tabSheet.getTab(layout);
                     tab.setCaption(formatTabCaption(currentWindow.getCaption(), currentWindow.getDescription()));
-                    tab.setDescription(formatTabDescription(currentWindow.getCaption(), currentWindow.getDescription()));
                 }
                 fireListeners(window, getTabs().size() != 0);
                 showStartupScreen(appWindow);

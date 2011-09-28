@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -355,11 +356,12 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     }
 
     public String getDescription() {
-        return description;
+        return getImpl().getToolTipText();
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        getImpl().setToolTipText(description);
+        DesktopToolTipManager.getInstance().registerTooltip(impl);
     }
 
     public Formatter getFormatter() {

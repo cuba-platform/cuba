@@ -533,9 +533,9 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         @Override
         public void onBrowserEvent(Event event) {
             super.onBrowserEvent(event);
-            if (client != null) {
+            /*if (client != null) {
                 client.handleTooltipEvent(event, VFilterSelect.this);
-            }
+            }*/
         }
 
         public HandlerRegistration addClickHandler(ClickHandler handler) {
@@ -560,7 +560,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         public void onBrowserEvent(Event event) {
             super.onBrowserEvent(event);
             if (client != null) {
-                client.handleTooltipEvent(event, VFilterSelect.this);
+                //client.handleTooltipEvent(event, VFilterSelect.this);
             }
         }
     };

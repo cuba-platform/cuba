@@ -184,6 +184,7 @@ public class App implements ConnectionListener {
     }
 
     protected void initUI() {
+        ToolTipManager.sharedInstance().setEnabled(false);
         frame = new JFrame(getApplicationTitle());
         frame.setName("MainFrame");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);

@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.gui.settings.Settings;
+import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.text.StrBuilder;
@@ -68,6 +69,7 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     protected String description;
     protected Component expandedComponent;
     protected Map<Component, ComponentCaption> captions = new HashMap<Component, ComponentCaption>();
+    protected Map<Component, JPanel> wrappers = new HashMap<Component, JPanel>();
 
     protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<com.haulmont.cuba.gui.components.Action>();
 
@@ -380,14 +382,34 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     }
 
     public void add(Component component) {
+        ComponentCaption caption = null;
+        boolean haveDescription = false;
         if (DesktopContainerHelper.hasExternalCaption(component)) {
-            ComponentCaption caption = new ComponentCaption(component);
+            caption = new ComponentCaption(component);
             captions.put(component, caption);
             getContainer().add(caption, layoutAdapter.getCaptionConstraints());
+        } else if (DesktopContainerHelper.hasExternalDescription(component)) {
+            caption = new ComponentCaption(component);
+            captions.put(component, caption);
+            haveDescription = true;
         }
 
         JComponent composition = DesktopComponentsHelper.getComposition(component);
-        getContainer().add(composition, layoutAdapter.getConstraints(component));
+         //if component have description without caption, we need to wrap
+        // component to view Description button horizontally after component
+        if (haveDescription) {
+            JPanel wrapper = new JPanel();
+            BoxLayoutAdapter adapter = BoxLayoutAdapter.create(wrapper);
+            adapter.setExpandLayout(true);
+            adapter.setSpacing(false);
+            adapter.setMargin(false);
+            wrapper.add(composition);
+            wrapper.add(caption, new CC().alignY("top"));
+            getContainer().add(wrapper);
+            wrappers.put(component, wrapper);
+        } else {
+            getContainer().add(composition, layoutAdapter.getConstraints(component));
+        }
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
             registerComponent(component);
@@ -398,7 +420,13 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     }
 
     public void remove(Component component) {
-        getContainer().remove(DesktopComponentsHelper.getComposition(component));
+        if (wrappers.containsKey(component)) {
+            getContainer().remove(wrappers.get(component));
+            wrappers.remove(component);
+        } else {
+            getContainer().remove(DesktopComponentsHelper.getComposition(component));
+        }
+        getContainer().validate();
         if (captions.containsKey(component)) {
             getContainer().remove(captions.get(component));
             captions.remove(component);

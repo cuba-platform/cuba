@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
 import org.apache.commons.lang.StringUtils;
@@ -90,10 +91,12 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
     }
 
     public String getDescription() {
-        return null;
+        return impl.getToolTipText();
     }
 
     public void setDescription(String description) {
+        impl.setToolTipText(description);
+        DesktopToolTipManager.getInstance().registerTooltip(impl);
     }
 
     public String getIcon() {

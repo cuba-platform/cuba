@@ -18,6 +18,7 @@ package com.vaadin.terminal.gwt.client;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.vaadin.terminal.gwt.client.ui.Icon;
 
@@ -30,6 +31,8 @@ public class VCaption extends HTML {
     private Element errorIndicatorElement;
 
     private Element requiredFieldIndicator;
+
+    private Element toolTipIndicator;
 
     private Icon icon;
 
@@ -68,8 +71,6 @@ public class VCaption extends HTML {
         }
 
         setStyleName(CLASSNAME);
-        sinkEvents(VTooltip.TOOLTIP_EVENTS);
-
     }
 
     /**
@@ -168,10 +169,25 @@ public class VCaption extends HTML {
         }
 
         if (hasDescription) {
-            if (captionText != null) {
-                addStyleDependentName("hasdescription");
-            } else {
-                removeStyleDependentName("hasdescription");
+            addStyleDependentName("hasdescription");
+            if (toolTipIndicator == null) {
+                toolTipIndicator = DOM.createDiv();
+                toolTipIndicator.setClassName("v-tooltip-button");
+
+                DOM.insertChild(getElement(), toolTipIndicator, getInsertPosition(ATTRIBUTE_DESCRIPTION));
+                DOM.sinkEvents(toolTipIndicator, Event.ONCLICK);
+                DOM.setEventListener(toolTipIndicator, new EventListener() {
+                    @Override
+                    public void onBrowserEvent(Event event) {
+                        client.handleTooltipEvent(event, owner);
+                    }
+                });
+            }
+        } else {
+            removeStyleDependentName("hasdescription");
+            if (toolTipIndicator != null) {
+                DOM.removeChild(getElement(), toolTipIndicator);
+                toolTipIndicator = null;
             }
         }
 
@@ -184,6 +200,13 @@ public class VCaption extends HTML {
 
                 DOM.insertChild(getElement(), requiredFieldIndicator,
                         getInsertPosition(ATTRIBUTE_REQUIRED));
+                DOM.sinkEvents(requiredFieldIndicator, Event.ONCLICK);
+                DOM.setEventListener(requiredFieldIndicator, new EventListener() {
+                    @Override
+                    public void onBrowserEvent(Event event) {
+                        client.handleTooltipEvent(event, owner);
+                    }
+                });
             }
         } else if (requiredFieldIndicator != null) {
             // Remove existing
@@ -240,6 +263,14 @@ public class VCaption extends HTML {
             return pos;
         }
         if (requiredFieldIndicator != null) {
+            pos++;
+        }
+
+        if (element.equals(ATTRIBUTE_DESCRIPTION)) {
+            return pos;
+        }
+
+        if (toolTipIndicator != null) {
             pos++;
         }
 
@@ -307,6 +338,9 @@ public class VCaption extends HTML {
         if (uidl.hasAttribute(ATTRIBUTE_REQUIRED)) {
             return true;
         }
+        if(uidl.hasAttribute(ATTRIBUTE_DESCRIPTION)){
+            return true;
+        }
 
         return false;
     }
@@ -336,6 +370,9 @@ public class VCaption extends HTML {
         }
         if (requiredFieldIndicator != null) {
             width += Util.getRequiredWidth(requiredFieldIndicator);
+        }
+        if (toolTipIndicator != null) {
+            width += Util.getRequiredWidth(toolTipIndicator);
         }
         if (errorIndicatorElement != null) {
             width += Util.getRequiredWidth(errorIndicatorElement);
@@ -475,8 +512,32 @@ public class VCaption extends HTML {
         }
     }
 
-    protected Element getTextElement() {
+    /**
+     * Returns the caption's text Element.
+     *
+     * @return captionText Element
+     */
+    public Element getTextElement() {
         return captionText;
+    }
+
+
+    /**
+     * Returns the caption's required Element.
+     *
+     * @return required Element
+     */
+    public Element getRequiredElement() {
+        return requiredFieldIndicator;
+    }
+
+    /**
+     * Returns the caption's ToolTip Element.
+     *
+     * @return tooltipIndicator Element
+     */
+    public Element getTooltipElement() {
+        return toolTipIndicator;
     }
 
     public static String getCaptionOwnerPid(Element e) {

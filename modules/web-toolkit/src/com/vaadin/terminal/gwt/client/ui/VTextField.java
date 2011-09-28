@@ -108,7 +108,7 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
             return;
         }
         if (client != null) {
-            client.handleTooltipEvent(event, this);
+            //client.handleTooltipEvent(event, this);
         }
     }
 

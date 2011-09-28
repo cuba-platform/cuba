@@ -30,6 +30,22 @@ public class DesktopContainerHelper {
         return false;
     }
 
+    /**
+     * Checks for the presence of component description
+     *
+     * @param component component to check
+     * @return <b>true</b> if the component has a description, and <b>false</b> otherwise
+     */
+    public static boolean hasExternalDescription(Component component) {
+        if (component instanceof Field && !(component instanceof DesktopCheckBox)) {
+            final String description = ((Field) component).getDescription();
+            if (StringUtils.isNotEmpty(description)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static void assignContainer(Component component, DesktopContainer container) {
         if (component instanceof DesktopComponent) {
             ((DesktopComponent) component).setContainer(container);

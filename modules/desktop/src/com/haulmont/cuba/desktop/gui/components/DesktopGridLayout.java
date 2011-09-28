@@ -7,10 +7,12 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
+import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.GridLayoutAdapter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.GridLayout;
+import net.miginfocom.layout.CC;
 
 import javax.swing.*;
 import java.util.*;
@@ -29,6 +31,7 @@ public class DesktopGridLayout
     protected Collection<Component> ownComponents = new HashSet<Component>();
     protected Map<String, Component> componentByIds = new HashMap<String, Component>();
     protected Map<Component, ComponentCaption> captions = new HashMap<Component, ComponentCaption>();
+    protected Map<Component, JPanel> wrappers = new HashMap<Component, JPanel>();
 
     public DesktopGridLayout() {
         impl = new JPanel();
@@ -59,13 +62,32 @@ public class DesktopGridLayout
         final JComponent composition = DesktopComponentsHelper.getComposition(component);
 
         // add caption first
+        ComponentCaption caption = null;
+        boolean haveDescription = false;
         if (DesktopContainerHelper.hasExternalCaption(component)) {
-            ComponentCaption caption = new ComponentCaption(component);
+            caption = new ComponentCaption(component);
             captions.put(component, caption);
             impl.add(caption, layoutAdapter.getCaptionConstraints(col, row, col2, row2));
+        } else if (DesktopContainerHelper.hasExternalDescription(component)) {
+            caption = new ComponentCaption(component);
+            captions.put(component, caption);
+            haveDescription = true;
         }
-
-        impl.add(composition, layoutAdapter.getConstraints(component, col, row, col2, row2));
+         //if component have description without caption, we need to wrap
+        // component to view Description button horizontally after component
+        if (haveDescription) {
+            JPanel wrapper = new JPanel();
+            BoxLayoutAdapter adapter = BoxLayoutAdapter.create(wrapper);
+            adapter.setExpandLayout(true);
+            adapter.setSpacing(false);
+            adapter.setMargin(false);
+            wrapper.add(composition);
+            wrapper.add(caption, new CC().alignY("top"));
+            impl.add(wrapper, layoutAdapter.getConstraints(component, col, row, col2, row2));
+            wrappers.put(component, wrapper);
+        } else {
+            impl.add(composition, layoutAdapter.getConstraints(component, col, row, col2, row2));
+        }
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
@@ -112,10 +134,16 @@ public class DesktopGridLayout
     }
 
     public void remove(Component component) {
-        impl.remove(DesktopComponentsHelper.getComposition(component));
+        if (wrappers.containsKey(component)) {
+            impl.remove(wrappers.get(component));
+            wrappers.remove(component);
+        } else {
+            impl.remove(DesktopComponentsHelper.getComposition(component));
+        }
         if (captions.containsKey(component)) {
             impl.remove(captions.get(component));
             captions.remove(component);
+
         }
         if (component.getId() != null) {
             componentByIds.remove(component.getId());

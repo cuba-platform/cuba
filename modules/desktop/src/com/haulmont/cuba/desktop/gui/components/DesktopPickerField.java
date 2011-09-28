@@ -12,6 +12,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.Picker;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.CaptionMode;
@@ -298,11 +299,13 @@ public class DesktopPickerField
 
     @Override
     public String getDescription() {
-        return null;
+        return impl.getEditor().getToolTipText();
     }
 
     @Override
     public void setDescription(String description) {
+        impl.getEditor().setToolTipText(description);
+        DesktopToolTipManager.getInstance().registerTooltip(impl.getEditor());
     }
 
     @Override

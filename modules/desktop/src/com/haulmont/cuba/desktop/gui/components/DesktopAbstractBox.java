@@ -10,6 +10,7 @@ import com.haulmont.cuba.desktop.gui.data.DesktopContainerHelper;
 import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
+import net.miginfocom.layout.CC;
 
 import javax.swing.*;
 import java.util.*;
@@ -30,6 +31,7 @@ public abstract class DesktopAbstractBox
 
     protected Component expandedComponent;
     protected Map<Component, ComponentCaption> captions = new HashMap<Component, ComponentCaption>();
+    protected Map<Component, JPanel> wrappers = new HashMap<Component, JPanel>();
 
     public DesktopAbstractBox() {
         impl = new JPanel();
@@ -38,14 +40,34 @@ public abstract class DesktopAbstractBox
 
     public void add(Component component) {
         // add caption first
+        ComponentCaption caption = null;
+        boolean haveDescription = false;
         if (DesktopContainerHelper.hasExternalCaption(component)) {
-            ComponentCaption caption = new ComponentCaption(component);
+            caption = new ComponentCaption(component);
             captions.put(component, caption);
             impl.add(caption, layoutAdapter.getCaptionConstraints());
+        } else if (DesktopContainerHelper.hasExternalDescription(component)) {
+            caption = new ComponentCaption(component);
+            captions.put(component, caption);
+            haveDescription = true;
         }
 
         JComponent composition = DesktopComponentsHelper.getComposition(component);
-        impl.add(composition, layoutAdapter.getConstraints(component));
+        //if component have description without caption, we need to wrap
+        // component to view Description button horizontally after component
+        if (haveDescription) {
+            JPanel wrapper = new JPanel();
+            BoxLayoutAdapter adapter = BoxLayoutAdapter.create(wrapper);
+            adapter.setExpandLayout(true);
+            adapter.setSpacing(false);
+            adapter.setMargin(false);
+            wrapper.add(composition);
+            wrapper.add(caption,new CC().alignY("top"));
+            impl.add(wrapper);
+            wrappers.put(component, wrapper);
+        } else {
+            impl.add(composition, layoutAdapter.getConstraints(component));
+        }
 
         if (component.getId() != null) {
             componentByIds.put(component.getId(), component);
@@ -60,11 +82,17 @@ public abstract class DesktopAbstractBox
 
     public void remove(Component component) {
         JComponent composition = DesktopComponentsHelper.getComposition(component);
-        impl.remove(composition);
+        if (wrappers.containsKey(component)) {
+            impl.remove(wrappers.get(component));
+            wrappers.remove(component);
+        } else {
+            impl.remove(composition);
+        }
         if (captions.containsKey(component)) {
             impl.remove(captions.get(component));
             captions.remove(component);
         }
+
         impl.revalidate();
         impl.repaint();
 

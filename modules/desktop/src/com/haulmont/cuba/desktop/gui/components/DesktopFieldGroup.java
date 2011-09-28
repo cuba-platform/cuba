@@ -10,13 +10,12 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DatasourceComponent;
-import com.haulmont.cuba.gui.components.FieldGroup;
-import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.desktop.sys.vcl.ToolTipButton;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -49,6 +48,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     private Map<Field, Integer> fieldsColumn = new HashMap<Field, Integer>();
     private Map<Field, Component> fieldComponents = new HashMap<Field, Component>();
     private Map<Field, JLabel> fieldLabels = new HashMap<Field, JLabel>();
+    private Map<Field, ToolTipButton> fieldTooltips = new HashMap<Field,ToolTipButton>();
     private Map<Integer, List<Field>> columnFields = new HashMap<Integer, List<Field>>();
     private Map<Field, CustomFieldGenerator> generators = new HashMap<Field, CustomFieldGenerator>();
     private AbstractFieldFactory fieldFactory = new FieldFactory();
@@ -489,6 +489,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         }
 
         String caption = null;
+        String description = null;
 
         CustomFieldGenerator generator = generators.get(field);
         if (generator == null)
@@ -508,17 +509,32 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             if (StringUtils.isNotEmpty(((HasCaption) component).getCaption())) {
                 caption = ((HasCaption) component).getCaption();     // custom field has manually set caption
             }
+
+            description = field.getDescription();
+            if (StringUtils.isNotEmpty(((HasCaption) component).getDescription())) {
+                description = ((HasCaption) component).getDescription();  // custom field has manually set description
+            } else if (StringUtils.isNotEmpty(description)) {
+                ((HasCaption) component).setDescription(description);
+            }
         }
 
         JLabel label = new JLabel(caption);
         label.setVisible(component.isVisible());
-        impl.add(label, new CC().cell(col * 2, row, 1, 1));
+        impl.add(label, new CC().cell(col * 3, row, 1, 1));
         fieldLabels.put(field, label);
-
+        if (description != null&& !(component instanceof CheckBox)) {
+            field.setDescription(description);
+            ToolTipButton tooltipBtn = new ToolTipButton();
+            tooltipBtn.setVisible(component.isVisible());
+            tooltipBtn.setToolTipText(description);
+            DesktopToolTipManager.getInstance().registerTooltip(tooltipBtn);
+            impl.add(tooltipBtn, new CC().cell(col * 3 + 2, row, 1, 1).alignY("top"));
+            fieldTooltips.put(field, tooltipBtn);
+        }
         fieldComponents.put(field, component);
         assignTypicalAttributes(component);
         JComponent jComponent = DesktopComponentsHelper.getComposition(component);
-        CC cell = new CC().cell(col * 2 + 1, row, 1, 1);
+        CC cell = new CC().cell(col * 3 + 1, row, 1, 1);
 
         if (field.getWidth() != null && component.getWidth() == 0 && component.getWidthUnits() == 0) {
             component.setWidth(field.getWidth());

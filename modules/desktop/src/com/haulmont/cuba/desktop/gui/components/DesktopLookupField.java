@@ -14,12 +14,14 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 
+import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import java.awt.event.*;
@@ -272,11 +274,13 @@ public class DesktopLookupField
 
     @Override
     public String getDescription() {
-        return null;
+        return ((JComponent) impl.getEditor().getEditorComponent()).getToolTipText();
     }
 
     @Override
     public void setDescription(String description) {
+        ((JComponent) impl.getEditor().getEditorComponent()).setToolTipText(description);
+        DesktopToolTipManager.getInstance().registerTooltip((JComponent) impl.getEditor().getEditorComponent());
     }
 
     @Override

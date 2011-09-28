@@ -93,9 +93,9 @@ public class VDateField extends FlowPanel implements Paintable, Field {
     @Override
     public void onBrowserEvent(Event event) {
         super.onBrowserEvent(event);
-        if (client != null) {
+        /*if (client != null) {
             client.handleTooltipEvent(event, this);
-        }
+        }*/
     }
 
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {

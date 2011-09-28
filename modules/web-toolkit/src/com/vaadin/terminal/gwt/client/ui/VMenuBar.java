@@ -528,7 +528,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         // Handle tooltips
         if (targetItem == null && client != null) {
             // Handle root menubar tooltips
-            client.handleTooltipEvent(e, this);
+           /* client.handleTooltipEvent(e, this);*/
         } else if (targetItem != null) {
             // Handle item tooltips
             targetItem.onBrowserEvent(e);
