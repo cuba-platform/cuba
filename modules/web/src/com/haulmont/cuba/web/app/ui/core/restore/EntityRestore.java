@@ -30,7 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import java.util.Map;
 import java.util.Set;
 
-public class EntityRestore extends AbstractWindow{
+public class EntityRestore extends AbstractWindow {
 
     protected LookupField entities;
     protected GroupDatasourceImpl entitiesDs;
@@ -66,6 +66,7 @@ public class EntityRestore extends AbstractWindow{
                         if (filter != null)
                             tablePanel.remove(filter);
                         entitiesTable = new WebTable();
+                        entitiesTable.setFrame(frame);
                         for (MetaProperty mp : metaClass.getProperties()) {
                             if (MetaProperty.Type.DATATYPE == mp.getType() /*&& !Arrays.asList(removeFields).contains(mp.getName())*/) {
                                 Table.Column column = new Table.Column(metaClass.getPropertyEx(mp.getName()));
@@ -145,9 +146,13 @@ public class EntityRestore extends AbstractWindow{
         });
         primaryFilter.setVisible(false);
         tablePanel = getComponent("table-panel");
-        String restoreEntitys = ConfigProvider.getConfig(WebConfig.class).getRestoreEntityId();
-        Map<String,Object> options = new java.util.TreeMap<String,Object>();
-        if (restoreEntitys == null || StringUtils.isBlank(restoreEntitys)) {
+        entities.setOptionsMap(getEntitiesLookupFieldOptions());
+    }
+
+    protected Map<String, Object> getEntitiesLookupFieldOptions() {
+        String restoreEntities = ConfigProvider.getConfig(WebConfig.class).getRestoreEntityId();
+        Map<String, Object> options = new java.util.TreeMap<String, Object>();
+        if (restoreEntities == null || StringUtils.isBlank(restoreEntities)) {
             for (MetaClass metaClass : MetadataProvider.getSession().getClasses()) {
                 if (metaClass.getProperty("deleteTs") == null) continue;
                 if (metaClass.getDescendants() != null && metaClass.getDescendants().size() > 0) continue;
@@ -158,12 +163,12 @@ public class EntityRestore extends AbstractWindow{
             for (MetaClass metaClass : MetadataProvider.getSession().getClasses()) {
                 if (metaClass.getProperty("deleteTs") == null) continue;
                 if (metaClass.getDescendants() != null && metaClass.getDescendants().size() > 0) continue;
-                if (restoreEntitys.contains(metaClass.getName())) {
+                if (restoreEntities.contains(metaClass.getName())) {
                     Class classJava = metaClass.getJavaClass();
                     options.put(MessageProvider.getMessage(classJava, classJava.getSimpleName()) + " [" + metaClass.getName() + "]", metaClass);
                 }
             }
         }
-        entities.setOptionsMap(options);
+        return options;
     }
 }
