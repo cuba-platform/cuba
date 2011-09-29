@@ -25,6 +25,11 @@ import com.vaadin.terminal.gwt.client.ui.layout.ChildComponentContainer;
 public class VFieldGroupLayout extends VGridLayout {
 
     private boolean verticalCaption = false;
+    protected int[] columnAdditionalWidths;
+
+    public static final int MAX_ADDITIONAL_WIDTH = 26;
+    public static final int REQUIRED_INDICATOR_WIDTH = 10;
+    public static final int TOOLTIP_INDICATOR_WIDTH = 16;
 
     protected ChildComponentContainer createComponentContainer(Paintable paintable) {
         return new FieldGroupComponentContainer((Widget) paintable,
@@ -38,6 +43,10 @@ public class VFieldGroupLayout extends VGridLayout {
             verticalCaption = uidl.getBooleanAttribute("verticalCaption");
         }
 
+        columnAdditionalWidths = new int[uidl.getIntAttribute("w")];
+        for (int i = 0; i < columnAdditionalWidths.length; i++) {
+            columnAdditionalWidths[i] = MAX_ADDITIONAL_WIDTH;
+        }
         super.updateFromUIDL(uidl, client);
 
         if (cells != null) {
@@ -61,8 +70,12 @@ public class VFieldGroupLayout extends VGridLayout {
         } else {
             RenderSpace cellSpace = super.getAllocatedSpace(child);
             Cell cell = paintableToCell.get(child);
+            int cellAdditionalWidth = ((FieldGroupComponentContainer) cell.cc).getAdditionalWidth();
+            int columnAdditionalWidth = columnAdditionalWidths[cell.getCol()];
+
             return new RenderSpace(
-                    cellSpace.getWidth() - captionWidths[cell.getCol()] - spacingPixelsHorizontal+50,
+                    cellSpace.getWidth() - captionWidths[cell.getCol()] - spacingPixelsHorizontal
+                            + columnAdditionalWidth - cellAdditionalWidth,
                     cellSpace.getHeight()
             );
         }
@@ -145,14 +158,15 @@ public class VFieldGroupLayout extends VGridLayout {
 
     private class FieldGroupComponentContainer extends ChildComponentContainer {
 
-        protected Element fakeCaption;
+        protected Element rightCaption;
+        protected int additionalWidth = MAX_ADDITIONAL_WIDTH;
 
         protected FieldGroupComponentContainer(Widget widget, int orientation) {
             super(widget, orientation);
         }
 
         public int getCaptionWidthAfterComponent() {
-            return fakeCaption == null ? 0 : Util.getRequiredWidth(fakeCaption);
+            return rightCaption == null ? 0 : Util.getRequiredWidth(rightCaption);
         }
 
         @Override
@@ -230,32 +244,37 @@ public class VFieldGroupLayout extends VGridLayout {
                     Util.setFloat(caption.getElement(), "left");
                     int fakeCaptionWidth = 0;
                     if (caption.getRequiredElement() != null) {
-                        fakeCaption = DOM.createDiv();
-                        fakeCaption.setClassName(VCaption.CLASSNAME);
+                        rightCaption = DOM.createDiv();
+                        rightCaption.setClassName(VCaption.CLASSNAME);
                         caption.getElement().removeChild(caption.getRequiredElement());
-                        fakeCaption.appendChild(caption.getRequiredElement());
-                        fakeCaptionWidth += 10;
-                        containerDIV.insertAfter(fakeCaption, widgetDIV);
+                        rightCaption.appendChild(caption.getRequiredElement());
+                        fakeCaptionWidth += REQUIRED_INDICATOR_WIDTH;
+                        containerDIV.insertAfter(rightCaption, widgetDIV);
                     }
                     if (caption.getTooltipElement() != null) {
-                        if (fakeCaption == null) {
-                            fakeCaption = DOM.createDiv();
-                            fakeCaption.setClassName(VCaption.CLASSNAME);
-                            containerDIV.insertAfter(fakeCaption, widgetDIV);
+                        if (rightCaption == null) {
+                            rightCaption = DOM.createDiv();
+                            rightCaption.setClassName(VCaption.CLASSNAME);
+                            containerDIV.insertAfter(rightCaption, widgetDIV);
                         }
                         caption.getElement().removeChild(caption.getTooltipElement());
                         if (!(widget instanceof VCheckBox)) {
-                            fakeCaption.appendChild(caption.getTooltipElement());
-                            fakeCaptionWidth += 16;
+                            rightCaption.appendChild(caption.getTooltipElement());
+                            fakeCaptionWidth += TOOLTIP_INDICATOR_WIDTH;
                         }
                     }
-                    if (fakeCaption != null)
-                        DOM.setStyleAttribute(fakeCaption, "width", fakeCaptionWidth + "px");
+                    if (rightCaption != null)
+                        DOM.setStyleAttribute(rightCaption, "width", fakeCaptionWidth + "px");
+                    additionalWidth = MAX_ADDITIONAL_WIDTH - fakeCaptionWidth;
 
                     containerDIV.insertBefore(caption.getElement(), widgetDIV);
                 }
                 adopt(caption);
             }
+        }
+
+        public int getAdditionalWidth() {
+            return additionalWidth;
         }
 
         @Override
@@ -281,6 +300,9 @@ public class VFieldGroupLayout extends VGridLayout {
                     Cell cell = paintableToCell.get(widget);
                     int maxWidth = VFieldGroupLayout.this.captionWidths[cell.getCol()];
                     VFieldGroupLayout.this.captionWidths[cell.getCol()] = Math.max(maxWidth, captionWidth);
+                    int columnAdditionalWidth = VFieldGroupLayout.this.columnAdditionalWidths[cell.getCol()];
+                    VFieldGroupLayout.this.columnAdditionalWidths[cell.getCol()] =
+                            Math.min(additionalWidth, columnAdditionalWidth);
                 }
             }
         }
