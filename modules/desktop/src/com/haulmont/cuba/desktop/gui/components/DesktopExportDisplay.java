@@ -50,6 +50,7 @@ public class DesktopExportDisplay implements ExportDisplay {
         int result = JOptionPane.showConfirmDialog(mainFrame, fileCaption, dialogCaption,
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (result == JOptionPane.YES_OPTION) {
+            fileChooser.setSelectedFile(new File(fileName));
             if (fileChooser.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
                 saveFile(dataProvider, fileChooser.getSelectedFile());
             }
