@@ -215,7 +215,6 @@ public class WebActionsField
                 } else {
                     lookupButton.setIcon("select/img/bg-right-lookup-readonly.png");
                 }
-                lookupButton.setEnabled(lookupField.isEditable());
                 lookupButton.setStyleName(BaseTheme.BUTTON_LINK);
                 component.addButton((Button) lookupButton.getComponent());
             }
@@ -243,7 +242,6 @@ public class WebActionsField
 
         if (action.getId().equals(LOOKUP) && lookupButton != null) {
             lookupButton.setAction(action);
-            lookupButton.setEnabled(lookupField.isEditable());
         } else if (action.getId().equals(OPEN) && openButton != null) {
             openButton.setAction(action);
             openButton.setEnabled(lookupField.isEditable());
