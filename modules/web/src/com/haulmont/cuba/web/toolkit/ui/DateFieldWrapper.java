@@ -55,7 +55,15 @@ public class DateFieldWrapper extends CustomField {
         return Date.class;
     }
 
-    public boolean isRequired(){
+    public void setReadOnly(boolean readOnly) {
+        dateField.setEditable(!readOnly);
+    }                                    
+
+    public boolean isReadOnly() {
+        return !dateField.isEditable();
+    }
+
+    public boolean isRequired() {
         return dateField.isRequired();
     }
 
