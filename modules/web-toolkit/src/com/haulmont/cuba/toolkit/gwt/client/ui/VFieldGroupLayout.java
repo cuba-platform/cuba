@@ -42,10 +42,11 @@ public class VFieldGroupLayout extends VGridLayout {
         if (uidl.hasAttribute("verticalCaption")) {
             verticalCaption = uidl.getBooleanAttribute("verticalCaption");
         }
-
-        columnAdditionalWidths = new int[uidl.getIntAttribute("w")];
-        for (int i = 0; i < columnAdditionalWidths.length; i++) {
-            columnAdditionalWidths[i] = MAX_ADDITIONAL_WIDTH;
+        if (uidl.getAttributeNames().contains("w")) {
+            columnAdditionalWidths = new int[uidl.getIntAttribute("w")];
+            for (int i = 0; i < columnAdditionalWidths.length; i++) {
+                columnAdditionalWidths[i] = MAX_ADDITIONAL_WIDTH;
+            }
         }
         super.updateFromUIDL(uidl, client);
 
