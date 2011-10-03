@@ -65,6 +65,11 @@
         <property name="parent"/>
     </view>
 
+    <view entity="sec$Group" name="group.edit" extends="group.browse">
+        <property name="constraints" view="_local"/>
+        <property name="sessionAttributes" view="_local"/>
+    </view>
+
     <view entity="sec$User" name="group.browse">
         <property name="name"/>
         <property name="login"/>

@@ -49,7 +49,7 @@
             <split id="split" orientation="horizontal" pos="30">
                 <vbox expand="groups" spacing="true" margin="false;true;false;false">
                     <buttonsPanel>
-                        <button action="groups.create" icon="icons/create.png"/>
+                        <popupButton id="createButton" caption="msg://create.caption" icon="icons/create.png"/>
                         <button action="groups.edit" icon="icons/edit.png"/>
                         <button action="groups.remove" icon="icons/remove.png"/>
                         <button action="groups.refresh" icon="icons/refresh.png"/>
