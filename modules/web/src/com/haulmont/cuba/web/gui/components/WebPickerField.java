@@ -226,8 +226,11 @@ public class WebPickerField
             @Override
             protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
                 return new PropertyWrapper(item, propertyPath, dsManager) {
-                     public Object getValue(){
-                        return value;
+                    public Object getValue(){
+                        if (value == null)
+                            return super.getValue();
+                        else
+                            return value;
                     }
 
                     @Override
