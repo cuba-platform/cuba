@@ -80,8 +80,11 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 }
 
                 // if completed
-                if (!taskHandler.isAlive()) {
+                if (taskHandler.isDone()) {
                     task.done(taskExecutor.getExecutionResult());
+                }
+
+                if (!taskHandler.isAlive()) {
                     timer.stopTimer();
                 }
             }
