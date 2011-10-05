@@ -573,7 +573,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         newFilterEntity.setComponentId(filterEntity.getComponentId());
         newFilterEntity.setName(MessageProvider.getMessage(MESSAGES_PACK, "newFilterName"));
         newFilterEntity.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
-        newFilterEntity.setCode(filterEntity.getCode());
+        //newFilterEntity.setCode(filterEntity.getCode());
         newFilterEntity.setXml(filterEntity.getXml());
         filterEntity = newFilterEntity;
     }
