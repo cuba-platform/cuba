@@ -203,16 +203,7 @@ public class FilterEditor extends AbstractFilterEditor {
         defaultCb.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (defaultCb.isSelected()) {
-                    applyDefaultCb.setEnabled(true);
-                } else {
-                    applyDefaultCb.setEnabled(false);
-                    applyDefaultCb.setSelected(false);
-                }
-                if (filterEntity != null) {
-                    filterEntity.setIsDefault(defaultCb.isSelected());
-
-                }
+                updateApplyDefaultCb();
             }
         });
         checkBoxes.add(defaultCbLabel);
@@ -258,6 +249,18 @@ public class FilterEditor extends AbstractFilterEditor {
         return saveBtn;
     }
 
+    private void updateApplyDefaultCb(){
+        if (defaultCb.isSelected()) {
+                    applyDefaultCb.setEnabled(true);
+                } else {
+                    applyDefaultCb.setEnabled(false);
+                    applyDefaultCb.setSelected(false);
+                }
+                if (filterEntity != null) {
+                    filterEntity.setIsDefault(defaultCb.isSelected());
+
+                }
+    }
 
     private void initAddSelect(JPanel panel) {
         JLabel label = new JLabel(getMessage("FilterEditor.addCondition"));
@@ -389,6 +392,7 @@ public class FilterEditor extends AbstractFilterEditor {
         defaultCb.setVisible(filterEntity.getFolder() == null);
         defaultCbLabel.setVisible(defaultCb.isVisible());
         defaultCb.setSelected(isTrue(filterEntity.getIsDefault()));
+        updateApplyDefaultCb();
         applyDefaultCb.setVisible(defaultCb.isVisible() && manualApplyRequired);
         applyDefaultLabel.setVisible(applyDefaultCb.isVisible());
         applyDefaultCb.setSelected(BooleanUtils.isTrue(filterEntity.getApplyDefault()));

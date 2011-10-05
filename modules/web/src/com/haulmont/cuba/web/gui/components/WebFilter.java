@@ -217,27 +217,35 @@ public class WebFilter
 
         actions.addAction(new CreateAction());
 
-        if (filterEntity == null)
+        if (filterEntity == null) {
+            actions.addAction(new MakeDefaultAction());
             return;
+        }
 
         if ((BooleanUtils.isNotTrue(filterEntity.getIsSet())))
             actions.addAction(new CopyAction());
 
         if (checkGlobalFilterPermission()) {
-            if ((BooleanUtils.isNotTrue(filterEntity.getIsSet()))&&((filterEntity.getFolder() == null) || (filterEntity.getFolder() instanceof SearchFolder) ||
-                    ((filterEntity.getFolder() instanceof AppFolder) && checkGlobalAppFolderPermission())))
+            if ((BooleanUtils.isNotTrue(filterEntity.getIsSet())) &&
+                    ((filterEntity.getFolder() == null && (filterEntity.getCode() == null)) ||
+                            (filterEntity.getFolder() instanceof SearchFolder) ||
+                            ((filterEntity.getFolder() instanceof AppFolder) && checkGlobalAppFolderPermission())))
                 actions.addAction(new EditAction());
 
             if (filterEntity.getCode() == null && filterEntity.getFolder() == null)
                 actions.addAction(new DeleteAction());
         } else {
             if (filterEntity.getFolder() instanceof SearchFolder) {
-                if ((BooleanUtils.isNotTrue(filterEntity.getIsSet()))&&(UserSessionProvider.getUserSession().getUser().equals(((SearchFolder) filterEntity.getFolder()).getUser())))
+                if ((UserSessionProvider.getUserSession().getUser().equals(((SearchFolder) filterEntity.getFolder()).getUser())) &&
+                        (BooleanUtils.isNotTrue(filterEntity.getIsSet())))
                     actions.addAction(new EditAction());
             }
-            if (filterEntity.getCode() == null && filterEntity.getFolder() == null && UserSessionProvider.getUserSession().getUser().equals(filterEntity.getUser()))
+            if (filterEntity.getCode() == null && filterEntity.getFolder() == null &&
+                    UserSessionProvider.getUserSession().getUser().equals(filterEntity.getUser()))
                 actions.addAction(new DeleteAction());
         }
+
+        actions.addAction(new MakeDefaultAction());
 
         if (filterEntity.getCode() == null && foldersPane != null && filterEntity.getFolder() == null)
             actions.addAction(new SaveAsFolderAction(false));
@@ -1091,6 +1099,16 @@ public class WebFilter
         );
     }
 
+    private void setDefaultFilter() {
+        if (filterEntity != null) {
+            filterEntity.setIsDefault(true);
+        }
+        Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
+        for (FilterEntity filter : filters) {
+            if (!ObjectUtils.equals(filter, filterEntity))
+                filter.setIsDefault(false);
+        }
+    }
 
     private class SelectListener implements Property.ValueChangeListener {
 
@@ -1193,6 +1211,22 @@ public class WebFilter
 
         public void actionPerform(Component component) {
             delete();
+        }
+    }
+
+    private class MakeDefaultAction extends AbstractAction {
+        public MakeDefaultAction() {
+            super("makeDefault");
+        }
+
+        @Override
+        public String getCaption() {
+            return MessageProvider.getMessage(MESSAGES_PACK, getId());
+        }
+
+        @Override
+        public void actionPerform(Component component) {
+            setDefaultFilter();
         }
     }
 
