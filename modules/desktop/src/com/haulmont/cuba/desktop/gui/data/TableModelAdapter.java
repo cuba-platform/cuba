@@ -113,11 +113,17 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
         return getValueAt(item, columnIndex);
     }
 
+    @SuppressWarnings("unchecked")
     public Object getValueAt(Entity item, int columnIndex) {
         Table.Column column = columns.get(columnIndex);
         if (column.getId() instanceof MetaPropertyPath) {
             String property = column.getId().toString();
             Object value = item.getValueEx(property);
+
+            if (column.getFormatter() != null) {
+                return column.getFormatter().format(value);
+            }
+
             MetaPropertyPath metaProperty = ((MetaPropertyPath) column.getId());
 
             boolean isDataType = (metaProperty.getRange().isDatatype());
