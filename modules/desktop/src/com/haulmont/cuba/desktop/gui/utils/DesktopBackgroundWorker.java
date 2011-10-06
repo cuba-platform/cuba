@@ -70,7 +70,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
             try {
                 result = runnableTask.run();
             } catch (Exception ex) {
-                log.error(ex);
+                log.error("Internal background task error", ex);
             }
             return result;
         }

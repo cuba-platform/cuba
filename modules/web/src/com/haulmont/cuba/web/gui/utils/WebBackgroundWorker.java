@@ -49,7 +49,13 @@ public class WebBackgroundWorker implements BackgroundWorker {
         checkNotNull(task);
         checkNotNull(task.getOwnerWindow());
 
-        App appInstance = App.getInstance();
+        App appInstance;
+        try {
+            appInstance = App.getInstance();
+        } catch (IllegalStateException ex) {
+            log.error("Couldn't handle task", ex);
+            throw ex;
+        }
 
         // UI timer
         WebTimer pingTimer = new WebTimer(uiCheckInterval, true);
@@ -140,7 +146,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
             try {
                 result = runnableTask.run();
             } catch (Exception ex) {
-                log.error(ex);
+                log.error("Internal background task error", ex);
             } finally {
                 this.result = result;
                 // Is done
