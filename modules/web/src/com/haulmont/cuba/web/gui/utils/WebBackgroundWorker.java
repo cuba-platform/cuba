@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.web.gui.utils;
 
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
@@ -16,7 +15,6 @@ import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.WatchDog;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.WebTimer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,13 +33,31 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
     private Log log = LogFactory.getLog(WebBackgroundWorker.class);
 
-    private final int uiCheckInterval;
-
     private WatchDog watchDog;
 
-    public WebBackgroundWorker(Configuration configuration, WatchDog watchDog) {
+    public WebBackgroundWorker(WatchDog watchDog) {
         this.watchDog = watchDog;
-        this.uiCheckInterval = configuration.getConfig(WebConfig.class).getUiCheckInterval();
+    }
+
+    private static class WebTimerListener {
+
+        private WebTimer timer;
+
+        private Timer.TimerListener timerListener;
+
+        private WebTimerListener(WebTimer timer) {
+            this.timer = timer;
+        }
+
+        public void startListen(Timer.TimerListener timerListener) {
+            stopListen();
+            this.timerListener = timerListener;
+            timer.addTimerListener(timerListener);
+        }
+
+        public void stopListen() {
+            timer.sheduleStopListen(timerListener);
+        }
     }
 
     @Override
@@ -58,10 +74,12 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         // UI timer
-        WebTimer pingTimer = new WebTimer(uiCheckInterval, true);
+        WebTimer pingTimer = appInstance.getWorkerTimer();
+
+        final WebTimerListener webTimerListener = new WebTimerListener(pingTimer);
 
         // create task executor
-        final WebTaskExecutor<T, V> taskExecutor = new WebTaskExecutor<T, V>(appInstance, task, pingTimer);
+        final WebTaskExecutor<T, V> taskExecutor = new WebTaskExecutor<T, V>(appInstance, task, webTimerListener);
 
         // add thread to taskSet
         appInstance.addBackgroundTask(taskExecutor);
@@ -70,12 +88,16 @@ public class WebBackgroundWorker implements BackgroundWorker {
         final TaskHandler<T, V> taskHandler = new TaskHandler<T, V>(taskExecutor, watchDog);
 
         // add timer to AppWindow for UI ping
-        pingTimer.addTimerListener(new com.haulmont.cuba.gui.components.Timer.TimerListener() {
-
+        Timer.TimerListener timerListener = new Timer.TimerListener() {
             private long intentVersion = 0;
+
+            private boolean stopped = false;
 
             @Override
             public void onTimer(Timer timer) {
+                if (stopped)
+                    return;
+
                 // handle intents
                 if (!taskHandler.isCancelled()) {
                     long newIntent = taskExecutor.getIntentVersion();
@@ -88,10 +110,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 // if completed
                 if (taskHandler.isDone()) {
                     task.done(taskExecutor.getExecutionResult());
-                }
-
-                if (!taskHandler.isAlive()) {
-                    timer.stopTimer();
+                    webTimerListener.stopListen();
                 }
             }
 
@@ -99,8 +118,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
             public void onStopTimer(Timer timer) {
                 // Do nothing
             }
-        });
-        appInstance.addTimer(pingTimer, task.getOwnerWindow());
+        };
+        webTimerListener.startListen(timerListener);
 
         return taskHandler;
     }
@@ -113,7 +132,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         private App app;
 
         private BackgroundTask<T, V> runnableTask;
-        private WebTimer pingTimer;
+        private WebTimerListener webTimerListener;
 
         private volatile boolean canceled = false;
         private volatile boolean done = false;
@@ -125,9 +144,10 @@ public class WebBackgroundWorker implements BackgroundWorker {
         private V result = null;
         protected UUID userId;
 
-        private WebTaskExecutor(App app, BackgroundTask<T, V> runnableTask, WebTimer pingTimer) {
+        private WebTaskExecutor(App app, BackgroundTask<T, V> runnableTask,
+                                WebTimerListener webTimerListener) {
             this.runnableTask = runnableTask;
-            this.pingTimer = pingTimer;
+            this.webTimerListener = webTimerListener;
             this.app = app;
             runnableTask.setProgressHandler(this);
 
@@ -160,7 +180,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
-        public void handleProgress(T ... changes) {
+        public void handleProgress(T... changes) {
             synchronized (intents) {
                 intentVersion++;
                 intents.addAll(Arrays.asList(changes));
@@ -193,9 +213,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         private void stopTimer(boolean mayInterruptIfRunning) {
-            if ((pingTimer != null) && mayInterruptIfRunning) {
-                pingTimer.stopTimer();
-                pingTimer = null;
+            if ((webTimerListener != null) && mayInterruptIfRunning) {
+                webTimerListener.stopListen();
             }
         }
 

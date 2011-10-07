@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.exception.*;
+import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.haulmont.cuba.web.sys.LinkHandler;
@@ -110,6 +111,8 @@ public abstract class App extends Application
 
     protected WebConfig webConfig;
 
+    protected WebTimer workerTimer;
+
     static {
         AppContext.setProperty(AppConfig.CLIENT_TYPE_PROP, ClientType.WEB.toString());
     }
@@ -136,6 +139,7 @@ public abstract class App extends Application
         requestStartTimes = new WeakHashMap<Object, Long>();
     }
 
+    @Override
     public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
         this.response = response;
         cookies.updateCookies(request);
@@ -145,6 +149,7 @@ public abstract class App extends Application
         }
     }
 
+    @Override
     public void onRequestEnd(HttpServletRequest request, HttpServletResponse response) {
         testModeRequest = false;
     }
@@ -339,6 +344,7 @@ public abstract class App extends Application
     public void userSubstituted(Connection connection) {
     }
 
+    @Override
     public void terminalError(Terminal.ErrorEvent event) {
         GlobalConfig config = ConfigProvider.getConfig(GlobalConfig.class);
         if (config.getTestMode()) {
@@ -365,6 +371,7 @@ public abstract class App extends Application
         }
     }
 
+    @Override
     public void transactionStart(Application application, Object transactionData) {
         HttpServletRequest request = (HttpServletRequest) transactionData;
 
@@ -477,6 +484,7 @@ public abstract class App extends Application
         }
     }
 
+    @Override
     public void transactionEnd(Application application, Object transactionData) {
         HttpServletRequest request = (HttpServletRequest) transactionData;
         if (connection.isConnected()) {
@@ -555,6 +563,16 @@ public abstract class App extends Application
      */
     public void addTimer(final Timer timer, com.haulmont.cuba.gui.components.Window owner) {
         timers.add(timer, owner);
+    }
+
+    public WebTimer getWorkerTimer() {
+        if (workerTimer != null)
+            return workerTimer;
+
+        int uiCheckInterval = ConfigProvider.getConfig(WebConfig.class).getUiCheckInterval();
+        workerTimer = new WebTimer(uiCheckInterval, true);
+        addTimer(workerTimer);
+        return workerTimer;
     }
 
     protected Timer createSessionPingTimer(final boolean connected) {
