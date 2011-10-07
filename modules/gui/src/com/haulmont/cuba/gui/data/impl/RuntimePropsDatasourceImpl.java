@@ -18,12 +18,16 @@ import org.apache.commons.lang.StringUtils;
 import java.util.*;
 
 /**
+ * Specific datasource for runtime properties.
+ * It will be initialized only when main datasource will be valid.
+ *
  * <p>$Id$</p>
  *
  * @author devyatkin
  */
 
-public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimePropertiesEntity> implements RuntimePropsDatasource<RuntimePropertiesEntity> {
+public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimePropertiesEntity>
+        implements RuntimePropsDatasource<RuntimePropertiesEntity> {
 
     private DsContext dsContext;
     private DataService dataService;
@@ -32,7 +36,7 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
     private View view;
     private Datasource mainDs;
     private boolean inittedBefore = false;
-
+    private boolean categoryChanged = false;
 
     protected State state = State.NOT_INITIALIZED;
 
@@ -53,6 +57,7 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
         mainDs.addListener(new DsListenerAdapter() {
             public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                 if (property.equals("category")) {
+                    categoryChanged=true;
                     initMetaClass();
                 }
             }
@@ -76,14 +81,16 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
         }
 
         LoadContext valuesContext = new LoadContext(CategoryAttributeValue.class);
-        LoadContext.Query query = valuesContext.setQueryString("select a from sys$CategoryAttributeValue a,sys$CategoryAttribute atr where a.entityId =:e and a.categoryAttribute=atr and atr.category.id=:cat ");
+        LoadContext.Query query = valuesContext.setQueryString("select a from sys$CategoryAttributeValue a" +
+                ",sys$CategoryAttribute atr where a.entityId =:e and a.categoryAttribute=atr and atr.category.id=:cat ");
         query.addParameter("e", entity.getUuid());
         query.addParameter("cat", entity.getCategory());
         valuesContext.setView("categoryAttributeValue");
         List<CategoryAttributeValue> entityValues = dataService.loadList(valuesContext);
 
         LoadContext attributesContext = new LoadContext(CategoryAttribute.class);
-        LoadContext.Query attributeQuery = attributesContext.setQueryString("select a from sys$CategoryAttribute a where a.category.id=:cat order by a.orderNo");
+        LoadContext.Query attributeQuery = attributesContext.setQueryString("select a from sys$CategoryAttribute a " +
+                "where a.category.id=:cat order by a.orderNo");
         attributeQuery.addParameter("cat", entity.getCategory());
         valuesContext.setView("_local");
         List<CategoryAttribute> attributes = dataService.loadList(attributesContext);
@@ -93,19 +100,28 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
 
         for (CategoryAttribute attribute : attributes) {
             CategoryAttributeValue attrValue = getValue(attribute, entityValues);
+            Object value;
             if (attrValue == null) {
                 attrValue = new CategoryAttributeValue();
                 attrValue.setCategoryAttribute(attribute);
                 attrValue.setEntityId(entity.getId());
-                attrValue.setStringValue(attribute.getDefaultString());
-                attrValue.setIntValue(attribute.getDefaultInt());
-                attrValue.setDoubleValue(attribute.getDefaultDouble());
-                attrValue.setBooleanValue(attribute.getDefaultBoolean());
-                attrValue.setDateValue(attribute.getDefaultDate());
-                attrValue.setEntityValue(attribute.getDefaultEntityId());
+                if (PersistenceHelper.isNew(entity) || categoryChanged) {
+                    attrValue.setStringValue(attribute.getDefaultString());
+                    attrValue.setIntValue(attribute.getDefaultInt());
+                    attrValue.setDoubleValue(attribute.getDefaultDouble());
+                    attrValue.setBooleanValue(attribute.getDefaultBoolean());
+                    attrValue.setDateValue(attribute.getDefaultDate());
+                    attrValue.setEntityValue(attribute.getDefaultEntityId());
+                    value = parseValue(attribute, attrValue);
+                    itemToUpdate.add(attrValue);
+                    modified = true;
+                } else {
+                    value = null;
+                }
+            } else {
+                value = parseValue(attribute, attrValue);
             }
             categoryValues.put(attribute.getName(), attrValue);
-            Object value = parseValue(attribute, attrValue);
             variables.put(attribute.getName(), value);
             RuntimePropertiesMetaProperty property = new RuntimePropertiesMetaProperty(
                     this.metaClass,
@@ -135,8 +151,8 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
         inittedBefore = true;
     }
 
-    private void createOptionsDatasource(CategoryAttribute attribute, SetValueEntity attributeValue) {
-        String property = attribute.getName();
+    private void createOptionsDatasource(CategoryAttribute attribute, final SetValueEntity attributeValue) {
+        final String property = attribute.getName();
         final String id = property;
 
         final MetaClass metaClass = this.getMetaClass();
@@ -160,6 +176,7 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
         }
 
         ((DatasourceImpl) datasource).valid();
+        //datasource.setItem(attributeValue);
         ((DsContextImplementation) getDsContext()).register(datasource);
     }
 

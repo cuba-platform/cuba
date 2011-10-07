@@ -39,7 +39,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     private MigLayout layout;
     private Datasource datasource;
     private int rows;
-    private int cols;
+    private int cols = 1;
     private boolean editable = true;
     private boolean enabled = true;
     private boolean borderVisible = false;

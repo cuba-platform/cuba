@@ -27,6 +27,9 @@ import org.apache.commons.lang.StringUtils;
 import java.util.*;
 
 /**
+ *  Universal frame for editing Runtime properties
+ *  of any {@link com.haulmont.cuba.core.entity.CategorizedEntity} subclass.
+ *
  * <p>$Id$</p>
  *
  * @author devyatkin
@@ -137,8 +140,8 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                     fieldsCount++;
                     newRuntime.addField(field, columnNo);
                     if (fieldsCount % rowsPerColumn == 0) {
-                        columnNo++;
                         newRuntime.setColumns(columnNo + 1);
+                        columnNo++;
                     }
                 }
                 if (!rootFields.isEmpty())
@@ -172,9 +175,10 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                                 public Component generateField(Datasource datasource, Object propertyId) {
                                     LookupField field = AppConfig.getFactory().createComponent(LookupField.NAME);
                                     field.setFrame(RuntimePropertiesFrame.this);
+                                    CollectionDatasource fieldDs = getDsContext().get((String) propertyId);
+                                    field.setOptionsDatasource(fieldDs);
                                     field.setDatasource(rds, (String) propertyId);
-                                    field.setOptionsDatasource(getDsContext().<CollectionDatasource>get((String) propertyId));
-//                                field.setHeight("-1px");
+                                    //field.setHeight("-1px");
                                     field.setWidth("100%");
                                     return field;
                                 }
@@ -201,6 +205,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                                         lookupAction.setLookupScreen(screen);
                                 }
                             }
+                            pickerField.setWidth("100%");
                             return pickerField;
                         }
                     });

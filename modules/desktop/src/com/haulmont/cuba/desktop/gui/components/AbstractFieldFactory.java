@@ -75,10 +75,11 @@ public abstract class AbstractFieldFactory {
     private Component createStringField(Datasource datasource, String property, Element xmlDescriptor) {
         DesktopTextField textField = new DesktopTextField();
         textField.setDatasource(datasource, property);
-
-        final String rows = xmlDescriptor.attributeValue("rows");
-        if (!StringUtils.isEmpty(rows)) {
-             textField.setRows(Integer.valueOf(rows));
+        if (xmlDescriptor != null) {
+            final String rows = xmlDescriptor.attributeValue("rows");
+            if (!StringUtils.isEmpty(rows)) {
+                textField.setRows(Integer.valueOf(rows));
+            }
         }
 
         textField.setVisible(true);

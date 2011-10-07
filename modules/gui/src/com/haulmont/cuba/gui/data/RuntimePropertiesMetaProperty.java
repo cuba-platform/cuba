@@ -23,6 +23,8 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.*;
 
 /**
+ * Specific MetaProperty for runtime property.
+ *
  * <p>$Id$</p>
  *
  * @author devyatkin
@@ -34,7 +36,7 @@ public class RuntimePropertiesMetaProperty implements MetaProperty {
     private Range range;
     private Class javaClass;
 
-    private AnnotatedElement annotatedElement = new FakeAnnotadetElement();
+    private AnnotatedElement annotatedElement = new FakeAnnotatedElement();
 
     public RuntimePropertiesMetaProperty(MetaClass metaClass, String name, Class javaClass) {
         this.javaClass = javaClass;
@@ -126,26 +128,26 @@ public class RuntimePropertiesMetaProperty implements MetaProperty {
         return null;
     }
 
-    protected class FakeAnnotadetElement implements AnnotatedElement {
+    protected class FakeAnnotatedElement implements AnnotatedElement {
 
         @Override
         public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
+            return false;
         }
 
         @Override
         public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return null;
         }
 
         @Override
         public Annotation[] getAnnotations() {
-            return new Annotation[0];  //To change body of implemented methods use File | Settings | File Templates.
+            return new Annotation[0];
         }
 
         @Override
         public Annotation[] getDeclaredAnnotations() {
-            return new Annotation[0];  //To change body of implemented methods use File | Settings | File Templates.
+            return new Annotation[0];
         }
     }
 }

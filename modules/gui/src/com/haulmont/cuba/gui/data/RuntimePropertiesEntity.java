@@ -16,10 +16,13 @@ import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.global.UuidProvider;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
 /**
+ * The entity, that contains a set of runtime properties.
+ *
  * <p>$Id$</p>
  *
  * @author devyatkin
@@ -34,7 +37,8 @@ public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
     private Set<ValueListener> listeners = new LinkedHashSet<ValueListener>();
     private Map<String,CategoryAttributeValue> categoryValues;
 
-    public RuntimePropertiesEntity(MetaClass metaClass, Map<String, Object> variables, Map<String, CategoryAttributeValue> categoryValues) {
+    public RuntimePropertiesEntity(MetaClass metaClass, Map<String, Object> variables,
+                                   Map<String, CategoryAttributeValue> categoryValues) {
         this.metaClass = metaClass;
         this.id = UuidProvider.createUuid();
         this.values = variables;
@@ -85,6 +89,7 @@ public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
         return (T) values.get(name);
     }
 
+    @Override
     public void setValue(String name, Object value) {
         Object oldValue = values.get(name);
         if (!ObjectUtils.equals(oldValue, value)) {
@@ -110,17 +115,22 @@ public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
         return (T) values.get(propertyPath);
     }
 
+    @Override
     public void setValueEx(String propertyPath, Object value) {
         Object oldValue = values.get(propertyPath);
         if (!ObjectUtils.equals(oldValue, value)) {
             values.put(propertyPath, value);
             changed.put(propertyPath, value);
             CategoryAttributeValue attrValue = categoryValues.get(propertyPath);
-            if (Entity.class.isAssignableFrom(value.getClass())) {
-                attrValue.setEntityValue(((StandardEntity) value).getUuid());
-            } else
-                setValue(attrValue,value);
-
+            if (value != null) {
+                if (Entity.class.isAssignableFrom(value.getClass())) {
+                    attrValue.setEntityValue(((StandardEntity) value).getUuid());
+                } else {
+                    setValue(attrValue, value);
+                }
+            } else {
+                setValue(attrValue, value);
+            }
             for (ValueListener listener : listeners) {
                 listener.propertyChanged(this, propertyPath, oldValue, value);
             }
@@ -131,20 +141,36 @@ public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
         return categoryValues.get(name);
     }
 
-
     private void setValue(CategoryAttributeValue attrValue, Object value) {
-        if (value instanceof Integer) {
-            attrValue.setIntValue((Integer) value);
-        } else if (value instanceof Double) {
-            attrValue.setDoubleValue((Double) value);
-        } else if (value instanceof Boolean) {
-            attrValue.setBooleanValue((Boolean) value);
-        } else if (value instanceof Date) {
-            attrValue.setDateValue((Date) value);
-        } else if (value instanceof String) {
-            attrValue.setStringValue((String) value);
-        } else if (value instanceof SetValueEntity) {
-            attrValue.setStringValue(((SetValueEntity) value).getValue());
+        if (attrValue.getCategoryAttribute().getIsEntity()) {
+            attrValue.setEntityValue((UUID) value);
+        } else {
+            String dataType = attrValue.getCategoryAttribute().getDataType();
+            switch (RuntimePropsDatasource.PropertyType.valueOf(dataType)) {
+                case INTEGER:
+                    attrValue.setIntValue((Integer) value);
+                    break;
+                case DOUBLE:
+                    attrValue.setDoubleValue((Double) value);
+                    break;
+                case BOOLEAN:
+                    attrValue.setBooleanValue((Boolean) value);
+                    break;
+                case DATE:
+                    attrValue.setDateValue((Date) value);
+                    break;
+                case STRING:
+                    attrValue.setStringValue(StringUtils.trimToNull((String) value));
+                    break;
+                case ENUMERATION:
+                    if (value != null)
+                        attrValue.setStringValue(((SetValueEntity) value).getValue());
+                    else attrValue.setStringValue(null);
+                    break;
+                case ENTITY:
+                    attrValue.setEntityValue((UUID) value);
+                    break;
+            }
         }
     }
 }

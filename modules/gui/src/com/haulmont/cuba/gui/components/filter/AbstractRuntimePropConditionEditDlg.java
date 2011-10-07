@@ -182,20 +182,21 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
         condition.setInExpr(Op.IN.equals(op) || Op.NOT_IN.equals(op));
         condition.setOperator(operationSelect.<Op>getValue());
         AbstractParam param;
-
+        Class paramJavaClass = op.isUnary() ? null : javaClass;
         if (SetValueEntity.class.isAssignableFrom(javaClass)) {
             condition.setJavaClass(String.class);
-            param = getParamFactory().createParam(paramName, javaClass, null, null, condition.getDatasource(),
+            param = getParamFactory().createParam(paramName, paramJavaClass, null, null, condition.getDatasource(),
                     condition.isInExpr(), attribute.getId());
         } else {
             condition.setJavaClass(javaClass);
-            param = getParamFactory().createParam(paramName, javaClass, null, null, condition.getDatasource(),
+            param = getParamFactory().createParam(paramName, paramJavaClass, null, null, condition.getDatasource(),
                     condition.isInExpr());
         }
 
         condition.setParam(param);
 
-        AbstractParam categoryAttrParam = getParamFactory().createParam(categoryAttrParamName, UUID.class, null, null, condition.getDatasource(), false);
+        AbstractParam categoryAttrParam = getParamFactory().createParam(categoryAttrParamName, UUID.class,
+                null, null, condition.getDatasource(), false);
         categoryAttrParam.setValue(attributeSelect.<CategoryAttribute>getValue().getId());
         condition.setCategoryAttributeParam(categoryAttrParam);
         condition.setCategoryId(categorySelect.<Category>getValue().getId());
