@@ -44,8 +44,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
 import static com.haulmont.cuba.report.formatters.oo.ODTHelper.*;
@@ -104,48 +102,38 @@ public class DocFormatter extends AbstractFormatter {
         }
     }
 
+    @Override
     public void createDocument(Band rootBand, final ReportOutputType outputType, final OutputStream outputStream) {
-
         if (templateFile == null)
             throw new NullPointerException("Template file can't be null");
 
         this.rootBand = rootBand;
-        try {
-            Runnable runnable = new Runnable() {
-                public void run() {
-                    try {
-                        XInputStream xis = getXInputStream(templateFile);
-                        XComponentLoader xComponentLoader = connection.createXComponentLoader();
-                        xComponent = loadXComponent(xComponentLoader, xis);
 
-                        officeComponent = new OfficeComponent(connection, xComponentLoader, xComponent);
+        Runnable runnable = new Runnable() {
+            public void run() {
+                try {
+                    XInputStream xis = getXInputStream(templateFile);
+                    XComponentLoader xComponentLoader = connection.createXComponentLoader();
+                    xComponent = loadXComponent(xComponentLoader, xis);
 
-                        // Lock clipboard
-                        synchronized (ClipBoardHelper.class) {
-                            // Handling tables
-                            fillTables();
-                        }
-                        // Handling text
-                        replaceAllAliasesInDocument();
-                        // Saving document to output stream and closing
-                        saveAndClose(xComponent, outputType, outputStream);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
+                    officeComponent = new OfficeComponent(connection, xComponentLoader, xComponent);
+
+                    // Lock clipboard
+                    synchronized (ClipBoardHelper.class) {
+                        // Handling tables
+                        fillTables();
                     }
+                    // Handling text
+                    replaceAllAliasesInDocument();
+                    // Saving document to output stream and closing
+                    saveAndClose(xComponent, outputType, outputStream);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
-            };
-
-            Future future = ((OOOConnector) Locator.lookup(OOOConnector.NAME)).getExecutor().submit(runnable);
-            future.get(ConfigProvider.getConfig(ServerConfig.class).getDocFormatterTimeout(), TimeUnit.SECONDS);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        } finally {
-            try {
-                connection.close();
-            } catch (Exception e) {
-                //close silently
             }
-        }
+        };
+
+        runWithTimeoutAndCloseConnection(connection, runnable);
     }
 
     private void saveAndClose(XComponent xComponent, ReportOutputType outputType, OutputStream outputStream)

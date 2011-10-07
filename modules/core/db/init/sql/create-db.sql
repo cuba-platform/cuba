@@ -624,8 +624,8 @@ create table REPORT_TEMPLATE
   CODE varchar(50),
   TEMPLATE_FILE_ID varchar(36),
   OUTPUT_TYPE integer default 0,
-  IS_DEFAULT boolean default false,
-  IS_CUSTOM boolean default false,
+  IS_DEFAULT smallint default false,
+  IS_CUSTOM smallint default false,
   CUSTOM_CLASS varchar,
 
   primary key (ID),

@@ -14,6 +14,7 @@ import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.Orientation;
 import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.exception.ReportFormatterException;
+import com.haulmont.cuba.report.formatters.oo.XlsToPdfConverter;
 import com.haulmont.cuba.report.formatters.xls.*;
 import org.apache.poi.hssf.model.HSSFFormulaParser;
 import org.apache.poi.hssf.record.EscherAggregate;
@@ -28,6 +29,7 @@ import org.apache.poi.ss.util.AreaReference;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
@@ -64,6 +66,7 @@ public class XLSFormatter extends AbstractFormatter {
         registerReportExtension("xlt");
 
         registerReportOutput(ReportOutputType.XLS);
+        registerReportOutput(ReportOutputType.PDF);
 
         defaultOutputType = ReportOutputType.XLS;
     }
@@ -87,6 +90,7 @@ public class XLSFormatter extends AbstractFormatter {
     private void cloneWorkbookDataFormats() {
     }
 
+    @Override
     public void createDocument(Band rootBand, ReportOutputType outputType, OutputStream outputStream) {
 
         if (templateFile == null)
@@ -100,10 +104,21 @@ public class XLSFormatter extends AbstractFormatter {
 
         processDocument(rootBand);
 
-        try {
-            resultWorkbook.write(outputStream);
-        } catch (Exception e) {
-            throw new ReportFormatterException(e);
+        if (ReportOutputType.XLS == outputType) {
+            try {
+                resultWorkbook.write(outputStream);
+            } catch (Exception e) {
+                throw new ReportFormatterException(e);
+            }
+        } else if (ReportOutputType.PDF == outputType) {
+            try {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                resultWorkbook.write(byteArrayOutputStream);
+                XlsToPdfConverter xlsToPdfConverter = new XlsToPdfConverter();
+                xlsToPdfConverter.convertXlsToPdf(byteArrayOutputStream.toByteArray(), outputStream);
+            } catch (Exception e) {
+                throw new ReportFormatterException(e);
+            }
         }
     }
 
@@ -184,8 +199,8 @@ public class XLSFormatter extends AbstractFormatter {
                     resultRow = resultSheet.createRow(rownum + rowsAddedByHorizontalBand);
                     rowsAddedByHorizontalBand += 1;
 
-                    if (templateCell.getCellStyle().getParentStyle() !=null
-                            && templateCell.getCellStyle().getParentStyle().getUserStyleName()!=null
+                    if (templateCell.getCellStyle().getParentStyle() != null
+                            && templateCell.getCellStyle().getParentStyle().getUserStyleName() != null
                             && templateCell.getCellStyle().getParentStyle().getUserStyleName().equals("styleWithoutHeight")
                             ) {
                         //resultRow.setHeight(templateCell.getRow().getHeight());

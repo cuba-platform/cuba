@@ -30,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
 
 @SuppressWarnings({"serial", "unused"})
 public class ReportHelper {
@@ -91,18 +90,18 @@ public class ReportHelper {
         }
     }
 
-    public static void printReport(Report report, String reportTitle, Map<String, Object> params) {
-        printReport(report, "", reportTitle, params);
+    public static void printReport(Report report, String defaultOutputFileName, Map<String, Object> params) {
+        printReport(report, "", defaultOutputFileName, params);
     }
 
     public static void printReport(Report report, Map<String, Object> params) {
         printReport(report, report.getName(), params);
     }
 
-    public static void printReport(Report report, String templateCode, String reportTitle, Map<String, Object> params) {
+    public static void printReport(Report report, String templateCode, String defaultOutputFileName, Map<String, Object> params) {
         try {
-            if (StringUtils.isEmpty(reportTitle))
-                reportTitle = report.getName();
+            if (StringUtils.isBlank(defaultOutputFileName))
+                defaultOutputFileName = report.getName();
 
             ReportService srv = ServiceLocator.lookup(ReportService.NAME);
 
@@ -117,7 +116,8 @@ public class ReportHelper {
             ExportFormat exportFormat = exportFormats.get(reportOutputType);
 
             WebExportDisplay exportDisplay = new WebExportDisplay();
-            exportDisplay.show(new ByteArrayDataProvider(byteArr), reportTitle, exportFormat);
+            String documentName = document.getDocumentName();
+            exportDisplay.show(new ByteArrayDataProvider(byteArr), StringUtils.isNotBlank(documentName) ? documentName : defaultOutputFileName, exportFormat);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -131,20 +131,20 @@ public class ReportHelper {
                 params.put("screen", window.getId());
 
                 window.openLookup("report$Report.run", new Window.Lookup.Handler() {
-                            public void handleLookup(Collection items) {
-                                if (items != null && items.size() > 0) {
-                                    Report report = (Report) items.iterator().next();
-                                    report = window.getDsContext().getDataService().reload(report, "report.edit");
-                                    if (report != null) {
-                                        if (report.getInputParameters() != null && report.getInputParameters().size() > 0) {
-                                            openReportParamsDialog(report, window);
-                                        } else {
-                                            ReportHelper.printReport(report, Collections.<String, Object>emptyMap());
-                                        }
-                                    }
+                    public void handleLookup(Collection items) {
+                        if (items != null && items.size() > 0) {
+                            Report report = (Report) items.iterator().next();
+                            report = window.getDsContext().getDataService().reload(report, "report.edit");
+                            if (report != null) {
+                                if (report.getInputParameters() != null && report.getInputParameters().size() > 0) {
+                                    openReportParamsDialog(report, window);
+                                } else {
+                                    ReportHelper.printReport(report, Collections.<String, Object>emptyMap());
                                 }
                             }
-                        }, WindowManager.OpenType.DIALOG, params);
+                        }
+                    }
+                }, WindowManager.OpenType.DIALOG, params);
             }
 
             @Override
@@ -219,14 +219,14 @@ public class ReportHelper {
 
         if (checkReportsForStart(window, paramAlias, paramValue, javaClassName, reportType, name)) {
             window.openLookup("report$Report.run", new Window.Lookup.Handler() {
-                        public void handleLookup(Collection items) {
-                            if (items != null && items.size() > 0) {
-                                Report report = (Report) items.iterator().next();
-                                report = window.getDsContext().getDataService().reload(report, "report.edit");
-                                runReport(report, window, paramAlias, paramValue, name);
-                            }
-                        }
-                    }, WindowManager.OpenType.DIALOG, params);
+                public void handleLookup(Collection items) {
+                    if (items != null && items.size() > 0) {
+                        Report report = (Report) items.iterator().next();
+                        report = window.getDsContext().getDataService().reload(report, "report.edit");
+                        runReport(report, window, paramAlias, paramValue, name);
+                    }
+                }
+            }, WindowManager.OpenType.DIALOG, params);
         }
     }
 

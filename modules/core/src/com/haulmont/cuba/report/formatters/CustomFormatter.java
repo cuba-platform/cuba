@@ -29,6 +29,7 @@ public class CustomFormatter implements Formatter {
         this.template = template;
     }
 
+    @Override
     public byte[] createDocument(Band rootBand) {
         Class clazz = ScriptingProvider.loadClass(template.getCustomClass());
         try {

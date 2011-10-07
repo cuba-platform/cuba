@@ -84,9 +84,11 @@ public class InputParametersController extends AbstractWindow {
                     actionPerform: {Component component ->
                         if (report != null) {
                             try {
+                                validate();
                                 Map<String, Object> collectedParams = collectParameters(parameterComponents)
                                 ReportHelper.printReport(report, collectedParams)
-                            } catch (com.haulmont.cuba.gui.components.ValidationException e) {
+                            } catch (com.haulmont.cuba.gui.components.RequiredValueMissingException e) {
+                                showNotification(getMessage('input.requiredParametersNotSet'), IFrame.NotificationType.WARNING)
                             } catch (Validator.InvalidValueException e) {
                                 showNotification(getMessage('input.requiredParametersNotSet'), IFrame.NotificationType.WARNING)
                             }
@@ -228,5 +230,4 @@ public class InputParametersController extends AbstractWindow {
         fieldCreationMapping.put(ParameterType.NUMERIC, createNumericField)
         fieldCreationMapping.put(ParameterType.ENUMERATION, createEnumLookup)
     }
-
 }

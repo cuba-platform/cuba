@@ -34,24 +34,28 @@ import java.util.*;
  */
 @ManagedBean(ReportingApi.NAME)
 public class ReportingBean implements ReportingApi {
-
+    public static final String REPORT_FILE_NAME_KEY = "__REPORT_FILE_NAME";
+    public static final String REPORT_EDIT_VIEW_NAME = "report.edit";
     private ThreadLocal<Map<String, Object>> params = new ThreadLocal<Map<String, Object>>();
     private ThreadLocal<Set<String>> bandDefinitionNames = new ThreadLocal<Set<String>>();
 
+    @Override
     public ReportOutputDocument createReport(Report report, Map<String, Object> params) throws IOException {
-        report = reloadEntity(report, "report.edit");
+        report = reloadEntity(report, REPORT_EDIT_VIEW_NAME);
         ReportTemplate reportTemplate = report.getDefaultTemplate();
         return createReportDocument(report, reportTemplate, params);
     }
 
+    @Override
     public ReportOutputDocument createReport(Report report, String templateCode, Map<String, Object> params) throws IOException {
-        report = reloadEntity(report, "report.edit");
+        report = reloadEntity(report, REPORT_EDIT_VIEW_NAME);
         ReportTemplate template = report.getTemplateByCode(templateCode);
         return createReportDocument(report, template, params);
     }
 
+    @Override
     public ReportOutputDocument createReport(Report report, ReportTemplate template, Map<String, Object> params) throws IOException {
-        report = reloadEntity(report, "report.edit");
+        report = reloadEntity(report, REPORT_EDIT_VIEW_NAME);
         return createReportDocument(report, template, params);
     }
 
@@ -98,7 +102,10 @@ public class ReportingBean implements ReportingApi {
                 throw new UnsupportedFormatException();
 
             byte[] result = resultStream.toByteArray();
-            return new ReportOutputDocument(report, template.getReportOutputType(), result);
+            ReportOutputDocument reportOutputDocument = new ReportOutputDocument(report, template.getReportOutputType(), result);
+            setNameToOutputFile(rootBand, reportOutputDocument);
+
+            return reportOutputDocument;
         } catch (ReportFormatterException ex) {
             throw ex;
         } catch (Exception e) {
@@ -106,6 +113,14 @@ public class ReportingBean implements ReportingApi {
         }
     }
 
+    private void setNameToOutputFile(Band rootBand, ReportOutputDocument reportOutputDocument) {
+        Object reportFileName = rootBand.getData().get(REPORT_FILE_NAME_KEY);
+        if (reportFileName != null) {
+            reportOutputDocument.setDocumentName(reportFileName.toString());
+        }
+    }
+
+    @Override
     public Report reloadReport(Report report) {
         Transaction tx = Locator.createTransaction();
         try {
@@ -120,31 +135,44 @@ public class ReportingBean implements ReportingApi {
         }
     }
 
+    @Override
     public byte[] exportReports(Collection<Report> reports) throws IOException, FileStorageException {
         return ImportExportHelper.exportReports(reports);
     }
 
+    @Override
     public FileDescriptor createAndSaveReport(Report report,
                                               Map<String, Object> params, String fileName) throws IOException {
+        report = reloadEntity(report, REPORT_EDIT_VIEW_NAME);
         ReportTemplate template = report.getDefaultTemplate();
         return createAndSaveReport(report, template, params, fileName);
     }
 
+    @Override
     public FileDescriptor createAndSaveReport(Report report, String templateCode,
                                               Map<String, Object> params, String fileName) throws IOException {
+        report = reloadEntity(report, REPORT_EDIT_VIEW_NAME);
         ReportTemplate template = report.getTemplateByCode(templateCode);
         return createAndSaveReport(report, template, params, fileName);
     }
 
+    @Override
     public FileDescriptor createAndSaveReport(Report report, ReportTemplate template,
                                               Map<String, Object> params, String fileName) throws IOException {
-        report = reloadEntity(report, "_local");
+        report = reloadEntity(report, REPORT_EDIT_VIEW_NAME);
+        return createAndSaveReportDocument(report, template, params, fileName);
+    }
 
-        byte[] reportData = createReport(report, template, params).getContent();
+    private FileDescriptor createAndSaveReportDocument(Report report, ReportTemplate template, Map<String, Object> params, String fileName) throws IOException {
+        byte[] reportData = createReportDocument(report, template, params).getContent();
+        String ext = template.getReportOutputType().toString().toLowerCase();
 
+        return saveReport(reportData, fileName, ext);
+    }
+
+    private FileDescriptor saveReport(byte[] reportData, String fileName, String ext) throws IOException {
         FileDescriptor file = new FileDescriptor();
         file.setCreateDate(TimeProvider.currentTimestamp());
-        String ext = template.getReportOutputType().toString().toLowerCase();
         file.setName(fileName + "." + ext);
         file.setExtension(ext);
         file.setSize(reportData.length);
@@ -167,6 +195,7 @@ public class ReportingBean implements ReportingApi {
         return file;
     }
 
+    @Override
     public Collection<Report> importReports(byte[] zipBytes) throws IOException, FileStorageException {
         return ImportExportHelper.importReports(zipBytes);
     }
@@ -270,7 +299,7 @@ public class ReportingBean implements ReportingApi {
      * @return Data bands
      */
     private List<Band> createBands(BandDefinition definition, Band parentBand) {
-        definition = reloadEntity(definition, "report.edit");
+        definition = reloadEntity(definition, REPORT_EDIT_VIEW_NAME);
         List<Map<String, Object>> outputData = getBandData(definition, parentBand);
         List<Band> bandsList = createBandsList(definition, parentBand, outputData);
         return bandsList;

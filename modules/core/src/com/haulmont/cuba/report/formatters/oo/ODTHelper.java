@@ -12,7 +12,9 @@ package com.haulmont.cuba.report.formatters.oo;
 
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.app.FileStorageAPI;
+import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.sun.star.beans.PropertyValue;
 import com.sun.star.frame.XComponentLoader;
@@ -24,6 +26,10 @@ import com.sun.star.io.XInputStream;
 import com.sun.star.io.XOutputStream;
 import com.sun.star.lang.XComponent;
 import com.sun.star.util.XCloseable;
+import org.apache.commons.io.IOUtils;
+
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.asXCloseable;
 import static com.haulmont.cuba.report.formatters.oo.ODTUnoConverter.asXStorable;
@@ -32,10 +38,11 @@ public final class ODTHelper {
     public static XInputStream getXInputStream(FileDescriptor fileDescriptor) {
         FileStorageAPI storageAPI = Locator.lookup(FileStorageAPI.NAME);
         try {
-            byte[] bytes = storageAPI.loadFile(fileDescriptor);
-            OOInputStream oois = new OOInputStream(bytes);
-            return oois;
+            byte[] bytes = IOUtils.toByteArray(storageAPI.openFileInputStream(fileDescriptor));
+            return new OOInputStream(bytes);
         } catch (FileStorageException e) {
+            throw new RuntimeException(e);
+        } catch (java.io.IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -77,7 +84,7 @@ public final class ODTHelper {
      */
     public static String pathToUrl(String sURL) throws java.io.IOException {
         java.io.File sourceFile = new java.io.File(sURL);
-        StringBuffer sTmp = new StringBuffer("file:///");
+        StringBuilder sTmp = new StringBuilder("file:///");
         sTmp.append(sourceFile.getCanonicalPath().replace('\\', '/'));
         return sTmp.toString();
     }
@@ -88,5 +95,20 @@ public final class ODTHelper {
 
     public static void paste(XDispatchHelper xDispatchHelper, XDispatchProvider xDispatchProvider) {
         xDispatchHelper.executeDispatch(xDispatchProvider, ".uno:Paste", "", 0, new PropertyValue[]{new PropertyValue()});
+    }
+
+    public static void runWithTimeoutAndCloseConnection(OOOConnection connection, Runnable runnable) {
+        try {
+            Future future = ((OOOConnector) Locator.lookup(OOOConnector.NAME)).getExecutor().submit(runnable);
+            future.get(ConfigProvider.getConfig(ServerConfig.class).getDocFormatterTimeout(), TimeUnit.SECONDS);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                connection.close();
+            } catch (Exception e) {
+                //close silently
+            }
+        }
     }
 }

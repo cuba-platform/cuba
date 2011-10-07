@@ -23,49 +23,58 @@ import java.util.Map;
 @Service(ReportService.NAME)
 public class ReportServiceBean implements ReportService {
 
+    @Override
     public ReportOutputDocument createReport(Report report, Map<String, Object> params) throws IOException {
         ReportingApi uploadingApi = Locator.lookup(ReportingApi.NAME);
         return uploadingApi.createReport(report, params);
     }
 
+    @Override
     public ReportOutputDocument createReport(Report report, String templateCode, Map<String, Object> params) throws IOException {
         ReportingApi uploadingApi = Locator.lookup(ReportingApi.NAME);
         return uploadingApi.createReport(report, templateCode, params);
     }
 
+    @Override
     public ReportOutputDocument createReport(Report report, ReportTemplate template, Map<String, Object> params) throws IOException {
         ReportingApi uploadingApi = Locator.lookup(ReportingApi.NAME);
         return uploadingApi.createReport(report, template, params);
     }
 
+    @Override
     public Report reloadReport(Report report) {
         ReportingApi uploadingApi = Locator.lookup(ReportingApi.NAME);
         return uploadingApi.reloadReport(report);
     }
 
+    @Override
     public byte[] exportReports(Collection<Report> reports) throws IOException, FileStorageException {
         ReportingApi uploadingApi = Locator.lookup(ReportingApi.NAME);
         return uploadingApi.exportReports(reports);
     }
 
+    @Override
     public FileDescriptor createAndSaveReport(Report report,
                                               Map<String, Object> params, String fileName) throws IOException {
         ReportingApi uploadingApi = Locator.lookup(ReportingApi.NAME);
         return uploadingApi.createAndSaveReport(report, params, fileName);
     }
 
+    @Override
     public FileDescriptor createAndSaveReport(Report report, String templateCode,
                                               Map<String, Object> params, String fileName) throws IOException {
         ReportingApi uploadingApi = Locator.lookup(ReportingApi.NAME);
         return uploadingApi.createAndSaveReport(report, templateCode, params, fileName);
     }
 
+    @Override
     public FileDescriptor createAndSaveReport(Report report, ReportTemplate template,
                                               Map<String, Object> params, String fileName) throws IOException {
         ReportingApi uploadingApi = Locator.lookup(ReportingApi.NAME);
         return uploadingApi.createAndSaveReport(report, template, params, fileName);
     }
 
+    @Override
     public Collection<Report> importReports(byte[] zipBytes) throws IOException, FileStorageException {
         ReportingApi uploadingApi = Locator.lookup(ReportingApi.NAME);
         return uploadingApi.importReports(zipBytes);

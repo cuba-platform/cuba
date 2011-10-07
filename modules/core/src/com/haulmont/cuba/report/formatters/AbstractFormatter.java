@@ -16,10 +16,12 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.ReportOutputType;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -52,24 +54,29 @@ public abstract class AbstractFormatter implements Formatter, ReportEngine {
         outputTypes.add(outputType);
     }
 
+    @Override
     public FileDescriptor getTemplateFile() {
         return templateFile;
     }
 
+    @Override
     public void setTemplateFile(FileDescriptor templateFile) {
         this.templateFile = templateFile;
     }
 
+    @Override
     public byte[] createDocument(Band rootBand) {
         ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
         createDocument(rootBand, getDefaultOutputType(), resultStream);
         return resultStream.toByteArray();
     }
 
+    @Override
     public boolean hasSupportReport(String reportExtension, ReportOutputType outputType) {
         return extensions.contains(reportExtension) && outputTypes.contains(outputType);
     }
 
+    @Override
     public ReportOutputType getDefaultOutputType() {
         return defaultOutputType;
     }
@@ -77,10 +84,11 @@ public abstract class AbstractFormatter implements Formatter, ReportEngine {
     protected InputStream getFileInputStream(FileDescriptor fd) {
         FileStorageAPI storageAPI = Locator.lookup(FileStorageAPI.NAME);
         try {
-            byte[] arr = storageAPI.loadFile(fd);
-            ByteArrayInputStream bis = new ByteArrayInputStream(arr);
-            return bis;
+            byte[] arr = IOUtils.toByteArray(storageAPI.openFileInputStream(fd));
+            return new ByteArrayInputStream(arr);
         } catch (FileStorageException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

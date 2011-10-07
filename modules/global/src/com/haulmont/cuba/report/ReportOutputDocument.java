@@ -22,11 +22,20 @@ public class ReportOutputDocument implements Serializable {
 
     private ReportOutputType outputType;
 
+    private String documentName;
+
     private byte[] content;
 
     public ReportOutputDocument(Report report, ReportOutputType outputType, byte[] content) {
         this.report = report;
         this.outputType = outputType;
+        this.content = content;
+    }
+
+    public ReportOutputDocument(Report report, ReportOutputType outputType, String documentName, byte[] content) {
+        this.report = report;
+        this.outputType = outputType;
+        this.documentName = documentName;
         this.content = content;
     }
 
@@ -40,5 +49,13 @@ public class ReportOutputDocument implements Serializable {
 
     public byte[] getContent() {
         return content;
+    }
+
+    public String getDocumentName() {
+        return documentName;
+    }
+
+    public void setDocumentName(String documentName) {
+        this.documentName = documentName;
     }
 }
