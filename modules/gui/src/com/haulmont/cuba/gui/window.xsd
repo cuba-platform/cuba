@@ -1035,8 +1035,8 @@
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasBothExpand"/>
 
-        <xs:attribute name="collapsable" type="xs:string" use="optional"/>
-        <xs:attribute name="collapsed" type="xs:string" use="optional"/>
+        <xs:attribute name="collapsable" type="xs:boolean" use="optional"/>
+        <xs:attribute name="collapsed" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- IFrame -->

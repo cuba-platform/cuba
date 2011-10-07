@@ -631,53 +631,65 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
         return ids;
     }
 
+    @Override
     public Collection getChildren(Object itemId) {
         return ((Hierarchical) items).getChildren(itemId);
     }
 
+    @Override
     public Object getParent(Object itemId) {
         return ((Hierarchical) items).getParent(itemId);
     }
 
+    @Override
     public Collection rootItemIds() {
         return ((Hierarchical) items).rootItemIds();
     }
 
+    @Override
     public boolean setParent(Object itemId, Object newParentId)
             throws UnsupportedOperationException {
         return ((Hierarchical) items).setParent(itemId, newParentId);
     }
 
+    @Override
     public boolean areChildrenAllowed(Object itemId) {
         return ((Hierarchical) items).areChildrenAllowed(itemId);
     }
 
+    @Override
     public boolean setChildrenAllowed(Object itemId, boolean areChildrenAllowed)
             throws UnsupportedOperationException {
         return ((Hierarchical) items).setChildrenAllowed(itemId, areChildrenAllowed);
     }
 
+    @Override
     public boolean isRoot(Object itemId) {
         return ((Hierarchical) items).isRoot(itemId);
     }
 
+    @Override
     public boolean hasChildren(Object itemId) {
         return ((Hierarchical) items).hasChildren(itemId);
     }
 
+    @Override
     public boolean isCaption(Object itemId) {
         return items instanceof TreeTableContainer
                 && ((TreeTableContainer) items).isCaption(itemId);
     }
 
+    @Override
     public String getCaption(Object itemId) {
         return ((TreeTableContainer) items).getCaption(itemId);
     }
 
+    @Override
     public boolean setCaption(Object itemId, String caption) {
         return ((TreeTableContainer) items).setCaption(itemId, caption);
     }
 
+    @Override
     public int getLevel(Object itemId) {
         return ((TreeTableContainer) items).getLevel(itemId);
     }
