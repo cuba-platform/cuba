@@ -89,6 +89,8 @@ public class ApplicationConnection {
     public static final String ATTRIBUTE_DESCRIPTION = "description";
     public static final String ATTRIBUTE_ERROR = "error";
 
+    private static final int DELAY_FOR_BLOCKING_UI = 3000;
+
     // will hold the UIDL security key (for XSS protection) once received
     private String uidlSecurityKey = "init";
 
@@ -799,8 +801,8 @@ public class ApplicationConnection {
                         blockUI(configuration.getBlockUiMessage());
                     }
                 };
-                // Block UI after 1.5 sec delay
-                blockUITimer.schedule(1500);
+                // Block UI after 3 sec delay
+                blockUITimer.schedule(DELAY_FOR_BLOCKING_UI);
             }
         }
 

@@ -8,12 +8,12 @@
  * JQuery unblock UI button
  */
 .blockUiCloseBtn {
-    position: fixed;
-    left: 12px;
-    top: 12px;
-    background: url('images/cross.png') no-repeat top left;
-    width: 24px;
-    height: 24px;
+    right: 2px;
+    top: 2px;
+    position: absolute;
+    background: url('images/cross.png') no-repeat top right;
+    width: 16px;
+    height: 16px;
 }
 
 .blockUI {
