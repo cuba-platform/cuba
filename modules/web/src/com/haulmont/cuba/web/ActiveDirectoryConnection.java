@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 25.11.2010 15:33:25
- *
- * $Id: ActiveDirectoryConnection.java 3253 2010-11-25 12:41:14Z gorodnov $
  */
 package com.haulmont.cuba.web;
 
@@ -14,7 +9,16 @@ import com.haulmont.cuba.security.global.LoginException;
 
 import java.util.Locale;
 
+/**
+ * Interface to be implemented by middleware connection objects supporting ActiveDirectory integration.
+ */
 public interface ActiveDirectoryConnection {
 
+    /**
+     * Log in to the system using ActiveDirectory integration.
+     * @param login             user login name
+     * @param locale            user locale
+     * @throws LoginException   in case of unsuccesful login due to wrong credentials or other issues
+     */
     void loginActiveDirectory(String login, Locale locale) throws LoginException;
 }

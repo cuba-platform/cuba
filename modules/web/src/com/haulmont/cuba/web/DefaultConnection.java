@@ -16,17 +16,18 @@ import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 
 import java.util.Locale;
 
+/**
+ * Default {@link Connection} implementation for web-client.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public class DefaultConnection extends AbstractConnection implements ActiveDirectoryConnection {
 
     private static final long serialVersionUID = 5996384066163004543L;
 
-    /**
-     * Perform login
-     * @param login login name
-     * @param password encrypted password
-     * @param locale
-     * @throws LoginException
-     */
+    @Override
     public void login(String login, String password, Locale locale) throws LoginException {
         if (locale == null)
             throw new IllegalArgumentException("Locale is null");
@@ -34,11 +35,7 @@ public class DefaultConnection extends AbstractConnection implements ActiveDirec
         update(getLoginService().login(login, password, locale));
     }
 
-    /**
-     * Perform login using password stored in ActiveDirectory
-     * @param login login name
-     * @throws LoginException
-     */
+    @Override
     public void loginActiveDirectory(String login, Locale locale) throws LoginException {
         if (locale == null)
             throw new IllegalArgumentException("Locale is null");

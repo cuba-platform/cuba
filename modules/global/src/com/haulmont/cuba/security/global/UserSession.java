@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 26.11.2008 13:27:53
- *
- * $Id$
  */
 package com.haulmont.cuba.security.global;
 
@@ -23,7 +18,17 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * User session
+ * Class that encapsulates an active user session.
+ *
+ * <p>It contains user attributes, credentials, set of permissions, and methods to check permissions for certain
+ * objects.</p>
+ *
+ * <p>On the client side a descendant of this class is maintained:
+ * <code>com.haulmont.cuba.client.ClientUserSession</code></p>
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 public class UserSession implements Serializable
 {
@@ -88,6 +93,7 @@ public class UserSession implements Serializable
     public UserSession(UserSession src) {
         id = src.id;
         user = src.user;
+        substitutedUser = src.substitutedUser;
         system = src.system;
         roles = src.roles;
         locale = src.locale;

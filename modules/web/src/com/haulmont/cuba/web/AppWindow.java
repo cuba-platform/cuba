@@ -813,11 +813,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     private class DoNotChangeSubstUserAction extends AbstractAction {
-        private AbstractSelect substUserSelect;
 
-        protected DoNotChangeSubstUserAction(AbstractSelect substUserSelect) {
+        protected DoNotChangeSubstUserAction() {
             super("doNotChangeSubstUserAction");
-            this.substUserSelect = substUserSelect;
         }
 
         @Override
@@ -849,7 +847,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                         MessageProvider.getMessage(getMessagesPack(), "substUserSelectDialog.title"),
                         MessageProvider.formatMessage(getMessagesPack(), "substUserSelectDialog.msg", name),
                         IFrame.MessageType.WARNING,
-                        new Action[]{new ChangeSubstUserAction(substUserSelect), new DoNotChangeSubstUserAction(substUserSelect)}
+                        new Action[]{new ChangeSubstUserAction(substUserSelect), new DoNotChangeSubstUserAction()}
                 );
             }
 

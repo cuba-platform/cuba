@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 04.12.2008 12:43:55
- *
- * $Id: AbstractConnection.java 3253 2010-11-25 12:41:14Z gorodnov $
  */
 package com.haulmont.cuba.web;
 
@@ -26,14 +21,19 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Connection to the middleware.
- * <br>Can be obtained via {@link com.haulmont.cuba.web.App#getConnection()} method.
+ * Abstract class that encapsulates common connection behaviour for web-client.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 public abstract class AbstractConnection implements Connection {
+
     private static Log log = LogFactory.getLog(AbstractConnection.class);
 
     private Map<ConnectionListener, Object> connListeners = new HashMap<ConnectionListener, Object>();
@@ -42,27 +42,18 @@ public abstract class AbstractConnection implements Connection {
     private boolean connected;
     private UserSession session;
 
-    /**
-     * True if the web application is succesfully logged in to middleware and a user session exists.
-     */
+    @Override
     public boolean isConnected() {
         return connected;
     }
 
-    /**
-     * Current user session. Null if not connected.
-     */
+    @Override
+    @Nullable
     public UserSession getSession() {
         return session;
     }
 
-    /**
-     * Set user session for this connection
-     */
-    public void setSession(UserSession session) {
-        this.session = session;
-    }
-
+    @Override
     public void update(UserSession session) throws LoginException {
         this.session = new ClientUserSession(session);
         connected = true;
@@ -106,17 +97,13 @@ public abstract class AbstractConnection implements Connection {
         }
     }
 
-    /**
-     * Substitute user. Current user session will get rights and constraints of substituted user.
-     */
+    @Override
     public void substituteUser(User substitutedUser) {
-        session = getLoginService().substituteUser(substitutedUser);
+        session = new ClientUserSession(getLoginService().substituteUser(substitutedUser));
         fireSubstitutionListeners();
     }
 
-    /**
-     * Perform logout
-     */
+    @Override
     public String logout() {
         if (!connected)
             return null;
@@ -139,18 +126,22 @@ public abstract class AbstractConnection implements Connection {
         session = null;
     }
 
+    @Override
     public void addListener(ConnectionListener listener) {
         connListeners.put(listener, null);
     }
 
+    @Override
     public void removeListener(ConnectionListener listener) {
         connListeners.remove(listener);
     }
 
+    @Override
     public void addListener(UserSubstitutionListener listener) {
         usListeners.put(listener, null);
     }
 
+    @Override
     public void removeListener(UserSubstitutionListener listener) {
         usListeners.remove(listener);
     }

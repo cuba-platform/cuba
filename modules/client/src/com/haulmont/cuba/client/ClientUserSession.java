@@ -13,6 +13,10 @@ import com.haulmont.cuba.security.global.UserSession;
 import java.io.Serializable;
 
 /**
+ * Client-side extension of {@link UserSession}.
+ *
+ * <p>Sends updates of the user session properties to the middleware.</p>
+ *
  * <p>$Id$</p>
  *
  * @author krivopustov
