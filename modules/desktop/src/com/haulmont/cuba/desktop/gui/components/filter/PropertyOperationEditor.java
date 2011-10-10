@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.Op;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -28,6 +29,8 @@ public class PropertyOperationEditor extends OperationEditor{
     @Override
     protected void createEditor() {
         final JComboBox select = new ExtendedComboBox();
+        select.setPreferredSize(new Dimension(100, 22));
+        select.setMaximumSize(new Dimension(100, Integer.MAX_VALUE));
         boolean selected=false;
         for (Op op : Op.availableOps(condition.getJavaClass())) {
             ItemWrapper<Op> wrapper = new ItemWrapper<Op>(op, MessageProvider.getMessage(op));

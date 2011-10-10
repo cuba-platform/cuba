@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components.filter;
 
+import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
@@ -30,10 +31,8 @@ import javax.swing.*;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.EventListenerList;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -48,10 +47,10 @@ import static org.apache.commons.lang.BooleanUtils.isTrue;
  */
 public class FilterEditor extends AbstractFilterEditor {
 
-    private static final int NAME_COLUMN_WIDTH = 110;
-    private static final int OPERATION_COLUMN_WIDTH = 127;
-    private static final int PARAM_COLUMN_WIDTH = 138;
-    private static final int HIDDEN_COLUMN_WIDTH = 70;
+    private static final int NAME_COLUMN_WIDTH = 130;
+    private static final int OPERATION_COLUMN_WIDTH = 107;
+    private static final int PARAM_COLUMN_WIDTH = 150;
+    private static final int HIDDEN_COLUMN_WIDTH = 58;
     private static final int DELETE_COLUMN_WIDTH = 38;
 
     private JPanel panel;
@@ -65,7 +64,7 @@ public class FilterEditor extends AbstractFilterEditor {
     private JButton cancelBtn;
     private JComboBox addSelect;
     private JTable table;
-    private ConditionTableModel model;
+    private ConditionsTableModel model;
     private JTextField nameField;
     private JCheckBox globalCb;
     private JCheckBox defaultCb;
@@ -116,19 +115,8 @@ public class FilterEditor extends AbstractFilterEditor {
                 if (row == -1) {
                     return;
                 }
-                AbstractCondition<Param> condition = ((ConditionTableModel) table.getModel()).getCondition(row);
-                int index = conditions.indexOf(condition);
-                if (index > 0) {
-                    AbstractCondition next = conditions.get(index - 1);
-                    conditions.set(index - 1, condition);
-                    conditions.set(index, next);
-                    table.setRowSelectionInterval(index, index);
-                    TableColumnModel columnModel = table.getColumnModel();
-                    for (int i = 1; i < 3; i++) {
-                        columnModel.getColumn(i).getCellEditor().cancelCellEditing();
-                    }
-                    updateTable(index - 1);
-                }
+                Node<AbstractCondition> node = model.getNode(table.getSelectedRow());
+                model.moveUp(node);
             }
         });
         upDownPanel.add(upBtn, new CC().wrap());
@@ -142,19 +130,8 @@ public class FilterEditor extends AbstractFilterEditor {
                 if (row == -1) {
                     return;
                 }
-                AbstractCondition<Param> condition = ((ConditionTableModel) table.getModel()).getCondition(row);
-                int index = conditions.indexOf(condition);
-                int count = conditions.size();
-                if (index < count - 1) {
-                    AbstractCondition next = conditions.get(index + 1);
-                    conditions.set(index + 1, condition);
-                    conditions.set(index, next);
-                    TableColumnModel columnModel = table.getColumnModel();
-                    for (int i = 1; i < 3; i++) {
-                        columnModel.getColumn(i).getCellEditor().cancelCellEditing();
-                    }
-                    updateTable(index + 1);
-                }
+                Node<AbstractCondition> node = model.getNode(table.getSelectedRow());
+                model.moveDown(node);
             }
         });
         upDownPanel.add(downBtn);
@@ -273,14 +250,21 @@ public class FilterEditor extends AbstractFilterEditor {
             addSelect.addItem(new ItemWrapper<AbstractConditionDescriptor>(descriptor, descriptor.getLocCaption()));
 
         }
-        if (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
-            ConditionCreator conditionCreator = new ConditionCreator(filterComponentName, datasource);
-            addSelect.addItem(new ItemWrapper<AbstractConditionDescriptor>(conditionCreator, conditionCreator.getLocCaption()));
-        }
 
         if (CategorizedEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
             RuntimePropConditionCreator runtimePropCreator = new RuntimePropConditionCreator(filterComponentName, datasource);
             addSelect.addItem(new ItemWrapper<AbstractConditionDescriptor>(runtimePropCreator, runtimePropCreator.getLocCaption()));
+        }
+
+        GroupCreator andGroupCreator = new GroupCreator(GroupType.AND, filterComponentName, datasource);
+        addSelect.addItem(new ItemWrapper<AbstractConditionDescriptor>(andGroupCreator, andGroupCreator.getLocCaption()));
+
+        GroupCreator orGroupCreator = new GroupCreator(GroupType.OR, filterComponentName, datasource);
+        addSelect.addItem(new ItemWrapper<AbstractConditionDescriptor>(orGroupCreator, orGroupCreator.getLocCaption()));
+
+        if (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
+            ConditionCreator conditionCreator = new ConditionCreator(filterComponentName, datasource);
+            addSelect.addItem(new ItemWrapper<AbstractConditionDescriptor>(conditionCreator, conditionCreator.getLocCaption()));
         }
 
         addSelect.addItemListener(new ItemListener() {
@@ -310,7 +294,7 @@ public class FilterEditor extends AbstractFilterEditor {
     }
 
     private void initTable(JPanel panel) {
-        model = new ConditionTableModel();
+        model = new ConditionsTableModel(conditions);
         table = new ConditionsTable();
         table.setModel(model);
         table.setFillsViewportHeight(true);
@@ -348,16 +332,21 @@ public class FilterEditor extends AbstractFilterEditor {
 
         this.panel.revalidate();
         this.panel.repaint();
-        for (AbstractCondition<Param> condition : conditions) {
-            model.addCondition(condition);
-        }
         //todo add PopupMenu
     }
 
     private void addCondition(AbstractConditionDescriptor descriptor) {
         AbstractCondition condition = descriptor.createCondition();
-        conditions.add(condition);
-        model.addCondition(condition);
+        Node<AbstractCondition> node = new Node<AbstractCondition>(condition);
+
+        if (table.getSelectedRow() > -1) {
+            Node<AbstractCondition> parentNode = model.getNode(table.getSelectedRow());
+            if (parentNode.getData().isGroup()) {
+                parentNode.addChild(node);
+            }
+        }
+
+        model.addNode(node);
         table.revalidate();
         table.repaint();
 
@@ -376,17 +365,13 @@ public class FilterEditor extends AbstractFilterEditor {
     }
 
     private void deleteCondition(AbstractCondition condition) {
-        conditions.remove(condition);
-        ((ConditionTableModel) table.getModel()).removeCondition(condition);
-        table.revalidate();
-        table.repaint();
-
+        model.removeCondition(condition);
         updateControls();
     }
 
     private void updateControls() {
         if (filterEntity.getCode() == null)
-            saveBtn.setEnabled(!conditions.isEmpty());
+            saveBtn.setEnabled(!conditions.getRootNodes().isEmpty());
         else
             saveBtn.setEnabled(false);
         defaultCb.setVisible(filterEntity.getFolder() == null);
@@ -396,18 +381,6 @@ public class FilterEditor extends AbstractFilterEditor {
         applyDefaultCb.setVisible(defaultCb.isVisible() && manualApplyRequired);
         applyDefaultLabel.setVisible(applyDefaultCb.isVisible());
         applyDefaultCb.setSelected(BooleanUtils.isTrue(filterEntity.getApplyDefault()));
-    }
-
-    private void updateTable(int index) {
-        model.clear();
-        for (AbstractCondition<Param> condition : conditions) {
-            model.addCondition(condition);
-        }
-        table.setRowSelectionInterval(index, index);
-        table.revalidate();
-        table.repaint();
-
-        updateControls();
     }
 
     @Override
@@ -435,7 +408,7 @@ public class FilterEditor extends AbstractFilterEditor {
     }
 
     @Override
-    protected AbstractFilterParser createFilterParser(List<AbstractCondition> conditions, String messagesPack,
+    protected AbstractFilterParser createFilterParser(ConditionsTree conditions, String messagesPack,
                                                       String filterComponentName, Datasource datasource) {
         return new FilterParser(conditions, messagesPack, filterComponentName, datasource);
     }
@@ -454,122 +427,6 @@ public class FilterEditor extends AbstractFilterEditor {
     protected void showNotification(String caption, String description) {
         App.getInstance().getWindowManager().showNotification
                 (caption, description, IFrame.NotificationType.HUMANIZED);
-    }
-
-    private class ConditionTableModel extends AbstractTableModel {
-        private String[] columnNames =
-                {
-                        getMessage("FilterEditor.column.name"),
-                        getMessage("FilterEditor.column.op"),
-                        getMessage("FilterEditor.column.param"),
-                        getMessage("FilterEditor.column.hidden"),
-                        getMessage("FilterEditor.column.control")
-                };
-        private ArrayList<AbstractCondition<Param>> items = new ArrayList<AbstractCondition<Param>>();
-
-        @Override
-        public int getRowCount() {
-            return items.size();
-        }
-
-        public void clear() {
-            int size = items.size();
-            items.clear();
-            fireTableRowsDeleted(0, size - 1);
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 5;
-        }
-
-        @Override
-        public String getColumnName(int col) {
-            return columnNames[col];
-        }
-
-        @Override
-        public Class getColumnClass(int col) {
-            Class c = null;
-
-            switch (col) {
-                case 0:
-                    c = String.class;
-                    break;
-                case 1:
-                    c = AbstractOperationEditor.class;
-                    break;
-                case 2:
-                    c = ParamEditor.class;
-                    break;
-                case 3:
-                    c = Boolean.class;
-                    break;
-                case 4:
-                    c = JButton.class;
-                    break;
-            }
-            return c;
-        }
-
-        @Override
-        public Object getValueAt(final int rowIndex, int columnIndex) {
-            switch (columnIndex) {
-                case 0:
-                    return items.get(rowIndex).getLocCaption();
-                case 1:
-                    return items.get(rowIndex);
-                case 2:
-                    return items.get(rowIndex);
-                case 3:
-                    return items.get(rowIndex).isHidden();
-                case 4:
-                    return items.get(rowIndex);
-                default:
-                    throw new RuntimeException();
-            }
-        }
-
-        @Override
-        public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return true;
-        }
-
-        public void addCondition(AbstractCondition<Param> condition) {
-            items.add(condition);
-            fireTableRowsInserted(items.size() - 1, items.size() - 1);
-        }
-
-        public void removeCondition(AbstractCondition<Param> condition) {
-            int index = items.indexOf(condition);
-            if (index != -1) {
-                items.remove(condition);
-                fireTableRowsDeleted(index, index);
-            }
-        }
-
-        public AbstractCondition<Param> getCondition(int row) {
-            if (items.size() < row) {
-                return null;
-            } else
-                return items.get(row);
-        }
-
-        @Override
-        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-            switch (columnIndex) {
-                case 3:
-                    items.get(rowIndex).setHidden((Boolean) aValue);
-                    break;
-            }
-        }
-
-        public void fireConditionUpdated(AbstractCondition condition) {
-            int row = items.indexOf(condition);
-            if (row != -1) {
-                fireTableRowsUpdated(row, row);
-            }
-        }
     }
 
     protected abstract class AbstractCell implements TableCellEditor, TableCellRenderer {
@@ -743,7 +600,6 @@ public class FilterEditor extends AbstractFilterEditor {
                         }
                     }
                     if (condition != null) {
-                        conditions.remove(condition);
                         wrappers.remove(condition);
                     }
                 }

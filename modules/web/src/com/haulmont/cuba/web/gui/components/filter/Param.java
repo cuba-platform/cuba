@@ -34,6 +34,7 @@ import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebPickerField;
 import com.haulmont.cuba.web.toolkit.ui.DateFieldWrapper;
 import com.vaadin.data.Property;
+import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
@@ -47,6 +48,8 @@ import java.text.ParseException;
 import java.util.*;
 
 public class Param extends AbstractParam<Component> {
+
+    public static final String TEXT_COMPONENT_WIDTH = "120px";
 
     public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, boolean inExpr) {
         super(name,javaClass,entityWhere,entityView,datasource,inExpr);
@@ -126,6 +129,7 @@ public class Param extends AbstractParam<Component> {
     private Component createTextField() {
         final TextField field = new com.haulmont.cuba.web.toolkit.ui.TextField();
         field.setNullRepresentation("");
+        field.setWidth(TEXT_COMPONENT_WIDTH);
 
         field.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
@@ -335,6 +339,7 @@ public class Param extends AbstractParam<Component> {
             } else {
                 WebPickerField picker = new WebPickerField();
                 picker.setMetaClass(metaClass);
+                picker.setWidth(TEXT_COMPONENT_WIDTH);
 
                 picker.addListener(
                         new ValueListener() {
@@ -381,6 +386,7 @@ public class Param extends AbstractParam<Component> {
 
             } else {
                 final WebLookupField lookup = new WebLookupField();
+                lookup.setWidth(TEXT_COMPONENT_WIDTH);
                 lookup.setOptionsDatasource(ds);
 
                 ds.addListener(

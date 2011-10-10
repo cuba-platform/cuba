@@ -32,6 +32,9 @@ public class NameEditor extends CustomComponent implements AbstractCondition.Lis
         this.condition = condition;
 
         condition.addListener(this);
+
+        // TODO fix this
+        setWidth(100, UNITS_PIXELS);
     }
 
     public void captionChanged() {

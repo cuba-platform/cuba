@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
+import com.haulmont.bali.datastruct.Node;
+import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -34,7 +36,7 @@ import static org.apache.commons.lang.BooleanUtils.isTrue;
  */
 public abstract class AbstractFilterEditor {
 
-    protected static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
+    public static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
     protected Filter filter;
     protected FilterEntity filterEntity;
@@ -44,7 +46,7 @@ public abstract class AbstractFilterEditor {
     protected List<AbstractConditionDescriptor> descriptors = new ArrayList<AbstractConditionDescriptor>();
     protected List<String> existingNames;
 
-    protected List<AbstractCondition> conditions = new ArrayList<AbstractCondition>();
+    protected ConditionsTree conditions = new ConditionsTree();
     protected String messagesPack;
     protected String filterComponentName;
 
@@ -101,7 +103,7 @@ public abstract class AbstractFilterEditor {
             CollectionDatasource datasource);
 
     protected abstract AbstractFilterParser createFilterParser(
-            List<AbstractCondition> conditions,
+            ConditionsTree conditions,
             String messagesPack,
             String filterComponentName,
             Datasource datasource);
@@ -191,7 +193,7 @@ public abstract class AbstractFilterEditor {
         }
 
         StringBuilder sb = new StringBuilder();
-        for (AbstractCondition condition : conditions) {
+        for (AbstractCondition condition : conditions.toConditionsList()) {
             String error = condition.getError();
             if (error != null)
                 sb.append(error).append("\n");
@@ -218,6 +220,6 @@ public abstract class AbstractFilterEditor {
     }
 
     public List<AbstractCondition> getConditions() {
-        return conditions;
+        return conditions.toConditionsList();
     }
 }

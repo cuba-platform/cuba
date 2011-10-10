@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
+import com.haulmont.bali.datastruct.Node;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
@@ -23,14 +24,15 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebFilter;
+import com.haulmont.cuba.web.toolkit.ui.TreeTable;
+import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.ui.*;
-import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
-import java.util.*;
+import java.util.List;
 
 import static org.apache.commons.lang.BooleanUtils.isTrue;
 
@@ -38,7 +40,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
     private AbstractOrderedLayout layout;
     private TextField nameField;
-    private Table table;
+    private TreeTable table;
     private Select addSelect;
     private CheckBox defaultCb;
     private CheckBox applyDefaultCb;
@@ -51,12 +53,22 @@ public class FilterEditor extends AbstractFilterEditor {
     private Button upBtn;
     private Button downBtn;
 
+    protected ConditionsContainer container;
+
     public FilterEditor(final WebFilter webFilter, FilterEntity filterEntity,
                         Element filterDescriptor, List<String> existingNames) {
         super(webFilter, filterEntity, filterDescriptor, existingNames);
     }
 
     public void init() {
+        container = new ConditionsContainer(conditions);
+        container.addListener(new Container.ItemSetChangeListener() {
+            @Override
+            public void containerItemSetChange(Container.ItemSetChangeEvent event) {
+                updateControls();
+            }
+        });
+
         layout = new VerticalLayout();
         layout.setSpacing(true);
         layout.setMargin(true, false, false, false);
@@ -79,14 +91,7 @@ public class FilterEditor extends AbstractFilterEditor {
             public void buttonClick(Button.ClickEvent event) {
                 Object item = table.getValue();
                 if (item != table.getNullSelectionItemId()) {
-                    AbstractCondition condition = (AbstractCondition) item;
-                    int index = conditions.indexOf(condition);
-                    if (index > 0) {
-                        AbstractCondition next = conditions.get(index - 1);
-                        conditions.set(index - 1, condition);
-                        conditions.set(index, next);
-                        updateTable();
-                    }
+                    container.moveUp((Node<AbstractCondition>) item);
                 }
             }
         });
@@ -98,15 +103,7 @@ public class FilterEditor extends AbstractFilterEditor {
             public void buttonClick(Button.ClickEvent event) {
                 Object item = table.getValue();
                 if (item != table.getNullSelectionItemId()) {
-                    AbstractCondition condition = (AbstractCondition) item;
-                    int index = conditions.indexOf(condition);
-                    int count = conditions.size();
-                    if (index < count - 1) {
-                        AbstractCondition next = conditions.get(index + 1);
-                        conditions.set(index + 1, condition);
-                        conditions.set(index, next);
-                        updateTable();
-                    }
+                    container.moveDown((Node<AbstractCondition>) item);
                 }
             }
         });
@@ -243,17 +240,26 @@ public class FilterEditor extends AbstractFilterEditor {
             addSelect.setItemCaption(descriptor, descriptor.getLocCaption());
         }
 
+        if (CategorizedEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
+            RuntimePropConditionCreator runtimePropCreator = new RuntimePropConditionCreator(filterComponentName, datasource);
+            addSelect.addItem(runtimePropCreator);
+            addSelect.setItemCaption(runtimePropCreator, runtimePropCreator.getLocCaption());
+        }
+
+        GroupCreator andGroupCreator = new GroupCreator(GroupType.AND, filterComponentName, datasource);
+        addSelect.addItem(andGroupCreator);
+        addSelect.setItemCaption(andGroupCreator, andGroupCreator.getLocCaption());
+
+        GroupCreator orGroupCreator = new GroupCreator(GroupType.OR, filterComponentName, datasource);
+        addSelect.addItem(orGroupCreator);
+        addSelect.setItemCaption(orGroupCreator, orGroupCreator.getLocCaption());
+
         if (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.customConditions")) {
             ConditionCreator conditionCreator = new ConditionCreator(filterComponentName, datasource);
             addSelect.addItem(conditionCreator);
             addSelect.setItemCaption(conditionCreator, conditionCreator.getLocCaption());
         }
 
-        if (CategorizedEntity.class.isAssignableFrom(metaClass.getJavaClass())) {
-            RuntimePropConditionCreator runtimePropCreator = new RuntimePropConditionCreator(filterComponentName, datasource);
-            addSelect.addItem(runtimePropCreator);
-            addSelect.setItemCaption(runtimePropCreator, runtimePropCreator.getLocCaption());
-        }
         addSelect.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
                 if (addSelect.getValue() != null) {
@@ -266,7 +272,7 @@ public class FilterEditor extends AbstractFilterEditor {
     }
 
     private void initTable(AbstractLayout layout) {
-        table = new com.haulmont.cuba.web.toolkit.ui.Table();
+        table = new TreeTable();
         table.setImmediate(true);
         table.setSelectable(true);
         table.setPageLength(0);
@@ -274,42 +280,30 @@ public class FilterEditor extends AbstractFilterEditor {
         table.setHeight("200px");
         table.setStyleName("filter-conditions");
 
+        table.setContainerDataSource(container);
+
         String nameCol = getMessage("FilterEditor.column.name");
         String opCol = getMessage("FilterEditor.column.op");
         String paramCol = getMessage("FilterEditor.column.param");
         String hiddenCol = getMessage("FilterEditor.column.hidden");
         String cntrCol = getMessage("FilterEditor.column.control");
 
-        table.addContainerProperty(nameCol, NameEditor.class, null);
-        table.setColumnWidth(nameCol, 160);
+        table.setColumnWidth(ConditionsContainer.NAME_PROP_ID, 160);
+        table.setColumnHeader(ConditionsContainer.NAME_PROP_ID, nameCol);
 
-        table.addContainerProperty(opCol, OperationEditor.Editor.class, null);
-        table.setColumnWidth(opCol, 100);
+        table.setColumnWidth(ConditionsContainer.OP_PROP_ID, 100);
+        table.setColumnHeader(ConditionsContainer.OP_PROP_ID, opCol);
 
-        table.addContainerProperty(paramCol, ParamEditor.class, null);
-        table.setColumnWidth(paramCol, 160);
+        table.setColumnWidth(ConditionsContainer.PARAM_PROP_ID, 160);
+        table.setColumnHeader(ConditionsContainer.PARAM_PROP_ID, paramCol);
 
-        table.addContainerProperty(hiddenCol, CheckBox.class, null);
-        table.setColumnWidth(cntrCol, 50);
+        table.setColumnWidth(ConditionsContainer.HIDDEN_PROP_ID, 50);
+        table.setColumnHeader(ConditionsContainer.HIDDEN_PROP_ID, hiddenCol);
 
-        table.addContainerProperty(cntrCol, Button.class, null);
-        table.setColumnWidth(cntrCol, 30);
+        table.setColumnWidth(ConditionsContainer.CONTROL_PROP_ID, 30);
+        table.setColumnHeader(ConditionsContainer.CONTROL_PROP_ID, cntrCol);
 
-        for (final AbstractCondition condition : this.conditions) {
-            NameEditor nameEditor = new NameEditor(condition);
-            AbstractOperationEditor operationEditor = condition.createOperationEditor();
-            ParamEditor paramEditor = new ParamEditor(condition, false);
-
-            table.addItem(new Object[]{
-                    nameEditor,
-                    operationEditor.getImpl(),
-                    paramEditor,
-                    createHiddenCheckbox(condition),
-                    createDeleteConditionBtn(condition)
-            },
-                    condition
-            );
-        }
+        table.expandAll();
 
         final Action showNameAction = new Action(MessageProvider.getMessage(MESSAGES_PACK, "FilterEditor.showNameAction"));
         table.addActionHandler(
@@ -335,86 +329,33 @@ public class FilterEditor extends AbstractFilterEditor {
 
     private void addCondition(AbstractConditionDescriptor descriptor) {
         AbstractCondition condition = descriptor.createCondition();
-        conditions.add(condition);
+        Node<AbstractCondition> node = new Node<AbstractCondition>(condition);
 
-        NameEditor nameEditor = new NameEditor(condition);
-        AbstractOperationEditor operationEditor = condition.createOperationEditor();
-        ParamEditor paramEditor = new ParamEditor(condition, false);
+        Object selected = table.getValue();
+        if (selected != table.getNullSelectionItemId()) {
+            Node<AbstractCondition> parentNode = (Node<AbstractCondition>) selected;
+            if (parentNode.getData().isGroup()) {
+                parentNode.addChild(node);
+            }
+        }
+        container.addItem(node);
+        table.setExpanded(node);
 
-        table.addItem(new Object[]{
-                nameEditor,
-                operationEditor.getImpl(),
-                paramEditor,
-                createHiddenCheckbox(condition),
-                createDeleteConditionBtn(condition)
-        },
-                condition
-        );
-
-        updateControls();
+        AbstractOperationEditor operationEditor = condition.getOperationEditor();
         if (operationEditor instanceof HasAction) {
             ((HasAction) operationEditor).doAction();
         }
     }
 
-    private void deleteCondition(AbstractCondition condition) {
-        conditions.remove(condition);
-        table.removeItem(condition);
-        updateControls();
-    }
-
     private void updateControls() {
         if (filterEntity.getCode() == null)
-            saveBtn.setEnabled(!conditions.isEmpty());
+            saveBtn.setEnabled(!conditions.getRootNodes().isEmpty());
         else
             saveBtn.setEnabled(false);
         defaultCb.setVisible(filterEntity.getFolder() == null);
         defaultCb.setValue(isTrue(filterEntity.getIsDefault()));
         applyDefaultCb.setVisible(defaultCb.isVisible() && manualApplyRequired);
         applyDefaultCb.setValue(BooleanUtils.isTrue(filterEntity.getApplyDefault()));
-    }
-
-    private void updateTable() {
-        table.removeAllItems();
-        for (final AbstractCondition condition : this.conditions) {
-            NameEditor nameEditor = new NameEditor(condition);
-            AbstractOperationEditor operationEditor = condition.createOperationEditor();
-            ParamEditor paramEditor = new ParamEditor(condition, false);
-
-            table.addItem(new Object[]{
-                    nameEditor,
-                    operationEditor.getImpl(),
-                    paramEditor,
-                    createHiddenCheckbox(condition),
-                    createDeleteConditionBtn(condition)
-            },
-                    condition
-            );
-        }
-        updateControls();
-    }
-
-    private Button createDeleteConditionBtn(final AbstractCondition condition) {
-        Button delBtn = WebComponentsHelper.createButton("icons/tab-remove.png");
-        delBtn.setStyleName(BaseTheme.BUTTON_LINK);
-        delBtn.addListener(new Button.ClickListener() {
-            public void buttonClick(Button.ClickEvent event) {
-                deleteCondition(condition);
-            }
-        });
-        return delBtn;
-    }
-
-    private CheckBox createHiddenCheckbox(final AbstractCondition condition) {
-        final CheckBox checkBox = new CheckBox();
-        checkBox.setValue(condition.isHidden());
-        checkBox.addListener(new Button.ClickListener() {
-            public void buttonClick(Button.ClickEvent event) {
-                boolean hidden = BooleanUtils.isTrue((Boolean) checkBox.getValue());
-                condition.setHidden(hidden);
-            }
-        });
-        return checkBox;
     }
 
     @Override
@@ -442,7 +383,7 @@ public class FilterEditor extends AbstractFilterEditor {
     }
 
     @Override
-    protected AbstractFilterParser createFilterParser(List<AbstractCondition> conditions, String messagesPack,
+    protected AbstractFilterParser createFilterParser(ConditionsTree conditions, String messagesPack,
                                                       String filterComponentName, Datasource datasource) {
         return new FilterParser(conditions, messagesPack, filterComponentName, datasource);
     }
@@ -468,9 +409,5 @@ public class FilterEditor extends AbstractFilterEditor {
 
     public FilterEntity getFilterEntity() {
         return filterEntity;
-    }
-
-    public List<AbstractCondition> getConditions() {
-        return conditions;
     }
 }

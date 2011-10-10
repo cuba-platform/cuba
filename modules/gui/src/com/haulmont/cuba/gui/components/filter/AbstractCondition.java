@@ -22,8 +22,12 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.UUID;
 
+/**
+ * Class that encapsulates common filter condition behaviour.
+ */
 public abstract class AbstractCondition<T extends AbstractParam> {
-    protected static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
+
+    public static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
     public interface Listener {
         void captionChanged();
@@ -36,6 +40,7 @@ public abstract class AbstractCondition<T extends AbstractParam> {
     protected String locCaption;
     protected String filterComponentName;
     protected String text;
+    protected boolean group;
     protected boolean unary;
     protected boolean inExpr;
     protected Class javaClass;
@@ -184,8 +189,12 @@ public abstract class AbstractCondition<T extends AbstractParam> {
     }
 
     public void toXml(Element element) {
-        element.setText(getText());
+        String text = getText();
+        if (text != null)
+            element.setText(text);
+
         element.addAttribute("name", name);
+
         if (javaClass != null)
             element.addAttribute("class", javaClass.getName());
 
@@ -220,6 +229,10 @@ public abstract class AbstractCondition<T extends AbstractParam> {
 
     public void setJavaClass(Class javaClass) {
         this.javaClass = javaClass;
+    }
+
+    public boolean isGroup() {
+        return group;
     }
 
     public boolean isUnary() {
@@ -272,4 +285,11 @@ public abstract class AbstractCondition<T extends AbstractParam> {
     public abstract AbstractOperationEditor getOperationEditor();
 
     protected abstract ParamFactory<T> getParamFactory();
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

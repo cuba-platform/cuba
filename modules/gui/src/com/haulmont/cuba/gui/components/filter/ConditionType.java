@@ -10,7 +10,11 @@
  */
 package com.haulmont.cuba.gui.components.filter;
 
+/**
+ * Generic filter condition type.
+ */
 public enum ConditionType {
+    GROUP,
     PROPERTY,
     CUSTOM,
     RUNTIME_PROPERTY

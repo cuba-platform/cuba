@@ -1,15 +1,11 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 14.10.2009 14:03:58
- *
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -30,10 +26,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.components.filter.AbstractCondition;
-import com.haulmont.cuba.gui.components.filter.AbstractParam;
-import com.haulmont.cuba.gui.components.filter.ConditionType;
-import com.haulmont.cuba.gui.components.filter.Op;
+import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.filter.DenyingClause;
@@ -69,6 +62,13 @@ import java.util.regex.Pattern;
 
 import static org.apache.commons.lang.BooleanUtils.isTrue;
 
+/**
+ * Generic filter implementation for the web-client.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+*/
 public class WebFilter
         extends WebAbstractComponent<VerticalLayout> implements Filter {
     private static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
@@ -78,9 +78,9 @@ public class WebFilter
     private CollectionDatasource datasource;
     private QueryFilter dsQueryFilter;
     private FilterEntity filterEntity;
-    private List<AbstractCondition> conditions = Collections.EMPTY_LIST;
+    private ConditionsTree conditions = new ConditionsTree();
 
-    private AbstractLayout paramsLayout;
+    private com.vaadin.ui.Component paramsLayout;
     private AbstractOrderedLayout editLayout;
     private FilterSelect select;
     private WebPopupButton actions;
@@ -113,7 +113,7 @@ public class WebFilter
     public WebFilter() {
         persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
         component = new VerticalLayout();
-        component.setMargin(true);
+        //component.setMargin(true);
         component.setStyleName("generic-filter");
 
         foldersPane = App.getInstance().getAppWindow().getFoldersPane();
@@ -260,8 +260,8 @@ public class WebFilter
             if (filterEntity != null) {
                 boolean haveCorrectCondition = false;
 
-                for (AbstractCondition condition : conditions) {
-                    if ((condition.getParam()==null) || (condition.getParam().getValue() != null)) {
+                for (AbstractCondition condition : conditions.toConditionsList()) {
+                    if ((condition.getParam() != null) && (condition.getParam().getValue() != null)) {
                         haveCorrectCondition = true;
                         break;
                     }
@@ -270,7 +270,7 @@ public class WebFilter
                 if (!haveCorrectCondition) {
                     if (!isNewWindow) {
                         App.getInstance().getWindowManager().showNotification
-                                (MessageProvider.getMessage(mainMessagesPack, "filter.emptyConditions"), IFrame.NotificationType.ERROR);
+                                (MessageProvider.getMessage(mainMessagesPack, "filter.emptyConditions"), IFrame.NotificationType.HUMANIZED);
                     }
                     return false;
                 } else
@@ -360,46 +360,94 @@ public class WebFilter
     }
 
     private void createParamsLayout(boolean focusOnConditions) {
-        List<AbstractCondition> visibleConditions = new ArrayList<AbstractCondition>();
-        for (AbstractCondition condition : conditions) {
+        boolean hasGroups = false;
+        for (AbstractCondition condition : conditions.getRoots()) {
+            if (condition.isGroup() && !condition.isHidden()) {
+                hasGroups = true;
+                break;
+            }
+        }
+        if (hasGroups && conditions.getRootNodes().size() > 1) {
+            WebGroupBox groupBox = new WebGroupBox();
+            groupBox.setWidth("-1");
+            groupBox.setCaption(MessageProvider.getMessage(AbstractCondition.MESSAGES_PACK, "GroupType.AND"));
+            paramsLayout = groupBox;
+            recursivelyCreateParamsLayout(focusOnConditions, conditions.getRootNodes(), groupBox, 0);
+        } else {
+            paramsLayout = recursivelyCreateParamsLayout(focusOnConditions, conditions.getRootNodes(), null, 0);
+        }
+    }
+
+    private ComponentContainer recursivelyCreateParamsLayout(boolean focusOnConditions,
+                                               List<Node<AbstractCondition>> nodes,
+                                               ComponentContainer parentContainer,
+                                               int level) {
+
+        List<Node<AbstractCondition>> visibleConditionNodes = new ArrayList<Node<AbstractCondition>>();
+        for (Node<AbstractCondition> node : nodes) {
+            AbstractCondition condition = node.getData();
             if (!condition.isHidden())
-                visibleConditions.add(condition);
+                visibleConditionNodes.add(node);
         }
 
-        if (visibleConditions.isEmpty()) {
-            paramsLayout = new HorizontalLayout();
-            return;
+        if (visibleConditionNodes.isEmpty()) {
+            HorizontalLayout horizontalLayout = new HorizontalLayout();
+
+            if (parentContainer != null)
+                parentContainer.addComponent(horizontalLayout);
+
+            return horizontalLayout;
         }
 
-        int columns = 3;
-        int rows = visibleConditions.size() / columns;
-        if (visibleConditions.size() % columns != 0)
+        int columns = level == 0 ? 3 : 2;
+        int rows = visibleConditionNodes.size() / columns;
+        if (visibleConditionNodes.size() % columns != 0)
             rows++;
         com.vaadin.ui.GridLayout grid = new com.vaadin.ui.GridLayout(columns, rows);
-        grid.setMargin(true, false, false, false);
-        boolean focusSetted=false;
-        for (int i = 0; i < visibleConditions.size(); i++) {
-            AbstractCondition condition = visibleConditions.get(i);
-            HorizontalLayout paramLayout = new HorizontalLayout();
-            paramLayout.setSpacing(true);
-            boolean bottomMargin = (i / columns) < (rows - 1); // no bottom margin for the last row
-            paramLayout.setMargin(false, true, bottomMargin, false);
-            if (condition.getParam().getJavaClass() != null) {
-                Label label = new Label(condition.getLocCaption());
-                paramLayout.addComponent(label);
+        grid.setMargin(parentContainer == null, false, false, false);
+        grid.setSpacing(true);
 
-                ParamEditor paramEditor = new ParamEditor(condition, true);
-                if (focusOnConditions && !focusSetted) {
-                    paramEditor.setFocused();
-                    focusSetted = true;
+        boolean focusSet = false;
+
+        for (int i = 0; i < visibleConditionNodes.size(); i++) {
+            Node<AbstractCondition> node = visibleConditionNodes.get(i);
+            AbstractCondition condition = node.getData();
+            com.vaadin.ui.Component cellContent;
+            if (condition.isGroup()) {
+                WebGroupBox groupBox = new WebGroupBox();
+                groupBox.setWidth("-1");
+                groupBox.setCaption(condition.getLocCaption());
+
+                if (!node.getChildren().isEmpty()) {
+                    recursivelyCreateParamsLayout(
+                            focusOnConditions && !focusSet, node.getChildren(), groupBox, level++);
                 }
-                paramLayout.addComponent(paramEditor);
+                cellContent = groupBox;
+            } else {
+                HorizontalLayout paramLayout = new HorizontalLayout();
+                paramLayout.setSpacing(true);
+                paramLayout.setMargin(false);
+                if (condition.getParam().getJavaClass() != null) {
+                    Label label = new Label(condition.getLocCaption());
+                    paramLayout.addComponent(label);
+
+                    ParamEditor paramEditor = new ParamEditor(condition, true);
+                    if (focusOnConditions && !focusSet) {
+                        paramEditor.setFocused();
+                        focusSet = true;
+                    }
+                    paramLayout.addComponent(paramEditor);
+                }
+                cellContent = paramLayout;
             }
-            grid.addComponent(paramLayout, i % columns, i / columns);
-            grid.setComponentAlignment(paramLayout, com.vaadin.ui.Alignment.MIDDLE_RIGHT);
+            grid.addComponent(cellContent, i % columns, i / columns);
+            grid.setComponentAlignment(cellContent, com.vaadin.ui.Alignment.MIDDLE_RIGHT);
         }
 
-        paramsLayout = grid;
+        if (parentContainer != null)
+            parentContainer.addComponent(grid);
+
+        return grid;
     }
 
     private void setActions(Table table) {
@@ -644,7 +692,7 @@ public class WebFilter
 
 
     public List<AbstractCondition> getConditions() {
-        return Collections.unmodifiableList(conditions);
+        return Collections.unmodifiableList(conditions.toConditionsList());
     }
 
     public void editorCancelled() {
@@ -837,7 +885,7 @@ public class WebFilter
     }
 
     public <T extends Component> T getOwnComponent(String id) {
-        List<AbstractCondition> list = editor == null ? conditions : editor.getConditions();
+        List<AbstractCondition> list = editor == null ? conditions.toConditionsList() : editor.getConditions();
 
         for (AbstractCondition condition : list) {
             if (condition.getParam() != null) {
@@ -879,7 +927,7 @@ public class WebFilter
 
     private void parseFilterXml() {
         if (filterEntity == null) {
-            conditions = new ArrayList<AbstractCondition>();
+            conditions = new ConditionsTree();
         } else {
             FilterParser parser =
                     new FilterParser(filterEntity.getXml(), getFrame().getMessagesPack(), getId(), datasource);
@@ -1050,8 +1098,8 @@ public class WebFilter
     private String submintParameters() {
         FilterParser parser = new FilterParser(filterEntity.getXml(), MESSAGES_PACK, filterEntity.getComponentId(), datasource);
         parser.fromXml();
-        List<AbstractCondition> defaultConditions = parser.getConditions();
-        Iterator<AbstractCondition> it = conditions.iterator();
+        List<AbstractCondition> defaultConditions = parser.getConditions().toConditionsList();
+        Iterator<AbstractCondition> it = conditions.toConditionsList().iterator();
         Iterator<AbstractCondition> defaultIt = defaultConditions.iterator();
         while (it.hasNext()) {
             AbstractCondition current = it.next();

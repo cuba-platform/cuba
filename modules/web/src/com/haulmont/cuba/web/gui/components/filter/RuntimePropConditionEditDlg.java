@@ -52,6 +52,7 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
         public Editor() {
             super(condition.getLocCaption());
             setWidth("380px");
+            setModal(true);
 
             VerticalLayout layout = new VerticalLayout();
             layout.setMargin(true);

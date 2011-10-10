@@ -54,6 +54,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
         public Editor() {
             super(condition.getLocCaption());
             setWidth("470px");
+            setModal(true);
 
             VerticalLayout layout = new VerticalLayout();
             layout.setMargin(true);

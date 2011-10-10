@@ -9,6 +9,7 @@ package com.haulmont.cuba.desktop.gui.components.filter;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.AbstractFilterParser;
 import com.haulmont.cuba.gui.components.filter.ConditionType;
+import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 
@@ -20,7 +21,7 @@ import java.util.List;
  * @author devyatkin
  */
 public class FilterParser extends AbstractFilterParser {
-    public FilterParser(List<AbstractCondition> conditions, String messagesPack, String filterComponentName, Datasource datasource) {
+    public FilterParser(ConditionsTree conditions, String messagesPack, String filterComponentName, Datasource datasource) {
         super(conditions, messagesPack, filterComponentName, datasource);
     }
 
@@ -31,6 +32,8 @@ public class FilterParser extends AbstractFilterParser {
     @Override
     protected AbstractCondition createCondition(ConditionType type, Element element) {
         switch (type) {
+            case GROUP:
+                return new GroupCondition(element, filterComponentName);
             case PROPERTY:
                 return new PropertyCondition(element, messagesPack, filterComponentName, datasource);
             case CUSTOM:

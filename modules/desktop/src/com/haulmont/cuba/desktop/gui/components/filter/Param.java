@@ -50,6 +50,9 @@ import java.util.*;
  * @author devyatkin
  */
 public class Param extends AbstractParam<JComponent> {
+
+    public static final Dimension TEXT_COMPONENT_DIM = new Dimension(120, Integer.MAX_VALUE);
+
     public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, boolean inExpr) {
         super(name, javaClass, entityWhere, entityView, datasource, inExpr);
     }
@@ -157,7 +160,9 @@ public class Param extends AbstractParam<JComponent> {
             field.setValue(stringValue.toString());
         } else
             field.setValue(value);
-        return field.getComponent();
+        JComponent component = field.getComponent();
+        component.setMaximumSize(TEXT_COMPONENT_DIM);
+        return component;
     }
 
     private JComponent createDateField(Class javaClass) {
@@ -325,7 +330,9 @@ public class Param extends AbstractParam<JComponent> {
                         }
                 );
                 picker.setValue(value);
-                return picker.getComponent();
+                JComponent component = picker.getComponent();
+                component.setMaximumSize(TEXT_COMPONENT_DIM);
+                return component;
             }
         } else {
             CollectionDatasource ds = new DsBuilder(datasource.getDsContext())
@@ -378,7 +385,9 @@ public class Param extends AbstractParam<JComponent> {
                 });
 
                 lookup.setValue(value);
-                return lookup.getComponent();
+                JComponent component = lookup.getComponent();
+                component.setMaximumSize(TEXT_COMPONENT_DIM);
+                return component;
             }
         }
     }

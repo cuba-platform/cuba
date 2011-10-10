@@ -24,7 +24,7 @@ public class ParamEditor extends JPanel implements AbstractCondition.Listener {
     private JComponent field;
 
     public ParamEditor(final AbstractCondition<Param> condition, boolean showOperation) {
-        super(new MigLayout("insets 0 0 0 0, align center"));
+        super(new MigLayout("insets 0 0 0 0, align left"));
         this.condition = condition;
 
         if (condition.getParam() != null) {

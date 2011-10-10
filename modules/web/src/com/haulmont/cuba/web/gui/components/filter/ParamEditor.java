@@ -36,7 +36,6 @@ public class ParamEditor extends CustomComponent implements AbstractCondition.Li
                 layout.addComponent(opLab);
             }
             field = condition.getParam().createEditComponent();
-            field.setWidth("100%");
             layout.addComponent(field);
         }
 
@@ -48,7 +47,6 @@ public class ParamEditor extends CustomComponent implements AbstractCondition.Li
             layout.removeComponent(field);
         }
         field = condition.getParam().createEditComponent();
-        field.setWidth("100%");
         layout.addComponent(field);
     }
 

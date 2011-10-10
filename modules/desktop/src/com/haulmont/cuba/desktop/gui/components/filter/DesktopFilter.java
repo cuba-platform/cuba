@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components.filter;
 
+import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
@@ -23,7 +24,6 @@ import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
@@ -31,6 +31,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.AbstractParam;
+import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.Op;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -52,6 +53,7 @@ import org.dom4j.Attribute;
 import org.dom4j.Element;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -60,6 +62,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Generic filter implementation for the desktop-client.
+ *
  * <p>$Id$</p>
  *
  * @author krivopustov
@@ -74,7 +78,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     private FilterEntity noFilter;
     private FilterEntity filterEntity;
-    private List<AbstractCondition> conditions = Collections.EMPTY_LIST;
+    private ConditionsTree conditions = new ConditionsTree();
 
     private DesktopFilterSelect select;
     private JPanel maxResultsPanel;
@@ -377,43 +381,84 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         }
         paramsPanel = new JPanel(new MigLayout(paramsPanelLC));
 
-        List<AbstractCondition> visibleConditions = new ArrayList<AbstractCondition>();
-        for (AbstractCondition condition : conditions) {
-            if (!condition.isHidden())
-                visibleConditions.add(condition);
+        boolean hasGroups = false;
+        for (AbstractCondition condition : conditions.getRoots()) {
+            if (condition.isGroup() && !condition.isHidden()) {
+                hasGroups = true;
+                break;
+            }
         }
-        if (visibleConditions.isEmpty()) {
-            impl.add(paramsPanel, new CC().spanX());
+        if (hasGroups && conditions.getRootNodes().size() > 1) {
+            JPanel groupBox = createParamsGroupBox(
+                    MessageProvider.getMessage(AbstractCondition.MESSAGES_PACK, "GroupType.AND"));
+            paramsPanel.add(groupBox);
+            recursivelyCreateParamsPanel(focusOnConditions, conditions.getRootNodes(), groupBox, 0);
+        } else {
+            recursivelyCreateParamsPanel(focusOnConditions, conditions.getRootNodes(), paramsPanel, 0);
+        }
+
+        impl.add(paramsPanel, new CC().spanX());
+    }
+
+    private void recursivelyCreateParamsPanel(
+            boolean focusOnConditions, List<Node<AbstractCondition>> nodes, JComponent parentComponent, int level)
+    {
+        List<Node<AbstractCondition>> visibleConditionNodes = new ArrayList<Node<AbstractCondition>>();
+        for (Node<AbstractCondition> node : nodes) {
+            AbstractCondition condition = node.getData();
+            if (!condition.isHidden())
+                visibleConditionNodes.add(node);
+        }
+        if (visibleConditionNodes.isEmpty()) {
             return;
         }
 
-        int columns = 3;
+        int columns = level == 0 ? 3 : 2;
         LC paramsLC = new LC();
         paramsLC.insetsAll("0").wrapAfter(columns);
         if (LayoutAdapter.isDebug()) {
             paramsLC.debug(1000);
         }
         MigLayout paramsLayout = new MigLayout(paramsLC);
-        paramsPanel.setLayout(paramsLayout);
-        boolean focusSetted = false;
-        for (AbstractCondition condition : visibleConditions) {
-            JPanel paramPanel = new JPanel();
+        parentComponent.setLayout(paramsLayout);
 
-            if (condition.getParam().getJavaClass() != null) {
-                JLabel label = new JLabel(condition.getLocCaption());
-                paramPanel.add(label);
+        boolean focusSet = false;
 
-                ParamEditor paramEditor = new ParamEditor(condition, true);
-                if (focusOnConditions && !focusSetted) {
+        for (Node<AbstractCondition> node : visibleConditionNodes) {
+            AbstractCondition condition = node.getData();
+            if (condition.isGroup()) {
+                JPanel groupBox = createParamsGroupBox(condition.getLocCaption());
 
+                if (!node.getChildren().isEmpty()) {
+                    recursivelyCreateParamsPanel(
+                            focusOnConditions && !focusSet, node.getChildren(), groupBox, level++);
                 }
-                paramPanel.add(paramEditor);
+                parentComponent.add(groupBox);
 
+            } else {
+                JPanel paramPanel = new JPanel();
 
+                if (condition.getParam().getJavaClass() != null) {
+                    JLabel label = new JLabel(condition.getLocCaption());
+                    paramPanel.add(label);
+
+                    ParamEditor paramEditor = new ParamEditor(condition, true);
+                    if (focusOnConditions && !focusSet) {
+
+                    }
+                    paramPanel.add(paramEditor);
+                }
+                parentComponent.add(paramPanel);
             }
-            paramsPanel.add(paramPanel);
         }
-        impl.add(paramsPanel, new CC().spanX());
+    }
+
+    private JPanel createParamsGroupBox(String caption) {
+        JPanel groupBox = new JPanel();
+        TitledBorder border = BorderFactory.createTitledBorder(" " + caption + " ");
+        border.setTitlePosition(TitledBorder.CENTER);
+        groupBox.setBorder(border);
+        return groupBox;
     }
 
     private void internalSetFilterEntity() {
@@ -509,8 +554,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             if (filterEntity != null) {
                 boolean haveCorrectCondition = false;
 
-                for (AbstractCondition condition : conditions) {
-                    if ((condition.getParam() == null) || (condition.getParam().getValue() != null)) {
+                for (AbstractCondition condition : conditions.toConditionsList()) {
+                    if ((condition.getParam() != null) && (condition.getParam().getValue() != null)) {
                         haveCorrectCondition = true;
                         break;
                     }
@@ -519,7 +564,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                 if (!haveCorrectCondition) {
                     if (!isNewWindow) {
                         App.getInstance().getWindowManager().showNotification
-                                (MessageProvider.getMessage(mainMessagesPack, "filter.emptyConditions"), IFrame.NotificationType.ERROR);
+                                (MessageProvider.getMessage(mainMessagesPack, "filter.emptyConditions"), IFrame.NotificationType.HUMANIZED);
                     }
                     return false;
                 } else
@@ -819,7 +864,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     public <T extends Component> T getOwnComponent(String id) {
-        List<AbstractCondition> list = editor == null ? conditions : editor.getConditions();
+        List<AbstractCondition> list = editor == null ? conditions.toConditionsList() : editor.getConditions();
 
         for (AbstractCondition condition : list) {
             if (condition.getParam() != null) {
@@ -861,7 +906,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     private void parseFilterXml() {
         if (filterEntity == null) {
-            conditions = new ArrayList<AbstractCondition>();
+            conditions = new ConditionsTree();
         } else {
             FilterParser parser =
                     new FilterParser(filterEntity.getXml(), getFrame().getMessagesPack(), getId(), datasource);
