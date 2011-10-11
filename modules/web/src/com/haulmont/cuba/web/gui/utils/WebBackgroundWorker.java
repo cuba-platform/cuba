@@ -109,7 +109,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
                 // if completed
                 if (taskHandler.isDone()) {
-                    task.done(taskExecutor.getExecutionResult());
+                    taskExecutor.handleDone();
                     webTimerListener.stopListen();
                 }
             }
@@ -232,10 +232,6 @@ public class WebBackgroundWorker implements BackgroundWorker {
             return result;
         }
 
-        public V getExecutionResult() {
-            return result;
-        }
-
         @Override
         public BackgroundTask<T, V> getTask() {
             return runnableTask;
@@ -263,6 +259,18 @@ public class WebBackgroundWorker implements BackgroundWorker {
         public void handleIntents() {
             synchronized (intents) {
                 runnableTask.progress(intents);
+                // notify listeners
+                for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
+                    listener.onProgress(intents);
+                }
+            }
+        }
+
+        public void handleDone() {
+            runnableTask.done(result);
+            // notify listeners
+            for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
+                listener.onDone(result);
             }
         }
     }

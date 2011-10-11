@@ -78,12 +78,21 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         @Override
         protected void process(List<T> chunks) {
             runnableTask.progress(chunks);
+            // Notify listeners
+            for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
+                listener.onProgress(chunks);
+            }
         }
 
         @Override
         protected void done() {
-            if (!runnableTask.isInterrupted())
+            if (!runnableTask.isInterrupted()) {
                 runnableTask.done(result);
+                // Notify listeners
+                for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
+                    listener.onDone(result);
+                }
+            }
         }
 
         @Override

@@ -128,7 +128,12 @@ public interface BackgroundWorker {
             if (isAlive()) {
                 canceled = taskExecutor.cancelExecution(mayInterruptIfRunning);
                 if (canceled) {
-                    taskExecutor.getTask().canceled();
+                    BackgroundTask<T, V> task = taskExecutor.getTask();
+                    task.canceled();
+                    // Notify listeners
+                    for (BackgroundTask.ProgressListener listener : task.getProgressListeners()) {
+                        listener.onCancel();
+                    }
                 }
             }
             return canceled;
