@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.View;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -24,23 +25,34 @@ import java.util.UUID;
  */
 @Service(EntitySnapshotService.NAME)
 public class EntitySnapshotServiceBean implements EntitySnapshotService {
+
+    @Override
     public List<EntitySnapshot> getSnapshots(MetaClass metaClass, UUID id) {
         EntitySnapshotAPI snapshotAPI = Locator.lookup(EntitySnapshotAPI.NAME);
         return snapshotAPI.getSnapshots(metaClass, id);
     }
 
+    @Override
     public EntitySnapshot createSnapshot(BaseEntity entity, View view) {
         EntitySnapshotAPI snapshotAPI = Locator.lookup(EntitySnapshotAPI.NAME);
         return snapshotAPI.createSnapshot(entity, view);
     }
 
+    @Override
     public BaseEntity extractEntity(EntitySnapshot snapshot) {
         EntitySnapshotAPI snapshotAPI = Locator.lookup(EntitySnapshotAPI.NAME);
         return snapshotAPI.extractEntity(snapshot);
     }
 
+    @Override
     public EntityDiff getDifference(EntitySnapshot first, EntitySnapshot second) {
         EntitySnapshotAPI snapshotAPI = Locator.lookup(EntitySnapshotAPI.NAME);
         return snapshotAPI.getDifference(first, second);
+    }
+
+    @Override
+    public void migrateSnapshots(MetaClass metaClass, UUID id, Map<Class, Class> classMapping) {
+        EntitySnapshotAPI snapshotAPI = Locator.lookup(EntitySnapshotAPI.NAME);
+        snapshotAPI.migrateSnapshots(metaClass, id, classMapping);
     }
 }

@@ -7,7 +7,10 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
@@ -22,6 +25,8 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * <p>$Id$</p>
@@ -41,12 +46,13 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         diffManager = new EntityDiffManager(this);
     }
 
+    @Override
     public List<EntitySnapshot> getSnapshots(MetaClass metaClass, UUID id) {
         List<EntitySnapshot> resultList = null;
 
         Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query query = em.createQuery(
                     "select s from core$EntitySnapshot s where s.entityId = :entityId and s.entityMetaClass = :metaClass");
             query.setParameter("entityId", id);
@@ -66,12 +72,58 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         // load snapshots
         List<EntitySnapshot> snapshotList = getSnapshots(metaClass, id);
         // translate XML
-        for (EntitySnapshot snapshot : snapshotList) {
+        for (Map.Entry<Class, Class> classEntry : classMapping.entrySet()) {
+            Class beforeClass = classEntry.getKey();
+            Class afterClass = classEntry.getValue();
 
+            checkNotNull(beforeClass);
+            checkNotNull(afterClass);
+
+            // If BeforeClass != AfterClass
+            if (!beforeClass.equals(afterClass)) {
+                String beforeClassName = beforeClass.getCanonicalName();
+                String afterClassName = afterClass.getCanonicalName();
+
+                String beforeClassStartTag = "<" + beforeClassName + ">";
+                String beforeClassEndTag = "</" + beforeClassName + ">";
+
+                String afterClassStartTag = "<" + afterClassName + ">";
+                String afterClassEndTag = "</" + afterClassName + ">";
+
+                String beforeClassAttr = "class=\"" + beforeClassName + "\"";
+                String afterClassAttr = "class=\"" + afterClassName + "\"";
+
+                for (EntitySnapshot snapshot : snapshotList) {
+                    String snapshotXml = snapshot.getSnapshotXml();
+
+                    snapshotXml = snapshotXml.replaceAll(beforeClassStartTag, afterClassStartTag);
+                    snapshotXml = snapshotXml.replaceAll(beforeClassEndTag, afterClassEndTag);
+                    snapshotXml = snapshotXml.replaceAll(beforeClassAttr, afterClassAttr);
+                    snapshot.setSnapshotXml(snapshotXml);
+                }
+            }
         }
+
         // Save snapshots to db
+        Transaction tx = persistence.createTransaction();
+        try
+
+        {
+            EntityManager em = persistence.getEntityManager();
+
+            for (EntitySnapshot snapshot : snapshotList)
+                em.merge(snapshot);
+
+            tx.commit();
+        } finally
+
+        {
+            tx.end();
+        }
+
     }
 
+    @Override
     public EntitySnapshot createSnapshot(BaseEntity entity, View view) {
 
         if (entity == null)
@@ -97,7 +149,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
         Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             em.persist(snapshot);
 
             tx.commit();
@@ -108,16 +160,19 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         return snapshot;
     }
 
+    @Override
     public BaseEntity extractEntity(EntitySnapshot snapshot) {
         String xml = snapshot.getSnapshotXml();
         return (BaseUuidEntity) fromXML(xml);
     }
 
+    @Override
     public View extractView(EntitySnapshot snapshot) {
         String xml = snapshot.getViewXml();
         return (View) fromXML(xml);
     }
 
+    @Override
     public EntityDiff getDifference(EntitySnapshot first, EntitySnapshot second) {
         return diffManager.getDifference(first, second);
     }

@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.EntityDiff;
 import com.haulmont.cuba.core.global.View;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -54,4 +55,13 @@ public interface EntitySnapshotService {
      * @return Diff
      */
     EntityDiff getDifference(EntitySnapshot first, EntitySnapshot second);
+
+    /**
+     * Translate snapshots for archival classes
+     *
+     * @param metaClass    Metaclass
+     * @param id           Entity Id
+     * @param classMapping Map of [OldClass -> NewClass] for migration
+     */
+    void migrateSnapshots(MetaClass metaClass, UUID id, Map<Class, Class> classMapping);
 }
