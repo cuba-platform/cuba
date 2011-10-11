@@ -649,6 +649,9 @@ public class ApplicationConnection {
         showError(details, configuration.getCommunicationErrorCaption(),
                 configuration.getCommunicationErrorMessage(),
                 configuration.getCommunicationErrorUrl());
+        // Block UI if error
+        if (configuration.useUiBlocking())
+            blockUI(configuration.getCommunicationErrorMessage());
     }
 
     /**
@@ -827,8 +830,10 @@ public class ApplicationConnection {
         }
 
         if (uiBlocked){
-            unBlockUI();
-            uiBlocked = false;
+            if (applicationRunning) {
+                unBlockUI();
+                uiBlocked = false;
+            }
         }
 
         if (loadElement != null) {
