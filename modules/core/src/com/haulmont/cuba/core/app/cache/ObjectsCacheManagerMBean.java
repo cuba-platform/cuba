@@ -21,4 +21,6 @@ public interface ObjectsCacheManagerMBean {
     String printActiveCaches();
 
     String printStatsByName(String cacheName);
+
+    String reloadByName(String cacheName);
 }

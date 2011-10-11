@@ -9,7 +9,7 @@ package com.haulmont.cuba.core.app.cache;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.Collection;
+import java.util.Map;
 
 /**
  * <p>$Id$</p>
@@ -17,12 +17,14 @@ import java.util.Collection;
  * @author artamonov
  */
 @Service(ObjectsCacheManagerService.NAME)
-public class ObjectsCacheManagerServiceBean implements ObjectsCacheManagerService{
+public class ObjectsCacheManagerServiceBean implements ObjectsCacheManagerService {
 
     @Inject
     private ObjectsCacheManagerAPI managerAPI;
 
-    public Collection<ObjectsCacheInstance> getActiveInstances() {
-        return managerAPI.getActiveInstances();
+    @Override
+    public void updateCache(String cacheName, Map<String, Object> params) {
+        ObjectsCacheController controller = managerAPI.getController(cacheName);
+        controller.updateCache(params);
     }
 }

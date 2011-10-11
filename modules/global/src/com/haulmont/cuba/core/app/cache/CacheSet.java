@@ -10,6 +10,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -21,14 +22,18 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author artamonov
  */
 @SuppressWarnings({"unused"})
-public class CacheSet {
+public class CacheSet implements Cloneable {
     private Collection<Object> items;
+
+    public CacheSet() {
+        this(Collections.<Object>emptyList());
+    }
 
     public CacheSet(Collection<Object> items) {
         this.items = items;
     }
 
-    public Collection getItems() {
+    public Collection<Object> getItems() {
         return items;
     }
 
@@ -85,9 +90,13 @@ public class CacheSet {
     public Object clone() throws CloneNotSupportedException {
         CacheSet cloneInstance = (CacheSet) super.clone();
         cloneInstance.items = new LinkedList<Object>(items);
-        return cloneInstance;
+        return new CacheSet(new LinkedList<Object>(items));
     }
 
+    /**
+     * Size
+     * @return Cache set size
+     */
     public int getSize() {
         return (items != null) ? items.size() : 0;
     }

@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.core.app.cache;
 
-import java.util.Collection;
+import java.util.Map;
 
 /**
  * Service for manage application caches
@@ -17,5 +17,10 @@ import java.util.Collection;
 public interface ObjectsCacheManagerService {
     String NAME = "cuba_ObjectsCacheManagerService";
 
-    Collection<ObjectsCacheInstance> getActiveInstances();
+    /**
+     * Update cache content
+     * @param cacheName Cache instance name
+     * @param params Params for update
+     */
+    void updateCache(String cacheName, Map<String, Object> params);
 }

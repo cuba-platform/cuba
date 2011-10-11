@@ -6,10 +6,10 @@
 
 package com.haulmont.cuba.core.app.cache;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
+ * Statistics cache life cycle
  * <p>$Id$</p>
  *
  * @author artamonov
@@ -65,7 +65,7 @@ public class CacheStatistics {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append("Cache: ").append(cacheName).append("\n");
         sb.append("Count: ").append(objectsCount).append("\n");

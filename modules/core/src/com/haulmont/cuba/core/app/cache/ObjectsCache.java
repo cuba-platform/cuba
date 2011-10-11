@@ -22,7 +22,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  *
  * @author artamonov
  */
-public class ObjectsCache implements ObjectsCacheInstance {
+public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheController {
 
     private String name;
     private CacheSet cacheSet;
@@ -47,6 +47,7 @@ public class ObjectsCache implements ObjectsCacheInstance {
         cacheSet = new CacheSet(Collections.emptyList());
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -54,6 +55,7 @@ public class ObjectsCache implements ObjectsCacheInstance {
     public void setName(String name) {
         this.name = name;
         managerAPI.registerCache(this);
+        managerAPI.registerController(this);
     }
 
     public CacheLoader getLoader() {
@@ -72,17 +74,25 @@ public class ObjectsCache implements ObjectsCacheInstance {
         this.logUpdateEvent = logUpdateEvent;
     }
 
-    public void refresh() {
+    private boolean isValidState() {
         if (StringUtils.isEmpty(name)) {
             log.error("Not set name for ObjectsCache instance");
-            return;
+            return false;
         }
 
         if (!AppContext.isStarted())
-            return;
+            return false;
 
-        if (loader != null) {
+        if (loader == null) {
+            log.error("Not set cache loader for ObjectsCache:" + name);
+            return false;
+        }
 
+        return true;
+    }
+
+    public void refresh() {
+        if (isValidState()) {
             Date updateStart = TimeProvider.currentTimestamp();
 
             // Load data
@@ -90,7 +100,7 @@ public class ObjectsCache implements ObjectsCacheInstance {
             try {
                 data = loader.loadData(this);
             } catch (CacheException e) {
-                log.error(String.format("Load data for cache %s failed", name));
+                log.error(String.format("Load data for cache %s failed", name), e);
                 this.cacheSet = new CacheSet(Collections.emptyList());
                 return;
             }
@@ -118,10 +128,10 @@ public class ObjectsCache implements ObjectsCacheInstance {
             if (logUpdateEvent)
                 log.debug("Updated cache set in " + name + " " +
                         String.valueOf(lastUpdateDuration) + " millis");
-        } else
-            log.error("Not set cache loader for ObjectsCache:" + name);
+        }
     }
 
+    @Override
     public CacheStatistics getStatistics() {
 
         cacheLock.readLock().lock();
@@ -149,18 +159,66 @@ public class ObjectsCache implements ObjectsCacheInstance {
         return stats;
     }
 
+    @Override
     public Collection execute(CacheSelector cacheSelector) {
         Collection result;
 
         cacheLock.readLock().lock();
 
-        if (cacheSelector != null)
-            result = cacheSelector.select(cacheSet);
-        else
+        if (cacheSelector != null) {
+            // Select from cache copy
+            CacheSet temporaryCacheSet;
+            try {
+                temporaryCacheSet = (CacheSet) cacheSet.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException(e);
+            }
+            result = cacheSelector.select(temporaryCacheSet);
+        } else
             result = Collections.emptyList();
 
         cacheLock.readLock().unlock();
 
         return result;
+    }
+
+    @Override
+    public ObjectsCacheInstance getCache() {
+        return this;
+    }
+
+    @Override
+    public void reloadCache() {
+        refresh();
+    }
+
+    @Override
+    public void updateCache(Map<String, Object> params) {
+        if (isValidState()) {
+            // Modify cache copy
+            CacheSet temporaryCacheSet;
+            try {
+                temporaryCacheSet = (CacheSet) cacheSet.clone();
+            } catch (CloneNotSupportedException e) {
+                log.error(String.format("Update data for cache %s failed", name), e);
+                this.cacheSet = new CacheSet(Collections.emptyList());
+                return;
+            }
+
+            try {
+                loader.updateData(temporaryCacheSet, params);
+            } catch (CacheException e) {
+                log.error(String.format("Update data for cache %s failed", name), e);
+                this.cacheSet = new CacheSet(Collections.emptyList());
+                return;
+            }
+
+            cacheLock.writeLock().lock();
+
+            // Modify cache set
+            this.cacheSet = temporaryCacheSet;
+
+            cacheLock.writeLock().unlock();
+        }
     }
 }
