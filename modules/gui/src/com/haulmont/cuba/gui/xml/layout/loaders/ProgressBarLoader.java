@@ -1,0 +1,61 @@
+/*
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+package com.haulmont.cuba.gui.xml.layout.loaders;
+
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ProgressBar;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
+
+/**
+ * <p>$Id$</p>
+ *
+ * @author Alexander Budarov
+ */
+public class ProgressBarLoader extends AbstractFieldLoader {
+    private static final long serialVersionUID = 4465232545027614638L;
+
+    public ProgressBarLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+        super(context, config, factory);
+    }
+
+    public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
+        ProgressBar component = factory.createComponent(element.getName());
+
+        assignXmlDescriptor(component, element);
+        loadId(component, element);
+
+        loadVisible(component, element);
+        loadEditable(component, element);
+        loadEnable(component, element);
+
+        loadStyleName(component, element);
+
+        /*loadCaption(component, element);
+        loadDescription(component, element);*/
+
+        loadHeight(component, element);
+        loadWidth(component, element);
+        loadAlign(component, element);
+
+        loadIndeterminate(component, element);
+
+        assignFrame(component);
+
+        return component;
+    }
+
+    private void loadIndeterminate(ProgressBar component, Element element) {
+        final String indeterminate = element.attributeValue("indeterminate");
+        if (!StringUtils.isEmpty(indeterminate)) {
+            component.setIndeterminate(BooleanUtils.toBoolean(indeterminate));
+        }
+    }
+}

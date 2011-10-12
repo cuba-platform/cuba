@@ -476,6 +476,18 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- Progress bar -->
+    <xs:complexType name="progressBarComponent">
+        <xs:attributeGroup ref="requiresId"/>
+        <!--<xs:attributeGroup ref="hasCaption"/>-->
+        <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasEditState"/>
+        <xs:attributeGroup ref="hasAlign"/>
+        <xs:attribute name="indeterminate" type="xs:string" use="optional"/>
+    </xs:complexType>
+
     <!-- LookupField-->
     <xs:complexType name="lookupFieldComponent">
         <xs:complexContent>
@@ -1260,6 +1272,7 @@
                 <xs:element name="lookupPickerField" type="lookupPickerFieldComponent"/>
 
                 <xs:element name="optionsGroup" type="optionsGroupComponent"/>
+                <xs:element name="progressBar" type="progressBarComponent"/>
 
                 <xs:element name="upload" type="uploadComponent"/>
                 <xs:element name="multiupload" type="multiuploadComponent"/>

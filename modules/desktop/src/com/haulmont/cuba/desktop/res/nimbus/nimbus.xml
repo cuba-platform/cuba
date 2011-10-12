@@ -11,6 +11,8 @@
         <color property="Hyperlink.visitedColor" value="#0033ff"/>
         <color property="Hyperlink.linkColor" value="#0033ff"/>
         <dimension property="Table.intercellSpacing" value="1 1"/>
+        <color property="nimbusOrange" value="#33628c"/>
+        <!-- make orange to be the same as nimbusBase -->
     </ui-defaults>
 
     <style name="h2">

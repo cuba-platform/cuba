@@ -24,7 +24,7 @@ import java.util.Map;
 @ManagedBean(ComponentsFactory.NAME)
 public class DesktopComponentsFactory implements ComponentsFactory {
 
-    private static Map<String, Class<? extends Component>> classes = new HashMap<String, Class<?extends Component>>();
+    private static Map<String, Class<? extends Component>> classes = new HashMap<String, Class<? extends Component>>();
 
     static {
         classes.put(Window.NAME, DesktopWindow.class);
@@ -64,6 +64,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(Embedded.NAME, DesktopEmbedded.class);
         classes.put(WidgetsTree.NAME, DesktopWidgetsTree.class);
         classes.put(GroupBox.NAME, DesktopGroupBox.class);
+        classes.put(ProgressBar.NAME, DesktopProgressBar.class);
         classes.put(TimeField.NAME, DesktopTimeField.class);
     }
 

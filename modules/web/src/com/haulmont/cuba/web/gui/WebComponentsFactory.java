@@ -18,7 +18,7 @@ import java.util.Map;
 @ManagedBean(ComponentsFactory.NAME)
 public class WebComponentsFactory implements ComponentsFactory, Serializable {
 
-    private static Map<String, Class<? extends Component>> classes = new HashMap<String, Class<?extends Component>>();
+    private static Map<String, Class<? extends Component>> classes = new HashMap<String, Class<? extends Component>>();
 
     private static final long serialVersionUID = -409350376523747015L;
 
@@ -70,6 +70,7 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put(TokenList.NAME, WebTokenList.class);
         classes.put(WidgetsTree.NAME, WebWidgetsTree.class);
         classes.put(TwinColumn.NAME, WebTwinColumn.class);
+        classes.put(ProgressBar.NAME, WebProgressBar.class);
         classes.put(RowsCount.NAME, WebRowsCount.class);
     }
 
@@ -77,7 +78,7 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put(element, componentClass);
     }
 
-    public static void registerComponents(ComponentPalette ... palettes) {
+    public static void registerComponents(ComponentPalette... palettes) {
         for (ComponentPalette palette : palettes) {
             Map<String, Class<? extends Component>> loaders = palette.getComponents();
             for (Map.Entry<String, Class<? extends Component>> loaderEntry : loaders.entrySet()) {

@@ -10,6 +10,7 @@
 package com.haulmont.cuba.gui.xml.layout;
 
 import com.haulmont.cuba.gui.ComponentPalette;
+import com.haulmont.cuba.gui.components.ProgressBar;
 import com.haulmont.cuba.gui.xml.layout.loaders.*;
 
 import java.io.Serializable;
@@ -69,12 +70,12 @@ public class LayoutLoaderConfig implements Serializable {
         config.register("lookupPickerField", LookupPickerFieldLoader.class);
         config.register("optionsGroup", OptionsGroupLoader.class);
         config.register("upload", FileUploadFieldLoader.class);
-        config.register("multiupload",FileUploadFieldLoader.class);
+        config.register("multiupload", FileUploadFieldLoader.class);
         config.register("table", TableLoader.class);
         config.register("treeTable", TreeTableLoader.class);
         config.register("groupTable", GroupTableLoader.class);
         config.register("iframe", IFrameLoader.class);
-        config.register("runtimeProperties",RuntimePropertiesFrameLoader.class);
+        config.register("runtimeProperties", RuntimePropertiesFrameLoader.class);
         config.register("split", SplitPanelLoader.class);
         config.register("tree", TreeLoader.class);
         config.register("tabsheet", TabsheetLoader.class);
@@ -89,6 +90,7 @@ public class LayoutLoaderConfig implements Serializable {
         config.register("tokenList", TokenListLoader.class);
         config.register("widgetsTree", WidgetsTreeLoader.class);
         config.register("twinColumn", TwinColumnLoader.class);
+        config.register(ProgressBar.NAME, ProgressBarLoader.class);
 
         config.register("scriptHost", ScriptHostLoader.class);
     }
@@ -97,7 +99,7 @@ public class LayoutLoaderConfig implements Serializable {
         customLoaders.put(tagName, aClass);
     }
 
-    public static void registerLoaders(ComponentPalette ... palettes) {
+    public static void registerLoaders(ComponentPalette... palettes) {
         for (ComponentPalette palette : palettes) {
             Map<String, Class<? extends ComponentLoader>> loaders = palette.getLoaders();
             for (Map.Entry<String, Class<? extends ComponentLoader>> loaderEntry : loaders.entrySet()) {
@@ -131,8 +133,7 @@ public class LayoutLoaderConfig implements Serializable {
         return loader;
     }
 
-    protected void register(String name, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loader)
-    {
+    protected void register(String name, Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loader) {
         loaders.put(name, loader);
     }
 }
