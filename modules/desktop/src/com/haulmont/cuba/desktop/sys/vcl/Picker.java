@@ -102,4 +102,8 @@ public class Picker extends JComponent {
     public boolean isEnabled() {
         return enabled;
     }
+
+    public void requestFocus(){
+        editor.requestFocus();
+    }
 }

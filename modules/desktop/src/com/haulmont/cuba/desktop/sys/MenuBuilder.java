@@ -8,13 +8,16 @@ package com.haulmont.cuba.desktop.sys;
 
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.NoSuchScreenException;
+import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.security.global.UserSession;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import java.awt.event.*;
 import java.util.List;
 
 /**
@@ -46,7 +49,22 @@ public class MenuBuilder {
     private void createMenuBarItem(JMenuBar menuBar, MenuItem item) {
         String caption = MenuConfig.getMenuItemCaption(item.getId());
         if (!item.getChildren().isEmpty()) {
-            JMenu jMenu = new JMenu(caption);
+            final JMenu jMenu = new JMenu(caption);
+            jMenu.addMenuListener(new MenuListener() {
+                @Override
+                public void menuSelected(MenuEvent e) {
+                    jMenu.requestFocus();
+                }
+
+                @Override
+                public void menuDeselected(MenuEvent e) {
+                }
+
+                @Override
+                public void menuCanceled(MenuEvent e) {
+                }
+            });
+
             assignShortcut(jMenu, item);
             menuBar.add(jMenu);
             createSubMenu(jMenu, item);
@@ -58,7 +76,7 @@ public class MenuBuilder {
         }
     }
 
-    private void assignCommand(JMenuItem jMenuItem, MenuItem item) {
+    private void assignCommand(final JMenuItem jMenuItem, MenuItem item) {
         WindowInfo windowInfo;
         try {
             windowInfo = AppContext.getBean(WindowConfig.class).getWindowInfo(item.getId());
@@ -104,6 +122,11 @@ public class MenuBuilder {
     }
 
     private void assignShortcut(JMenuItem jMenuItem, MenuItem item) {
-        // TODO
+        if (item.getShortcut() != null) {
+            ShortcutAction.Key key = item.getShortcut().getKey();
+            ShortcutAction.Modifier[] modifiers = item.getShortcut().getModifiers();
+            ShortcutAction.KeyCombination combo = new ShortcutAction.KeyCombination(key, modifiers);
+            jMenuItem.setAccelerator(DesktopComponentsHelper.convertKeyCombination(combo));
+        }
     }
 }

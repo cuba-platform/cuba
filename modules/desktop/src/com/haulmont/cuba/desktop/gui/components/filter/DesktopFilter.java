@@ -80,7 +80,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     private FilterEntity filterEntity;
     private ConditionsTree conditions = new ConditionsTree();
 
-    private DesktopFilterSelect select;
+    private DesktopLookupField select;
     private JPanel maxResultsPanel;
     private JPanel paramsPanel;
     private JPanel editPanel;
@@ -120,6 +120,18 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         impl = new JPanel(topLayout);
         //todo foldersPane
 
+        InputMap inputMap = impl.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        ActionMap actionMap = impl.getActionMap();
+
+        KeyStroke applyFilterKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.ALT_DOWN_MASK, false);
+        inputMap.put(applyFilterKeyStroke, "applyFilter");
+        actionMap.put("applyFilter", new javax.swing.AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                apply(false);
+            }
+        });
+
         noFilter = new FilterEntity() {
             @Override
             public String toString() {
@@ -128,13 +140,12 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         };
         noFilter.setName(MessageProvider.getMessage(mainMessagesPack, "filter.noFilter"));
 
-        select = new DesktopFilterSelect();
-        Dimension dimension = select.getMinimumSize();
-        select.setMinimumSize(new Dimension(300, dimension.height));
-        select.addItemListener(new SelectListener());
+        select = new DesktopLookupField();
+        select.setRequired(true);
 
-        impl.add(select);
-        DesktopComponentsHelper.adjustSize(select);
+        select.<JComponent>getComponent().setMinimumSize(new Dimension(300, DesktopComponentsHelper.FIELD_HEIGHT));
+        select.addListener(new SelectListener());
+        impl.add(select.<java.awt.Component>getComponent());
         applyBtn = new JButton(MessageProvider.getMessage(mainMessagesPack, "actions.Apply"));
         applyBtn.setIcon(App.getInstance().getResources().getIcon("icons/search.png"));
         DesktopComponentsHelper.adjustSize(applyBtn);
@@ -442,9 +453,14 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                     JLabel label = new JLabel(condition.getLocCaption());
                     paramPanel.add(label);
 
-                    ParamEditor paramEditor = new ParamEditor(condition, true);
+                    final ParamEditor paramEditor = new ParamEditor(condition, true);
                     if (focusOnConditions && !focusSet) {
-
+                        focusSet = true;
+                        SwingUtilities.invokeLater(new Runnable(){
+                            public void run(){
+                                paramEditor.requestFocus();
+                            }
+                        });
                     }
                     paramPanel.add(paramEditor);
                 }
@@ -462,11 +478,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     private void internalSetFilterEntity() {
-        List<FilterEntity> list = new ArrayList(select.getFilters());
+        List<FilterEntity> list = new ArrayList(select.getOptionsList());
         list.remove(filterEntity);
-
-        select.removeAllItems();
-
         list.add(filterEntity);
 
         final Map<FilterEntity, String> captions = new HashMap<FilterEntity, String>();
@@ -490,14 +503,12 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                     }
                 }
         );
-        ItemWrapper<FilterEntity> noFilterWrapper = new ItemWrapper<FilterEntity>(noFilter, noFilter.toString());
-        select.setNoFilter(noFilterWrapper);
-        select.addItem(noFilterWrapper);
+
+        select.setOptionsList(list);
+        select.setNullOption(noFilter);
         for (FilterEntity filter : list) {
-            ItemWrapper<FilterEntity> wrapper = new ItemWrapper<FilterEntity>(filter, captions.get(filter));
-            select.addItem(wrapper);
             if (filter == filterEntity) {
-                select.setSelectedItem(wrapper);
+                select.setValue(filter);
             }
         }
     }
@@ -662,7 +673,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                     //
                 }
                 if (defaultId != null) {
-                    Collection<FilterEntity> filters = select.getFilters();
+                    Collection<FilterEntity> filters = select.getOptionsList();
                     for (FilterEntity filter : filters) {
                         if (defaultId.equals(filter.getId())) {
                             filter.setIsDefault(true);
@@ -672,14 +683,9 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                             if (!BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
                                 applyingDefault = true;
                                 try {
-                                    int count = select.getItemCount();
-                                    for (int i = 0; i < count; i++) {
-                                        ItemWrapper<FilterEntity> wrapper = (ItemWrapper<FilterEntity>) select.getItemAt(i);
-                                        if (wrapper.getItem().equals(filter)) {
-                                            select.setSelectedItem(wrapper);
-                                            break;
-                                        }
-                                    }
+                                            select.setValue(filter);
+                                                                           
+                                    
 
                                     updateControls();
                                     if (clientConfig.getGenericFilterManualApplyRequired()) {
@@ -745,12 +751,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                     }
                 }
         );
-        ItemWrapper<FilterEntity> noFilterWrapper = new ItemWrapper<FilterEntity>(noFilter, noFilter.toString());
-        select.setNoFilter(noFilterWrapper);
-        select.addItem(noFilterWrapper);
-        for (FilterEntity filter : filters) {
-            select.addItem(new ItemWrapper<FilterEntity>(filter, captions.get(filter)));
-        }
+        select.setOptionsList(filters);
+        select.setNullOption(noFilter);
     }
 
     private void saveFilterEntity() {
@@ -790,7 +792,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     private void createEditLayout() {
         List<String> names = new ArrayList<String>();
         Map<String, Locale> locales = globalConfig.getAvailableLocales();
-        for (FilterEntity filter : select.getFilters()) {
+        for (FilterEntity filter : (List<FilterEntity>) select.getOptionsList()) {
             if (filter != filterEntity) {
 
                 if (filter.getCode() == null)
@@ -811,7 +813,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (BooleanUtils.isTrue(filterEntity.getIsDefault())) {
-                    Collection<FilterEntity> filters = select.getFilters();
+                    Collection<FilterEntity> filters = select.getOptionsList();
                     for (FilterEntity filter : filters) {
                         if (!filter.equals(filterEntity))
                             filter.setIsDefault(false);
@@ -861,6 +863,14 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     public void remove(Component component) {
+    }
+
+    public void requestFocus() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                select.requestFocus();
+            }
+        });
     }
 
     public <T extends Component> T getOwnComponent(String id) {
@@ -925,7 +935,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         UUID defaultId = null;
         Boolean applyDefault = false;
-        Collection<FilterEntity> filters = select.getFilters();
+        Collection<FilterEntity> filters = select.getOptionsList();
         for (FilterEntity filter : filters) {
             if (BooleanUtils.isTrue(filter.getIsDefault())) {
                 defaultId = filter.getId();
@@ -974,11 +984,12 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                             public void actionPerform(Component component) {
                                 deleteFilterEntity();
                                 filterEntity = null;
-                                select.removeItem(select.getSelectedItem());
-                                if (!select.getFilters().isEmpty()) {
-                                    select.setSelectedItem(select.getFilters().iterator().next());
+                                select.getOptionsList().remove(select.getValue());
+
+                                if (!select.getOptionsList().isEmpty()) {
+                                    select.setValue(select.getOptionsList().iterator().next());
                                 } else {
-                                    select.setSelectedItem(noFilter);
+                                    select.setValue(noFilter);
                                 }
                             }
                         },
@@ -991,23 +1002,21 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         if (filterEntity != null) {
             filterEntity.setIsDefault(true);
         }
-        Collection<FilterEntity> filters = select.getFilters();
+        Collection<FilterEntity> filters = select.getOptionsList();
         for (FilterEntity filter : filters) {
             if (!ObjectUtils.equals(filter, filterEntity))
                 filter.setIsDefault(false);
         }
     }
 
-    private class SelectListener implements ItemListener {
+    private class SelectListener implements ValueListener {
+
         @Override
-        public void itemStateChanged(ItemEvent e) {
-            if (ItemEvent.SELECTED != e.getStateChange()) {
-                return;
-            }
+        public void valueChanged(Object source, String property, Object prevValue, Object value) {
             if (changingFilter)
                 return;
 
-            filterEntity = ((ItemWrapper<FilterEntity>) select.getSelectedItem()).getItem();
+            filterEntity = select.getValue();
             if (filterEntity.equals(noFilter)) {
                 filterEntity = null;
             }

@@ -7,10 +7,7 @@
 package com.haulmont.cuba.desktop.exception;
 
 import com.haulmont.cuba.desktop.App;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,19 +42,14 @@ public class NoUserSessionHandler extends AbstractExceptionHandler<NoUserSession
         }
     }
 
-    private class LoginAction extends AbstractAction {
+    private class LoginAction extends DialogAction {
         protected LoginAction() {
-            super("actions.Ok");
+            super(DialogAction.Type.OK);
         }
 
         public void actionPerform(Component component) {
             App app = App.getInstance();
             app.getConnection().logout();
-        }
-
-        @Override
-        public String getCaption() {
-            return getMessage("actions.Ok");
         }
     }
 

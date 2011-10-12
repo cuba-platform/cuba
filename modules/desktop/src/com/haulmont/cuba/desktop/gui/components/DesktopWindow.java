@@ -72,6 +72,7 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     protected Map<Component, JPanel> wrappers = new HashMap<Component, JPanel>();
 
     protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<com.haulmont.cuba.gui.components.Action>();
+    protected Map<ShortcutAction,KeyStroke> shortcutActions = new HashMap<ShortcutAction,KeyStroke>();
 
     protected WindowDelegate delegate;
 
@@ -143,25 +144,16 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
                     MessageProvider.getMessage(AppConfig.getMessagesPack(), "closeUnsaved"),
                     MessageType.WARNING,
                     new Action[]{
-                            new AbstractAction(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Yes")) {
+                            new DialogAction(DialogAction.Type.YES) {
                                 public void actionPerform(Component component) {
                                     forceClose = true;
                                     close(actionId);
                                 }
 
-                                @Override
-                                public String getIcon() {
-                                    return "icons/ok.png";
-                                }
                             },
-                            new AbstractAction(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.No")) {
+                            new DialogAction(DialogAction.Type.NO) {
                                 public void actionPerform(Component component) {
                                     doAfterClose = null;
-                                }
-
-                                @Override
-                                public String getIcon() {
-                                    return "icons/cancel.png";
                                 }
                             }
                     }
@@ -210,11 +202,38 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         return null;
     }
 
-    public void addAction(Action action) {
+    @Override
+    public void addAction(final Action action) {
+        if (action instanceof ShortcutAction) {
+            ShortcutAction.KeyCombination combination = ((ShortcutAction) action).getKeyCombination();
+
+            KeyStroke keyStroke = DesktopComponentsHelper.convertKeyCombination(combination);
+            InputMap inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+            inputMap.put(keyStroke, action.getId());
+            ActionMap actionMap = panel.getActionMap();
+            actionMap.put(action.getId(), new javax.swing.AbstractAction() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    action.actionPerform(DesktopWindow.this);
+                }
+            });
+            shortcutActions.put((ShortcutAction) action, keyStroke);
+        }
         actionsOrder.add(action);
     }
 
+    @Override
     public void removeAction(Action action) {
+        if (action instanceof ShortcutAction) {
+            InputMap inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+            ActionMap actionMap = panel.getActionMap();
+            KeyStroke keyStroke = shortcutActions.get(action);
+            if (keyStroke != null) {
+                inputMap.remove(keyStroke);
+                actionMap.remove(action.getId());
+            }
+        }
         actionsOrder.remove(action);
     }
 
@@ -618,6 +637,17 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
 
         private Log log = LogFactory.getLog(DesktopWindow.Editor.class);
 
+        public Editor() {
+            super();
+            addAction(new AbstractShortcutAction("commitAndCloseAction",
+                    new ShortcutAction.KeyCombination(ShortcutAction.Key.ENTER, ShortcutAction.Modifier.CTRL)) {
+                @Override
+                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                    commitAndClose();
+                }
+            });
+        }
+
         @Override
         protected WindowDelegate createDelegate() {
             return new EditorWindowDelegate(this, App.getInstance().getWindowManager());
@@ -704,6 +734,7 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         private Component lookupComponent;
         private Handler handler;
         private Validator validator;
+        private SelectListener selectListener;
 
         private JPanel container;
 
@@ -715,6 +746,17 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         @Override
         public void setLookupComponent(Component lookupComponent) {
             this.lookupComponent = lookupComponent;
+            if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table) {
+                ((com.haulmont.cuba.gui.components.Table) lookupComponent).setEnterPressAction(
+                        new AbstractAction("enterPressedAction") {
+                            @Override
+                            public void actionPerform(Component component) {
+                                if (selectListener != null) {
+                                    selectListener.actionPerformed(null);
+                                }
+                            }
+                        });
+            }
         }
 
         @Override
@@ -759,35 +801,11 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
                     new MigLayout("ins 0 n n n" + (LayoutAdapter.isDebug() ? ", debug" : ""))
             );
 
+            selectListener = new SelectListener();
+
             JButton selectBtn = new JButton(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Select"));
             selectBtn.setIcon(App.getInstance().getResources().getIcon("icons/ok.png"));
-            selectBtn.addActionListener(
-                    new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            if (validator != null && !validator.validate())
-                                return;
-
-                            Collection selected;
-                            if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table ) {
-                                selected = ((com.haulmont.cuba.gui.components.Table) lookupComponent).getSelected();
-                            } else if (lookupComponent instanceof com.haulmont.cuba.gui.components.Tree) {
-                                selected = ((com.haulmont.cuba.gui.components.Tree) lookupComponent).getSelected();
-                            } else if (lookupComponent instanceof LookupField) {
-                                selected = Collections.singleton(((LookupField) lookupComponent).getValue());
-                            } else if (lookupComponent instanceof PickerField) {
-                                selected = Collections.singleton(((PickerField) lookupComponent).getValue());
-                            } else if (lookupComponent instanceof OptionsGroup) {
-                                final OptionsGroup optionsGroup = (OptionsGroup) lookupComponent;
-                                selected = optionsGroup.getValue();
-                            } else {
-                                throw new UnsupportedOperationException();
-                            }
-                            close("select");
-                            handler.handleLookup(selected);
-                        }
-                    }
-            );
+            selectBtn.addActionListener(selectListener);
             DesktopComponentsHelper.adjustSize(selectBtn);
             buttonsPanel.add(selectBtn);
 
@@ -810,6 +828,32 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         @Override
         protected JComponent getContainer() {
             return container;
+        }
+
+        private class SelectListener implements ActionListener {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (validator != null && !validator.validate())
+                    return;
+
+                Collection selected;
+                if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table) {
+                    selected = ((com.haulmont.cuba.gui.components.Table) lookupComponent).getSelected();
+                } else if (lookupComponent instanceof com.haulmont.cuba.gui.components.Tree) {
+                    selected = ((com.haulmont.cuba.gui.components.Tree) lookupComponent).getSelected();
+                } else if (lookupComponent instanceof LookupField) {
+                    selected = Collections.singleton(((LookupField) lookupComponent).getValue());
+                } else if (lookupComponent instanceof PickerField) {
+                    selected = Collections.singleton(((PickerField) lookupComponent).getValue());
+                } else if (lookupComponent instanceof OptionsGroup) {
+                    final OptionsGroup optionsGroup = (OptionsGroup) lookupComponent;
+                    selected = optionsGroup.getValue();
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+                close("select");
+                handler.handleLookup(selected);
+            }
         }
     }
 }

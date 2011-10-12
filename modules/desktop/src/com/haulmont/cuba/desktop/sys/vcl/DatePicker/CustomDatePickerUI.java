@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.sys.vcl.DatePicker;
 
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
+import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.plaf.basic.BasicDatePickerUI;
 
 import javax.swing.*;
@@ -28,5 +29,14 @@ public class CustomDatePickerUI extends BasicDatePickerUI {
         b.setFocusable(false);
         b.setPreferredSize(new Dimension(22, DesktopComponentsHelper.BUTTON_HEIGHT));
         return b;
+    }
+
+    protected void installKeyboardActions() {
+        super.installKeyboardActions();
+        ActionMap pickerMap = datePicker.getActionMap();
+        pickerMap.remove(JXDatePicker.CANCEL_KEY);
+        InputMap pickerInputMap = datePicker.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        pickerInputMap.remove(KeyStroke.getKeyStroke("ESCAPE"));
+
     }
 }

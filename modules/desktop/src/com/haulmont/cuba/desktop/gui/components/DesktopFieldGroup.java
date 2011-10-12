@@ -206,6 +206,24 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         }
     }
 
+    @Override
+    public void requestFocus() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                if (!columnFields.isEmpty()) {
+                    List<Field> fields = columnFields.get(0);
+                    if (!fields.isEmpty()) {
+                        Field f = fields.get(0);
+                        Component c = fieldComponents.get(f);
+                        if (c != null) {
+                            c.requestFocus();
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     public Datasource getDatasource() {
         return datasource;
     }

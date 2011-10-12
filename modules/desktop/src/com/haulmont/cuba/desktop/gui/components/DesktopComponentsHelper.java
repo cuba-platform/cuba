@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
 import org.apache.commons.lang.ArrayUtils;
 
@@ -15,6 +16,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -109,5 +111,32 @@ public class DesktopComponentsHelper {
 
     public static void adjustDateFieldSize(JPanel dateFieldComposition) {
         dateFieldComposition.setPreferredSize(new Dimension(0, FIELD_HEIGHT));
+    }
+
+    /**
+     * Convert {@link ShortcutAction.KeyCombination} to {@link KeyStroke}.
+     *
+     * @param combination Key combination to convert
+     * @return KeyStroke
+     */
+    public static KeyStroke convertKeyCombination(ShortcutAction.KeyCombination combination) {
+        ShortcutAction.Modifier[] modifiers = combination.getModifiers();
+        int modifiersMask = 0;
+        if (modifiers != null && modifiers.length > 0) {
+            for (ShortcutAction.Modifier modifier : modifiers) {
+                switch (modifier) {
+                    case CTRL:
+                        modifiersMask = modifiersMask | InputEvent.CTRL_DOWN_MASK;
+                        break;
+                    case ALT:
+                        modifiersMask = modifiersMask | InputEvent.ALT_DOWN_MASK;
+                        break;
+                    case SHIFT:
+                        modifiersMask = modifiersMask | InputEvent.SHIFT_DOWN_MASK;
+                        break;
+                }
+            }
+        }
+        return KeyStroke.getKeyStroke(combination.getKey().getVirtualKey(), modifiersMask, false);
     }
 }

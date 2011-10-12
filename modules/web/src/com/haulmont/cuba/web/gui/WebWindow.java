@@ -50,7 +50,7 @@ import java.util.*;
 import java.util.List;
 
 public class WebWindow
-        implements 
+        implements
             Window,
             Component.Wrapper,
             Component.HasXmlDescriptor,
@@ -58,7 +58,7 @@ public class WebWindow
 {
     private static final long serialVersionUID = -686695761338837334L;
 
-    private boolean closing=false;
+    private boolean closing = false;
 
     private String id;
     private String debugId;
@@ -517,25 +517,15 @@ public class WebWindow
                     MessageProvider.getMessage(WebWindow.class, "closeUnsaved"),
                     MessageType.WARNING,
                     new Action[]{
-                            new AbstractAction(MessageProvider.getMessage(WebWindow.class, "actions.Yes")) {
+                            new DialogAction(DialogAction.Type.YES) {
                                 public void actionPerform(Component component) {
                                     forceClose = true;
                                     close(actionId);
                                 }
-
-                                @Override
-                                public String getIcon() {
-                                    return "icons/ok.png";
-                                }
                             },
-                            new AbstractAction(MessageProvider.getMessage(WebWindow.class, "actions.No")) {
+                            new DialogAction(DialogAction.Type.NO) {
                                 public void actionPerform(Component component) {
                                     doAfterClose = null;
-                                }
-
-                                @Override
-                                public String getIcon() {
-                                    return "icons/cancel.png";
                                 }
                             }
                     }
@@ -606,6 +596,17 @@ public class WebWindow
 
     public static class Editor extends WebWindow implements Window.Editor {
 
+        public Editor() {
+            super();
+            addAction(new AbstractShortcutAction("commitAndCloseAction",
+                    new ShortcutAction.KeyCombination(ShortcutAction.Key.ENTER, ShortcutAction.Modifier.CTRL)) {
+                @Override
+                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                    commitAndClose();
+                }
+            });
+        }
+
         @Override
         protected WindowDelegate createDelegate() {
             return new EditorWindowDelegate(this, App.getInstance().getWindowManager());
@@ -668,7 +669,7 @@ public class WebWindow
         }
 
         public boolean commit(boolean validate) {
-            if (validate && !((Window.Editor)getWrapper()).validateOnCommit())
+            if (validate && !((Window.Editor) getWrapper()).validateOnCommit())
                 return false;
 
             ((EditorWindowDelegate) delegate).commit();
@@ -765,6 +766,7 @@ public class WebWindow
         private VerticalLayout container;
         private Button selectButton;
         private Button cancelButton;
+        private SelectAction selectAction;
 
         public com.haulmont.cuba.gui.components.Component getLookupComponent() {
             return lookupComponent;
@@ -772,6 +774,17 @@ public class WebWindow
 
         public void setLookupComponent(Component lookupComponent) {
             this.lookupComponent = lookupComponent;
+
+            if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table) {
+                ((com.haulmont.cuba.gui.components.Table) lookupComponent).setEnterPressAction(
+                        new AbstractAction("enterPressedAction") {
+                            @Override
+                            public void actionPerform(Component component) {
+                                if (selectAction != null)
+                                    selectAction.buttonClick(null);
+                            }
+                        });
+            }
         }
 
         public Handler getLookupHandler() {
@@ -818,10 +831,11 @@ public class WebWindow
             okbar.setSpacing(true);
 
             final String messagesPackage = AppConfig.getMessagesPack();
+            selectAction = new SelectAction(this);
             selectButton = WebComponentsHelper.createButton();
             selectButton.setCaption(MessageProvider.getMessage(messagesPackage, "actions.Select"));
             selectButton.setIcon(new ThemeResource("icons/ok.png"));
-            selectButton.addListener(new SelectAction(this));
+            selectButton.addListener(selectAction);
             selectButton.setStyleName("Window-actionButton");
 
             cancelButton = WebComponentsHelper.createButton();

@@ -83,37 +83,13 @@ public class RemoveAction extends AbstractAction implements CollectionDatasource
                 getConfirmationMessage(messagesPackage),
                 IFrame.MessageType.CONFIRMATION,
                 new Action[]{
-                        new AbstractAction("ok") {
-                            public String getCaption() {
-                                return MessageProvider.getMessage(messagesPackage, "actions.Ok");
-                            }
-
-                            public boolean isEnabled() {
-                                return true;
-                            }
-
-                            @Override
-                            public String getIcon() {
-                                return "icons/ok.png";
-                            }
+                        new DialogAction(DialogAction.Type.OK) {
 
                             public void actionPerform(Component component) {
                                 doRemove(selected, autocommit);
                                 afterRemove(selected);
                             }
-                        }, new AbstractAction("cancel") {
-                            public String getCaption() {
-                                return MessageProvider.getMessage(messagesPackage, "actions.Cancel");
-                            }
-
-                            public boolean isEnabled() {
-                                return true;
-                            }
-
-                            @Override
-                            public String getIcon() {
-                                return "icons/cancel.png";
-                            }
+                        }, new DialogAction(DialogAction.Type.CANCEL) {
 
                             public void actionPerform(Component component) {
                             }

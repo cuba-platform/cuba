@@ -36,18 +36,18 @@ public interface ShortcutAction extends Action {
     }
 
     enum Key {
-        ENTER(13),
+        ENTER(13,'\n'),
         ESCAPE(27),
         PAGE_UP(33),
         PAGE_DOWN(34),
-        TAB(9),
+        TAB(9,'\t'),
         ARROW_LEFT(37),
         ARROW_UP(38),
         ARROW_RIGHT(39),
         ARROW_DOWN(40),
         BACKSPACE(8),
-        DELETE(46),
-        INSERT(45),
+        DELETE(46,0x7F),
+        INSERT(45,0x9B),
         END(35),
         HOME(36),
         F1(112),
@@ -101,13 +101,24 @@ public interface ShortcutAction extends Action {
         SPACEBAR(32);
 
         private int code;
+        private int virtualKey;
 
         Key(int code) {
             this.code = code;
+            this.virtualKey = code;
+        }
+
+        Key(int code, int virtualKey) {
+            this.code = code;
+            this.virtualKey = virtualKey;
         }
 
         public int getCode() {
             return code;
+        }
+
+        public int getVirtualKey() {
+            return virtualKey;
         }
     }
 

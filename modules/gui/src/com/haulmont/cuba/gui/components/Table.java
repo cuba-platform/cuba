@@ -39,6 +39,9 @@ public interface Table
     void setItemClickAction(Action action);
     Action getItemClickAction();
 
+    void setEnterPressAction(Action action);
+    Action getEnterPressAction();
+
     List<Column> getNotCollapsedColumns();
 
     void setSortable(boolean sortable);

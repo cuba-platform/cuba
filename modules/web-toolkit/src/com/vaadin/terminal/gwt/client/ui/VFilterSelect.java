@@ -632,14 +632,22 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             }
         });
 
-        tb.sinkEvents(VTooltip.TOOLTIP_EVENTS);
-        popupOpener.sinkEvents(VTooltip.TOOLTIP_EVENTS);
         panel.add(popupOpener);
         popupOpener.add(tb);
         initWidget(panel);
         setStyleName(CLASSNAME);
         tb.addKeyDownHandler(this);
         tb.addKeyUpHandler(this);
+        tb.addKeyPressHandler(new KeyPressHandler(){
+
+            @Override
+            public void onKeyPress(KeyPressEvent event) {
+                if (event.getCharCode() == '\r' && !event.isAnyModifierKeyDown()) {
+                    event.stopPropagation();
+                }
+
+            }
+        });
         tb.setStyleName(CLASSNAME + "-input");
         tb.addFocusHandler(this);
         tb.addBlurHandler(this);
@@ -745,7 +753,9 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
         currentSuggestions.clear();
         final UIDL options = uidl.getChildUIDL(0);
-        totalMatches = uidl.getIntAttribute("totalMatches");
+        if (uidl.getAttributeNames().contains("totalMatches")) {
+            totalMatches = uidl.getIntAttribute("totalMatches");
+        } else totalMatches = 0;
 
         showOptionsDesc = uidl.hasAttribute("optionsDesc") && uidl.getBooleanAttribute("optionsDesc");
 
@@ -932,8 +942,12 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                 filterOptions(currentPage, tb.getText());
             }
             break;
+            case KeyCodes.KEY_ENTER:
+            case KeyCodes.KEY_ESCAPE:
+                if (!event.isAnyModifierKeyDown())
+                    event.stopPropagation();
+                break;
         }
-
     }
 
     private void popupKeyDown(KeyDownEvent event) {
@@ -968,6 +982,11 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                 filterOptions(currentPage);
             }
             suggestionPopup.menu.doSelectedItemAction();
+            if (!event.isAnyModifierKeyDown())
+                event.stopPropagation();
+            break;
+            case KeyCodes.KEY_ESCAPE:
+            event.stopPropagation();
             break;
         }
 
@@ -976,19 +995,23 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     public void onKeyUp(KeyUpEvent event) {
         if (enabled && !readonly) {
             switch (event.getNativeKeyCode()) {
-            case KeyCodes.KEY_ENTER:
-            case KeyCodes.KEY_TAB:
-            case KeyCodes.KEY_SHIFT:
-            case KeyCodes.KEY_CTRL:
-            case KeyCodes.KEY_ALT:
-            case KeyCodes.KEY_DOWN:
-            case KeyCodes.KEY_UP:
-            case KeyCodes.KEY_PAGEDOWN:
-            case KeyCodes.KEY_PAGEUP:
-                ; // NOP
-                break;
-            case KeyCodes.KEY_ESCAPE:
-                reset();
+                case KeyCodes.KEY_ENTER:
+                    if (!event.isAnyModifierKeyDown())
+                        event.stopPropagation();
+                    break;
+                case KeyCodes.KEY_TAB:
+                case KeyCodes.KEY_SHIFT:
+                case KeyCodes.KEY_CTRL:
+                case KeyCodes.KEY_ALT:
+                case KeyCodes.KEY_DOWN:
+                case KeyCodes.KEY_UP:
+                case KeyCodes.KEY_PAGEDOWN:
+                case KeyCodes.KEY_PAGEUP:
+                    // NOP
+                    break;
+                case KeyCodes.KEY_ESCAPE:
+                    event.stopPropagation();
+                    reset();
                 break;
             default:
                 filterOptions(currentPage);

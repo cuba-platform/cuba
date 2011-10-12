@@ -131,6 +131,10 @@ public class VOrderedLayout extends CellBasedLayout {
         int pos = 0;
         for (final Iterator<Object> it = uidl.getChildIterator(); it.hasNext();) {
             final UIDL childUIDL = (UIDL) it.next();
+            //VerticalActionsLayout has actions but this class cant operate with actions
+            if (childUIDL.getTag().equals("actions")){
+                continue;
+            }
             final Paintable child = client.getPaintable(childUIDL);
             Widget widget = (Widget) child;
 

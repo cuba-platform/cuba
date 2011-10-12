@@ -15,6 +15,7 @@ import com.haulmont.cuba.web.toolkit.data.util.AggregationContainerOrderedWrappe
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
@@ -32,6 +33,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
     protected LinkedList<Object> editableColumns = null;
     protected boolean storeColWidth = false;
+    protected LinkedList<ShortcutListener> shortcutListeners = new LinkedList<ShortcutListener>();
 
     protected PagingMode pagingMode = PagingMode.SCROLLING;
 
@@ -131,6 +133,15 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
             variables.remove("selected");
         }
         super.changeVariables(source, variables);
+        if (variables.containsKey("enterPressed")) {
+            fireShortcutListeners();
+        }
+    }
+
+    private void fireShortcutListeners() {
+        for (ShortcutListener listener : shortcutListeners) {
+            listener.handleAction(Table.this, null);
+        }
     }
 
     /**
@@ -1058,6 +1069,19 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         } else {
             throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
         }
+    }
+
+    @Override
+    public void addShortcutListener(ShortcutListener listener) {
+        if (listener.getKeyCode() != 13 || !(listener.getModifiers() == null || listener.getModifiers().length > 0)) {
+            throw new UnsupportedOperationException("Table only support Enter shortcuts");
+        } else
+            shortcutListeners.add(listener);
+    }
+
+    @Override
+    public void removeShortcutListener(ShortcutListener listener){
+        shortcutListeners.remove(listener);
     }
 
     public boolean isAggregatable() {

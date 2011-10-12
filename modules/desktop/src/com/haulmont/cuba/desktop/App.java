@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.swing.plaf.InputMapUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -98,6 +99,7 @@ public class App implements ConnectionListener {
             contextLoader.load();
 
             initTheme();
+            initLookAndFeelDefaults();
             initUI();
             initExceptionHandling();
         } catch (Throwable t) {
@@ -181,6 +183,12 @@ public class App implements ConnectionListener {
 
     public DesktopTheme getTheme() {
         return theme;
+    }
+
+    protected void initLookAndFeelDefaults() {
+        InputMapUIResource inputMap =
+                (InputMapUIResource) UIManager.getLookAndFeelDefaults().get("FormattedTextField.focusInputMap");
+        inputMap.remove(KeyStroke.getKeyStroke("ESCAPE"));
     }
 
     protected void initUI() {

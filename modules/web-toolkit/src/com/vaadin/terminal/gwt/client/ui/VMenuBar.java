@@ -585,6 +585,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
      * @param item
      */
     public void itemClick(CustomMenuItem item) {
+        focus();
         if (item.getCommand() != null) {
             setSelected(null);
 

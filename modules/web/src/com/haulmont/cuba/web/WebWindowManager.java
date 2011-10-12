@@ -15,13 +15,15 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
-import com.vaadin.event.ShortcutListener;
+import com.vaadin.event.*;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
@@ -573,6 +575,27 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
+        win.addActionHandler(new com.vaadin.event.Action.Handler() {
+
+            private com.vaadin.event.ShortcutAction exitAction =
+                    new com.vaadin.event.ShortcutAction(
+                            "escapeAction",
+                            com.vaadin.event.ShortcutAction.KeyCode.ESCAPE,
+                            null);
+
+            @Override
+            public com.vaadin.event.Action[] getActions(Object o, Object o1) {
+                return new com.vaadin.event.Action[]{exitAction};
+            }
+
+            @Override
+            public void handleAction(com.vaadin.event.Action action, Object o, Object o1) {
+                if (exitAction.equals(action)) {
+                    window.close("close", true);
+                }
+            }
+        });
+
         if (forciblyDialog) {
             outerLayout.setHeight(100, Sizeable.UNITS_PERCENTAGE);
             win.setWidth(800, Sizeable.UNITS_PIXELS);
@@ -940,6 +963,21 @@ public class WebWindowManager extends WindowManager {
                         appWindow.removeWindow(window);
                 }
             });
+
+            if (action instanceof DialogAction) {
+                switch (((DialogAction) action).getType()) {
+                    case OK:
+                    case YES:
+                        button.setClickShortcut(ShortcutAction.Key.ENTER.getCode(), ShortcutAction.Modifier.CTRL.getCode());
+                        break;
+                    case NO:
+                    case CANCEL:
+                    case CLOSE:
+                        button.setClickShortcut(ShortcutAction.Key.ESCAPE.getCode());
+                        break;
+                }
+            }
+
             if (action.getIcon() != null) {
                 button.setIcon(new ThemeResource(action.getIcon()));
                 button.addStyleName(WebButton.ICON_STYLE);
@@ -947,6 +985,8 @@ public class WebWindowManager extends WindowManager {
             setDebugId(button, action.getId());
             buttonsContainer.addComponent(button);
         }
+        if (buttonsContainer.getComponentCount() > 0)
+            ((Button) buttonsContainer.getComponent(0)).focus();
 
         actionsBar.addComponent(buttonsContainer);
 

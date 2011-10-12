@@ -68,4 +68,13 @@ public class ParamEditor extends JPanel implements AbstractCondition.Listener {
         add(field);
 
     }
+
+    @Override
+    public void requestFocus() {
+        if (field instanceof JPanel) {
+            field.getComponent(0).requestFocus();
+        } else {
+            field.requestFocus();
+        }
+    }
 }

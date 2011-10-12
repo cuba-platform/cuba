@@ -44,6 +44,8 @@ public class DatePicker extends JXDatePicker {
     }
 
     public void setEditor(final JFormattedTextField editor) {
+        final int ENTER_CODE = 10;
+
         editor.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -51,12 +53,21 @@ public class DatePicker extends JXDatePicker {
                     editor.setCaretPosition(editor.getCaretPosition() + 1);
                 }
             }
+
+            @Override
+            public void keyPressed(KeyEvent event) {
+                if (ENTER_CODE == event.getKeyCode())
+                    try {
+                        editor.commitEdit();
+                    } catch (ParseException e) {
+                        //
+                    }
+            }
         });
 
         editor.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-
                 editor.setCaretPosition(0);
             }
         });
@@ -149,6 +160,7 @@ public class DatePicker extends JXDatePicker {
                         MessageProvider.getMessage(AppConfig.getMessagesPack(), "validationFail"),
                         IFrame.NotificationType.TRAY
                 );
+                cancelEdit();
                 throw e;
             }
         }

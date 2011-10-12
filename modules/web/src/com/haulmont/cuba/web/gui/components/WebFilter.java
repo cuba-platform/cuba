@@ -23,7 +23,9 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.filter.*;
@@ -43,8 +45,10 @@ import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.filter.*;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
+import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.IntegerValidator;
+import com.vaadin.event.*;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
@@ -70,7 +74,7 @@ import static org.apache.commons.lang.BooleanUtils.isTrue;
  * @author krivopustov
 */
 public class WebFilter
-        extends WebAbstractComponent<VerticalLayout> implements Filter {
+        extends WebAbstractComponent<VerticalActionsLayout> implements Filter {
     private static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
     private PersistenceManagerService persistenceManager;
@@ -112,7 +116,26 @@ public class WebFilter
 
     public WebFilter() {
         persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
-        component = new VerticalLayout();
+        component = new VerticalActionsLayout();
+
+        component.addActionHandler(new com.vaadin.event.Action.Handler() {
+            private com.vaadin.event.ShortcutAction shortcutAction =
+                    new com.vaadin.event.ShortcutAction("applyFilterAction",
+                            com.vaadin.event.ShortcutAction.KeyCode.ENTER,
+                            new int[]{com.vaadin.event.ShortcutAction.ModifierKey.ALT});
+
+            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+                return new com.vaadin.event.Action[]{shortcutAction};
+            }
+
+            public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
+
+                if (ObjectUtils.equals(action, shortcutAction)) {
+                    apply(false);
+                }
+            }
+        });
+
         //component.setMargin(true);
         component.setStyleName("generic-filter");
 

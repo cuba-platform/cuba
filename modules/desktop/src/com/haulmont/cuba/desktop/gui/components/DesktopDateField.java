@@ -172,6 +172,15 @@ public class DesktopDateField
     }
 
     @Override
+    public void requestFocus() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                datePicker.requestFocus();
+            }
+        });
+    }
+
+    @Override
     public <T> T getValue() {
         try {
             return (T) constructDate();

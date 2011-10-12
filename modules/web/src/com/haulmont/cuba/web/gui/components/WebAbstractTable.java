@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
@@ -48,7 +49,7 @@ import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.*;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.ThemeResource;
@@ -76,6 +77,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected boolean editable;
     protected boolean sortable = true;
     protected Action itemClickAction;
+    protected Action enterPressAction;
 
     protected Table.StyleProvider styleProvider;
 
@@ -289,21 +291,21 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             }
         });
 
+        component.addShortcutListener(new ShortcutListener("tableEnter", com.vaadin.event.ShortcutAction.KeyCode.ENTER, null) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                if (enterPressAction != null) {
+                    enterPressAction.actionPerform(WebAbstractTable.this);
+                } else {
+                    handleClickAction();
+                }
+            }
+        });
+
         component.addListener(new ItemClickEvent.ItemClickListener() {
             public void itemClick(ItemClickEvent event) {
                 if (event.isDoubleClick() && event.getItem() != null) {
-                    Action action = getItemClickAction();
-                    if (action == null) {
-                        action = getAction("edit");
-                        if (action == null) {
-                            action = getAction("view");
-                        }
-                    }
-                    if (action != null && action.isEnabled()) {
-                        Window window = ComponentsHelper.getWindow(WebAbstractTable.this);
-                        if (!(window instanceof Window.Lookup))
-                            action.actionPerform(WebAbstractTable.this);
-                    }
+                    handleClickAction();
                 }
             }
         });
@@ -321,6 +323,21 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         componentComposition.setExpandRatio(component, 1);
 
         component.setEnableCancelSorting(ConfigProvider.getConfig(WebConfig.class).getEnableCancelTableSorting());
+    }
+
+    protected void handleClickAction() {
+        Action action = getItemClickAction();
+        if (action == null) {
+            action = getAction("edit");
+            if (action == null) {
+                action = getAction("view");
+            }
+        }
+        if (action != null && action.isEnabled()) {
+            Window window = ComponentsHelper.getWindow(WebAbstractTable.this);
+            if (!(window instanceof Window.Lookup))
+                action.actionPerform(WebAbstractTable.this);
+        }
     }
 
     protected Collection<MetaPropertyPath> createColumns(com.vaadin.data.Container ds) {
@@ -693,6 +710,16 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
 
         return true;
+    }
+
+    @Override
+    public void setEnterPressAction(Action action) {
+        enterPressAction = action;
+    }
+
+    @Override
+    public Action getEnterPressAction(){
+        return enterPressAction;
     }
 
     public void setItemClickAction(Action action) {

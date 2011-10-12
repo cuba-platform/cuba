@@ -50,6 +50,10 @@ public class DialogAction extends AbstractAction {
         return type.icon;
     }
 
+    public Type getType() {
+        return type;
+    }
+
     public void actionPerform(Component component) {
     }
 }

@@ -35,6 +35,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import javax.swing.*;
+import javax.swing.AbstractAction;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -75,6 +76,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     private StyleProvider styleProvider;
 
     private Action itemClickAction;
+    private Action enterPressAction;
 
     private boolean columnsInited = false;
 
@@ -98,15 +100,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         if (e.getClickCount() == 2) {
-                            Action action = getItemClickAction();
-                            if (action == null) {
-                                action = getAction(EditAction.ACTION_ID);
-                            }
-                            if (action != null && action.isEnabled()) {
-                                Window window = ComponentsHelper.getWindow(DesktopAbstractTable.this);
-                                if (!(window instanceof Window.Lookup))
-                                    action.actionPerform(DesktopAbstractTable.this);
-                            }
+                            handleClickAction();
                         }
                     }
 
@@ -134,6 +128,17 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 }
         );
 
+        impl.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "enter");
+        impl.getActionMap().put("enter", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                if (enterPressAction != null) {
+                    enterPressAction.actionPerform(DesktopAbstractTable.this);
+                } else {
+                    handleClickAction();
+                }
+            }
+        });
+
         scrollPane.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -142,6 +147,18 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 columnsInited = true;
             }
         });
+    }
+
+    protected void handleClickAction() {
+        Action action = getItemClickAction();
+        if (action == null) {
+            action = getAction(EditAction.ACTION_ID);
+        }
+        if (action != null && action.isEnabled()) {
+            Window window = ComponentsHelper.getWindow(DesktopAbstractTable.this);
+            if (!(window instanceof Window.Lookup))
+                action.actionPerform(DesktopAbstractTable.this);
+        }
     }
 
     protected void readjustColumns() {
@@ -467,6 +484,16 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     public void addValidator(Field.Validator validator) {
+    }
+
+    @Override
+    public void setEnterPressAction(Action action) {
+        enterPressAction = action;
+    }
+
+    @Override
+    public Action getEnterPressAction() {
+        return enterPressAction;
     }
 
     public void setItemClickAction(Action action) {

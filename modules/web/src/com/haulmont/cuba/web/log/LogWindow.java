@@ -14,8 +14,10 @@ import com.haulmont.cuba.core.app.CubaDeployerService;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.App;
+import com.vaadin.event.Action;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.*;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 
 import java.util.List;
@@ -32,6 +34,21 @@ public class LogWindow extends Window
     }
 
     private void initUI() {
+        addActionHandler(new com.vaadin.event.Action.Handler() {
+            private ShortcutAction shortcut = new ShortcutAction("escapeAction", ShortcutAction.KeyCode.ESCAPE, null);
+
+            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+                return new Action[]{shortcut};
+            }
+
+            public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
+
+                if (ObjectUtils.equals(action, shortcut)) {
+                    close();
+                }
+            }
+        });
+
         VerticalLayout layout = new VerticalLayout();
         layout.setSpacing(true);
         setLayout(layout);

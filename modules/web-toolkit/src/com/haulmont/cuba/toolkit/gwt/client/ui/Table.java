@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.Focusable;
 import com.vaadin.terminal.gwt.client.RenderInformation;
 import com.vaadin.terminal.gwt.client.ui.*;
 import com.vaadin.terminal.gwt.client.ui.VGridLayout;
@@ -33,7 +34,7 @@ import org.vaadin.hene.popupbutton.widgetset.client.ui.VPopupButton;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt.client.ui.Table, ScrollHandler, FocusHandler, BlurHandler {
+public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt.client.ui.Table, ScrollHandler, FocusHandler, BlurHandler, Focusable {
     public static final String CLASSNAME = "v-table";
     public static final String CLASSNAME_SELECTION_FOCUS = CLASSNAME + "-focus";
 
@@ -122,6 +123,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 }
                 cancelScrollingVelocityTimer();
                 navKeyDown = false;
+            } else if (KeyCodes.KEY_ENTER == keyCode && !keyUpEvent.isAnyModifierKeyDown()) {
+                event.stopPropagation();
+                client.updateVariable(paintableId, "enterPressed", "", immediate);
             }
         }
     };
@@ -3728,6 +3732,10 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         } // else if too high, NOP (all know browsers accept illegally big
           // values here)
         bodyContainer.setScrollPosition(newPixels);
+    }
+
+    public void focus(){
+        bodyContainer.focus();    
     }
 
     /*

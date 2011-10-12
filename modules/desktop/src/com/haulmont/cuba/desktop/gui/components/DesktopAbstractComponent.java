@@ -130,7 +130,11 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public void requestFocus() {
-        impl.requestFocus();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                impl.requestFocus();
+            }
+        });
     }
 
     @Override

@@ -26,9 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.swing.AbstractAction;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
@@ -172,7 +170,19 @@ public class DesktopWindowManager extends WindowManager {
             windowOpenMode.put(window, openMode);
         }
 
+        addShortcuts(window);
+
         afterShowWindow(window);
+    }
+
+    protected void addShortcuts(final Window window) {
+        window.addAction(new AbstractShortcutAction("escapeAction",
+                new ShortcutAction.KeyCombination(ShortcutAction.Key.ESCAPE)) {
+            @Override
+            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                window.close("close");
+            }
+        });
     }
 
     private JDialog showWindowDialog(final Window window, String caption, String description, boolean forciblyDialog) {
@@ -228,6 +238,7 @@ public class DesktopWindowManager extends WindowManager {
             throw new IllegalStateException("BreadCrumbs not found");
 
         Window currentWindow = breadCrumbs.getCurrentWindow();
+        windowOpenMode.get(currentWindow.getFrame()).setFocusOwner(App.getInstance().getMainFrame().getFocusOwner());
 
         Set<Map.Entry<Window, Integer>> set = windows.entrySet();
         boolean pushed = false;
@@ -429,7 +440,14 @@ public class DesktopWindowManager extends WindowManager {
                     putToWindowMap(entry.getKey(), entry.getValue());
                 }
                 JComponent component = DesktopComponentsHelper.getComposition(currentWindow);
-
+                final java.awt.Component focusedCmp = windowOpenMode.get(currentWindow.getFrame()).getFocusOwner();
+                if (focusedCmp != null) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            focusedCmp.requestFocus();
+                        }
+                    });
+                }
                 layout.remove(DesktopComponentsHelper.getComposition(window));
                 layout.add(component);
 
@@ -464,7 +482,7 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     @Override
-    public void showOptionDialog(String title, String message, IFrame.MessageType messageType, Action[] actions) {
+    public void showOptionDialog(String title, String message, IFrame.MessageType messageType,final Action[] actions) {
 
         class ActionWrapper {
             Action action;
@@ -504,7 +522,7 @@ public class DesktopWindowManager extends WindowManager {
                 optionType,
                 null,
                 options,
-                options[0]
+                null
         );
         final JDialog dialog = new JDialog(App.getInstance().getMainFrame(), title, false);
         dialog.setContentPane(optionPane);
@@ -515,16 +533,41 @@ public class DesktopWindowManager extends WindowManager {
                         String prop = e.getPropertyName();
                         if (dialog.isVisible()
                                 && (e.getSource() == optionPane)
-                                && (prop.equals(JOptionPane.VALUE_PROPERTY)))
-                        {
-                            ActionWrapper actionWrapper = (ActionWrapper) e.getNewValue();
-                            actionWrapper.getAction().actionPerform(null);
-
+                                && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
+                            if (e.getNewValue() instanceof ActionWrapper) {
+                                ActionWrapper actionWrapper = (ActionWrapper) e.getNewValue();
+                                actionWrapper.getAction().actionPerform(null);
+                            }
                             App.getInstance().enable();
                             dialog.setVisible(false);
                         }
                     }
                 });
+
+        KeyStroke okKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK, true);
+
+        InputMap inputMap = optionPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        ActionMap actionMap = optionPane.getActionMap();
+
+        inputMap.put(okKeyStroke, "okAction");
+        actionMap.put("okAction", new javax.swing.AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (Action action : actions) {
+                    if (action instanceof DialogAction) {
+                        switch (((DialogAction) action).getType()) {
+                            case OK:
+                            case YES:
+                                action.actionPerform(null);
+                                App.getInstance().enable();
+                                dialog.setVisible(false);
+                                return;
+                        }
+                    }
+                }
+            }
+        });
+
         dialog.pack();
         dialog.setLocationRelativeTo(App.getInstance().getMainFrame());
         App.getInstance().disable(null);
@@ -563,6 +606,7 @@ public class DesktopWindowManager extends WindowManager {
         protected Window window;
         protected OpenType openType;
         protected Object data;
+        private java.awt.Component focusOwner;
 
         public WindowOpenMode(Window window, OpenType openType) {
             this.window = window;
@@ -583,6 +627,14 @@ public class DesktopWindowManager extends WindowManager {
 
         public OpenType getOpenType() {
             return openType;
+        }
+
+        public java.awt.Component getFocusOwner() {
+            return focusOwner;
+        }
+
+        public void setFocusOwner(java.awt.Component focusOwner) {
+            this.focusOwner = focusOwner;
         }
     }
 

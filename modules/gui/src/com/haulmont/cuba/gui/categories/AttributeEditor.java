@@ -35,6 +35,8 @@ import java.util.*;
 import java.util.List;
 
 /**
+ * Class that encapsulates editing {@link com.haulmont.cuba.core.entity.CategoryAttribute} entities.
+ * 
  * <p>$Id$</p>
  *
  * @author devyatkin
@@ -70,7 +72,7 @@ public class AttributeEditor extends AbstractEditor {
         nameField.setRequired(true);
         nameField.setCaption(getMessage("name"));
         nameField.setWidth(FIELD_WIDTH);
-
+        nameField.requestFocus();
         nameField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
