@@ -17,5 +17,6 @@ public class LogWindowLauncher implements Runnable {
     public void run() {
         LogWindow logWindow = new LogWindow();
         App.getInstance().getAppWindow().addWindow(logWindow);
+        logWindow.focus();
     }
 }

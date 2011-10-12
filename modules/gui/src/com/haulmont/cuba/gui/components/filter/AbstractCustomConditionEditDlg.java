@@ -73,6 +73,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         nameText = factory.createComponent(TextField.NAME);
         nameText.setWidth(FIELD_WIDTH);
         nameText.setValue(condition.getLocCaption());
+        nameText.requestFocus();
 
         joinLab = factory.createComponent(Label.NAME);
         joinLab.setValue(MessageProvider.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.joinLabel"));

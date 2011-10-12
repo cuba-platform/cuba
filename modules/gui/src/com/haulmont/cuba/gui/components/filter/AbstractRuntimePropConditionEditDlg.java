@@ -65,6 +65,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
                     fillAttributeSelect((Category) value);
             }
         });
+        categorySelect.requestFocus();
 
         attributeLabel = factory.createComponent(Label.NAME);
         attributeLabel.setValue(MessageProvider.getMessage(MESSAGES_PACK, "RuntimePropConditionEditDlg.attributeLabel"));
@@ -216,6 +217,7 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
             Category category = categories.get(0);
             categorySelect.setVisible(false);
             categoryLabel.setVisible(false);
+            attributeSelect.requestFocus();
             categoriesMap.put(category.getName(), category);
             categorySelect.setOptionsMap(categoriesMap);
             categorySelect.setValue(category);
