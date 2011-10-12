@@ -140,6 +140,11 @@ public class DesktopComponentsHelper {
         return KeyStroke.getKeyStroke(combination.getKey().getVirtualKey(), modifiersMask, false);
     }
 
+    /**
+     * Make JTable handle TAB key as all other components - move focus to next/previous components.
+     * <p>Default Swing behaviour for table is to move focus to next/previous cell inside the table.</p>
+     * @param table table instance
+     */
     public static void correctTableFocusTraversal(JTable table) {
         table.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
                 Collections.singleton(AWTKeyStroke.getAWTKeyStroke("TAB")));
