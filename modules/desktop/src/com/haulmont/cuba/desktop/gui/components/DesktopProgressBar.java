@@ -31,6 +31,8 @@ public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> i
 
     public DesktopProgressBar() {
         impl = new JProgressBar();
+        impl.setMinimum(0);
+        impl.setMaximum(WHOLE_PROGRESS);
     }
 
     @Override
