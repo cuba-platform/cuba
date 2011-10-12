@@ -55,6 +55,8 @@ public class DesktopTreeTable
         impl.setRootVisible(false);
         impl.setColumnControlVisible(true);
         impl.setEditable(false);
+        DesktopComponentsHelper.correctTableFocusTraversal(impl);
+
         initComponent();
 
         tableSettings = new SwingXTableSettings(impl, columnsOrder);

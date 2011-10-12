@@ -34,7 +34,7 @@ public abstract class AppConfig
 
     /**
      * Current client type.
-     * Set up through system property by specific client implementation.
+     * Set up through app property {@link #CLIENT_TYPE_PROP} by specific client implementation.
      * @return  current client type
      */
     public static ClientType getClientType() {
@@ -45,8 +45,8 @@ public abstract class AppConfig
     }
 
     /**
-     * Message pack used by GenericUI components.
-     * Set up through system property by specific client implementation.
+     * Central messages pack used by GenericUI components and application code.
+     * Set up through app property {@link #MESSAGES_PACK_PROP} depending on the client type and set of base projects.
      * @return  message pack name
      */
     public static String getMessagesPack() {

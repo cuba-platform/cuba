@@ -467,6 +467,10 @@
 
 /***********/
 
+.v-tree-node-filter-new-cond-dlg {
+    font-weight: bold;
+}
+
 /*
  * Next styles are moved from thesis project
  * //todo put them into appropriate folders in peyto theme

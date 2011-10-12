@@ -6,16 +6,12 @@
 
 package com.haulmont.cuba.gui.components.filter;
 
-import com.haulmont.bali.datastruct.Node;
-import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -53,6 +49,8 @@ public abstract class AbstractFilterEditor {
     protected static List<String> defaultExcludedProps = Arrays.asList("version");
 
     protected Boolean manualApplyRequired;
+
+    protected Messages messages = AppContext.getBean(Messages.NAME, Messages.class);
 
     public AbstractFilterEditor(final Filter filter, FilterEntity filterEntity,
                                 Element filterDescriptor, List<String> existingNames) {
@@ -168,7 +166,7 @@ public abstract class AbstractFilterEditor {
     }
 
     protected String getMessage(String key) {
-        return MessageProvider.getMessage(MESSAGES_PACK, key);
+        return messages.getMessage(MESSAGES_PACK, key);
     }
 
     public FilterEntity getFilterEntity() {

@@ -9,7 +9,6 @@ package com.haulmont.cuba.gui.components.filter;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.QueryParser;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
-import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
 
@@ -27,6 +26,7 @@ public abstract class AbstractConditionDescriptor<T extends AbstractParam> {
     protected String entityAlias;
     protected boolean inExpr;
     protected ParamFactory<T> paramFactory = getParamFactory();
+    protected boolean showImmediately;
 
     public AbstractConditionDescriptor(String name, String filterComponentName, CollectionDatasource datasource) {
         this.name = name;
@@ -65,6 +65,10 @@ public abstract class AbstractConditionDescriptor<T extends AbstractParam> {
 
     public void setInExpr(boolean inExpr) {
         this.inExpr = inExpr;
+    }
+
+    public boolean isShowImmediately() {
+        return showImmediately;
     }
 
     public T createParam(AbstractCondition condition) {

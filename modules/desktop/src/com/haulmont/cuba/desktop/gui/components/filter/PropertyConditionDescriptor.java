@@ -6,11 +6,14 @@
 
 package com.haulmont.cuba.desktop.gui.components.filter;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.AbstractPropertyConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
+
+import javax.annotation.Nullable;
 
 /**
  * <p>$Id$</p>
@@ -18,8 +21,12 @@ import org.dom4j.Element;
  * @author devyatkin
  */
 public class PropertyConditionDescriptor extends AbstractPropertyConditionDescriptor<Param> {
-    public PropertyConditionDescriptor(String name, String caption, String messagesPack,
-                                       String filterComponentName, CollectionDatasource datasource) {
+
+    public PropertyConditionDescriptor(String name,
+                                       @Nullable String caption,
+                                       String messagesPack,
+                                       String filterComponentName,
+                                       CollectionDatasource datasource) {
         super(name, caption, messagesPack, filterComponentName, datasource);
     }
 

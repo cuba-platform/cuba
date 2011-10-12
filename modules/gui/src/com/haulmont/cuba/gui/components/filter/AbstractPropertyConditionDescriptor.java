@@ -12,6 +12,8 @@ import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
+
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
@@ -24,7 +26,7 @@ public abstract class AbstractPropertyConditionDescriptor<T extends AbstractPara
     protected String entityParamView;
 
     public AbstractPropertyConditionDescriptor(String name,
-                                               String caption,
+                                               @Nullable String caption,
                                                String messagesPack,
                                                String filterComponentName,
                                                CollectionDatasource datasource) {
@@ -34,10 +36,10 @@ public abstract class AbstractPropertyConditionDescriptor<T extends AbstractPara
         if (!isBlank(caption)) {
             this.locCaption = MessageUtils.loadString(messagesPack, caption);
         } else {
-            this.caption = MessageUtils.getMessageRef(metaClass, name);
-            this.locCaption = MessageProvider.getMessage(metaClass.getJavaClass(), metaClass.getJavaClass().getSimpleName() + "." + name);
-            if (this.locCaption == null || this.locCaption.equals(metaClass.getJavaClass().getSimpleName() + "." + name))
-                this.locCaption = MessageUtils.getPropertyCaption(metaClass, name);
+            this.caption = MessageUtils.getMessageRef(this.metaClass, name);
+            this.locCaption = MessageProvider.getMessage(this.metaClass.getJavaClass(), this.metaClass.getJavaClass().getSimpleName() + "." + name);
+            if (this.locCaption == null || this.locCaption.equals(this.metaClass.getJavaClass().getSimpleName() + "." + name))
+                this.locCaption = MessageUtils.getPropertyCaption(this.metaClass, name);
         }
     }
 

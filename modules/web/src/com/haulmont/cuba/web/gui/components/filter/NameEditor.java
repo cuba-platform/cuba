@@ -33,8 +33,8 @@ public class NameEditor extends CustomComponent implements AbstractCondition.Lis
 
         condition.addListener(this);
 
-        // TODO fix this
-        setWidth(100, UNITS_PIXELS);
+        // TODO fix this - now if we don't set the width explicitly, the name is not visible in the tree table at all
+        setWidth(200, UNITS_PIXELS);
     }
 
     public void captionChanged() {

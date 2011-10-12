@@ -7,7 +7,9 @@
 package com.haulmont.cuba.desktop.gui.components.filter;
 
 import com.haulmont.bali.datastruct.Node;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.desktop.App;
@@ -17,6 +19,7 @@ import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.*;
+import com.haulmont.cuba.gui.components.filter.addcondition.SelectionHandler;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -214,12 +217,25 @@ public class FilterEditor extends AbstractFilterEditor {
         namePanel.add(nameField);
 
         JPanel addPanel = new JPanel(new MigLayout(new LC().insetsAll("0")));
-        initAddSelect(addPanel);
+
+        if (ConfigProvider.getConfig(ClientConfig.class).getGenericFilterTreeConditionSelect()) {
+            initAddDialog(addPanel);
+        } else {
+            initAddSelect(addPanel);
+        }
+
         initTable(mainPanel);
         topPanel.add(namePanel, new CC().growX());
         topPanel.add(addPanel, new CC().alignX("right"));
 
         updateControls();
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                nameField.requestFocus();
+            }
+        });
     }
 
     public JButton getSaveButton() {
@@ -237,6 +253,28 @@ public class FilterEditor extends AbstractFilterEditor {
                     filterEntity.setIsDefault(defaultCb.isSelected());
 
                 }
+    }
+
+    private void initAddDialog(JPanel panel) {
+        JButton button = new JButton(getMessage("FilterEditor.addCondition"));
+        panel.add(button, new CC().alignX("right"));
+
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AddConditionDlg dlg = new AddConditionDlg(metaClass,
+                        descriptors,
+                        new AddConditionDlg.DescriptorBuilder(messagesPack, filterComponentName, datasource),
+                        new SelectionHandler() {
+                            @Override
+                            public void select(AbstractConditionDescriptor descriptor) {
+                                addCondition(descriptor);
+                            }
+                        });
+                App.getInstance().disable(null);
+                dlg.setVisible(true);
+            }
+        });
     }
 
     private void initAddSelect(JPanel panel) {
@@ -299,6 +337,7 @@ public class FilterEditor extends AbstractFilterEditor {
         table.setModel(model);
         table.setFillsViewportHeight(true);
         table.setRowSelectionAllowed(true);
+        DesktopComponentsHelper.correctTableFocusTraversal(table);
 
         table.setRowHeight(DesktopComponentsHelper.FIELD_HEIGHT + 2);
         table.getTableHeader().setReorderingAllowed(false);
@@ -358,6 +397,8 @@ public class FilterEditor extends AbstractFilterEditor {
         if (editor instanceof HasAction) {
             ((HasAction) editor).doAction();
         }
+
+        table.requestFocus();
     }
 
     public JPanel getPanel() {

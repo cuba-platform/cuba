@@ -68,7 +68,7 @@ public class Param extends AbstractParam<Component> {
 
         switch (type) {
             case DATATYPE:
-                component = createDatatypeField(Datatypes.getInstance().get(javaClass));
+                component = createDatatypeField(Datatypes.get(javaClass));
                 break;
             case ENTITY:
                 component = createEntityLookup();
@@ -412,6 +412,7 @@ public class Param extends AbstractParam<Component> {
     }
 
     private void initListEdit(final ListEditComponent component) {
+        component.setWidth(TEXT_COMPONENT_WIDTH);
         component.addListener(
                 new Property.ValueChangeListener() {
                     public void valueChange(Property.ValueChangeEvent event) {

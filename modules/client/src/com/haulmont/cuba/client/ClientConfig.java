@@ -92,4 +92,12 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.genericFilterChecking")
     @DefaultBoolean(true)
     boolean getGenericFilterChecking();
+
+    /**
+     * @return  If true, enable adding conditions through tree-like structure of properties, groups, etc.<br/>
+     * If false, switch to adding conditions through plain dropdown list (old style).
+     */
+    @Property("cuba.gui.genericFilterTreeConditionSelect")
+    @DefaultBoolean(true)
+    boolean getGenericFilterTreeConditionSelect();
 }

@@ -10,14 +10,18 @@
  */
 package com.haulmont.cuba.web.gui.components.filter;
 
-import com.haulmont.cuba.gui.components.filter.*;
-import org.dom4j.Element;
+import com.haulmont.cuba.gui.components.filter.AbstractCondition;
+import com.haulmont.cuba.gui.components.filter.AbstractPropertyConditionDescriptor;
+import com.haulmont.cuba.gui.components.filter.ParamFactory;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import org.dom4j.Element;
+
+import javax.annotation.Nullable;
 
 public class PropertyConditionDescriptor extends AbstractPropertyConditionDescriptor<Param> {
 
     public PropertyConditionDescriptor(String name,
-                                       String caption,
+                                       @Nullable String caption,
                                        String messagesPack,
                                        String filterComponentName,
                                        CollectionDatasource datasource)

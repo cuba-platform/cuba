@@ -19,6 +19,7 @@ public class RuntimePropConditionCreator extends ConditionCreator {
     public RuntimePropConditionCreator(String filterComponentName, CollectionDatasource datasource) {
         super(filterComponentName, datasource);
         locCaption = MessageProvider.getMessage(MESSAGES_PACK, "runtimePropConditionCreator");
+        showImmediately = true;
     }
 
     @Override

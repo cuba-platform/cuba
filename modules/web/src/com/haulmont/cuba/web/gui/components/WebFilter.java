@@ -136,7 +136,8 @@ public class WebFilter
             }
         });
 
-        //component.setMargin(true);
+        // don't add margin because filter is usually placed inside a groupbox that adds margins to its content
+        component.setMargin(false);
         component.setStyleName("generic-filter");
 
         foldersPane = App.getInstance().getAppWindow().getFoldersPane();

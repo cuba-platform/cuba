@@ -139,4 +139,11 @@ public class DesktopComponentsHelper {
         }
         return KeyStroke.getKeyStroke(combination.getKey().getVirtualKey(), modifiersMask, false);
     }
+
+    public static void correctTableFocusTraversal(JTable table) {
+        table.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
+                Collections.singleton(AWTKeyStroke.getAWTKeyStroke("TAB")));
+        table.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
+                Collections.singleton(AWTKeyStroke.getAWTKeyStroke("shift TAB")));
+    }
 }

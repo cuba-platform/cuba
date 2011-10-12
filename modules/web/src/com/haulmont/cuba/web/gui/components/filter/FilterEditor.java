@@ -11,13 +11,15 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.bali.datastruct.Node;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.CategorizedEntity;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.*;
+import com.haulmont.cuba.gui.components.filter.addcondition.SelectionHandler;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -137,7 +139,7 @@ public class FilterEditor extends AbstractFilterEditor {
         globalCb = new CheckBox();
         globalCb.setCaption(getMessage("FilterEditor.global"));
         globalCb.setValue(filterEntity.getUser() == null);
-        globalCb.setEnabled(UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.filter.global"));
+        globalCb.setEnabled(UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.global"));
         controlLayout.addComponent(globalCb);
 
         bottomGrid.addComponent(globalCb, 1, 0);
@@ -196,7 +198,12 @@ public class FilterEditor extends AbstractFilterEditor {
 
         HorizontalLayout addLayout = new HorizontalLayout();
         addLayout.setSpacing(true);
-        initAddSelect(addLayout);
+
+        if (ConfigProvider.getConfig(ClientConfig.class).getGenericFilterTreeConditionSelect()) {
+            initAddDialog(addLayout);
+        } else {
+            initAddSelect(addLayout);
+        }
         topGrid.addComponent(addLayout, 1, 0);
         topGrid.setComponentAlignment(addLayout, Alignment.MIDDLE_RIGHT);
 
@@ -224,6 +231,28 @@ public class FilterEditor extends AbstractFilterEditor {
 
     public Button getSaveButton() {
         return saveBtn;
+    }
+
+    private void initAddDialog(HorizontalLayout addLayout) {
+        Button addBtn = new Button(getMessage("FilterEditor.addCondition"));
+        addBtn.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                AddConditionDlg dlg = new AddConditionDlg(
+                        metaClass,
+                        descriptors,
+                        new AddConditionDlg.DescriptorBuilder(messagesPack, filterComponentName, datasource),
+                        new SelectionHandler() {
+                            @Override
+                            public void select(AbstractConditionDescriptor descriptor) {
+                                addCondition(descriptor);
+                            }
+                        });
+                dlg.center();
+                App.getInstance().getAppWindow().addWindow(dlg);
+            }
+        });
+        addLayout.addComponent(addBtn);
     }
 
     private void initAddSelect(AbstractLayout layout) {
@@ -288,7 +317,7 @@ public class FilterEditor extends AbstractFilterEditor {
         String hiddenCol = getMessage("FilterEditor.column.hidden");
         String cntrCol = getMessage("FilterEditor.column.control");
 
-        table.setColumnWidth(ConditionsContainer.NAME_PROP_ID, 160);
+        table.setColumnWidth(ConditionsContainer.NAME_PROP_ID, 230);
         table.setColumnHeader(ConditionsContainer.NAME_PROP_ID, nameCol);
 
         table.setColumnWidth(ConditionsContainer.OP_PROP_ID, 100);
@@ -342,7 +371,7 @@ public class FilterEditor extends AbstractFilterEditor {
         table.setExpanded(node);
 
         AbstractOperationEditor operationEditor = condition.getOperationEditor();
-        if (operationEditor instanceof HasAction) {
+        if (operationEditor instanceof HasAction && descriptor.isShowImmediately()) {
             ((HasAction) operationEditor).doAction();
         }
     }
