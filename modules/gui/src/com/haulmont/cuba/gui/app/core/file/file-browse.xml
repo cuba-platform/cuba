@@ -1,6 +1,7 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="com.haulmont.cuba.gui.app.core.file.FileBrowser">
+        class="com.haulmont.cuba.gui.app.core.file.FileBrowser"
+        focusComponent="genericFilter">
 
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/gui/app/core/file/file.views.xml"/>

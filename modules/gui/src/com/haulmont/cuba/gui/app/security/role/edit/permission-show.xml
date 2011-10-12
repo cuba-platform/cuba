@@ -9,6 +9,7 @@
     caption="msg://permissions"
     class="com.haulmont.cuba.gui.app.security.role.edit.PermissionShow"
     messagesPack="com.haulmont.cuba.gui.app.security.role.edit"
+    focusComponent="permissionsMessage"
 >
 
     <dsContext/>

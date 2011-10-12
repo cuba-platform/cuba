@@ -8,7 +8,8 @@
         class="com.haulmont.cuba.gui.app.core.server.edit.ServerEditor"
         messagesPack="com.haulmont.cuba.gui.app.core.server"
         datasource="serverDs"
-        caption="msg://server.editor.caption">
+        caption="msg://server.editor.caption"
+        focusComponent="fieldGroup">
 
     <dsContext>
         <datasource
@@ -19,7 +20,7 @@
     </dsContext>
 
     <layout expand="space">
-        <fieldGroup datasource="serverDs" border="visible" width="500px">
+        <fieldGroup id="fieldGroup" datasource="serverDs" border="visible" width="500px">
             <column width="100%">
                 <field id="name"/>
                 <field id="address"/>

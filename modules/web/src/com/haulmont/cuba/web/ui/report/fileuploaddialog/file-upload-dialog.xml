@@ -3,6 +3,7 @@
         class="com.haulmont.cuba.web.ui.report.fileuploaddialog.ReportImportDialog"
         messagesPack="com.haulmont.cuba.web.ui.report.fileuploaddialog"
         caption="msg://fileUploadDialog.caption"
+        focusComponent="fileUpload"
         >
 
     <metadataContext>

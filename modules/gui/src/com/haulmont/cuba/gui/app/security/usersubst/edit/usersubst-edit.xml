@@ -8,7 +8,8 @@
         class="com.haulmont.cuba.gui.app.security.usersubst.edit.UsersubstEditor"
         messagesPack="com.haulmont.cuba.gui.app.security.usersubst"
         caption="msg://userSubstitution.caption"
-        datasource="subst">
+        datasource="subst"
+        focusComponent="substUser">
 
     <metadataContext>
         <view class="com.haulmont.cuba.security.entity.UserSubstitution" name="usersubst.edit">

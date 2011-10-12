@@ -4,6 +4,7 @@
         messagesPack="com.haulmont.cuba.gui.app.core.server"
         lookupComponent="table"
         caption="msg://server.browse.caption"
+        focusComponent="table"
         >
 
     <dsContext>

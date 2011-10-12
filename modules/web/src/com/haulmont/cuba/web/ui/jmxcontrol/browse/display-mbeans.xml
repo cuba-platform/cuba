@@ -2,7 +2,8 @@
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         class="com.haulmont.cuba.web.ui.jmxcontrol.browse.MbeansDisplayWindow"
         messagesPack="com.haulmont.cuba.web.ui.jmxcontrol.browse"
-        caption="msg://displayMbeans.title">
+        caption="msg://displayMbeans.title"
+        focusComponent="mbeans">
 
     <metadataContext>
     </metadataContext>

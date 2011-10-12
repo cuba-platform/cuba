@@ -8,7 +8,9 @@
     xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
     caption="msg://entity-permissions"
     class="com.haulmont.cuba.gui.app.security.role.edit.PermissionsLookup"
-    lookupComponent="permissions">
+    lookupComponent="permissions"
+    focusComponent="permissions-tree"
+    >
 
     <companions>
         <web class="com.haulmont.cuba.web.app.ui.security.role.PermissionsLookupCompanion"/>

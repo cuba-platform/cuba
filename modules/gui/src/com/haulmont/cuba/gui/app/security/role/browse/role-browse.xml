@@ -10,6 +10,7 @@
         messagesPack="com.haulmont.cuba.gui.app.security.role.browse"
         lookupComponent="roles"
         caption="msg://caption"
+        focusComponent="roles"
         >
 
     <dsContext>

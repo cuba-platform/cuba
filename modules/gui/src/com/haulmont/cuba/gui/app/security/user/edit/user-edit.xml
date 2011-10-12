@@ -10,6 +10,7 @@
         caption="msg://caption"
         class="com.haulmont.cuba.gui.app.security.user.edit.UserEditor"
         messagesPack="com.haulmont.cuba.gui.app.security.user.edit"
+        focusComponent="fieldGroup"
         >
 
     <companions>

@@ -8,7 +8,8 @@
         class="com.haulmont.cuba.gui.categories.CategoryEditor"
         messagesPack="com.haulmont.cuba.gui.categories"
         caption="msg://editorCaption"
-        datasource="categoryDs">
+        datasource="categoryDs"
+        focusComponent="name">
 
     <dsContext>
         <datasource id="categoryDs" class="com.haulmont.cuba.core.entity.Category" view="category.edit">

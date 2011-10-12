@@ -10,6 +10,7 @@
     caption="msg://copySettings"
     class="com.haulmont.cuba.web.app.ui.security.user.copysettings.CopySettings"
     messagesPack="com.haulmont.cuba.web.app.ui.security.user.copysettings"
+    focusComponent="user"
 >
     <dsContext>
         <collectionDatasource id="users"

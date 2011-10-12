@@ -8,7 +8,8 @@
         class="com.haulmont.cuba.gui.categories.CategoryBrowser"
         messagesPack="com.haulmont.cuba.gui.categories"
         lookupComponent="categoryTable"
-        caption="msg://categories">
+        caption="msg://categories"
+        focusComponent="categoriesFilter">
     <dsContext>
         <collectionDatasource
                 id="categoriesDs"

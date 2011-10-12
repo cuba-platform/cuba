@@ -9,6 +9,7 @@
     caption="msg://specific-permissions"
     class="com.haulmont.cuba.gui.app.security.role.edit.PermissionsLookup"
     lookupComponent="permissions-tree"
+    focusComponent="permissions-tree"
 >
 
     <companions>

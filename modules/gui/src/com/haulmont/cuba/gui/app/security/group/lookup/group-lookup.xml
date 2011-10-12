@@ -10,6 +10,7 @@
     class="com.haulmont.cuba.gui.app.security.group.lookup.GroupLookup"
     lookupComponent="groups"
     caption="msg://browser.caption"
+    focusComponent="groups"
 >
     <dsContext>
         <hierarchicalDatasource

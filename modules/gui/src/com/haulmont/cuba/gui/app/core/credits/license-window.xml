@@ -9,6 +9,7 @@
         class="com.haulmont.cuba.gui.app.core.credits.LicenseWindow"
         messagesPack="com.haulmont.cuba.gui.app.core.credits"
         caption="msg://license"
+        focusComponent="text"
         >
     <dsContext/>
 

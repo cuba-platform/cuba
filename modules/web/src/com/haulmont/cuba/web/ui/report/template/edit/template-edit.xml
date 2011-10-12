@@ -10,6 +10,7 @@
         datasource="templateDs"
         caption="msg://templateEditor"
         messagesPack="com.haulmont.cuba.web.ui.report"
+        focusComponent="code"
         >
 
     <dsContext>

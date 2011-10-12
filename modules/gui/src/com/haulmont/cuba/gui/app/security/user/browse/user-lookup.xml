@@ -10,6 +10,7 @@
         lookupComponent="users"
         caption="msg://caption"
         messagesPack="com.haulmont.cuba.gui.app.security.user.browse"
+        focusComponent="genericFilter"
         >
     <dsContext>
         <collectionDatasource

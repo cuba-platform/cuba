@@ -2,7 +2,8 @@
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         class="com.haulmont.cuba.gui.app.core.file.FileEditor"
         datasource="fileDs"
-        caption="msg://editorCaption">
+        caption="msg://editorCaption"
+        focusComponent="uploadField">
 
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/gui/app/core/file/file.views.xml"/>

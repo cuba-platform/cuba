@@ -7,7 +7,8 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         class="com.haulmont.cuba.gui.app.security.session.browse.SessionBrowser"
-        caption="msg://caption">
+        caption="msg://caption"
+        focusComponent="sessions_table">
 
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/gui/app/security/session/session.views.xml"/>

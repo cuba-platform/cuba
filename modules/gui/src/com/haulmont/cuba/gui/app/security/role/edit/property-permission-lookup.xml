@@ -9,6 +9,7 @@
         caption="msg://property-permissions"
         class="com.haulmont.cuba.gui.app.security.role.edit.PropertyPermissionsLookup"
         lookupComponent="permissions"
+        focusComponent="permissions-tree"
         >
 
     <companions>

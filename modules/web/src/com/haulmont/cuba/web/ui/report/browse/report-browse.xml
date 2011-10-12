@@ -4,6 +4,7 @@
         messagesPack="com.haulmont.cuba.web.ui.report"
         lookupComponent="table"
         caption="msg://reportBrowser"
+        focusComponent="table"
         >
 
     <dsContext>

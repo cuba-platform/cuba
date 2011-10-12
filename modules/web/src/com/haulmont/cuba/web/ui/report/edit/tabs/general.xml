@@ -7,7 +7,7 @@
             <split orientation="horizontal" id="split">
                 <groupBox stylename="edit-area">
                     <vbox spacing="true" align="TOP_LEFT" expand="templatesTable">
-                        <fieldGroup caption="msg://report.properties" datasource="reportDs">
+                        <fieldGroup id="propertiesFieldGroup" caption="msg://report.properties" datasource="reportDs">
                             <field id="name" required="true" requiredMessage="msg://report.nameMsg"/>
                             <field id="reportType" required="true" requiredMessage="msg://report.reportTypeMsg"/>
                         </fieldGroup>

@@ -9,6 +9,7 @@
         datasource="attribute"
         messagesPack="com.haulmont.cuba.gui.app.security.sessionattr"
         caption="msg://editor.caption"
+        focusComponent="fields"
         >
 
     <dsContext>

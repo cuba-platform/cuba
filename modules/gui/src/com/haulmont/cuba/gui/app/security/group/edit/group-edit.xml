@@ -9,6 +9,7 @@
         messagesPack="com.haulmont.cuba.gui.app.security.group"
         caption="msg://editor.caption"
         datasource="group"
+        focusComponent="name"
         >
     <dsContext>
         <datasource id="group" class="com.haulmont.cuba.security.entity.Group" view="group.browse"/>

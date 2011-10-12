@@ -8,6 +8,7 @@
         class="com.haulmont.cuba.gui.app.security.constraint.edit.ConstraintEditor"
         datasource="constraint"
         messagesPack="com.haulmont.cuba.gui.app.security.constraint"
+        focusComponent="entityName"
         >
 
     <metadataContext>

@@ -8,7 +8,8 @@
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         class="com.haulmont.cuba.gui.app.core.showinfo.SystemInfoWindow"
         messagesPack="com.haulmont.cuba.gui.app.core.showinfo"
-        caption="msg://showInfo.title">
+        caption="msg://showInfo.title"
+        focusComponent="infoTable">
 
     <dsContext>
         <collectionDatasource id="paramsDs" view="_local" class="com.haulmont.cuba.core.global.KeyValueEntity" refreshMode="NEVER"/>

@@ -4,6 +4,7 @@
         datasource="reportScreenDs"
         caption="msg://reportScreenEditor"
         messagesPack="com.haulmont.cuba.web.ui.report"
+        focusComponent="screenId"
         >
 
     <dsContext>

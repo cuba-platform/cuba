@@ -9,6 +9,7 @@
         class="com.haulmont.cuba.gui.app.core.locking.LockBrowser"
         messagesPack="com.haulmont.cuba.gui.app.core.locking"
         caption="msg://caption"
+        focusComponent="locks"
         >
 
     <dsContext>

@@ -3,7 +3,8 @@
         class="com.haulmont.cuba.gui.app.core.file.MultiUploader"
         datasource="filesDs"
         messagesPack="com.haulmont.cuba.gui.app.core.file"
-        caption="msg://editorCaption">
+        caption="msg://editorCaption"
+        focusComponent="multiUpload">
 
     <dsContext>
         <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor"

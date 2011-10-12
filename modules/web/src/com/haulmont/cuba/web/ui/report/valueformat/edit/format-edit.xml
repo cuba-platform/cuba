@@ -4,6 +4,7 @@
         messagesPack="com.haulmont.cuba.web.ui.report"
         datasource="valuesFormatsDs"
         caption="msg://formatsEdit"
+        focusComponent="formatFields"
         >
 
     <dsContext>

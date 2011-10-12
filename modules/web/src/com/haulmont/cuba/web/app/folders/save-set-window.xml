@@ -7,7 +7,8 @@
 <window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         caption="msg://saveSetWindow.caption"
         class="com.haulmont.cuba.web.app.folders.SaveSetWindow"
-        messagesPack="com.haulmont.cuba.web.app.folders">
+        messagesPack="com.haulmont.cuba.web.app.folders"
+        focusComponent="folderSelect">
     <dsContext>
         <collectionDatasource id="setFoldersDs" class="com.haulmont.cuba.security.entity.SearchFolder" view="_local" >
             <query>

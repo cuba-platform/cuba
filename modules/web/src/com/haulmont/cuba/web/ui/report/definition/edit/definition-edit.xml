@@ -4,6 +4,7 @@
         datasource="bandDefinitionDs"
         caption="msg://bandDefinitionEditor"
         messagesPack="com.haulmont.cuba.web.ui.report"
+        focusComponent="name"
         >
 
     <dsContext>

@@ -4,6 +4,7 @@
         messagesPack="com.haulmont.cuba.web.ui.report"
         datasource="parameterDs"
         caption="msg://parameterEditor"
+        focusComponent="name"
         >
 
     <dsContext>

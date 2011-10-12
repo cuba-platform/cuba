@@ -4,6 +4,7 @@
         messagesPack="com.haulmont.cuba.web.ui.report"
         datasource="reportDs"
         caption="msg://reportEditor"
+        focusComponent="generalFrame.propertiesFieldGroup"
         >
 
     <dsContext>
