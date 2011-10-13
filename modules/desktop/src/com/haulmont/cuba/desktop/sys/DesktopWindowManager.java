@@ -601,6 +601,18 @@ public class DesktopWindowManager extends WindowManager {
         return null;
     }
 
+    /**
+     * Release resources right before throwing away this WindowManager instance.
+     */
+    public void dispose() {
+        for (WindowOpenMode openMode : windowOpenMode.values()) {
+            if (openMode.getOpenType().equals(OpenType.DIALOG)) {
+                JDialog dialog = (JDialog) openMode.getData();
+                dialog.setVisible(false);
+            }
+        }
+    }
+
     protected static class WindowOpenMode {
 
         protected Window window;

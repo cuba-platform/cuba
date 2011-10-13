@@ -402,6 +402,8 @@ public class App implements ConnectionListener {
             windowManager.setTabsPane(tabsPane);
             initExceptionHandlers(true);
         } else {
+            if (windowManager != null)
+                windowManager.dispose();
             windowManager = null;
             frame.setContentPane(createStartContentPane());
             frame.repaint();
