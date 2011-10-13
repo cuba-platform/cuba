@@ -50,13 +50,15 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         public void startListen(Timer.TimerListener timerListener) {
-            stopListen();
             this.timerListener = timerListener;
             timer.addTimerListener(timerListener);
         }
 
-        public void stopListen() {
-            timer.sheduleStopListen(timerListener);
+        public void stopListen(boolean removeListener) {
+            if (!removeListener)
+                timer.sheduleStopListen(timerListener);
+            else
+                timer.removeTimerListener(timerListener);
         }
     }
 
@@ -91,13 +93,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
         Timer.TimerListener timerListener = new Timer.TimerListener() {
             private long intentVersion = 0;
 
-            private boolean stopped = false;
-
             @Override
             public void onTimer(Timer timer) {
-                if (stopped)
-                    return;
-
                 // handle intents
                 if (!taskHandler.isCancelled()) {
                     long newIntent = taskExecutor.getIntentVersion();
@@ -110,7 +107,10 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 // if completed
                 if (taskHandler.isDone()) {
                     taskExecutor.handleDone();
-                    webTimerListener.stopListen();
+                }
+
+                if (!taskHandler.isAlive()) {
+                    webTimerListener.stopListen(false);
                 }
             }
 
@@ -189,7 +189,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         @Override
         public boolean cancelExecution(boolean mayInterruptIfRunning) {
-            boolean canceled = false;
+            boolean canceled = super.isAlive();
 
             runnableTask.setInterrupted(true);
 
@@ -207,14 +207,15 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     app.removeBackgroundTask(this);
 
                 this.canceled = canceled;
+
+                stopTimer(mayInterruptIfRunning);
             }
-            stopTimer(mayInterruptIfRunning);
             return canceled;
         }
 
         private void stopTimer(boolean mayInterruptIfRunning) {
             if ((webTimerListener != null) && mayInterruptIfRunning) {
-                webTimerListener.stopListen();
+                webTimerListener.stopListen(true);
             }
         }
 
@@ -257,20 +258,28 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         public void handleIntents() {
-            synchronized (intents) {
-                runnableTask.progress(intents);
-                // notify listeners
-                for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
-                    listener.onProgress(intents);
+            try {
+                synchronized (intents) {
+                    runnableTask.progress(intents);                     
+                    // notify listeners
+                    for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
+                        listener.onProgress(intents);
+                    }
                 }
+            } catch (Exception ex) {
+                log.error("Internal background task error", ex);
             }
         }
 
         public void handleDone() {
-            runnableTask.done(result);
-            // notify listeners
-            for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
-                listener.onDone(result);
+            try {
+                runnableTask.done(result);                     
+                // notify listeners
+                for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
+                    listener.onDone(result);
+                }
+            } catch (Exception ex) {
+                log.error("Internal background task error", ex);
             }
         }
     }

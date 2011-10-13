@@ -36,7 +36,8 @@ public class AppTimers {
      * @param timer new timer
      */
     public void add(final Timer timer) {
-        add(timer, null, app.getCurrentWindow());
+        if (!timerWindow.containsKey(timer))
+            add(timer, null, app.getCurrentWindow());
     }
 
     /**
@@ -45,14 +46,16 @@ public class AppTimers {
      * @param owner component that owns a timer
      */
     public void add(final Timer timer, com.haulmont.cuba.gui.components.Window owner) {
-        add(timer, owner, app.getCurrentWindow());
+        if (!timerWindow.containsKey(timer))
+            add(timer, owner, app.getCurrentWindow());
     }
 
     /**
      * Do not use this method in application code
      */
     public void add(final Timer timer, Window mainWindow) {
-        add(timer, null, mainWindow);
+        if (!timerWindow.containsKey(timer))
+            add(timer, null, mainWindow);
     }
 
     /**

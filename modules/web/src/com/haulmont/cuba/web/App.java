@@ -571,7 +571,7 @@ public abstract class App extends Application
 
         int uiCheckInterval = ConfigProvider.getConfig(WebConfig.class).getUiCheckInterval();
         workerTimer = new WebTimer(uiCheckInterval, true);
-        addTimer(workerTimer);
+        workerTimer.stopTimer();
         return workerTimer;
     }
 

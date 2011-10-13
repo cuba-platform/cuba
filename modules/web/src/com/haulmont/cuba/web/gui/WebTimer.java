@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.web.toolkit.Timer;
 import org.dom4j.Element;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class WebTimer extends Timer implements com.haulmont.cuba.gui.components.
     private final List<TimerListener> stoppingListeners = new LinkedList<TimerListener>();
 
     private static final long serialVersionUID = -6176423005954649715L;
+    protected Listener listener;
 
     public WebTimer() {
         this(500, false);
@@ -36,8 +38,7 @@ public class WebTimer extends Timer implements com.haulmont.cuba.gui.components.
 
     public WebTimer(int delay, boolean repeat) {
         super(delay, repeat);
-
-        addListener(new Listener() {
+        listener = new Listener() {
             @Override
             public void onTimer(Timer timer) {
                 fireOnTimer();
@@ -47,7 +48,15 @@ public class WebTimer extends Timer implements com.haulmont.cuba.gui.components.
             public void onStopTimer(Timer timer) {
                 fireOnStopTimer();
             }
-        });
+        };
+        addListener(listener);
+    }
+
+    @Override
+    public void startTimer() {
+        if (!getListeners().contains(listener))
+            addListener(listener);
+        super.startTimer();
     }
 
     @Override
@@ -86,6 +95,10 @@ public class WebTimer extends Timer implements com.haulmont.cuba.gui.components.
     @Override
     public synchronized void addTimerListener(TimerListener listener) {
         if (!timerListeners.contains(listener)) timerListeners.add(listener);
+    }
+
+    public synchronized List<TimerListener> getTimerListeners() {
+        return Collections.unmodifiableList(timerListeners);
     }
 
     @Override

@@ -59,6 +59,13 @@ public class Timer implements Serializable {
         }
     }
 
+    public void startTimer() {
+        if (isStopped()) {
+            stopped = false;
+            dirty = true;
+        }
+    }
+
     public void requestRepaint() {
         dirty = true;
     }

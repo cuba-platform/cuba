@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.toolkit.Timer;
 import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
 import com.vaadin.Application;
@@ -66,6 +67,19 @@ public class CubaCommunicationManager extends CommunicationManager {
         writer.print(", \"timers\":[");
 
         final JsonPaintTarget paintTarget = new JsonPaintTarget(this, writer, false);
+
+        // WebBackgroundWorker special timer
+        WebTimer workerTimer = application.getWorkerTimer();
+        int workerListenersCount = workerTimer.getTimerListeners().size();
+        if (workerTimer.isStopped()) {
+            if (workerListenersCount > 0)  {
+                workerTimer.startTimer();
+                application.addTimer(workerTimer);
+            }
+        } else {
+            if (workerListenersCount == 0)
+                workerTimer.stopTimer();
+        }
 
         final Set<Timer> timers = new HashSet<Timer>(application.getTimers().getAll(window));
         for (final Timer timer : timers) {
