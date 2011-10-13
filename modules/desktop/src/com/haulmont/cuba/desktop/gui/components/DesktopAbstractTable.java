@@ -130,6 +130,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
         impl.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "enter");
         impl.getActionMap().put("enter", new AbstractAction() {
+
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (enterPressAction != null) {
                     enterPressAction.actionPerform(DesktopAbstractTable.this);
@@ -208,10 +210,12 @@ public abstract class DesktopAbstractTable<C extends JTable>
         return panel;
     }
 
+    @Override
     public List<Column> getColumns() {
         return columnsOrder;
     }
 
+    @Override
     public Column getColumn(String id) {
         for (Table.Column column : columnsOrder) {
             if (column.getId().toString().equals(id))
@@ -220,6 +224,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
         return null;
     }
 
+    @Override
     public void addColumn(Column column) {
         columns.put(column.getId(), column);
         columnsOrder.add(column);
@@ -231,6 +236,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
         refresh();
     }
 
+    @Override
     public void removeColumn(Column column) {
         String name;
         if (column.getId() instanceof MetaPropertyPath) {
@@ -267,6 +273,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
         }
     }
 
+    @Override
     public void setDatasource(final CollectionDatasource datasource) {
         UserSession userSession = UserSessionProvider.getUserSession();
         if (!userSession.isEntityOpPermitted(datasource.getMetaClass(), EntityOp.READ)) {
@@ -457,6 +464,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected void initSelectionListener(final CollectionDatasource datasource) {
         impl.getSelectionModel().addListSelectionListener(
                 new ListSelectionListener() {
+
+                    @Override
                     public void valueChanged(ListSelectionEvent e) {
                         if (e.getValueIsAdjusting())
                             return;
@@ -477,12 +486,15 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected void setColumnHeader(Object propertyPath, String caption) {
     }
 
+    @Override
     public void setRequired(Column column, boolean required, String message) {
     }
 
+    @Override
     public void addValidator(Column column, Field.Validator validator) {
     }
 
+    @Override
     public void addValidator(Field.Validator validator) {
     }
 
@@ -496,6 +508,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
         return enterPressAction;
     }
 
+    @Override
     public void setItemClickAction(Action action) {
         if (itemClickAction != null) {
             removeAction(itemClickAction);
@@ -506,43 +519,59 @@ public abstract class DesktopAbstractTable<C extends JTable>
         }
     }
 
+    @Override
     public Action getItemClickAction() {
         return itemClickAction;
     }
 
+    @Override
     public List<Column> getNotCollapsedColumns() {
-        return null;
+        List<Column> visibleColumns = new LinkedList<Column>();
+        for (Column column : columnsOrder) {
+            if (!column.isCollapsed())
+                visibleColumns.add(column);
+        }
+        return visibleColumns;
     }
 
+    @Override
     public void setSortable(boolean sortable) {
         this.sortable = sortable;
     }
 
+    @Override
     public boolean isSortable() {
         return sortable;
     }
 
+    @Override
     public void setAggregatable(boolean aggregatable) {
     }
 
+    @Override
     public boolean isAggregatable() {
         return false;
     }
 
+    @Override
     public void setShowTotalAggregation(boolean showAggregation) {
     }
 
+    @Override
     public boolean isShowTotalAggregation() {
         return false;
     }
 
+    @Override
     public void sortBy(Object propertyId, boolean ascending) {
     }
 
+    @Override
     public RowsCount getRowsCount() {
         return rowsCount;
     }
 
+    @Override
     public void setRowsCount(RowsCount rowsCount) {
         if (this.rowsCount != null) {
             topPanel.remove(DesktopComponentsHelper.getComposition(this.rowsCount));
@@ -554,16 +583,20 @@ public abstract class DesktopAbstractTable<C extends JTable>
         }
     }
 
+    @Override
     public boolean isAllowMultiStringCells() {
         return false;
     }
 
+    @Override
     public void setAllowMultiStringCells(boolean value) {
     }
 
+    @Override
     public void setRowHeaderMode(RowHeaderMode mode) {
     }
 
+    @Override
     public void setStyleProvider(StyleProvider styleProvider) {
         this.styleProvider = styleProvider;
         final Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
@@ -606,12 +639,15 @@ public abstract class DesktopAbstractTable<C extends JTable>
         }
     }
 
+    @Override
     public void setPagingMode(PagingMode mode) {
     }
 
+    @Override
     public void setPagingProvider(PagingProvider pagingProvider) {
     }
 
+    @Override
     public void addGeneratedColumn(String columnId, ColumnGenerator generator) {
         if (columnId == null)
             throw new IllegalArgumentException("columnId is null");
@@ -629,6 +665,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
         packRows();
     }
 
+    @Override
     public void removeGeneratedColumn(String columnId){
         if (id == null)
             throw new IllegalArgumentException("columnId is null");
@@ -637,14 +674,17 @@ public abstract class DesktopAbstractTable<C extends JTable>
         tableModel.removeGeneratedColumn(col);
     }
 
+    @Override
     public boolean isEditable() {
         return editable;
     }
 
+    @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         impl.setEnabled(enabled);
         if (buttonsPanel != null) {
@@ -652,10 +692,12 @@ public abstract class DesktopAbstractTable<C extends JTable>
         }
     }
 
+    @Override
     public ButtonsPanel getButtonsPanel() {
         return buttonsPanel;
     }
 
+    @Override
     public void setButtonsPanel(ButtonsPanel panel) {
         if (buttonsPanel != null) {
             topPanel.remove(DesktopComponentsHelper.unwrap(buttonsPanel));
@@ -667,42 +709,53 @@ public abstract class DesktopAbstractTable<C extends JTable>
         }
     }
 
+    @Override
     public void usePresentations(boolean b) {
     }
 
+    @Override
     public boolean isUsePresentations() {
         return false;
     }
 
+    @Override
     public void loadPresentations() {
     }
 
+    @Override
     public Presentations getPresentations() {
         return null;
     }
 
+    @Override
     public void applyPresentation(Object id) {
     }
 
+    @Override
     public void applyPresentationAsDefault(Object id) {
     }
 
+    @Override
     public Object getDefaultPresentationId() {
         return null;
     }
 
+    @Override
     public void applySettings(Element element) {
         tableSettings.apply(element, isSortable());
     }
 
+    @Override
     public boolean saveSettings(Element element) {
         return tableSettings.saveSettings(element);
     }
 
+    @Override
     public boolean isMultiSelect() {
         return impl.getSelectionModel().getSelectionMode() != ListSelectionModel.SINGLE_SELECTION;
     }
 
+    @Override
     public void setMultiSelect(boolean multiselect) {
         if (multiselect)
             impl.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -710,11 +763,13 @@ public abstract class DesktopAbstractTable<C extends JTable>
             impl.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
+    @Override
     public <T extends Entity> T getSingleSelected() {
         Set selected = getSelected();
         return selected.isEmpty() ? null : (T) selected.iterator().next();
     }
 
+    @Override
     public Set getSelected() {
         Set set = new HashSet();
         int[] rows = impl.getSelectedRows();
@@ -727,11 +782,13 @@ public abstract class DesktopAbstractTable<C extends JTable>
         return set;
     }
 
+    @Override
     public void setSelected(Entity item) {
         int rowIndex = impl.convertRowIndexToView(tableModel.getRowIndex(item));
         impl.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
     }
 
+    @Override
     public void setSelected(Collection<Entity> items) {
         for (Entity item : items) {
             int rowIndex = impl.convertRowIndexToView(tableModel.getRowIndex(item));
@@ -739,10 +796,12 @@ public abstract class DesktopAbstractTable<C extends JTable>
         }
     }
 
+    @Override
     public CollectionDatasource getDatasource() {
         return datasource;
     }
 
+    @Override
     public void refresh() {
         if (datasource != null) {
             datasource.refresh();
