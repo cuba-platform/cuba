@@ -9,6 +9,7 @@ package com.haulmont.cuba.toolkit.gwt.client.ui;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.ui.TextBox;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.ui.VPopupCalendar;
 
@@ -57,12 +58,13 @@ public class VMaskedPopupCalendar extends VPopupCalendar {
                     || e.getCharCode() == KeyCodes.KEY_PAGEDOWN
                     || e.getCharCode() == KeyCodes.KEY_PAGEUP
                     || e.getCharCode() == KeyCodes.KEY_RIGHT
-                    || e.getCharCode() == KeyCodes.KEY_TAB
                     || e.isAltKeyDown()
                     || e.isControlKeyDown()
                     || e.isMetaKeyDown()) {
                 debug("keyPressHandler.onKeyPress: return immediately");
                 e.preventDefault(); // KK: otherwise incorrectly handles combinations like Shift+'='
+                return;
+            } else if (BrowserInfo.get().isGecko() && e.getCharCode() == '\u0000') { //pressed tab in firefox
                 return;
             }
 

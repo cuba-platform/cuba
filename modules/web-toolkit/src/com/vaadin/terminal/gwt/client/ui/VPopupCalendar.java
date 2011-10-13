@@ -11,6 +11,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
@@ -60,7 +61,7 @@ public class VPopupCalendar extends VTextualDate implements Paintable, Field,
         calendarToggle.setStyleName(CLASSNAME + "-button");
         calendarToggle.setText("");
         calendarToggle.addClickHandler(this);
-        calendarToggle.getElement().setTabIndex(-1);
+        calendarToggle.getElement().setTabIndex(-2);
         add(calendarToggle);
 
         calendar = GWT.create(VCalendarPanel.class);

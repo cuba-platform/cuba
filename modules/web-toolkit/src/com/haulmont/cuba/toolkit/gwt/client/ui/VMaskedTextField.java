@@ -13,6 +13,7 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
+import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.ui.VTextField;
 
@@ -51,12 +52,13 @@ public class VMaskedTextField extends VTextField {
 					|| e.getCharCode() == KeyCodes.KEY_PAGEDOWN
 					|| e.getCharCode() == KeyCodes.KEY_PAGEUP
 					|| e.getCharCode() == KeyCodes.KEY_RIGHT
-					|| e.getCharCode() == KeyCodes.KEY_TAB
 					|| e.isAltKeyDown()
                     || e.isControlKeyDown()
                     || e.isMetaKeyDown()) {
                 debug("keyPressHandler.onKeyPress: return immediately");
                 e.preventDefault(); // KK: otherwise incorrectly handles combinations like Shift+'='
+                return;
+            } else if (BrowserInfo.get().isGecko() && e.getCharCode() == '\u0000') { //pressed tab in firefox
                 return;
             }
 			if (getCursorPos() < maskTest.size()) {
