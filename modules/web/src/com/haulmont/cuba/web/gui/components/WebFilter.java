@@ -788,6 +788,11 @@ public class WebFilter
             filterEntity.getFolder().setFilterXml(filterEntity.getXml());
             SearchFolder folder = saveFolder((SearchFolder) filterEntity.getFolder());
             filterEntity.setFolder(folder);
+        } else if (filterEntity.getFolder() instanceof AppFolder) {
+            filterEntity.getFolder().setName(filterEntity.getName());
+            filterEntity.getFolder().setFilterXml(filterEntity.getXml());
+            AppFolder folder = saveAppFolder((AppFolder) filterEntity.getFolder());
+            filterEntity.setFolder(folder);
         }
     }
 

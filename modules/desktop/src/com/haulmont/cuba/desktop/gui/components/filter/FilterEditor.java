@@ -152,7 +152,7 @@ public class FilterEditor extends AbstractFilterEditor {
                     ((DesktopFilter) filter).editorCommitted();
             }
         });
-        if (filterEntity.getCode() != null)
+        if (filterEntity.getFolder() == null && filterEntity.getCode() != null)
             saveBtn.setEnabled(false);
         buttonsPanel.add(saveBtn);
 
@@ -411,7 +411,7 @@ public class FilterEditor extends AbstractFilterEditor {
     }
 
     private void updateControls() {
-        if (filterEntity.getCode() == null)
+        if (filterEntity.getFolder() != null || filterEntity.getCode() == null)
             saveBtn.setEnabled(!conditions.getRootNodes().isEmpty());
         else
             saveBtn.setEnabled(false);

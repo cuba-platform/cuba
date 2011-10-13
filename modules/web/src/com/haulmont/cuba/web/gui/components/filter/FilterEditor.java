@@ -120,7 +120,7 @@ public class FilterEditor extends AbstractFilterEditor {
                     ((WebFilter) filter).editorCommitted();
             }
         });
-        if (filterEntity.getCode() != null)
+        if (filterEntity.getFolder() == null && filterEntity.getCode() != null)
             saveBtn.setEnabled(false);
         controlLayout.addComponent(saveBtn);
 
@@ -377,7 +377,7 @@ public class FilterEditor extends AbstractFilterEditor {
     }
 
     private void updateControls() {
-        if (filterEntity.getCode() == null)
+        if (filterEntity.getFolder() != null || filterEntity.getCode() == null)
             saveBtn.setEnabled(!conditions.getRootNodes().isEmpty());
         else
             saveBtn.setEnabled(false);
