@@ -171,7 +171,9 @@ public class WebDateField
             timeFormat = StringUtils.trimToEmpty(time.toString());
             timeField.setFormat(timeFormat);
             setResolution(resolution);
-        } else setResolution(Resolution.DAY);
+        } else if (resolution.ordinal() < Resolution.DAY.ordinal()) {
+            setResolution(Resolution.DAY);
+        }
 
         this.dateFormat = StringUtils.trimToEmpty(date.toString());
         dateField.setDateFormat(this.dateFormat);
