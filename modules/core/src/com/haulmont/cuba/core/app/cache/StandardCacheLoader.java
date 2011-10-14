@@ -127,7 +127,6 @@ public class StandardCacheLoader implements CacheLoader {
                 EntityManager em = persistence.getEntityManager();
                 em.setView(view);
                 Query query = em.createQuery(dbQuery);
-                em.setView(view);
 
                 for (Object item : updateItems) {
                     Entity entity = (Entity) item;
