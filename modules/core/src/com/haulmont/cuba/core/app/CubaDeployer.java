@@ -20,9 +20,8 @@ import java.io.InputStream;
 
 /**
  * CubaDeployer MBean implementation.
- * <p>
- * Intended to support other MBeans dependencies because it starts after all other platform MBeans.
- * Also holds some information about the system.
+ *
+ * <p>Holds the system release timestamp and date.</p>
  */
 @ManagedBean(CubaDeployerMBean.NAME)
 public class CubaDeployer implements CubaDeployerMBean

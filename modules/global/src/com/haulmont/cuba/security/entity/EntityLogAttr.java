@@ -11,6 +11,7 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.chile.core.annotations.MetaProperty;
@@ -23,11 +24,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.Persistent;
 
 /**
- * Record containing changed entity attribute
- * Created by {@link com.haulmont.cuba.security.app.EntityLog} MBean
+ * Record containing changed entity attribute.
+ * Created by <code>EntityLog</code> MBean.
  */
 @Entity(name = "sec$EntityLogAttr")
 @Table(name = "SEC_ENTITY_LOG_ATTR")
+@SystemLevel
 public class EntityLogAttr extends BaseUuidEntity {
     private static final long serialVersionUID = 4258700403293876630L;
 

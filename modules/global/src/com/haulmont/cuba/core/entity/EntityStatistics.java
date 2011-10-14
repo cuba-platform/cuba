@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+
 import javax.persistence.Entity;
 import javax.persistence.Column;
 import javax.persistence.Table;
@@ -17,6 +19,7 @@ import java.util.Date;
 
 @Entity(name = "core$EntityStatistics")
 @Table(name = "SYS_ENTITY_STATISTICS")
+@SystemLevel
 public class EntityStatistics extends BaseUuidEntity implements Updatable {
 
     private static final long serialVersionUID = -1734840995849860033L;

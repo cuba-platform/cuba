@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.SendingStatus;
 
 import javax.persistence.*;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @Entity(name = "sys$SendingMessage")
 @Table(name = "SYS_SENDING_MESSAGE")
+@SystemLevel
 public class SendingMessage extends BaseUuidEntity implements Updatable, SoftDelete {
 
     private static final long serialVersionUID = -8156998515878702538L;

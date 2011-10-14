@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
@@ -35,7 +36,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Class that encapsulates editing {@link com.haulmont.cuba.core.entity.CategoryAttribute} entities.
+ * Class that encapsulates editing of {@link com.haulmont.cuba.core.entity.CategoryAttribute} entities.
  * 
  * <p>$Id$</p>
  *
@@ -265,12 +266,14 @@ public class AttributeEditor extends AbstractEditor {
         entityTypeField.setCaption(getMessage("entityType"));
         entityTypeField.setRequired(true);
         entityTypeField.setWidth(FIELD_WIDTH);
-        Map<String, Object> options = new HashMap<String, Object>();
+        Map<String, Object> options = new TreeMap<String, Object>();
         MetaClass entityType = null;
         for (MetaClass metaClass : MetadataHelper.getAllPersistentMetaClasses()) {
-            options.put(MessageUtils.getEntityCaption(metaClass), metaClass);
-            if (hasValue && metaClass.getJavaClass().getName().equals(attribute.getDataType())) {
-                entityType = metaClass;
+            if (!BooleanUtils.isTrue((Boolean) metaClass.getAnnotations().get(SystemLevel.class.getName()))) {
+                options.put(MessageUtils.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
+                if (hasValue && metaClass.getJavaClass().getName().equals(attribute.getDataType())) {
+                    entityType = metaClass;
+                }
             }
         }
         entityTypeField.setOptionsMap(options);

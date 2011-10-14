@@ -11,6 +11,7 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 
@@ -19,6 +20,7 @@ import javax.persistence.*;
  */
 @Entity(name = "sec$Constraint")
 @Table(name = "SEC_CONSTRAINT")
+@SystemLevel
 public class Constraint extends StandardEntity
 {
     private static final long serialVersionUID = -8598548105315052474L;

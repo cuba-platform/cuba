@@ -1,15 +1,11 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 25.08.2009 12:50:12
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataBuildInfo;
@@ -18,12 +14,15 @@ import com.haulmont.cuba.core.sys.MetadataBuildHelper;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Service facade for {@link com.haulmont.cuba.core.app.CubaDeployer} MBean
+ * Standard implementation of {@link CubaDeployerService} interface.
+ *
+ * <p>Annotated with <code>@ManagedBean</code> instead of <code>@Service</code> to be available before user login.</p>
  */
 @ManagedBean(CubaDeployerService.NAME)
 public class CubaDeployerServiceBean implements CubaDeployerService {
@@ -44,19 +43,39 @@ public class CubaDeployerServiceBean implements CubaDeployerService {
     public MetadataBuildInfo getMetadataBuildInfo() {
         return new MetadataBuildInfo(
                 MetadataBuildHelper.getPersistentEntitiesPackages(),
-                MetadataBuildHelper.getTransientEntitiesPackages()
+                MetadataBuildHelper.getTransientEntitiesPackages(),
+                getEntityAnnotations(),
+                getReplacedEntities()
         );
     }
 
-    public List<View> getViews() {
-        return metadata.getViewRepository().getAll();
+    private Map<String, Map<String, Object>> getEntityAnnotations() {
+        Map<String, Map<String, Object>> result = new HashMap<String, Map<String, Object>>();
+        for (MetaClass metaClass : metadata.getSession().getClasses()) {
+            if (!metaClass.getAnnotations().isEmpty()) {
+                Map<String, Object> annotations = new HashMap<String, Object>();
+                for (Map.Entry<String, Object> entry : metaClass.getAnnotations().entrySet()) {
+                    // send to the client only annotations with String or Boolean value,
+                    // others are not safe for serialization
+                    if (entry.getValue() instanceof String || entry.getValue() instanceof Boolean) {
+                        annotations.put(entry.getKey(), entry.getValue());
+                    }
+                }
+                result.put(metaClass.getJavaClass().getName(), annotations);
+            }
+        }
+        return result;
     }
 
-    public Map<String, String> getReplacedEntities() {
+    private Map<String, String> getReplacedEntities() {
         Map<String, String> result = new HashMap<String, String>();
         for (Map.Entry<Class, Class> entry : metadata.getReplacedEntities().entrySet()) {
             result.put(entry.getKey().getName(), entry.getValue().getName());
         }
         return result;
+    }
+
+    public List<View> getViews() {
+        return metadata.getViewRepository().getAll();
     }
 }

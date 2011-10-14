@@ -9,6 +9,7 @@ package com.haulmont.cuba.core.entity;
 import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
 @DiscriminatorColumn(name = "DISCRIMINATOR", discriminatorType = DiscriminatorType.INTEGER)
 @DiscriminatorValue("0")
 @NamePattern("%s|name")
+@SystemLevel
 public class Category extends StandardEntity {
 
     private static final long serialVersionUID = 7160259865207148541L;

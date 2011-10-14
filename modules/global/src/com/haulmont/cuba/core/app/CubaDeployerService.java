@@ -1,11 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 25.08.2009 12:49:45
- *
  */
 package com.haulmont.cuba.core.app;
 
@@ -16,7 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Service interface to the CubaDeployer MBean
+ * Service interface to provide initial information for clients. Can be invoked before login when user session
+ * is not yet established.
  *
  * <p>$Id$</p>
  *
@@ -33,6 +30,4 @@ public interface CubaDeployerService {
     MetadataBuildInfo getMetadataBuildInfo();
 
     List<View> getViews();
-
-    Map<String, String> getReplacedEntities();
 }

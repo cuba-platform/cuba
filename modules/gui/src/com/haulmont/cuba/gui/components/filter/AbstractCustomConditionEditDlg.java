@@ -7,6 +7,7 @@
 package com.haulmont.cuba.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport;
@@ -312,7 +313,9 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         Object selectedItem = null;
         if (ParamType.ENTITY.equals(typeSelect.getValue())) {
             for (MetaClass metaClass : MetadataHelper.getAllPersistentMetaClasses()) {
-                items.put(metaClass.getName() + " (" + MessageUtils.getEntityCaption(metaClass) + ")", metaClass);
+                if (!BooleanUtils.isTrue((Boolean) metaClass.getAnnotations().get(SystemLevel.class.getName()))) {
+                    items.put(MessageUtils.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
+                }
             }
 
             if (param != null && AbstractParam.Type.ENTITY.equals(param.getType())) {
@@ -322,7 +325,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
             entitySelect.setOptionsMap(items);
             entitySelect.setValue(selectedItem);
 
-        } else if (ParamType.ENUM.equals(typeSelect)) {
+        } else if (ParamType.ENUM.equals(typeSelect.getValue())) {
             for (Class enumClass : MetadataHelper.getAllEnums()) {
                 items.put(enumClass.getSimpleName() + " (" + MessageProvider.getMessage(enumClass, enumClass.getSimpleName()) + ")", enumClass);
             }

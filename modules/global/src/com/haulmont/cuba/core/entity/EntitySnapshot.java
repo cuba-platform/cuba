@@ -10,6 +10,7 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.Persistent;
@@ -28,6 +29,7 @@ import java.util.UUID;
  */
 @Entity(name = "core$EntitySnapshot")
 @Table(name = "SYS_ENTITY_SNAPSHOT")
+@SystemLevel
 public class EntitySnapshot extends BaseUuidEntity {
 
     private static final long serialVersionUID = 4835363127711391591L;

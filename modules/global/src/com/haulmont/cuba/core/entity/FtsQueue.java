@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.Entity;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 @Entity(name = "core$FtsQueue")
 @Table(name = "SYS_FTS_QUEUE")
+@SystemLevel
 public class FtsQueue extends BaseUuidEntity {
 
     private static final long serialVersionUID = 6488459370269702942L;

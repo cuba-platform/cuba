@@ -7,35 +7,46 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.security.entity.ScreenHistoryEntity;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
+ * Class that encapsulates screen opening history functionality. It is used by WindowManager and should not be invoked
+ * from application code.
+ *
  * <p>$Id$</p>
  *
  * @author krivopustov
  */
 public class ScreenHistorySupport {
 
-    private List<String> screenIds;
+    private Set<String> screenIds = new HashSet<String>();
 
     public ScreenHistorySupport() {
         ClientConfig config = ConfigProvider.getConfig(ClientConfig.class);
         String property = config.getScreenIdsToSaveHistory();
-        if (property != null && StringUtils.isNotBlank(property))
-            screenIds = Arrays.asList(StringUtils.split(property, ','));
+        if (StringUtils.isNotBlank(property)) {
+            screenIds.addAll(Arrays.asList(StringUtils.split(property, ',')));
+        }
+
+        for (MetaClass metaClass : MetadataHelper.getAllPersistentMetaClasses()) {
+            Boolean value = (Boolean) metaClass.getAnnotations().get(TrackEditScreenHistory.class.getName());
+            if (BooleanUtils.isTrue(value)) {
+                screenIds.add(metaClass.getName() + ".edit");
+            }
+        }
     }
 
     public void saveScreenHistory(Window window, WindowManager.OpenType openType){

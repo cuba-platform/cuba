@@ -11,6 +11,7 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 
@@ -20,6 +21,7 @@ import javax.persistence.*;
 @Table(name = "SEC_SEARCH_FOLDER")
 @PrimaryKeyJoinColumn(name = "FOLDER_ID", referencedColumnName = "ID")
 @DiscriminatorValue("S")
+@SystemLevel
 public class SearchFolder extends AbstractSearchFolder {
 
     @ManyToOne(fetch = FetchType.LAZY)

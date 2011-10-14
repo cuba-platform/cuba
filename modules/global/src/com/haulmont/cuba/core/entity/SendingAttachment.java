@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.EmailAttachment;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ import javax.persistence.Entity;
 
 @Entity(name = "sys$SendingAttachment")
 @Table(name = "SYS_SENDING_ATTACHMENT")
+@SystemLevel
 public class SendingAttachment extends BaseUuidEntity {
 
     private static final long serialVersionUID = -8253918579521701435L;

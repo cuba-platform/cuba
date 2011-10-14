@@ -12,6 +12,7 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
@@ -21,6 +22,7 @@ import javax.persistence.*;
  */
 @Entity(name = "sec$UserRole")
 @Table(name = "SEC_USER_ROLE")
+@SystemLevel
 public class UserRole extends StandardEntity
 {
     private static final long serialVersionUID = 8543853035155300992L;

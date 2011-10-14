@@ -11,6 +11,7 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 
@@ -24,6 +25,7 @@ import java.util.UUID;
 @javax.persistence.Entity(name = "core$FileDescriptor")
 @Table(name = "SYS_FILE")
 @NamePattern("%s (%s)|name,createDate")
+@SystemLevel
 public class FileDescriptor extends StandardEntity {
 
     private static final long serialVersionUID = 564683944299730504L;

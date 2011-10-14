@@ -10,10 +10,13 @@
  */
 package com.haulmont.cuba.report;
 
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+
 import javax.persistence.*;
 
 @Entity(name = "report$ReportScreen")
 @Table(name = "REPORT_REPORT_SCREEN")
+@SystemLevel
 public class ReportScreen extends HardDeleteEntity {
 
     private static final long serialVersionUID = -7416940515333599470L;

@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -22,6 +24,7 @@ import java.util.Date;
  */
 @Entity(name = "core$Config")
 @Table(name = "SYS_CONFIG")
+@SystemLevel
 public class Config extends BaseUuidEntity implements Versioned, Updatable
 {
     private static final long serialVersionUID = -2103060811330948816L;

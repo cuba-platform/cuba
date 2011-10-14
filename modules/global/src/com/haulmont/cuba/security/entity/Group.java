@@ -13,6 +13,7 @@ package com.haulmont.cuba.security.entity;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.chile.core.annotations.NamePattern;
@@ -28,6 +29,7 @@ import java.util.Set;
 @Table(name = "SEC_GROUP")
 @Listeners({"com.haulmont.cuba.security.listener.GroupEntityListener"})
 @NamePattern("%s|name")
+@TrackEditScreenHistory
 public class Group extends StandardEntity
 {
     private static final long serialVersionUID = -4581386806900761785L;

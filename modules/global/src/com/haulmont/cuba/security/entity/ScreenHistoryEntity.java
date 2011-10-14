@@ -12,9 +12,11 @@ package com.haulmont.cuba.security.entity;
 
 import javax.persistence.*;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 @javax.persistence.Entity(name = "sec$ScreenHistory")
 @Table(name = "SEC_SCREEN_HISTORY")
+@SystemLevel
 public class ScreenHistoryEntity extends BaseUuidEntity {
 
     private static final long serialVersionUID = 1L;

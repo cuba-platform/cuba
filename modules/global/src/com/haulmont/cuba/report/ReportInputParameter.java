@@ -10,10 +10,13 @@
  */
 package com.haulmont.cuba.report;
 
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+
 import javax.persistence.*;
 
 @Entity(name = "report$ReportInputParameter")
 @Table(name = "REPORT_INPUT_PARAMETER")
+@SystemLevel
 @SuppressWarnings("unused")
 public class ReportInputParameter extends HardDeleteEntity {
     private static final long serialVersionUID = 6231014880104406246L;

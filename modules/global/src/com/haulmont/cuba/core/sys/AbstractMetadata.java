@@ -33,7 +33,7 @@ public abstract class AbstractMetadata implements Metadata {
         if (session == null) {
             synchronized (this) {
                 if (session == null) {
-                    session = initMetadata();
+                    initMetadata();
                 }
             }
         }
@@ -45,7 +45,7 @@ public abstract class AbstractMetadata implements Metadata {
         if (viewRepository == null) {
             synchronized (this) {
                 if (viewRepository == null) {
-                    viewRepository = initViews();
+                    initViews();
                 }
             }
         }
@@ -57,7 +57,7 @@ public abstract class AbstractMetadata implements Metadata {
         if (replacedEntities == null) {
             synchronized (this) {
                 if (replacedEntities == null) {
-                    replacedEntities = initReplacedEntities();
+                    initMetadata();
                 }
             }
         }
@@ -114,10 +114,7 @@ public abstract class AbstractMetadata implements Metadata {
         return __getReplacedClass(metaClass.getJavaClass());
     }
 
-    protected abstract Session initMetadata();
+    protected abstract void initMetadata();
 
-    protected abstract ViewRepository initViews();
-
-    protected abstract Map<Class,Class> initReplacedEntities();
-
+    protected abstract void initViews();
 }

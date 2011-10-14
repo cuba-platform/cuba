@@ -54,10 +54,12 @@ public interface ClientConfig extends Config {
     boolean getCollectionDatasourceDbSortEnabled();
 
     /**
-     * @return List of screen aliases for which saving screen history is enabled.
+     * List of screen aliases for which saving screen history is enabled.
+     * <p>Obsolete. Recommended way to specify this information is entity annotations
+     * in <code>*-metadata.xml</code></p>
+     * @return  comma-separated list of screen aliases
      */
     @Property("cuba.screenIdsToSaveHistory")
-    @Default("sec$User.edit,sec$Group.edit,sec$Role.edit")
     String getScreenIdsToSaveHistory();
 
     /**

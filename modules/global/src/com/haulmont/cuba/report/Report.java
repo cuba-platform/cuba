@@ -13,6 +13,7 @@ package com.haulmont.cuba.report;
 import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.security.entity.Role;
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +25,7 @@ import java.util.List;
 @Entity(name = "report$Report")
 @Table(name = "REPORT_REPORT")
 @NamePattern("%s|name")
+@SystemLevel
 @SuppressWarnings("unused")
 public class Report extends HardDeleteEntity {
     private static final long serialVersionUID = -2817764915661205093L;

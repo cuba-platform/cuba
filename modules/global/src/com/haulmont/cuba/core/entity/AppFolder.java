@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 
@@ -20,6 +21,7 @@ import javax.persistence.*;
 @Table(name = "SYS_APP_FOLDER")
 @PrimaryKeyJoinColumn(name="FOLDER_ID", referencedColumnName = "ID")
 @DiscriminatorValue("A")
+@SystemLevel
 public class AppFolder extends AbstractSearchFolder {
 
     @Column(name = "VISIBILITY_SCRIPT", length = 200)

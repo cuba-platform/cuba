@@ -7,6 +7,7 @@
 package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.*;
@@ -20,6 +21,7 @@ import java.util.UUID;
  */
 @javax.persistence.Entity(name = "sys$CategoryAttributeValue")
 @Table(name = "SYS_ATTR_VALUE")
+@SystemLevel
 public class CategoryAttributeValue extends StandardEntity {
 
     private static final long serialVersionUID = -2861790889151226985L;

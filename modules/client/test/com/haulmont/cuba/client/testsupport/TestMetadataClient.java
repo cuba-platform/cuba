@@ -8,7 +8,6 @@ package com.haulmont.cuba.client.testsupport;
 
 import com.haulmont.chile.core.loader.ChileMetadataLoader;
 import com.haulmont.chile.core.loader.MetadataLoader;
-import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.sys.AbstractMetadata;
 import com.haulmont.cuba.core.sys.PersistentClassesMetadataLoader;
@@ -16,7 +15,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>$Id$</p>
@@ -35,34 +33,28 @@ public class TestMetadataClient extends AbstractMetadata {
     }
 
     @Override
-    protected Session initMetadata() {
+    protected void initMetadata() {
         MetadataLoader metadataLoader = new PersistentClassesMetadataLoader();
         for (String p : packages) {
             metadataLoader.loadPackage(p, p);
         }
         metadataLoader.postProcess();
 
-        Session metadataSession = metadataLoader.getSession();
+        session = metadataLoader.getSession();
 
-        metadataLoader = new ChileMetadataLoader(metadataSession);
+        metadataLoader = new ChileMetadataLoader(session);
         for (String p : packages) {
             metadataLoader.loadPackage(p, p);
         }
         metadataLoader.postProcess();
 
-        return metadataSession;
+        replacedEntities = new HashMap<Class, Class>();
     }
 
     @Override
-    protected ViewRepository initViews() {
-        ViewRepository vr = new ViewRepository();
+    protected void initViews() {
+        viewRepository = new ViewRepository();
         if (!StringUtils.isEmpty(viewsConfig))
-            vr.deployViews(viewsConfig);
-        return vr;
-    }
-
-    @Override
-    protected Map<Class, Class> initReplacedEntities() {
-        return new HashMap<Class, Class>();
+            viewRepository.deployViews(viewsConfig);
     }
 }

@@ -15,6 +15,7 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
+import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +32,7 @@ import java.util.Set;
 @Table(name = "SEC_USER")
 @Listeners("com.haulmont.cuba.security.listener.UserEntityListener")
 @NamePattern("#getCaption|login,name")
+@TrackEditScreenHistory
 public class User extends StandardEntity
 {
     private static final long serialVersionUID = 5007187642916030394L;

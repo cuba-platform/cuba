@@ -8,6 +8,7 @@ package com.haulmont.cuba.report;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.DeletePolicy;
 
 import javax.persistence.*;
@@ -20,6 +21,7 @@ import javax.persistence.*;
  */
 @Entity(name = "report$ReportTemplate")
 @Table(name = "REPORT_TEMPLATE")
+@SystemLevel
 @SuppressWarnings("unused")
 public class ReportTemplate extends HardDeleteEntity {
 

@@ -12,16 +12,18 @@ package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Versioned;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.ClientType;
 
 import javax.persistence.*;
 
 /**
  * Record for user setting.
- * Used by {@link com.haulmont.cuba.security.app.UserSettingServiceBean}
+ * Used by <code>UserSettingServiceBean</code>.
  */
 @Entity(name = "sec$UserSetting")
 @Table(name = "SEC_USER_SETTING")
+@SystemLevel
 public class UserSetting extends BaseUuidEntity
 {
     private static final long serialVersionUID = -4324101071593066529L;

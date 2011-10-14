@@ -18,14 +18,16 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.Set;
 
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.openjpa.persistence.Persistent;
 
 /**
  * Record containing information about entity lifecycle event.
- * Created by {@link com.haulmont.cuba.security.app.EntityLog} MBean
+ * Created by <code>EntityLog</code> MBean.
  */
 @Entity(name = "sec$EntityLog")
 @Table(name = "SEC_ENTITY_LOG")
+@SystemLevel
 public class EntityLogItem extends BaseUuidEntity
 {
     private static final long serialVersionUID = 5859030306889056606L;

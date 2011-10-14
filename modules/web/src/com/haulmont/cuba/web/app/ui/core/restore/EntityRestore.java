@@ -14,9 +14,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.entity.annotation.EnableRestore;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
@@ -25,10 +24,10 @@ import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebFilter;
 import com.haulmont.cuba.web.gui.components.WebTable;
 import com.haulmont.cuba.web.gui.components.WebVBoxLayout;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class EntityRestore extends AbstractWindow {
 
@@ -150,23 +149,17 @@ public class EntityRestore extends AbstractWindow {
     }
 
     protected Map<String, Object> getEntitiesLookupFieldOptions() {
-        String restoreEntities = ConfigProvider.getConfig(WebConfig.class).getRestoreEntityId();
-        Map<String, Object> options = new java.util.TreeMap<String, Object>();
-        if (restoreEntities == null || StringUtils.isBlank(restoreEntities)) {
-            for (MetaClass metaClass : MetadataProvider.getSession().getClasses()) {
-                if (metaClass.getProperty("deleteTs") == null) continue;
-                if (metaClass.getDescendants() != null && metaClass.getDescendants().size() > 0) continue;
-                Class classJava = metaClass.getJavaClass();
-                options.put(MessageProvider.getMessage(classJava, classJava.getSimpleName()) + " [" + metaClass.getName() + "]", metaClass);
-            }
-        } else {
-            for (MetaClass metaClass : MetadataProvider.getSession().getClasses()) {
-                if (metaClass.getProperty("deleteTs") == null) continue;
-                if (metaClass.getDescendants() != null && metaClass.getDescendants().size() > 0) continue;
-                if (restoreEntities.contains(metaClass.getName())) {
-                    Class classJava = metaClass.getJavaClass();
-                    options.put(MessageProvider.getMessage(classJava, classJava.getSimpleName()) + " [" + metaClass.getName() + "]", metaClass);
-                }
+        List<String> restoreEntities = new ArrayList<String>();
+        String restoreEntitiesProp = ConfigProvider.getConfig(WebConfig.class).getRestoreEntityId();
+        if (StringUtils.isNotBlank(restoreEntitiesProp))
+            restoreEntities.addAll(Arrays.asList(StringUtils.split(restoreEntitiesProp, ',')));
+
+        Map<String, Object> options = new TreeMap<String, Object>();
+
+        for (MetaClass metaClass : MetadataHelper.getAllPersistentMetaClasses()) {
+            Boolean enableRestore = (Boolean) metaClass.getAnnotations().get(EnableRestore.class.getName());
+            if (BooleanUtils.isTrue(enableRestore) || restoreEntities.contains(metaClass.getName())) {
+                options.put(MessageUtils.getEntityCaption(metaClass) + " (" + metaClass.getName() + ")", metaClass);
             }
         }
         return options;

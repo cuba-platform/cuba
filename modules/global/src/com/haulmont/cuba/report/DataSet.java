@@ -11,11 +11,13 @@
 package com.haulmont.cuba.report;
 
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 
 @Entity(name = "report$DataSet")
 @Table(name = "REPORT_DATA_SET")
+@SystemLevel
 public class DataSet extends HardDeleteEntity {
     private static final long serialVersionUID = -3706206933129963303L;
 

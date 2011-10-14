@@ -11,10 +11,10 @@
     <layout>
         <vbox expand="table-panel" spacing="true">
             <hbox margin="true;true;true;false" spacing="true">
-                <lookupField id="entities"/>
+                <lookupField id="entities" width="250px"/>
                 <button id="refresh" icon="icons/refresh.png"/>
             </hbox>
-            <filter id="genericFilter" stylename="edit-area">
+            <filter id="genericFilter">
                 <properties include=".*" exclude=""/>
             </filter>
 

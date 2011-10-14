@@ -13,6 +13,7 @@ package com.haulmont.cuba.report;
 import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.DeletePolicy;
 import com.haulmont.chile.core.annotations.NamePattern;
 
@@ -22,6 +23,7 @@ import java.util.List;
 @Entity(name = "report$BandDefinition")
 @Table(name = "REPORT_BAND_DEFINITION")
 @NamePattern("%s|name")
+@SystemLevel
 public class BandDefinition extends HardDeleteEntity {
     private static final long serialVersionUID = 8658220979738705511L;
 

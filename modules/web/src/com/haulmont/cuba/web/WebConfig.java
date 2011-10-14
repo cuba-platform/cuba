@@ -194,7 +194,10 @@ public interface WebConfig extends Config
     String getTestModeParamName();
 
     /**
-     * @return Comma-separated list of entity ids which can be restored by means of the restore screen.
+     * List of entity ids which can be restored by means of the restore screen.
+     * <p>Obsolete. Recommended way to specify this information is entity annotations
+     * in <code>*-metadata.xml</code></p>
+     * @return comma-separated list of entity ids
      */
     @Property("cuba.restoreScreenEntityIds")
     String getRestoreEntityId();

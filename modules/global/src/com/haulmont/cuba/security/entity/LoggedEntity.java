@@ -15,13 +15,15 @@ import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import javax.persistence.*;
 import java.util.Set;
 
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.commons.lang.BooleanUtils;
 
 /**
- * Configuration element of {@link com.haulmont.cuba.security.app.EntityLog}
+ * Configuration element of <code>EntityLog</code> MBean.
  */
 @Entity(name = "sec$LoggedEntity")
 @Table(name = "SEC_LOGGED_ENTITY")
+@SystemLevel
 public class LoggedEntity extends BaseUuidEntity
 {
     private static final long serialVersionUID = 2189206984294705835L;

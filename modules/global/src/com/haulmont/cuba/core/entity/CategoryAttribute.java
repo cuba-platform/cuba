@@ -8,6 +8,7 @@ package com.haulmont.cuba.core.entity;
 
 import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import org.apache.openjpa.persistence.Persistent;
@@ -22,6 +23,7 @@ import java.util.UUID;
 @Entity(name="sys$CategoryAttribute")
 @Table(name = "SYS_CATEGORY_ATTR")
 @NamePattern("%s|name")
+@SystemLevel
 public class CategoryAttribute extends StandardEntity {
 
     private static final long serialVersionUID = -6959392628534815752L;

@@ -45,7 +45,7 @@ public class MetadataClientImpl extends AbstractMetadata {
     private CubaDeployerService deployerService;
 
     @Override
-    protected Session initMetadata() {
+    protected void initMetadata() {
         log.info("Initializing metadata");
 
         MetadataBuildInfo metadataBuildInfo = deployerService.getMetadataBuildInfo();
@@ -57,50 +57,46 @@ public class MetadataClientImpl extends AbstractMetadata {
         loadMetadata(metadataLoader, packages);
         metadataLoader.postProcess();
 
-        Session metadataSession = metadataLoader.getSession();
+        session = metadataLoader.getSession();
 
-        metadataLoader = new ChileMetadataLoader(metadataSession);
+        metadataLoader = new ChileMetadataLoader(session);
         packages = metadataBuildInfo.getTransientEntitiesPackages();
         loadMetadata(metadataLoader, packages);
         metadataLoader.postProcess();
 
-        return metadataSession;
+        for (Map.Entry<String, Map<String, Object>> classEntry : metadataBuildInfo.getEntityAnnotations().entrySet()) {
+            MetaClass metaClass = session.getClass(ReflectionHelper.getClass(classEntry.getKey()));
+            for (Map.Entry<String, Object> entry : classEntry.getValue().entrySet()) {
+                metaClass.getAnnotations().put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        replacedEntities = new HashMap<Class, Class>();
+        for (Map.Entry<String, String> entry : metadataBuildInfo.getReplacedEntities().entrySet()) {
+            Class from = ReflectionHelper.getClass(entry.getKey());
+            Class to = ReflectionHelper.getClass(entry.getValue());
+            replacedEntities.put(from, to);
+        }
     }
 
     @Override
-    protected ViewRepository initViews() {
+    protected void initViews() {
         log.info("Initializing views");
 
-        ViewRepository vr = new ViewRepository();
+        viewRepository = new ViewRepository();
 
         List<View> views = deployerService.getViews();
         for (View view : views) {
             MetaClass metaClass = getSession().getClass(view.getEntityClass());
-            vr.storeView(metaClass, view);
+            viewRepository.storeView(metaClass, view);
         }
 
         String configName = AppContext.getProperty("cuba.viewsConfig");
         if (!StringUtils.isBlank(configName)) {
             StrTokenizer tokenizer = new StrTokenizer(configName);
             for (String fileName : tokenizer.getTokenArray()) {
-                vr.deployViews(fileName);
+                viewRepository.deployViews(fileName);
             }
         }
-
-        return vr;
-    }
-
-    @Override
-    protected Map<Class, Class> initReplacedEntities() {
-        Map<Class, Class> map = new HashMap<Class, Class>();
-
-        Map<String, String> names = deployerService.getReplacedEntities();
-        for (Map.Entry<String, String> entry : names.entrySet()) {
-            Class from = ReflectionHelper.getClass(entry.getKey());
-            Class to = ReflectionHelper.getClass(entry.getValue());
-            map.put(from, to);
-        }
-
-        return map;
     }
 }

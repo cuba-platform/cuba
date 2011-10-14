@@ -11,6 +11,7 @@
 package com.haulmont.cuba.security.entity;
 
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
 
@@ -19,6 +20,7 @@ import javax.persistence.*;
  */
 @Entity(name = "sec$GroupHierarchy")
 @Table(name = "SEC_GROUP_HIERARCHY")
+@SystemLevel
 public class GroupHierarchy extends BaseUuidEntity
 {
     private static final long serialVersionUID = 8106113488822530560L;

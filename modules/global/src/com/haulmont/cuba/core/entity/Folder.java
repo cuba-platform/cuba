@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+
 import javax.persistence.*;
 import javax.persistence.Entity;
 
@@ -18,6 +20,7 @@ import javax.persistence.Entity;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("F")
+@SystemLevel
 public class Folder extends StandardEntity {
 
     private static final long serialVersionUID = -2038652558181851215L;
