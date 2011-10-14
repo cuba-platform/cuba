@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<xs:schema
+        targetNamespace="http://www.haulmont.com/schema/cuba/metadata.xsd"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        attributeFormDefault="unqualified"
+        elementFormDefault="qualified">
+
+    <xs:element name="metadata">
+        <xs:complexType mixed="true">
+            <xs:sequence>
+                <xs:element type="metadataModelType" name="metadata-model" minOccurs="0" maxOccurs="1"/>
+                <xs:element type="entityFactoryType" name="entityFactory" minOccurs="0" maxOccurs="1"/>
+                <xs:element type="annotationsType" name="annotations" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="metadataType">
+        <xs:sequence>
+            <xs:element type="metadataModelType" name="metadata-model"/>
+            <xs:element type="entityFactoryType" name="entityFactory"/>
+            <xs:element type="annotationsType" name="annotations"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="metadataModelType">
+        <xs:sequence>
+            <xs:element name="class" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="entityFactoryType">
+        <xs:sequence>
+            <xs:element type="replaceType" name="replace" maxOccurs="unbounded" minOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="replaceType">
+        <xs:attribute type="xs:string" name="class" use="required"/>
+        <xs:attribute type="xs:string" name="with" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="annotationsType">
+        <xs:sequence>
+            <xs:element type="entityType" name="entity" maxOccurs="unbounded" minOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="entityType">
+        <xs:sequence>
+            <xs:element type="annotationType" name="annotation" maxOccurs="unbounded" minOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="class" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="annotationType">
+        <xs:attribute type="xs:string" name="name" use="required"/>
+        <xs:attribute type="xs:string" name="value" use="required"/>
+    </xs:complexType>
+
+</xs:schema>

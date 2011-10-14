@@ -1,4 +1,6 @@
-<metadata>
+<?xml version="1.0" encoding="utf-8"?>
+<metadata xmlns="http://www.haulmont.com/schema/cuba/metadata.xsd">
+
     <metadata-model>
         <class>com.haulmont.cuba.gui.config.PermissionConfig$Target</class>
         <class>com.haulmont.cuba.security.entity.UserSessionEntity</class>
