@@ -114,14 +114,11 @@ public class AttributeEditor extends AbstractEditor {
                 if (prevValue != null) {
                     clearValue(attribute);
                 }
-                requiredField.setEditable(true);
                 if (RuntimePropsDatasource.PropertyType.ENTITY.equals(value)) {
                     attribute.setIsEntity(true);
                     generateDefaultEntityValueField(!dataTypeFieldInited);
 
                 } else if (RuntimePropsDatasource.PropertyType.ENUMERATION.equals(value)) {
-                    requiredField.setValue(true);
-                    requiredField.setEditable(false);
                     attribute.setIsEntity(false);
                     attribute.setDataType(value.toString());
                     generateDefaultEnumValueField(!dataTypeFieldInited);
