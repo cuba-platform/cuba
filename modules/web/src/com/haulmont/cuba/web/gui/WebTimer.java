@@ -143,7 +143,7 @@ public class WebTimer extends Timer implements com.haulmont.cuba.gui.components.
         synchronized (startingListeners) {
             for (final TimerListener startingListener : startingListeners)
                 timerListeners.add(startingListener);
-            stoppingListeners.clear();
+            startingListeners.clear();
         }
     }
 
