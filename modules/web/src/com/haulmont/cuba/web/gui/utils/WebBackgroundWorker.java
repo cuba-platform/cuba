@@ -51,14 +51,11 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         public void startListen(Timer.TimerListener timerListener) {
             this.timerListener = timerListener;
-            timer.scheduleStartListen(timerListener);
+            timer.addTimerListener(timerListener);
         }
 
-        public void stopListen(boolean removeListener) {
-            if (!removeListener)
-                timer.scheduleStopListen(timerListener);
-            else
-                timer.removeTimerListener(timerListener);
+        public void stopListen() {
+            timer.removeTimerListener(timerListener);
         }
     }
 
@@ -110,7 +107,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 }
 
                 if (!taskHandler.isAlive()) {
-                    webTimerListener.stopListen(false);
+                    webTimerListener.stopListen();
                 }
             }
 
@@ -215,7 +212,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         private void stopTimer(boolean mayInterruptIfRunning) {
             if ((webTimerListener != null) && mayInterruptIfRunning) {
-                webTimerListener.stopListen(true);
+                webTimerListener.stopListen();
             }
         }
 

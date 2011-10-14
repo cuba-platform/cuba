@@ -27,10 +27,6 @@ public class WebTimer extends Timer implements com.haulmont.cuba.gui.components.
 
     private final List<TimerListener> timerListeners = new LinkedList<TimerListener>();
 
-    private final List<TimerListener> stoppingListeners = new LinkedList<TimerListener>();
-
-    private final List<TimerListener> startingListeners = new LinkedList<TimerListener>();
-
     private static final long serialVersionUID = -6176423005954649715L;
     protected Listener listener;
 
@@ -94,61 +90,42 @@ public class WebTimer extends Timer implements com.haulmont.cuba.gui.components.
         xmlDescriptor = element;
     }
 
-    @Override
-    public synchronized void addTimerListener(TimerListener listener) {
-        if (!timerListeners.contains(listener)) timerListeners.add(listener);
-    }
-
     public synchronized List<TimerListener> getTimerListeners() {
         return Collections.unmodifiableList(timerListeners);
     }
 
     @Override
-    public synchronized void removeTimerListener(TimerListener listener) {
-        timerListeners.remove(listener);
-    }
-
-    /**
-     * Call in onTimer in listeners for stop listen this Timer
-     * @param listener Listener
-     */
-    public void scheduleStopListen(TimerListener listener) {
-        synchronized (stoppingListeners) {
-            stoppingListeners.add(listener);
+    public synchronized void addTimerListener(TimerListener listener) {
+        synchronized (timerListeners) {
+            if (!timerListeners.contains(listener)) timerListeners.add(listener);
         }
     }
 
-    /**
-     * Call in onTimer in listeners for start listen this Timer
-     * @param listener Listener
-     */
-    public void scheduleStartListen(TimerListener listener) {
-        synchronized (startingListeners) {
-            startingListeners.add(listener);
+    @Override
+    public synchronized void removeTimerListener(TimerListener listener) {
+        synchronized (timerListeners) {
+            timerListeners.remove(listener);
         }
     }
 
     private synchronized void fireOnTimer() {
+        List<TimerListener> executionList;
+        synchronized (timerListeners) {
+            executionList = new LinkedList<TimerListener>(timerListeners);
+        }
         // Process
-        for (final TimerListener listener : timerListeners) {
+        for (final TimerListener listener : executionList) {
             listener.onTimer(this);
-        }
-        // Remove stopped
-        synchronized (stoppingListeners) {
-            for (final TimerListener stopedListener : stoppingListeners)
-                timerListeners.remove(stopedListener);
-            stoppingListeners.clear();
-        }
-        // Run new
-        synchronized (startingListeners) {
-            for (final TimerListener startingListener : startingListeners)
-                timerListeners.add(startingListener);
-            startingListeners.clear();
         }
     }
 
     private synchronized void fireOnStopTimer() {
-        for (final TimerListener listener : timerListeners) {
+        List<TimerListener> executionList;
+        synchronized (timerListeners) {
+            executionList = new LinkedList<TimerListener>(timerListeners);
+        }
+        // Process
+        for (final TimerListener listener : executionList) {
             listener.onStopTimer(this);
         }
     }
