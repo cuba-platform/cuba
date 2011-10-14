@@ -81,6 +81,8 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
     }
 
     public void commit() {
+        clearCommitLists();
+        modified = false;
     }
 
     public State getState() {
