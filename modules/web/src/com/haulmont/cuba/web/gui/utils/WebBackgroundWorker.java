@@ -51,12 +51,12 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         public void startListen(Timer.TimerListener timerListener) {
             this.timerListener = timerListener;
-            timer.addTimerListener(timerListener);
+            timer.scheduleStartListen(timerListener);
         }
 
         public void stopListen(boolean removeListener) {
             if (!removeListener)
-                timer.sheduleStopListen(timerListener);
+                timer.scheduleStopListen(timerListener);
             else
                 timer.removeTimerListener(timerListener);
         }

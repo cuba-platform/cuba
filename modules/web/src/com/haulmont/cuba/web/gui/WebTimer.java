@@ -29,6 +29,8 @@ public class WebTimer extends Timer implements com.haulmont.cuba.gui.components.
 
     private final List<TimerListener> stoppingListeners = new LinkedList<TimerListener>();
 
+    private final List<TimerListener> startingListeners = new LinkedList<TimerListener>();
+
     private static final long serialVersionUID = -6176423005954649715L;
     protected Listener listener;
 
@@ -110,9 +112,19 @@ public class WebTimer extends Timer implements com.haulmont.cuba.gui.components.
      * Call in onTimer in listeners for stop listen this Timer
      * @param listener Listener
      */
-    public void sheduleStopListen(TimerListener listener) {
+    public void scheduleStopListen(TimerListener listener) {
         synchronized (stoppingListeners) {
             stoppingListeners.add(listener);
+        }
+    }
+
+    /**
+     * Call in onTimer in listeners for start listen this Timer
+     * @param listener Listener
+     */
+    public void scheduleStartListen(TimerListener listener) {
+        synchronized (startingListeners) {
+            startingListeners.add(listener);
         }
     }
 
@@ -125,6 +137,12 @@ public class WebTimer extends Timer implements com.haulmont.cuba.gui.components.
         synchronized (stoppingListeners) {
             for (final TimerListener stopedListener : stoppingListeners)
                 timerListeners.remove(stopedListener);
+            stoppingListeners.clear();
+        }
+        // Run new
+        synchronized (startingListeners) {
+            for (final TimerListener startingListener : startingListeners)
+                timerListeners.add(startingListener);
             stoppingListeners.clear();
         }
     }
