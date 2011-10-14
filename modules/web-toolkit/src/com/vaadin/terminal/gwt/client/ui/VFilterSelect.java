@@ -1010,8 +1010,9 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                     // NOP
                     break;
                 case KeyCodes.KEY_ESCAPE:
-                    event.stopPropagation();
-                    reset();
+                    if (reset()) {
+                        event.stopPropagation();
+                    }
                 break;
             default:
                 filterOptions(currentPage);
@@ -1020,17 +1021,25 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         }
     }
 
-    private void reset() {
+    private boolean reset() {
+        boolean changed = true;
         if (currentSuggestion != null) {
             String text = currentSuggestion.getReplacementString();
+            if (tb.getText().equals(text)) {
+                changed = false;
+            }
             setPromptingOff(text);
             selectedOptionKey = currentSuggestion.key;
         } else {
+            if ("".equals(tb.getText())) {
+                changed = false;
+            }
             setPromptingOn();
             selectedOptionKey = null;
         }
         lastFilter = "";
         suggestionPopup.hide();
+        return changed;
     }
 
     /**

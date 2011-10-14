@@ -92,7 +92,7 @@ public class DefaultApp extends App implements ConnectionListener {
                 final AppWindow appWindow = createAppWindow();
                 appWindow.setName(name);
                 addWindow(appWindow);
-
+                appWindow.focus();
                 connection.addListener(appWindow);
 
                 return appWindow;

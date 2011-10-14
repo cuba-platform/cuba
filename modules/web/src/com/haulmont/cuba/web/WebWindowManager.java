@@ -841,6 +841,7 @@ public class WebWindowManager extends WindowManager {
             appWindow.setTabSheet(null);
             appWindow.initStartupLayout();
             fireShowStartupLayoutListeners();
+            appWindow.focus();
         }
     }
 
