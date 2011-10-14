@@ -109,8 +109,6 @@ public class ApplicationConnection {
     private Timer blockUITimer;
     private Element loadElement;
 
-    private boolean uiBlocked = false;
-
     private final VView view;
 
     protected boolean applicationRunning = false;
@@ -800,8 +798,10 @@ public class ApplicationConnection {
                 blockUITimer = new Timer() {
                     @Override
                     public void run() {
-                        uiBlocked = true;
-                        blockUI(configuration.getBlockUiMessage());
+                        if (blockUITimer != null) {
+                            blockUI(configuration.getBlockUiMessage());
+                            VConsole.log("Block UI");
+                        }
                     }
                 };
                 // Block UI after 3 sec delay
@@ -829,11 +829,9 @@ public class ApplicationConnection {
             loadTimer = null;
         }
 
-        if (uiBlocked){
-            if (applicationRunning) {
-                unBlockUI();
-                uiBlocked = false;
-            }
+        if (applicationRunning) {
+            unBlockUI();
+            VConsole.log("Unblock UI");
         }
 
         if (loadElement != null) {
