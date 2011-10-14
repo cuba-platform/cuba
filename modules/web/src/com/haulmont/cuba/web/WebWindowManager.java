@@ -580,10 +580,10 @@ public class WebWindowManager extends WindowManager {
                         "escapeAction",
                         com.vaadin.event.ShortcutAction.KeyCode.ESCAPE,
                         null);
-        Map<com.vaadin.event.Action, HasAction> actions = new HashMap<com.vaadin.event.Action, HasAction>();
-        actions.put(exitAction, new HasAction() {
+        Map<com.vaadin.event.Action, Runnable> actions = new HashMap<com.vaadin.event.Action, Runnable>();
+        actions.put(exitAction, new Runnable() {
             @Override
-            public void doAction() {
+            public void run() {
                 window.close("close", true);
             }
         });

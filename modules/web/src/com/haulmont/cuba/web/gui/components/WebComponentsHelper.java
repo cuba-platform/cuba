@@ -320,7 +320,7 @@ public class WebComponentsHelper {
      * @param actions map of actions
      */
     public static void setActions(final Action.Container container,
-                                  final Map<Action, HasAction> actions) {
+                                  final Map<Action, Runnable> actions) {
         container.addActionHandler(new Action.Handler() {
 
             @Override
@@ -331,9 +331,9 @@ public class WebComponentsHelper {
 
             @Override
             public void handleAction(Action action, Object sender, Object target) {
-                HasAction hasAction = actions.get(action);
-                if (hasAction != null) {
-                    hasAction.doAction();
+                Runnable runnable = actions.get(action);
+                if (runnable != null) {
+                    runnable.run();
                 }
             }
         });

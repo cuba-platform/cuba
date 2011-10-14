@@ -11,7 +11,7 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.gui.components.HasAction;
+import com.haulmont.cuba.gui.components.filter.HasAction;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.App;

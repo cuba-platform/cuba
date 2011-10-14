@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.gui.components;
+package com.haulmont.cuba.gui.components.filter;
 
 /**
  * <p>$Id$</p>

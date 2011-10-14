@@ -17,7 +17,7 @@ import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.HasAction;
+import com.haulmont.cuba.gui.components.filter.HasAction;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.addcondition.SelectionHandler;

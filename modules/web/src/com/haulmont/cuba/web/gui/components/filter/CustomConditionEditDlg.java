@@ -11,7 +11,6 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.components.HasAction;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionEditDlg;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
@@ -38,16 +37,16 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
         ShortcutAction commitAction = new ShortcutAction("commit", ShortcutAction.KeyCode.ENTER,
                 new int[]{ShortcutAction.ModifierKey.CTRL});
 
-        Map<Action, HasAction> actions = new HashMap<Action, HasAction>();
-        actions.put(closeAction, new HasAction() {
+        Map<Action, Runnable> actions = new HashMap<Action, Runnable>();
+        actions.put(closeAction, new Runnable() {
             @Override
-            public void doAction() {
+            public void run() {
                 closeDlg();
             }
         });
-        actions.put(commitAction, new HasAction() {
+        actions.put(commitAction, new Runnable() {
             @Override
-            public void doAction() {
+            public void run() {
                 if (commit())
                     closeDlg();
             }

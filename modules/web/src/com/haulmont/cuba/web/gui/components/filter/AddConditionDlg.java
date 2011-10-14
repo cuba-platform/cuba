@@ -11,7 +11,6 @@ import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.HasAction;
 import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.addcondition.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -137,16 +136,16 @@ public class AddConditionDlg extends Window {
         ShortcutAction commitAction = new ShortcutAction("Commit", ShortcutAction.KeyCode.ENTER,
                 new int[]{ShortcutAction.ModifierKey.CTRL});
 
-        Map<Action, HasAction> actionsMap = new HashMap<Action, HasAction>();
-        actionsMap.put(closeAction, new HasAction() {
+        Map<Action, Runnable> actionsMap = new HashMap<Action, Runnable>();
+        actionsMap.put(closeAction, new Runnable() {
             @Override
-            public void doAction() {
+            public void run() {
                 close();
             }
         });
-        actionsMap.put(commitAction, new HasAction() {
+        actionsMap.put(commitAction, new Runnable() {
             @Override
-            public void doAction() {
+            public void run() {
                 commit(selectionHandler);
             }
         });
