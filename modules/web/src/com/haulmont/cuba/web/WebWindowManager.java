@@ -575,26 +575,20 @@ public class WebWindowManager extends WindowManager {
             }
         });
 
-        win.addActionHandler(new com.vaadin.event.Action.Handler() {
-
-            private com.vaadin.event.ShortcutAction exitAction =
-                    new com.vaadin.event.ShortcutAction(
-                            "escapeAction",
-                            com.vaadin.event.ShortcutAction.KeyCode.ESCAPE,
-                            null);
-
+        com.vaadin.event.ShortcutAction exitAction =
+                new com.vaadin.event.ShortcutAction(
+                        "escapeAction",
+                        com.vaadin.event.ShortcutAction.KeyCode.ESCAPE,
+                        null);
+        Map<com.vaadin.event.Action, HasAction> actions = new HashMap<com.vaadin.event.Action, HasAction>();
+        actions.put(exitAction, new HasAction() {
             @Override
-            public com.vaadin.event.Action[] getActions(Object o, Object o1) {
-                return new com.vaadin.event.Action[]{exitAction};
-            }
-
-            @Override
-            public void handleAction(com.vaadin.event.Action action, Object o, Object o1) {
-                if (exitAction.equals(action)) {
-                    window.close("close", true);
-                }
+            public void doAction() {
+                window.close("close", true);
             }
         });
+
+        WebComponentsHelper.setActions(win, actions);
 
         if (forciblyDialog) {
             outerLayout.setHeight(100, Sizeable.UNITS_PERCENTAGE);

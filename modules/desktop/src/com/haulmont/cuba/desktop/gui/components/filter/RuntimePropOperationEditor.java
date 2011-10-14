@@ -10,8 +10,8 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.HasAction;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
-import com.haulmont.cuba.gui.components.filter.HasAction;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;

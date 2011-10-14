@@ -22,6 +22,7 @@ public class ConditionCreator extends AbstractConditionDescriptor {
     public ConditionCreator(String filterComponentName, CollectionDatasource datasource) {
         super("creator", filterComponentName, datasource);
         locCaption = MessageProvider.getMessage(MESSAGES_PACK, "conditionCreator");
+        showImmediately = true;
     }
 
     @Override

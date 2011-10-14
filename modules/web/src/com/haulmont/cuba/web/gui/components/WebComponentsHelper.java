@@ -11,10 +11,12 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.haulmont.cuba.web.toolkit.ui.Table;
+import com.vaadin.event.Action;
 import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.FileResource;
 import com.vaadin.terminal.Resource;
@@ -309,6 +311,32 @@ public class WebComponentsHelper {
                 keyCombination.getKey().getCode(),
                 ShortcutAction.Modifier.codes(keyCombination.getModifiers())
         );
+    }
+
+    /**
+     * Add actions to vaadin action container.
+     *
+     * @param container any {@link Action.Container}
+     * @param actions map of actions
+     */
+    public static void setActions(final Action.Container container,
+                                  final Map<Action, HasAction> actions) {
+        container.addActionHandler(new Action.Handler() {
+
+            @Override
+            public Action[] getActions(Object target, Object sender) {
+                Set<Action> shortcuts = actions.keySet();
+                return shortcuts.toArray(new Action[shortcuts.size()]);
+            }
+
+            @Override
+            public void handleAction(Action action, Object sender, Object target) {
+                HasAction hasAction = actions.get(action);
+                if (hasAction != null) {
+                    hasAction.doAction();
+                }
+            }
+        });
     }
 
     public static int convertFieldGroupCaptionAlignment(FieldGroup.FieldCaptionAlignment captionAlignment) {

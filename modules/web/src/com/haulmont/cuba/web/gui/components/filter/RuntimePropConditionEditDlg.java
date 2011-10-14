@@ -7,12 +7,18 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.components.HasAction;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.AbstractRuntimePropConditionEditDlg;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.vaadin.event.Action;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>$Id$</p>
@@ -31,10 +37,35 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
         impl.closeDlg();
     }
 
+    protected void initShortcuts() {
+        ShortcutAction closeAction = new ShortcutAction("close", ShortcutAction.KeyCode.ESCAPE, new int[0]);
+        ShortcutAction commitAction = new ShortcutAction("commit", ShortcutAction.KeyCode.ENTER,
+                new int[]{ShortcutAction.ModifierKey.CTRL});
+
+        Map<Action, HasAction> actions = new HashMap<Action, HasAction>();
+        actions.put(closeAction, new HasAction() {
+            @Override
+            public void doAction() {
+                closeDlg();
+            }
+        });
+        actions.put(commitAction, new HasAction() {
+            @Override
+            public void doAction() {
+                if (commit())
+                    closeDlg();
+            }
+        });
+        WebComponentsHelper.setActions(impl, actions);
+    }
+
+
     @Override
     public Window getImpl() {
-        if (impl == null)
+        if (impl == null) {
             impl = new Editor();
+            initShortcuts();
+        }
         return impl;
     }
 

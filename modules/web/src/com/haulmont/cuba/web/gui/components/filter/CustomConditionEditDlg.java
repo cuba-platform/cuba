@@ -11,13 +11,19 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.components.HasAction;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionEditDlg;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.vaadin.event.Action;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.*;
 import org.apache.commons.lang.StringUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Window> {
 
@@ -27,11 +33,34 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
         super(condition);
     }
 
+    protected void initShortcuts() {
+        ShortcutAction closeAction = new ShortcutAction("close", ShortcutAction.KeyCode.ESCAPE, new int[0]);
+        ShortcutAction commitAction = new ShortcutAction("commit", ShortcutAction.KeyCode.ENTER,
+                new int[]{ShortcutAction.ModifierKey.CTRL});
+
+        Map<Action, HasAction> actions = new HashMap<Action, HasAction>();
+        actions.put(closeAction, new HasAction() {
+            @Override
+            public void doAction() {
+                closeDlg();
+            }
+        });
+        actions.put(commitAction, new HasAction() {
+            @Override
+            public void doAction() {
+                if (commit())
+                    closeDlg();
+            }
+        });
+        WebComponentsHelper.setActions(impl, actions);
+    }
 
     @Override
     public Window getImpl() {
-        if (impl == null)
+        if (impl == null) {
             impl = new Editor();
+            initShortcuts();
+        }
         return impl;
     }
 
@@ -84,6 +113,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<Windo
 
             } else {
                 grid.setRows(6);
+                joinText.requestFocus();
             }
 
             grid.addComponent(WebComponentsHelper.unwrap(joinLab), 0, i);

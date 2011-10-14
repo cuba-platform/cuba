@@ -8,10 +8,9 @@ package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.HasAction;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
-import com.haulmont.cuba.gui.components.filter.HasAction;
 import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;

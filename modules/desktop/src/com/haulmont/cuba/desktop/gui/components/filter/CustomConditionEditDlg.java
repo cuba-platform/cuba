@@ -35,9 +35,32 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
 
     @Override
     public JDialog getImpl() {
-        if (impl == null)
+        if (impl == null) {
             impl = new EditDlg();
+            initShortcuts();
+        }
         return impl;
+    }
+
+    protected void initShortcuts() {
+        KeyStroke esc = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+        Action escAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                closeDlg();
+            }
+        };
+        DesktopComponentsHelper.addShortcutAction("escape", impl.getRootPane(), esc, escAction);
+        KeyStroke commitKey = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK, false);
+        Action commitAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (commit()) {
+                    closeDlg();
+                }
+            }
+        };
+        DesktopComponentsHelper.addShortcutAction("commit", impl.getRootPane(), commitKey, commitAction);
     }
 
     @Override
@@ -80,6 +103,8 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
                 nameTextField.setSize(nameSize);
                 nameTextField.setPreferredSize(nameSize);
                 mainPanel.add(nameTextField);
+            } else {
+                joinText.requestFocus();
             }
 
             mainPanel.add(DesktopComponentsHelper.unwrap(joinLab), new CC().alignX("right"));

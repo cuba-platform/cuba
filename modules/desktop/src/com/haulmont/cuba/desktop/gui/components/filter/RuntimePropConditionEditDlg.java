@@ -39,9 +39,32 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
 
     @Override
     public JDialog getImpl() {
-        if (impl == null)
+        if (impl == null) {
             impl = new Editor();
+            initShortcuts();
+        }
         return impl;
+    }
+
+    protected void initShortcuts() {
+        KeyStroke esc = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
+        Action escAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                closeDlg();
+            }
+        };
+        DesktopComponentsHelper.addShortcutAction("escape", impl.getRootPane(), esc, escAction);
+        KeyStroke commitKey = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK, false);
+        Action commitAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (commit()) {
+                    closeDlg();
+                }
+            }
+        };
+        DesktopComponentsHelper.addShortcutAction("commit", impl.getRootPane(), commitKey, commitAction);
     }
 
     @Override

@@ -11,9 +11,11 @@ import com.haulmont.cuba.core.entity.CategorizedEntity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.HasAction;
 import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.addcondition.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -131,24 +133,25 @@ public class AddConditionDlg extends Window {
     }
 
     private void initShortcuts() {
-        final ShortcutAction closeAction = new ShortcutAction("Close", ShortcutAction.KeyCode.ESCAPE, null);
-        final ShortcutAction commitAction = new ShortcutAction("Commit", ShortcutAction.KeyCode.ENTER,
-                new int[] { ShortcutAction.ModifierKey.CTRL });
+        ShortcutAction closeAction = new ShortcutAction("Close", ShortcutAction.KeyCode.ESCAPE, null);
+        ShortcutAction commitAction = new ShortcutAction("Commit", ShortcutAction.KeyCode.ENTER,
+                new int[]{ShortcutAction.ModifierKey.CTRL});
 
-        addActionHandler(new Action.Handler() {
+        Map<Action, HasAction> actionsMap = new HashMap<Action, HasAction>();
+        actionsMap.put(closeAction, new HasAction() {
             @Override
-            public Action[] getActions(Object target, Object sender) {
-                return new Action[] { closeAction, commitAction };
-            }
-
-            @Override
-            public void handleAction(Action action, Object sender, Object target) {
-                if (action == closeAction)
-                    close();
-                else if (action == commitAction)
-                    commit(selectionHandler);
+            public void doAction() {
+                close();
             }
         });
+        actionsMap.put(commitAction, new HasAction() {
+            @Override
+            public void doAction() {
+                commit(selectionHandler);
+            }
+        });
+
+        WebComponentsHelper.setActions(this, actionsMap);
     }
 
     private void commit(SelectionHandler selectionHandler) {

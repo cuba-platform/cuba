@@ -6,15 +6,14 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.ShortcutAction;
-import com.haulmont.cuba.gui.components.ValuePathHelper;
 import org.apache.commons.lang.ArrayUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.swing.Action;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.util.Collection;
@@ -150,5 +149,20 @@ public class DesktopComponentsHelper {
                 Collections.singleton(AWTKeyStroke.getAWTKeyStroke("TAB")));
         table.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
                 Collections.singleton(AWTKeyStroke.getAWTKeyStroke("shift TAB")));
+    }
+
+    /**
+     * Add shortcut action to any JComponent.
+     *
+     * @param name name of action that used as action key in {@link InputMap} and {@link ActionMap}.
+     * @param component
+     * @param key
+     * @param action
+     */
+    public static void addShortcutAction(String name, JComponent component, KeyStroke key, Action action) {
+        ActionMap actionMap = component.getActionMap();
+        InputMap inputMap = component.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        inputMap.put(key, name);
+        actionMap.put(name, action);
     }
 }
