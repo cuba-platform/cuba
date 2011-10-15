@@ -2746,7 +2746,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                 sendSelectedRows();
             }
 
-            private void rowClick() {
+            protected void rowClick() {
                 boolean currentlyJustThisRowSelected = selectedRowKeys
                         .size() == 1
                         && selectedRowKeys

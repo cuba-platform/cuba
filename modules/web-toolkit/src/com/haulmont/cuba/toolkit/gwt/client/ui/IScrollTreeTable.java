@@ -428,6 +428,9 @@ public class IScrollTreeTable
                         handleClickEvent(event);
                         break;
                     case Event.ONCONTEXTMENU:
+                        if (selectMode > com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE) {
+                            rowClick();
+                        }
                         handleRowClick(event);
                         showContextMenu(event);
                         break;
