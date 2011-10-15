@@ -689,8 +689,8 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                     collapsed.addItem(item);
                 }
 
-                moreItem.setSubMenu(collapsed);
-                addItem(moreItem);
+//                moreItem.setSubMenu(collapsed);
+//                addItem(moreItem);
             }
         }
     }

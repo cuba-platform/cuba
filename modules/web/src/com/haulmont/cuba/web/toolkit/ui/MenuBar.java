@@ -135,7 +135,7 @@ public class MenuBar extends com.vaadin.ui.MenuBar {
         target.addAttribute("id", item.getId());
 
         if (item.getStyleName() != null) {
-            target.addAttribute("stylename", item.getStyleName());
+            target.addAttribute("style", item.getStyleName());
         }
 
         if (item.isSeparator()) {

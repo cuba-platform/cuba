@@ -109,9 +109,7 @@ public class WindowDelegate {
                             boolean modified = ((Component.HasSettings) component).saveSettings(e);
                             if (component instanceof Component.HasPresentations && ((Component.HasPresentations) component).isUsePresentations()) {
                                 Object def = ((Component.HasPresentations) component).getDefaultPresentationId();
-                                if (def != null) {
-                                    e.addAttribute("presentation", def.toString());
-                                }
+                                e.addAttribute("presentation", def != null ? def.toString() : "");
                                 ((Component.HasPresentations) component).getPresentations().commit();
                             }
                             WindowDelegate.this.settings.setModified(modified);

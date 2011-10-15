@@ -42,7 +42,7 @@ public class ApplicationConfiguration implements EntryPoint {
         VERSION = "6.6.1-haulmont-20110607";
     }
 
-    private static WidgetSet widgetSet = GWT.create(WidgetSet.class);
+    private static WidgetSet widgetSet = GWT.create(com.haulmont.cuba.toolkit.gwt.client.WidgetSet.class);
 
     private String id;
     private String themeUri;

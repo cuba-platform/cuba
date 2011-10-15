@@ -121,7 +121,9 @@ public class PresentationsImpl implements Presentations, Serializable {
 
     public void setDefault(Presentation p) {
         checkLoad();
-        if (presentations.containsKey(p.getId())) {
+        if (p == null) {
+            def = null;
+        } else if (presentations.containsKey(p.getId())) {
             if (def != null) {
                 def.setDefault(false);
             }
@@ -164,8 +166,9 @@ public class PresentationsImpl implements Presentations, Serializable {
             needToUpdate.add(p);
             if (BooleanUtils.isTrue(p.getDefault())) {
                 setDefault(p);
+            } else if (def != null && def.getId().equals(p.getId())) {
+                setDefault(null);
             }
-            firePresentationsSetChanged();
         } else {
             throw new IllegalStateException(String.format("Invalid presentation: %s", p.getId()));
         }
@@ -193,6 +196,8 @@ public class PresentationsImpl implements Presentations, Serializable {
             commited(commitResult);
 
             clearCommitList();
+
+            firePresentationsSetChanged();
         }
     }
 

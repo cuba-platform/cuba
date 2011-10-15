@@ -7,8 +7,6 @@
     <!-- Uncomment if 'ru' locale support will be needed -->
     <!--<extend-property name="locale" values="ru"/>-->
 
-    <entry-point class="com.haulmont.cuba.toolkit.gwt.client.WidgetSet" />
-
     <!--
         Uncomment the 'generate-with' below if you want to enable lazy loading strategy of client code (code splitting).
         For further info please visit http://dev.vaadin.com/wiki/WidgetSet
