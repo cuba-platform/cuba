@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -304,7 +305,9 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
         else if (value instanceof Instance) {
             return ((Instance) value).getInstanceName();
         } else if (value instanceof Date) {
-            return Datatypes.getInstance().get(Date.class).format((Date) value);
+            SimpleDateFormat df = new SimpleDateFormat(
+                    Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getDateTimeFormat());
+            return df.format(value);
         } else if (value instanceof Set) {
             StringBuffer sb = new StringBuffer();
             sb.append("[");
