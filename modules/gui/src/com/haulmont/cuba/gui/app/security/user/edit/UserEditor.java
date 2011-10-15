@@ -441,7 +441,7 @@ public class UserEditor extends AbstractEditor {
         }
 
         public void actionPerform(Component component) {
-            getDialogParams().setWidth(450);
+            getDialogParams().setWidth(500);
 
             if (substitutionsDs.getItem() != null)
                 openEditor("sec$UserSubstitution.edit", substitutionsDs.getItem(),
