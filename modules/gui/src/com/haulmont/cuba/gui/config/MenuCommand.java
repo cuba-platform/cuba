@@ -87,12 +87,12 @@ public class MenuCommand {
                 else
                     throw new UnsupportedOperationException();
 
-                final MetaClass metaClass = MetadataProvider.getSession().getClass(metaClassName);
-                if (metaClass == null)
+                final Class javaClass = MetadataProvider.getReplacedClass(metaClassName);
+                if (javaClass == null)
                     throw new IllegalStateException(String.format("Can't find metaClass %s", metaClassName));
 
                 try {
-                    entityItem = metaClass.createInstance();
+                    entityItem = (Entity) javaClass.newInstance();
                 } catch (Throwable e) {
                     throw new RuntimeException(e);
                 }
