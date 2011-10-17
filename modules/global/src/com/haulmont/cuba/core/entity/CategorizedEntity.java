@@ -5,6 +5,10 @@
  */
 package com.haulmont.cuba.core.entity;
 
+import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
+import com.haulmont.cuba.core.global.DeletePolicy;
+
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
@@ -21,6 +25,7 @@ public abstract class CategorizedEntity extends BaseUuidEntity {
 
     @ManyToOne
     @JoinColumn(name = "CATEGORY_ID")
+    @OnDeleteInverse(DeletePolicy.DENY)
     protected Category category;
 
     public Category getCategory() {
