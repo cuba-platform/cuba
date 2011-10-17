@@ -231,6 +231,7 @@ public class AttributeEditor extends AbstractEditor {
         textField.setId("enumeration");
         textField.setCaption(getMessage("ENUMERATION"));
         textField.setWidth(FIELD_WIDTH);
+        textField.setRequired(true);  
         textField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
