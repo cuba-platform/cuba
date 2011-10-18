@@ -123,6 +123,8 @@ public class CategoryAttributeValue extends StandardEntity {
             return stringValue;
         else if (intValue != null)
             return intValue;
+        else if (doubleValue != null)
+            return doubleValue;
         else if (dateValue != null)
             return dateValue;
         else if (booleanValue != null)
