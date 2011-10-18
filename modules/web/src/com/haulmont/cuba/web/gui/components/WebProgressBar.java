@@ -29,6 +29,8 @@ public class WebProgressBar extends WebAbstractField<ProgressIndicator> implemen
         component.setImmediate(true);
         component.setInvalidCommitted(true);
         component.setIndeterminate(false);
+        // disable polling on client
+        component.setPollingInterval(Integer.MAX_VALUE);
     }
 
     @Override

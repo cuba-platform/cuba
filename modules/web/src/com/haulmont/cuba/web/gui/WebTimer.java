@@ -90,25 +90,25 @@ public class WebTimer extends Timer implements com.haulmont.cuba.gui.components.
         xmlDescriptor = element;
     }
 
-    public synchronized List<TimerListener> getTimerListeners() {
+    public List<TimerListener> getTimerListeners() {
         return Collections.unmodifiableList(timerListeners);
     }
 
     @Override
-    public synchronized void addTimerListener(TimerListener listener) {
+    public void addTimerListener(TimerListener listener) {
         synchronized (timerListeners) {
             if (!timerListeners.contains(listener)) timerListeners.add(listener);
         }
     }
 
     @Override
-    public synchronized void removeTimerListener(TimerListener listener) {
+    public void removeTimerListener(TimerListener listener) {
         synchronized (timerListeners) {
             timerListeners.remove(listener);
         }
     }
 
-    private synchronized void fireOnTimer() {
+    private void fireOnTimer() {
         List<TimerListener> executionList;
         synchronized (timerListeners) {
             executionList = new LinkedList<TimerListener>(timerListeners);
@@ -119,7 +119,7 @@ public class WebTimer extends Timer implements com.haulmont.cuba.gui.components.
         }
     }
 
-    private synchronized void fireOnStopTimer() {
+    private void fireOnStopTimer() {
         List<TimerListener> executionList;
         synchronized (timerListeners) {
             executionList = new LinkedList<TimerListener>(timerListeners);
