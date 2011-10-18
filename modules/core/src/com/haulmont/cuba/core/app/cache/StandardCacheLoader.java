@@ -11,10 +11,9 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.app.PersistenceConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.Scripting;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,6 +41,9 @@ public class StandardCacheLoader implements CacheLoader {
 
     @Inject
     private Scripting scripting;
+
+    @Inject
+    private Configuration configuration;
 
     private static Log log = LogFactory.getLog(ObjectsCache.class);
 
@@ -98,7 +100,7 @@ public class StandardCacheLoader implements CacheLoader {
             EntityManager em = persistence.getEntityManager();
             em.setView(view);
             Query query = em.createQuery(dbQuery);
-
+            query.setMaxResults(getMaxQueryResults());
             List<Object> resultList = query.getResultList();
             cacheSet = new CacheSet(resultList);
             tx.commit();
@@ -113,6 +115,9 @@ public class StandardCacheLoader implements CacheLoader {
 
     @Override
     public void updateData(CacheSet cacheSet, Map<String, Object> params) throws CacheException {
+        if (configuration.getConfig(GlobalConfig.class).getTestMode())
+            return;
+
         Collection<Object> items = cacheSet.getItems();
 
         List updateItems = (List) params.get("items");
@@ -144,5 +149,10 @@ public class StandardCacheLoader implements CacheLoader {
         } else {
             log.debug("Nothing to update");
         }
+    }
+
+    protected int getMaxQueryResults() {
+        return configuration.getConfig(GlobalConfig.class).getTestMode() ?
+                500 : configuration.getConfig(PersistenceConfig.class).getDefaultMaxFetchUI();
     }
 }
