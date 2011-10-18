@@ -781,7 +781,7 @@ create table SYS_CATEGORY_ATTR(
 	DEFAULT_STRING varchar,
 	DEFAULT_INT integer,
 	DEFAULT_DOUBLE real,
-	DEFAULT_DATE date,
+	DEFAULT_DATE timestamp,
 	DEFAULT_BOOLEAN boolean,
 	DEFAULT_ENTITY_VALUE uuid,
 	ENUMERATION varchar(500),
