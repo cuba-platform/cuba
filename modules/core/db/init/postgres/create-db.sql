@@ -807,7 +807,7 @@ create table SYS_ATTR_VALUE(
 	STRING_VALUE varchar,
 	INTEGER_VALUE integer,
 	DOUBLE_VALUE real,
-	DATE_VALUE date,
+	DATE_VALUE timestamp,
 	BOOLEAN_VALUE boolean,
 	ENTITY_VALUE uuid,
 	primary key (ID)

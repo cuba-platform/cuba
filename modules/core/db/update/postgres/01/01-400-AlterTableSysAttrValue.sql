@@ -1,0 +1,3 @@
+-- $Id$
+-- Description:
+ALTER TABLE SYS_ATTR_VALUE ALTER COLUMN DATE_VALUE TYPE timestamp;
