@@ -16,13 +16,14 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.report.exception.ReportFormatterException;
+import com.haulmont.cuba.report.exception.ReportingException;
 import com.haulmont.cuba.report.exception.UnsupportedFormatException;
 import com.haulmont.cuba.report.formatters.*;
 import com.haulmont.cuba.report.loaders.*;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -34,8 +35,11 @@ import java.util.*;
  */
 @ManagedBean(ReportingApi.NAME)
 public class ReportingBean implements ReportingApi {
+
     public static final String REPORT_FILE_NAME_KEY = "__REPORT_FILE_NAME";
     public static final String REPORT_EDIT_VIEW_NAME = "report.edit";
+
+    // todo remove thread locals
     private ThreadLocal<Map<String, Object>> params = new ThreadLocal<Map<String, Object>>();
     private ThreadLocal<Set<String>> bandDefinitionNames = new ThreadLocal<Set<String>>();
 
@@ -106,10 +110,10 @@ public class ReportingBean implements ReportingApi {
             setNameToOutputFile(rootBand, reportOutputDocument);
 
             return reportOutputDocument;
-        } catch (ReportFormatterException ex) {
+        } catch (ReportingException ex) {
             throw ex;
         } catch (Exception e) {
-            throw new ReportFormatterException(e);
+            throw new ReportingException(e);
         }
     }
 
@@ -122,7 +126,7 @@ public class ReportingBean implements ReportingApi {
 
     @Override
     public Report reloadReport(Report report) {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = PersistenceProvider.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             em.setView(MetadataProvider.getViewRepository().getView(report.getClass(), "report.export"));
@@ -184,7 +188,7 @@ public class ReportingBean implements ReportingApi {
             throw new IOException(e);
         }
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = PersistenceProvider.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             em.persist(file);
@@ -246,7 +250,7 @@ public class ReportingBean implements ReportingApi {
         return rootBand;
     }
 
-    private List<Map<String, Object>> getBandData(BandDefinition definition, Band parentBand) {
+    private List<Map<String, Object>> getBandData(BandDefinition definition, @Nullable Band parentBand) {
         List<DataSet> dataSets = definition.getDataSets();
         if (dataSets == null || dataSets.size() == 0)
             return Collections.singletonList(params.get());//add input params to band
@@ -276,17 +280,24 @@ public class ReportingBean implements ReportingApi {
         List<Map<String, Object>> result = null;
         DataSetType dataSetType = dataSet.getType();
 
+        DataLoader loader = null;
         if (DataSetType.SQL.equals(dataSetType)) {
-            result = new SqlDataDataLoader(paramsMap).loadData(dataSet, parentBand);
+            loader = new SqlDataDataLoader(paramsMap);
         } else if (DataSetType.GROOVY.equals(dataSetType)) {
-            result = new GroovyDataLoader(paramsMap).loadData(dataSet, parentBand);
+            loader = new GroovyDataLoader(paramsMap);
         } else if (DataSetType.JPQL.equals(dataSetType)) {
-            result = new JpqlDataDataLoader(paramsMap).loadData(dataSet, parentBand);
+            loader = new JpqlDataDataLoader(paramsMap);
         } else if (DataSetType.SINGLE.equals(dataSetType)) {
-            result = new SingleEntityDataLoader(paramsMap).loadData(dataSet, parentBand);
+            loader = new SingleEntityDataLoader(paramsMap);
         } else if (DataSetType.MULTI.equals(dataSetType)) {
-            result = new MultiEntityDataLoader(paramsMap).loadData(dataSet, parentBand);
+            loader = new MultiEntityDataLoader(paramsMap);
+        } else if (DataSetType.QUERY.equals(dataSetType)) {
+            loader = new QueryDataLoader(paramsMap);
         }
+
+        if (loader != null)
+            result = loader.loadData(dataSet, parentBand);
+
         return result;
     }
 
@@ -301,8 +312,7 @@ public class ReportingBean implements ReportingApi {
     private List<Band> createBands(BandDefinition definition, Band parentBand) {
         definition = reloadEntity(definition, REPORT_EDIT_VIEW_NAME);
         List<Map<String, Object>> outputData = getBandData(definition, parentBand);
-        List<Band> bandsList = createBandsList(definition, parentBand, outputData);
-        return bandsList;
+        return createBandsList(definition, parentBand, outputData);
     }
 
     private List<Band> createBandsList(BandDefinition definition, Band parentBand, List<Map<String, Object>> outputData) {
@@ -322,7 +332,7 @@ public class ReportingBean implements ReportingApi {
     }
 
     private <T extends Entity> T reloadEntity(T entity, String viewName) {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = PersistenceProvider.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             em.setView(MetadataProvider.getViewRepository().getView(entity.getClass(), viewName));

@@ -10,6 +10,7 @@
 package com.haulmont.cuba.gui.data;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 
@@ -94,6 +95,9 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
     /** Query string which is used to load data. Implementation-dependent (JPQL, Groovy, etc.). */
     String getQuery();
+
+    /** Create load context with jpql query and filter */
+    LoadContext getCompiledLoadContext() throws UnsupportedOperationException;
 
     /** Query filter associated with {@link #getQuery()} */
     QueryFilter getQueryFilter();

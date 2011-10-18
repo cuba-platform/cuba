@@ -13,7 +13,7 @@ package com.haulmont.cuba.report.formatters;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.Orientation;
 import com.haulmont.cuba.report.ReportOutputType;
-import com.haulmont.cuba.report.exception.ReportFormatterException;
+import com.haulmont.cuba.report.exception.ReportingException;
 import com.haulmont.cuba.report.formatters.oo.XlsToPdfConverter;
 import com.haulmont.cuba.report.formatters.xls.*;
 import org.apache.poi.hssf.model.HSSFFormulaParser;
@@ -99,7 +99,7 @@ public class XLSFormatter extends AbstractFormatter {
         try {
             initWorkbook();
         } catch (Exception e) {
-            throw new ReportFormatterException(e);
+            throw new ReportingException(e);
         }
 
         processDocument(rootBand);
@@ -108,7 +108,7 @@ public class XLSFormatter extends AbstractFormatter {
             try {
                 resultWorkbook.write(outputStream);
             } catch (Exception e) {
-                throw new ReportFormatterException(e);
+                throw new ReportingException(e);
             }
         } else if (ReportOutputType.PDF == outputType) {
             try {
@@ -117,7 +117,7 @@ public class XLSFormatter extends AbstractFormatter {
                 XlsToPdfConverter xlsToPdfConverter = new XlsToPdfConverter();
                 xlsToPdfConverter.convertXlsToPdf(byteArrayOutputStream.toByteArray(), outputStream);
             } catch (Exception e) {
-                throw new ReportFormatterException(e);
+                throw new ReportingException(e);
             }
         }
     }

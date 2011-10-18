@@ -17,7 +17,7 @@ import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.ReportOutputType;
 import com.haulmont.cuba.report.ReportValueFormat;
 import com.haulmont.cuba.report.exception.FailedToConnectToOpenOfficeException;
-import com.haulmont.cuba.report.exception.ReportFormatterException;
+import com.haulmont.cuba.report.exception.ReportingException;
 import com.haulmont.cuba.report.formatters.doctags.BitmapTagHandler;
 import com.haulmont.cuba.report.formatters.doctags.HtmlContentTagHandler;
 import com.haulmont.cuba.report.formatters.doctags.ImageTagHandler;
@@ -184,7 +184,7 @@ public class DocFormatter extends AbstractFormatter {
                 }
             }
         } catch (Exception e) {
-            throw new ReportFormatterException(e);
+            throw new ReportingException(e);
         }
         return false;
     }
@@ -289,7 +289,7 @@ public class DocFormatter extends AbstractFormatter {
     /**
      * Replaces all aliases ${bandname.paramname} in document text.
      *
-     * @throws ReportFormatterException If there is not appropriate band or alias is bad
+     * @throws com.haulmont.cuba.report.exception.ReportingException If there is not appropriate band or alias is bad
      */
     private void replaceAllAliasesInDocument() {
         XTextDocument xTextDocument = asXTextDocument(xComponent);
@@ -305,19 +305,19 @@ public class DocFormatter extends AbstractFormatter {
                 String[] parts = alias.split("\\.");
 
                 if (parts == null || parts.length < 2)
-                    throw new ReportFormatterException("Bad alias : " + textRange.getString());
+                    throw new ReportingException("Bad alias : " + textRange.getString());
 
                 String bandName = parts[0];
                 Band band = bandName.equals(ROOT_BAND_NAME) ? rootBand : rootBand.getChildByName(bandName);
 
                 if (band == null)
-                    throw new ReportFormatterException("No band for alias : " + alias);
+                    throw new ReportingException("No band for alias : " + alias);
 
                 String paramName = StringUtils.join(parts, '.', 1, parts.length);
                 insertValue(textRange.getText(), textRange, band, paramName);
             }
         } catch (Exception ex) {
-            throw new ReportFormatterException(ex);
+            throw new ReportingException(ex);
         }
     }
 
@@ -348,7 +348,7 @@ public class DocFormatter extends AbstractFormatter {
             } else
                 text.insertString(textRange, "", true);
         } catch (Exception ex) {
-            throw new ReportFormatterException("Insert data error");
+            throw new ReportingException("Insert data error");
         }
     }
 

@@ -400,6 +400,22 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         return true;
     }
 
+    @Override
+    public LoadContext getCompiledLoadContext() {
+        LoadContext context = new LoadContext(metaClass);
+        Map<String, Object> params;
+        if (savedParameters == null) {
+            params = Collections.emptyMap();
+        } else
+            params = savedParameters;
+        LoadContext.Query q = createLoadContextQuery(context, params);
+        if (sortInfos != null && sortOnDb) {
+            setSortDirection(q);
+        }
+        context.setView(view);
+        return context;
+    }
+
     /**
      * Load data from middleware into {@link #data} field.
      * <p>This method can be overridden in descendants to provide specific load functionality.</p>
@@ -422,14 +438,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
                 return;
 
             if (sortInfos != null && sortOnDb) {
-                boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
-                MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
-                if (MetadataHelper.isPersistent(propertyPath.getMetaProperty())) {
-                    QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
-                    transformer.replaceOrderBy(propertyPath.toString(), !asc);
-                    String jpqlQuery = transformer.getResult();
-                    q.setQueryString(jpqlQuery);
-                }
+                setSortDirection(q);
             }
 
             if (firstResult > 0)
@@ -456,6 +465,17 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
 
         sw.stop();
+    }
+
+    private void setSortDirection(LoadContext.Query q) {
+        boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
+        MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+        if (MetadataHelper.isPersistent(propertyPath.getMetaProperty())) {
+            QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
+            transformer.replaceOrderBy(propertyPath.toString(), !asc);
+            String jpqlQuery = transformer.getResult();
+            q.setQueryString(jpqlQuery);
+        }
     }
 
     @SuppressWarnings("unchecked")

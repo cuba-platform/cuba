@@ -15,7 +15,6 @@ import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.report.Band;
-import com.haulmont.cuba.report.DataSet;
 import com.haulmont.cuba.report.DataSetType;
 import org.postgresql.util.PGobject;
 
@@ -32,8 +31,6 @@ public abstract class AbstractDbDataLoader implements DataLoader {
     protected AbstractDbDataLoader(Map<String, Object> params) {
         this.params = params;
     }
-
-    public abstract List<Map<String, Object>> loadData(DataSet dataSet, Band parentBand);
 
     protected List<String> parseQueryOutputParametersNames(String query) {
         ArrayList<String> result = new ArrayList<String>();
@@ -93,7 +90,7 @@ public abstract class AbstractDbDataLoader implements DataLoader {
 
             if (entry.getValue() == null) {
                 query = query.replaceAll(deleteRegexp, "");
-            } else if (query.indexOf(alias) > -1) {
+            } else if (query.contains(alias)) {
                 values.add(entry.getValue());
                 query = query.replaceAll(regexp, "?" + i++);
             }

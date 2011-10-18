@@ -14,15 +14,41 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import org.apache.commons.lang.ObjectUtils;
 
 public enum DataSetType implements EnumClass<Integer> {
-    SQL(10),
-    JPQL(20),
-    GROOVY(30),
-    SINGLE(40),
-    MULTI(50);
 
+    /**
+     * SQL query
+     */
+    SQL(10),
+
+    /**
+     * JPQL query
+     */
+    JPQL(20),
+
+    /**
+     * Groovy script
+     */
+    GROOVY(30),
+
+    /**
+     * Entity
+     */
+    SINGLE(40),
+
+    /**
+     * Entities list
+     */
+    MULTI(50),
+
+    /**
+     * Used with filters,
+     * Need specify: query, view, params
+     */
+    QUERY(60);
 
     private Integer id;
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -39,5 +65,4 @@ public enum DataSetType implements EnumClass<Integer> {
         }
         return null;
     }
-
 }

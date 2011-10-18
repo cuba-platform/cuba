@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.report.exception.FailedToConnectToOpenOfficeException;
-import com.haulmont.cuba.report.exception.ReportFormatterException;
+import com.haulmont.cuba.report.exception.ReportingException;
 import com.haulmont.cuba.report.exception.UnsupportedFormatException;
 
 /**
@@ -18,14 +18,14 @@ import com.haulmont.cuba.report.exception.UnsupportedFormatException;
  *
  * @author devyatkin
  */
-public class ReportExceptionHandler extends AbstractExceptionHandler<ReportFormatterException> {
+public class ReportExceptionHandler extends AbstractExceptionHandler<ReportingException> {
 
     public ReportExceptionHandler() {
-        super(ReportFormatterException.class);
+        super(ReportingException.class);
     }
 
     @Override
-    protected void doHandle(Thread thread, ReportFormatterException e) {
+    protected void doHandle(Thread thread, ReportingException e) {
         String messageCode = "reportException.message";
         if (e instanceof FailedToConnectToOpenOfficeException) {
             messageCode = "reportException.failedConnectToOffice";

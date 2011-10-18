@@ -12,18 +12,18 @@ package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.report.exception.FailedToConnectToOpenOfficeException;
-import com.haulmont.cuba.report.exception.ReportFormatterException;
+import com.haulmont.cuba.report.exception.ReportingException;
 import com.haulmont.cuba.report.exception.UnsupportedFormatException;
 import com.haulmont.cuba.web.App;
 import com.vaadin.ui.Window;
 
-public class ReportExceptionHandler extends AbstractExceptionHandler<ReportFormatterException> {
+public class ReportExceptionHandler extends AbstractExceptionHandler<ReportingException> {
 
     public ReportExceptionHandler() {
-        super(ReportFormatterException.class);
+        super(ReportingException.class);
     }
 
-    protected void doHandle(ReportFormatterException t, App app) {
+    protected void doHandle(ReportingException t, App app) {
         String messageCode = "reportException.message";
         if (t instanceof FailedToConnectToOpenOfficeException) {
             messageCode = "reportException.failedConnectToOffice";
@@ -34,7 +34,7 @@ public class ReportExceptionHandler extends AbstractExceptionHandler<ReportForma
         app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
     }
 
-    public boolean handle(ReportFormatterException e, App app) {
+    public boolean handle(ReportingException e, App app) {
         doHandle(e, app);
         return true;
     }

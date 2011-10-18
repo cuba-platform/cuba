@@ -16,6 +16,7 @@ import com.haulmont.cuba.report.CustomReport;
 import com.haulmont.cuba.report.Report;
 import com.haulmont.cuba.report.ReportTemplate;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 public class CustomFormatter implements Formatter {
@@ -30,7 +31,7 @@ public class CustomFormatter implements Formatter {
     }
 
     @Override
-    public byte[] createDocument(Band rootBand) {
+    public byte[] createDocument(@Nullable Band rootBand) {
         Class clazz = ScriptingProvider.loadClass(template.getCustomClass());
         try {
             CustomReport customReport = (CustomReport) clazz.newInstance();

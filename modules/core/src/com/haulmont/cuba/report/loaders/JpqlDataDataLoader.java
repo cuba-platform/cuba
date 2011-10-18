@@ -10,24 +10,28 @@
  */
 package com.haulmont.cuba.report.loaders;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.DataSet;
 import com.haulmont.cuba.report.DataSetType;
-
-import java.util.*;
-
 import org.apache.commons.lang.StringUtils;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class JpqlDataDataLoader extends AbstractDbDataLoader {
     public JpqlDataDataLoader(Map<String, Object> params) {
         super(params);
     }
 
+    @Override
     public List<Map<String, Object>> loadData(DataSet dataSet, Band parentBand) {
         List<String> outputParameters = null;
         List queryResult = null;
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = PersistenceProvider.createTransaction();
         try {
             String query = dataSet.getText();
             if (StringUtils.isBlank(query)) return Collections.emptyList();

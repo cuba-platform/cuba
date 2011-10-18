@@ -77,6 +77,8 @@ public class ReportEditor extends AbstractEditor {
 
         getDsContext().get('reportDs').refresh()
         getDsContext().addListener(new CommitListener() {
+
+            @Override
             void beforeCommit(CommitContext<Entity> context) {
                 // delete descriptors from db
                 for (Entity entity: context.commitInstances) {
@@ -89,6 +91,7 @@ public class ReportEditor extends AbstractEditor {
                 }
             }
 
+            @Override
             void afterCommit(CommitContext<Entity> context, Set<Entity> result) {
                 FileStorageService storageService = ServiceLocator.lookup(FileStorageService.NAME)
 
@@ -364,6 +367,8 @@ public class ReportEditor extends AbstractEditor {
 
         Button defaultTemplateBtn = getComponent("generalFrame.defaultTemplateBtn")
         defaultTemplateBtn.action = new AbstractAction("report.defaultTemplate") {
+
+            @Override
             void actionPerform(Component component) {
                 ReportTemplate template = templatesTable.getSingleSelected()
                 if ((template != null) && !template.getDefaultFlag()) {

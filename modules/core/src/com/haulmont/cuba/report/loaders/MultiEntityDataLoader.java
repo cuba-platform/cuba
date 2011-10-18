@@ -22,6 +22,7 @@ public class MultiEntityDataLoader extends AbstractDbDataLoader {
         super(params);
     }
 
+    @Override
     public List<Map<String, Object>> loadData(DataSet dataSet, Band parentBand) {
         Object entities = params.get("entities");
         if (entities == null || !(entities instanceof Collection))

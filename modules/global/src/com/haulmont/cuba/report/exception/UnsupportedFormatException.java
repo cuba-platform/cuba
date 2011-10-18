@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.report.exception;
 
-public class UnsupportedFormatException extends ReportFormatterException {
+public class UnsupportedFormatException extends ReportingException {
     public UnsupportedFormatException() {
     }
 

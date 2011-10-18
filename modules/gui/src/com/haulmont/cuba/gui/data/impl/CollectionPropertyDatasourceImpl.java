@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.components.AggregationInfo;
@@ -396,6 +397,11 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     public String getQuery() {
         return null;
+    }
+
+    @Override
+    public LoadContext getCompiledLoadContext() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
     }
 
     public QueryFilter getQueryFilter() {

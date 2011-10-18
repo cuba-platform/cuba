@@ -24,11 +24,12 @@ public class SqlDataDataLoader extends AbstractDbDataLoader {
         super(params);
     }
 
+    @Override
     public List<Map<String, Object>> loadData(DataSet dataSet, Band parentBand) {
         List resList = null;
         List<String> outputParameters = null;
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = PersistenceProvider.createTransaction();
         try {
             String query = dataSet.getText();
             if (StringUtils.isBlank(query)) return Collections.emptyList();

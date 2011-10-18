@@ -675,6 +675,11 @@ create table REPORT_DATA_SET
   TEXT longvarchar,
   TYPE integer,
   BAND_DEFINITION varchar(36),
+  ENTITY_PARAM_NAME varchar(255),
+  ENTITY_CLASS_PARAM_NAME varchar(500),
+  LIST_ENTITIES_PARAM_NAME varchar(255),
+  QUERY_PARAM_NAME varchar(255),
+  VIEW_PARAM_NAME varchar(255),
 
   primary key (ID),
   constraint FK_REPORT_DATA_SET_TO_REPORT_BAND_DEFINITION foreign key (BAND_DEFINITION)

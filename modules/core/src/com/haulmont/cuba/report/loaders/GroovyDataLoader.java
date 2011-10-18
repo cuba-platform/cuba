@@ -10,7 +10,6 @@
  */
 package com.haulmont.cuba.report.loaders;
 
-import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.DataSet;
@@ -30,6 +29,7 @@ public class GroovyDataLoader implements DataLoader {
         this.params = params;
     }
 
+    @Override
     public List<Map<String, Object>> loadData(DataSet dataSet, Band parentBand) {
         String script = dataSet.getText();
         Map<String, Object> params = new HashMap<String, Object>();

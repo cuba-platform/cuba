@@ -16,6 +16,12 @@ import com.haulmont.cuba.report.Band;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Interface to be implemented by loaders for {@link com.haulmont.cuba.report.app.ReportService}
+ * <p>$Id$</p>
+ *
+ * @author artamonov
+ */
 public interface DataLoader {
     List<Map<String, Object>> loadData(DataSet dataSet, Band parentBand);
 }

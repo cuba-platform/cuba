@@ -11,20 +11,20 @@
 
 package com.haulmont.cuba.report.exception;
 
-public class ReportFormatterException extends RuntimeException {
+public class ReportingException extends RuntimeException {
 
-    public ReportFormatterException() {
+    public ReportingException() {
     }
 
-    public ReportFormatterException(String message) {
+    public ReportingException(String message) {
         super(message);
     }
        
-    public ReportFormatterException(String message, Throwable cause) {
+    public ReportingException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ReportFormatterException(Throwable cause) {
+    public ReportingException(Throwable cause) {
         super(cause);
     }
 }

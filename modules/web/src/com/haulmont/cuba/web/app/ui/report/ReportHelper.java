@@ -13,18 +13,19 @@ package com.haulmont.cuba.web.app.ui.report;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
+import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.report.*;
 import com.haulmont.cuba.report.app.ReportService;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
-import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -115,7 +116,7 @@ public class ReportHelper {
             ReportOutputType reportOutputType = document.getOutputType();
             ExportFormat exportFormat = exportFormats.get(reportOutputType);
 
-            WebExportDisplay exportDisplay = new WebExportDisplay();
+            ExportDisplay exportDisplay = AppConfig.createExportDisplay();
             String documentName = document.getDocumentName();
             exportDisplay.show(new ByteArrayDataProvider(byteArr), StringUtils.isNotBlank(documentName) ? documentName : defaultOutputFileName, exportFormat);
 
@@ -158,8 +159,11 @@ public class ReportHelper {
         return createPrintformFromEditorAction(captionId, editor, null);
     }
 
-    public static AbstractAction createPrintformFromEditorAction(String captionId, final Window.Editor editor, @Nullable final String name) {
+    public static AbstractAction createPrintformFromEditorAction(String captionId, final Window.Editor editor,
+                                                                 @Nullable final String name) {
         return new AbstractAction(captionId) {
+
+            @Override
             public void actionPerform(Component component) {
                 final Entity entity = editor.getItem();
                 if (entity != null) {
@@ -219,6 +223,8 @@ public class ReportHelper {
 
         if (checkReportsForStart(window, paramAlias, paramValue, javaClassName, reportType, name)) {
             window.openLookup("report$Report.run", new Window.Lookup.Handler() {
+
+                @Override
                 public void handleLookup(Collection items) {
                     if (items != null && items.size() > 0) {
                         Report report = (Report) items.iterator().next();

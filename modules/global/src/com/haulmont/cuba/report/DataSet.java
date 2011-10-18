@@ -10,7 +10,6 @@
  */
 package com.haulmont.cuba.report;
 
-import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 
 import javax.persistence.*;
@@ -29,6 +28,21 @@ public class DataSet extends HardDeleteEntity {
 
     @Column(name = "TYPE")
     private Integer type;
+
+    @Column(name = "ENTITY_PARAM_NAME")
+    private String entityParamName;
+
+    @Column(name = "LIST_ENTITIES_PARAM_NAME")
+    private String listEntitiesParamName;
+
+    @Column(name = "QUERY_PARAM_NAME")
+    private String queryParamName;
+
+    @Column(name = "VIEW_PARAM_NAME")
+    private String viewParamName;
+
+    @Column(name = "ENTITY_CLASS_PARAM_NAME")
+    private String entityClassParamName;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "BAND_DEFINITION")
@@ -56,6 +70,46 @@ public class DataSet extends HardDeleteEntity {
 
     public void setType(DataSetType type) {
         this.type = type != null ? type.getId() : null;
+    }
+
+    public String getEntityParamName() {
+        return entityParamName;
+    }
+
+    public void setEntityParamName(String entityParamName) {
+        this.entityParamName = entityParamName;
+    }
+
+    public String getEntityClassParamName() {
+        return entityClassParamName;
+    }
+
+    public void setEntityClassParamName(String entityClassParamName) {
+        this.entityClassParamName = entityClassParamName;
+    }
+
+    public String getListEntitiesParamName() {
+        return listEntitiesParamName;
+    }
+
+    public void setListEntitiesParamName(String listEntitiesParamName) {
+        this.listEntitiesParamName = listEntitiesParamName;
+    }
+
+    public String getQueryParamName() {
+        return queryParamName;
+    }
+
+    public void setQueryParamName(String queryParamName) {
+        this.queryParamName = queryParamName;
+    }
+
+    public String getViewParamName() {
+        return viewParamName;
+    }
+
+    public void setViewParamName(String viewParamName) {
+        this.viewParamName = viewParamName;
     }
 
     public BandDefinition getBandDefinition() {

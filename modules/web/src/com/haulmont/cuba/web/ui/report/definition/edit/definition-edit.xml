@@ -21,6 +21,8 @@
     </dsContext>
     <#assign width = 400>
     <#assign rwidth = 500>
+    <#assign datasetTypeWidth = 210>
+    <#assign paramWidth = 260>
     <layout expand="box">
 
         <vbox id="box" margin="true" stylename="edit-area" spacing="true" expand="split">
@@ -65,17 +67,37 @@
                     </table>
                 </vbox>
                 <!-- Split -->
-                <vbox margin="false;false;false;true" expand="text">
+                <vbox margin="false;false;false;true" expand="text" spacing="true">
                     <label value="msg://dataSet.name"/>
                     <textField id="datasetName" datasource="dataSetsDs" property="name"
                                required="true" requiredMessage="msg://dataSet.nameMsg"/>
 
                     <label value="msg://dataSet.type"/>
-                    <lookupField id="type" datasource="dataSetsDs" property="type"
+                    <lookupField id="type" datasource="dataSetsDs" property="type" width="${datasetTypeWidth}"
                                  required="true" requiredMessage="msg://dataSet.typeMsg"/>
 
                     <label id="dataSet_text" value="msg://dataSet.text"/>
                     <autoCompleteTextField id="text" datasource="dataSetsDs" property="text" rows="25" cols="60"/>
+
+                    <label id="entityParamLabel" value="msg://dataSet.entityParamName"/>
+                    <textField id="entityParamTextBox" width="${paramWidth}"
+                               datasource="dataSetsDs" property="entityParamName"/>
+
+                    <label id="entitiesParamLabel" value="msg://dataSet.entitiesParamName"/>
+                    <textField id="entitiesParamTextBox"  width="${paramWidth}"
+                               datasource="dataSetsDs" property="listEntitiesParamName"/>
+
+                    <label id="queryParamLabel" value="msg://dataSet.queryParamName"/>
+                    <textField id="queryParamTextBox" width="${paramWidth}"
+                               datasource="dataSetsDs" property="queryParamName"/>
+
+                    <label id="viewParamLabel" value="msg://dataSet.viewParamName"/>
+                    <textField id="viewParamTextBox" width="${paramWidth}"
+                               datasource="dataSetsDs" property="viewParamName"/>
+
+                    <label id="classParamLabel" value="msg://dataSet.classParamName"/>
+                    <textField id="classParamTextBox" width="${paramWidth}"
+                               datasource="dataSetsDs" property="entityClassParamName"/>
                 </vbox>
             </split>
 

@@ -88,6 +88,11 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         return query;
     }
 
+    @Override
+    public LoadContext getCompiledLoadContext() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
+
     public QueryFilter getQueryFilter() {
         return filter;
     }

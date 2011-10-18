@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.ReportOutputType;
-import com.haulmont.cuba.report.exception.ReportFormatterException;
+import com.haulmont.cuba.report.exception.ReportingException;
 import com.haulmont.cuba.report.exception.UnsupportedFormatException;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
@@ -84,7 +84,7 @@ public class HtmlFormatter extends AbstractFormatter {
 
             FileUtils.deleteQuietly(tmpFile);
         } catch (Exception e) {
-            throw new ReportFormatterException(e);
+            throw new ReportingException(e);
         }
     }
 
@@ -97,10 +97,10 @@ public class HtmlFormatter extends AbstractFormatter {
         try {
             htmlTemplate.process(templateModel, htmlWriter);
             htmlWriter.close();
-        } catch (ReportFormatterException e) {
+        } catch (ReportingException e) {
             throw e;
         } catch (Exception e) {
-            throw new ReportFormatterException(e);
+            throw new ReportingException(e);
         }
     }
 
@@ -139,7 +139,7 @@ public class HtmlFormatter extends AbstractFormatter {
             byte[] templateBytes = storageAPI.loadFile(templateFile);
             templateContent = new String(templateBytes);
         } catch (FileStorageException e) {
-            throw new ReportFormatterException(e);
+            throw new ReportingException(e);
         }
         StringTemplateLoader stringLoader = new StringTemplateLoader();
         stringLoader.putTemplate(templateFile.getFileName(), templateContent);
@@ -152,7 +152,7 @@ public class HtmlFormatter extends AbstractFormatter {
         try {
             htmlTemplate = fmConfiguration.getTemplate(templateFile.getFileName());
         } catch (Exception e) {
-            throw new ReportFormatterException(e);
+            throw new ReportingException(e);
         }
         return htmlTemplate;
     }

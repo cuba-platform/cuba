@@ -511,14 +511,14 @@ create table REPORT_BAND_DEFINITION
 (
   ID uuid not null,
   CREATE_TS timestamp without time zone,
-  CREATED_BY character varying(50),
+  CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp without time zone,
-  UPDATED_BY character varying(50),
+  UPDATED_BY varchar(50),
 
-  QUERY character varying(255),
+  QUERY varchar(255),
   PARENT_DEFINITION_ID uuid,
-  NAME character varying(255),
+  NAME varchar(255),
   ORIENTATION integer default 0,
   POSITION_ integer default 0,
 
@@ -533,12 +533,12 @@ create table REPORT_REPORT
 (
   ID uuid not null,
   CREATE_TS timestamp without time zone,
-  CREATED_BY character varying(50),
+  CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp without time zone,
-  UPDATED_BY character varying(50),
+  UPDATED_BY varchar(50),
 
-  NAME character varying(255),
+  NAME varchar(255),
   ROOT_DEFINITION_ID uuid,
   REPORT_TYPE integer,
 
@@ -553,10 +553,10 @@ create table REPORT_TEMPLATE
 (
   ID uuid not null,
   CREATE_TS timestamp without time zone,
-  CREATED_BY character varying(50),
+  CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp without time zone,
-  UPDATED_BY character varying(50),
+  UPDATED_BY varchar(50),
 
   REPORT_ID uuid,
   CODE varchar(50),
@@ -564,7 +564,7 @@ create table REPORT_TEMPLATE
   OUTPUT_TYPE integer default 0,
   IS_DEFAULT boolean default false,
   IS_CUSTOM boolean default false,
-  CUSTOM_CLASS character varying,
+  CUSTOM_CLASS varchar,
 
   primary key (ID),
   constraint FK_REPORT_TEMPLATE_TO_REPORT foreign key (REPORT_ID)
@@ -577,16 +577,16 @@ create table REPORT_INPUT_PARAMETER
 (
   ID uuid not null,
   CREATE_TS timestamp without time zone,
-  CREATED_BY character varying(50),
+  CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp without time zone,
-  UPDATED_BY character varying(50),
+  UPDATED_BY varchar(50),
 
   REPORT_ID uuid,
   TYPE integer,
-  NAME character varying(255),
-  ALIAS character varying(100),
-  SCREEN character varying(255),
+  NAME varchar(255),
+  ALIAS varchar(100),
+  SCREEN varchar(255),
   FROM_BROWSER boolean,
   REQUIRED boolean default false,
   POSITION_ integer default 0,
@@ -604,15 +604,20 @@ create table REPORT_DATA_SET
 (
   ID uuid not null,
   CREATE_TS timestamp without time zone,
-  CREATED_BY character varying(50),
+  CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp without time zone,
-  UPDATED_BY character varying(50),
+  UPDATED_BY varchar(50),
 
-  NAME character varying(255),
+  NAME varchar(255),
   TEXT text,
   TYPE integer,
   BAND_DEFINITION uuid,
+  ENTITY_PARAM_NAME varchar(255),
+  ENTITY_CLASS_PARAM_NAME varchar(500),
+  LIST_ENTITIES_PARAM_NAME varchar(255),
+  QUERY_PARAM_NAME varchar(255),
+  VIEW_PARAM_NAME varchar(255),
 
   primary key (ID),
   constraint FK_REPORT_DATA_SET_TO_REPORT_BAND_DEFINITION foreign key (BAND_DEFINITION)
@@ -638,13 +643,13 @@ create table REPORT_REPORT_SCREEN
 (
   ID uuid not null,
   CREATE_TS timestamp without time zone,
-  CREATED_BY character varying(50),
+  CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp without time zone,
-  UPDATED_BY character varying(50),
+  UPDATED_BY varchar(50),
 
   REPORT_ID uuid,
-  SCREEN_ID character varying(255),
+  SCREEN_ID varchar(255),
 
   primary key (ID),
   constraint FK_REPORT_REPORT_SCREEN_TO_REPORT_REPORT foreign key (REPORT_ID)
@@ -657,14 +662,14 @@ create table REPORT_VALUE_FORMAT
 (
   ID uuid not null,
   CREATE_TS timestamp without time zone,
-  CREATED_BY character varying(50),
+  CREATED_BY varchar(50),
   VERSION integer,
   UPDATE_TS timestamp without time zone,
-  UPDATED_BY character varying(50),
+  UPDATED_BY varchar(50),
 
   REPORT_ID uuid,
-  NAME character varying(255),
-  FORMAT character varying(255),
+  NAME varchar(255),
+  FORMAT varchar(255),
 
   primary key (ID),
   constraint FK_REPORT_VALUE_FORMAT_TO_REPORT_REPORT foreign key (REPORT_ID)
