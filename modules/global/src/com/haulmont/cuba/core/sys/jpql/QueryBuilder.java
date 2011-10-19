@@ -27,10 +27,12 @@ public class QueryBuilder {
     }
 
     public void appendString(String s) {
-        if (sb.length() != 0 && getLast() == ' ' && (s.charAt(0) == ' ' || s.charAt(0) == ')' || s.charAt(0) == ',')) {
-            deleteLast();
+        if (s != null) {
+            if (sb.length() != 0 && getLast() == ' ' && (s.charAt(0) == ' ' || s.charAt(0) == ')' || s.charAt(0) == ',')) {
+                deleteLast();
+            }
+            sb.append(s);
         }
-        sb.append(s);
     }
 
     public char getLast() {
