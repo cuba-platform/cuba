@@ -149,6 +149,18 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
             return false;
     }
 
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        Table.Column column = columns.get(columnIndex);
+        Object id = getItemId(rowIndex);
+        Entity item = datasource.getItem(id);
+
+        if (column.getId() instanceof MetaPropertyPath) {
+            String property = column.getId().toString();
+            item.setValueEx(property, aValue);
+        }
+    }
+
     public Object getItemId(int rowIndex) {
         Object id = null;
         if (datasource instanceof CollectionDatasource.Ordered) {
