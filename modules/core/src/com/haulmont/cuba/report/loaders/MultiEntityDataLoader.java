@@ -24,9 +24,18 @@ public class MultiEntityDataLoader extends AbstractDbDataLoader {
 
     @Override
     public List<Map<String, Object>> loadData(DataSet dataSet, Band parentBand) {
-        Object entities = params.get("entities");
-        if (entities == null || !(entities instanceof Collection))
-            throw new IllegalStateException("Input parameters don't contain 'entities' param or it isn't a collection");
+
+        String paramName = dataSet.getListEntitiesParamName();
+        Object entities;
+        if (params.containsKey(paramName))
+            entities = params.get(paramName);
+        else
+            entities = params.get("entities");
+
+        if (entities == null || !(entities instanceof Collection)) {
+            throw new IllegalStateException(
+                    "Input parameters don't contain 'entities' param or it isn't a collection");
+        }
         Collection<Entity> entitiesList = (Collection) entities;
         List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
         for (Entity entity : entitiesList) {

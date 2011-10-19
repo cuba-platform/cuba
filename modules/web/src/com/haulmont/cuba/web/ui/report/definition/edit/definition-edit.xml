@@ -86,18 +86,6 @@
                     <label id="entitiesParamLabel" value="msg://dataSet.entitiesParamName"/>
                     <textField id="entitiesParamTextBox"  width="${paramWidth}"
                                datasource="dataSetsDs" property="listEntitiesParamName"/>
-
-                    <label id="queryParamLabel" value="msg://dataSet.queryParamName"/>
-                    <textField id="queryParamTextBox" width="${paramWidth}"
-                               datasource="dataSetsDs" property="queryParamName"/>
-
-                    <label id="viewParamLabel" value="msg://dataSet.viewParamName"/>
-                    <textField id="viewParamTextBox" width="${paramWidth}"
-                               datasource="dataSetsDs" property="viewParamName"/>
-
-                    <label id="classParamLabel" value="msg://dataSet.classParamName"/>
-                    <textField id="classParamTextBox" width="${paramWidth}"
-                               datasource="dataSetsDs" property="entityClassParamName"/>
                 </vbox>
             </split>
 

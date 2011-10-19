@@ -8,17 +8,16 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.web.ui.report;
+package com.haulmont.cuba.web.ui.report.run;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.gui.report.ReportHelper;
 import com.haulmont.cuba.report.Report;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.web.app.ui.report.ReportHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +53,7 @@ public class RunReportDatasource extends CollectionDatasourceImpl {
     private void applySecurityPolicies(User user, String screen) {
         final List<Report> reports = new ArrayList<Report>(data.values());
         data.clear();
-        List<Report> filter = ReportHelper.applySecurityPolicies(user,screen,reports);
+        List<Report> filter = ReportHelper.applySecurityPolicies(user, screen, reports);
         for (Report report : filter) {
             data.put(report.getId(), report);
             attachListener(report);

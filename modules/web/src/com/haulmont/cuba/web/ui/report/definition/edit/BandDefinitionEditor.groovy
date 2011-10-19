@@ -12,8 +12,8 @@ package com.haulmont.cuba.web.ui.report.definition.edit
 
 import com.haulmont.cuba.core.entity.Entity
 import com.haulmont.cuba.core.global.MessageProvider
+import com.haulmont.cuba.core.global.UserSessionProvider
 import com.haulmont.cuba.gui.AppConfig
-import com.haulmont.cuba.gui.UserSessionClient
 import com.haulmont.cuba.gui.autocomplete.AutoCompleteSupport
 import com.haulmont.cuba.gui.autocomplete.JpqlSuggestionFactory
 import com.haulmont.cuba.gui.autocomplete.Suggester
@@ -34,6 +34,9 @@ public class BandDefinitionEditor extends AbstractEditor implements Suggester {
 
     private static volatile Collection<com.haulmont.chile.core.model.MetaClass> metaClasses;
 
+    private BandDefinition parentDefinition
+    private Integer position
+
     def BandDefinitionEditor(IFrame frame) {
         super(frame);
     }
@@ -47,9 +50,6 @@ public class BandDefinitionEditor extends AbstractEditor implements Suggester {
         super.setItem(definition);
         selectFirstDataset()
     }
-
-    private BandDefinition parentDefinition
-    private Integer position
 
     @Override
     public void init(Map<String, Object> params) {
@@ -68,10 +68,7 @@ public class BandDefinitionEditor extends AbstractEditor implements Suggester {
                     dataset.name = dataset.bandDefinition.name ?: 'dataset'
                     dataset.type = DataSetType.GROOVY
 
-                    dataset.queryParamName = 'query'
-                    dataset.viewParamName = 'view'
                     dataset.entityParamName = 'entity'
-                    dataset.entityClassParamName = 'entityClass'
                     dataset.listEntitiesParamName = 'entities'
 
                     table.datasource.addItem(dataset)
@@ -80,7 +77,7 @@ public class BandDefinitionEditor extends AbstractEditor implements Suggester {
                     MessageProvider.getMessage(AppConfig.messagesPack, 'actions.Create')
                 },
                 isEnabled: {
-                    UserSessionClient.userSession.isEntityOpPermitted(table.datasource.metaClass, EntityOp.CREATE)
+                    UserSessionProvider.userSession.isEntityOpPermitted(table.datasource.metaClass, EntityOp.CREATE)
                 }
         ]))
 
@@ -99,15 +96,6 @@ public class BandDefinitionEditor extends AbstractEditor implements Suggester {
         Label entitiesParamLabel = getComponent('entitiesParamLabel')
         TextField entitiesParamTextBox = getComponent('entitiesParamTextBox')
 
-        Label queryParamLabel = getComponent('queryParamLabel')
-        TextField queryParamTextBox = getComponent('queryParamTextBox')
-
-        Label viewParamLabel = getComponent('viewParamLabel')
-        TextField viewParamTextBox = getComponent('viewParamTextBox')
-
-        Label classParamLabel = getComponent('classParamLabel')
-        TextField classParamTextBox = getComponent('classParamTextBox')
-
         def queryEditors = [
                 queryLabel, queryTextField
         ]
@@ -120,29 +108,20 @@ public class BandDefinitionEditor extends AbstractEditor implements Suggester {
                 entitiesParamLabel, entitiesParamTextBox
         ]
 
-        def queryParamEditors = [
-                queryParamLabel, queryParamTextBox,
-                viewParamLabel, viewParamTextBox,
-                classParamLabel, classParamTextBox
-        ]
-
         def allParams = [
                 queryLabel, queryTextField,
                 entityParamLabel, entityParamTextBox,
-                entitiesParamLabel, entitiesParamTextBox,
-                queryParamLabel, queryParamTextBox,
-                viewParamLabel, viewParamTextBox,
-                classParamLabel, classParamTextBox
+                entitiesParamLabel, entitiesParamTextBox
         ]
 
         lookupField.addListener(
                 [
-                        valueChanged: {Object source, String property, Object prevValue, Object value ->
+                        valueChanged: { Object source, String property, Object prevValue, Object value ->
 
                             // Hide all editors for dataset
                             allParams.each { Component c -> c.visible = false }
 
-                            DataSetType dsType = (DataSetType)value;
+                            DataSetType dsType = (DataSetType) value;
                             switch (dsType) {
                                 case DataSetType.SQL:
                                 case DataSetType.JPQL:
@@ -157,10 +136,6 @@ public class BandDefinitionEditor extends AbstractEditor implements Suggester {
 
                                 case DataSetType.MULTI:
                                     entitiesParamEditors.each { Component c -> c.visible = true }
-                                    break
-
-                                case DataSetType.QUERY:
-                                    queryParamEditors.each { Component c -> c.visible = true }
                                     break
                             }
                         }

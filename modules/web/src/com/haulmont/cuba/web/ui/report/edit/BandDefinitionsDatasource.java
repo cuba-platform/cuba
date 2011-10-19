@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.web.ui.report;
+package com.haulmont.cuba.web.ui.report.edit;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;

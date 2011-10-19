@@ -44,7 +44,7 @@ import com.haulmont.cuba.gui.components.validators.DoubleValidator
 import com.vaadin.data.Validator
 import com.haulmont.chile.core.model.Instance
 import com.haulmont.cuba.core.global.MessageProvider
-import com.haulmont.cuba.web.app.ui.report.ReportHelper
+import com.haulmont.cuba.gui.report.ReportHelper
 import com.haulmont.cuba.gui.components.LookupField
 import com.haulmont.cuba.web.gui.components.WebLookupField
 import org.apache.commons.lang.StringUtils

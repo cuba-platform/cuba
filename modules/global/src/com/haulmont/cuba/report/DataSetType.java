@@ -38,13 +38,7 @@ public enum DataSetType implements EnumClass<Integer> {
     /**
      * Entities list
      */
-    MULTI(50),
-
-    /**
-     * Used with filters,
-     * Need specify: query, view, params
-     */
-    QUERY(60);
+    MULTI(50);
 
     private Integer id;
 

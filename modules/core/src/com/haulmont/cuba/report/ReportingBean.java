@@ -68,7 +68,21 @@ public class ReportingBean implements ReportingApi {
             throw new NullPointerException("Report template is null");
 
         try {
-            this.params.set(params);
+            // Preprocess prototypes
+            List<String> prototypes = new LinkedList<String>();
+            for (Map.Entry<String, Object> param : params.entrySet()) {
+                if (param.getValue() instanceof ParameterPrototype)
+                    prototypes.add(param.getKey());
+            }
+            Map<String, Object> paramsMap = new HashMap<String, Object>(params);
+
+            for (String paramName : prototypes) {
+                ParameterPrototype prototype = (ParameterPrototype) params.get(paramName);
+                List data = PrototypesLoader.loadData(prototype);
+                paramsMap.put(paramName, data);
+            }
+
+            this.params.set(paramsMap);
             this.bandDefinitionNames.set(new HashSet<String>());
 
             if (template.getCustomFlag()) {
@@ -291,8 +305,6 @@ public class ReportingBean implements ReportingApi {
             loader = new SingleEntityDataLoader(paramsMap);
         } else if (DataSetType.MULTI.equals(dataSetType)) {
             loader = new MultiEntityDataLoader(paramsMap);
-        } else if (DataSetType.QUERY.equals(dataSetType)) {
-            loader = new QueryDataLoader(paramsMap);
         }
 
         if (loader != null)

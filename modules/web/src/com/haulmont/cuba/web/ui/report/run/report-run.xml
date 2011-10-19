@@ -12,7 +12,7 @@
                 class="com.haulmont.cuba.report.Report"
                 view="report.edit"
                 >
-            <datasourceClass>com.haulmont.cuba.web.ui.report.RunReportDatasource</datasourceClass>
+            <datasourceClass>com.haulmont.cuba.web.ui.report.run.RunReportDatasource</datasourceClass>
             <query>
                 <![CDATA[select r from report$Report r]]>
                 <filter>
@@ -28,10 +28,10 @@
 
     <layout expand="table-panel">
         <vbox id="table-panel" expand="table" spacing="true">
-            <hbox align="MIDDLE_LEFT" spacing="true" margin="true;false;true;false">
-                <button id="runReport" action="table.runReport" icon="icons/run.png"/>
-            </hbox>
             <table id="table" editable="false">
+                <buttonsPanel>
+                    <button id="runReport" action="table.runReport" icon="icons/run.png"/>
+                </buttonsPanel>
                 <columns>
                     <column id="name" caption="msg://report.name"/>
                 </columns>

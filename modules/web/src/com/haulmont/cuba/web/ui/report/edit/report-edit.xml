@@ -19,7 +19,7 @@
             <collectionDatasource id="templatesDs" property="templates"/>
         </datasource>
         <hierarchicalDatasource id="treeDs" class="com.haulmont.cuba.report.BandDefinition" view="report.edit">
-            <datasourceClass>com.haulmont.cuba.web.ui.report.BandDefinitionsDatasource</datasourceClass>
+            <datasourceClass>com.haulmont.cuba.web.ui.report.edit.BandDefinitionsDatasource</datasourceClass>
         </hierarchicalDatasource>
     </dsContext>
     <layout expand="tabsheet">

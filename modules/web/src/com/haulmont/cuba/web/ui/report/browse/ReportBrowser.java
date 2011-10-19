@@ -14,10 +14,10 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
+import com.haulmont.cuba.gui.report.ReportHelper;
 import com.haulmont.cuba.report.Report;
 import com.haulmont.cuba.report.app.ReportService;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
-import com.haulmont.cuba.web.app.ui.report.ReportHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.web.ui.report.fileuploaddialog.ReportImportDialog;
 
