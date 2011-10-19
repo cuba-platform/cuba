@@ -14,12 +14,11 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
-import com.haulmont.cuba.gui.export.ExportFormat;
+import com.haulmont.cuba.gui.export.ReportPrintHelper;
 import com.haulmont.cuba.report.*;
 import com.haulmont.cuba.report.app.ReportService;
 import org.apache.commons.lang.StringUtils;
@@ -39,48 +38,40 @@ import static com.google.common.base.Preconditions.checkState;
  *
  * @author artamonov
  */
-public class FilterPrintAction extends AbstractAction {
-
-    static HashMap<ReportOutputType, ExportFormat> exportFormats = new HashMap<ReportOutputType, ExportFormat>();
-
-    static {
-        exportFormats.put(ReportOutputType.XLS, ExportFormat.XLS);
-        exportFormats.put(ReportOutputType.DOC, ExportFormat.DOC);
-        exportFormats.put(ReportOutputType.PDF, ExportFormat.PDF);
-        exportFormats.put(ReportOutputType.HTML, ExportFormat.HTML);
-    }
+public class ReportPrintAction extends AbstractAction {
 
     public static final String ACTION_ID = "filterPrint";
     private static final String REPORT_LOADING_VIEW = "report.edit";
 
-    protected final Table table;
+    protected final CollectionDatasource collectionDatasource;
     protected final ExportDisplay display;
     protected final String reportId;
     protected final String templateId;
     protected final String defaultName;
 
-    public FilterPrintAction(Table table, String reportId) {
-        this(table, reportId, null, null);
+    public ReportPrintAction(CollectionDatasource collectionDatasource, String reportId) {
+        this(collectionDatasource, reportId, null, null);
     }
 
-    public FilterPrintAction(Table table, String reportId, String defaultName) {
-        this(table, reportId, null, defaultName);
+    public ReportPrintAction(CollectionDatasource collectionDatasource, String reportId, String defaultName) {
+        this(collectionDatasource, reportId, null, defaultName);
     }
 
-    public FilterPrintAction(Table table, String reportId, @Nullable String templateId, @Nullable String defaultName) {
-        this(table, AppConfig.createExportDisplay(), reportId, templateId, defaultName, ACTION_ID);
+    public ReportPrintAction(CollectionDatasource collectionDatasource, String reportId, @Nullable String templateId, @Nullable String defaultName) {
+        this(collectionDatasource, AppConfig.createExportDisplay(), reportId, templateId, defaultName, ACTION_ID);
     }
 
-    public FilterPrintAction(Table table, ExportDisplay display, String reportId,
+    public ReportPrintAction(CollectionDatasource collectionDatasource, ExportDisplay display, String reportId,
                              @Nullable String templateId, String defaultName, String id) {
         super(id);
 
         checkState(StringUtils.isNotEmpty(reportId));
+        checkNotNull(collectionDatasource);
 
         this.defaultName = defaultName;
         this.reportId = reportId;
         this.templateId = templateId;
-        this.table = table;
+        this.collectionDatasource = collectionDatasource;
         if (display != null)
             this.display = display;
         else
@@ -89,22 +80,22 @@ public class FilterPrintAction extends AbstractAction {
 
     @Override
     public void actionPerform(Component component) {
-        CollectionDatasource datasource = table.getDatasource();
-        checkNotNull(datasource);
-
         // Get load context for datasource
-        LoadContext loadContext = datasource.getCompiledLoadContext();
+        LoadContext loadContext = collectionDatasource.getCompiledLoadContext();
         if (loadContext == null)
             throw new RuntimeException("Null load context from collection datasource");
 
         // Get Report by Id
-        Report report = loadReport(datasource.getDataService());
+        Report report = loadReport(collectionDatasource.getDataService());
 
         if (report == null)
             throw new RuntimeException("Couldn't found report : " + reportId);
 
         // Find dataset for type QUERY
         DataSet queryDataSet = findQueryDataSet(report.getRootBandDefinition());
+
+        if (queryDataSet == null)
+            throw new RuntimeException("No such dataset with type QUERY in report");
 
         // Fill params
         Map<String, Object> params = prepareParams(loadContext, queryDataSet);
@@ -132,7 +123,7 @@ public class FilterPrintAction extends AbstractAction {
             display.show(
                     new ByteArrayDataProvider(document.getContent()),
                     StringUtils.isNotBlank(documentName) ? documentName : report.getName(),
-                    exportFormats.get(document.getOutputType()));
+                    ReportPrintHelper.getExportFormat(document.getOutputType()));
 
         } catch (IOException e) {
             throw new RuntimeException(e);

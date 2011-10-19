@@ -21,6 +21,7 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
+import com.haulmont.cuba.gui.export.ReportPrintHelper;
 import com.haulmont.cuba.report.*;
 import com.haulmont.cuba.report.app.ReportService;
 import com.haulmont.cuba.security.entity.Role;
@@ -34,20 +35,7 @@ import java.util.*;
 
 @SuppressWarnings({"serial", "unused"})
 public class ReportHelper {
-    static HashMap<ReportOutputType, ExportFormat> exportFormats = new HashMap<ReportOutputType, ExportFormat>();
-
-    static {
-        exportFormats.put(ReportOutputType.XLS, ExportFormat.XLS);
-        exportFormats.put(ReportOutputType.DOC, ExportFormat.DOC);
-        exportFormats.put(ReportOutputType.PDF, ExportFormat.PDF);
-        exportFormats.put(ReportOutputType.HTML, ExportFormat.HTML);
-    }
-
     private ReportHelper() {
-    }
-
-    public static ExportFormat getExportFormat(ReportOutputType reportOutputType) {
-        return exportFormats.get(reportOutputType);
     }
 
     public static void runReport(Report report, Window window) {
@@ -113,8 +101,7 @@ public class ReportHelper {
                 document = srv.createReport(report, templateCode, params);
 
             byte[] byteArr = document.getContent();
-            ReportOutputType reportOutputType = document.getOutputType();
-            ExportFormat exportFormat = exportFormats.get(reportOutputType);
+            ExportFormat exportFormat = ReportPrintHelper.getExportFormat(document.getOutputType());
 
             ExportDisplay exportDisplay = AppConfig.createExportDisplay();
             String documentName = document.getDocumentName();
