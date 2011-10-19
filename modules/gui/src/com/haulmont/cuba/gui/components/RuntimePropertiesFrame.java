@@ -109,8 +109,14 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                 final FieldGroup newRuntime = AppConfig.getFactory().createComponent(FieldGroup.NAME);
                 newRuntime.setBorderVisible(false);
                 newRuntime.setId("runtime");
-                if (runtime != null)
+                if (runtime != null) {
                     contentPane.remove(runtime);
+                    Component cfg = contentPane.getComponent("categoryFieldGroup");
+                    if (cfg != null) {
+                        contentPane.remove(cfg);
+                        contentPane.add(cfg);
+                    }
+                }
                 newRuntime.setFrame(getFrame());
                 contentPane.add(newRuntime);
                 registerComponent(newRuntime);
