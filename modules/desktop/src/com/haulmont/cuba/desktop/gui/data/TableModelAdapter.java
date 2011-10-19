@@ -152,6 +152,9 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         Table.Column column = columns.get(columnIndex);
+        if (!column.isEditable())
+            return;
+
         Object id = getItemId(rowIndex);
         Entity item = datasource.getItem(id);
 

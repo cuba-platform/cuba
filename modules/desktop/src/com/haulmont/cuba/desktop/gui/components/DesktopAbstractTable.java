@@ -34,8 +34,8 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import javax.swing.*;
 import javax.swing.AbstractAction;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -656,6 +656,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
         Column col = getColumn(columnId);
         tableModel.addGeneratedColumn(col);
+        col.setEditable(false); // generated column must be non-editable, see TableModelAdapter.setValueAt()
         TableColumnModel columnModel = impl.getColumnModel();
         TableColumn tableColumn = columnModel.getColumn(columnModel.getColumnIndex(col));
         CellEditor cellEditor = new CellEditor(generator);
