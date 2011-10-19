@@ -367,7 +367,10 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
                     @Override
                     public void stateChanged(Datasource ds, State prevState, State state) {
                         if (State.VALID.equals(state)) {
-                            initMetaClass();
+                            if (!State.VALID.equals(prevState))
+                                initMetaClass();
+                            else
+                                valid();
                         }
                     }
                 }
