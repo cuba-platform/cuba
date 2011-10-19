@@ -20,6 +20,8 @@ import javax.persistence.*;
 public class DataSet extends HardDeleteEntity {
     private static final long serialVersionUID = -3706206933129963303L;
 
+    public static final String QUERY_PARAMS_POSTFIX = ".params";
+
     @Column(name = "NAME")
     private String name;
 

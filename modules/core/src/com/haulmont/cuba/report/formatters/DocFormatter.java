@@ -110,6 +110,7 @@ public class DocFormatter extends AbstractFormatter {
         this.rootBand = rootBand;
 
         Runnable runnable = new Runnable() {
+            @Override
             public void run() {
                 try {
                     XInputStream xis = getXInputStream(templateFile);

@@ -57,7 +57,8 @@ public class ReportPrintAction extends AbstractAction {
         this(collectionDatasource, reportId, null, defaultName);
     }
 
-    public ReportPrintAction(CollectionDatasource collectionDatasource, String reportId, @Nullable String templateId, @Nullable String defaultName) {
+    public ReportPrintAction(CollectionDatasource collectionDatasource, String reportId,
+                             @Nullable String templateId, @Nullable String defaultName) {
         this(collectionDatasource, AppConfig.createExportDisplay(), reportId, templateId, defaultName, ACTION_ID);
     }
 
@@ -142,7 +143,7 @@ public class ReportPrintAction extends AbstractAction {
         params.put(queryDataSet.getEntityClassParamName(), loadClass.getCanonicalName());
 
         Map<String, Object> queryParams = query.getParameters();
-        params.put(queryDataSet.getQueryParamName() + ".params", queryParams);
+        params.put(queryDataSet.getQueryParamName() + DataSet.QUERY_PARAMS_POSTFIX, queryParams);
         return params;
     }
 

@@ -45,6 +45,7 @@ public class HtmlFormatter extends AbstractFormatter {
         defaultOutputType = ReportOutputType.HTML;
     }
 
+    @Override
     public void createDocument(Band rootBand, ReportOutputType outputType, OutputStream outputStream) {
 
         if (templateFile == null)

@@ -6,17 +6,17 @@
 
 package com.haulmont.cuba.report.loaders;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.DataSet;
+import com.haulmont.cuba.report.EntityMap;
 import com.haulmont.cuba.report.exception.ReportDataLoaderException;
 import org.apache.commons.lang.StringUtils;
 
@@ -57,7 +57,7 @@ public class QueryDataLoader implements DataLoader {
             throw new ReportDataLoaderException("Couldn't found entity class for Query");
         }
 
-        Map<String, Object> queryParams = (Map<String, Object>) params.get(queryParamName + ".params");
+        Map<String, Object> queryParams = (Map<String, Object>) params.get(queryParamName + DataSet.QUERY_PARAMS_POSTFIX);
 
         View queryView = MetadataProvider.getViewRepository().getView(metaClass, view);
 
@@ -82,30 +82,11 @@ public class QueryDataLoader implements DataLoader {
             tx.end();
         }
 
-        Collection<com.haulmont.chile.core.model.MetaProperty> propertyCollection = metaClass.getProperties();
         List<Map<String, Object>> results = new LinkedList<Map<String, Object>>();
         for (Object entity : queryResult) {
-            Map<String, Object> lineMap = new HashMap<String, Object>();
-            for (MetaProperty property : propertyCollection) {
-                lineMap.put(property.getName(), getValue((Instance) entity, property.getName()));
-            }
-            results.add(lineMap);
+            results.add(new EntityMap((Entity) entity));
         }
 
         return results;
-    }
-
-    private Object getValue(Instance instance, String key) {
-        if (key == null) return null;
-        Object value = null;
-        try {
-            value = instance.getValue(key.toString());
-        } catch (Exception e) {/*Do nothing*/}
-        if (value == null) {
-            try {
-                value = instance.getValueEx(key.toString());
-            } catch (Exception e) {/*Do nothing*/}
-        }
-        return value;
     }
 }
