@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.PickerField;
@@ -45,7 +46,7 @@ public abstract class AbstractFieldFactory {
                 } else if (typeName.equals(BooleanDatatype.NAME)) {
                     return createBooleanField(datasource, property);
                 } else if (typeName.equals(DateDatatype.NAME) || typeName.equals(DateTimeDatatype.NAME)) {
-                    return createDateField(datasource, property, mpp);
+                    return createDateField(datasource, property, mpp, xmlDescriptor);
                 } else if (typeName.equals(TimeDatatype.NAME)) {
                     return createTimeField(datasource, property, mpp);
                 } else if (datatype instanceof NumberDatatype) {
@@ -86,7 +87,8 @@ public abstract class AbstractFieldFactory {
         return textField;
     }
 
-    private Component createDateField(Datasource datasource, String property, MetaPropertyPath mpp) {
+    private Component createDateField(Datasource datasource, String property, MetaPropertyPath mpp,
+                                      Element xmlDescriptor) {
         DesktopDateField dateField = new DesktopDateField();
         dateField.setDatasource(datasource, property);
 
@@ -99,8 +101,20 @@ public abstract class AbstractFieldFactory {
                 tt = (TemporalType) metaProperty.getAnnotations().get("temporal");
         }
 
-        if (tt == TemporalType.DATE) {
+        final String resolution = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("resolution");
+
+        if (!StringUtils.isEmpty(resolution)) {
+            dateField.setResolution(DateField.Resolution.valueOf(resolution));
+        } else if (tt == TemporalType.DATE) {
             dateField.setResolution(DateField.Resolution.DAY);
+        }
+        String dateFormat = xmlDescriptor == null ? null : xmlDescriptor.attributeValue("dateFormat");
+        if (!StringUtils.isEmpty(dateFormat)) {
+            if (dateFormat.startsWith("msg://")) {
+                dateFormat = MessageProvider.getMessage(
+                        AppConfig.getMessagesPack(), dateFormat.substring(6, dateFormat.length()));
+            }
+            dateField.setDateFormat(dateFormat);
         }
         return dateField;
     }
