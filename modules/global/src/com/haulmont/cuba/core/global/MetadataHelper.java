@@ -71,8 +71,13 @@ public abstract class MetadataHelper {
                 BaseLongIdEntity.class.equals(javaClass);
     }
 
-    public static boolean isPersistent(MetaProperty metaProperty) {
-        return !metaProperty.getAnnotatedElement().isAnnotationPresent(com.haulmont.chile.core.annotations.MetaProperty.class);
+    public static boolean isPersistent(MetaPropertyPath metaPropertyPath) {
+        for (MetaProperty metaProperty : metaPropertyPath.getMetaProperties()) {
+            if (metaProperty.getAnnotatedElement().isAnnotationPresent(com.haulmont.chile.core.annotations.MetaProperty.class))
+                return false;
+        }
+
+        return true;
     }
 
     public static boolean isEmbedded(MetaProperty metaProperty){
