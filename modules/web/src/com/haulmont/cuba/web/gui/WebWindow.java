@@ -737,12 +737,15 @@ public class WebWindow
                 try {
                     com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
                     com.vaadin.ui.Component c = vComponent;
+                    com.vaadin.ui.Component prevC = null;
                     while (c != null) {
                         if (c instanceof com.vaadin.ui.Component.Focusable) {
                             ((com.vaadin.ui.Component.Focusable) c).focus();
-                        } else if (c instanceof TabSheet) {
-                            ((TabSheet) c).setSelectedTab(c);
+                        } else if (c instanceof TabSheet && !((TabSheet) c).getSelectedTab().equals(prevC)) {
+                            ((TabSheet) c).setSelectedTab(prevC);
+                            break;
                         }
+                        prevC = c;
                         c = c.getParent();
                     }
                     if (vComponent instanceof com.vaadin.ui.Component.Focusable)
