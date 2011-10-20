@@ -9,10 +9,7 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.LockService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.LockInfo;
-import com.haulmont.cuba.core.global.LockNotSupported;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -139,6 +136,10 @@ public class EditorWindowDelegate extends WindowDelegate {
                 final DataService dataservice = ds.getDataService();
                 item = dataservice.reload(item, ds.getView(), ds.getMetaClass(), useSecurityConstraints);
             }
+        }
+
+        if (item == null) {
+            throw new EntityDeletedException();
         }
 
         if (PersistenceHelper.isNew(item)

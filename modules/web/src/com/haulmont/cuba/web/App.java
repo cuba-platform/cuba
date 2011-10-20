@@ -259,6 +259,7 @@ public abstract class App extends Application
             exceptionHandlers.addHandler(new ReportExceptionHandler());
             exceptionHandlers.addHandler(new FileMissingExceptionHandler());
             exceptionHandlers.addHandler(new InvalidValueExceptionHandler());
+            exceptionHandlers.addHandler(new EntityDeletedExceptionHandler());
         } else {
             exceptionHandlers.getHandlers().clear();
         }

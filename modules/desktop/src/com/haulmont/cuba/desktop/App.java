@@ -389,6 +389,7 @@ public class App implements ConnectionListener {
             exceptionHandlers.addHandler(new JPAOptimisticExceptionHandler());
             exceptionHandlers.addHandler(new ReportExceptionHandler());
             exceptionHandlers.addHandler(new FileMissingExceptionHandler());
+            exceptionHandlers.addHandler(new EntityDeletedExceptionHandler());
         } else {
             exceptionHandlers.getHandlers().clear();
         }
