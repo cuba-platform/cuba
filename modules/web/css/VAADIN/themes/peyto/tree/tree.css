@@ -60,6 +60,11 @@
 	margin-left: 16px;
 }
 
+.v-tree-node-caption .v-icon {
+    display: inline;
+    vertical-align: text-bottom;
+}
+
 .v-tree-node-leaf .v-tree-node-caption {
 	margin-left: 2px;
 }
@@ -68,6 +73,7 @@
 .v-tree-node .v-tree-node-caption span {
 	padding: 0 2px;
 	cursor: default;
+	display: inline;
 	white-space: nowrap;
     font-size: 12px;
     color: #1E3146;

@@ -122,6 +122,12 @@ public interface WebConfig extends Config
     int getAppFoldersRefreshPeriodSec();
 
     /**
+     * @return Whether to use icons for folders.
+     */
+    @DefaultBoolean(false)
+    boolean getShowFolderIcons();
+
+    /**
      * @return Maximum number of symbols in main tabs captions.
      */
     @DefaultInt(25)

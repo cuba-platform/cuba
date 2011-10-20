@@ -46,6 +46,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Tree;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -429,6 +430,17 @@ public class FoldersPane extends VerticalLayout {
         for (Folder folder : folders) {
             tree.addItem(folder);
             tree.setItemCaption(folder, folder.getCaption());
+            if (ConfigProvider.getConfig(WebConfig.class).getShowFolderIcons()) {
+                if (folder instanceof SearchFolder) {
+                    if (BooleanUtils.isTrue(((SearchFolder) folder).getIsSet())) {
+                        tree.setItemIcon(folder, new ThemeResource("icons/set-small.png"));
+                    } else {
+                        tree.setItemIcon(folder, new ThemeResource("icons/search-folder-small.png"));
+                    }
+                } else if (folder instanceof AppFolder) {
+                    tree.setItemIcon(folder, new ThemeResource("icons/app-folder-small.png"));
+                }
+            }
         }
         for (Folder folder : folders) {
             if (folder.getParent() == null) {

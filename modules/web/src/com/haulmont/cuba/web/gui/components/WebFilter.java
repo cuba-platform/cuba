@@ -1561,7 +1561,8 @@ public class WebFilter
 
         public void actionPerform(Component component) {
             IFrame frame = WebFilter.this.getFrame();
-            String windowAlias = frame.getId();
+            String[] strings = ValuePathHelper.parse(getComponentPath());
+            String windowAlias = strings[0];
             frame.openLookup(windowAlias, new Window.Lookup.Handler() {
                 public void handleLookup(Collection items) {
                     String filterXml = filterEntity.getXml();
