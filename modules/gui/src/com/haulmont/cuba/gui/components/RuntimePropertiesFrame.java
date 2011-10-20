@@ -146,8 +146,8 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                     fieldsCount++;
                     newRuntime.addField(field, columnNo);
                     if (fieldsCount % rowsPerColumn == 0) {
-                        newRuntime.setColumns(columnNo + 1);
                         columnNo++;
+                        newRuntime.setColumns(columnNo + 1);
                     }
                 }
                 if (!rootFields.isEmpty())
