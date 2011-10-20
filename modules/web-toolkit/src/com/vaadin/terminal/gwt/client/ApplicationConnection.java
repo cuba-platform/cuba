@@ -113,6 +113,8 @@ public class ApplicationConnection {
 
     protected boolean applicationRunning = false;
 
+    protected boolean uiblocked = false;
+
     private int activeRequests = 0;
 
     /** Parameters for this application connection loaded from the web-page */
@@ -241,7 +243,7 @@ public class ApplicationConnection {
         client.isActive = function() {
             return ap.@com.vaadin.terminal.gwt.client.ApplicationConnection::hasActiveRequest()() ||
                     ap.@com.vaadin.terminal.gwt.client.ApplicationConnection::isLoadingIndicatorVisible()();
-        }
+        };
         var vi = ap.@com.vaadin.terminal.gwt.client.ApplicationConnection::getVersionInfo()();
         if (vi) {
             client.getVersionInfo = function() {
@@ -251,10 +253,10 @@ public class ApplicationConnection {
 
         client.getElementByPath = function(id) {
            return componentLocator.@com.vaadin.terminal.gwt.client.ComponentLocator::getElementByPath(Ljava/lang/String;)(id);
-        }
+        };
         client.getPathForElement = function(element) {
            return componentLocator.@com.vaadin.terminal.gwt.client.ComponentLocator::getPathForElement(Lcom/google/gwt/user/client/Element;)(element);
-        }
+        };
 
         if(!$wnd.vaadin.clients) {
            $wnd.vaadin.clients = {};
@@ -305,7 +307,7 @@ public class ApplicationConnection {
     			oldSync();
     		}
     		app.@com.vaadin.terminal.gwt.client.ApplicationConnection::sendPendingVariableChanges()();
-    	}
+    	};
     	var oldForceLayout;
     	if ($wnd.vaadin.forceLayout) {
     		oldForceLayout = $wnd.vaadin.forceLayout;
@@ -372,7 +374,7 @@ public class ApplicationConnection {
      */
     public String getAppUri() {
         return configuration.getApplicationUri();
-    };
+    }
 
     /**
      * Indicates whether or not there are currently active UIDL requests. Used
@@ -648,8 +650,10 @@ public class ApplicationConnection {
                 configuration.getCommunicationErrorMessage(),
                 configuration.getCommunicationErrorUrl());
         // Block UI if error
-        if (configuration.useUiBlocking())
+        if (configuration.useUiBlocking()) {
             blockUI(configuration.getCommunicationErrorMessage());
+            uiblocked = true;
+        }
     }
 
     /**
@@ -715,7 +719,7 @@ public class ApplicationConnection {
                      * loadTimer.cancel() so we have to check that we really
                      * should make it visible
                      */
-                    if (loadTimer != null) {
+                    if (getLoadTimer() != null) {
                         showLoadingIndicator(true);
                     }
 
@@ -723,7 +727,16 @@ public class ApplicationConnection {
             };
             // First one kicks in at 300ms
         }
+        VConsole.log("Start loading timer");
         loadTimer.schedule(300);
+    }
+
+    protected Timer getLoadTimer() {
+        return loadTimer;
+    }
+
+    protected Timer getBlockUITimer() {
+        return blockUITimer;
     }
 
     protected void endRequest() {
@@ -795,17 +808,21 @@ public class ApplicationConnection {
 
         if (blockUI) {
             if (configuration.useUiBlocking()) {
-                blockUITimer = new Timer() {
-                    @Override
-                    public void run() {
-                        if (blockUITimer != null) {
-                            blockUI(configuration.getBlockUiMessage());
-                            VConsole.log("Block UI");
+                if (blockUITimer == null) {
+                    blockUITimer = new Timer() {
+                        @Override
+                        public void run() {
+                            if (getBlockUITimer() != null) {
+                                blockUI(configuration.getBlockUiMessage());
+                                uiblocked = true;
+                                VConsole.log("Block UI");
+                            }
                         }
-                    }
-                };
+                    };
+                }
                 // Block UI after 3 sec delay
                 blockUITimer.schedule(DELAY_FOR_BLOCKING_UI);
+                VConsole.log("Start blocking timer");
             }
         }
 
@@ -822,16 +839,19 @@ public class ApplicationConnection {
 
         if (loadTimer != null) {
             loadTimer.cancel();
+            VConsole.log("Stop loading timer");
             if (blockUITimer != null) {
                 blockUITimer.cancel();
+                VConsole.log("Stop blocking timer");
                 blockUITimer = null;
             }
             loadTimer = null;
         }
 
-        if (applicationRunning) {
+        if (applicationRunning && uiblocked) {
             unBlockUI();
             VConsole.log("Unblock UI");
+            uiblocked = false;
         }
 
         if (loadElement != null) {
