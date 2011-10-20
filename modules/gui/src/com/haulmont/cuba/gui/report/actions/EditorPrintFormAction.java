@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.report.ReportHelper;
 import com.haulmont.cuba.report.*;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * <p>$Id$</p>
@@ -52,17 +53,22 @@ public class EditorPrintFormAction extends AbstractPrintFormAction {
     }
 
     @Override
-    protected void handleReportLookup(Report report, Window window, String paramAlias, Object paramValue, String name) {
+    protected String preprocessParams(Report report, String paramAlias, Object paramValue) {
         if (ENTITY_SPECIAL_KEY.equals(paramAlias)) {
+            List<ReportInputParameter> inputParameters = report.getInputParameters();
             DataSet singleDataSet = findDataSet(report.getRootBandDefinition(), DataSetType.SINGLE);
-            if (singleDataSet == null)
-                throw new IllegalStateException("Couldn't found single entity dataset in report");
-            paramAlias = singleDataSet.getEntityParamName();
+            if (singleDataSet == null) {
+                if ((inputParameters != null) && (inputParameters.size() > 0)) {
+                    paramAlias = inputParameters.get(0).getAlias();
+                }
+            } else
+                paramAlias = singleDataSet.getEntityParamName();
+
             if (paramValue instanceof ParameterPrototype) {
                 ((ParameterPrototype) paramValue).setParamName(paramAlias);
             }
         }
-        super.handleReportLookup(report, window, paramAlias, paramValue, name);
+        return paramAlias;
     }
 
     @Override

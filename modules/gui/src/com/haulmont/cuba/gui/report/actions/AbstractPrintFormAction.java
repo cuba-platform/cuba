@@ -33,7 +33,7 @@ abstract class AbstractPrintFormAction extends AbstractAction {
     }
 
     protected void openRunReportScreen(final Window window, final String paramAlias, final Object paramValue,
-                                     String javaClassName, ReportType reportType) {
+                                       String javaClassName, ReportType reportType) {
         openRunReportScreen(window, paramAlias, paramValue, javaClassName, reportType, null);
     }
 
@@ -41,15 +41,20 @@ abstract class AbstractPrintFormAction extends AbstractAction {
         if (bandDefinition == null)
             return null;
 
-        if (bandDefinition.getDataSets() == null)
+        List<DataSet> dataSets = bandDefinition.getDataSets();
+        if (dataSets == null)
             return null;
 
-        for (DataSet ds : bandDefinition.getDataSets()) {
+        for (DataSet ds : dataSets) {
             if (ds.getType() == dsType)
                 return ds;
         }
 
-        for (BandDefinition child : bandDefinition.getChildrenBandDefinitions()) {
+        List<BandDefinition> childrenBandDefinitions = bandDefinition.getChildrenBandDefinitions();
+        if (childrenBandDefinitions == null)
+            return null;
+
+        for (BandDefinition child : childrenBandDefinitions) {
             DataSet queryDataSet = findDataSet(child, dsType);
             if (queryDataSet != null)
                 return queryDataSet;
@@ -58,8 +63,12 @@ abstract class AbstractPrintFormAction extends AbstractAction {
         return null;
     }
 
+    protected String preprocessParams(Report report, String paramAlias, Object paramValue) {
+        return paramAlias;
+    }
+
     protected void openRunReportScreen(final Window window, final String paramAlias, final Object paramValue,
-                                     String javaClassName, ReportType reportType, @Nullable final String name) {
+                                       String javaClassName, ReportType reportType, @Nullable final String name) {
         Map<String, Object> params = new HashMap<String, Object>();
 
         String metaClass;
@@ -81,19 +90,16 @@ abstract class AbstractPrintFormAction extends AbstractAction {
                     if (items != null && items.size() > 0) {
                         Report report = (Report) items.iterator().next();
                         report = window.getDsContext().getDataService().reload(report, "report.edit");
-                        handleReportLookup(report, window, paramAlias, paramValue, name);
+                        String inputParamAlias = preprocessParams(report, paramAlias, paramValue);
+                        ReportHelper.runReport(report, window, inputParamAlias, paramValue, name);
                     }
                 }
             }, WindowManager.OpenType.DIALOG, params);
         }
     }
 
-    protected void handleReportLookup(Report report, Window window, String paramAlias, Object paramValue, String name) {
-        ReportHelper.runReport(report, window, paramAlias, paramValue, name);
-    }
-
     protected boolean checkReportsForStart(final Window window, final String paramAlias, final Object paramValue,
-                                         String javaClassName, ReportType reportType, @Nullable final String name) {
+                                           String javaClassName, ReportType reportType, @Nullable final String name) {
         Collection<MetaClass> metaClasses = MetadataHelper.getAllMetaClasses();
         String metaClassName = "";
         Iterator<MetaClass> iterator = metaClasses.iterator();
@@ -120,7 +126,8 @@ abstract class AbstractPrintFormAction extends AbstractAction {
         if (reports.size() == 1) {
             Report report = reports.get(0);
             window.getDsContext().getDataService().reload(report, "report.edit");
-            ReportHelper.runReport(report, window, paramAlias, paramValue, name);
+            String inputParamAlias = preprocessParams(report, paramAlias, paramValue);
+            ReportHelper.runReport(report, window, inputParamAlias, paramValue, name);
         } else if (reports.size() == 0) {
             String msg = MessageProvider.getMessage(ReportHelper.class, "report.notFoundReports");
             window.showNotification(msg, IFrame.NotificationType.HUMANIZED);

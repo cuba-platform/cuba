@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.report.ReportHelper;
 import com.haulmont.cuba.report.*;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * <p>$Id$</p>
@@ -47,6 +48,9 @@ public class TablePrintFormAction extends AbstractPrintFormAction {
     @Override
     public void actionPerform(Component component) {
         final Object selected = multiObjects ? table.getSelected() : table.getSingleSelected();
+
+        Action cancelAction = new DialogAction(DialogAction.Type.CANCEL);
+
         if (selected != null && (!multiObjects || ((Collection) selected).size() > 0)) {
 
             Action printSelectedAction = new AbstractAction("actions.printSelected") {
@@ -73,15 +77,19 @@ public class TablePrintFormAction extends AbstractPrintFormAction {
                 }
             };
 
-            Action cancelAction = new DialogAction(DialogAction.Type.CANCEL);
+            Action[] actions;
+            if (multiObjects) {
+                actions = new Action[]{printAllAction, printSelectedAction, cancelAction};
 
-            window.showOptionDialog(MessageProvider.getMessage(ReportHelper.class, "notifications.confirmPrintSelectedheader"),
-                    MessageProvider.getMessage(ReportHelper.class, "notifications.confirmPrintSelected"),
-                    IFrame.MessageType.CONFIRMATION,
-                    new Action[]{printAllAction, printSelectedAction, cancelAction});
+                window.showOptionDialog(MessageProvider.getMessage(ReportHelper.class, "notifications.confirmPrintSelectedheader"),
+                        MessageProvider.getMessage(ReportHelper.class, "notifications.confirmPrintSelected"),
+                        IFrame.MessageType.CONFIRMATION,
+                        actions);
+            } else {
+                printSelected(selected);
+            }
         } else {
-
-            if ((table.getDatasource().getState() == Datasource.State.VALID) &&
+            if (multiObjects && (table.getDatasource().getState() == Datasource.State.VALID) &&
                     (table.getDatasource().getItemIds().size() > 0)) {
                 Action yesAction = new DialogAction(DialogAction.Type.OK) {
                     @Override
@@ -89,8 +97,6 @@ public class TablePrintFormAction extends AbstractPrintFormAction {
                         printAll();
                     }
                 };
-
-                Action cancelAction = new DialogAction(DialogAction.Type.CANCEL);
 
                 window.showOptionDialog(MessageProvider.getMessage(ReportHelper.class, "notifications.confirmPrintAllheader"),
                         MessageProvider.getMessage(ReportHelper.class, "notifications.confirmPrintAll"),
@@ -102,32 +108,41 @@ public class TablePrintFormAction extends AbstractPrintFormAction {
         }
     }
 
-    @Override
-    protected void handleReportLookup(Report report, Window window, String paramAlias, Object paramValue, String name) {
+    protected String preprocessParams(Report report, String paramAlias, Object paramValue) {
+        List<ReportInputParameter> inputParameters = report.getInputParameters();
+
         if (ENTITY_SPECIAL_KEY.equals(paramAlias)) {
             DataSet singleDataSet = findDataSet(report.getRootBandDefinition(), DataSetType.SINGLE);
-            if (singleDataSet == null)
-                throw new IllegalStateException("Couldn't found single entity dataset in report");
-            paramAlias = singleDataSet.getEntityParamName();
+            if (singleDataSet == null) {
+                if ((inputParameters != null) && (inputParameters.size() > 0)) {
+                    paramAlias = inputParameters.get(0).getAlias();
+                }
+            } else
+                paramAlias = singleDataSet.getEntityParamName();
+
             if (paramValue instanceof ParameterPrototype) {
                 ((ParameterPrototype) paramValue).setParamName(paramAlias);
             }
         } else if (ENTITIES_LIST_SPECIAL_KEY.equals(paramAlias)) {
-            DataSet singleDataSet = findDataSet(report.getRootBandDefinition(), DataSetType.MULTI);
-            if (singleDataSet == null)
-                throw new IllegalStateException("Couldn't found multi entity dataset in report");
-            paramAlias = singleDataSet.getListEntitiesParamName();
+            DataSet multiDataSet = findDataSet(report.getRootBandDefinition(), DataSetType.MULTI);
+            if (multiDataSet == null) {
+                if ((inputParameters != null) && (inputParameters.size() > 0)) {
+                    paramAlias = inputParameters.get(0).getAlias();
+                }
+            } else
+                paramAlias = multiDataSet.getListEntitiesParamName();
+
             if (paramValue instanceof ParameterPrototype) {
                 ((ParameterPrototype) paramValue).setParamName(paramAlias);
             }
         }
-        super.handleReportLookup(report, window, paramAlias, paramValue, name);
+        return paramAlias;
     }
 
     private void printSelected(Object selected) {
         ReportType reportType = multiObjects ? ReportType.LIST_PRINT_FORM : ReportType.PRINT_FORM;
         String paramKey = multiObjects ? ENTITIES_LIST_SPECIAL_KEY : ENTITY_SPECIAL_KEY;
-        Class<?> selectedClass = ((Collection) selected).iterator().next().getClass();
+        Class<?> selectedClass = multiObjects ? ((Collection) selected).iterator().next().getClass() : selected.getClass();
 
         String javaClassName = multiObjects ? selectedClass.getCanonicalName() :
                 selected.getClass().getCanonicalName();
