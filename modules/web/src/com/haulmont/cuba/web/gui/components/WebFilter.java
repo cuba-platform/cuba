@@ -1496,7 +1496,9 @@ public class WebFilter
                 params.put("entityType", entityType);
                 params.put("items", table.getSelected());
                 params.put("componentPath", getComponentPath());
-                params.put("componentId", WebFilter.this.getId());
+                String[] strings = ValuePathHelper.parse(getComponentPath());
+                String componentId = ValuePathHelper.format(Arrays.copyOfRange(strings, 1, strings.length));
+                params.put("componentId", componentId);
                 params.put("foldersPane", foldersPane);
                 params.put("entityClass", datasource.getMetaClass().getJavaClass().getName());
                 params.put("query", datasource.getQuery());
