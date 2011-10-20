@@ -40,8 +40,6 @@ import java.util.*;
 @SuppressWarnings({"serial"})
 public class ReportHelper {
 
-    // todo Move it to GUI
-
     private ReportHelper() {
     }
 
@@ -138,6 +136,7 @@ public class ReportHelper {
      * @param editor Editor window
      * @return Action
      */
+    @Deprecated
     public static AbstractAction createPrintformFromEditorAction(String captionId, final Window.Editor editor) {
         return createPrintformFromEditorAction(captionId, editor, null);
     }
@@ -150,6 +149,7 @@ public class ReportHelper {
      * @param name Report name
      * @return Action
      */
+    @Deprecated
     public static AbstractAction createPrintformFromEditorAction(String captionId, final Window.Editor editor,
                                                                  @Nullable final String name) {
         return new EditorPrintFormAction(captionId, editor, name);
@@ -164,6 +164,7 @@ public class ReportHelper {
      * @param multiObjects Multiple objects support
      * @return Action
      */
+    @Deprecated
     public static AbstractAction createPrintformFromTableAction(String captionId, final Window window,
                                                                 final Table table, final boolean multiObjects) {
         return new TablePrintFormAction(captionId, window, table, multiObjects);

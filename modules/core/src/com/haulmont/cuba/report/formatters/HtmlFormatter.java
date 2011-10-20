@@ -20,7 +20,10 @@ import com.haulmont.cuba.report.exception.UnsupportedFormatException;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.*;
@@ -34,6 +37,8 @@ import java.util.Map;
  * Engine for create reports with HTML templates and FreeMarker markup
  */
 public class HtmlFormatter extends AbstractFormatter {
+
+    private static Log log = LogFactory.getLog(HtmlFormatter.class);
 
     public HtmlFormatter() {
         registerReportExtension("htm");
@@ -72,7 +77,7 @@ public class HtmlFormatter extends AbstractFormatter {
     private void renderPdfDocument(String htmlContent, OutputStream outputStream) {
         ITextRenderer renderer = new ITextRenderer();
         try {
-            File tmpFile = File.createTempFile("htmlReport",".htm");
+            File tmpFile = File.createTempFile("htmlReport", ".htm");
             DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(tmpFile));
             dataOutputStream.write(htmlContent.getBytes(Charset.forName("UTF-8")));
             dataOutputStream.close();
@@ -98,6 +103,9 @@ public class HtmlFormatter extends AbstractFormatter {
         try {
             htmlTemplate.process(templateModel, htmlWriter);
             htmlWriter.close();
+        } catch (TemplateException fmException) {
+            log.error("FreeMarker template exception", fmException);
+            throw new ReportingException("FreeMarkerException: " + fmException.getMessage());
         } catch (ReportingException e) {
             throw e;
         } catch (Exception e) {

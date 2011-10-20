@@ -57,7 +57,7 @@ public class TablePrintFormAction extends AbstractPrintFormAction {
 
                 @Override
                 public String getIcon() {
-                    return "icons/doc.png";
+                    return "icons/table-select-row.png";
                 }
             };
 
@@ -69,7 +69,7 @@ public class TablePrintFormAction extends AbstractPrintFormAction {
 
                 @Override
                 public String getIcon() {
-                    return "icons/documents.png";
+                    return "icons/table-select-all.png";
                 }
             };
 
