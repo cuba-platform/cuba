@@ -84,6 +84,7 @@ public class EntityRestore extends AbstractWindow {
                         filter.setFrame(getFrame());
                         filter.setStyleName(primaryFilter.getStyleName());
                         filter.setXmlDescriptor(primaryFilter.getXmlDescriptor());
+                        filter.setUseMaxResults(true);
                         filter.setDatasource(entitiesDs);
                         entitiesTable.setWidth("100%");
                         entitiesTable.setHeight("100%");

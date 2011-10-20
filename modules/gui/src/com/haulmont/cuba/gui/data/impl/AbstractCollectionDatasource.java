@@ -443,6 +443,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     public int getCount() {
         LoadContext context = new LoadContext(metaClass);
         LoadContext.Query q = createLoadContextQuery(context, savedParameters == null ? Collections.<String, Object>emptyMap() : savedParameters);
+        context.setSoftDeletion(isSoftDeletion());
         if (q == null)
             return 0;
 
