@@ -619,7 +619,7 @@ public class WebFilter
             parseFilterXml();
 
             internalSetFilterEntity();
-            if (filterEntity.getIsDefault()) {
+            if (BooleanUtils.isTrue(filterEntity.getIsDefault())) {
                 setDefaultFilter();
             }
             switchToUse();

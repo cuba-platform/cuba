@@ -876,7 +876,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             parseFilterXml();
 
             internalSetFilterEntity();
-            if (filterEntity.getIsDefault()) {
+            if (BooleanUtils.isTrue(filterEntity.getIsDefault())) {
                 setDefaultFilter();
             }
             switchToUse();
