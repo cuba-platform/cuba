@@ -290,12 +290,12 @@ configure(webModule) {
         copy {
             from 'css/VAADIN/themes'
             into outDir
-            include 'blacklabel/**'
+//            include 'blacklabel/**'
             include 'peyto/**'
         }
 
         ant.taskdef(name: 'buildTheme', classname: 'com.haulmont.cuba.ant.BuildThemeTask', classpath: configurations.provided.asPath)
-        ant.buildTheme(themeDir: new File(outDir, '/blacklabel'), destFile: 'styles-include.css')
+//        ant.buildTheme(themeDir: new File(outDir, '/blacklabel'), destFile: 'styles-include.css')
         ant.buildTheme(themeDir: new File(outDir, '/peyto'), destFile: 'styles-include.css')
     }
 
