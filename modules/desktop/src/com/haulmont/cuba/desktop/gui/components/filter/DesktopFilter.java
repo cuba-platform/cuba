@@ -77,6 +77,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     private String mainMessagesPack = AppConfig.getMessagesPack();
 
     private FilterEntity noFilter;
+    private ItemWrapper<FilterEntity> noFilterWrapper;
     private FilterEntity filterEntity;
     private ConditionsTree conditions = new ConditionsTree();
 
@@ -101,6 +102,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     private GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
     private ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
+    private String defaultFilterCaption;
 
     private Component applyTo;
 
@@ -119,6 +121,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         impl = new JPanel(topLayout);
         //todo foldersPane
+
+        defaultFilterCaption = MessageProvider.getMessage(MESSAGES_PACK, "defaultFilter");
 
         InputMap inputMap = impl.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         ActionMap actionMap = impl.getActionMap();
@@ -139,6 +143,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             }
         };
         noFilter.setName(MessageProvider.getMessage(mainMessagesPack, "filter.noFilter"));
+
+        noFilterWrapper = new ItemWrapper<FilterEntity>(noFilter,noFilter.toString());
 
         select = new DesktopLookupField();
         select.setRequired(true);
@@ -344,7 +350,11 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                 actions.addAction(new DeleteAction());
         }
 
-        actions.addAction(new MakeDefaultAction());
+        if (filterEntity != null && BooleanUtils.isNotTrue(filterEntity.getIsDefault())
+                && filterEntity.getFolder() == null
+                && filterEntity.getIsSet() == null) {
+            actions.addAction(new MakeDefaultAction());
+        }
         //todo
         /* if (filterEntity.getCode() == null && foldersPane != null && filterEntity.getFolder() == null)
             actions.addAction(new SaveAsFolderAction(false));
@@ -478,37 +488,48 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     private void internalSetFilterEntity() {
-        List<FilterEntity> list = new ArrayList(select.getOptionsList());
-        list.remove(filterEntity);
-        list.add(filterEntity);
-
+        List<ItemWrapper<FilterEntity>> list = select.getOptionsList();
+        for (ItemWrapper<FilterEntity> wrapper : list) {
+            if (wrapper.getItem() == filterEntity) {
+                list.remove(wrapper);
+                break;
+            }
+        }
+        String caption = getCurrentFilterCaption();
+        if (BooleanUtils.isTrue(filterEntity.getIsDefault()) && filterEntity.getFolder() == null) {
+            caption += " " + defaultFilterCaption;
+        }
+        list.add(new ItemWrapper<FilterEntity>(filterEntity, caption));
         final Map<FilterEntity, String> captions = new HashMap<FilterEntity, String>();
-        for (FilterEntity filter : list) {
-            if (filter == filterEntity) {
-                captions.put(filter, getCurrentFilterCaption());
+        for (ItemWrapper<FilterEntity> filterWrapper : list) {
+            String filterCaption;
+            if (filterWrapper.getItem() == filterEntity) {
+                filterCaption = getCurrentFilterCaption();
+                captions.put(filterWrapper.getItem(), getCurrentFilterCaption());
             } else {
-                if (filter.getCode() == null)
-                    captions.put(filter, filter.getName());
-                else {
-                    captions.put(filter, MessageProvider.getMessage(mainMessagesPack, filter.getCode()));
+                filterCaption = getFilterCaption(filterWrapper.getItem());
+                if (BooleanUtils.isTrue(filterWrapper.getItem().getIsDefault())) {
+                    filterCaption += " " + defaultFilterCaption;
                 }
             }
+
+            captions.put(filterWrapper.getItem(), filterCaption);
         }
 
         Collections.sort(
                 list,
-                new Comparator<FilterEntity>() {
-                    public int compare(FilterEntity f1, FilterEntity f2) {
-                        return captions.get(f1).compareTo(captions.get(f2));
+                new Comparator<ItemWrapper>() {
+                    public int compare(ItemWrapper f1, ItemWrapper f2) {
+                        return captions.get(f1.getItem()).compareTo(captions.get(f2.getItem()));
                     }
                 }
         );
 
         select.setOptionsList(list);
-        select.setNullOption(noFilter);
-        for (FilterEntity filter : list) {
-            if (filter == filterEntity) {
-                select.setValue(filter);
+        select.setNullOption(noFilterWrapper);
+        for (ItemWrapper filterWrapper : list) {
+            if (filterWrapper.getItem() == filterEntity) {
+                select.setValue(filterWrapper);
             }
         }
     }
@@ -655,59 +676,31 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         Window window = ComponentsHelper.getWindow(this);
 
-        SettingsImpl settings = new SettingsImpl(window.getId());
-
-        String componentPath = getComponentPath();
-        String[] strings = ValuePathHelper.parse(componentPath);
-        String name = ValuePathHelper.format((String[]) ArrayUtils.subarray(strings, 1, strings.length));
-
-        Element e = settings.get(name).element("defaultFilter");
-        if (e != null) {
-            String defIdStr = e.attributeValue("id");
-            Boolean applyDefault = Boolean.valueOf(e.attributeValue("applyDefault"));
-            if (!StringUtils.isBlank(defIdStr)) {
-                UUID defaultId = null;
-                try {
-                    defaultId = UUID.fromString(defIdStr);
-                } catch (IllegalArgumentException ex) {
-                    //
-                }
-                if (defaultId != null) {
-                    Collection<FilterEntity> filters = select.getOptionsList();
-                    for (FilterEntity filter : filters) {
-                        if (defaultId.equals(filter.getId())) {
-                            filter.setIsDefault(true);
-                            filter.setApplyDefault(applyDefault);
-
-                            Map<String, Object> params = window.getContext().getParams();
-                            if (!BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
-                                applyingDefault = true;
-                                try {
-                                            select.setValue(filter);
-                                                                           
-                                    
-
-                                    updateControls();
-                                    if (clientConfig.getGenericFilterManualApplyRequired()) {
-                                        if (filter.getApplyDefault()) {
-                                            apply(true);
-                                        }
-                                    } else apply(true);
-                                    if (filterEntity != null)
-                                        if (filterEntity.getCode() != null) {
-                                            window.setDescription(MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode()));
-                                        } else
-                                            window.setDescription(filterEntity.getName());
-                                    else
-                                        window.setDescription(null);
-                                } finally {
-                                    applyingDefault = false;
-                                }
+        Collection<ItemWrapper<FilterEntity>> filters = select.getOptionsList();
+        FilterEntity defaultFilter = getDefaultFilter(filters);
+        for (ItemWrapper<FilterEntity> filterWrapper : filters) {
+            if (ObjectUtils.equals(defaultFilter, filterWrapper.getItem())) {
+                filterWrapper.setCaption(getFilterCaption(filterWrapper.getItem()) + " " + defaultFilterCaption);
+                Map<String, Object> params = window.getContext().getParams();
+                if (!BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
+                    applyingDefault = true;
+                    try {
+                        select.setValue(filterWrapper);
+                        updateControls();
+                        if (clientConfig.getGenericFilterManualApplyRequired()) {
+                            if (filterWrapper.getItem().getApplyDefault()) {
+                                apply(true);
                             }
-                            break;
-                        }
+                        } else apply(true);
+                        if (filterEntity != null)
+                            window.setDescription(getFilterCaption(filterEntity));
+                        else
+                            window.setDescription(null);
+                    } finally {
+                        applyingDefault = false;
                     }
                 }
+                break;
             }
         }
     }
@@ -717,6 +710,14 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             filterEntity = null;
 
         switchToUse();
+    }
+
+    private String getFilterCaption(FilterEntity filter) {
+        if (filter.getCode() == null)
+            return filter.getName();
+        else {
+            return MessageProvider.getMessage(mainMessagesPack, filter.getCode());
+        }
     }
 
     private void loadFilterEntities() {
@@ -736,11 +737,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         List<FilterEntity> filters = new ArrayList(ds.loadList(ctx));
         final Map<FilterEntity, String> captions = new HashMap<FilterEntity, String>();
         for (FilterEntity filter : filters) {
-            if (filter.getCode() == null)
-                captions.put(filter, filter.getName());
-            else {
-                captions.put(filter, MessageProvider.getMessage(mainMessagesPack, filter.getCode()));
-            }
+            String filterCaption = getFilterCaption(filter);
+            captions.put(filter, filterCaption);
         }
 
         Collections.sort(
@@ -751,8 +749,46 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                     }
                 }
         );
-        select.setOptionsList(filters);
-        select.setNullOption(noFilter);
+        List<ItemWrapper<FilterEntity>> wrappedList = new LinkedList<ItemWrapper<FilterEntity>>();
+        for (FilterEntity filter : filters) {
+            wrappedList.add(new ItemWrapper<FilterEntity>(filter, getFilterCaption(filter)));
+        }
+        select.setOptionsList(wrappedList);
+        select.setNullOption(noFilterWrapper);
+    }
+
+    private FilterEntity getDefaultFilter(Collection<ItemWrapper<FilterEntity>> filterWrappers) {
+        Window window = ComponentsHelper.getWindow(this);
+        SettingsImpl settings = new SettingsImpl(window.getId());
+
+        String componentPath = getComponentPath();
+        String[] strings = ValuePathHelper.parse(componentPath);
+        String name = ValuePathHelper.format((String[]) ArrayUtils.subarray(strings, 1, strings.length));
+
+        Element e = settings.get(name).element("defaultFilter");
+        if (e != null) {
+            String defIdStr = e.attributeValue("id");
+            Boolean applyDefault = Boolean.valueOf(e.attributeValue("applyDefault"));
+            if (!StringUtils.isBlank(defIdStr)) {
+                UUID defaultId = null;
+                try {
+                    defaultId = UUID.fromString(defIdStr);
+                } catch (IllegalArgumentException ex) {
+                    //
+                }
+                if (defaultId != null) {
+                    for (ItemWrapper<FilterEntity> filterWrapper : filterWrappers) {
+                        if (defaultId.equals(filterWrapper.getItem().getId())) {
+                            FilterEntity filter = filterWrapper.getItem();
+                            filter.setIsDefault(true);
+                            filter.setApplyDefault(applyDefault);
+                            return filter;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private void saveFilterEntity() {
@@ -792,9 +828,9 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     private void createEditLayout() {
         List<String> names = new ArrayList<String>();
         Map<String, Locale> locales = globalConfig.getAvailableLocales();
-        for (FilterEntity filter : (List<FilterEntity>) select.getOptionsList()) {
+        for (ItemWrapper<FilterEntity> filterWrapper : (List<ItemWrapper<FilterEntity>>) select.getOptionsList()) {
+            FilterEntity filter = filterWrapper.getItem();
             if (filter != filterEntity) {
-
                 if (filter.getCode() == null)
                     names.add(filter.getName());
                 else {
@@ -813,10 +849,10 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (BooleanUtils.isTrue(filterEntity.getIsDefault())) {
-                    Collection<FilterEntity> filters = select.getOptionsList();
-                    for (FilterEntity filter : filters) {
-                        if (!filter.equals(filterEntity))
-                            filter.setIsDefault(false);
+                    Collection<ItemWrapper<FilterEntity>> filterWrappers = select.getOptionsList();
+                    for (ItemWrapper<FilterEntity> filterWrapper : filterWrappers) {
+                        if (!filterWrapper.getItem().equals(filterEntity))
+                            filterWrapper.getItem().setIsDefault(false);
                     }
                 }
             }
@@ -840,7 +876,9 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             parseFilterXml();
 
             internalSetFilterEntity();
-
+            if (filterEntity.getIsDefault()) {
+                setDefaultFilter();
+            }
             switchToUse();
         } finally {
             changingFilter = false;
@@ -935,11 +973,11 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         UUID defaultId = null;
         Boolean applyDefault = false;
-        Collection<FilterEntity> filters = select.getOptionsList();
-        for (FilterEntity filter : filters) {
-            if (BooleanUtils.isTrue(filter.getIsDefault())) {
-                defaultId = filter.getId();
-                applyDefault = filter.getApplyDefault();
+        Collection<ItemWrapper<FilterEntity>> filterWrappers = select.getOptionsList();
+        for (ItemWrapper<FilterEntity> filterWraper : filterWrappers) {
+            if (BooleanUtils.isTrue(filterWraper.getItem().getIsDefault())) {
+                defaultId = filterWraper.getItem().getId();
+                applyDefault = filterWraper.getItem().getApplyDefault();
                 break;
             }
         }
@@ -985,11 +1023,10 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                                 deleteFilterEntity();
                                 filterEntity = null;
                                 select.getOptionsList().remove(select.getValue());
-
                                 if (!select.getOptionsList().isEmpty()) {
                                     select.setValue(select.getOptionsList().iterator().next());
                                 } else {
-                                    select.setValue(noFilter);
+                                    select.setValue(noFilterWrapper);
                                 }
                             }
                         },
@@ -1002,10 +1039,14 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         if (filterEntity != null) {
             filterEntity.setIsDefault(true);
         }
-        Collection<FilterEntity> filters = select.getOptionsList();
-        for (FilterEntity filter : filters) {
-            if (!ObjectUtils.equals(filter, filterEntity))
-                filter.setIsDefault(false);
+        Collection<ItemWrapper<FilterEntity>> filterWrappers = select.getOptionsList();
+        for (ItemWrapper<FilterEntity> filterWrapper : filterWrappers) {
+            if (!ObjectUtils.equals(filterWrapper.getItem(), filterEntity)) {
+                filterWrapper.getItem().setIsDefault(false);
+                filterWrapper.setCaption(getFilterCaption(filterWrapper.getItem()));
+            } else {
+                filterWrapper.setCaption(getFilterCaption(filterWrapper.getItem()) + " " + defaultFilterCaption);
+            }
         }
     }
 
@@ -1016,7 +1057,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             if (changingFilter)
                 return;
 
-            filterEntity = select.getValue();
+            filterEntity = ((ItemWrapper<FilterEntity>)select.getValue()).getItem();
             if (filterEntity.equals(noFilter)) {
                 filterEntity = null;
             }
@@ -1135,6 +1176,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         @Override
         public void actionPerform(Component component) {
             setDefaultFilter();
+            actions.removeAction(MakeDefaultAction.this);
         }
     }
 

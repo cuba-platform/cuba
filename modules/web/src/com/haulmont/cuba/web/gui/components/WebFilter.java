@@ -113,11 +113,12 @@ public class WebFilter
 
     private GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
     private ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
+    private String defaultFilterCaption;
 
     public WebFilter() {
         persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
         component = new VerticalActionsLayout();
-
+        defaultFilterCaption = MessageProvider.getMessage(MESSAGES_PACK, "defaultFilter");
         component.addActionHandler(new com.vaadin.event.Action.Handler() {
             private com.vaadin.event.ShortcutAction shortcutAction =
                     new com.vaadin.event.ShortcutAction("applyFilterAction",
@@ -268,8 +269,11 @@ public class WebFilter
                     UserSessionProvider.getUserSession().getUser().equals(filterEntity.getUser()))
                 actions.addAction(new DeleteAction());
         }
-
-        actions.addAction(new MakeDefaultAction());
+        if (filterEntity != null && BooleanUtils.isNotTrue(filterEntity.getIsDefault())
+                && filterEntity.getFolder() == null
+                && filterEntity.getIsSet() == null) {
+            actions.addAction(new MakeDefaultAction());
+        }
 
         if (filterEntity.getCode() == null && foldersPane != null && filterEntity.getFolder() == null)
             actions.addAction(new SaveAsFolderAction(false));
@@ -569,58 +573,30 @@ public class WebFilter
         loadFilterEntities();
 
         Window window = ComponentsHelper.getWindow(this);
-        SettingsImpl settings = new SettingsImpl(window.getId());
 
-        String componentPath = getComponentPath();
-        String[] strings = ValuePathHelper.parse(componentPath);
-        String name = ValuePathHelper.format((String[]) ArrayUtils.subarray(strings, 1, strings.length));
-
-        Element e = settings.get(name).element("defaultFilter");
-        if (e != null) {
-            String defIdStr = e.attributeValue("id");
-            Boolean applyDefault = Boolean.valueOf(e.attributeValue("applyDefault"));
-            if (!StringUtils.isBlank(defIdStr)) {
-                UUID defaultId = null;
+        Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
+        FilterEntity defaultFilter = getDefaultFilter(filters);
+        if (defaultFilter != null) {
+            Map<String, Object> params = window.getContext().getParams();
+            if (!BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
+                applyingDefault = true;
                 try {
-                    defaultId = UUID.fromString(defIdStr);
-                } catch (IllegalArgumentException ex) {
-                    //
-                }
-                if (defaultId != null) {
-                    Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
-                    for (FilterEntity filter : filters) {
-                        if (defaultId.equals(filter.getId())) {
-                            filter.setIsDefault(true);
-                            filter.setApplyDefault(applyDefault);
-
-                            Map<String, Object> params = window.getContext().getParams();
-                            if (!BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
-                                applyingDefault = true;
-                                try {
-                                    select.setValue(filter);
-                                    updateControls();
-                                    if (clientConfig.getGenericFilterManualApplyRequired()) {
-                                        if (filter.getApplyDefault()) {
-                                            apply(true);
-                                        }
-                                    } else apply(true);
-                                    if (filterEntity != null)
-                                        if (filterEntity.getCode() != null) {
-                                            window.setDescription(MessageProvider.getMessage(mainMessagesPack, filterEntity.getCode()));
-                                        } else
-                                            window.setDescription(filterEntity.getName());
-                                    else
-                                        window.setDescription(null);
-                                } finally {
-                                    applyingDefault = false;
-                                }
-                            }
-                            else{
-
-                            }
-                            break;
+                    select.setValue(defaultFilter);
+                    select.setItemCaption(defaultFilter, getFilterCaption(defaultFilter)
+                            + " "
+                            + defaultFilterCaption);
+                    updateControls();
+                    if (clientConfig.getGenericFilterManualApplyRequired()) {
+                        if (defaultFilter.getApplyDefault()) {
+                            apply(true);
                         }
-                    }
+                    } else apply(true);
+                    if (filterEntity != null) {
+                        window.setDescription(getFilterCaption(filterEntity));
+                    } else
+                        window.setDescription(null);
+                } finally {
+                    applyingDefault = false;
                 }
             }
         }
@@ -643,7 +619,9 @@ public class WebFilter
             parseFilterXml();
 
             internalSetFilterEntity();
-
+            if (filterEntity.getIsDefault()) {
+                setDefaultFilter();
+            }
             switchToUse();
         } finally {
             changingFilter = false;
@@ -660,15 +638,16 @@ public class WebFilter
 
         final Map<FilterEntity, String> captions = new HashMap<FilterEntity, String>();
         for (FilterEntity filter : list) {
+            String filterCaption;
             if (filter == filterEntity) {
-                captions.put(filter, getCurrentFilterCaption());
+                filterCaption = getCurrentFilterCaption();
             } else {
-                if (filter.getCode() == null)
-                    captions.put(filter, filter.getName());
-                else {
-                    captions.put(filter, MessageProvider.getMessage(mainMessagesPack, filter.getCode()));
+                filterCaption = getFilterCaption(filter);
+                if (BooleanUtils.isTrue(filter.getIsDefault())) {
+                    filterCaption += " " + defaultFilterCaption;
                 }
             }
+            captions.put(filter, filterCaption);
         }
 
         Collections.sort(
@@ -726,6 +705,14 @@ public class WebFilter
         switchToUse();
     }
 
+    private String getFilterCaption(FilterEntity filter) {
+        if (filter.getCode() == null)
+            return filter.getName();
+        else {
+            return MessageProvider.getMessage(mainMessagesPack, filter.getCode());
+        }
+    }
+
     private void loadFilterEntities() {
         DataService ds = ServiceLocator.getDataService();
         LoadContext ctx = new LoadContext(FilterEntity.class);
@@ -743,11 +730,8 @@ public class WebFilter
         List<FilterEntity> filters = new ArrayList(ds.loadList(ctx));
         final Map<FilterEntity, String> captions = new HashMap<FilterEntity, String>();
         for (FilterEntity filter : filters) {
-            if (filter.getCode() == null)
-                captions.put(filter, filter.getName());
-            else {
-                captions.put(filter, MessageProvider.getMessage(mainMessagesPack, filter.getCode()));
-            }
+            String filterCaption = getFilterCaption(filter);
+            captions.put(filter, filterCaption);
         }
 
         Collections.sort(
@@ -764,6 +748,39 @@ public class WebFilter
             select.addItem(filter);
             select.setItemCaption(filter, captions.get(filter));
         }
+    }
+
+    private FilterEntity getDefaultFilter(Collection<FilterEntity> filters) {
+        Window window = ComponentsHelper.getWindow(this);
+        SettingsImpl settings = new SettingsImpl(window.getId());
+
+        String componentPath = getComponentPath();
+        String[] strings = ValuePathHelper.parse(componentPath);
+        String name = ValuePathHelper.format((String[]) ArrayUtils.subarray(strings, 1, strings.length));
+
+        Element e = settings.get(name).element("defaultFilter");
+        if (e != null) {
+            String defIdStr = e.attributeValue("id");
+            Boolean applyDefault = Boolean.valueOf(e.attributeValue("applyDefault"));
+            if (!StringUtils.isBlank(defIdStr)) {
+                UUID defaultId = null;
+                try {
+                    defaultId = UUID.fromString(defIdStr);
+                } catch (IllegalArgumentException ex) {
+                    //
+                }
+                if (defaultId != null) {
+                    for (FilterEntity filter : filters) {
+                        if (defaultId.equals(filter.getId())) {
+                            filter.setIsDefault(true);
+                            filter.setApplyDefault(applyDefault);
+                            return filter;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private void saveFilterEntity() {
@@ -1182,9 +1199,15 @@ public class WebFilter
         }
         Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
         for (FilterEntity filter : filters) {
-            if (!ObjectUtils.equals(filter, filterEntity))
-                filter.setIsDefault(false);
+            if (!ObjectUtils.equals(filter, filterEntity)) {
+                if (BooleanUtils.isTrue(filter.getIsDefault())) {
+                    select.setItemCaption(filter, getFilterCaption(filter));
+                    filter.setIsDefault(false);
+                }
+            }
         }
+        if (filterEntity != null)
+            select.setItemCaption(filterEntity, getFilterCaption(filterEntity) + " " + defaultFilterCaption);
     }
 
     private class SelectListener implements Property.ValueChangeListener {
@@ -1304,6 +1327,7 @@ public class WebFilter
         @Override
         public void actionPerform(Component component) {
             setDefaultFilter();
+            actions.removeAction(MakeDefaultAction.this);
         }
     }
 

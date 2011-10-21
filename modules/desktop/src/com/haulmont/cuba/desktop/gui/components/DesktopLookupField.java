@@ -25,6 +25,7 @@ import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import java.awt.event.*;
+import java.util.List;
 
 /**
  * <p>$Id$</p>
@@ -270,6 +271,12 @@ public class DesktopLookupField
     @Override
     public void setCaption(String caption) {
         this.caption = caption;
+    }
+
+    @Override
+    public void setOptionsList(List optionsList) {
+        super.setOptionsList(optionsList);
+        optionsInitialized = false;
     }
 
     @Override
