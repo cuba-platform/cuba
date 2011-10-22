@@ -58,6 +58,7 @@ public class FolderEditWindow extends Window {
         setCaption(adding ? getMessage("folders.folderEditWindow.adding") : getMessage("folders.folderEditWindow"));
 
         setWidth(300, Sizeable.UNITS_PIXELS);
+        setResizable(false);
 
         layout = new VerticalLayout();
         layout.setMargin(true);
