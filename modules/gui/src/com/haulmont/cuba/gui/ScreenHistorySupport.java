@@ -63,7 +63,8 @@ public class ScreenHistorySupport {
                     if (PersistenceHelper.isNew(entity)) {
                         return;
                     }
-                    caption = MessageUtils.getEntityCaption(entity.getMetaClass()) + " " + entity.getInstanceName();
+                    if (StringUtils.isBlank(caption))
+                        caption = MessageUtils.getEntityCaption(entity.getMetaClass()) + " " + entity.getInstanceName();
                 }
             }
             ScreenHistoryEntity screenHistoryEntity = MetadataProvider.create(ScreenHistoryEntity.class);
