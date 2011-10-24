@@ -144,11 +144,17 @@ public class QueryFilter {
         if (declaredParams.isEmpty())
             return true;
 
+        // Return true only if declared params have values and there is at least one non-session parameter among them.
+        // This is necessary to exclude generic filter conditions that contain only session parameters. Otherwise
+        // there is no way to handle exclusion. Unfortunately this imposes the restriction on custom filters design:
+        // condition with session-only parameters must be avoided, they must be coded as part of main query body or as
+        // part of another condition.
+        boolean found = false;
         for (ParameterInfo paramInfo : declaredParams) {
-            if (params.contains(paramInfo.getName()))
-                return true;
+            if (params.contains(paramInfo.getName())) {
+                found = found || !paramInfo.getType().equals(ParameterInfo.Type.SESSION);
+            }
         }
-
-        return false;
+        return found;
     }
 }
