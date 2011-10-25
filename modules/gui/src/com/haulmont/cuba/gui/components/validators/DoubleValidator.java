@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.ValidationException;
+import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
 
 import java.math.BigDecimal;
@@ -28,11 +29,13 @@ public class DoubleValidator implements Field.Validator {
 
     protected String message;
     protected String messagesPack;
+    protected String onlyPositive;
 
     private static final long serialVersionUID = 7129516061104979525L;
 
     public DoubleValidator(Element element, String messagesPack) {
         message = element.attributeValue("message");
+        onlyPositive = element.attributeValue("onlyPositive");
         this.messagesPack = messagesPack;
     }
 
@@ -44,18 +47,26 @@ public class DoubleValidator implements Field.Validator {
         this.message = MessageProvider.getMessage(AppConfig.getMessagesPack(), "validation.invalidNumber");
     }
 
+    private boolean checkDoubleOnPositive(Double value) {
+        return !ObjectUtils.equals("true", onlyPositive) || value >= 0;
+    }
+
+    private boolean checkBigDecimalOnPositive(BigDecimal value) {
+        return !ObjectUtils.equals("true", onlyPositive) || value.compareTo(BigDecimal.ZERO) >= 0;
+    }
+
     public void validate(Object value) throws ValidationException {
         boolean result;
         if (value instanceof String) {
             try {
                 Datatype<Double> datatype = Datatypes.get(DoubleDatatype.NAME);
-                datatype.parse((String) value, UserSessionProvider.getLocale());
-                result = true;
+                Double num = datatype.parse((String) value, UserSessionProvider.getLocale());
+                result = checkDoubleOnPositive(num);
             } catch (ParseException e) {
                 result = false;
             }
         } else {
-            result = (value instanceof Double) || (value instanceof BigDecimal);
+            result = (value instanceof Double && checkDoubleOnPositive((Double) value)) || (value instanceof BigDecimal && checkBigDecimalOnPositive((BigDecimal) value));
         }
 
         if (!result) {
