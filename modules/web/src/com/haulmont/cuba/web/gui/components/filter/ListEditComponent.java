@@ -17,16 +17,23 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.web.gui.components.WebButton;
+import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebPickerField;
 import com.vaadin.data.Property;
 import com.vaadin.terminal.*;
 import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Field;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.text.StrBuilder;
@@ -460,24 +467,31 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
                 field = lookup.getComponent();
 
             } else if (Date.class.isAssignableFrom(itemClass)) {
-                field = new DateField();
-                ((DateField) field).setImmediate(true);
-                if (itemClass.equals(java.sql.Date.class))
-                    ((DateField) field).setResolution(DateField.RESOLUTION_DAY);
-                else
-                    ((DateField) field).setResolution(DateField.RESOLUTION_MIN);
-                field.addListener(
-                        new ValueChangeListener() {
-                            public void valueChange(Property.ValueChangeEvent event) {
-                                Object value = event.getProperty().getValue();
-                                if (value != null) {
-                                    String str = addDate((Date) value);
-                                    addItemLayout(value, str);
-                                    field.setValue(null);
-                                }
-                            }
+                final WebDateField dateField = new WebDateField();
+
+                field = dateField.getComponent();
+                DateField.Resolution resolution;
+                String dateFormat;
+                if (itemClass.equals(java.sql.Date.class)) {
+                    resolution = DateField.Resolution.DAY;
+                    dateFormat = MessageProvider.getMessage(AppConfig.getMessagesPack(), "dateFormat");
+                } else {
+                    resolution = DateField.Resolution.MIN;
+                    dateFormat = MessageProvider.getMessage(AppConfig.getMessagesPack(), "dateTimeFormat");
+                }
+                dateField.setResolution(resolution);
+                dateField.setDateFormat(dateFormat);
+
+                dateField.addListener(new ValueListener() {
+                    @Override
+                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                        if (value != null) {
+                            String str = addDate((Date) value);
+                            addItemLayout(value, str);
+                            field.setValue(null);
                         }
-                );
+                    }
+                });
             } else
                 throw new UnsupportedOperationException();
 
