@@ -10,25 +10,23 @@
  */
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.sys.persistence.PostgresUUID;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.global.*;
-
-import javax.persistence.TemporalType;
-import javax.persistence.FlushModeType;
-import java.util.*;
-import java.sql.SQLException;
-
-import org.apache.openjpa.persistence.OpenJPAQuery;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import com.haulmont.cuba.core.sys.persistence.PostgresUUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAQuery;
 
-public class QueryImpl implements Query
-{
+import javax.persistence.FlushModeType;
+import javax.persistence.TemporalType;
+import java.sql.SQLException;
+import java.util.*;
+
+public class QueryImpl<T> implements TypedQuery<T> {
     private Log log = LogFactory.getLog(QueryImpl.class);
 
     private EntityManagerImpl em;
@@ -36,8 +34,14 @@ public class QueryImpl implements Query
     private OpenJPAQuery query;
     private boolean isNative;
     private String queryString;
+    private Class<T> resultClass;
 
     private Collection<QueryMacroHandler> macroHandlers;
+
+    public QueryImpl(EntityManagerImpl entityManager, boolean isNative, Class<T> resultClass) {
+        this(entityManager, isNative);
+        this.resultClass = resultClass;
+    }
 
     public QueryImpl(EntityManagerImpl entityManager, boolean isNative) {
         this.em = entityManager;
@@ -46,18 +50,21 @@ public class QueryImpl implements Query
         this.macroHandlers = AppContext.getBeansOfType(QueryMacroHandler.class).values();
     }
 
-    private OpenJPAQuery getQuery() {
+    private OpenJPAQuery<T> getQuery() {
         if (query == null) {
             if (isNative) {
                 log.trace("Creating SQL query: " + queryString);
                 query = emDelegate.createNativeQuery(queryString);
                 query.setFlushMode(FlushModeType.COMMIT);
-            }
-            else {
+            } else {
                 log.trace("Creating JPQL query: " + queryString);
                 String s = transformQueryString();
                 log.trace("Transformed JPQL query: " + s);
-                query = emDelegate.createQuery(s);
+                if (resultClass != null) {
+                    query = (OpenJPAQuery) emDelegate.createQuery(s, resultClass);
+                } else {
+                    query = emDelegate.createQuery(s);
+                }
                 query.setFlushMode(FlushModeType.COMMIT);
             }
         }
@@ -74,8 +81,7 @@ public class QueryImpl implements Query
         Class cls = tmpQuery.getResultClass();
         if (cls == null
                 || !BaseEntity.class.isAssignableFrom(cls)
-                || !PersistenceHelper.isSoftDeleted(cls))
-        {
+                || !PersistenceHelper.isSoftDeleted(cls)) {
             return result;
         } else {
             String entityName = PersistenceHelper.getEntityName(cls);
@@ -106,19 +112,19 @@ public class QueryImpl implements Query
         }
     }
 
-    public List getResultList() {
+    public List<T> getResultList() {
         if (!isNative && log.isTraceEnabled())
             log.trace("JPQL query result class: " + getQuery().getResultClass());
-        OpenJPAQuery jpaQuery = getQuery();
+        OpenJPAQuery<T> jpaQuery = getQuery();
         addMacroParams(jpaQuery);
         return jpaQuery.getResultList();
     }
 
-    public Object getSingleResult() {
+    public T getSingleResult() {
         if (!isNative && log.isTraceEnabled())
             log.trace("JPQL query result class: " + getQuery().getResultClass());
 
-        OpenJPAQuery jpaQuery = getQuery();
+        OpenJPAQuery<T> jpaQuery = getQuery();
         addMacroParams(jpaQuery);
         return jpaQuery.getSingleResult();
     }

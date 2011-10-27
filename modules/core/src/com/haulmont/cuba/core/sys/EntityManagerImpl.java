@@ -12,6 +12,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.app.DataCacheAPI;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
@@ -29,10 +30,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class EntityManagerImpl implements EntityManager
-{
-    public interface CloseListener
-    {
+public class EntityManagerImpl implements EntityManager {
+    public interface CloseListener {
         void onClose();
     }
 
@@ -90,8 +89,7 @@ public class EntityManagerImpl implements EntityManager
         if (entity instanceof SoftDelete && softDeletion) {
             ((SoftDelete) entity).setDeleteTs(TimeProvider.currentTimestamp());
             ((SoftDelete) entity).setDeletedBy(userSession != null ? userSession.getUser().getLogin() : "<unknown>");
-        }
-        else {
+        } else {
             delegate.remove(entity);
         }
     }
@@ -115,6 +113,13 @@ public class EntityManagerImpl implements EntityManager
     public Query createQuery(String qlStr) {
         QueryImpl query = new QueryImpl(this, false);
         query.setQueryString(qlStr);
+        return query;
+    }
+
+    @Override
+    public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass) {
+        QueryImpl<T> query = new QueryImpl<T>(this, false, resultClass);
+        query.setQueryString(qlString);
         return query;
     }
 
