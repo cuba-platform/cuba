@@ -20,10 +20,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.data.impl.GroupDatasourceImpl;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.gui.components.WebButton;
-import com.haulmont.cuba.web.gui.components.WebFilter;
-import com.haulmont.cuba.web.gui.components.WebTable;
-import com.haulmont.cuba.web.gui.components.WebVBoxLayout;
+import com.haulmont.cuba.web.gui.components.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -89,6 +86,7 @@ public class EntityRestore extends AbstractWindow {
                         entitiesTable.setWidth("100%");
                         entitiesTable.setHeight("100%");
                         entitiesTable.setMultiSelect(true);
+                        entitiesTable.setRowsCount(new WebRowsCount());
                         entitiesTable.addAction(new AbstractAction("restore") {
                             public void actionPerform(Component component) {
                                 final Set<Entity> listEntity = entitiesTable.getSelected();
