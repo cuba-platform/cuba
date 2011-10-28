@@ -120,10 +120,7 @@ public class QueryFilter {
     private boolean paramValueIsOk(Object value) {
         if (value instanceof String)
             return !StringUtils.isBlank((String) value);
-        else if (value instanceof Number)
-            return ((Number) value).intValue() != 0;
-        else
-            return value != null;
+        else return value != null;
     }
 
     private Condition refine(Condition src, Set<String> params) {

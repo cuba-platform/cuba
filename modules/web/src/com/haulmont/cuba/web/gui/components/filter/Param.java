@@ -229,7 +229,7 @@ public class Param extends AbstractParam<Component> {
                             try {
                                 p = datatype.parse(part);
                             } catch (ParseException e) {
-                                App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(Param.class,
+                                App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(AbstractParam.class,
                                         "Param.numberInvalid"), IFrame.NotificationType.ERROR);
                                 return;
                             }
@@ -239,7 +239,7 @@ public class Param extends AbstractParam<Component> {
                         try {
                             v = datatype.parse((String) value);
                         } catch (ParseException e) {
-                            App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(Param.class,
+                            App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(AbstractParam.class,
                                     "Param.numberInvalid"), IFrame.NotificationType.ERROR);
                             return;
                         }
@@ -262,10 +262,10 @@ public class Param extends AbstractParam<Component> {
         field.setImmediate(true);
 
         field.addItem(Boolean.TRUE);
-        field.setItemCaption(Boolean.TRUE, MessageProvider.getMessage("com.haulmont.cuba.gui.components.filter", "Boolean.TRUE"));
+        field.setItemCaption(Boolean.TRUE, MessageProvider.getMessage(AbstractParam.class, "Boolean.TRUE"));
 
         field.addItem(Boolean.FALSE);
-        field.setItemCaption(Boolean.FALSE, MessageProvider.getMessage("com.haulmont.cuba.gui.components.filter", "Boolean.FALSE"));
+        field.setItemCaption(Boolean.FALSE, MessageProvider.getMessage(AbstractParam.class, "Boolean.FALSE"));
 
         field.addListener(new Property.ValueChangeListener() {
             public void valueChange(Property.ValueChangeEvent event) {
@@ -300,7 +300,7 @@ public class Param extends AbstractParam<Component> {
                                 }
                                 setValue(list);
                             } catch (IllegalArgumentException ie) {
-                                App.getInstance().getAppWindow().showNotification(MessageProvider.getMessage("com.haulmont.cuba.gui.components.filter",
+                                App.getInstance().getAppWindow().showNotification(MessageProvider.getMessage(AbstractParam.class,
                                         "Param.uuid.Err"), Window.Notification.TYPE_TRAY_NOTIFICATION);
                                 setValue(null);
                             }
@@ -309,7 +309,7 @@ public class Param extends AbstractParam<Component> {
                         try{
                             setValue(UUID.fromString((String) value));
                         }catch(IllegalArgumentException ie){
-                            App.getInstance().getAppWindow().showNotification(MessageProvider.getMessage("com.haulmont.cuba.gui.components.filter",
+                            App.getInstance().getAppWindow().showNotification(MessageProvider.getMessage(AbstractParam.class,
                                     "Param.uuid.Err"), Window.Notification.TYPE_TRAY_NOTIFICATION);
                         }
                     }

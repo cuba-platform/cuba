@@ -229,7 +229,7 @@ public class Param extends AbstractParam<JComponent> {
                             try {
                                 p = datatype.parse(part);
                             } catch (ParseException e) {
-                                App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(Param.class,
+                                App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(AbstractParam.class,
                                         "Param.numberInvalid"), IFrame.NotificationType.ERROR);
                                 return;
                             }
@@ -239,7 +239,7 @@ public class Param extends AbstractParam<JComponent> {
                         try {
                             v = datatype.parse((String) value);
                         } catch (ParseException e) {
-                            App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(Param.class,
+                            App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(AbstractParam.class,
                                     "Param.numberInvalid"), IFrame.NotificationType.ERROR);
                             return;
                         }
@@ -294,7 +294,7 @@ public class Param extends AbstractParam<JComponent> {
                             setValue(UUID.fromString((String) value));
                         } catch (IllegalArgumentException ie) {
                             App.getInstance().getWindowManager().showNotification
-                                    (MessageProvider.getMessage(this.getClass(), "Param.uuid.Err"), IFrame.NotificationType.HUMANIZED);
+                                    (MessageProvider.getMessage(AbstractParam.class, "Param.uuid.Err"), IFrame.NotificationType.HUMANIZED);
                         }
                     }
                 else if (value instanceof String && StringUtils.isBlank((String) value))
