@@ -104,6 +104,14 @@ public interface GlobalConfig extends Config {
     Map<String, Locale> getAvailableLocales();
 
     /**
+     * Show locale select in LoginWindow.
+     * @return true if show
+     */
+    @Property("cuba.web.localeSelectVisible")
+    @DefaultBoolean(true)
+    boolean getLocaleSelectVisible();
+
+    /**
      * Whether to use {@link com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased} instead of
      * {@link QueryTransformerRegex}
      * @return true or false

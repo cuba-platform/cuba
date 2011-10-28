@@ -13,13 +13,16 @@ package com.haulmont.cuba.security.app;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -85,6 +88,12 @@ public class LoginWorkerBean implements LoginWorker
         Transaction tx = Locator.createTransaction();
         try {
             User user = loadUser(login, password, locale);
+
+            if (user.getLanguage() != null &&
+                    BooleanUtils.isFalse(ConfigProvider.getConfig(GlobalConfig.class).getLocaleSelectVisible())) {
+                locale = new Locale(user.getLanguage());
+            }
+
             UserSession session = userSessionManager.createSession(user, locale, false);
             if (user.getDefaultSubstitutedUser() != null) {
                 userSessionManager.updateSession(session, user.getDefaultSubstitutedUser());
