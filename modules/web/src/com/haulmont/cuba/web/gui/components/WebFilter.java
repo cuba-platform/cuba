@@ -1378,6 +1378,15 @@ public class WebFilter
                     } else if (Op.ENDS_WITH.equals(op)) {
                         value = wrapValueForLike(value, true, false);
                     }
+                } else if (condition instanceof RuntimePropCondition) {
+                    Op op = ((RuntimePropCondition) condition).getOperator();
+                    if (Op.CONTAINS.equals(op) || op.equals(Op.DOES_NOT_CONTAIN)) {
+                        value = wrapValueForLike(value);
+                    } else if (Op.STARTS_WITH.equals(op)) {
+                        value = wrapValueForLike(value, false, true);
+                    } else if (Op.ENDS_WITH.equals(op)) {
+                        value = wrapValueForLike(value, true, false);
+                    }
                 } else if (condition instanceof CustomCondition) {
                     String where = ((CustomCondition) condition).getWhere();
                     Op op = ((CustomCondition) condition).getOperator();
@@ -1402,8 +1411,8 @@ public class WebFilter
             return ParametersHelper.CASE_INSENSITIVE_MARKER + "%" + value + "%";
         }
 
-        private String wrapValueForLike(Object value,boolean before, boolean after) {
-            return ParametersHelper.CASE_INSENSITIVE_MARKER + (before?"%":"") + value + (after?"%":"");
+        private String wrapValueForLike(Object value, boolean before, boolean after) {
+            return ParametersHelper.CASE_INSENSITIVE_MARKER + (before ? "%" : "") + value + (after ? "%" : "");
         }
 
         public void setValue(Object value) {
