@@ -24,6 +24,23 @@ public class ParametersHelper {
     public static final Pattern QUERY_PARAMETERS_PATTERN = Pattern.compile(QUERY_PARAMETERS_RE);
     public static final String CASE_INSENSITIVE_MARKER = "(?i)";
 
+    public static final Pattern TEMPL_CLAUSE_PATTERN = Pattern.compile("<#[^>]*>");
+
+    public static Pattern TEMPL_PARAM_PATTERN; // "((component)|(param)|(ds)|(session)|(custom))\\$[\\w\\.]+"
+
+    static {
+        StringBuilder sb = new StringBuilder("(");
+        ParameterInfo.Type[] values = ParameterInfo.Type.values();
+        for (int i = 0, valuesLength = values.length; i < valuesLength; i++) {
+            sb.append("(").append(values[i].getPrefix()).append(")");
+            if (i < valuesLength - 1) {
+                sb.append("|");
+            }
+        }
+        sb.append(")").append("\\$[\\w\\.]+");
+        TEMPL_PARAM_PATTERN = Pattern.compile(sb.toString());
+    }
+
     public static Set<String> extractNames(String text) {
         Set<String> set = new HashSet<String>();
         
@@ -56,6 +73,18 @@ public class ParametersHelper {
             infos.add(info);
         }
 
+        // Add parameters used by freemarker clauses
+        Matcher templMatcher = TEMPL_CLAUSE_PATTERN.matcher(query);
+        while (templMatcher.find()) {
+            String templClause = templMatcher.group();
+
+            Matcher paramMatcher = TEMPL_PARAM_PATTERN.matcher(templClause);
+            while (paramMatcher.find()) {
+                String param = paramMatcher.group();
+                infos.add(parse(param, false));
+            }
+        }
+
         if (filter != null) {
             infos.addAll(filter.getParameters());
         }
@@ -67,9 +96,13 @@ public class ParametersHelper {
         boolean caseInsensitive = !StringUtils.isBlank(matcher.group(1));
         final String param = matcher.group(2);
 
+        return parse(param, caseInsensitive);
+    }
+
+    private static ParameterInfo parse(String param, boolean caseInsensitive) {
         final String[] strings = param.split("\\$");
         if (strings.length != 2) {
-            throw new IllegalStateException(String.format("Illegal parameter info '%s'", matcher.group()));
+            throw new IllegalStateException(String.format("Illegal parameter info '%s'", param));
         }
         final String source = strings[0];
         final String name = strings[1];
@@ -79,29 +112,6 @@ public class ParametersHelper {
                 return new ParameterInfo(name, type, caseInsensitive);
             }
         }
-        throw new IllegalStateException(String.format("Illegal parameter info '%s'", matcher.group()));
+        throw new IllegalStateException(String.format("Illegal parameter info '%s'", param));
     }
-
-//    public static ParameterInfo parse(String parameterInfo) {
-//        if (parameterInfo.startsWith(":")) {
-//            final String param = parameterInfo.substring(1);
-//
-//            final String[] strings = param.split("\\$");
-//            if (strings.length != 2) {
-//                throw new IllegalStateException(String.format("Illegal parameter info '%s'", parameterInfo));
-//            }
-//            final String source = strings[0];
-//            final String name = strings[1];
-//
-//            for (ParameterInfo.Type type : ParameterInfo.Type.values()) {
-//                if (type.prefix.equals(source)) {
-//                    return new ParameterInfo(name, type);
-//                }
-//            }
-//
-//            throw new IllegalStateException(String.format("Illegal parameter info '%s'", parameterInfo));
-//        } else {
-//            throw new IllegalStateException(String.format("Illegal parameter info '%s'", parameterInfo));
-//        }
-//    }
 }
