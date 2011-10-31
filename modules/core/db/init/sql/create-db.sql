@@ -95,6 +95,58 @@ create table SYS_ENTITY_STATISTICS (
 
 ------------------------------------------------------------------------------------------------------------
 
+create table SYS_SCHEDULED_TASK (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+
+    BEAN_NAME varchar(50),
+    METHOD_NAME varchar(50),
+    USER_NAME varchar(50),
+    USER_PASSWORD varchar(50),
+    IS_SINGLETON smallint,
+    IS_ACTIVE smallint,
+    PERIOD integer,
+    TIMEOUT integer,
+    START_DATE timestamp,
+    TIME_FRAME integer,
+    START_DELAY integer,
+    PERMITTED_SERVERS varchar(500),
+    LOG_START smallint,
+    LOG_FINISH smallint,
+    LAST_START_TIME timestamp,
+    LAST_START_SERVER varchar(50),
+
+    primary key (ID),
+    constraint UNIQ_SYS_SCHEDULED_TASK_BEAN_METHOD unique (BEAN_NAME, METHOD_NAME)
+);
+
+------------------------------------------------------------------------------------------------------------
+
+create table SYS_SCHEDULED_EXECUTION (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+
+    TASK_ID varchar(36),
+    SERVER varchar(50),
+    START_TIME timestamp,
+    FINISH_TIME timestamp,
+    RESULT longvarchar,
+
+    primary key (ID),
+    constraint SYS_SCHEDULED_EXECUTION_TASK foreign key (TASK_ID) references SYS_SCHEDULED_TASK(ID)
+);
+
+create index IDX_SYS_SCHEDULED_EXECUTION_TASK_START_TIME  on SYS_SCHEDULED_EXECUTION (TASK_ID, START_TIME);
+
+------------------------------------------------------------------------------------------------------------
+
 create table SEC_ROLE (
     ID varchar(36),
     CREATE_TS timestamp,

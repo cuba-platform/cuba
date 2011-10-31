@@ -12,6 +12,8 @@ import javax.annotation.ManagedBean;
 import java.util.Date;
 
 /**
+ * Standard client-side implementation of {@link TimeSource} interface.
+ *
  * <p>$Id$</p>
  *
  * @author krivopustov
@@ -22,5 +24,10 @@ public class TimeSourceClientImpl implements TimeSource {
     @Override
     public Date currentTimestamp() {
         return new Date();
+    }
+
+    @Override
+    public long currentTimeMillis() {
+        return System.currentTimeMillis();
     }
 }

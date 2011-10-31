@@ -17,9 +17,9 @@
         <property name="serviceInterface" value="com.haulmont.cuba.security.app.LoginService"/>
     </bean>
 
-    <bean name="/cuba_DeployerService" class="com.haulmont.cuba.core.sys.remoting.HttpServiceExporter">
-        <property name="service" ref="cuba_DeployerService"/>
-        <property name="serviceInterface" value="com.haulmont.cuba.core.app.CubaDeployerService"/>
+    <bean name="/cuba_ServerInfoService" class="com.haulmont.cuba.core.sys.remoting.HttpServiceExporter">
+        <property name="service" ref="cuba_ServerInfoService"/>
+        <property name="serviceInterface" value="com.haulmont.cuba.core.app.ServerInfoService"/>
     </bean>
 
     <bean name="/cuba_LocalizedMessageService" class="com.haulmont.cuba.core.sys.remoting.HttpServiceExporter">

@@ -25,6 +25,13 @@ import javax.annotation.ManagedBean;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Standard implementation of middleware clustering based on JGroups.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 @ManagedBean(ClusterManagerAPI.NAME)
 public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, AppContext.Listener {
 
@@ -65,24 +72,29 @@ public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, A
         thread.start();
     }
 
+    @Override
     public synchronized void addListener(Class messageClass, ClusterListener listener) {
         this.listeners.put(messageClass.getName(), listener);
     }
 
+    @Override
     public synchronized void removeListener(Class messageClass, ClusterListener listener) {
         listeners.remove(messageClass.getName());
     }
 
+    @Override
     public void applicationStarted() {
         String enabled = AppContext.getProperty("cuba.cluster.enabled");
         if (Boolean.valueOf(enabled))
             start();
     }
 
+    @Override
     public void applicationStopped() {
         stop();
     }
 
+    @Override
     public void start() {
         log.info("Starting cluster");
 
@@ -110,6 +122,7 @@ public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, A
         }
     }
 
+    @Override
     public void stop() {
         if (channel == null)
             return;
@@ -124,10 +137,12 @@ public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, A
         currentView = null;
     }
 
+    @Override
     public boolean isStarted() {
         return channel != null;
     }
 
+    @Override
     public boolean isMaster() {
         if (currentView == null || channel == null)
             return true;
@@ -140,6 +155,7 @@ public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, A
         return coordinator.equals(channel.getAddress());
     }
 
+    @Override
     public String getCurrentView() {
         return currentView == null ? "" : currentView.toString();
     }

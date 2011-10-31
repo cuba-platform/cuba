@@ -18,6 +18,8 @@
         <class>com.haulmont.cuba.core.entity.SendingMessage</class>
         <class>com.haulmont.cuba.core.entity.SendingAttachment</class>
         <class>com.haulmont.cuba.core.entity.EntitySnapshot</class>
+        <class>com.haulmont.cuba.core.entity.ScheduledTask</class>
+        <class>com.haulmont.cuba.core.entity.ScheduledExecution</class>
 
         <class>com.haulmont.cuba.core.entity.EmbeddableEntity</class>
 

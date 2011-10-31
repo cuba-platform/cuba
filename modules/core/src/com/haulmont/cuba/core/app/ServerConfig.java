@@ -104,4 +104,9 @@ public interface ServerConfig extends Config {
     @Property("cuba.log.cutLoadListQueries")
     @DefaultBoolean(false)
     boolean getCutLoadListQueries();
+
+    @Property("cuba.schedulingActive")
+    @DefaultBoolean(false)
+    boolean getSchedulingActive();
+    void setSchedulingActive(boolean value);
 }

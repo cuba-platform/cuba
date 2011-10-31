@@ -9,7 +9,20 @@
         <item id="core$LockInfo.browse"/>
         <item id="jmxcontrol$DisplayMbeans"/>
         <item id="core$Entity.restore"/>
+
+        <item id="sec$User.browse"/>
+        <item id="sec$Group.browse"/>
+        <item id="sec$Role.browse"/>
+        <item id="-"/>
+        <item id="sec$UserSessionEntity.browse"/>
+        <item id="core$LockInfo.browse"/>
+        <item id="core$FileDescriptor.browse"/>
+        <item id="core$Entity.restore"/>
+        <item id="jmxcontrol$DisplayMbeans"/>
+        <item id="report$Report.browse"/>
+        <item id="sys$Categories.browse"/>
         <item id="sys$SendingMessage.browse"/>
+        <item id="core$ScheduledTask.browse"/>
     </menu>
     <menu id="reports">
         <item id="report$Report.browse"/>

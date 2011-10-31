@@ -10,28 +10,36 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * CubaDeployer MBean implementation.
+ * ServerInfo MBean implementation.
  *
- * <p>Holds the system release timestamp and date.</p>
+ * <p>Holds the server parameters.</p>
  */
-@ManagedBean(CubaDeployerMBean.NAME)
-public class CubaDeployer implements CubaDeployerMBean
+@ManagedBean(ServerInfoAPI.NAME)
+public class ServerInfo implements ServerInfoAPI, ServerInfoMBean
 {
-    private Log log = LogFactory.getLog(CubaDeployer.class);
+    private Log log = LogFactory.getLog(ServerInfo.class);
 
     private String releaseNumber = "?";
     private String releaseTimestamp = "?";
 
-    public CubaDeployer() {
+    @Inject
+    private Configuration configuration;
+
+    private volatile String serverId;
+
+    public ServerInfo() {
         InputStream stream = getClass().getResourceAsStream("/com/haulmont/cuba/core/global/release.number");
         if (stream != null)
             try {
@@ -55,5 +63,14 @@ public class CubaDeployer implements CubaDeployerMBean
 
     public String getReleaseTimestamp() {
         return releaseTimestamp;
+    }
+
+    @Override
+    public String getServerId() {
+        if (serverId == null) {
+            GlobalConfig globalConfig = configuration.getConfig(GlobalConfig.class);
+            serverId = globalConfig.getWebHostName() + ":" + globalConfig.getWebPort() + "/" + globalConfig.getWebContextName();
+        }
+        return serverId;
     }
 }

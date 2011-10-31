@@ -104,7 +104,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
                 component.setContainerDataSource(new EnumerationContainer(optionsList));
                 setCaptionMode(CaptionMode.ITEM);
             } else {
-                throw new UnsupportedOperationException();
+                component.setContainerDataSource(new ObjectContainer(optionsList));
+                component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT_DEFAULTS_ID);
             }
             this.optionsList = optionsList;
         } else if (!optionsList.isEmpty()) {

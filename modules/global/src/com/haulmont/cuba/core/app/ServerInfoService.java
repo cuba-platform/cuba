@@ -19,9 +19,9 @@ import java.util.Map;
  *
  * @author krivopustov
  */
-public interface CubaDeployerService {
+public interface ServerInfoService {
 
-    String NAME = "cuba_DeployerService";
+    String NAME = "cuba_ServerInfoService";
 
     String getReleaseNumber();
 

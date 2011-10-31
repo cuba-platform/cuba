@@ -1,0 +1,61 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.scheduled.ScheduledExecutionBrowser"
+        messagesPack="com.haulmont.cuba.gui.app.core.scheduled"
+        caption="msg://executionBrowseCaption"
+        focusComponent="executionsTable"
+        >
+
+    <dsContext>
+        <collectionDatasource id="executionsDs" class="com.haulmont.cuba.core.entity.ScheduledExecution" view="_local">
+            <query><![CDATA[
+                select e from core$ScheduledExecution e
+                where e.task.id = :param$task
+                    <#if (component$finishedField?has_content && component$finishedField == true)>and e.finishTime is not null</#if>
+                order by e.startTime desc
+                ]]>
+                <filter>
+                    <and>
+                        <c>e.host like :component$hostField</c>
+                        <c>e.startTime &gt;= :component$startTimeField1</c>
+                        <c>e.startTime &lt;= :component$startTimeField2</c>
+                    </and>
+                </filter>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expand="executionsTable" spacing="true">
+        <groupBox id="filterBox" width="-1px">
+            <caption label="msg://filter"/>
+            <hbox spacing="true">
+                <label value="msg://com.haulmont.cuba.core.entity/ScheduledExecution.server"/>
+                <textField id="hostField"/>
+                <label value="msg://startTimeFrom"/>
+                <dateField id="startTimeField1"/>
+                <label value="msg://startTimeTill"/>
+                <dateField id="startTimeField2"/>
+                <checkBox id="finishedField" caption="msg://finished"/>
+            </hbox>
+        </groupBox>
+        <table id="executionsTable">
+            <buttonsPanel>
+                <button action="executionsTable.refresh" icon="icons/refresh.png"/>
+            </buttonsPanel>
+            <rowsCount/>
+            <columns>
+                <column id="startTime"/>
+                <column id="finishTime"/>
+                <column id="server"/>
+                <column id="result"/>
+            </columns>
+            <rows datasource="executionsDs"/>
+        </table>
+    </layout>
+</window>

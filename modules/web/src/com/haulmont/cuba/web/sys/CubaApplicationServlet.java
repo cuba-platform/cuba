@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import com.haulmont.cuba.core.app.CubaDeployerService;
+import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -411,7 +411,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
 
     private static String releaseTimestamp() {
         if (releaseTimestamp == null) {
-            CubaDeployerService service = ServiceLocator.lookup(CubaDeployerService.NAME);
+            ServerInfoService service = ServiceLocator.lookup(ServerInfoService.NAME);
             String timestamp = service.getReleaseTimestamp();
             if (timestamp == null || timestamp.equals("") || timestamp.equals("?")) {
                 timestamp = "0.9";

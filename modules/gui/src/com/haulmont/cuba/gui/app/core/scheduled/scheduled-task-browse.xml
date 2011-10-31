@@ -1,0 +1,48 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.scheduled.ScheduledTaskBrowser"
+        messagesPack="com.haulmont.cuba.gui.app.core.scheduled"
+        caption="msg://taskBrowseCaption"
+        focusComponent="tasksTable"
+        >
+
+    <dsContext>
+        <collectionDatasource id="tasksDs" class="com.haulmont.cuba.core.entity.ScheduledTask" view="_local">
+            <query>
+                select t from core$ScheduledTask t order by t.beanName, t.methodName
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expand="tasksTable" spacing="true">
+        <table id="tasksTable">
+            <buttonsPanel>
+                <button action="tasksTable.create" icon="icons/create.png"/>
+                <button action="tasksTable.edit" icon="icons/edit.png"/>
+                <button action="tasksTable.remove" icon="icons/remove.png"/>
+                <button action="tasksTable.executions"/>
+            </buttonsPanel>
+            <columns>
+                <column id="active"/>
+                <column id="beanName"/>
+                <column id="methodName"/>
+                <column id="userName"/>
+                <column id="singleton"/>
+                <column id="period"/>
+                <column id="timeout"/>
+                <column id="startDate"/>
+                <column id="timeFrame"/>
+                <column id="permittedServers"/>
+                <column id="logStart"/>
+                <column id="logFinish"/>
+            </columns>
+            <rows datasource="tasksDs"/>
+        </table>
+    </layout>
+</window>

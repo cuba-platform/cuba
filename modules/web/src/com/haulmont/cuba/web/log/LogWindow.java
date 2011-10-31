@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.web.log;
 
-import com.haulmont.cuba.core.app.CubaDeployerService;
+import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.web.App;
@@ -82,7 +82,7 @@ public class LogWindow extends Window
     }
 
     private String getVersionString() {
-        CubaDeployerService service = ServiceLocator.lookup(CubaDeployerService.NAME);
+        ServerInfoService service = ServiceLocator.lookup(ServerInfoService.NAME);
         String releaseNumber = service.getReleaseNumber();
         String releaseTimestamp = service.getReleaseTimestamp();
         String str = MessageProvider.formatMessage(getClass(), "logWindow.versionString", releaseNumber, releaseTimestamp);

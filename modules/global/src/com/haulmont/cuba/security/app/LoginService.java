@@ -18,7 +18,11 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Interface to LoginServiceBean
+ * Service interface defining methods to login users to the middleware.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 public interface LoginService
 {
@@ -36,8 +40,6 @@ public interface LoginService
 
     /**
      * Login using user name and trusted password
-     *
-     *
      * @param login login name
      * @param password
      * @param locale client locale

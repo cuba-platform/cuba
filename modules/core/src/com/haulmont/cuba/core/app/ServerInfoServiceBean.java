@@ -6,7 +6,6 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataBuildInfo;
 import com.haulmont.cuba.core.global.View;
@@ -14,30 +13,30 @@ import com.haulmont.cuba.core.sys.MetadataBuildHelper;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Standard implementation of {@link CubaDeployerService} interface.
+ * Standard implementation of {@link ServerInfoService} interface.
  *
  * <p>Annotated with <code>@ManagedBean</code> instead of <code>@Service</code> to be available before user login.</p>
  */
-@ManagedBean(CubaDeployerService.NAME)
-public class CubaDeployerServiceBean implements CubaDeployerService {
+@ManagedBean(ServerInfoService.NAME)
+public class ServerInfoServiceBean implements ServerInfoService {
 
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    protected ServerInfoAPI serverInfo;
+
     public String getReleaseNumber() {
-        CubaDeployerMBean mBean = Locator.lookup(CubaDeployerMBean.NAME);
-        return mBean.getReleaseNumber();
+        return serverInfo.getReleaseNumber();
     }
 
     public String getReleaseTimestamp() {
-        CubaDeployerMBean mBean = Locator.lookup(CubaDeployerMBean.NAME);
-        return mBean.getReleaseTimestamp();
+        return serverInfo.getReleaseTimestamp();
     }
 
     public MetadataBuildInfo getMetadataBuildInfo() {

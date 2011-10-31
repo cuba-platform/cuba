@@ -22,10 +22,18 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 
 import javax.persistence.FlushModeType;
+import javax.persistence.LockModeType;
 import javax.persistence.TemporalType;
 import java.sql.SQLException;
 import java.util.*;
 
+/**
+ * Implementation of {@link TypedQuery} interface based on OpenJPA.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public class QueryImpl<T> implements TypedQuery<T> {
     private Log log = LogFactory.getLog(QueryImpl.class);
 
@@ -112,6 +120,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         }
     }
 
+    @Override
     public List<T> getResultList() {
         if (!isNative && log.isTraceEnabled())
             log.trace("JPQL query result class: " + getQuery().getResultClass());
@@ -120,6 +129,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return jpaQuery.getResultList();
     }
 
+    @Override
     public T getSingleResult() {
         if (!isNative && log.isTraceEnabled())
             log.trace("JPQL query result class: " + getQuery().getResultClass());
@@ -129,22 +139,26 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return jpaQuery.getSingleResult();
     }
 
+    @Override
     public int executeUpdate() {
         OpenJPAQuery jpaQuery = getQuery();
         addMacroParams(jpaQuery);
         return jpaQuery.executeUpdate();
     }
 
+    @Override
     public Query setMaxResults(int maxResult) {
         getQuery().setMaxResults(maxResult);
         return this;
     }
 
+    @Override
     public Query setFirstResult(int startPosition) {
         getQuery().setFirstResult(startPosition);
         return this;
     }
 
+    @Override
     public Query setParameter(String name, Object value) {
         if (value instanceof BaseEntity)
             value = ((BaseEntity) value).getId();
@@ -152,11 +166,13 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return this;
     }
 
+    @Override
     public Query setParameter(String name, Date value, TemporalType temporalType) {
         getQuery().setParameter(name, value, temporalType);
         return this;
     }
 
+    @Override
     public Query setParameter(int position, Object value) {
         if (value instanceof BaseEntity)
             value = ((BaseEntity) value).getId();
@@ -173,8 +189,15 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return this;
     }
 
+    @Override
     public Query setParameter(int position, Date value, TemporalType temporalType) {
         getQuery().setParameter(position, value, temporalType);
+        return this;
+    }
+
+    @Override
+    public Query setLockMode(LockModeType lockMode) {
+        getQuery().setLockMode(lockMode);
         return this;
     }
 

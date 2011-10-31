@@ -1,0 +1,78 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.scheduled.ScheduledTaskEditor"
+        messagesPack="com.haulmont.cuba.gui.app.core.scheduled"
+        datasource="taskDs"
+        caption="msg://taskEditCaption"
+        focusComponent="activeField">
+
+    <dsContext>
+        <datasource
+                id="taskDs"
+                class="com.haulmont.cuba.core.entity.ScheduledTask"
+                view="_local">
+        </datasource>
+    </dsContext>
+
+    <layout expand="windowActions">
+        <grid spacing="true">
+            <columns count="2"/>
+            <rows>
+                <row>
+                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.active"/>
+                    <checkBox id="activeField" datasource="taskDs" property="active"/>
+                </row>
+                <row>
+                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.beanName"/>
+                    <lookupField id="beanNameField" datasource="taskDs" property="beanName" width="300px"/>
+                </row>
+                <row>
+                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.methodName"/>
+                    <lookupField id="methodNameField" datasource="taskDs" property="methodName" width="300px"/>
+                </row>
+                <row>
+                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.userName"/>
+                    <lookupField id="userNameField" datasource="taskDs" property="userName" width="300px"/>
+                </row>
+                <row>
+                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.singleton"/>
+                    <checkBox id="singletonField" datasource="taskDs" property="singleton"/>
+                </row>
+                <row>
+                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.period"/>
+                    <textField id="periodField" datasource="taskDs" property="period" width="150px"/>
+                </row>
+                <row>
+                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.timeout"/>
+                    <textField id="timeoutField" datasource="taskDs" property="timeout" width="150px"/>
+                </row>
+                <row>
+                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.startDate"/>
+                    <dateField id="startDateField" datasource="taskDs" property="startDate" width="150px"/>
+                </row>
+                <row>
+                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.timeFrame"/>
+                    <textField id="timeFrameField" datasource="taskDs" property="timeFrame" width="150px"/>
+                </row>
+                <row>
+                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.permittedServers"/>
+                    <textField id="permittedServersField" datasource="taskDs" property="permittedServers" width="500px"/>
+                </row>
+                <row>
+                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.logStart"/>
+                    <checkBox id="logStartField" datasource="taskDs" property="logStart"/>
+                </row>
+                <row>
+                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.logFinish"/>
+                    <checkBox id="logFinishField" datasource="taskDs" property="logFinish"/>
+                </row>
+            </rows>
+        </grid>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

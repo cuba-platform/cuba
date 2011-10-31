@@ -26,4 +26,11 @@ public abstract class TimeProvider
 
         return AppContext.getBean(TimeSource.NAME, TimeSource.class).currentTimestamp();
     }
+
+    public static long currentTimeMillis() {
+        if (AppContext.getApplicationContext() == null)
+            return 0;
+
+        return AppContext.getBean(TimeSource.NAME, TimeSource.class).currentTimeMillis();
+    }
 }

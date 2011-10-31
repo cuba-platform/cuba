@@ -10,8 +10,7 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.loader.ChileMetadataLoader;
 import com.haulmont.chile.core.loader.MetadataLoader;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.Session;
-import com.haulmont.cuba.core.app.CubaDeployerService;
+import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataBuildInfo;
 import com.haulmont.cuba.core.global.View;
@@ -42,13 +41,13 @@ public class MetadataClientImpl extends AbstractMetadata {
     private Log log = LogFactory.getLog(getClass());
 
     @Inject
-    private CubaDeployerService deployerService;
+    private ServerInfoService serverInfoService;
 
     @Override
     protected void initMetadata() {
         log.info("Initializing metadata");
 
-        MetadataBuildInfo metadataBuildInfo = deployerService.getMetadataBuildInfo();
+        MetadataBuildInfo metadataBuildInfo = serverInfoService.getMetadataBuildInfo();
 
         Collection<String> packages;
 
@@ -85,7 +84,7 @@ public class MetadataClientImpl extends AbstractMetadata {
 
         viewRepository = new ViewRepository();
 
-        List<View> views = deployerService.getViews();
+        List<View> views = serverInfoService.getViews();
         for (View view : views) {
             MetaClass metaClass = getSession().getClass(view.getEntityClass());
             viewRepository.storeView(metaClass, view);

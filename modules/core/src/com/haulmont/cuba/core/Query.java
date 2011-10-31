@@ -12,13 +12,18 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.global.View;
 
+import javax.persistence.LockModeType;
 import javax.persistence.TemporalType;
 import java.util.List;
 import java.util.Date;
 
 /**
-* Interface to control query execution.
-*/
+ * Interface to control query execution.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public interface Query {
 
     /**
@@ -114,6 +119,13 @@ public interface Query {
      * @throws IllegalArgumentException if position does not correspond to positional parameter of query
      */
     Query setParameter(int position, Date value, TemporalType temporalType);
+
+    /**
+     * Set the lock mode type to be used for the query execution.
+     * @param lockMode  lock mode
+     * @return          the same query instance
+     */
+    Query setLockMode(LockModeType lockMode);
 
     /**
      * Set View for this Query instance.

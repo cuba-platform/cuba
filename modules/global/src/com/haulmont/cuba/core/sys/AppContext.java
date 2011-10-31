@@ -13,6 +13,7 @@ package com.haulmont.cuba.core.sys;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -44,10 +45,27 @@ public class AppContext {
         context = applicationContext;
     }
 
+    /**
+     * Return an instance of the specified bean.
+     * @param name  the name of the bean to retrieve
+     * @return      bean instance
+     * @see         org.springframework.beans.factory.BeanFactory#getBean(java.lang.String)
+     */
+    @Nonnull
     public static <T> T getBean(String name) {
         return (T) context.getBean(name);
     }
 
+    /**
+     * Return an instance of the specified bean.
+     * @param name      the name of the bean to retrieve
+     * @param beanType  type the bean must match. Can be an interface or superclass of the actual class, or null
+     * for any match. For example, if the value is Object.class, this method will succeed whatever the class of the
+     * returned instance.
+     * @return          bean instance
+     * @see             org.springframework.beans.factory.BeanFactory#getBean(java.lang.String, java.lang.Class)
+     */
+    @Nonnull
     public static <T> T getBean(String name, Class<T> beanType) {
         return context.getBean(name, beanType);
     }

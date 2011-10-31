@@ -79,9 +79,9 @@
                 <entry key="${cuba.webContextName}.cuba:service=CachingFacade" value-ref="cuba_CachingFacade"/>
                 <entry key="${cuba.webContextName}.cuba:service=ClusterManager" value-ref="cuba_ClusterManager"/>
                 <entry key="${cuba.webContextName}.cuba:service=ScriptingManager" value-ref="cuba_ScriptingManager"/>
-                <entry key="${cuba.webContextName}.cuba:service=CubaDeployer" value-ref="cuba_CubaDeployer"/>
+                <entry key="${cuba.webContextName}.cuba:service=ServerInfo" value-ref="cuba_ServerInfo"/>
                 <entry key="${cuba.webContextName}.cuba:service=EmailManager" value-ref="cuba_EmailManager"/>
-
+                <entry key="${cuba.webContextName}.cuba:service=Scheduling" value-ref="cuba_Scheduling"/>
                 <entry key="${cuba.webContextName}.cuba:service=ObjectsCacheManager"
                        value-ref="cuba_ObjectsCacheManager"/>
             </map>
@@ -104,9 +104,9 @@
                         <entry key="cuba_CachingFacade" value="com.haulmont.cuba.core.app.CachingFacadeMBean"/>
                         <entry key="cuba_ClusterManager" value="com.haulmont.cuba.core.app.ClusterManagerMBean"/>
                         <entry key="cuba_ScriptingManager" value="com.haulmont.cuba.core.app.ScriptingManagerMBean"/>
-                        <entry key="cuba_CubaDeployer" value="com.haulmont.cuba.core.app.CubaDeployerMBean"/>
+                        <entry key="cuba_ServerInfo" value="com.haulmont.cuba.core.app.ServerInfoMBean"/>
                         <entry key="cuba_EmailManager" value="com.haulmont.cuba.core.app.EmailManagerMBean"/>
-
+                        <entry key="cuba_Scheduling" value="com.haulmont.cuba.core.app.scheduling.SchedulingMBean"/>
                         <entry key="${cuba.webContextName}.cuba:service=ObjectsCacheManager"
                                value="com.haulmont.cuba.core.app.cache.ObjectsCacheManagerMBean"/>
                     </map>
@@ -125,6 +125,7 @@
     <task:scheduled-tasks scheduler="scheduler">
         <task:scheduled ref="cuba_Heartbeat" method="beat" fixed-rate="1000"/>
         <task:scheduled ref="cuba_LockManager" method="expireLocks" fixed-rate="60000"/>
+        <task:scheduled ref="cuba_Scheduling" method="processScheduledTasks" fixed-rate="1000"/>
     </task:scheduled-tasks>
 
     <!-- Email setup -->

@@ -84,6 +84,15 @@
     <screen id="core$EntitySnapshot.view"
             template="/com/haulmont/cuba/gui/app/core/entitydiff/diff-view.xml"/>
 
+    <screen id="core$ScheduledTask.browse"
+            template="/com/haulmont/cuba/gui/app/core/scheduled/scheduled-task-browse.xml"/>
+
+    <screen id="core$ScheduledTask.edit"
+            template="/com/haulmont/cuba/gui/app/core/scheduled/scheduled-task-edit.xml"/>
+
+    <screen id="core$ScheduledExecution.browse"
+            template="/com/haulmont/cuba/gui/app/core/scheduled/scheduled-execution-browse.xml"/>
+
     <screen id="license"
             template="/com/haulmont/cuba/gui/app/core/credits/license-window.xml"/>
 
