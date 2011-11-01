@@ -92,6 +92,16 @@ public class MessageUtils {
      * Get localized name of an entity property. Messages pack should be placed in the packet of entity.
      */
     public static String getPropertyCaption(MetaClass metaClass, String propertyName) {
+        Class<?> ownClass = metaClass.getJavaClass();
+        String className = ownClass.getName();
+        int i = className.lastIndexOf('.');
+        if (i > -1)
+            className = className.substring(i + 1);
+
+        String key = className + "." + propertyName;
+        String message = MessageProvider.getMessage(ownClass, key);
+        if (!message.equals(key)) return message;
+
         MetaPropertyPath propertyPath = metaClass.getPropertyPath(propertyName);
         return getPropertyCaption(propertyPath.getMetaProperty());
     }
