@@ -53,6 +53,7 @@
             <property name="login"/>
             <property name="name"/>
         </property>
+        <property name="startDate"/>
         <property name="endDate"/>
     </view>
 

@@ -383,6 +383,7 @@ create table SEC_USER_SUBSTITUTION (
 
     USER_ID varchar(36),
     SUBSTITUTED_USER_ID varchar(36),
+    START_DATE timestamp,
     END_DATE timestamp,
 
     primary key (ID),

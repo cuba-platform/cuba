@@ -15,6 +15,7 @@
         <view class="com.haulmont.cuba.security.entity.UserSubstitution" name="usersubst.edit">
             <property name="user" view="_minimal"/>
             <property name="substitutedUser" view="_minimal"/>
+            <property name="startDate"/>
             <property name="endDate"/>
         </view>
     </metadataContext>
@@ -54,6 +55,11 @@
                         <label value="msg://substUser"/>
                         <lookupField id="substUser" datasource="subst" property="substitutedUser"
                                      required="true" optionsDatasource="users" requiredMessage="msg://substUserMsg" width="250"/>
+                    </row>
+                    <row>
+                        <label value="msg://startDate"/>
+                        <dateField id="startDate" datasource="subst" property="startDate" dateFormat="dd/MM/yyyy"
+                                   resolution="DAY"/>
                     </row>
                     <row>
                         <label value="msg://endDate"/>

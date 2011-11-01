@@ -347,6 +347,7 @@ create table SEC_USER_SUBSTITUTION (
 
     USER_ID uuid,
     SUBSTITUTED_USER_ID uuid,
+    START_DATE timestamp,
     END_DATE timestamp,
 
     primary key (ID),

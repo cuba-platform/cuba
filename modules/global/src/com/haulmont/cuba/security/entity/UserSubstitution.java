@@ -34,6 +34,9 @@ public class UserSubstitution extends StandardEntity {
     @OnDeleteInverse(DeletePolicy.CASCADE)
     protected User substitutedUser;
 
+    @Column(name = "START_DATE")
+    protected Date startDate;
+
     @Column(name = "END_DATE")
     protected Date endDate;
 
@@ -51,6 +54,14 @@ public class UserSubstitution extends StandardEntity {
 
     public void setSubstitutedUser(User substitutedUser) {
         this.substitutedUser = substitutedUser;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     public Date getEndDate() {

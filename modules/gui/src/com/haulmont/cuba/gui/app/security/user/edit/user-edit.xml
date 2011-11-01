@@ -83,6 +83,10 @@
                         <columns>
                             <column id="substitutedUser.login" caption="msg://login"/>
                             <column id="substitutedUser.name" caption="msg://name"/>
+                            <column id="startDate" caption="msg://startDate">
+                                <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
+                                           format="dd/MM/yyyy"/>
+                            </column>
                             <column id="endDate" caption="msg://endDate">
                                 <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
                                            format="dd/MM/yyyy"/>
