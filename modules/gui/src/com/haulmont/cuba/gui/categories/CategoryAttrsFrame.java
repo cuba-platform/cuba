@@ -178,6 +178,11 @@ public class CategoryAttrsFrame extends AbstractFrame {
                                 defaultValue = simpleDateFormat.format(date);
                             }
                             break;
+                        case BOOLEAN:
+                            Boolean b = attribute.getDefaultBoolean();
+                            if (b != null)
+                                defaultValue = BooleanUtils.isTrue(b) ? getMessage("msgTrue") : getMessage("msgFalse");
+                            break;
                         default:
                             if (attribute.getDefaultValue() != null)
                                 defaultValue = attribute.getDefaultValue().toString();
