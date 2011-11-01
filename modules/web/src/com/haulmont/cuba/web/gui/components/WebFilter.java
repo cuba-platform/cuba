@@ -1507,7 +1507,8 @@ public class WebFilter
         public void setFrame(IFrame frame) {
         }
     }
-     private class AddToSetAction extends AbstractAction {
+
+    private class AddToSetAction extends AbstractAction {
         private Table table;
 
         private AddToSetAction(Table table) {
