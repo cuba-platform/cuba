@@ -71,6 +71,7 @@ public class AttributeEditor extends AbstractEditor {
         nameField = factory.createComponent(TextField.NAME);
         nameField.setId("name");
         nameField.setRequired(true);
+        nameField.setRequiredMessage(getMessage("nameRequired"));
         nameField.setCaption(getMessage("name"));
         nameField.setWidth(FIELD_WIDTH);
         nameField.requestFocus();
@@ -106,6 +107,7 @@ public class AttributeEditor extends AbstractEditor {
 
         dataTypeField.setNewOptionAllowed(false);
         dataTypeField.setRequired(true);
+        dataTypeField.setRequiredMessage(getMessage("dataTypeRequired"));
         dataTypeField.setOptionsMap(options);
         dataTypeField.setCaption(getMessage("dataType"));
         dataTypeField.addListener(new ValueListener() {
@@ -266,6 +268,7 @@ public class AttributeEditor extends AbstractEditor {
         entityTypeField.setId("entityType");
         entityTypeField.setCaption(getMessage("entityType"));
         entityTypeField.setRequired(true);
+        entityTypeField.setRequiredMessage(getMessage("entityTypeRequired"));
         entityTypeField.setWidth(FIELD_WIDTH);
         Map<String, Object> options = new TreeMap<String, Object>();
         MetaClass entityType = null;
