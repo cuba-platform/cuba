@@ -870,3 +870,4 @@ create table SYS_ATTR_VALUE(
 )^
 
 alter table SYS_ATTR_VALUE add constraint SYS_ATTR_VALUE_CATEGORY_ATTR_ID foreign key (CATEGORY_ATTR_ID) references SYS_CATEGORY_ATTR(ID)^
+
