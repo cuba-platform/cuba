@@ -88,6 +88,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     private JButton applyBtn;
     private FilterEditor editor;
 
+    private boolean defaultFilterEmpty = true;
     private boolean changingFilter;
     private boolean applyingDefault;
     private boolean editing = false;
@@ -322,10 +323,13 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         actions.addAction(new CreateAction());
 
-        if (filterEntity == null){
-            actions.addAction(new MakeDefaultAction());
+        if (filterEntity == null) {
+            if (!defaultFilterEmpty) {
+                actions.addAction(new MakeDefaultAction());
+            }
             return;
         }
+
 
         if ((BooleanUtils.isNotTrue(filterEntity.getIsSet())))
             actions.addAction(new CopyAction());
@@ -678,30 +682,38 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         Collection<ItemWrapper<FilterEntity>> filters = select.getOptionsList();
         FilterEntity defaultFilter = getDefaultFilter(filters);
-        for (ItemWrapper<FilterEntity> filterWrapper : filters) {
-            if (ObjectUtils.equals(defaultFilter, filterWrapper.getItem())) {
-                filterWrapper.setCaption(getFilterCaption(filterWrapper.getItem()) + " " + defaultFilterCaption);
-                Map<String, Object> params = window.getContext().getParams();
-                if (!BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
-                    applyingDefault = true;
-                    try {
-                        select.setValue(filterWrapper);
-                        updateControls();
-                        if (clientConfig.getGenericFilterManualApplyRequired()) {
-                            if (filterWrapper.getItem().getApplyDefault()) {
-                                apply(true);
-                            }
-                        } else apply(true);
-                        if (filterEntity != null)
-                            window.setDescription(getFilterCaption(filterEntity));
-                        else
-                            window.setDescription(null);
-                    } finally {
-                        applyingDefault = false;
+        if (defaultFilter != null) {
+            defaultFilterEmpty = false;
+
+            for (ItemWrapper<FilterEntity> filterWrapper : filters) {
+                if (ObjectUtils.equals(defaultFilter, filterWrapper.getItem())) {
+                    filterWrapper.setCaption(getFilterCaption(filterWrapper.getItem()) + " " + defaultFilterCaption);
+                    Map<String, Object> params = window.getContext().getParams();
+                    if (!BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
+                        applyingDefault = true;
+                        try {
+                            select.setValue(filterWrapper);
+                            updateControls();
+                            if (clientConfig.getGenericFilterManualApplyRequired()) {
+                                if (filterWrapper.getItem().getApplyDefault()) {
+                                    apply(true);
+                                }
+                            } else apply(true);
+                            if (filterEntity != null)
+                                window.setDescription(getFilterCaption(filterEntity));
+                            else
+                                window.setDescription(null);
+                        } finally {
+                            applyingDefault = false;
+                        }
                     }
+                    break;
                 }
-                break;
             }
+        } else {
+            noFilter.setIsDefault(true);
+            defaultFilterEmpty = true;
+            updateControls();
         }
     }
 
@@ -1038,7 +1050,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     private void setDefaultFilter() {
         if (filterEntity != null) {
             filterEntity.setIsDefault(true);
-        }
+            defaultFilterEmpty = false;
+        } else defaultFilterEmpty = true;
         Collection<ItemWrapper<FilterEntity>> filterWrappers = select.getOptionsList();
         for (ItemWrapper<FilterEntity> filterWrapper : filterWrappers) {
             if (!ObjectUtils.equals(filterWrapper.getItem(), filterEntity)) {

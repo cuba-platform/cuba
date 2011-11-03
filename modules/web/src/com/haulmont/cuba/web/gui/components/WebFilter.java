@@ -68,11 +68,11 @@ import static org.apache.commons.lang.BooleanUtils.isTrue;
 
 /**
  * Generic filter implementation for the web-client.
- *
+ * <p/>
  * <p>$Id$</p>
  *
  * @author krivopustov
-*/
+ */
 public class WebFilter
         extends WebAbstractComponent<VerticalActionsLayout> implements Filter {
     private static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
@@ -91,6 +91,7 @@ public class WebFilter
 
     private Button applyBtn;
 
+    private boolean defaultFilterEmpty = true;
     private boolean changingFilter;
     private boolean applyingDefault;
     private boolean editing;
@@ -243,7 +244,9 @@ public class WebFilter
         actions.addAction(new CreateAction());
 
         if (filterEntity == null) {
-            actions.addAction(new MakeDefaultAction());
+            if (!defaultFilterEmpty) {
+                actions.addAction(new MakeDefaultAction());
+            }
             return;
         }
 
@@ -577,6 +580,7 @@ public class WebFilter
         Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
         FilterEntity defaultFilter = getDefaultFilter(filters);
         if (defaultFilter != null) {
+            defaultFilterEmpty = false;
             Map<String, Object> params = window.getContext().getParams();
             if (!BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
                 applyingDefault = true;
@@ -599,6 +603,10 @@ public class WebFilter
                     applyingDefault = false;
                 }
             }
+        } else {
+            noFilter.setIsDefault(true);
+            defaultFilterEmpty = true;
+            updateControls();
         }
     }
 
@@ -1196,7 +1204,8 @@ public class WebFilter
     private void setDefaultFilter() {
         if (filterEntity != null) {
             filterEntity.setIsDefault(true);
-        }
+            defaultFilterEmpty = false;
+        } else defaultFilterEmpty = true;
         Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
         for (FilterEntity filter : filters) {
             if (!ObjectUtils.equals(filter, filterEntity)) {
