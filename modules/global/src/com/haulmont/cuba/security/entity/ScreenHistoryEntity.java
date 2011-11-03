@@ -13,6 +13,9 @@ package com.haulmont.cuba.security.entity;
 import javax.persistence.*;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import org.apache.openjpa.persistence.Persistent;
+
+import java.util.UUID;
 
 @javax.persistence.Entity(name = "sec$ScreenHistory")
 @Table(name = "SEC_SCREEN_HISTORY")
@@ -30,6 +33,10 @@ public class ScreenHistoryEntity extends BaseUuidEntity {
 
     @Column(name = "URL", length = 4000)
     private String url;
+
+    @Column(name = "ENTITY_ID")
+    @Persistent
+    private UUID entityId;
 
     public User getUser() {
         return user;
@@ -53,5 +60,13 @@ public class ScreenHistoryEntity extends BaseUuidEntity {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public UUID getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(UUID entityId) {
+        this.entityId = entityId;
     }
 }

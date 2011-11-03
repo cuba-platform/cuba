@@ -56,21 +56,24 @@ public class ScreenHistorySupport {
                 && (screenIds == null || screenIds.contains(window.getId())))
         {
             String caption = window.getCaption();
+            UUID entityId = null;
             IFrame frame = window.getFrame();
             if (frame instanceof Window.Editor) {
-                Instance entity = ((Window.Editor) frame).getItem();
+                Entity entity = ((Window.Editor) frame).getItem();
                 if (entity != null) {
                     if (PersistenceHelper.isNew(entity)) {
                         return;
                     }
                     if (StringUtils.isBlank(caption))
                         caption = MessageUtils.getEntityCaption(entity.getMetaClass()) + " " + entity.getInstanceName();
+                    entityId = (UUID) entity.getId();
                 }
             }
             ScreenHistoryEntity screenHistoryEntity = MetadataProvider.create(ScreenHistoryEntity.class);
             screenHistoryEntity.setCaption(StringUtils.abbreviate(caption, 255));
             screenHistoryEntity.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
             screenHistoryEntity.setUrl(makeLink(window));
+            screenHistoryEntity.setEntityId(entityId);
 
             CommitContext cc = new CommitContext(Collections.singleton(screenHistoryEntity));
             ServiceLocator.getDataService().commit(cc);

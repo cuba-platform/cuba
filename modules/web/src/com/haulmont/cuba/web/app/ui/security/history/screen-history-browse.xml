@@ -7,7 +7,7 @@
         >
 
     <dsContext>                                           
-        <collectionDatasource id="historyDs" class="com.haulmont.cuba.security.entity.ScreenHistoryEntity" view="browse">
+        <collectionDatasource id="historyDs" class="com.haulmont.cuba.security.entity.ScreenHistoryEntity" view="browse" fetchMode="LAZY">
             <query>
                 <![CDATA[select h from sec$ScreenHistory h where h.user.id = :session$userId
                 order by h.createTs desc]]>
