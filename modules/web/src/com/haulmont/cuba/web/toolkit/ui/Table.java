@@ -50,6 +50,12 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
     private boolean showTotalAggregation = true;
 
+    private List<CollapseListener> columnCollapseListeners = new ArrayList<CollapseListener>();
+
+    public interface CollapseListener {
+        void columnCollapsed(Object columnId, boolean collapsed);
+    }
+
     public enum PagingMode {
         PAGE,
         SCROLLING
@@ -1149,6 +1155,24 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
     public void setShowTotalAggregation(boolean showTotalAggregation) {
         this.showTotalAggregation = showTotalAggregation;
         requestRepaint();
+    }
+
+    public void addColumnCollapseListener(CollapseListener listener) {
+        columnCollapseListeners.add(listener);
+    }
+
+    public void removeColumnCollapseListener(CollapseListener listener) {
+        columnCollapseListeners.remove(listener);
+    }
+
+    @Override
+    public void setColumnCollapsed(Object propertyId, boolean collapsed) throws IllegalStateException {
+        if (collapsedColumns.contains(propertyId) != collapsed) {
+            for (CollapseListener listener : columnCollapseListeners) {
+                listener.columnCollapsed(propertyId, collapsed);
+            }
+        }
+        super.setColumnCollapsed(propertyId, collapsed);
     }
 
     public interface PagingProvider extends Serializable {

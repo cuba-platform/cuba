@@ -110,6 +110,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected DsManager dsManager;
 
+    private List<ColumnCollapseListener> columnCollapseListeners = new ArrayList<ColumnCollapseListener>();
+
     public java.util.List<Table.Column> getColumns() {
         return columnsOrder;
     }
@@ -306,6 +308,16 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             public void itemClick(ItemClickEvent event) {
                 if (event.isDoubleClick() && event.getItem() != null) {
                     handleClickAction();
+                }
+            }
+        });
+
+        component.addColumnCollapseListener(new com.haulmont.cuba.web.toolkit.ui.Table.CollapseListener() {
+            @Override
+            public void columnCollapsed(Object columnId, boolean collapsed) {
+                final Column collapsedColumn = getColumn(columnId.toString());
+                for (ColumnCollapseListener listener : columnCollapseListeners) {
+                    listener.columnCollapsed(collapsedColumn, collapsed);
                 }
             }
         });
@@ -1370,5 +1382,15 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     public Object getDefaultPresentationId() {
         Presentation def = presentations.getDefault();
         return def == null ? null : def.getId();
+    }
+
+    @Override
+    public void addColumnCollapsedListener(ColumnCollapseListener columnCollapsedListener) {
+        columnCollapseListeners.add(columnCollapsedListener);
+    }
+
+    @Override
+    public void removeColumnCollapseListener(ColumnCollapseListener columnCollapseListener) {
+        columnCollapseListeners.remove(columnCollapseListener);
     }
 }

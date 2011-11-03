@@ -930,4 +930,12 @@ public abstract class DesktopAbstractTable<C extends JTable>
             cache.clear();
         }
     }
+
+    @Override
+    public void addColumnCollapsedListener(ColumnCollapseListener columnCollapsedListener) {
+    }
+
+    @Override
+    public void removeColumnCollapseListener(ColumnCollapseListener columnCollapseListener) {
+    }
 }

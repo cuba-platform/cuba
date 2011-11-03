@@ -61,6 +61,13 @@ public interface Table
     boolean isAllowMultiStringCells();
     void setAllowMultiStringCells(boolean value);
 
+    interface ColumnCollapseListener extends Serializable {
+        void columnCollapsed(Column collapsedColumn, boolean collapsed);
+    }
+
+    void addColumnCollapsedListener(ColumnCollapseListener columnCollapsedListener);
+    void removeColumnCollapseListener(ColumnCollapseListener columnCollapseListener);
+
     public static class Column implements HasXmlDescriptor, HasCaption, HasFomatter, Serializable {
 
         private static final long serialVersionUID = -8462478820056909896L;
