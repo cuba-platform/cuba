@@ -19,6 +19,8 @@ import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ViewHelper;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -34,6 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class EntityDiffManager {
 
     private EntitySnapshotAPI snapshotAPI;
+    private Log log = LogFactory.getLog(EntityDiffManager.class);
 
     public EntityDiffManager(EntitySnapshotAPI snapshotAPI) {
         this.snapshotAPI = snapshotAPI;
@@ -167,20 +170,26 @@ public class EntityDiffManager {
                                             ViewProperty viewProperty, MetaProperty metaProperty,
                                             Stack<Object> diffBranch) {
         EntityPropertyDiff propertyDiff = null;
-        // check exist value in diff branch
-        if (!diffBranch.contains(secondValue)) {
+        if (viewProperty.getView() != null) {
+            // check exist value in diff branch
+            if (!diffBranch.contains(secondValue)) {
 
-            if (secondValue != null) {
-                // added or modified
-                propertyDiff = generateClassDiffFor(secondValue, firstValue, secondValue,
-                        viewProperty, metaProperty, diffBranch);
-            } else {
-                if (firstValue != null) {
-                    // removed or set null
-                    propertyDiff = generateClassDiffFor(firstValue, firstValue, secondValue,
+                if (secondValue != null) {
+                    // added or modified
+                    propertyDiff = generateClassDiffFor(secondValue, firstValue, secondValue,
                             viewProperty, metaProperty, diffBranch);
+                } else {
+                    if (firstValue != null) {
+                        // removed or set null
+                        propertyDiff = generateClassDiffFor(firstValue, firstValue, secondValue,
+                                viewProperty, metaProperty, diffBranch);
+                    }
                 }
             }
+        } else {
+            if ((firstValue != null) || (secondValue != null))
+                log.warn("Not null values for (null) view ignored, property: " + metaProperty.getName() +
+                        "in class" + metaProperty.getDeclaringClass().getCanonicalName());
         }
         return propertyDiff;
     }
