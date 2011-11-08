@@ -114,7 +114,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
 
     @Override
     public boolean isVisible() {
-        boolean componentVisible = impl != null && impl.isVisible();
+        boolean componentVisible = getComposition() != null && getComposition().isVisible();
 
         if (container != null)
             return componentVisible && container.isVisible();
