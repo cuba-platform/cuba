@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
@@ -227,7 +228,7 @@ public class Param extends AbstractParam<Component> {
                         for (String part : parts) {
                             Object p;
                             try {
-                                p = datatype.parse(part);
+                                p = datatype.parse(part, UserSessionProvider.getLocale());
                             } catch (ParseException e) {
                                 App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(AbstractParam.class,
                                         "Param.numberInvalid"), IFrame.NotificationType.ERROR);
@@ -237,7 +238,7 @@ public class Param extends AbstractParam<Component> {
                         }
                     } else {
                         try {
-                            v = datatype.parse((String) value);
+                            v = datatype.parse((String) value, UserSessionProvider.getLocale());
                         } catch (ParseException e) {
                             App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(AbstractParam.class,
                                     "Param.numberInvalid"), IFrame.NotificationType.ERROR);
@@ -252,7 +253,7 @@ public class Param extends AbstractParam<Component> {
             }
         });
 
-        field.setValue(value);
+        field.setValue(datatype.format(value, UserSessionProvider.getLocale()));
         return field;
     }
 
@@ -435,7 +436,7 @@ public class Param extends AbstractParam<Component> {
         LoadContext.Query q = context.setQueryString("select a from sys$CategoryAttribute a where a.id = :id");
         context.setView("_local");
         q.addParameter("id", categoryAttrId);
-        CategoryAttribute categoryAttribute = dataService.load(context);
+        CategoryAttribute categoryAttribute = (CategoryAttribute) dataService.load(context);
 
         runtimeEnum = new LinkedList<String>();
         String enumerationString = categoryAttribute.getEnumeration();

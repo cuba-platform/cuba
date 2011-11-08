@@ -227,7 +227,7 @@ public class Param extends AbstractParam<JComponent> {
                         for (String part : parts) {
                             Object p;
                             try {
-                                p = datatype.parse(part);
+                                p = datatype.parse(part, UserSessionProvider.getLocale());
                             } catch (ParseException e) {
                                 App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(AbstractParam.class,
                                         "Param.numberInvalid"), IFrame.NotificationType.ERROR);
@@ -237,7 +237,7 @@ public class Param extends AbstractParam<JComponent> {
                         }
                     } else {
                         try {
-                            v = datatype.parse((String) value);
+                            v = datatype.parse((String) value, UserSessionProvider.getLocale());
                         } catch (ParseException e) {
                             App.getInstance().getWindowManager().showNotification(MessageProvider.getMessage(AbstractParam.class,
                                     "Param.numberInvalid"), IFrame.NotificationType.ERROR);
@@ -252,7 +252,7 @@ public class Param extends AbstractParam<JComponent> {
             }
         });
 
-        field.setValue(value == null ? "" : datatype.format(value));
+        field.setValue(value == null ? "" : datatype.format(value, UserSessionProvider.getLocale()));
         return field.getComposition();
     }
 

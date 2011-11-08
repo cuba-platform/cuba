@@ -224,7 +224,7 @@ public abstract class AbstractParam<T> {
 
             case DATATYPE:
             case UNARY:
-                Datatype datatype = Datatypes.getInstance().get(javaClass);
+                Datatype datatype = Datatypes.get(javaClass);
                 if (datatype == null)
                     throw new UnsupportedOperationException("Unsupported parameter class: " + javaClass);
 
