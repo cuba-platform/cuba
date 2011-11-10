@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema
-    targetNamespace="http://www.haulmont.com/schema/cuba/view.xsd"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns="http://www.haulmont.com/schema/cuba/view.xsd"
-    elementFormDefault="qualified"
-    attributeFormDefault="unqualified"
->
+        targetNamespace="http://www.haulmont.com/schema/cuba/view.xsd"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns="http://www.haulmont.com/schema/cuba/view.xsd"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"
+        >
     <xs:element name="views">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="include" type="includeType" minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element name="view" type="viewType" minOccurs="1" maxOccurs="unbounded"/>
+                <xs:element name="view" type="viewType" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
