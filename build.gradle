@@ -20,10 +20,10 @@ buildscript {
     )
     repositories {
             mavenLocal()
-            mavenRepo(urls: "http://repository.haulmont.com:8587/nexus/content/groups/work")
+            mavenRepo(url: "http://repository.haulmont.com:8587/nexus/content/groups/work")
     }
     dependencies {
-        classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.0-SNAPSHOT'
+        classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.1-SNAPSHOT'
     }
 }
 
@@ -169,8 +169,8 @@ configure(coreModule) {
     }
 
     task testsJar(dependsOn: testClasses, type: Jar) {
-        from sourceSets.main.classesDir
-        from sourceSets.test.classesDir
+        from sourceSets.main.output.classesDir
+        from sourceSets.test.output.classesDir
         classifier = 'tests'
     }
 
@@ -197,8 +197,8 @@ configure(clientModule) {
     }
 
     task testsJar(dependsOn: testClasses, type: Jar) {
-        from sourceSets.main.classesDir
-        from sourceSets.test.classesDir
+        from sourceSets.main.output.classesDir
+        from sourceSets.test.output.classesDir
         classifier = 'tests'
     }
 
@@ -311,7 +311,7 @@ configure(webModule) {
         if (!widgetsetsDir.exists()) {
             javaexec {
                 main = 'com.google.gwt.dev.Compiler'
-                classpath(validationSrcDir, webToolkitSrcDir, webToolkitModule.sourceSets.main.classesDir, sourceSets.main.compileClasspath, sourceSets.main.classesDir)
+                classpath(validationSrcDir, webToolkitSrcDir, webToolkitModule.sourceSets.main.output.classesDir, sourceSets.main.compileClasspath, sourceSets.main.output.classesDir)
                 args('-war', widgetsetsDir.absolutePath, '-style', 'OBF', 'com.haulmont.cuba.toolkit.gwt.WidgetSet')
                 jvmArgs('-Xmx512m', '-Xss8m', '-XX:MaxPermSize=256m', '-Djava.awt.headless=true')
             }
