@@ -26,8 +26,11 @@ import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
 
@@ -51,6 +54,9 @@ public class AttributeEditor extends AbstractEditor {
     private CategoryAttribute attribute;
     private boolean dataTypeFieldInited = false;
     private DataService dataService;
+
+    @Inject
+    private Datasource attributeDs;
 
     @Inject
     private ComponentsFactory factory;
@@ -133,6 +139,24 @@ public class AttributeEditor extends AbstractEditor {
             }
         });
         fieldsContainer.add(dataTypeField);
+    }
+
+    @Override
+    public void commitAndClose() {
+        CollectionDatasource parent = (CollectionDatasource) ((DatasourceImplementation) attributeDs).getParent();
+        if (parent != null) {
+            CategoryAttribute categoryAttribute = (CategoryAttribute) getItem();
+            for (Object id : parent.getItemIds()) {
+                CategoryAttribute ca = (CategoryAttribute) parent.getItem(id);
+                if (ca.getName().equals(categoryAttribute.getName())
+                        && (!ca.equals(categoryAttribute))) {
+                    showNotification(getMessage("validationFail"), getMessage("uniqueName"), NotificationType.TRAY);
+                    return;
+                }
+            }
+        }
+
+        super.commitAndClose();
     }
 
     private void generateDefaultValueField(Enum<RuntimePropsDatasource.PropertyType> dataType, boolean setValue) {

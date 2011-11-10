@@ -185,7 +185,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                                     field.setOptionsDatasource(fieldDs);
                                     field.setDatasource(rds, (String) propertyId);
                                     //field.setHeight("-1px");
-                                    field.setWidth("100%");
+                                    field.setWidth(fieldWidth);
                                     return field;
                                 }
                             });
@@ -211,7 +211,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                                         lookupAction.setLookupScreen(screen);
                                 }
                             }
-                            pickerField.setWidth("100%");
+                            pickerField.setWidth(fieldWidth);
                             return pickerField;
                         }
                     });
