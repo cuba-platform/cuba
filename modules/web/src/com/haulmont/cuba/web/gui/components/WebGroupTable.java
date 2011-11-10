@@ -41,6 +41,8 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
 
     protected Map<Table.Column, GroupAggregationCells> groupAggregationCells = null;
 
+    protected boolean rerender = true;
+
     private static final long serialVersionUID = 4274142811721901398L;
 
     public WebGroupTable() {
@@ -69,6 +71,11 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
             public void paintContent(PaintTarget target) throws PaintException {
                 super.paintContent(target);
                 paintSpecificContent(target);
+            }
+
+            @Override
+            public void groupBy(Object[] properties) {
+                groupBy(properties, rerender);
             }
         };
         initComponent(component);
@@ -574,7 +581,11 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         protected class GroupDataSourceRefreshListener extends DataSourceRefreshListener {
             @Override
             public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
+                rerender = false;
+                Collection groupProperties = component.getGroupProperties();
+                component.groupBy(groupProperties.toArray());
                 super.stateChanged(ds, prevState, state);
+                rerender = true;
             }
 
             @Override
