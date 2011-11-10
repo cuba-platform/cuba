@@ -1026,6 +1026,8 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
                             newValue.add(v);
                         }
                     }
+                    if (oldValue.isEmpty() && newValue.isEmpty())
+                        return;
                     setValue(newValue);
                 }
             } else {

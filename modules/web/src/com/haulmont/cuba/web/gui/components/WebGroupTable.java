@@ -574,8 +574,6 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         protected class GroupDataSourceRefreshListener extends DataSourceRefreshListener {
             @Override
             public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
-                Collection groupProperties = component.getGroupProperties();
-                component.groupBy(groupProperties.toArray());
                 super.stateChanged(ds, prevState, state);
             }
 

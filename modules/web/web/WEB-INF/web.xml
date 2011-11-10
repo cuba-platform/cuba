@@ -48,19 +48,9 @@
         <url-pattern>/dispatch/*</url-pattern>
     </servlet-mapping>
 
-    <servlet>
-        <servlet-name>jr_image_servlet</servlet-name>
-        <servlet-class>net.sf.jasperreports.j2ee.servlets.ImageServlet</servlet-class>
-    </servlet>
-
     <servlet-mapping>
         <servlet-name>cuba_servlet</servlet-name>
         <url-pattern>/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>jr_image_servlet</servlet-name>
-        <url-pattern>/jasperreport/image</url-pattern>
     </servlet-mapping>
 
     <filter>

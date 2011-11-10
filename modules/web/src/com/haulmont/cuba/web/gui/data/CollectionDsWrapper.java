@@ -201,7 +201,6 @@ public class CollectionDsWrapper implements Container, Container.ItemSetChangeNo
             final boolean prevIgnoreListeners = ignoreListeners;
             try {
                 itemsCache.clear();
-                fireItemSetChanged();
             } finally {
                 ignoreListeners = prevIgnoreListeners;
             }
