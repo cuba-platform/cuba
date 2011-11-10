@@ -26,24 +26,12 @@ public abstract class ControllerUtils {
         if (mapping == null) throw new IllegalArgumentException("Mapping cannot be null");
         GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(getProtocol()).append("://")
-                .append(globalConfig.getWebHostName());
-        if (globalConfig.getWebPort() != null) {
-            sb.append(":")
-                    .append(globalConfig.getWebPort());
-        }
-        sb.append("/")
-                .append(globalConfig.getWebContextName()).append(getContollerPrefix());
+        StringBuilder sb = new StringBuilder(globalConfig.getWebAppUrl()).append(getContollerPrefix());
         if (!mapping.startsWith("/")) {
             sb.append("/");
         }
         sb.append(mapping);
         return sb.toString();
-    }
-
-    private static String getProtocol() {
-        return "http";
     }
 
     public static String getContollerPrefix() {
