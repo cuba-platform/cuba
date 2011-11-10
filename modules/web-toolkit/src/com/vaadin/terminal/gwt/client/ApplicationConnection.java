@@ -784,7 +784,7 @@ public class ApplicationConnection {
         for (int i = 1; i < variableBurst.size(); i += 2) {
             String id = variableBurst.get(i);
             id = id.substring(0, id.indexOf(VAR_FIELD_SEPARATOR));
-            if (!idToPaintableDetail.containsKey(id) && !id.startsWith("DD")) {
+            if (!idToPaintableDetail.containsKey(id) && !id.startsWith("DD") && !id.startsWith("TID")) {
                 // variable owner does not exist anymore
                 variableBurst.remove(i - 1);
                 variableBurst.remove(i - 1);
