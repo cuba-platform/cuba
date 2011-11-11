@@ -223,6 +223,8 @@ configure(guiModule) {
         compile(group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.0.1')
         groovy(groovyArtifact)
         groovy(asm)
+
+        testCompile(clientModule.sourceSets.test.output)
     }
 
     test {
