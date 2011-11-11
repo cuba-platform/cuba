@@ -20,6 +20,9 @@ import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.OpenJPAException;
 import serp.bytecode.*;
 
+/**
+ * Enhances entity classes.
+ */
 public class CubaEnhancer implements PCEnhancer.AuxiliaryEnhancer {
 
     private static final Class ENHANCED_TYPE = CubaEnhanced.class;
