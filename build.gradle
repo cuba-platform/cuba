@@ -171,6 +171,8 @@ configure(coreModule) {
     task testsJar(dependsOn: testClasses, type: Jar) {
         from sourceSets.main.output.classesDir
         from sourceSets.test.output.classesDir
+        from sourceSets.main.output.resourcesDir
+        from sourceSets.test.output.resourcesDir
         classifier = 'tests'
     }
 
