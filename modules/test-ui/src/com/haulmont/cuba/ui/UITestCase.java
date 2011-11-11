@@ -75,6 +75,7 @@ public abstract class UITestCase extends TestCase {
      * @throws Exception On IOException or while run client program
      */
     protected List<UITestStep> runUiTest(String testFileName) throws Exception {
+        String outDirPath = getOrCreateOutputPath();
         String executorScript = getExecutorScript();
 
         StringBuilder errors = new StringBuilder();
@@ -87,7 +88,6 @@ public abstract class UITestCase extends TestCase {
             i++;
         }
 
-        String outDirPath = getOutputPath();
         saveLog(testSteps, outDirPath + getName() + ".log");
         if (i < testSteps.size() && makeScreenshot)
             captureScreen(outDirPath + getName() + ".png");
@@ -95,7 +95,7 @@ public abstract class UITestCase extends TestCase {
         return testSteps;
     }
 
-    private String getOutputPath() throws IOException {
+    private String getOrCreateOutputPath() throws IOException {
         String outDirPath = ACCEPTANCE_DIR + "out/";
         File outDir = new File(outDirPath);
         if (!outDir.exists()) {
