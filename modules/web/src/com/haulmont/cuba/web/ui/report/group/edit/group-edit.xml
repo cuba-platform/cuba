@@ -1,0 +1,23 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.web.ui.report.group.edit.ReportGroupEditor"
+        datasource="groupDs"
+        caption="msg://reportGroupEditor"
+        messagesPack="com.haulmont.cuba.web.ui.report"
+        focusComponent="groupProps"
+        >
+
+    <dsContext>
+        <datasource id="groupDs" class="com.haulmont.cuba.report.ReportGroup" view="_local"/>
+    </dsContext>
+
+    <layout expand="windowActions">
+        <fieldGroup id="groupProps" datasource="groupDs">
+            <column>
+                <field id="title"/>
+                <field id="code"/>
+            </column>
+        </fieldGroup>
+        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+    </layout>
+</window>

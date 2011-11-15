@@ -11,33 +11,24 @@
 package com.haulmont.cuba.web.ui.report.edit
 
 import com.haulmont.chile.core.model.MetaPropertyPath
+import com.haulmont.cuba.core.app.FileStorageService
 import com.haulmont.cuba.core.entity.Entity
-import com.haulmont.cuba.core.global.MessageProvider
-import com.haulmont.cuba.core.global.MetadataProvider
-import com.haulmont.cuba.core.global.PersistenceHelper
-import com.haulmont.cuba.core.global.View
+import com.haulmont.cuba.core.entity.FileDescriptor
+import com.haulmont.cuba.gui.ServiceLocator
 import com.haulmont.cuba.gui.WindowManager
+import com.haulmont.cuba.gui.WindowManager.OpenType
 import com.haulmont.cuba.gui.components.actions.AddAction
 import com.haulmont.cuba.gui.components.actions.CreateAction
 import com.haulmont.cuba.gui.components.actions.EditAction
 import com.haulmont.cuba.gui.components.actions.RemoveAction
 import com.haulmont.cuba.gui.data.CollectionDatasource
 import com.haulmont.cuba.gui.data.DataService
-import com.haulmont.cuba.gui.data.Datasource
-import com.haulmont.cuba.report.BandDefinition
-import com.haulmont.cuba.report.Orientation
-import com.haulmont.cuba.report.Report
-import com.haulmont.cuba.report.ReportInputParameter
-import org.apache.commons.lang.StringUtils
-import com.haulmont.cuba.gui.components.*
-import com.haulmont.cuba.gui.WindowManager.OpenType
 import com.haulmont.cuba.gui.data.DsContext.CommitListener
-import com.haulmont.cuba.core.global.CommitContext
-import com.haulmont.cuba.report.ReportTemplate
-import com.haulmont.cuba.core.app.FileStorageService
-import com.haulmont.cuba.gui.ServiceLocator
-import com.haulmont.cuba.core.entity.FileDescriptor
-import com.haulmont.cuba.core.global.FileStorageException
+import org.apache.commons.lang.StringUtils
+import com.haulmont.cuba.core.global.*
+import com.haulmont.cuba.gui.components.*
+import com.haulmont.cuba.report.*
+import com.haulmont.cuba.gui.data.CollectionDatasource.RefreshMode
 
 public class ReportEditor extends AbstractEditor {
 
@@ -46,17 +37,32 @@ public class ReportEditor extends AbstractEditor {
     }
 
     def void setItem(Entity item) {
-        super.setItem(item);
-        Report report = (Report) getItem();
-        this.report = report;
+        Report report = (Report) item;
+        BandDefinition rootDefinition = null
+
         if (PersistenceHelper.isNew(item)) {
-            BandDefinition definition = new BandDefinition()
-            definition.setName('Root')
-            report.setRootBandDefinition(definition)
+            rootDefinition = new BandDefinition()
+            rootDefinition.setName('Root')
+            report.setRootBandDefinition(rootDefinition)
+            report.setBands(new HashSet<BandDefinition>([rootDefinition]))
+
+            CollectionDatasource groupsDs = getDsContext().get('groupsDs')
+            groupsDs.refresh()
+            if (groupsDs.getItemIds() != null) {
+                def id = groupsDs.getItemIds().iterator().next()
+                report.setGroup((ReportGroup)groupsDs.getItem(id))
+            }
         }
-        if (!StringUtils.isEmpty(this.report.name)) {
-            caption = MessageProvider.formatMessage(getClass(), 'reportEditor.format', this.report.name)
+        if (!StringUtils.isEmpty(report.name)) {
+            caption = MessageProvider.formatMessage(getClass(), 'reportEditor.format', report.name)
         }
+
+        super.setItem(item);
+        this.report = (Report) getItem();
+
+        if (PersistenceHelper.isNew(item))
+            rootDefinition.setReport(report)
+
         bandTree.datasource.refresh()
         bandTree.expandTree()
     }
@@ -64,7 +70,7 @@ public class ReportEditor extends AbstractEditor {
     private Report report
 
     private Tree bandTree
-    private Datasource treeDs
+    private CollectionDatasource treeDs
     private deletedFiles = [:]
 
     public void init(Map<String, Object> params) {
@@ -247,58 +253,6 @@ public class ReportEditor extends AbstractEditor {
         Button upButton = getComponent('generalFrame.up')
         Button downButton = getComponent('generalFrame.down')
 
-        def createBandDefinition = [
-                actionPerform: {Component component ->
-                    BandDefinition parentDefinition = treeDs.getItem()
-                    if (parentDefinition) {
-                        if (!Orientation.VERTICAL.equals(parentDefinition.orientation)) {
-
-                            Window.Editor editor = openEditor(
-                                    'report$BandDefinition.edit',
-                                    new BandDefinition(),
-                                    WindowManager.OpenType.THIS_TAB,
-                                    (Map<String, Object>) [
-                                            'parentDefinition': parentDefinition,
-                                            'position': parentDefinition.childrenBandDefinitions?.size()
-                                    ]
-                            )
-
-                            editor.addListener(
-                                    [
-                                            windowClosed: { String actionId -> treeDs.refresh() }
-                                    ] as Window.CloseListener
-                            )
-                        } else {
-                            showNotification(getMessage('generalFrame.noChildSupport'), IFrame.NotificationType.HUMANIZED)
-                        }
-                    }
-                }
-        ]
-
-        def editBandDefinition = [
-                actionPerform: { Component component ->
-                    BandDefinition definition = (BandDefinition) treeDs.getItem()
-                    if (definition) {
-                        Window.Editor editor = openEditor('report$BandDefinition.edit', definition, WindowManager.OpenType.THIS_TAB)
-                        editor.addListener(
-                                [
-                                        windowClosed: {
-                                            String actionId -> refreshBand(actionId, editor, definition)
-                                        }
-                                ] as Window.CloseListener)
-                    }
-                }
-        ]
-
-        def removeBandDefinition = [
-                actionPerform: { Component component ->
-                    BandDefinition definition = (BandDefinition) treeDs.getItem()
-//                    removeBandFromChilds(report.getRootBandDefinition(), definition)
-                    if (definition) dataService.remove(definition)
-                    treeDs.refresh()
-                }
-        ]
-
         def up = [
                 actionPerform: {Component component ->
                     BandDefinition definition = (BandDefinition) treeDs.getItem()
@@ -310,9 +264,7 @@ public class ReportEditor extends AbstractEditor {
                             BandDefinition previousDefinition = definitionsList.get(index - 1)
                             definition.position = definition.position - 1
                             previousDefinition.position = previousDefinition.position + 1
-                            dataService.commit(definition, bandDefinitionView)
-                            dataService.commit(previousDefinition, bandDefinitionView)
-                            treeDs.refresh()
+                            refreshBandsTree()
                         }
                     }
                 }
@@ -329,19 +281,45 @@ public class ReportEditor extends AbstractEditor {
                             BandDefinition nextDefinition = definitionsList.get(index + 1)
                             definition.position = definition.position + 1
                             nextDefinition.position = nextDefinition.position - 1
-                            dataService.commit(definition, bandDefinitionView)
-                            dataService.commit(nextDefinition, bandDefinitionView)
-                            treeDs.refresh()
+                            refreshBandsTree()
                         }
                     }
                 }
         ]
 
-        createBandDefinitionButton.action = new ActionAdapter('generalFrame.createBandDefinition', messagesPack, createBandDefinition)
-        editBandDefinitionButton.action = new ActionAdapter('generalFrame.editBandDefinition', messagesPack, editBandDefinition)
-        removeBandDefinitionButton.action = new ActionAdapter('generalFrame.removeBandDefinition', messagesPack, removeBandDefinition)
+        Tree tree = getComponent('generalFrame.serviceTree')
+        createBandDefinitionButton.action = new CreateAction(tree, OpenType.THIS_TAB, 'generalFrame.editBandDefinition') {
+            @Override
+            void actionPerform(Component component) {
+                BandDefinition parentDefinition = (BandDefinition)treeDs.getItem()
+                if (parentDefinition) {
+                    super.actionPerform(component)
+                }
+            }
+
+            @Override
+            protected Map<String, Object> getInitialValues() {
+                BandDefinition parentDefinition = (BandDefinition) treeDs.getItem()
+                return (Map<String, Object>) [
+                        'parentBandDefinition': parentDefinition,
+                        'position': parentDefinition.childrenBandDefinitions?.size(),
+                        'report': report
+                ]
+            }
+        }
+        // new ActionAdapter('generalFrame.createBandDefinition', messagesPack, createBandDefinition)
+        editBandDefinitionButton.action = new EditAction(bandTree, OpenType.THIS_TAB, 'generalFrame.editBandDefinition')
+        // new ActionAdapter('generalFrame.editBandDefinition', messagesPack, editBandDefinition)
+        removeBandDefinitionButton.action = new RemoveAction(bandTree, false, 'generalFrame.removeBandDefinition')
+        // new ActionAdapter('generalFrame.removeBandDefinition', messagesPack, removeBandDefinition)
         upButton.action = new ActionAdapter('generalFrame.up', messagesPack, up)
         downButton.action = new ActionAdapter('generalFrame.down', messagesPack, down)
+    }
+
+    private def refreshBandsTree() {
+        treeDs.setRefreshMode(RefreshMode.NEVER)
+        bandTree.refresh()
+        treeDs.setRefreshMode(RefreshMode.ALWAYS)
     }
 
     private def initTemplates() {
@@ -383,38 +361,6 @@ public class ReportEditor extends AbstractEditor {
                 }
             }
         };
-    }
-
-    private def refreshBand(actionId, editor, band) {
-        if (COMMIT_ACTION_ID.equals(actionId)) {
-            treeDs.refresh()
-        }
-    }
-
-    private void replaceInBands(BandDefinition rootBand, BandDefinition lastBand, BandDefinition newBand) {
-        java.util.List<BandDefinition> defs = rootBand.getChildrenBandDefinitions()
-        if (defs != null) {
-            def index = defs.indexOf(lastBand)
-            if (index >= 0) {
-                defs.remove(lastBand)
-            }
-            else {
-                for (BandDefinition childBand: defs) {
-                    replaceInBands(childBand, lastBand, newBand)
-                }
-            }
-        }
-    }
-
-    private void removeBandFromChilds(BandDefinition rootBand, BandDefinition band) {
-        java.util.List<BandDefinition> defs = rootBand.getChildrenBandDefinitions()
-        if (defs.contains(band))
-            defs.remove(band)
-        else {
-            for (BandDefinition childBand: defs) {
-                removeBandFromChilds(childBand, band)
-            }
-        }
     }
 
     public void commitAndClose() {

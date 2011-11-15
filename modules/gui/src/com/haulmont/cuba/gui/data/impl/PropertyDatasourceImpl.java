@@ -145,6 +145,13 @@ public class PropertyDatasourceImpl<T extends Entity>
     public void invalidate() {
     }
 
+    @Override
+    public void modified(T item) {
+        super.modified(item);
+
+        if (masterDs != null)
+            ((AbstractDatasource) masterDs).setModified(true);
+    }
 
     public void initialized() {
     }

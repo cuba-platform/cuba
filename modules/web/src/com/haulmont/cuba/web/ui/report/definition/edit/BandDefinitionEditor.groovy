@@ -29,6 +29,7 @@ import com.haulmont.cuba.report.DataSetType
 import com.haulmont.cuba.report.Orientation
 import com.haulmont.cuba.security.entity.EntityOp
 import com.haulmont.cuba.gui.components.*
+import com.haulmont.cuba.core.global.PersistenceHelper
 
 public class BandDefinitionEditor extends AbstractEditor implements Suggester {
 
@@ -44,9 +45,9 @@ public class BandDefinitionEditor extends AbstractEditor implements Suggester {
     @Override
     def void setItem(Entity item) {
         BandDefinition definition = (BandDefinition) item
-        definition.setParentBandDefinition(parentDefinition)
-        definition.position = position ?: definition.position
-        if (!definition.orientation) { definition.orientation = Orientation.HORIZONTAL }
+        if (PersistenceHelper.isNew(item))
+            definition.orientation = Orientation.HORIZONTAL
+
         super.setItem(definition);
         selectFirstDataset()
     }
@@ -54,8 +55,6 @@ public class BandDefinitionEditor extends AbstractEditor implements Suggester {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        parentDefinition = (BandDefinition) params['param$parentDefinition']
-        position = (Integer) params['param$position']
 
         Table table = getComponent('dataSets')
         table.addAction(new RemoveAction(table, false))

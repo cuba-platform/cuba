@@ -57,6 +57,12 @@
     <screen id="report$ReportTemplate.edit"
             template="/com/haulmont/cuba/web/ui/report/template/edit/template-edit.xml"/>
 
+    <screen id="report$ReportGroup.browse"
+            template="/com/haulmont/cuba/web/ui/report/group/browse/group-browse.xml"/>
+
+    <screen id="report$ReportGroup.edit"
+            template="/com/haulmont/cuba/web/ui/report/group/edit/group-edit.xml"/>
+
     <screen id="core$Entity.restore"
             template="/com/haulmont/cuba/web/app/ui/core/restore/entity-restore.xml"/>
 

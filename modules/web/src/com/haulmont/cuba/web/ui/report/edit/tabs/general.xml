@@ -8,8 +8,10 @@
                 <groupBox stylename="edit-area">
                     <vbox spacing="true" align="TOP_LEFT" expand="templatesTable">
                         <fieldGroup id="propertiesFieldGroup" caption="msg://report.properties" datasource="reportDs">
-                            <field id="name" required="true" requiredMessage="msg://report.nameMsg"/>
-                            <field id="reportType" required="true" requiredMessage="msg://report.reportTypeMsg"/>
+                            <field id="name" required="true" requiredMessage="msg://report.nameMsg" width="${width}"/>
+                            <field id="reportType" required="true" requiredMessage="msg://report.reportTypeMsg" width="${width}"/>
+                            <field id="group" required="true" optionsDatasource="groupsDs"
+                                   requiredMessage="msg://report.reportTypeMsg" width="${width}"/>
                         </fieldGroup>
                         <label value="msg://report.templates" stylename="h2"/>
                         <table id="templatesTable" sortable="false" height="200">

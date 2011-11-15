@@ -12,12 +12,8 @@
                 id="bandDefinitionDs"
                 class="com.haulmont.cuba.report.BandDefinition"
                 view="report.edit">
+            <collectionDatasource id="dataSetsDs" property="dataSets"/>
         </datasource>
-        <collectionDatasource id="dataSetsDs" class="com.haulmont.cuba.report.DataSet" view="report.edit">
-            <query>
-                select d from report$DataSet d where d.bandDefinition.id = :ds$bandDefinitionDs
-            </query>
-        </collectionDatasource>
     </dsContext>
     <#assign width = 400>
     <#assign rwidth = 500>

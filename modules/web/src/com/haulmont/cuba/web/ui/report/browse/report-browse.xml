@@ -8,10 +8,10 @@
         >
 
     <dsContext>
-        <collectionDatasource
+        <groupDatasource
                 id="reportDs"
                 class="com.haulmont.cuba.report.Report"
-                view="_local"
+                view="report.view"
                 >
             <query>
                 <![CDATA[select r from report$Report r]]>
@@ -23,27 +23,28 @@
                     </and>
                 </filter>
             </query>
-        </collectionDatasource>
+        </groupDatasource>
     </dsContext>
 
     <layout expand="table-panel">
         <vbox id="table-panel" expand="table" spacing="true">
-            <hbox align="MIDDLE_LEFT" spacing="true" margin="true">
-                <button action="table.create" icon="icons/create.png"/>
-                <button action="table.edit" icon="icons/edit.png"/>
-                <button action="table.remove" icon="icons/remove.png"/>
-                <label/>
-                <button id="import"/>
-                <button id="export"/>
-                <label/>
-                <button id="runReport" icon="icons/run.png"/>
-            </hbox>
-            <table id="table" editable="false" multiselect="true">
+            <groupTable id="table" editable="false" multiselect="true">
+                <buttonsPanel>
+                    <button action="table.create" icon="icons/create.png"/>
+                    <button action="table.edit" icon="icons/edit.png"/>
+                    <button action="table.remove" icon="icons/remove.png"/>
+                    <button id="import"/>
+                    <button id="export"/>
+                    <button id="runReport" icon="icons/run.png"/>
+                </buttonsPanel>
                 <columns>
+                    <group>
+                        <column id="group" width="200"/>
+                    </group>
                     <column id="name" caption="msg://report.name"/>
                 </columns>
                 <rows datasource="reportDs"/>
-            </table>
+            </groupTable>
         </vbox>
     </layout>
 </window>

@@ -634,6 +634,7 @@ create table REPORT_BAND_DEFINITION
   QUERY varchar(255),
   PARENT_DEFINITION_ID varchar(36),
   NAME varchar(255),
+  REPORT_ID varchar(36),
   ORIENTATION integer default 0,
   POSITION_ integer default 0,
 
@@ -643,6 +644,25 @@ create table REPORT_BAND_DEFINITION
 );
 
 --------------------------------------------------------------------------------------------------------------
+
+create table REPORT_GROUP (
+  ID varchar(36) not null,
+  CREATE_TS timestamp without time zone,
+  CREATED_BY varchar(50),
+  VERSION integer,
+  UPDATE_TS timestamp without time zone,
+  UPDATED_BY varchar(50),
+
+  TITLE varchar(255) not null,
+  CODE varchar(255),
+
+  primary key (ID)
+)^
+
+insert into REPORT_GROUP (ID, CREATE_TS, CREATED_BY, VERSION, TITLE, CODE)
+values ('4e083530-0b9c-11e1-9b41-6bdaa41bff94', now(), 'admin', 0, 'General', 'ReportGroup.default')^
+
+--  --------------------------------------------------------------------------------------------------------------
 
 create table REPORT_REPORT
 (
@@ -654,13 +674,19 @@ create table REPORT_REPORT
   UPDATED_BY varchar(50),
 
   NAME varchar(255),
+  GROUP_ID varchar(36) not null,
   ROOT_DEFINITION_ID varchar(36),
   REPORT_TYPE integer,
 
   primary key (ID),
   constraint FK_REPORT_REPORT_TO_REPORT_BAND_DEFINITION foreign key (ROOT_DEFINITION_ID)
-      references REPORT_BAND_DEFINITION (ID)
+      references REPORT_BAND_DEFINITION (ID),
+  constraint FK_REPORT_REPORT_TO_REPORT_GROUP foreign key (GROUP_ID)
+      references REPORT_GROUP (ID)
 );
+
+alter table REPORT_BAND_DEFINITION add constraint FK_REPORT_BAND_DEFINITION_TO_REPORT_REPORT
+foreign key (REPORT_ID) references REPORT_REPORT (ID);
 
 --------------------------------------------------------------------------------------------------------------
 

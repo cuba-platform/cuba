@@ -1,0 +1,30 @@
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.web.ui.report.group.browse.ReportGroupBrowser"
+        caption="msg://reportGroupBrowser"
+        messagesPack="com.haulmont.cuba.web.ui.report"
+        focusComponent="table"
+        >
+
+    <dsContext>
+        <collectionDatasource id="groupsDs" class="com.haulmont.cuba.report.ReportGroup" view="_local">
+            <query>
+                <![CDATA[select gr from report$ReportGroup gr]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expand="table">
+        <table id="table">
+            <buttonsPanel>
+                <button action="table.create" icon="icons/create.png"/>
+                <button action="table.edit" icon="icons/edit.png"/>
+                <button action="table.remove" icon="icons/remove.png"/>
+            </buttonsPanel>
+            <columns>
+                <column id="locName"/>
+            </columns>
+            <rows datasource="groupsDs"/>
+        </table>
+    </layout>
+</window>

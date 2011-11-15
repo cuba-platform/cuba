@@ -17,10 +17,17 @@
             <collectionDatasource id="rolesDs" property="roles"/>
             <collectionDatasource id="reportScreensDs" property="reportScreens"/>
             <collectionDatasource id="templatesDs" property="templates"/>
+            <hierarchicalDatasource id="treeDs" property="bands" hierarchyProperty="parentBandDefinition">
+                <collectionDatasource id="dataSetsDs" property="dataSets"/>
+            </hierarchicalDatasource>
         </datasource>
-        <hierarchicalDatasource id="treeDs" class="com.haulmont.cuba.report.BandDefinition" view="report.edit">
-            <datasourceClass>com.haulmont.cuba.web.ui.report.edit.BandDefinitionsDatasource</datasourceClass>
-        </hierarchicalDatasource>
+
+        <collectionDatasource id="groupsDs" class="com.haulmont.cuba.report.ReportGroup" view="_local">
+            <query>
+                <![CDATA[ select rg from report$ReportGroup rg order by rg.createTs asc ]]>
+            </query>
+        </collectionDatasource>
+
     </dsContext>
     <layout expand="tabsheet">
         <tabsheet id="tabsheet">

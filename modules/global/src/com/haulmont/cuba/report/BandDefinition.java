@@ -11,7 +11,6 @@
 package com.haulmont.cuba.report;
 
 import com.haulmont.chile.core.annotations.Aggregation;
-import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.DeletePolicy;
@@ -33,6 +32,10 @@ public class BandDefinition extends HardDeleteEntity {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "PARENT_DEFINITION_ID")
     private BandDefinition parentBandDefinition;
+
+    @ManyToOne
+    @JoinColumn(name = "REPORT_ID")
+    private Report report;
 
     @OneToMany(mappedBy = "parentBandDefinition", cascade = CascadeType.ALL)
     @Aggregation
@@ -97,5 +100,13 @@ public class BandDefinition extends HardDeleteEntity {
 
     public void setPosition(Integer position) {
         this.position = position != null && position > 0 ? position : 0;
+    }
+
+    public Report getReport() {
+        return report;
+    }
+
+    public void setReport(Report report) {
+        this.report = report;
     }
 }

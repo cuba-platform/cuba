@@ -20,12 +20,14 @@
         <item id="core$Entity.restore"/>
         <item id="jmxcontrol$DisplayMbeans"/>
         <item id="report$Report.browse"/>
+        <item id="report$ReportGroup.browse"/>
         <item id="sys$Categories.browse"/>
         <item id="sys$SendingMessage.browse"/>
         <item id="core$ScheduledTask.browse"/>
     </menu>
     <menu id="reports">
         <item id="report$Report.browse"/>
+        <item id="report$ReportGroup.browse"/>
         <item id="report$Report.run"/>
     </menu>
     <menu id="help">

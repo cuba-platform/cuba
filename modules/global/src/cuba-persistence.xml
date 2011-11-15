@@ -55,6 +55,7 @@
         <class>com.haulmont.cuba.report.ReportScreen</class>
         <class>com.haulmont.cuba.report.ReportValueFormat</class>
         <class>com.haulmont.cuba.report.Report</class>
+        <class>com.haulmont.cuba.report.ReportGroup</class>
 
         <properties>
             <property name="openjpa.Log" value="log4j"/>

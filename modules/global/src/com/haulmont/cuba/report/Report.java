@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import javax.persistence.*;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name = "report$Report")
 @Table(name = "REPORT_REPORT")
@@ -33,13 +34,21 @@ public class Report extends HardDeleteEntity {
     @Column(name = "NAME")
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "GROUP_ID")
+    private ReportGroup group;
+
     @Column(name = "REPORT_TYPE")
     private Integer reportType;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ROOT_DEFINITION_ID")
-    @OnDelete(value = DeletePolicy.CASCADE)
     private BandDefinition rootBandDefinition;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OnDelete(DeletePolicy.CASCADE)
+    @Aggregation
+    private Set<BandDefinition> bands;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @OnDelete(value = DeletePolicy.CASCADE)
@@ -167,5 +176,21 @@ public class Report extends HardDeleteEntity {
             }
         }
         return template;
+    }
+
+    public ReportGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(ReportGroup group) {
+        this.group = group;
+    }
+
+    public Set<BandDefinition> getBands() {
+        return bands;
+    }
+
+    public void setBands(Set<BandDefinition> bands) {
+        this.bands = bands;
     }
 }

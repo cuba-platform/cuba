@@ -48,8 +48,7 @@ public class TemplateEditor extends BasicEditor {
 
     @Override
     public void setItem(Entity item) {
-        super.setItem(item);
-        template = (ReportTemplate) getItem();
+        template = (ReportTemplate)item;
         if (StringUtils.isEmpty(template.getCode())) {
             Report report = template.getReport();
             if (report != null) {
@@ -60,6 +59,7 @@ public class TemplateEditor extends BasicEditor {
                     template.setCode("Template_" + Integer.toString(report.getTemplates().size()));
             }
         }
+        super.setItem(template);
         enableCustomProps(template.getCustomFlag());
 
         templateDescriptor = template.getTemplateFileDescriptor();
