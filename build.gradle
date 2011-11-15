@@ -112,10 +112,12 @@ configure(sharedLibModule) {
 }
 
 configure(globalModule) {
-    task enhance(dependsOn: [compileJava, processResources], type: CubaEnhancing) {
+    task enhance(type: CubaEnhancing) {
         persistenceXml = "$globalModule.projectDir/src/cuba-persistence.xml"
     }
-    task releaseTimestamp(dependsOn: [compileJava, processResources]) << {
+    compileJava << {
+        enhance.execute()
+
         Date releaseDate = new Date()
         String timeStamp = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(releaseDate)
 
@@ -123,8 +125,6 @@ configure(globalModule) {
         releaseFile.delete()
         releaseFile.write(timeStamp)
     }
-    classes.dependsOn enhance
-    classes.dependsOn releaseTimestamp
 }
 
 configure(coreModule) {
