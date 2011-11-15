@@ -56,7 +56,8 @@
                         <treechildren datasource="entities" captionProperty="caption"/>
                     </tree>
                 </vbox>
-                <vbox>
+                <scrollbox>
+                    <vbox>
                     <optionsGroup
                             id="permissions"
                             optionsDatasource="permissions"
@@ -64,6 +65,7 @@
                             captionProperty="caption"
                             />
                 </vbox>
+                </scrollbox>
             </split>
         </vbox>
     </layout>
