@@ -134,7 +134,7 @@ public class ExcelExporter {
             for (Object itemId : ds.getRootItemIds()) {
                 r = createHierarhicalRow(treeTable, columns, exportExpanded, r, itemId);
             }
-        } if (table instanceof GroupTable && datasource instanceof GroupDatasource
+        } else if (table instanceof GroupTable && datasource instanceof GroupDatasource
                 && ((GroupDatasource) datasource).hasGroups()) {
             GroupDatasource ds = (GroupDatasource) datasource;
             for (Object item : ds.rootGroups()) {
