@@ -785,8 +785,16 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
     @Override
     public void setSelected(Entity item) {
-        int rowIndex = impl.convertRowIndexToView(tableModel.getRowIndex(item));
-        impl.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
+        if (item != null) {
+            int rowIndex = impl.convertRowIndexToView(tableModel.getRowIndex(item));
+            impl.getSelectionModel().setSelectionInterval(rowIndex, rowIndex);
+        } else {
+            int[] rows = impl.getSelectedRows();
+            for (int row : rows) {
+                int rowIndex = impl.convertRowIndexToView(row);
+                impl.getSelectionModel().removeSelectionInterval(rowIndex, rowIndex);
+            }
+        }
     }
 
     @Override
