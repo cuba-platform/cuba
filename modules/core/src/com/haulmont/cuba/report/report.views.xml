@@ -48,6 +48,7 @@
         <property name="parentBandDefinition" view="_local"/>
         <property name="childrenBandDefinitions" view="_local"/>
         <property name="dataSets" view="_local"/>
+        <property name="report" view="_minimal"/>
     </view>
 
     <view entity="report$Report" name="report.export" extends="_local">
@@ -57,6 +58,8 @@
         <property name="roles" view="_local"/>
         <property name="reportScreens" view="_local"/>
         <property name="templates" view="template.export"/>
+        <property name="group" view="_local"/>
+        <property name="bands" view="report.export"/>
     </view>
 
 </views>

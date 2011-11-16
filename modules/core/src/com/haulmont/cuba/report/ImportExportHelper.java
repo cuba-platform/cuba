@@ -10,10 +10,7 @@
  */
 package com.haulmont.cuba.report;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.FileStorageAPI;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
@@ -240,10 +237,11 @@ public class ImportExportHelper {
         byteArrayInputStream.close();
 
         if (report != null) {
-            Transaction tx = Locator.createTransaction();
+            Transaction tx = PersistenceProvider.createTransaction();
             try {
                 EntityManager em = PersistenceProvider.getEntityManager();
                 Report exisitngReport = em.find(Report.class, report.getId());
+
                 if (exisitngReport != null) {
                     em.remove(exisitngReport);
                     em.flush();
@@ -253,9 +251,18 @@ public class ImportExportHelper {
                 tx.end();
             }
 
-            tx = Locator.createTransaction();
+            tx = PersistenceProvider.createTransaction();
             try {
                 EntityManager em = PersistenceProvider.getEntityManager();
+                ReportGroup reportGroup = null;
+                if (report.getGroup() != null) {
+                    reportGroup = em.find(ReportGroup.class, report.getGroup().getId());
+                }
+                if (reportGroup == null) {
+                    Query query = em.createQuery("select gr from report$ReportGroup gr where gr.code = 'ReportGroup.default'");
+                    reportGroup = (ReportGroup) query.getSingleResult();
+                }
+                report.setGroup(reportGroup);
                 if (PersistenceHelper.isNew(report)) {
                     em.persist(report);
                 } else {
