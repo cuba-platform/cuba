@@ -657,12 +657,12 @@ create table REPORT_GROUP (
   CODE varchar(255),
 
   primary key (ID)
-)^
+);
 
 insert into REPORT_GROUP (ID, CREATE_TS, CREATED_BY, VERSION, TITLE, CODE)
-values ('4e083530-0b9c-11e1-9b41-6bdaa41bff94', now(), 'admin', 0, 'General', 'ReportGroup.default')^
+values ('4e083530-0b9c-11e1-9b41-6bdaa41bff94', now(), 'admin', 0, 'General', 'ReportGroup.default');
 
---  --------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------
 
 create table REPORT_REPORT
 (
