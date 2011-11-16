@@ -564,10 +564,10 @@ INSERT INTO sec_filter (id,create_ts,created_by,version,update_ts,updated_by,del
 create table REPORT_BAND_DEFINITION
 (
   ID uuid not null,
-  CREATE_TS timestamp without time zone,
+  CREATE_TS timestamp,
   CREATED_BY varchar(50),
   VERSION integer,
-  UPDATE_TS timestamp without time zone,
+  UPDATE_TS timestamp,
   UPDATED_BY varchar(50),
 
   QUERY varchar(255),
@@ -586,10 +586,10 @@ create table REPORT_BAND_DEFINITION
 
 create table REPORT_GROUP (
   ID uuid not null,
-  CREATE_TS timestamp without time zone,
+  CREATE_TS timestamp,
   CREATED_BY varchar(50),
   VERSION integer,
-  UPDATE_TS timestamp without time zone,
+  UPDATE_TS timestamp,
   UPDATED_BY varchar(50),
 
   TITLE varchar(255) not null,
@@ -606,10 +606,10 @@ values ('4e083530-0b9c-11e1-9b41-6bdaa41bff94', now(), 'admin', 0, 'General', 'R
 create table REPORT_REPORT
 (
   ID uuid not null,
-  CREATE_TS timestamp without time zone,
+  CREATE_TS timestamp,
   CREATED_BY varchar(50),
   VERSION integer,
-  UPDATE_TS timestamp without time zone,
+  UPDATE_TS timestamp,
   UPDATED_BY varchar(50),
 
   NAME varchar(255),
@@ -632,10 +632,10 @@ foreign key (REPORT_ID) references REPORT_REPORT (ID)^
 create table REPORT_TEMPLATE
 (
   ID uuid not null,
-  CREATE_TS timestamp without time zone,
+  CREATE_TS timestamp,
   CREATED_BY varchar(50),
   VERSION integer,
-  UPDATE_TS timestamp without time zone,
+  UPDATE_TS timestamp,
   UPDATED_BY varchar(50),
 
   REPORT_ID uuid,
@@ -656,10 +656,10 @@ create table REPORT_TEMPLATE
 create table REPORT_INPUT_PARAMETER
 (
   ID uuid not null,
-  CREATE_TS timestamp without time zone,
+  CREATE_TS timestamp,
   CREATED_BY varchar(50),
   VERSION integer,
-  UPDATE_TS timestamp without time zone,
+  UPDATE_TS timestamp,
   UPDATED_BY varchar(50),
 
   REPORT_ID uuid,
@@ -683,10 +683,10 @@ create table REPORT_INPUT_PARAMETER
 create table REPORT_DATA_SET
 (
   ID uuid not null,
-  CREATE_TS timestamp without time zone,
+  CREATE_TS timestamp,
   CREATED_BY varchar(50),
   VERSION integer,
-  UPDATE_TS timestamp without time zone,
+  UPDATE_TS timestamp,
   UPDATED_BY varchar(50),
 
   NAME varchar(255),
@@ -718,10 +718,10 @@ create table REPORT_REPORTS_ROLES (
 
 create table REPORT_REPORT_SCREEN (
   ID uuid not null,
-  CREATE_TS timestamp without time zone,
+  CREATE_TS timestamp,
   CREATED_BY varchar(50),
   VERSION integer,
-  UPDATE_TS timestamp without time zone,
+  UPDATE_TS timestamp,
   UPDATED_BY varchar(50),
 
   REPORT_ID uuid,
@@ -736,10 +736,10 @@ create table REPORT_REPORT_SCREEN (
 
 create table REPORT_VALUE_FORMAT (
   ID uuid not null,
-  CREATE_TS timestamp without time zone,
+  CREATE_TS timestamp,
   CREATED_BY varchar(50),
   VERSION integer,
-  UPDATE_TS timestamp without time zone,
+  UPDATE_TS timestamp,
   UPDATED_BY varchar(50),
 
   REPORT_ID uuid,
