@@ -16,6 +16,8 @@ import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.DataSetType;
+import org.postgresql.util.PGInterval;
+import org.postgresql.util.PGmoney;
 import org.postgresql.util.PGobject;
 
 import java.util.*;
@@ -55,19 +57,27 @@ public abstract class AbstractDbDataLoader implements DataLoader {
                 Object[] resultRecord = (Object[]) _resultRecord;
                 for (Integer i = 0; i < resultRecord.length; i++) {
                     Object value = resultRecord[i];
-                    if (value instanceof PGobject) {
+                    if (isUUID(value))
                         value = UUID.fromString(value.toString());
-                    }
                     outputParameters.put(parametersNames.get(i), value);
                 }
             } else {
                 outputParameters.put(parametersNames.get(0),
-                        (_resultRecord instanceof PGobject) ? UUID.fromString(((PGobject) _resultRecord).getValue())
+                        (isUUID(_resultRecord)) ? UUID.fromString(((PGobject) _resultRecord).getValue())
                         : _resultRecord);//todo: do we need to support another postgres objects?
             }
             outputData.add(outputParameters);
         }
         return outputData;
+    }
+
+    private boolean isUUID(Object value) {
+        if (value instanceof PGobject) {
+            if (!(value instanceof PGInterval) &&
+                    !(value instanceof PGmoney))
+                return true;
+        }
+        return false;
     }
 
     protected Query insertParameters(String query, Band parentBand, DataSetType dataSetType) {
