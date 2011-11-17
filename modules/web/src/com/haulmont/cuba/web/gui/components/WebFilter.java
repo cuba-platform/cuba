@@ -651,7 +651,7 @@ public class WebFilter
                 filterCaption = getCurrentFilterCaption();
             } else {
                 filterCaption = getFilterCaption(filter);
-                if (BooleanUtils.isTrue(filter.getIsDefault())) {
+                if (BooleanUtils.isTrue(filter.getIsDefault()) && !noFilter.equals(filter)) {
                     filterCaption += " " + defaultFilterCaption;
                 }
             }
