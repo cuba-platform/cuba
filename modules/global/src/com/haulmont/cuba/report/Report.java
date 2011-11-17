@@ -11,10 +11,12 @@
 package com.haulmont.cuba.report;
 
 import com.haulmont.chile.core.annotations.Aggregation;
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.DeletePolicy;
+import com.haulmont.cuba.report.locale.ReportLocaleHelper;
 import com.haulmont.cuba.security.entity.Role;
 import org.apache.commons.lang.StringUtils;
 
@@ -25,7 +27,7 @@ import java.util.Set;
 
 @Entity(name = "report$Report")
 @Table(name = "REPORT_REPORT")
-@NamePattern("%s|name")
+@NamePattern("%s|locName")
 @SystemLevel
 @SuppressWarnings("unused")
 public class Report extends HardDeleteEntity {
@@ -34,12 +36,21 @@ public class Report extends HardDeleteEntity {
     @Column(name = "NAME")
     private String name;
 
+    @Column(name = "LOCALE_NAMES")
+    private String localeNames;
+
+    @Column(name = "CODE")
+    private String code;
+
     @ManyToOne
     @JoinColumn(name = "GROUP_ID")
     private ReportGroup group;
 
     @Column(name = "REPORT_TYPE")
     private Integer reportType;
+
+    @Transient
+    private String localeName;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "ROOT_DEFINITION_ID")
@@ -192,5 +203,31 @@ public class Report extends HardDeleteEntity {
 
     public void setBands(Set<BandDefinition> bands) {
         this.bands = bands;
+    }
+
+    public String getLocaleNames() {
+        return localeNames;
+    }
+
+    public void setLocaleNames(String localeNames) {
+        this.localeNames = localeNames;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    @MetaProperty
+    public String getLocName() {
+        if (localeName == null) {
+            localeName = ReportLocaleHelper.getLocalizedName(localeNames);
+            if (localeName == null)
+                localeName = name;
+        }
+        return localeName;
     }
 }

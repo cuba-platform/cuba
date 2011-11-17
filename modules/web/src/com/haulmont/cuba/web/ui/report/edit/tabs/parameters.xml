@@ -16,7 +16,7 @@
             </hbox>
             <table id="inputParametersTable" sortable="true" height="100%">
                 <columns>
-                    <column id="name" caption="msg://parameters.name"/>
+                    <column id="locName" caption="msg://parameters.name"/>
                     <column id="alias" caption="msg://parameters.alias"/>
                     <column id="type" caption="msg://parameters.type"/>
                     <column id="required" caption="msg://parameters.required"/>

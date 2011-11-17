@@ -23,6 +23,7 @@
             </buttonsPanel>
             <columns>
                 <column id="locName"/>
+                <column id="systemFlag"/>
             </columns>
             <rows datasource="groupsDs"/>
         </table>

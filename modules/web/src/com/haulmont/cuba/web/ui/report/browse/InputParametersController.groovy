@@ -119,7 +119,7 @@ public class InputParametersController extends AbstractWindow {
         }
 
         WebLabel label = new WebLabel()
-        label.setValue(parameter.name)
+        label.setValue(parameter.locName)
         parameterComponents.put(parameter.alias, field)
         field.setId(parameter.alias)
         field.setWidth("200px")

@@ -12,12 +12,16 @@
     </dsContext>
 
     <layout expand="windowActions">
+        <label value="msg://groupProperties" stylename="h2"/>
         <fieldGroup id="groupProps" datasource="groupDs">
             <column>
-                <field id="title"/>
+                <field id="title" required="true"/>
                 <field id="code"/>
             </column>
         </fieldGroup>
+        <label value="msg://groupLocaleCaption" stylename="h2"/>
+        <textField id="localeTextField" datasource="groupDs" property="localeNames"
+                   rows="5" cols="30"/>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

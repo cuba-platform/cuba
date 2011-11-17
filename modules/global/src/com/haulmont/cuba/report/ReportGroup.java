@@ -9,13 +9,10 @@ package com.haulmont.cuba.report;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.report.locale.ReportLocaleHelper;
 import org.apache.commons.lang.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Set;
 
 /**
@@ -38,19 +35,17 @@ public class ReportGroup extends HardDeleteEntity {
     @Column(name = "CODE")
     private String code;
 
-    @OneToMany(mappedBy = "group")
+    @Column(name = "LOCALE_NAMES")
+    private String localeNames;
+
+    @OneToMany(mappedBy = "group", fetch = FetchType.LAZY)
     private Set<Report> reports;
+
+    @Transient
+    private String localeName;
 
     public String getTitle() {
         return title;
-    }
-
-    @MetaProperty
-    public String getLocName() {
-        if (StringUtils.isEmpty(code))
-            return title;
-        else
-            return MessageProvider.getMessage(ReportGroup.class, code);
     }
 
     public void setTitle(String title) {
@@ -71,5 +66,28 @@ public class ReportGroup extends HardDeleteEntity {
 
     public void setReports(Set<Report> reports) {
         this.reports = reports;
+    }
+
+    public String getLocaleNames() {
+        return localeNames;
+    }
+
+    public void setLocaleNames(String localeNames) {
+        this.localeNames = localeNames;
+    }
+
+    @MetaProperty
+    public String getLocName() {
+        if (localeName == null) {
+            localeName = ReportLocaleHelper.getLocalizedName(localeNames);
+            if (localeName == null)
+                localeName = title;
+        }
+        return localeName;
+    }
+
+    @MetaProperty
+    public Boolean getSystemFlag() {
+        return StringUtils.isNotEmpty(code);
     }
 }

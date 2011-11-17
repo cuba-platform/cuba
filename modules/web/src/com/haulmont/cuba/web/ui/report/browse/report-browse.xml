@@ -41,7 +41,7 @@
                     <group>
                         <column id="group" width="200"/>
                     </group>
-                    <column id="name" caption="msg://report.name"/>
+                    <column id="locName" caption="msg://report.name"/>
                 </columns>
                 <rows datasource="reportDs"/>
             </groupTable>

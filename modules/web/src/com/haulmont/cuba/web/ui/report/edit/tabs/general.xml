@@ -5,10 +5,12 @@
     <layout expand="vSplit" expandLayout="true">
         <split orientation="vertical" expandable="true" id="vSplit" pos="60">
             <split orientation="horizontal" id="split">
-                <groupBox stylename="edit-area">
+                <groupBox>
                     <vbox spacing="true" align="TOP_LEFT" expand="templatesTable">
-                        <fieldGroup id="propertiesFieldGroup" caption="msg://report.properties" datasource="reportDs">
+                        <fieldGroup id="propertiesFieldGroup" border="hidden"
+                                    caption="msg://report.properties" datasource="reportDs">
                             <field id="name" required="true" requiredMessage="msg://report.nameMsg" width="${width}"/>
+                            <field id="code" width="${width}"/>
                             <field id="reportType" required="true" requiredMessage="msg://report.reportTypeMsg" width="${width}"/>
                             <field id="group" required="true" optionsDatasource="groupsDs"
                                    requiredMessage="msg://report.reportTypeMsg" width="${width}"/>
@@ -33,7 +35,7 @@
                     </vbox>
                 </groupBox>
                 <!-- Vertical Splitter -->
-                <groupBox stylename="edit-area" expand="treeBox">
+                <groupBox expand="treeBox">
                     <vbox id="treeBox" expand="serviceTree" spacing="true">
                         <label value="msg://report.bands" stylename="h2"/>
 

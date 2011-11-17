@@ -37,6 +37,9 @@
             <tab id="securityTab" caption="msg://securityTab">
                 <iframe src="/com/haulmont/cuba/web/ui/report/edit/tabs/security.xml" id="securityFrame"/>
             </tab>
+            <tab id="localesTab" caption="msg://localesTab">
+                <iframe src="/com/haulmont/cuba/web/ui/report/edit/tabs/locales.xml" id="localesFrame"/>
+            </tab>
         </tabsheet>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>

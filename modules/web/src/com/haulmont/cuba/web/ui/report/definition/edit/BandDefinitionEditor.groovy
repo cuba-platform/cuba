@@ -35,9 +35,6 @@ public class BandDefinitionEditor extends AbstractEditor implements Suggester {
 
     private static volatile Collection<com.haulmont.chile.core.model.MetaClass> metaClasses;
 
-    private BandDefinition parentDefinition
-    private Integer position
-
     def BandDefinitionEditor(IFrame frame) {
         super(frame);
     }

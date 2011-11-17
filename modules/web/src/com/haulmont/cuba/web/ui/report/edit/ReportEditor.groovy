@@ -36,6 +36,7 @@ public class ReportEditor extends AbstractEditor {
         super(frame);
     }
 
+    @Override
     def void setItem(Entity item) {
         Report report = (Report) item;
         BandDefinition rootDefinition = null
@@ -73,6 +74,7 @@ public class ReportEditor extends AbstractEditor {
     private CollectionDatasource treeDs
     private deletedFiles = [:]
 
+    @Override
     public void init(Map<String, Object> params) {
         super.init(params);
         initGeneral()
@@ -233,7 +235,8 @@ public class ReportEditor extends AbstractEditor {
         Table screenTable = getComponent('securityFrame.screenTable')
         screenTable.addAction(
                 new CreateAction(screenTable) {
-                    @Override protected Map<String, Object> getInitialValues() {
+                    @Override
+                    protected Map<String, Object> getInitialValues() {
                         return new HashMap(['report': report])
                     }
                 }
@@ -363,6 +366,7 @@ public class ReportEditor extends AbstractEditor {
         };
     }
 
+    @Override
     public void commitAndClose() {
         super.commitAndClose();
     }

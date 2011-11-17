@@ -655,12 +655,15 @@ create table REPORT_GROUP (
 
   TITLE varchar(255) not null,
   CODE varchar(255),
+  LOCALE_NAMES varchar(7000),
 
   primary key (ID)
 );
 
-insert into REPORT_GROUP (ID, CREATE_TS, CREATED_BY, VERSION, TITLE, CODE)
-values ('4e083530-0b9c-11e1-9b41-6bdaa41bff94', now(), 'admin', 0, 'General', 'ReportGroup.default');
+insert into REPORT_GROUP (ID, CREATE_TS, CREATED_BY, VERSION, TITLE, CODE, LOCALE_NAMES)
+values ('4e083530-0b9c-11e1-9b41-6bdaa41bff94', now(), 'admin', 0, 'General', 'ReportGroup.default',
+'en=General
+ru=Общие');
 
 ----------------------------------------------------------------------------------------------------------------
 
@@ -674,6 +677,8 @@ create table REPORT_REPORT
   UPDATED_BY varchar(50),
 
   NAME varchar(255),
+  CODE varchar(255),
+  LOCALE_NAMES varchar(7000),
   GROUP_ID varchar(36) not null,
   ROOT_DEFINITION_ID varchar(36),
   REPORT_TYPE integer,
@@ -726,6 +731,7 @@ create table REPORT_INPUT_PARAMETER
   REPORT_ID varchar(36),
   TYPE integer,
   NAME varchar(255),
+  LOCALE_NAMES varchar(7000),
   ALIAS varchar(100),
   SCREEN varchar(255),
   FROM_BROWSER smallint,

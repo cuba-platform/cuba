@@ -28,6 +28,6 @@ class ReportGroupEditor extends AbstractEditor {
 
     private def prepareDialogMode() {
         getDialogParams().setResizable(false)
-        getDialogParams().setWidth(300)
+        getDialogParams().setWidth(400)
     }
 }

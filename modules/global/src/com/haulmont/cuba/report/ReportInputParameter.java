@@ -10,13 +10,17 @@
  */
 package com.haulmont.cuba.report;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
+import com.haulmont.cuba.report.locale.ReportLocaleHelper;
 
 import javax.persistence.*;
 
 @Entity(name = "report$ReportInputParameter")
 @Table(name = "REPORT_INPUT_PARAMETER")
 @SystemLevel
+@NamePattern("%s|locName")
 @SuppressWarnings("unused")
 public class ReportInputParameter extends HardDeleteEntity {
     private static final long serialVersionUID = 6231014880104406246L;
@@ -30,6 +34,12 @@ public class ReportInputParameter extends HardDeleteEntity {
 
     @Column(name = "NAME")
     private String name;
+
+    @Column(name = "LOCALE_NAMES")
+    private String localeNames;
+
+    @Transient
+    private String localeName;
 
     @Column(name = "ALIAS")
     private String alias;
@@ -130,5 +140,23 @@ public class ReportInputParameter extends HardDeleteEntity {
 
     public void setScreen(String screen) {
         this.screen = screen;
+    }
+
+    public String getLocaleNames() {
+        return localeNames;
+    }
+
+    public void setLocaleNames(String localeNames) {
+        this.localeNames = localeNames;
+    }
+
+    @MetaProperty
+    public String getLocName() {
+        if (localeName == null) {
+            localeName = ReportLocaleHelper.getLocalizedName(localeNames);
+            if (localeName == null)
+                localeName = name;
+        }
+        return localeName;
     }
 }
