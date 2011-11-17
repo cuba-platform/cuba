@@ -1371,7 +1371,7 @@
                     <xs:complexType>
                         <xs:group ref="layoutOrComponent"/>
                         <xs:attribute name="expand" type="xs:string" use="optional"/>
-                        <xs:attribute name="expandLayout" type="xs:string" use="optional"/>
+                        <xs:attribute name="expandLayout" type="xs:boolean" use="optional"/>
 
                         <xs:attributeGroup ref="hasSize"/>
                         <xs:attributeGroup ref="hasStyle"/>
