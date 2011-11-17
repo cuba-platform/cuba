@@ -61,6 +61,9 @@ public class XLSFormatter extends AbstractFormatter {
 
     private AreaDependencyHelper areaDependencyHelper = new AreaDependencyHelper();
 
+    private Band rootBand;
+    private Map<HSSFSheet, HSSFPatriarch> drawingPatriarchsMap = new HashMap<HSSFSheet, HSSFPatriarch>();
+
     public XLSFormatter() {
         registerReportExtension("xls");
         registerReportExtension("xlt");
@@ -69,6 +72,23 @@ public class XLSFormatter extends AbstractFormatter {
         registerReportOutput(ReportOutputType.PDF);
 
         defaultOutputType = ReportOutputType.XLS;
+    }
+
+    @Override
+    public void createDocument(Band rootBand, ReportOutputType outputType, OutputStream outputStream) {
+        this.rootBand = rootBand;
+
+        if (templateFile == null)
+            throw new NullPointerException();
+
+        try {
+            initWorkbook();
+        } catch (Exception e) {
+            throw new ReportingException(e);
+        }
+
+        processDocument(rootBand);
+        outputDocument(outputType, outputStream);
     }
 
     private void initWorkbook() throws IOException {
@@ -90,20 +110,7 @@ public class XLSFormatter extends AbstractFormatter {
     private void cloneWorkbookDataFormats() {
     }
 
-    @Override
-    public void createDocument(Band rootBand, ReportOutputType outputType, OutputStream outputStream) {
-
-        if (templateFile == null)
-            throw new NullPointerException();
-
-        try {
-            initWorkbook();
-        } catch (Exception e) {
-            throw new ReportingException(e);
-        }
-
-        processDocument(rootBand);
-
+     private void outputDocument(ReportOutputType outputType, OutputStream outputStream) {
         if (ReportOutputType.XLS == outputType) {
             try {
                 resultWorkbook.write(outputStream);
@@ -139,7 +146,7 @@ public class XLSFormatter extends AbstractFormatter {
             HSSFSheet templateSheet = templateWorkbook.getSheetAt(sheetNumber);
             HSSFSheet resultSheet = resultWorkbook.getSheetAt(sheetNumber);
 
-            copyPicturesOnSheet(templateSheet, resultSheet);
+            copyPicturesFromTemplateToResult(templateSheet, resultSheet);
         }
     }
 
@@ -400,15 +407,15 @@ public class XLSFormatter extends AbstractFormatter {
         resultSheet.setMargin(Sheet.BottomMargin, templateSheet.getMargin(Sheet.BottomMargin));
 
         resultWorkbook.setSheetName(sheetNumber, templateWorkbook.getSheetName(sheetNumber));
+
+        HSSFPatriarch drawingPatriarch = resultSheet.createDrawingPatriarch();
+        drawingPatriarchsMap.put(resultSheet, drawingPatriarch);
     }
 
     /**
      * Clones styles for cells and palette from template workbook
      */
     private void cloneWorkbookStyles() {
-//        HSSFCellStyle cellStyle = resultWorkbook.createCellStyle();
-//        cellStyle.cloneStyleRelationsFrom(templateWorkbook.createCellStyle());
-
         HSSFPalette customPalette = templateWorkbook.getCustomPalette();
         for (short i = PaletteRecord.FIRST_COLOR_INDEX;
              i < PaletteRecord.FIRST_COLOR_INDEX + PaletteRecord.STANDARD_PALETTE_SIZE; i++) {
@@ -442,11 +449,11 @@ public class XLSFormatter extends AbstractFormatter {
             HSSFCellStyle templateStyle = templateCell.getCellStyle();
             HSSFCellStyle resultStyle = copyCellStyle(templateStyle);
             resultCell.setCellStyle(resultStyle);
-//            resultCell.setCellType(HSSFCell.CELL_TYPE_STRING);
 
             int cellType = templateCell.getCellType();
             if (cellType == HSSFCell.CELL_TYPE_STRING && isOneValueCell(templateCell))
-                updateValueCell(band, templateCell, resultCell);
+                updateValueCell(rootBand, band, templateCell, resultCell,
+                         drawingPatriarchsMap.get(resultCell.getSheet()));
             else if (cellType == HSSFCell.CELL_TYPE_FORMULA)
                 resultCell.setCellFormula(inlineBandDataToCellString(templateCell, band));
             else if (cellType == HSSFCell.CELL_TYPE_STRING)
@@ -583,9 +590,8 @@ public class XLSFormatter extends AbstractFormatter {
      * @param templateSheet - template sheet
      * @param resultSheet   - result sheet
      */
-    private void copyPicturesOnSheet(HSSFSheet templateSheet, HSSFSheet resultSheet) {
+    private void copyPicturesFromTemplateToResult(HSSFSheet templateSheet, HSSFSheet resultSheet) {
         List<HSSFClientAnchor> list = getAllAnchors(getEscherAggregate(templateSheet));
-        HSSFPatriarch workingPatriarch = resultSheet.createDrawingPatriarch();
 
         int i = 0;
         for (HSSFClientAnchor anchor : list) {
@@ -597,11 +603,11 @@ public class XLSFormatter extends AbstractFormatter {
             anchor.setCol2(bottomRight.getCol());
             anchor.setRow2(bottomRight.getRow());
 
-            workingPatriarch.createPicture(anchor, orderedPicturesId.get(i++));
+             drawingPatriarchsMap.get(resultSheet).createPicture(anchor, orderedPicturesId.get(i++));
         }
     }
 
-    private boolean rowExists(HSSFSheet sheet, int rowNumber) {
+    private static boolean rowExists(HSSFSheet sheet, int rowNumber) {
         return sheet.getRow(rowNumber) != null;
     }
 
@@ -646,7 +652,7 @@ public class XLSFormatter extends AbstractFormatter {
             set.add(dependent);
         }
 
-        void updateRefPtg(Area originalContainingArea, Area dependentContainingArea, RefPtg current) {
+        private void updateRefPtg(Area originalContainingArea, Area dependentContainingArea, RefPtg current) {
             Area areaReference = getAreaByCoordinate(current.getColumn(), current.getRow());
 
             if (areaReference == null) return;
@@ -666,7 +672,7 @@ public class XLSFormatter extends AbstractFormatter {
             current.setRow(row);
         }
 
-        void updateAreaPtg(AreaPtg current) {
+        private void updateAreaPtg(AreaPtg current) {
             Area areaReference = getAreaByCoordinate(current.getFirstColumn(), current.getFirstRow());
 
             List<Area> dependent = areasDependency.get(areaReference);
@@ -702,7 +708,7 @@ public class XLSFormatter extends AbstractFormatter {
             }
         }
 
-        Area getAreaByCoordinate(int col, int row) {
+        private Area getAreaByCoordinate(int col, int row) {
             for (Area areaReference : areasDependency.keySet()) {
                 if (areaReference.getTopLeft().getCol() > col) continue;
                 if (areaReference.getTopLeft().getRow() > row) continue;
@@ -737,6 +743,9 @@ public class XLSFormatter extends AbstractFormatter {
         }
     }
 
+    /**
+     * Bounds of region [(x,y) : (x1, y1)]
+     */
     private static class Bounds {
         public final int row0;
         public final int column0;
@@ -749,13 +758,5 @@ public class XLSFormatter extends AbstractFormatter {
             this.row1 = row1;
             this.column1 = column1;
         }
-
-        /*public int verticalOffset(Bounds bounds) {
-            if (bounds == null || bounds.row1 <= row0) {
-                return row1 - row0 + 1;
-            } else {
-                return row1 - bounds.row1;
-            }
-        }*/
     }
 }

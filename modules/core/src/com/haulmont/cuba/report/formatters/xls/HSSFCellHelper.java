@@ -11,16 +11,20 @@
 package com.haulmont.cuba.report.formatters.xls;
 
 import com.haulmont.cuba.report.Band;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.ss.util.CellReference;
+import com.haulmont.cuba.report.ReportValueFormat;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellReference;
 
+import java.awt.Dimension;
 import java.util.Date;
+import java.util.HashMap;
 
-import static com.haulmont.cuba.report.formatters.AbstractFormatter.*;
+import static com.haulmont.cuba.report.formatters.AbstractFormatter.insertBandDataToString;
+import static com.haulmont.cuba.report.formatters.AbstractFormatter.unwrapParameterName;
 
 public final class HSSFCellHelper {
     private HSSFCellHelper() {
@@ -29,11 +33,14 @@ public final class HSSFCellHelper {
     /**
      * Copies template cell to result cell and fills it with band data
      *
-     * @param band         - band
-     * @param templateCell - template cell
-     * @param resultCell   - result cell
+     * @param rootBand     Root band
+     * @param band         Band
+     * @param templateCell Template cell
+     * @param resultCell   Result cell
+     * @param patriarch    Toplevel container for shapes in a sheet
      */
-    public static void updateValueCell(Band band, HSSFCell templateCell, HSSFCell resultCell) {
+    public static void updateValueCell(Band rootBand, Band band, HSSFCell templateCell, HSSFCell resultCell,
+                                       HSSFPatriarch patriarch) {
         String parameterName = templateCell.toString();
         parameterName = unwrapParameterName(parameterName);
 
@@ -45,6 +52,7 @@ public final class HSSFCellHelper {
         }
 
         Object parameterValue = band.getData().get(parameterName);
+        HashMap<String, ReportValueFormat> valuesFormats = rootBand.getValuesFormats();
 
         if (parameterValue == null)
             resultCell.setCellType(HSSFCell.CELL_TYPE_BLANK);
@@ -54,7 +62,38 @@ public final class HSSFCellHelper {
             resultCell.setCellValue((Boolean) parameterValue);
         else if (parameterValue instanceof Date)
             resultCell.setCellValue((Date) parameterValue);
-        else resultCell.setCellValue(new HSSFRichTextString(parameterValue.toString()));
+        else if (valuesFormats.containsKey(parameterName)) {
+            String formatString = valuesFormats.get(parameterName).getFormatString();
+            ImageExtractor imageExtractor = new ImageExtractor(formatString, parameterValue);
+            if (ImageExtractor.isImage(formatString)) {
+                paintImageToCell(resultCell, patriarch, imageExtractor);
+            }
+        } else
+            resultCell.setCellValue(new HSSFRichTextString(parameterValue.toString()));
+    }
+
+    private static void paintImageToCell(HSSFCell resultCell, HSSFPatriarch patriarch, ImageExtractor imageExtractor) {
+        ImageExtractor.Image image = imageExtractor.extract();
+        if (image != null) {
+            int targetHeight = image.getHeight();
+            resultCell.getRow().setHeightInPoints(targetHeight);
+            HSSFSheet sheet = resultCell.getSheet();
+            HSSFWorkbook workbook = sheet.getWorkbook();
+
+            int pictureIdx = workbook.addPicture(image.getContent(), Workbook.PICTURE_TYPE_JPEG);
+
+            CreationHelper helper = workbook.getCreationHelper();
+            ClientAnchor anchor = helper.createClientAnchor();
+            anchor.setCol1(resultCell.getColumnIndex());
+            anchor.setRow1(resultCell.getRowIndex());
+            anchor.setCol2(resultCell.getColumnIndex());
+            anchor.setRow2(resultCell.getRowIndex());
+            HSSFPicture picture = patriarch.createPicture(anchor, pictureIdx);
+            Dimension imageDimension = picture.getImageDimension();
+            double actualHeight = imageDimension.getHeight();
+            picture.resize((double) targetHeight / actualHeight);
+            picture.resize();
+        }
     }
 
     /**

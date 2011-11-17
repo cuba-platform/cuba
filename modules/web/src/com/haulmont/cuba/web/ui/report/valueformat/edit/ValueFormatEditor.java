@@ -28,6 +28,7 @@ public class ValueFormatEditor extends BasicEditor {
             "dd/MM/yyyy HH:mm",
             "${image:WxH}",
             "${bitmap:WxH}",
+            "${imageFileId:WxH}",
             "${html}"
     };
     private static final long serialVersionUID = 3406588486315509607L;
@@ -44,11 +45,13 @@ public class ValueFormatEditor extends BasicEditor {
     public void init(Map<String, Object> params) {
         super.init(params);
         final FieldGroup fields = getComponent("formatFields");
+
         // Add default format strings to combobox
         FieldGroup.Field f = fields.getField("formatString");
         fields.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
             private static final long serialVersionUID = -8103880026038352529L;
 
+            @Override
             public Component generateField(Datasource datasource, Object propertyId) {
                 final WebLookupField lookupField = new WebLookupField();
                 fSelect = (FilterSelect) WebComponentsHelper.unwrap(lookupField);
@@ -63,6 +66,7 @@ public class ValueFormatEditor extends BasicEditor {
                 select.setNewItemHandler(new AbstractSelect.NewItemHandler() {
                     private static final long serialVersionUID = 655813124996141640L;
 
+                    @Override
                     public void addNewItem(String newItemCaption) {
                         select.addItem(newItemCaption);
                         select.setItemCaption(newItemCaption, newItemCaption);
