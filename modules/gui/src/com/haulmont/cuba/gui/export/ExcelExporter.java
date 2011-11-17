@@ -221,14 +221,12 @@ public class ExcelExporter {
             HSSFCell cell = row.createCell(c);
 
             Table.Column column = columns.get(c);
-            if (column.getId() instanceof MetaPropertyPath) {
-                Object val = InstanceUtils.getValueEx(instance, ((MetaPropertyPath) column.getId()).getPath());
-                TemporalType tt = (TemporalType) ((MetaPropertyPath) column.getId()).getMetaProperty().getAnnotations().get("temporal");
-                boolean isFull = true;
-                if (tt != null && tt == TemporalType.DATE)
-                    isFull = false;
-                formatValueCell(cell, val, c, rowNumber, level, isFull);
-            }
+            Object val = InstanceUtils.getValueEx(instance, ((MetaPropertyPath) column.getId()).getPath());
+            TemporalType tt = (TemporalType) ((MetaPropertyPath) column.getId()).getMetaProperty().getAnnotations().get("temporal");
+            boolean isFull = true;
+            if (tt != null && tt == TemporalType.DATE)
+                isFull = false;
+            formatValueCell(cell, val, c, rowNumber, level, isFull);
         }
 
     }
