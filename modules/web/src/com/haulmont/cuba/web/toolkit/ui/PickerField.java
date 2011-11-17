@@ -7,15 +7,11 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.data.Property;
-import com.vaadin.data.util.AbstractProperty;
 import com.vaadin.event.FieldEvents;
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.*;
 import com.vaadin.ui.TextField;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -114,10 +110,10 @@ public class PickerField extends CustomField {
     }
 
     public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
-        boolean readOnly = field.isReadOnly();
+        boolean fieldReadOnly = field.isReadOnly();
         field.setReadOnly(false);
         field.setValue(newValue);
-        field.setReadOnly(readOnly);
+        field.setReadOnly(!fieldReadOnly && isReadOnly() ? true :isReadOnly());
     }
 
     public void addListener(ValueChangeListener listener) {

@@ -160,6 +160,9 @@ public abstract class DesktopAbstractTable<C extends JTable>
             Window window = ComponentsHelper.getWindow(DesktopAbstractTable.this);
             if (!(window instanceof Window.Lookup))
                 action.actionPerform(DesktopAbstractTable.this);
+            else if (action.getId().equals(Window.Lookup.LOOKUP_ITEM_CLICK_ACTION_ID)) {
+                action.actionPerform(DesktopAbstractTable.this);
+            }
         }
     }
 

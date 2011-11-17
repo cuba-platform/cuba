@@ -738,6 +738,17 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
 
         private JPanel container;
 
+        public Lookup() {
+            super();
+            addAction(new AbstractShortcutAction(LOOKUP_SELECTED_ACTION_ID,
+                    new ShortcutAction.KeyCombination(ShortcutAction.Key.ENTER, ShortcutAction.Modifier.CTRL)) {
+                @Override
+                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                    fireSelectAction();
+                }
+            });
+        }
+
         @Override
         public Component getLookupComponent() {
             return lookupComponent;
@@ -747,13 +758,19 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         public void setLookupComponent(Component lookupComponent) {
             this.lookupComponent = lookupComponent;
             if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table) {
-                ((com.haulmont.cuba.gui.components.Table) lookupComponent).setEnterPressAction(
-                        new AbstractAction("enterPressedAction") {
+                com.haulmont.cuba.gui.components.Table table = (com.haulmont.cuba.gui.components.Table) lookupComponent;
+                table.setEnterPressAction(
+                        new AbstractAction(LOOKUP_ENTER_PRESSED_ACTION_ID) {
                             @Override
                             public void actionPerform(Component component) {
-                                if (selectListener != null) {
-                                    selectListener.actionPerformed(null);
-                                }
+                                fireSelectAction();
+                            }
+                        });
+                table.setItemClickAction(
+                        new AbstractAction(LOOKUP_ITEM_CLICK_ACTION_ID) {
+                            @Override
+                            public void actionPerform(Component component) {
+                                fireSelectAction();
                             }
                         });
             }
@@ -777,6 +794,11 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         @Override
         public void setLookupValidator(Validator validator) {
             this.validator = validator;
+        }
+
+        protected void fireSelectAction() {
+            if (selectListener != null)
+                selectListener.actionPerformed(null);
         }
 
         @Override

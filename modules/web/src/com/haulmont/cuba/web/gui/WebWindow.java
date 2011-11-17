@@ -29,18 +29,13 @@ import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
-import com.haulmont.cuba.web.gui.components.WebAbstractTable;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.toolkit.ui.FieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
-import com.vaadin.data.Validator;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.Table;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -771,6 +766,17 @@ public class WebWindow
         private Button cancelButton;
         private SelectAction selectAction;
 
+        public Lookup() {
+            super();
+            addAction(new AbstractShortcutAction(LOOKUP_SELECTED_ACTION_ID,
+                    new ShortcutAction.KeyCombination(ShortcutAction.Key.ENTER, ShortcutAction.Modifier.CTRL)) {
+                @Override
+                public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                   fireSelectAction();
+                }
+            });
+        }
+
         public com.haulmont.cuba.gui.components.Component getLookupComponent() {
             return lookupComponent;
         }
@@ -779,14 +785,20 @@ public class WebWindow
             this.lookupComponent = lookupComponent;
 
             if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table) {
-                ((com.haulmont.cuba.gui.components.Table) lookupComponent).setEnterPressAction(
-                        new AbstractAction("enterPressedAction") {
+                com.haulmont.cuba.gui.components.Table table = (com.haulmont.cuba.gui.components.Table) lookupComponent;
+                table.setEnterPressAction(
+                        new AbstractAction(LOOKUP_ENTER_PRESSED_ACTION_ID) {
                             @Override
                             public void actionPerform(Component component) {
-                                if (selectAction != null)
-                                    selectAction.buttonClick(null);
+                                fireSelectAction();
                             }
                         });
+                table.setItemClickAction(new AbstractAction(LOOKUP_ITEM_CLICK_ACTION_ID) {
+                    @Override
+                    public void actionPerform(Component component) {
+                        fireSelectAction();
+                    }
+                });
             }
         }
 
@@ -819,6 +831,11 @@ public class WebWindow
                 component.setWidth("100%");
                 component.setHeight("-1px");
             }
+        }
+
+        protected void fireSelectAction() {
+            if (selectAction != null)
+                selectAction.buttonClick(null);
         }
 
         @Override

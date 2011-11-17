@@ -127,6 +127,12 @@ public interface Window extends Serializable, IFrame, Component.HasCaption, Comp
 
         String NAME = "window.lookup";
 
+        String LOOKUP_ITEM_CLICK_ACTION_ID = "lookupItemClickAction";
+
+        String LOOKUP_ENTER_PRESSED_ACTION_ID="lookupEnterPressed";
+
+        String LOOKUP_SELECTED_ACTION_ID="lookupAction";
+
         /** Component showing a list of entities to look up from it */
         Component getLookupComponent();
 
