@@ -590,14 +590,17 @@ public class WebWindowManager extends WindowManager {
 
         WebComponentsHelper.setActions(win, actions);
 
-        if (forciblyDialog) {
+        final DialogParams dialogParams = getDialogParams();
+        boolean dialogParamsIsNull = dialogParams.getHeight() == null && dialogParams.getWidth() == null &&
+                dialogParams.getResizable() == null;
+
+        if (forciblyDialog && dialogParamsIsNull) {
             outerLayout.setHeight(100, Sizeable.UNITS_PERCENTAGE);
             win.setWidth(800, Sizeable.UNITS_PIXELS);
             win.setHeight(500, Sizeable.UNITS_PIXELS);
             win.setResizable(true);
             window.setHeight("100%");
         } else {
-            final DialogParams dialogParams = getDialogParams();
             if (dialogParams.getWidth() != null)
                 win.setWidth(dialogParams.getWidth().floatValue(), Sizeable.UNITS_PIXELS);
             else
