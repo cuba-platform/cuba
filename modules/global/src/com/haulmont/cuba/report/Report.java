@@ -41,7 +41,7 @@ public class Report extends HardDeleteEntity {
     @Column(name = "REPORT_TYPE")
     private Integer reportType;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "ROOT_DEFINITION_ID")
     private BandDefinition rootBandDefinition;
 
@@ -147,7 +147,7 @@ public class Report extends HardDeleteEntity {
      *
      * @return Template
      */
-    public ReportTemplate getDefaultTemplate(){
+    public ReportTemplate getDefaultTemplate() {
         ReportTemplate template = null;
         if (templates != null) {
             if (templates.size() == 1)
