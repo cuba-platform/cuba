@@ -12,18 +12,18 @@ allprojects {
 }
 
 buildscript {
-    org.apache.ivy.util.url.CredentialsStore.INSTANCE.addCredentials(
-        'Sonatype Nexus Repository Manager',
-        'repository.haulmont.com',
-        System.getenv('HAULMONT_REPOSITORY_USER'),
-        System.getenv('HAULMONT_REPOSITORY_PASSWORD')
-    )
     repositories {
-            mavenLocal()
-            mavenRepo(url: "http://repository.haulmont.com:8587/nexus/content/groups/work")
+        mavenLocal()
+        maven {
+            credentials {
+                username System.getenv('HAULMONT_REPOSITORY_USER')
+                password System.getenv('HAULMONT_REPOSITORY_PASSWORD')
+            }
+            url "http://repository.haulmont.com:8587/nexus/content/groups/work"
+        }
     }
     dependencies {
-        classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.1-SNAPSHOT'
+        classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.2-SNAPSHOT'
     }
 }
 
@@ -112,6 +112,11 @@ configure(sharedLibModule) {
 }
 
 configure(globalModule) {
+    dependencies {
+        // This dependency is required by CubaEnhancing task
+        compile(group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.2-SNAPSHOT')
+    }
+
     task enhance(type: CubaEnhancing) {
         persistenceXml = "$globalModule.projectDir/src/cuba-persistence.xml"
     }
