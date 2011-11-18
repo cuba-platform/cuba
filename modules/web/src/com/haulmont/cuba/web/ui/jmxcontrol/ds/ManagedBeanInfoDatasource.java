@@ -23,7 +23,7 @@ import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo;
 
 import java.util.*;
 
-public class ManagedBeanInfoDatasource  extends AbstractTreeTableDatasource<ManagedBeanInfo, UUID> {
+public class ManagedBeanInfoDatasource extends AbstractTreeTableDatasource<ManagedBeanInfo, UUID> {
     private static final long serialVersionUID = 4086956405782762547L;
 
     public ManagedBeanInfoDatasource(DsContext context, DataService dataservice, String id, MetaClass metaClass, String viewName) {
@@ -40,7 +40,7 @@ public class ManagedBeanInfoDatasource  extends AbstractTreeTableDatasource<Mana
 
         List<Node<ManagedBeanInfo>> nodes = new ArrayList<Node<ManagedBeanInfo>>();
 
-        for (ManagedBeanDomain mbd: domains) {
+        for (ManagedBeanDomain mbd : domains) {
             ManagedBeanInfo dummy = new ManagedBeanInfo();
             dummy.setDomain(mbd.getName());
 
@@ -49,7 +49,7 @@ public class ManagedBeanInfoDatasource  extends AbstractTreeTableDatasource<Mana
             nodes.add(node);
         }
 
-        List<ManagedBeanInfo> list = srv.getManagedBeans();
+        List<ManagedBeanInfo> list = loadManagedBeans(srv, params);
         for (ManagedBeanInfo mbi : list) {
             if (mbi != null) {
                 if (domainMap.containsKey(mbi.getDomain())) {
@@ -58,7 +58,33 @@ public class ManagedBeanInfoDatasource  extends AbstractTreeTableDatasource<Mana
             }
         }
 
+        // remove root nodes that might have left without children after filtering
+        for (Node<ManagedBeanInfo> rootNode : new ArrayList<Node<ManagedBeanInfo>>(nodes)) {
+            if (rootNode.getChildren().isEmpty()) {
+                nodes.remove(rootNode);
+            }
+        }
+
         return new Tree<ManagedBeanInfo>(nodes);
+    }
+
+    private List<ManagedBeanInfo> loadManagedBeans(JmxControlService srv, Map<String, Object> params) {
+        List<ManagedBeanInfo> managedBeans = srv.getManagedBeans();
+        List<ManagedBeanInfo> res = new ArrayList<ManagedBeanInfo>();
+
+        // filter by object name
+        String objectName = (String) params.get("objectName");
+        if (objectName != null) {
+            objectName = objectName.toLowerCase();
+            for (ManagedBeanInfo mbi : managedBeans) {
+                if (mbi.getObjectName() != null && mbi.getObjectName().toLowerCase().contains(objectName)) {
+                    res.add(mbi);
+                }
+            }
+            return res;
+        }
+
+        return managedBeans;
     }
 
     public boolean isCaption(UUID itemId) {
