@@ -7,12 +7,13 @@
 package com.haulmont.cuba.gui.app.core.scheduled;
 
 import com.haulmont.cuba.core.app.SchedulingService;
+import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.CheckBox;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.components.TextField;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -37,6 +38,12 @@ public class ScheduledTaskEditor extends AbstractEditor {
     protected LookupField userNameField;
 
     @Inject
+    protected TextField userPasswordField;
+
+    @Inject
+    protected Datasource<ScheduledTask> taskDs;
+
+    @Inject
     protected SchedulingService service;
 
     @Override
@@ -56,5 +63,13 @@ public class ScheduledTaskEditor extends AbstractEditor {
         });
 
         userNameField.setOptionsList(service.getAvailableUsers());
+
+        userPasswordField.setValue("-----");
+        userPasswordField.addListener(new ValueListener<TextField>() {
+            @Override
+            public void valueChanged(TextField source, String property, Object prevValue, Object value) {
+                taskDs.getItem().setUserPassword(DigestUtils.md5Hex((String) value));
+            }
+        });
     }
 }

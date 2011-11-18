@@ -36,30 +36,28 @@ public class DateFormatter implements Formatter<Date> {
         if (value == null) {
             return null;
         }
-        String format;
-        String type = element.attributeValue("type");
-        if (type != null) {
-            Table.Column.FormatterType ftype = Table.Column.FormatterType.valueOf(type);
-            FormatStrings formatStrings = Datatypes.getFormatStrings(UserSessionProvider.getUserSession().getLocale());
-            switch (ftype) {
-                case DATE:
-                    format = formatStrings.getDateFormat();
-                    break;
-                case DATETIME:
-                    format = formatStrings.getDateTimeFormat();
-                    break;
-                default:
-                    throw new RuntimeException("Illegal formatter type value");
+        String format = element.attributeValue("format");
+        if (StringUtils.isBlank(format)) {
+            String type = element.attributeValue("type");
+            if (type != null) {
+                Table.Column.FormatterType ftype = Table.Column.FormatterType.valueOf(type);
+                FormatStrings formatStrings = Datatypes.getFormatStrings(UserSessionProvider.getUserSession().getLocale());
+                switch (ftype) {
+                    case DATE:
+                        format = formatStrings.getDateFormat();
+                        break;
+                    case DATETIME:
+                        format = formatStrings.getDateTimeFormat();
+                        break;
+                    default:
+                        throw new RuntimeException("Illegal formatter type value");
+                }
             }
         }
-        else {
-            format = element.attributeValue("format");
-        }
 
-        if (StringUtils.isEmpty(format)) {
+        if (StringUtils.isBlank(format)) {
             return value.toString();
-        }
-        else {
+        } else {
             if (format.startsWith("msg://")) {
                 format = MessageProvider.getMessage(
                         AppConfig.getMessagesPack(), format.substring(6, format.length()));

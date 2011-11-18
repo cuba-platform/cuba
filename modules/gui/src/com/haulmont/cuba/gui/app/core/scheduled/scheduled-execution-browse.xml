@@ -22,7 +22,7 @@
                 ]]>
                 <filter>
                     <and>
-                        <c>e.host like :component$hostField</c>
+                        <c>e.server like :component$serverField</c>
                         <c>e.startTime &gt;= :component$startTimeField1</c>
                         <c>e.startTime &lt;= :component$startTimeField2</c>
                     </and>
@@ -36,7 +36,7 @@
             <caption label="msg://filter"/>
             <hbox spacing="true">
                 <label value="msg://com.haulmont.cuba.core.entity/ScheduledExecution.server"/>
-                <textField id="hostField"/>
+                <textField id="serverField"/>
                 <label value="msg://startTimeFrom"/>
                 <dateField id="startTimeField1"/>
                 <label value="msg://startTimeTill"/>
@@ -50,8 +50,12 @@
             </buttonsPanel>
             <rowsCount/>
             <columns>
-                <column id="startTime"/>
-                <column id="finishTime"/>
+                <column id="startTime">
+                    <formatter type="DATETIME" format="yyyy-MM-dd HH:mm:ss"/>
+                </column>
+                <column id="finishTime">
+                    <formatter type="DATETIME" format="yyyy-MM-dd HH:mm:ss"/>
+                </column>
                 <column id="server"/>
                 <column id="result"/>
             </columns>

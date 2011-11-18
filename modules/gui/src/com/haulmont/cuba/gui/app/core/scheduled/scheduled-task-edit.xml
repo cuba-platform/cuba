@@ -24,10 +24,6 @@
             <columns count="2"/>
             <rows>
                 <row>
-                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.active"/>
-                    <checkBox id="activeField" datasource="taskDs" property="active"/>
-                </row>
-                <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.beanName"/>
                     <lookupField id="beanNameField" datasource="taskDs" property="beanName" width="300px"/>
                 </row>
@@ -38,6 +34,10 @@
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.userName"/>
                     <lookupField id="userNameField" datasource="taskDs" property="userName" width="300px"/>
+                </row>
+                <row>
+                    <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.userPassword"/>
+                    <textField id="userPasswordField" width="300px" secret="true"/>
                 </row>
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.singleton"/>

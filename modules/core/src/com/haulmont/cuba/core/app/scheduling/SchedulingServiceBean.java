@@ -6,13 +6,11 @@
 
 package com.haulmont.cuba.core.app.scheduling;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Query;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ClusterListener;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.SchedulingService;
+import com.haulmont.cuba.core.entity.ScheduledTask;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.ClassUtils;
@@ -140,6 +138,21 @@ public class SchedulingServiceBean implements SchedulingService {
     public void setActive(boolean active) {
         scheduling.setActive(active);
         clusterManager.send(new SetSchedulingActiveMsg(active));
+    }
+
+    @Override
+    public void setActive(ScheduledTask task, boolean active) {
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
+
+            ScheduledTask t = em.find(ScheduledTask.class, task.getId());
+            t.setActive(active);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
     }
 
     public static class SetSchedulingActiveMsg implements Serializable {

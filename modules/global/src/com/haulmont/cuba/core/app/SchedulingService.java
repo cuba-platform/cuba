@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.entity.ScheduledTask;
+
 import java.util.List;
 import java.util.Map;
 
@@ -41,4 +43,11 @@ public interface SchedulingService {
      * @param active    true to activate scheduling
      */
     void setActive(boolean active);
+
+    /**
+     * Activate/deactivate specific task.
+     * @param task      task instance
+     * @param active    true to activate
+     */
+    void setActive(ScheduledTask task, boolean active);
 }

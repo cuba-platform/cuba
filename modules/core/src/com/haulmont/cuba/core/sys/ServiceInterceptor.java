@@ -12,6 +12,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.UserSession;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -45,7 +46,8 @@ public class ServiceInterceptor
             return res;
         } catch (Throwable e) {
             log.error("ServiceInterceptor caught exception: ", e);
-            throw e;
+            // Propagate the root exception only to avoid serialization errors on remote clients
+            throw ExceptionUtils.getRootCause(e);
         }
     }
 }
