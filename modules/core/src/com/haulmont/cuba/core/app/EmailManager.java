@@ -48,6 +48,9 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
     @Inject
     private TimeSource timeSource;
 
+    @Inject
+    private Persistence persistence;
+
     private EmailerConfig config;
 
     @Inject
@@ -95,10 +98,10 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
     }
 
     private void updateSendingMessagesStatus(List<UUID> messages, SendingStatus status) {
-        StringBuffer updateQueryStr = new StringBuffer();
+        StringBuilder updateQueryStr = new StringBuilder();
         updateQueryStr.append("update sys$SendingMessage sm set sm.status= :status, sm.updateTs = :currentTime")
                 .append("\t where sm.id in (:list)");
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             em.createQuery(updateQueryStr.toString())
@@ -133,7 +136,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
     }
 
     private List<SendingMessage> loadEmailsToSend() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             View view = new View(SendingMessage.class, true)
@@ -172,7 +175,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
             return Collections.emptyList();
 
         List<SendingMessage> messagesToRemove = new ArrayList<SendingMessage>();
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
 
@@ -201,8 +204,8 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
         return res;
     }
 
-    public void addEmailsToQueue(List<SendingMessage> sendingMessageList) {
-        Transaction tx = Locator.createTransaction();
+    public List<SendingMessage> addEmailsToQueue(List<SendingMessage> sendingMessageList) {
+        Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             for (SendingMessage message : sendingMessageList) {
@@ -216,6 +219,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
         } finally {
             tx.end();
         }
+        return sendingMessageList;
     }
 
     private void updateSendingMessageStatus(SendingMessage sendingMessage, SendingStatus status) {
@@ -223,10 +227,10 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
             boolean increaseAttemptsMade = !status.equals(SendingStatus.SENDING);
             Date currentTimestamp = timeSource.currentTimestamp();
 
-            Transaction tx = Locator.createTransaction();
+            Transaction tx = persistence.createTransaction();
             try {
                 EntityManager em = PersistenceProvider.getEntityManager();
-                StringBuffer queryStr = new StringBuffer("update sys$SendingMessage sm set sm.status = :status, sm.updateTs=:updateTs, sm.updatedBy = :updatedBy, sm.version = sm.version + 1 ");
+                StringBuilder queryStr = new StringBuilder("update sys$SendingMessage sm set sm.status = :status, sm.updateTs=:updateTs, sm.updatedBy = :updatedBy, sm.version = sm.version + 1 ");
                 if (increaseAttemptsMade)
                     queryStr.append(", sm.attemptsMade = sm.attemptsMade + 1 ");
                 if (status.equals(SendingStatus.SENT))

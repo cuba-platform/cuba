@@ -17,6 +17,7 @@ import com.haulmont.cuba.core.global.EmailInfo;
 import com.haulmont.cuba.security.global.LoginException;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * API of {@link Emailer} MBean.<br>
@@ -61,6 +62,14 @@ public interface EmailerAPI {
      * @throws EmailException
      */
     void sendEmailAsync(EmailInfo info, Integer attemptsCount,Date deadline) throws EmailException;
+
+    /**
+     *
+     * @param info EmailInfo of mail to send
+     * @return List of created SendingMessage
+     * @throws EmailException
+     */
+    List<SendingMessage> sendMessagesAsync(EmailInfo info) throws EmailException;
 
     /**
      * Don't use

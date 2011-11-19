@@ -18,7 +18,7 @@ import java.util.List;
 public interface EmailManagerAPI {
     String NAME = "cuba_EmailManager";
 
-    void addEmailsToQueue(List<SendingMessage> sendingMessageList);
+    List<SendingMessage> addEmailsToQueue(List<SendingMessage> sendingMessageList);
 
     void queueEmailsToSend();
 }
