@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Yuryi Artamonov
- * Created: 06.10.2010 14:57:32
- *
- * $Id$
  */
 package com.haulmont.cuba.web.exception;
 
@@ -17,17 +12,30 @@ import com.haulmont.cuba.report.exception.UnsupportedFormatException;
 import com.haulmont.cuba.web.App;
 import com.vaadin.ui.Window;
 
-public class ReportExceptionHandler extends AbstractExceptionHandler<ReportingException> {
+import javax.annotation.Nullable;
+
+/**
+ * Handles reporting exceptions.
+ *
+ * <p>$Id$</p>
+ *
+ * @author artamonov
+ */
+public class ReportExceptionHandler extends AbstractExceptionHandler {
 
     public ReportExceptionHandler() {
-        super(ReportingException.class);
+        super(
+                ReportingException.class.getName(),
+                FailedToConnectToOpenOfficeException.class.getName(),
+                UnsupportedFormatException.class.getName()
+        );
     }
 
-    protected void doHandle(ReportingException t, App app) {
+    protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
         String messageCode = "reportException.message";
-        if (t instanceof FailedToConnectToOpenOfficeException) {
+        if (FailedToConnectToOpenOfficeException.class.getName().equals(className)) {
             messageCode = "reportException.failedConnectToOffice";
-        } else if (t instanceof UnsupportedFormatException) {
+        } else if (UnsupportedFormatException.class.getName().equals(className)) {
             messageCode = "reportException.unsupportedFileFormat";
         }
         String msg = MessageProvider.getMessage(getClass(), messageCode);
@@ -35,7 +43,7 @@ public class ReportExceptionHandler extends AbstractExceptionHandler<ReportingEx
     }
 
     public boolean handle(ReportingException e, App app) {
-        doHandle(e, app);
+        doHandle(app, e.getClass().getName(), e.getMessage(), e);
         return true;
     }
 }

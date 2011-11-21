@@ -11,18 +11,23 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.components.IFrame;
 
+import javax.annotation.Nullable;
+
 /**
+ * Handles {@link EntityDeletedException}.
+ *
  * <p>$Id$</p>
  *
  * @author pavlov
  */
-public class EntityDeletedExceptionHandler extends AbstractExceptionHandler<EntityDeletedException>{
+public class EntityDeletedExceptionHandler extends AbstractExceptionHandler {
+
     public EntityDeletedExceptionHandler() {
-        super(EntityDeletedException.class);
+        super(EntityDeletedException.class.getName());
     }
 
     @Override
-    protected void doHandle(Thread thread, EntityDeletedException e) {
+    protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
         String msg = MessageProvider.formatMessage(getClass(), "entityDeletedException.message");
         App.getInstance().showNotificationPopup(msg, IFrame.NotificationType.WARNING);
     }

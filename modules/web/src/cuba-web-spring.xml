@@ -76,7 +76,28 @@
         </property>
     </bean>
 
-    <!-- Scheduling setup -->
+    <!-- Exception handlers -->
+
+    <bean id="cuba_exceptionHandlersConf" class="com.haulmont.cuba.web.exception.ExceptionHandlersConfiguration">
+        <property name="handlerClasses">
+            <list>
+                <value>com.haulmont.cuba.web.exception.NoUserSessionHandler</value>
+                <value>com.haulmont.cuba.web.exception.SilentExceptionHandler</value>
+                <value>com.haulmont.cuba.web.exception.UniqueConstraintViolationHandler</value>
+                <value>com.haulmont.cuba.web.exception.AccessDeniedHandler</value>
+                <value>com.haulmont.cuba.web.exception.NoSuchScreenHandler</value>
+                <value>com.haulmont.cuba.web.exception.DeletePolicyHandler</value>
+                <value>com.haulmont.cuba.web.exception.NumericOverflowExceptionHandler</value>
+                <value>com.haulmont.cuba.web.exception.OptimisticExceptionHandler</value>
+                <value>com.haulmont.cuba.web.exception.ReportExceptionHandler</value>
+                <value>com.haulmont.cuba.web.exception.FileMissingExceptionHandler</value>
+                <value>com.haulmont.cuba.web.exception.InvalidValueExceptionHandler</value>
+                <value>com.haulmont.cuba.web.exception.EntityDeletedExceptionHandler</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Spring scheduling setup -->
 
     <bean id="scheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
         <property name="daemon" value="true"/>
@@ -87,27 +108,12 @@
         <task:scheduled ref="cuba_FileUploading" method="clearTempDirectory" cron="0 0 0 * * 2,4,6"/>
     </task:scheduled-tasks>
 
-    <!-- Background Tasks -->
+    <!-- Background tasks support -->
 
     <bean id="cuba_BackgroundWorker_WatchDog" class="com.haulmont.cuba.gui.executors.TasksWatchDog"/>
 
     <bean id="cuba_BackgroundWorker" class="com.haulmont.cuba.web.gui.utils.WebBackgroundWorker">
         <constructor-arg index="0" ref="cuba_BackgroundWorker_WatchDog"/>
     </bean>
-
-    <!--
-
-    For use BackgroundWorker in project add to {app}-web-spring.xml this sheduler definition:
-
-    <bean id="backgroundWorkerScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
-        <property name="daemon" value="true"/>
-        <property name="poolSize" value="1"/>
-    </bean>
-
-    <task:scheduled-tasks scheduler="backgroundWorkerScheduler">
-        <task:scheduled ref="cuba_BackgroundWorker_WatchDog" method="cleanupTasks" fixed-delay="2000"/>
-    </task:scheduled-tasks>
-
-    -->
 
 </beans>

@@ -1,15 +1,17 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 28.07.2009 10:05:20
- *
- * $Id$
  */
 package com.haulmont.cuba.gui;
 
+/**
+ * Raised on attempt to open an unknown screen.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public class NoSuchScreenException extends RuntimeException {
 
     private static final long serialVersionUID = -3751833162235475862L;

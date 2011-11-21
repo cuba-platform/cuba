@@ -1,32 +1,35 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: FIRSTNAME LASTNAME
- * Created: 25.12.2009 10:22:36
- *
- * $Id$
  */
 package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.web.App;
 import com.vaadin.ui.Window;
-import org.apache.openjpa.util.OptimisticException;
 
+import javax.annotation.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class OptimisticExceptionHandler extends AbstractExceptionHandler<OptimisticException>{
+/**
+ * Handles a JPA optimistic lock exception.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
+public class OptimisticExceptionHandler extends AbstractExceptionHandler {
+
     public OptimisticExceptionHandler() {
-        super(OptimisticException.class);
+        super("org.springframework.orm.jpa.JpaOptimisticLockingFailureException");
     }
 
     @Override
-    protected void doHandle(OptimisticException e, App app) {
+    protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
         Pattern pattern = Pattern.compile("\\[([^-]*)-");
-        Matcher matcher = pattern.matcher(e.getMessage());
+        Matcher matcher = pattern.matcher(message);
         String entityClassName = "";
         if (matcher.find()) {
             entityClassName = matcher.group(1);

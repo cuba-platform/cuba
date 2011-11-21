@@ -11,19 +11,21 @@ import com.haulmont.cuba.web.App;
 import com.vaadin.data.Validator;
 import com.vaadin.ui.Window;
 
+import javax.annotation.Nullable;
+
 /**
  * <p>$Id$</p>
  *
- * @author knst
+ * @author krivopustov
  */
-public class InvalidValueExceptionHandler extends AbstractExceptionHandler<Validator.InvalidValueException> {
+public class InvalidValueExceptionHandler extends AbstractExceptionHandler {
 
     public InvalidValueExceptionHandler() {
-        super(Validator.InvalidValueException.class);
+        super(Validator.InvalidValueException.class.getName());
     }
 
     @Override
-    protected void doHandle(Validator.InvalidValueException e, App app) {
+    protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
         app.getAppWindow().showNotification(
                 MessageProvider.getMessage(getClass(), "validationFail.caption"),
                 MessageProvider.getMessage(getClass(), "validationFail"),

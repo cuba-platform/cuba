@@ -1,23 +1,27 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 25.12.2008 13:24:09
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.cuba.core.sys.ClassesInfo;
 import com.haulmont.cuba.security.entity.PermissionType;
 
 /**
- * This exception is raised on attempt to violate a security constraint
+ * Exception that is raised on attempt to violate a security constraint.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 public class AccessDeniedException extends RuntimeException
 {
     private static final long serialVersionUID = -3097861878301424338L;
+
+    static {
+        ClassesInfo.addClientSupported(AccessDeniedException.class);
+    }
 
     private PermissionType type;
 

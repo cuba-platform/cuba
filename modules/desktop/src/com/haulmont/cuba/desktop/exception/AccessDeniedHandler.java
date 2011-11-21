@@ -11,18 +11,23 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.components.IFrame;
 
+import javax.annotation.Nullable;
+
 /**
+ * Handles {@link AccessDeniedException}.
+ *
  * <p>$Id$</p>
  *
  * @author devyatkin
  */
-public class AccessDeniedHandler extends AbstractExceptionHandler<AccessDeniedException> {
+public class AccessDeniedHandler extends AbstractExceptionHandler {
+
     public AccessDeniedHandler() {
-        super(AccessDeniedException.class);
+        super(AccessDeniedException.class.getName());
     }
 
     @Override
-    protected void doHandle(Thread thread, AccessDeniedException e) {
+    protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
         String msg = MessageProvider.getMessage(getClass(), "accessDenied.message");
         App.getInstance().showNotificationPopup(msg, IFrame.NotificationType.ERROR);
     }

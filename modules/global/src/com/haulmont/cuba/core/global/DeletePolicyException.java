@@ -11,9 +11,13 @@
 package com.haulmont.cuba.core.global;
 
 /**
- * This exception is raised on attempt to soft delete an object,
- * which has linked objects marked with {@link OnDelete} annotation 
- * with {@link com.haulmont.cuba.core.global.DeletePolicy} DENY value
+ * Exception that is raised on attempt to soft delete an object,
+ * which has linked objects marked with {@link com.haulmont.cuba.core.entity.annotation.OnDelete} annotation
+ * with {@link com.haulmont.cuba.core.global.DeletePolicy#DENY} value.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 public class DeletePolicyException extends RuntimeException
 {

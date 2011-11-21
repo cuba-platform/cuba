@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Degtyarjov Eugeniy
- * Created: 17.11.2009 14:57:21
- *
- * $Id$
  */
 
 package com.haulmont.cuba.web.exception;
@@ -17,13 +12,23 @@ import com.vaadin.ui.Window;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.jdbc.ReportingSQLException;
 
-public class NumericOverflowExceptionHandler extends AbstractExceptionHandler<ReportingSQLException> {
+import javax.annotation.Nullable;
+
+/**
+ * Handles database "numeric overflow" exception.
+ *
+ * <p>$Id$</p>
+ *
+ * @author degtyarjov
+ */
+public class NumericOverflowExceptionHandler extends AbstractExceptionHandler {
+
     public NumericOverflowExceptionHandler() {
-        super(ReportingSQLException.class);
+        super(ReportingSQLException.class.getName());
     }
 
-    protected void doHandle(ReportingSQLException e, App app) {
-        if (StringUtils.containsIgnoreCase(e.getMessage(), MessageProvider.getMessage(getClass(), "numericFieldOverflow.marker"))) {
+    protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
+        if (StringUtils.containsIgnoreCase(message, "Numeric field overflow")) {
             String msg = MessageProvider.getMessage(getClass(), "numericFieldOverflow.message");
             app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
         }

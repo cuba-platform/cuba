@@ -62,8 +62,6 @@ public class App implements ConnectionListener {
 
     private DisabledGlassPane glassPane;
 
-    protected ExceptionHandlers exceptionHandlers;
-
     protected DesktopTheme theme;
 
     public static void main(final String[] args) {
@@ -360,8 +358,6 @@ public class App implements ConnectionListener {
     }
 
     protected void initExceptionHandling() {
-        exceptionHandlers = new ExceptionHandlers();
-
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             public void uncaughtException(Thread thread, Throwable throwable) {
                 handleException(thread, throwable);
@@ -373,25 +369,21 @@ public class App implements ConnectionListener {
 
     public void handleException(Thread thread, Throwable throwable) {
         log.error("Exception in thread " + thread, throwable);
-        exceptionHandlers.handle(thread, throwable);
+        ExceptionHandlers handlers = AppContext.getBean("cuba_ExceptionHandlers", ExceptionHandlers.class);
+        handlers.handle(thread, throwable);
     }
 
+    /**
+     * Initializes exception handlers immediately after login and logout.
+     * Can be overridden in descendants to manipulate exception handlers programmatically.
+     * @param isConnected   true after login, false after logout
+     */
     protected void initExceptionHandlers(boolean isConnected) {
+        ExceptionHandlers handlers = AppContext.getBean("cuba_ExceptionHandlers", ExceptionHandlers.class);
         if (isConnected) {
-            exceptionHandlers.addHandler(new NoUserSessionHandler()); // must be the first handler
-            exceptionHandlers.addHandler(new SilentExceptionHandler());
-            exceptionHandlers.addHandler(new UniqueConstraintViolationHandler());
-            exceptionHandlers.addHandler(new AccessDeniedHandler());
-            exceptionHandlers.addHandler(new NoSuchScreenHandler());
-            exceptionHandlers.addHandler(new DeletePolicyHandler());
-            exceptionHandlers.addHandler(new NumericOverflowExceptionHandler());
-            exceptionHandlers.addHandler(new OptimisticExceptionHandler());
-            exceptionHandlers.addHandler(new JPAOptimisticExceptionHandler());
-            exceptionHandlers.addHandler(new ReportExceptionHandler());
-            exceptionHandlers.addHandler(new FileMissingExceptionHandler());
-            exceptionHandlers.addHandler(new EntityDeletedExceptionHandler());
+            handlers.createByConfiguration();
         } else {
-            exceptionHandlers.getHandlers().clear();
+            handlers.removeAll();
         }
     }
 

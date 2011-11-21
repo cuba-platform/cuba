@@ -53,6 +53,26 @@
         </property>
     </bean>
 
+    <!-- Exception handlers -->
+
+    <bean id="cuba_exceptionHandlersConf" class="com.haulmont.cuba.desktop.exception.ExceptionHandlersConfiguration">
+        <property name="handlerClasses">
+            <list>
+                <value>com.haulmont.cuba.desktop.exception.NoUserSessionHandler</value>
+                <value>com.haulmont.cuba.desktop.exception.SilentExceptionHandler</value>
+                <value>com.haulmont.cuba.desktop.exception.UniqueConstraintViolationHandler</value>
+                <value>com.haulmont.cuba.desktop.exception.AccessDeniedHandler</value>
+                <value>com.haulmont.cuba.desktop.exception.NoSuchScreenHandler</value>
+                <value>com.haulmont.cuba.desktop.exception.DeletePolicyHandler</value>
+                <value>com.haulmont.cuba.desktop.exception.NumericOverflowExceptionHandler</value>
+                <value>com.haulmont.cuba.desktop.exception.OptimisticExceptionHandler</value>
+                <value>com.haulmont.cuba.desktop.exception.ReportExceptionHandler</value>
+                <value>com.haulmont.cuba.desktop.exception.FileMissingExceptionHandler</value>
+                <value>com.haulmont.cuba.desktop.exception.EntityDeletedExceptionHandler</value>
+            </list>
+        </property>
+    </bean>
+
     <!-- Background Tasks -->
 
     <bean id="cuba_BackgroundWorker_WatchDog" class="com.haulmont.cuba.gui.executors.TasksWatchDog"/>

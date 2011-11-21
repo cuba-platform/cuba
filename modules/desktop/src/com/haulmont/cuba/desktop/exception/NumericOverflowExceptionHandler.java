@@ -12,20 +12,24 @@ import com.haulmont.cuba.gui.components.IFrame;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.jdbc.ReportingSQLException;
 
+import javax.annotation.Nullable;
+
 /**
+ * Handles database "numeric overflow" exception.
+ *
  * <p>$Id$</p>
  *
  * @author devyatkin
  */
-public class NumericOverflowExceptionHandler extends AbstractExceptionHandler<ReportingSQLException> {
+public class NumericOverflowExceptionHandler extends AbstractExceptionHandler {
 
     public NumericOverflowExceptionHandler() {
-        super(ReportingSQLException.class);
+        super(ReportingSQLException.class.getName());
     }
 
     @Override
-    protected void doHandle(Thread thread, ReportingSQLException e) {
-        if (StringUtils.containsIgnoreCase(e.getMessage(), MessageProvider.getMessage(getClass(), "numericFieldOverflow.marker"))) {
+    protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
+        if (StringUtils.containsIgnoreCase(message, "Numeric field overflow")) {
             String msg = MessageProvider.getMessage(getClass(), "numericFieldOverflow.message");
             App.getInstance().showNotificationPopup(msg, IFrame.NotificationType.ERROR);
         }

@@ -20,7 +20,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.web.exception.*;
+import com.haulmont.cuba.web.exception.ExceptionHandlers;
 import com.haulmont.cuba.web.gui.WebTimer;
 import com.haulmont.cuba.web.log.AppLog;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
@@ -243,25 +243,15 @@ public abstract class App extends Application
     }
 
     /**
-     * Can be overridden in descendant to add application-specific exception handlers
+     * Initializes exception handlers immediately after login and logout.
+     * Can be overridden in descendants to manipulate exception handlers programmatically.
+     * @param isConnected   true after login, false after logout
      */
     protected void initExceptionHandlers(boolean isConnected) {
         if (isConnected) {
-            exceptionHandlers.addHandler(new NoUserSessionHandler()); // must be the first handler
-            exceptionHandlers.addHandler(new SilentExceptionHandler());
-            exceptionHandlers.addHandler(new UniqueConstraintViolationHandler());
-            exceptionHandlers.addHandler(new AccessDeniedHandler());
-            exceptionHandlers.addHandler(new NoSuchScreenHandler());
-            exceptionHandlers.addHandler(new DeletePolicyHandler());
-            exceptionHandlers.addHandler(new NumericOverflowExceptionHandler());
-            exceptionHandlers.addHandler(new OptimisticExceptionHandler());
-            exceptionHandlers.addHandler(new JPAOptimisticExceptionHandler());
-            exceptionHandlers.addHandler(new ReportExceptionHandler());
-            exceptionHandlers.addHandler(new FileMissingExceptionHandler());
-            exceptionHandlers.addHandler(new InvalidValueExceptionHandler());
-            exceptionHandlers.addHandler(new EntityDeletedExceptionHandler());
+            exceptionHandlers.createByConfiguration();
         } else {
-            exceptionHandlers.getHandlers().clear();
+            exceptionHandlers.removeAll();
         }
     }
 

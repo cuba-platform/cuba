@@ -1,25 +1,29 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 15.01.2010 16:42:17
- *
- * $Id$
  */
 package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.web.App;
 
-public class SilentExceptionHandler extends AbstractExceptionHandler<SilentException> {
+import javax.annotation.Nullable;
+
+/**
+ * Handler that does nothing in respond to {@link SilentException}.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
+public class SilentExceptionHandler extends AbstractExceptionHandler {
 
     public SilentExceptionHandler() {
-        super(SilentException.class);
+        super(SilentException.class.getName());
     }
 
     @Override
-    protected void doHandle(SilentException e, App app) {
+    protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
     }
 }

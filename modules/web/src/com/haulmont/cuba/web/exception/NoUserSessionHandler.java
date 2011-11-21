@@ -1,36 +1,42 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 25.09.2009 15:07:23
- *
- * $Id$
  */
 package com.haulmont.cuba.web.exception;
 
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.web.App;
-import com.haulmont.cuba.security.global.NoUserSessionException;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DialogAction;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.security.global.NoUserSessionException;
+import com.haulmont.cuba.web.App;
 import com.vaadin.terminal.ExternalResource;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
 import java.util.Locale;
 
-public class NoUserSessionHandler extends AbstractExceptionHandler<NoUserSessionException> {
+/**
+ * Handles {@link NoUserSessionException}.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
+public class NoUserSessionHandler extends AbstractExceptionHandler {
 
     private static Log log = LogFactory.getLog(NoUserSessionHandler.class);
     private Locale locale;
 
     public NoUserSessionHandler() {
-        super(NoUserSessionException.class);
+        super(NoUserSessionException.class.getName());
         locale = App.getInstance().getConnection().getSession().getLocale();
     }
 
-    protected void doHandle(NoUserSessionException t, App app) {
+    protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
         try {
             App.getInstance().getWindowManager().showOptionDialog(
                 MessageProvider.getMessage(getClass(), "dialogs.Information", locale),

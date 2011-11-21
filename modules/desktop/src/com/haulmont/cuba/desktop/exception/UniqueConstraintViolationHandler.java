@@ -12,12 +12,14 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.IFrame;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.orm.jpa.JpaSystemException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Handles database unique constraint violations. Determines the exception type by searching a special marker string
+ * in the messages of all exceptions in the chain.
+ *
  * <p>$Id$</p>
  *
  * @author devyatkin
@@ -48,7 +50,7 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler {
         Throwable t = exception;
         try {
             while (t != null) {
-                if (t.getMessage() != null && t.getMessage().contains(getMarker())) {
+                if (t.toString().contains(getMarker())) {
                     doHandle(thread, t);
                     return true;
                 }
@@ -62,7 +64,7 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler {
 
     protected void doHandle(Thread thread, Throwable e) {
         String constraintName = "";
-        Matcher matcher = getPattern().matcher(e.getMessage());
+        Matcher matcher = getPattern().matcher(e.toString());
         if (matcher.find()) {
             if (matcher.groupCount() > 1)
                 constraintName = matcher.group(2);

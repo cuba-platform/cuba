@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Ilya Grachev
- * Created: 29.07.2009 18:51:21
- *
- * $Id$
  */
 package com.haulmont.cuba.web.exception;
 
@@ -19,6 +14,14 @@ import com.vaadin.ui.Window;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Handles {@link DeletePolicyException}. Determines the exception type by searching a special marker string in the
+ * messages of all exceptions in the chain.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public class DeletePolicyHandler implements ExceptionHandler {
 
     @Override
@@ -26,8 +29,8 @@ public class DeletePolicyHandler implements ExceptionHandler {
         Throwable t = event.getThrowable();
         try {
             while (t != null) {
-                if (t.getMessage() != null && t.getMessage().contains(getMarker())) {
-                    doHandle(t.getMessage(), app);
+                if (t.toString().contains(getMarker())) {
+                    doHandle(t.toString(), app);
                     return true;
                 }
                 t = t.getCause();

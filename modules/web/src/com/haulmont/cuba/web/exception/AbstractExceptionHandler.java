@@ -10,35 +10,65 @@
  */
 package com.haulmont.cuba.web.exception;
 
-import com.vaadin.terminal.Terminal;
+import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.web.App;
+import com.vaadin.terminal.Terminal;
+import org.apache.commons.lang.exception.ExceptionUtils;
+
+import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * Base class for exception handler bound to specific exception type.
- * <p>
- * If you need to handle a specific exception, create a descendant of this class,
- * pass handling exception class into constructor, implement {@link #doHandle(Throwable,com.haulmont.cuba.web.App)} method
- * and register the new handler in {@link App#initExceptionHandlers(boolean)}.
+ * Base class for exception handlers determining their ability to handle an exception by its class name.
+ *
+ * <p>If you need to handle a specific exception, create a descendant of this class,
+ * pass handling exception class names into constructor, implement
+ * {@link #doHandle(com.haulmont.cuba.web.App, String, String, Throwable)} method
+ * and register the new handler in the definition of {@link ExceptionHandlersConfiguration} bean in the client's
+ * spring.xml.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
-public abstract class AbstractExceptionHandler<T extends Throwable> implements ExceptionHandler {
+public abstract class AbstractExceptionHandler implements ExceptionHandler {
 
-    private final Class<T> tClass;
+    private List<String> classNames;
 
-    public AbstractExceptionHandler(Class<T> tClass) {
-        this.tClass = tClass;
+    protected AbstractExceptionHandler(String... classNames) {
+        this.classNames = Arrays.asList(classNames);
     }
 
+    @Override
     public boolean handle(Terminal.ErrorEvent event, App app) {
-        Throwable t = event.getThrowable();
-        while (t != null) {
-            if (tClass.isAssignableFrom(t.getClass())) {
-                doHandle((T) t, app);
+        Throwable exception = event.getThrowable();
+        List<Throwable> list = ExceptionUtils.getThrowableList(exception);
+        for (Throwable throwable : list) {
+            if (classNames.contains(throwable.getClass().getName())) {
+                doHandle(app, throwable.getClass().getName(), throwable.getMessage(), throwable);
                 return true;
             }
-            t = t.getCause();
+            if (throwable instanceof RemoteException) {
+                RemoteException remoteException = (RemoteException) throwable;
+                for (RemoteException.Cause cause : remoteException.getCauses()) {
+                    if (classNames.contains(cause.getClassName())) {
+                        doHandle(app, cause.getClassName(), cause.getMessage(), cause.getThrowable());
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }
 
-    protected abstract void doHandle(T t, App app);
+    /**
+     * Perform exception handling.
+     * @param app       current {@link App} instance
+     * @param className actual exception class name
+     * @param message   exception message
+     * @param throwable exception instance. Can be null if the exception occured on the server side and this
+     * exception class isn't accessible by the client.
+     */
+    protected abstract void doHandle(App app, String className, String message, @Nullable Throwable throwable);
 }

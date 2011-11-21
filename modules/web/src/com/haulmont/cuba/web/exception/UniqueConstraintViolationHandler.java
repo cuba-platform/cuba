@@ -1,17 +1,11 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 21.05.2009 10:41:48
- *
- * $Id$
  */
 package com.haulmont.cuba.web.exception;
 
 import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.vaadin.terminal.Terminal;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -22,6 +16,14 @@ import org.apache.commons.lang.StringUtils;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+/**
+ * Handles database unique constraint violations. Determines the exception type by searching a special marker string
+ * in the messages of all exceptions in the chain.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public class UniqueConstraintViolationHandler implements ExceptionHandler
 {
     private String marker;
@@ -43,11 +45,12 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler
         return pattern;
     }
 
+    @Override
     public boolean handle(Terminal.ErrorEvent event, App app) {
         Throwable t = event.getThrowable();
         try {
             while (t != null) {
-                if (t.getMessage() != null && t.getMessage().contains(getMarker())) {
+                if (t.toString().contains(getMarker())) {
                     doHandle(t, app);
                     return true;
                 }
@@ -61,7 +64,7 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler
 
     private void doHandle(Throwable throwable, App app) {
         String constraintName = "";
-        Matcher matcher = getPattern().matcher(throwable.getMessage());
+        Matcher matcher = getPattern().matcher(throwable.toString());
         if (matcher.find()) {
             if (matcher.groupCount() > 1)
                 constraintName = matcher.group(2);

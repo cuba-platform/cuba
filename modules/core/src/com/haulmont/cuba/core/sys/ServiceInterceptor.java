@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.logging.Log;
@@ -36,16 +37,17 @@ public class ServiceInterceptor
             }
         }
 
-        UserSession userSession = userSessionSource.getUserSession();
-        if (log.isTraceEnabled())
-            log.trace("Invoking: " + ctx.getSignature() + ", session=" + userSession);
-
         try {
+            UserSession userSession = userSessionSource.getUserSession();
+            if (log.isTraceEnabled())
+                log.trace("Invoking: " + ctx.getSignature() + ", session=" + userSession);
+
             Object res = ctx.proceed();
             return res;
         } catch (Throwable e) {
             log.error("ServiceInterceptor caught exception: ", e);
-            throw e;
+            // Propagate the special exception to avoid serialization errors on remote clients
+            throw new RemoteException(e);
         }
     }
 }

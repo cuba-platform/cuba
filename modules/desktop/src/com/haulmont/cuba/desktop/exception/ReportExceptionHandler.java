@@ -13,23 +13,31 @@ import com.haulmont.cuba.report.exception.FailedToConnectToOpenOfficeException;
 import com.haulmont.cuba.report.exception.ReportingException;
 import com.haulmont.cuba.report.exception.UnsupportedFormatException;
 
+import javax.annotation.Nullable;
+
 /**
+ * Handles reporting exceptions.
+ *
  * <p>$Id$</p>
  *
  * @author devyatkin
  */
-public class ReportExceptionHandler extends AbstractExceptionHandler<ReportingException> {
+public class ReportExceptionHandler extends AbstractExceptionHandler {
 
     public ReportExceptionHandler() {
-        super(ReportingException.class);
+        super(
+                ReportingException.class.getName(),
+                FailedToConnectToOpenOfficeException.class.getName(),
+                UnsupportedFormatException.class.getName()
+        );
     }
 
     @Override
-    protected void doHandle(Thread thread, ReportingException e) {
+    protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
         String messageCode = "reportException.message";
-        if (e instanceof FailedToConnectToOpenOfficeException) {
+        if (FailedToConnectToOpenOfficeException.class.getName().equals(className)) {
             messageCode = "reportException.failedConnectToOffice";
-        } else if (e instanceof UnsupportedFormatException) {
+        } else if (UnsupportedFormatException.class.getName().equals(className)) {
             messageCode = "reportException.unsupportedFileFormat";
         }
         String msg = MessageProvider.getMessage(getClass(), messageCode);

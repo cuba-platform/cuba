@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 20.05.2009 18:32:01
- *
- * $Id$
  */
 package com.haulmont.cuba.web.exception;
 
@@ -18,19 +13,21 @@ import com.haulmont.cuba.web.App;
 import java.net.SocketException;
 
 /**
- * This exception handler comes into play if no other handler has handled the exception
+ * This exception handler comes into play if no other handler in the chain has handled the exception.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 public class DefaultExceptionHandler implements ExceptionHandler
 {
+    @Override
     public boolean handle(Terminal.ErrorEvent event, App app) {
         // Copied from com.vaadin.Application.terminalError()
 
         Throwable t = event.getThrowable();
         if (t instanceof SocketException) {
             // Most likely client browser closed socket
-//            System.err
-//                    .println("Warning: SocketException in CommunicationManager."
-//                            + " Most likely client (browser) closed socket.");
             return true;
         }
 
@@ -55,12 +52,6 @@ public class DefaultExceptionHandler implements ExceptionHandler
                 ((AbstractComponent) owner)
                         .setComponentError(new SystemError(e));
             }
-        } else {
-            /*
-             * Can't show it to the user in any way so we print to standard
-             * error
-             */
-//            t.printStackTrace();
         }
         return true;
     }

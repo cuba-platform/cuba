@@ -17,6 +17,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Handles {@link DeletePolicyException}. Determines the exception type by searching a special marker string in the
+ * messages of all exceptions in the chain.
+ *
  * <p>$Id$</p>
  *
  * @author devyatkin
@@ -28,8 +31,8 @@ public class DeletePolicyHandler implements ExceptionHandler {
         Throwable t = exception;
         try {
             while (t != null) {
-                if (t.getMessage() != null && t.getMessage().contains(getMarker())) {
-                    doHandle(thread, t.getMessage());
+                if (t.toString().contains(getMarker())) {
+                    doHandle(thread, t.toString());
                     return true;
                 }
                 t = t.getCause();

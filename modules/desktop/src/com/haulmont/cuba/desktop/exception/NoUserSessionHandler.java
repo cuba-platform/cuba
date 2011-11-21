@@ -12,21 +12,25 @@ import com.haulmont.cuba.security.global.NoUserSessionException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
+
 /**
+ * Handles {@link NoUserSessionException}.
+ *
  * <p>$Id$</p>
  *
  * @author krivopustov
  */
-public class NoUserSessionHandler extends AbstractExceptionHandler<NoUserSessionException> {
+public class NoUserSessionHandler extends AbstractExceptionHandler {
 
     private static Log log = LogFactory.getLog(NoUserSessionHandler.class);
 
     public NoUserSessionHandler() {
-        super(NoUserSessionException.class);
+        super(NoUserSessionException.class.getName());
     }
 
     @Override
-    protected void doHandle(Thread thread, NoUserSessionException e) {
+    protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
         try {
             App.getInstance().getWindowManager().showOptionDialog(
                     getMessage("dialogs.Information"),
