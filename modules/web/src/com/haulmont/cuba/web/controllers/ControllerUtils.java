@@ -21,7 +21,20 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
 public abstract class ControllerUtils {
-    
+    private static final String DISPATCHER = "dispatch";
+
+    public static String getWebControllerURL(String mapping) {
+        if (mapping == null) throw new IllegalArgumentException("Mapping cannot be null");
+
+        String baseUrl = App.getInstance().getURL().toExternalForm();
+        StringBuilder url = new StringBuilder(baseUrl).append(getDispatcher());
+        if (!mapping.startsWith("/")) {
+            url.append("/");
+        }
+        url.append(mapping);
+        return url.toString();
+    }
+
     public static String getControllerURL(String mapping) {
         if (mapping == null) throw new IllegalArgumentException("Mapping cannot be null");
         GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
@@ -34,8 +47,12 @@ public abstract class ControllerUtils {
         return sb.toString();
     }
 
+    public static String getDispatcher() {
+        return DISPATCHER;
+    }
+
     public static String getContollerPrefix() {
-        return "/dispatch";
+        return "/" + DISPATCHER;
     }
 
     public static String getControllerPath(HttpServletRequest request) {
