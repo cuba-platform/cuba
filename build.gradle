@@ -111,11 +111,6 @@ configure(sharedLibModule) {
 }
 
 configure(globalModule) {
-    dependencies {
-        // This dependency is required by CubaEnhancing task
-        compile(group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.2-SNAPSHOT')
-    }
-
     task enhance(type: CubaEnhancing) {
         persistenceXml = "$globalModule.projectDir/src/cuba-persistence.xml"
     }
@@ -293,41 +288,22 @@ configure(webModule) {
         }
     }
 
-    task buildThemes(dependsOn: compileJava) << {
-        File outDir = new File("$buildDir/web/VAADIN/themes")
-        outDir.mkdirs()
-        copy {
-            from 'css/VAADIN/themes'
-            into outDir
-//            include 'blacklabel/**'
-            include 'peyto/**'
-        }
-
-        ant.taskdef(name: 'buildTheme', classname: 'com.haulmont.cuba.ant.BuildThemeTask', classpath: configurations.provided.asPath)
-//        ant.buildTheme(themeDir: new File(outDir, '/blacklabel'), destFile: 'styles-include.css')
-        ant.buildTheme(themeDir: new File(outDir, '/peyto'), destFile: 'styles-include.css')
+    task buildThemes(dependsOn: compileJava, type: CubaWebThemeCreation) {
+        themes = [
+//                 [themeName: 'blacklabel', destFile: 'styles-include.css'],
+                [themeName: 'peyto', destFile: 'styles-include.css']
+        ]
+        cssDir = 'css/VAADIN/themes'
+        destDir = "$buildDir/web/VAADIN/themes"
     }
 
     File webOutDir = new File("$buildDir/web")
-
-    task buildGwt(dependsOn: buildThemes) << {
-        File widgetsetsDir = new File(webOutDir, "VAADIN/widgetsets")
-        File webToolkitSrcDir = new File(webToolkitModule.projectDir, 'src')
-
-        def gwtBuildingArtifacts = configurations.gwtBuilding.resolvedConfiguration.getResolvedArtifacts()
-        File validationSrcDir = gwtBuildingArtifacts.find { a-> a.name == 'validation-api' }.file
-
-        if (!widgetsetsDir.exists()) {
-            javaexec {
-                main = 'com.google.gwt.dev.Compiler'
-                classpath(validationSrcDir, webToolkitSrcDir, webToolkitModule.sourceSets.main.output.classesDir, sourceSets.main.compileClasspath, sourceSets.main.output.classesDir)
-                args('-war', widgetsetsDir.absolutePath, '-style', 'OBF', 'com.haulmont.cuba.toolkit.gwt.WidgetSet')
-                jvmArgs('-Xmx512m', '-Xss8m', '-XX:MaxPermSize=256m', '-Djava.awt.headless=true')
-            }
-            ant.delete(dir: new File(widgetsetsDir, 'WEB-INF'))
-        } else {
-            println "Widgetsets dir exists, skip build GWT"
-        }
+    task buildGwt(dependsOn: buildThemes, type: CubaWebToolkit) {
+        widgetSetsDir = "$webOutDir/VAADIN/widgetsets"
+        widgetSetModules = [webToolkitModule]
+        widgetSetClass = 'com.haulmont.cuba.toolkit.gwt.WidgetSet'
+//        jvmArgs('-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000')
+//        compilerArgs = ['-style' : 'PRETTY', '-localWorkers' : '2']
     }
     assemble.dependsOn buildGwt
 
