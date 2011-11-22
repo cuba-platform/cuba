@@ -312,7 +312,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
         setColumnIdentifiers();
 
-        impl.setRowSorter(new RowSorterImpl(tableModel));
+        if (isSortable())
+            impl.setRowSorter(new RowSorterImpl(tableModel));
 
         initSelectionListener(datasource);
 
@@ -540,6 +541,12 @@ public abstract class DesktopAbstractTable<C extends JTable>
     @Override
     public void setSortable(boolean sortable) {
         this.sortable = sortable;
+        if (sortable) {
+            if (tableModel != null && impl.getRowSorter() == null)
+                impl.setRowSorter(new RowSorterImpl(tableModel));
+        } else {
+            impl.setRowSorter(null);
+        }
     }
 
     @Override
@@ -573,6 +580,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 if (column.getId().equals(propertyId)) {
                     SortOrder sortOrder = ascending ? SortOrder.ASCENDING : SortOrder.DESCENDING;
                     tableModel.sort(Collections.singletonList(new RowSorter.SortKey(i, sortOrder)));
+                    onDataChange();
                     packRows();
                     break;
                 }

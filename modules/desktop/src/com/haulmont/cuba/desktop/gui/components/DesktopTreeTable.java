@@ -203,6 +203,12 @@ public class DesktopTreeTable
     }
 
     @Override
+    public void setSortable(boolean sortable) {
+        super.setSortable(sortable);
+        impl.setSortable(sortable);
+    }
+
+    @Override
     public void addGeneratedColumn(String columnId, ColumnGenerator generator) {
         if (columnId == null)
             throw new IllegalArgumentException("columnId is null");

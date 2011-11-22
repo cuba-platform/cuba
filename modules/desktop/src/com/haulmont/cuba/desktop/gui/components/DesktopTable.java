@@ -31,4 +31,10 @@ public class DesktopTable extends DesktopAbstractTable<JXTable> {
         tableModel = new TableModelAdapter(datasource, columnsOrder, true);
         impl.setModel(tableModel);
     }
+
+    @Override
+    public void setSortable(boolean sortable) {
+        super.setSortable(sortable);
+        impl.setSortable(sortable);
+    }
 }

@@ -52,4 +52,10 @@ public class DesktopGroupTable extends DesktopAbstractTable<JXTable> implements 
     public boolean isExpanded(GroupInfo groupId) {
         return true;
     }
+
+    @Override
+    public void setSortable(boolean sortable) {
+        super.setSortable(sortable);
+        impl.setSortable(sortable);
+    }
 }
