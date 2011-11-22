@@ -271,6 +271,8 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
         }
         ((CollectionDatasource.Sortable) datasource).sort(
                 sortInfos.toArray(new CollectionDatasource.Sortable.SortInfo[sortInfos.size()]));
+
+        fireTableDataChanged();
     }
 
     @Override

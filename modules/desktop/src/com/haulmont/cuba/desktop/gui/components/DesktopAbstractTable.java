@@ -78,7 +78,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     private Action itemClickAction;
     private Action enterPressAction;
 
-    private boolean columnsInited = false;
+    private boolean columnsInitialized = false;
 
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
@@ -144,9 +144,9 @@ public abstract class DesktopAbstractTable<C extends JTable>
         scrollPane.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                if (!columnsInited)
+                if (!columnsInitialized)
                     adjustColumnHeaders();
-                columnsInited = true;
+                columnsInitialized = true;
             }
         });
     }
@@ -567,6 +567,15 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
     @Override
     public void sortBy(Object propertyId, boolean ascending) {
+        if (isSortable()) {
+            for (int i = 0; i < columnsOrder.size(); i++) {
+                Column column = columnsOrder.get(i);
+                if (column.getId().equals(propertyId)) {
+                    SortOrder sortOrder = ascending ? SortOrder.ASCENDING : SortOrder.DESCENDING;
+                    tableModel.sort(Collections.singletonList(new RowSorter.SortKey(i, sortOrder)));
+                }
+            }
+        }
     }
 
     @Override

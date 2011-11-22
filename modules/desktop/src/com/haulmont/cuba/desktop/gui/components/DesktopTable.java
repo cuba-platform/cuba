@@ -6,13 +6,9 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.cuba.desktop.gui.data.AnyTableModelAdapter;
 import com.haulmont.cuba.desktop.gui.data.TableModelAdapter;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.jdesktop.swingx.JXTable;
-
-import javax.swing.*;
-import javax.swing.table.TableModel;
 
 /**
  * <p>$Id$</p>
