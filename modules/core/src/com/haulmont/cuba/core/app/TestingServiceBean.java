@@ -61,6 +61,11 @@ public class TestingServiceBean implements TestingService {
     }
 
     @Override
+    public String executeWithException() throws TestException {
+        throw new TestException("an error");
+    }
+
+    @Override
     public void clearScheduledTasks() {
         Transaction tx = persistence.createTransaction();
         try {

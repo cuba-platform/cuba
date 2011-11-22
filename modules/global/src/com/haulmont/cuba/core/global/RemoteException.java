@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.cuba.core.sys.ClassesInfo;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.annotation.Nullable;
@@ -18,7 +17,7 @@ import java.util.List;
 /**
  * Exception that returns to clients from the middleware. Contains the information about the whole server-side
  * exception chain in the <code>Cause</code> objects list. Actual exception instances are included only if they
- * explicitly made available for the clients (registered in {@link ClassesInfo}).
+ * explicitly declared as available for the clients (annotated with {@link SupportedByClient}).
  *
  * <p>$Id$</p>
  *
@@ -35,7 +34,7 @@ public class RemoteException extends RuntimeException {
         public Cause(Throwable throwable) {
             className = throwable.getClass().getName();
             message = throwable.getMessage();
-            if (ClassesInfo.isClientSupported(throwable.getClass()))
+            if (throwable.getClass().getAnnotation(SupportedByClient.class) != null)
                 this.throwable = throwable;
         }
 
@@ -70,6 +69,19 @@ public class RemoteException extends RuntimeException {
 
     public List<Cause> getCauses() {
         return Collections.unmodifiableList(causes);
+    }
+
+    /**
+     * @return  First exception in the causes list if it is checked, null otherwise
+     */
+    public Exception getFirstCheckedException() {
+        if (!causes.isEmpty()) {
+            Throwable t = causes.get(0).getThrowable();
+            if (t != null && !(t instanceof RuntimeException) && !(t instanceof Error)) {
+                return (Exception) t;
+            }
+        }
+        return null;
     }
 
     @Override

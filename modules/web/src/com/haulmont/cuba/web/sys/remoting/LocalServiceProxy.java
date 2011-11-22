@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.web.sys.remoting;
 
+import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.Deserializer;
 import com.haulmont.cuba.core.sys.remoting.LocalServiceDirectory;
@@ -17,9 +18,6 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.remoting.support.RemoteAccessor;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -116,6 +114,11 @@ public class LocalServiceProxy extends RemoteAccessor implements FactoryBean<Obj
             // don't use SerializationUtils.deserialize() here to avoid ClassNotFoundException
             if (result.getException() != null) {
                 Throwable t = (Throwable) Deserializer.deserialize(result.getException());
+                if (t instanceof RemoteException) {
+                    Exception exception = ((RemoteException) t).getFirstCheckedException();
+                    if (exception != null) // This is a checked exception declared in a service method
+                        throw exception;
+                }
                 throw t;
             } else {
                 Object data = Deserializer.deserialize(result.getData());

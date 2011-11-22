@@ -5,7 +5,6 @@
  */
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.cuba.core.sys.ClassesInfo;
 import com.haulmont.cuba.security.entity.PermissionType;
 
 /**
@@ -15,13 +14,10 @@ import com.haulmont.cuba.security.entity.PermissionType;
  *
  * @author krivopustov
  */
+@SupportedByClient
 public class AccessDeniedException extends RuntimeException
 {
     private static final long serialVersionUID = -3097861878301424338L;
-
-    static {
-        ClassesInfo.addClientSupported(AccessDeniedException.class);
-    }
 
     private PermissionType type;
 

@@ -5,7 +5,7 @@
  */
 package com.haulmont.cuba.security.global;
 
-import com.haulmont.cuba.core.sys.ClassesInfo;
+import com.haulmont.cuba.core.global.SupportedByClient;
 
 import java.util.UUID;
 
@@ -16,13 +16,10 @@ import java.util.UUID;
  *
  * @author krivopustov
  */
+@SupportedByClient
 public class NoUserSessionException extends RuntimeException
 {
     private static final long serialVersionUID = 4820628023682230319L;
-
-    static {
-        ClassesInfo.addClientSupported(NoUserSessionException.class);
-    }
 
     public NoUserSessionException(UUID sessionId) {
         super(String.format("User session not found: %s", sessionId.toString()));

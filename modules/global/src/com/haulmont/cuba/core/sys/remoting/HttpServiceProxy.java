@@ -6,7 +6,11 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
+import com.haulmont.cuba.core.global.RemoteException;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
+import org.springframework.remoting.support.RemoteInvocationResult;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * <p>$Id$</p>
@@ -22,5 +26,20 @@ public class HttpServiceProxy extends HttpInvokerProxyFactoryBean {
         ClusteredHttpInvokerRequestExecutor executor = new ClusteredHttpInvokerRequestExecutor(support);
         executor.setBeanClassLoader(getBeanClassLoader());
         setHttpInvokerRequestExecutor(executor);
+    }
+
+    @Override
+    protected Object recreateRemoteInvocationResult(RemoteInvocationResult result) throws Throwable {
+        Throwable throwable = result.getException();
+        if (throwable != null) {
+            if (throwable instanceof InvocationTargetException)
+                throwable = ((InvocationTargetException) throwable).getTargetException();
+            if (throwable instanceof RemoteException) {
+                Exception exception = ((RemoteException) throwable).getFirstCheckedException();
+                if (exception != null) // This is a checked exception declared in a service method
+                    throw exception;
+            }
+        }
+        return super.recreateRemoteInvocationResult(result);
     }
 }

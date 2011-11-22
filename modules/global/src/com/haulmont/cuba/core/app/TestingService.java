@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.global.SupportedByClient;
+
 /**
  * Service interface for integration testing. Don't use it in application code!
  *
@@ -23,8 +25,18 @@ public interface TestingService {
 
     boolean primitiveParameters(boolean b, int i, long l, double d);
 
+    String executeWithException() throws TestException;
+
     /**
      * Warning! Removes all scheduled tasks from the database!
      */
     void clearScheduledTasks();
+
+    @SupportedByClient
+    public static class TestException extends Exception {
+
+        public TestException(String message) {
+            super(message);
+        }
+    }
 }
