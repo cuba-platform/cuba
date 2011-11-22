@@ -111,6 +111,11 @@ configure(sharedLibModule) {
 }
 
 configure(globalModule) {
+    dependencies {
+        // This dependency is required by CubaEnhancing task
+        compile(group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.2-SNAPSHOT')
+    }
+
     task enhance(type: CubaEnhancing) {
         persistenceXml = "$globalModule.projectDir/src/cuba-persistence.xml"
     }
