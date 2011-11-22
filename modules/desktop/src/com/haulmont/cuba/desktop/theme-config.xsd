@@ -14,6 +14,7 @@
         <xs:sequence>
             <xs:element name="lookAndFeel" maxOccurs="1" minOccurs="0"/>
             <xs:element type="uiDefaultsType" name="ui-defaults" maxOccurs="1" minOccurs="0"/>
+            <xs:element type="layoutSettingsType" name="layout" maxOccurs="1" minOccurs="0"/>
             <xs:element type="styleType" name="style" maxOccurs="unbounded" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
@@ -47,6 +48,11 @@
     <xs:complexType name="dimensionType">
         <xs:attribute type="xs:string" name="property" use="required"/>
         <xs:attribute type="xs:string" name="value" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="layoutSettingsType">
+        <xs:attribute type="xs:int" name="margin-size" use="optional"/>
+        <xs:attribute type="xs:int" name="spacing-size" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="styleType">

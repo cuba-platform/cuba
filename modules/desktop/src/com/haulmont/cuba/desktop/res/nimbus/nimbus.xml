@@ -16,6 +16,8 @@
         <!-- make orange to be the same as nimbusBase -->
     </ui-defaults>
 
+    <layout margin-size="5" spacing-size="3"/>
+
     <style name="h2">
         <font family="Verdana" style="bold" size="14"/>
     </style>

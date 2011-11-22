@@ -9,6 +9,8 @@ package com.haulmont.cuba.desktop.theme.impl;
 import com.haulmont.cuba.desktop.Resources;
 import com.haulmont.cuba.desktop.theme.ComponentDecorator;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
+import net.miginfocom.layout.PlatformDefaults;
+import net.miginfocom.layout.UnitValue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -33,6 +35,13 @@ public class DesktopThemeImpl implements DesktopTheme {
     private Resources resources;
 
     protected Log log = LogFactory.getLog(getClass());
+
+    /**
+     * we can control margin & spacing sizes with help of {@link net.miginfocom.layout.PlatformDefaults} class.
+     */
+    private Integer marginSize;
+
+    private Integer spacingSize;
 
     public DesktopThemeImpl(String name) {
         this.name = name;
@@ -86,10 +95,20 @@ public class DesktopThemeImpl implements DesktopTheme {
         } catch (UnsupportedLookAndFeelException e) {
             throw new RuntimeException(e);
         }
+
+        if (marginSize != null) {
+            UnitValue marginValue = new UnitValue(marginSize);
+            PlatformDefaults.setPanelInsets(marginValue, marginValue, marginValue, marginValue);
+        }
+
+        if (spacingSize != null) {
+            UnitValue spacingValue = new UnitValue(spacingSize);
+            PlatformDefaults.setGridCellGap(spacingValue, spacingValue);
+        }
     }
 
     private void initUIDefaults() {
-        for (String propertyName: uiDefaults.keySet()) {
+        for (String propertyName : uiDefaults.keySet()) {
             UIManager.getLookAndFeelDefaults().put(propertyName, uiDefaults.get(propertyName));
         }
     }
@@ -107,18 +126,17 @@ public class DesktopThemeImpl implements DesktopTheme {
             return;
         }
 
-        for (ComponentDecorator decorator: style.getDecorators()) {
+        for (ComponentDecorator decorator : style.getDecorators()) {
             try {
                 decorator.decorate(component, state);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 log.error("Error applying decorator " + decorator + " to " + component, e);
             }
         }
     }
 
     private DesktopStyle findStyle(Class componentClass, String styleName) {
-        for (DesktopStyle desktopStyle: styles) {
+        for (DesktopStyle desktopStyle : styles) {
             if (desktopStyle.getName().equals(styleName) && desktopStyle.isSupported(componentClass)) {
                 return desktopStyle;
             }
@@ -128,5 +146,13 @@ public class DesktopThemeImpl implements DesktopTheme {
 
     public void setStyles(List<DesktopStyle> styles) {
         this.styles = styles;
+    }
+
+    public void setMarginSize(Integer marginSize) {
+        this.marginSize = marginSize;
+    }
+
+    public void setSpacingSize(Integer spacingSize) {
+        this.spacingSize = spacingSize;
     }
 }

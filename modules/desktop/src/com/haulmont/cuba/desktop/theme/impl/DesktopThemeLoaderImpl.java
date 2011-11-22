@@ -64,18 +64,15 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
             Resource resource = resourceLoader.getResource(xmlLocation);
             if (resource.exists()) {
                 InputStream stream = null;
-                    try {
-                        stream = resource.getInputStream();
-                        loadThemeFromXml(theme, stream);
-                    }
-                    catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    finally {
-                        IOUtils.closeQuietly(stream);
-                    }
-            }
-            else {
+                try {
+                    stream = resource.getInputStream();
+                    loadThemeFromXml(theme, stream);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    IOUtils.closeQuietly(stream);
+                }
+            } else {
                 log.warn("Resource " + location + " not found, ignore it");
             }
         }
@@ -113,21 +110,36 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
                 if (StringUtils.isNotEmpty(lookAndFeel)) {
                     theme.setLookAndFeel(lookAndFeel);
                 }
-            }
-            else if ("ui-defaults".equals(elementName)) {
+            } else if ("ui-defaults".equals(elementName)) {
                 loadUIDefaults(theme.getUiDefaults(), element);
-            }
-            else if ("style".equals(elementName)) {
+            } else if ("layout".equals(elementName)) {
+                loadLayoutSettings(theme, element);
+            } else if ("style".equals(elementName)) {
                 DesktopStyle style = loadStyle(element);
                 styles.add(style);
-            }
-            else {
+            } else {
                 log.error("Unknown tag: " + elementName);
             }
         }
 
         styles.addAll(theme.getStyles());
         theme.setStyles(styles);
+    }
+
+    private void loadLayoutSettings(DesktopThemeImpl theme, Element element) {
+        try {
+            String margin = element.attributeValue("margin-size");
+            if (margin != null) {
+                theme.setMarginSize(Integer.valueOf(margin));
+            }
+
+            String spacing = element.attributeValue("spacing-size");
+            if (spacing != null) {
+                theme.setSpacingSize(Integer.valueOf(spacing));
+            }
+        } catch (NumberFormatException e) {
+            log.error("Invalid integer value at layout settings: " + e.getMessage());
+        }
     }
 
     private DesktopStyle loadStyle(Element element) {
@@ -143,18 +155,16 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
             } catch (ClassNotFoundException e) {
                 log.error("Unknown component class: " + className);
             }
-        }
-        else {
+        } else {
             Element componentsElement = element.element(componentsSubTag);
             if (componentsElement != null) {
                 String componentsStr = componentsElement.getTextTrim();
                 StrTokenizer tokenizer = new StrTokenizer(componentsStr);
                 components = new ArrayList<Class>();
-                for (String className: tokenizer.getTokenArray()) {
+                for (String className : tokenizer.getTokenArray()) {
                     try {
                         components.add(Class.forName(className));
-                    }
-                    catch (ClassNotFoundException e) {
+                    } catch (ClassNotFoundException e) {
                         log.error("Unknown component class: " + className);
                     }
                 }
@@ -162,7 +172,7 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
         }
 
         List<ComponentDecorator> decorators = new ArrayList<ComponentDecorator>();
-        for (Element childElement: (List<Element>) element.elements()) {
+        for (Element childElement : (List<Element>) element.elements()) {
             if (!componentsSubTag.equals(childElement.getName())) {
                 ComponentDecorator decorator = loadDecorator(childElement);
                 if (decorator != null) {
@@ -186,19 +196,15 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
         if ("custom".equals(elementName)) {
             String className = element.attributeValue("class");
             return new CustomDecorator(className);
-        }
-        else if ("background".equals(elementName)) {
+        } else if ("background".equals(elementName)) {
             Color value = loadColorValue(element.attributeValue("color"));
             return new PropertyPathDecorator(property, value, state);
-        }
-        else if ("foreground".equals(elementName)) {
+        } else if ("foreground".equals(elementName)) {
             Color value = loadColorValue(element.attributeValue("color"));
             return new PropertyPathDecorator(property, value, state);
-        }
-        else if ("font".equals(elementName)) {
+        } else if ("font".equals(elementName)) {
             return loadFontDecorator(element, property, state);
-        }
-        else if (BORDER_TAG.equals(elementName)) {
+        } else if (BORDER_TAG.equals(elementName)) {
             Border border = loadBorder(element);
             return new PropertyPathDecorator(property, border, state);
         }
@@ -213,11 +219,10 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
                     ? convertFontStyle(element.attributeValue("style")) : null;
             Integer size = element.attributeValue("size") != null
                     ? Integer.parseInt(element.attributeValue("size")) : null;
-            FontDecorator decorator =  new FontDecorator(property, family, style, size);
+            FontDecorator decorator = new FontDecorator(property, family, style, size);
             decorator.setState(state);
             return decorator;
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             log.error("Error loading font for style", e);
             return null;
         }
@@ -238,12 +243,10 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
                 int bottom = Integer.parseInt(values[2]);
                 int left = Integer.parseInt(values[3]);
                 return BorderFactory.createEmptyBorder(top, left, bottom, right);
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 log.error("Border margins value should be like '0 0 0 0': " + value);
             }
-        }
-        else if ("line".equals(type)) {
+        } else if ("line".equals(type)) {
             String color = element.attributeValue("color");
             String width = element.attributeValue("width");
             Color borderColor = loadColorValue(color);
@@ -253,12 +256,10 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
             }
             if (width != null) {
                 return BorderFactory.createLineBorder(borderColor, Integer.parseInt(width));
-            }
-            else {
+            } else {
                 return BorderFactory.createLineBorder(borderColor);
             }
-        }
-        else if ("compound".equals(type)) {
+        } else if ("compound".equals(type)) {
             if (element.elements().size() < 2) {
                 log.error("Compound border should have two child borders");
                 return null;
@@ -275,8 +276,7 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
                 return null;
             }
             return BorderFactory.createCompoundBorder(outsideBorder, insideBorder);
-        }
-        else {
+        } else {
             log.error("Unknown border type: " + type);
         }
         return null;
@@ -302,17 +302,13 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
                 return null;
             }
             return loadColorValue(value);
-        }
-        else if ("font".equals(elementName)) {
+        } else if ("font".equals(elementName)) {
             return loadFontForUIDefault(element);
-        }
-        else if ("insets".equals(elementName)) {
+        } else if ("insets".equals(elementName)) {
             return loadInsets(element);
-        }
-        else if ("dimension".equals(elementName)) {
+        } else if ("dimension".equals(elementName)) {
             return loadDimension(element);
-        }
-        else {
+        } else {
             log.error("Uknown UI property value: " + elementName);
             return null;
         }
@@ -334,8 +330,7 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
             int width = Integer.parseInt(values[0]);
             int height = Integer.parseInt(values[1]);
             return new Dimension(width, height);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             log.error("Dimension value should be like '0 0': " + value);
             return null;
         }
@@ -360,8 +355,7 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
             int bottom = Integer.parseInt(values[2]);
             int left = Integer.parseInt(values[3]);
             return new Insets(top, left, bottom, right);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             log.error("Insets value should be like '0 0 0 0': " + value);
             return null;
         }
@@ -390,8 +384,7 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
         int sizeInt;
         try {
             sizeInt = Integer.parseInt(size);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             log.error("Unparseable size: " + size);
             return null;
         }
@@ -402,17 +395,13 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
     private Integer convertFontStyle(String styleStr) {
         if ("bold".equals(styleStr)) {
             return Font.BOLD;
-        }
-        else if ("italic".equals(styleStr)) {
+        } else if ("italic".equals(styleStr)) {
             return Font.ITALIC;
-        }
-        else if ("bold-italic".equals(styleStr)) {
+        } else if ("bold-italic".equals(styleStr)) {
             return Font.BOLD | Font.ITALIC;
-        }
-        else if (styleStr == null || "plain".equals(styleStr)) {
+        } else if (styleStr == null || "plain".equals(styleStr)) {
             return Font.PLAIN;
-        }
-        else {
+        } else {
             log.error("Unknown font style: " + styleStr);
             return null;
         }
