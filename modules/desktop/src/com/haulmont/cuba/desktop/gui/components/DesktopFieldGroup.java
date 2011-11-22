@@ -8,7 +8,10 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
@@ -48,7 +51,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     private Map<Field, Integer> fieldsColumn = new HashMap<Field, Integer>();
     private Map<Field, Component> fieldComponents = new HashMap<Field, Component>();
     private Map<Field, JLabel> fieldLabels = new HashMap<Field, JLabel>();
-    private Map<Field, ToolTipButton> fieldTooltips = new HashMap<Field,ToolTipButton>();
+    private Map<Field, ToolTipButton> fieldTooltips = new HashMap<Field, ToolTipButton>();
     private Map<Integer, List<Field>> columnFields = new HashMap<Integer, List<Field>>();
     private Map<Field, CustomFieldGenerator> generators = new HashMap<Field, CustomFieldGenerator>();
     private AbstractFieldFactory fieldFactory = new FieldFactory();
@@ -66,7 +69,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     public DesktopFieldGroup() {
         LC lc = new LC();
         lc.hideMode(3); // Invisible components will not participate in the layout at all and it will for instance not take up a grid cell.
-        lc.insets("panel");
+        lc.insets("0 0 0 0");
         if (LayoutAdapter.isDebug())
             lc.debug(1000);
 
@@ -292,8 +295,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
         if (editable) {
             readOnlyFields.remove(field);
-        }
-        else {
+        } else {
             readOnlyFields.add(field);
         }
     }
@@ -540,7 +542,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         label.setVisible(component.isVisible());
         impl.add(label, new CC().cell(col * 3, row, 1, 1));
         fieldLabels.put(field, label);
-        if (description != null&& !(component instanceof CheckBox)) {
+        if (description != null && !(component instanceof CheckBox)) {
             field.setDescription(description);
             ToolTipButton tooltipBtn = new ToolTipButton();
             tooltipBtn.setVisible(component.isVisible());
@@ -600,7 +602,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     public void setEditable(boolean editable) {
         this.editable = editable;
 
-        for (FieldGroup.Field field: fields.values()) {
+        for (FieldGroup.Field field : fields.values()) {
             doSetEditable(field, editable && !readOnlyFields.contains(field));
         }
     }

@@ -8,6 +8,7 @@
 
     <ui-defaults>
         <font property="CollapsiblePanel.font" family="SansSerif" size="12" style="bold"/>
+        <insets property="CollapsiblePanel.borderInsets" value="6 6 6 6"/>
         <color property="Hyperlink.visitedColor" value="#0033ff"/>
         <color property="Hyperlink.linkColor" value="#0033ff"/>
         <dimension property="Table.intercellSpacing" value="1 1"/>

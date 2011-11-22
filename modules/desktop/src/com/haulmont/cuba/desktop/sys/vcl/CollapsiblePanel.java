@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -81,7 +82,7 @@ public class CollapsiblePanel extends JPanel {
         add(titleBtn, BorderLayout.CENTER);
         add(composition, BorderLayout.CENTER);
 
-        setBorder(new CollapsibleTitledBorder(null, titleBtn));
+        setBorder(createBorderImplementation());
 
         preferredSize = getPreferredSize();
 
@@ -185,7 +186,7 @@ public class CollapsiblePanel extends JPanel {
     public void setBorderVisible(boolean borderVisible) {
         this.borderVisible = borderVisible;
         if (borderVisible) {
-            setBorder(new CollapsibleTitledBorder(null, titleBtn));
+            setBorder(createBorderImplementation());
             placeTitleComponent();
         } else {
             if (titleBtn.isVisible())
@@ -195,6 +196,11 @@ public class CollapsiblePanel extends JPanel {
             placeTitleComponent();
         }
         this.repaint();
+    }
+
+    private CollapsibleTitledBorder createBorderImplementation() {
+        Border border = LineBorder.createGrayLineBorder();
+        return new CollapsibleTitledBorder(border, titleBtn);
     }
 
     public JComponent getComposition() {
@@ -321,7 +327,7 @@ public class CollapsiblePanel extends JPanel {
 
         @Override
         public Insets getBorderInsets(Component c, Insets insets) {
-            Insets borderInsets = new Insets(3, 10, 10, 10);
+            Insets borderInsets = (Insets) UIManager.getLookAndFeelDefaults().get("CollapsiblePanel.borderInsets");
             insets.top = EDGE_SPACING + TEXT_SPACING + borderInsets.top;
             insets.right = EDGE_SPACING + TEXT_SPACING + borderInsets.right;
             insets.bottom = EDGE_SPACING + TEXT_SPACING + borderInsets.bottom;
@@ -339,7 +345,7 @@ public class CollapsiblePanel extends JPanel {
                     break;
                 case TOP:
                 case DEFAULT_POSITION:
-                    insets.top += Math.max(compHeight, borderInsets.top) - borderInsets.top;
+                    insets.top += (compHeight / 2 - TEXT_SPACING);
                     break;
                 case BELOW_TOP:
                     insets.top += compHeight + TEXT_SPACING;
@@ -366,7 +372,7 @@ public class CollapsiblePanel extends JPanel {
                     break;
                 case TOP:
                 case DEFAULT_POSITION:
-                    compR.y = EDGE_SPACING + (borderInsets.top - EDGE_SPACING - TEXT_SPACING - compD.height) / 2;
+                    compR.y = EDGE_SPACING + (borderInsets.top - EDGE_SPACING - TEXT_SPACING * 0 - compD.height) / 2;
                     break;
                 case BELOW_TOP:
                     compR.y = borderInsets.top - compD.height - TEXT_SPACING;
