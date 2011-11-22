@@ -573,6 +573,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 if (column.getId().equals(propertyId)) {
                     SortOrder sortOrder = ascending ? SortOrder.ASCENDING : SortOrder.DESCENDING;
                     tableModel.sort(Collections.singletonList(new RowSorter.SortKey(i, sortOrder)));
+                    packRows();
+                    break;
                 }
             }
         }
