@@ -14,6 +14,8 @@
         <dimension property="Table.intercellSpacing" value="1 1"/>
         <color property="nimbusOrange" value="#33628c"/>
         <!-- make orange to be the same as nimbusBase -->
+        <insets property="Button.contentMargins" value="6 12 6 12"/>
+        <!-- default is 6 14 6 14 -->
     </ui-defaults>
 
     <layout margin-size="5" spacing-size="3"/>
