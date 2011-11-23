@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
-import com.haulmont.cuba.desktop.exception.*;
+import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
 import com.haulmont.cuba.desktop.sys.*;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
@@ -376,7 +376,8 @@ public class App implements ConnectionListener {
     /**
      * Initializes exception handlers immediately after login and logout.
      * Can be overridden in descendants to manipulate exception handlers programmatically.
-     * @param isConnected   true after login, false after logout
+     *
+     * @param isConnected true after login, false after logout
      */
     protected void initExceptionHandlers(boolean isConnected) {
         ExceptionHandlers handlers = AppContext.getBean("cuba_ExceptionHandlers", ExceptionHandlers.class);
@@ -389,7 +390,7 @@ public class App implements ConnectionListener {
 
     public void connectionStateChanged(Connection connection) throws LoginException {
         if (connection.isConnected()) {
-            windowManager = new DesktopWindowManager();
+            windowManager = (DesktopWindowManager) getWindowManager();
             frame.setContentPane(createContentPane());
             frame.repaint();
             windowManager.setTabsPane(tabsPane);
@@ -406,6 +407,9 @@ public class App implements ConnectionListener {
     }
 
     public WindowManager getWindowManager() {
+        if (windowManager == null)
+            windowManager = new DesktopWindowManager();
+
         return windowManager;
     }
 
