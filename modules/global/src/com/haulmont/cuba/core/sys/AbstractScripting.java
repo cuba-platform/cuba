@@ -15,6 +15,7 @@ import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import groovy.util.GroovyScriptEngine;
+import groovy.util.ResourceConnector;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
 import org.apache.commons.io.IOUtils;
@@ -29,7 +30,9 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -89,12 +92,7 @@ public abstract class AbstractScripting implements Scripting {
         if (gse == null) {
             synchronized (this) {
                 if (gse == null) {
-                    final String[] rootPath = getScriptEngineRootPath();
-                    try {
-                        gse = new GroovyScriptEngine(rootPath, javaClassLoader);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    gse = new GroovyScriptEngine(new CubaResourceConnector(), javaClassLoader);
                 }
             }
         }
@@ -108,67 +106,7 @@ public abstract class AbstractScripting implements Scripting {
                     CompilerConfiguration cc = new CompilerConfiguration();
                     cc.setClasspath(groovyClassPath);
                     cc.setRecompileGroovySource(true);
-                    gcl = new GroovyClassLoader(javaClassLoader, cc) {
-                        // This overridden method is almost identical to super, but prefers Groovy source over parent classloader class
-                        @Override
-                        public Class loadClass(String name, boolean lookupScriptFiles, boolean preferClassOverScript, boolean resolve) throws ClassNotFoundException, CompilationFailedException {
-                            // look into cache
-                            Class cls = getClassCacheEntry(name);
-
-                            // enable recompilation?
-                            boolean recompile = isRecompilable(cls);
-                            if (!recompile) return cls;
-
-                            ClassNotFoundException last = null;
-
-                            // prefer class if no recompilation
-                            if (cls != null && preferClassOverScript) return cls;
-
-                            // we want to recompile if needed
-                            if (lookupScriptFiles) {
-                                // try groovy file
-                                try {
-                                    // check if recompilation already happened.
-                                    final Class classCacheEntry = getClassCacheEntry(name);
-                                    if (classCacheEntry != cls) return classCacheEntry;
-                                    URL source = getResourceLoader().loadGroovySource(name);
-                                    // if recompilation fails, we want cls==null
-                                    Class oldClass = cls;
-                                    cls = null;
-                                    cls = recompile(source, name, oldClass);
-                                } catch (IOException ioe) {
-                                    last = new ClassNotFoundException("IOException while opening groovy source: " + name, ioe);
-                                } finally {
-                                    if (cls == null) {
-                                        removeClassCacheEntry(name);
-                                    } else {
-                                        setClassCacheEntry(cls);
-                                    }
-                                }
-                            }
-
-                            if (cls == null) {
-                                // try parent loader
-                                try {
-                                    Class parentClassLoaderClass = super.loadClass(name, false, true, resolve);
-                                    // return if the parent loader was successful
-                                    if (cls != parentClassLoaderClass) return parentClassLoaderClass;
-                                } catch (ClassNotFoundException cnfe) {
-                                    last = cnfe;
-                                } catch (NoClassDefFoundError ncdfe) {
-                                    if (ncdfe.getMessage().indexOf("wrong name") > 0) {
-                                        last = new ClassNotFoundException(name);
-                                    } else {
-                                        throw ncdfe;
-                                    }
-                                }
-                                // no class found, there should have been an exception before now
-                                if (last == null) throw new AssertionError(true);
-                                throw last;
-                            }
-                            return cls;
-                        }
-                    };
+                    gcl = new CubaGroovyClassLoader(cc);
                 }
             }
         }
@@ -314,5 +252,172 @@ public abstract class AbstractScripting implements Scripting {
     public void clearCache() {
         getGroovyClassLoader().clearCache();
         javaClassLoader.clearCache();
+    }
+
+    protected class CubaResourceConnector implements ResourceConnector {
+
+        @Override
+        public URLConnection getResourceConnection(String resourceName) throws ResourceException {
+            URLConnection groovyScriptConn = null;
+            StringBuilder errors = new StringBuilder();
+            String[] rootPath = getScriptEngineRootPath();
+
+            // First workaround for invocation from GroovyScriptEngine.isSourceNewer()
+            for (String path : rootPath) {
+                if (resourceName.startsWith(path)) {
+                    // We came here from GroovyScriptEngine.isSourceNewer() and previously we've loaded the script
+                    // from conf
+                    File file = new File(resourceName);
+                    if (file.exists()) {
+                        try {
+                            URL url = file.toURI().toURL();
+                            groovyScriptConn = url.openConnection();
+                            // Make sure we can open it, if we can't it doesn't exist.
+                            groovyScriptConn.getInputStream();
+                            break;
+                        } catch (MalformedURLException e) {
+                            groovyScriptConn = null;
+                            errors.append(e.toString()).append("\n");
+                        } catch (IOException e) {
+                            groovyScriptConn = null;
+                            errors.append(e.toString()).append("\n");
+                        }
+                    }
+                }
+            }
+            if (groovyScriptConn != null)
+                return groovyScriptConn;
+
+            // Second workaround for invocation from GroovyScriptEngine.isSourceNewer()
+            try {
+                // Check if the resourceName is a valid URL. If it is and if we can open connection, use it
+                if (resourceName.startsWith("file:") && resourceName.contains(".jar!"))
+                    resourceName = "jar:" + resourceName;
+
+                URL resourceUrl = new URL(resourceName);
+                groovyScriptConn = resourceUrl.openConnection();
+                // Make sure we can open it, if we can't it doesn't exist.
+                groovyScriptConn.getInputStream();
+            } catch (MalformedURLException e) {
+                // Not an URL, just continue
+            } catch (IOException e) {
+                groovyScriptConn = null;
+                errors.append(e.toString()).append("\n");
+            }
+            if (groovyScriptConn != null)
+                return groovyScriptConn;
+
+            // Next try to find a source in conf.
+            String fileName = resourceName.endsWith(".groovy") ? resourceName : resourceName + ".groovy";
+            for (String root : rootPath) {
+                File file = new File(root, fileName);
+                if (file.exists()) {
+                    try {
+                        URL url = file.toURI().toURL();
+                        groovyScriptConn = url.openConnection();
+                        // Make sure we can open it, if we can't it doesn't exist.
+                        groovyScriptConn.getInputStream();
+                        break;
+                    } catch (MalformedURLException e) {
+                        groovyScriptConn = null;
+                        errors.append(e.toString()).append("\n");
+                    } catch (IOException e) {
+                        groovyScriptConn = null;
+                        errors.append(e.toString()).append("\n");
+                    }
+                } else {
+                    errors.append("File " + file + " doesn't exist").append("\n");
+                }
+            }
+            if (groovyScriptConn != null)
+                return groovyScriptConn;
+
+            // Next try to find a source groovy file in the classpath
+            URL url = getClass().getResource(fileName);
+            if (url != null) {
+                try {
+                    groovyScriptConn = url.openConnection();
+                    // Make sure we can open it, if we can't it doesn't exist.
+                    groovyScriptConn.getInputStream();
+                } catch (IOException e) {
+                    groovyScriptConn = null;
+                    errors.append(e.toString()).append("\n");
+                }
+            } else {
+                errors.append("Classpath resource " + fileName + " doesn't exist").append("\n");
+            }
+            if (groovyScriptConn != null)
+                return groovyScriptConn;
+
+            errors.insert(0, "Unable to find resource " + resourceName + ":\n");
+            throw new ResourceException(errors.toString());
+        }
+    }
+
+    protected class CubaGroovyClassLoader extends GroovyClassLoader {
+
+        public CubaGroovyClassLoader(CompilerConfiguration cc) {
+            super(AbstractScripting.this.javaClassLoader, cc);
+        }
+
+        // This overridden method is almost identical to super, but prefers Groovy source over parent classloader class
+        @Override
+        public Class loadClass(String name, boolean lookupScriptFiles, boolean preferClassOverScript, boolean resolve) throws ClassNotFoundException, CompilationFailedException {
+            // look into cache
+            Class cls = getClassCacheEntry(name);
+
+            // enable recompilation?
+            boolean recompile = isRecompilable(cls);
+            if (!recompile) return cls;
+
+            ClassNotFoundException last = null;
+
+            // prefer class if no recompilation
+            if (cls != null && preferClassOverScript) return cls;
+
+            // we want to recompile if needed
+            if (lookupScriptFiles) {
+                // try groovy file
+                try {
+                    // check if recompilation already happened.
+                    final Class classCacheEntry = getClassCacheEntry(name);
+                    if (classCacheEntry != cls) return classCacheEntry;
+                    URL source = getResourceLoader().loadGroovySource(name);
+                    // if recompilation fails, we want cls==null
+                    Class oldClass = cls;
+                    cls = null;
+                    cls = recompile(source, name, oldClass);
+                } catch (IOException ioe) {
+                    last = new ClassNotFoundException("IOException while opening groovy source: " + name, ioe);
+                } finally {
+                    if (cls == null) {
+                        removeClassCacheEntry(name);
+                    } else {
+                        setClassCacheEntry(cls);
+                    }
+                }
+            }
+
+            if (cls == null) {
+                // try parent loader
+                try {
+                    Class parentClassLoaderClass = super.loadClass(name, false, true, resolve);
+                    // return if the parent loader was successful
+                    if (cls != parentClassLoaderClass) return parentClassLoaderClass;
+                } catch (ClassNotFoundException cnfe) {
+                    last = cnfe;
+                } catch (NoClassDefFoundError ncdfe) {
+                    if (ncdfe.getMessage().indexOf("wrong name") > 0) {
+                        last = new ClassNotFoundException(name);
+                    } else {
+                        throw ncdfe;
+                    }
+                }
+                // no class found, there should have been an exception before now
+                if (last == null) throw new AssertionError(true);
+                throw last;
+            }
+            return cls;
+        }
     }
 }
