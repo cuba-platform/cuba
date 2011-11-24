@@ -1,0 +1,1 @@
+alter table REPORT_REPORT add CODE varchar(255)^
