@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.components.ProgressBar;
+import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -44,6 +45,14 @@ public class DesktopProgressBar extends DesktopAbstractComponent<JProgressBar> i
     @Override
     public void removeListener(ValueListener listener) {
         listeners.remove(listener);
+    }
+
+    @Override
+    public void setValueChangingListener(ValueChangingListener listener) {
+    }
+
+    @Override
+    public void removeValueChangingListener() {
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {

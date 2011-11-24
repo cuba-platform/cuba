@@ -15,10 +15,12 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.data.Property;
+import org.apache.commons.lang.ObjectUtils;
 
 import java.util.*;
 import java.util.List;
@@ -34,7 +36,10 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     protected MetaPropertyPath metaPropertyPath;
 
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
+    protected ValueChangingListener valueChangingListener;
     protected List<Field.Validator> validators = new ArrayList<Field.Validator>();
+
+    protected boolean settingValue = false;
 
     protected DsManager dsManager;
 
@@ -85,10 +90,12 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         component.setRequiredError(msg);
     }
 
+    @Override
     public <T> T getValue() {
         return (T) component.getValue();
     }
 
+    @Override
     public void setValue(Object value) {
         if (component.isReadOnly())
             return;
@@ -111,18 +118,22 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         component.setDescription(description);
     }
 
+    @Override
     public boolean isEditable() {
         return !component.isReadOnly();
     }
 
+    @Override
     public void setEditable(boolean editable) {
         component.setReadOnly(!editable);
     }
 
+    @Override
     public void addListener(ValueListener listener) {
         if (!listeners.contains(listener)) listeners.add(listener);
     }
 
+    @Override
     public void removeListener(ValueListener listener) {
         listeners.remove(listener);
     }
@@ -131,12 +142,41 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
 
     protected void attachListener(T component) {
         component.addListener(new Property.ValueChangeListener() {
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
+                if (settingValue)
+                    return;
+
+                settingValue = true;
+
                 final Object value = getValue();
-                fireValueChanged(prevValue, value);
-                prevValue = value;
+                Object newValue = fileValueChanging(prevValue, value);
+                fireValueChanged(prevValue, newValue);
+                prevValue = newValue;
+
+                if (!ObjectUtils.equals(value, newValue))
+                    WebAbstractField.this.component.setValue(newValue);
+
+                settingValue = false;
             }
         });
+    }
+
+    @Override
+    public void setValueChangingListener(ValueChangingListener listener) {
+        valueChangingListener = listener;
+    }
+
+    @Override
+    public void removeValueChangingListener() {
+        valueChangingListener = null;
+    }
+
+    protected Object fileValueChanging(Object prevValue, Object value) {
+        if (valueChangingListener != null)
+            return valueChangingListener.valueChanging(this, "value", prevValue, value);
+        else
+            return value;
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {
@@ -154,6 +194,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         validators.remove(validator);
     }
 
+    @Override
     public boolean isValid() {
         try {
             validate();
@@ -163,6 +204,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         }
     }
 
+    @Override
     public void validate() throws ValidationException {
         if (!isVisible() || !isEditable() || !isEnabled())
             return;

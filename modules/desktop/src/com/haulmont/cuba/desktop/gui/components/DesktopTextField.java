@@ -61,7 +61,6 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     private Object prevValue;
 
     private String caption;
-    private String description;
 
     private DefaultValueFormatter valueFormatter;
     private Locale locale = UserSessionProvider.getLocale();
@@ -197,9 +196,9 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     @Override
     public void setValue(Object value) {
        if (!ObjectUtils.equals(prevValue, value)) {
+           fireChangeListeners(value);
            updateInstance(value);
            updateComponent(value);
-           fireChangeListeners(value);
        }
     }
 
@@ -337,37 +336,45 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         }
     }
 
+    @Override
     public boolean isEditable() {
         return editable;
     }
 
+    @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
         if (impl != null)
             impl.setEditable(editable);
     }
 
+    @Override
     public String getCaption() {
         return caption;
     }
 
+    @Override
     public void setCaption(String caption) {
         this.caption = caption;
     }
 
+    @Override
     public String getDescription() {
         return getImpl().getToolTipText();
     }
 
+    @Override
     public void setDescription(String description) {
         getImpl().setToolTipText(description);
         DesktopToolTipManager.getInstance().registerTooltip(impl);
     }
 
+    @Override
     public Formatter getFormatter() {
         return valueFormatter.getFormatter();
     }
 
+    @Override
     public void setFormatter(Formatter formatter) {
         valueFormatter.setFormatter(formatter);
     }
@@ -414,6 +421,9 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
                 Object newValue = validateRawValue(getImpl().getText());
                 if ("".equals(newValue))
                     newValue = null;
+
+                if (valueChangingListener != null)
+                    newValue = fileValueChanging(prevValue, newValue);
 
                 if (!ObjectUtils.equals(prevValue, newValue))
                     setValue(newValue);

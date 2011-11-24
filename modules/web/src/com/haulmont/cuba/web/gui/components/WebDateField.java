@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.WebConfig;
@@ -134,16 +135,19 @@ public class WebDateField
         return timeField;
     }
 
+    @Override
     public Resolution getResolution() {
         return resolution;
     }
 
+    @Override
     public void setResolution(Resolution resolution) {
         this.resolution = resolution;
         __setResolution(resolution);
         updateLayout();
     }
 
+    @Override
     public String getDateFormat() {
         return dateTimeFormat;
     }
@@ -157,6 +161,7 @@ public class WebDateField
         }
     }
 
+    @Override
     public void setDateFormat(String dateFormat) {
         dateTimeFormat = dateFormat;
         StringBuilder date = new StringBuilder(dateFormat);
@@ -283,6 +288,14 @@ public class WebDateField
     @Override
     public void removeListener(ValueListener listener) {
         listeners.remove(listener);
+    }
+
+    @Override
+    public void setValueChangingListener(ValueChangingListener listener) {
+    }
+
+    @Override
+    public void removeValueChangingListener() {
     }
 
     @Override

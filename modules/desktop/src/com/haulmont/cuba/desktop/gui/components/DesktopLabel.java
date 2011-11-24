@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
@@ -51,14 +52,17 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
         valueFormatter = new DefaultValueFormatter(locale);
     }
 
+    @Override
     public Datasource getDatasource() {
         return datasource;
     }
 
+    @Override
     public MetaProperty getMetaProperty() {
         return metaProperty;
     }
 
+    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
@@ -104,22 +108,27 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
         }
     }
 
+    @Override
     public boolean isEditable() {
         return false;
     }
 
+    @Override
     public void setEditable(boolean editable) {
     }
 
+    @Override
     public Formatter getFormatter() {
         return valueFormatter.getFormatter();
     }
 
+    @Override
     public void setFormatter(Formatter formatter) {
         valueFormatter.setFormatter(formatter);
         updateComponent(prevValue);
     }
 
+    @Override
     public <T> T getValue() {
         return (T) prevValue;
     }
@@ -163,13 +172,23 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
         }
     }
 
+    @Override
     public void addListener(ValueListener listener) {
         if (!listeners.contains(listener))
             listeners.add(listener);
     }
 
+    @Override
     public void removeListener(ValueListener listener) {
         listeners.remove(listener);
+    }
+
+    @Override
+    public void setValueChangingListener(ValueChangingListener listener) {
+    }
+
+    @Override
+    public void removeValueChangingListener() {
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {

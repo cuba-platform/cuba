@@ -34,6 +34,7 @@ import com.haulmont.cuba.gui.components.filter.AbstractParam;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.Op;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.filter.DenyingClause;
 import com.haulmont.cuba.gui.filter.QueryFilter;
@@ -180,10 +181,12 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         updateControls();
     }
 
+    @Override
     public CollectionDatasource getDatasource() {
         return datasource;
     }
 
+    @Override
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
         this.dsQueryFilter = datasource.getQueryFilter();
@@ -368,7 +371,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         }*/
     }
 
-
+    @Override
     public void setFilterEntity(FilterEntity filterEntity) {
         changingFilter = true;
         try {
@@ -471,6 +474,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                     if (focusOnConditions && !focusSet) {
                         focusSet = true;
                         SwingUtilities.invokeLater(new Runnable(){
+                            @Override
                             public void run(){
                                 paramEditor.requestFocus();
                             }
@@ -523,6 +527,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         Collections.sort(
                 list,
                 new Comparator<ItemWrapper>() {
+                    @Override
                     public int compare(ItemWrapper f1, ItemWrapper f2) {
                         return captions.get(f1.getItem()).compareTo(captions.get(f2.getItem()));
                     }
@@ -585,6 +590,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         return name;
     }
 
+    @Override
     public boolean apply(boolean isNewWindow) {
         if (clientConfig.getGenericFilterChecking()) {
             if (filterEntity != null) {
@@ -675,6 +681,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         return sb.toString();
     }
 
+    @Override
     public void loadFiltersAndApplyDefault() {
         loadFilterEntities();
 
@@ -756,6 +763,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         Collections.sort(
                 filters,
                 new Comparator<FilterEntity>() {
+                    @Override
                     public int compare(FilterEntity f1, FilterEntity f2) {
                         return captions.get(f1).compareTo(captions.get(f2));
                     }
@@ -871,12 +879,14 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         });
     }
 
+    @Override
     public void setUseMaxResults(boolean useMaxResults) {
         this.useMaxResults = useMaxResults;
         maxResultsPanel.setVisible(useMaxResults
                 && UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.maxResults"));
     }
 
+    @Override
     public boolean getUseMaxResults() {
         return useMaxResults;
     }
@@ -897,6 +907,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         }
     }
 
+    @Override
     public void setApplyTo(Component component) {
         applyTo = component;
         if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
@@ -905,24 +916,30 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         }
     }
 
+    @Override
     public Component getApplyTo() {
         return applyTo;
     }
 
+    @Override
     public void add(Component component) {
     }
 
+    @Override
     public void remove(Component component) {
     }
 
+    @Override
     public void requestFocus() {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 select.requestFocus();
             }
         });
     }
 
+    @Override
     public <T extends Component> T getOwnComponent(String id) {
         List<AbstractCondition> list = editor == null ? conditions.toConditionsList() : editor.getConditions();
 
@@ -948,6 +965,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         return null;
     }
 
+    @Override
     public <T extends Component> T getComponent(String id) {
         String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1)
@@ -956,10 +974,12 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             throw new UnsupportedOperationException("Filter contains only one level of subcomponents");
     }
 
+    @Override
     public Collection<Component> getOwnComponents() {
         return Collections.EMPTY_LIST;
     }
 
+    @Override
     public Collection<Component> getComponents() {
         return getOwnComponents();
     }
@@ -974,9 +994,11 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         }
     }
 
+    @Override
     public void applySettings(Element element) {
     }
 
+    @Override
     public boolean saveSettings(Element element) {
         Boolean changed = false;
         Element e = element.element("defaultFilter");
@@ -1121,6 +1143,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             return MessageProvider.getMessage(MESSAGES_PACK, getId());
         }
 
+        @Override
         public void actionPerform(Component component) {
             createFilterEntity();
             parseFilterXml();
@@ -1133,10 +1156,12 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             super("copyAction");
         }
 
+        @Override
         public String getCaption() {
             return MessageProvider.getMessage(MESSAGES_PACK, getId());
         }
 
+        @Override
         public void actionPerform(Component component) {
             copyFilterEntity();
             parseFilterXml();
@@ -1155,6 +1180,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             return MessageProvider.getMessage(MESSAGES_PACK, getId());
         }
 
+        @Override
         public void actionPerform(Component component) {
             switchToEdit();
         }
@@ -1171,6 +1197,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             return MessageProvider.getMessage(MESSAGES_PACK, getId());
         }
 
+        @Override
         public void actionPerform(Component component) {
             delete();
         }
@@ -1204,6 +1231,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             this.param = param;
         }
 
+        @Override
         public <T> T getValue() {
             Object value = param.getValue();
             if (value instanceof String
@@ -1257,95 +1285,129 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             return ParametersHelper.CASE_INSENSITIVE_MARKER + (before ? "%" : "") + value + (after ? "%" : "");
         }
 
+        @Override
         public void setValue(Object value) {
         }
 
+        @Override
         public void addListener(ValueListener listener) {
             param.addListener(listener);
         }
 
+        @Override
         public void removeListener(ValueListener listener) {
             param.removeListener(listener);
         }
 
+        @Override
+        public void setValueChangingListener(ValueChangingListener listener) {
+        }
+
+        @Override
+        public void removeValueChangingListener() {
+        }
+
+        @Override
         public boolean isEditable() {
             return false;
         }
 
+        @Override
         public void setEditable(boolean editable) {
         }
 
+        @Override
         public String getId() {
             return param.getName();
         }
 
+        @Override
         public void setId(String id) {
         }
 
+        @Override
         public String getDebugId() {
             return null;
         }
 
+        @Override
         public void setDebugId(String id) {
         }
 
+        @Override
         public boolean isEnabled() {
             return false;
         }
 
+        @Override
         public void setEnabled(boolean enabled) {
         }
 
+        @Override
         public boolean isVisible() {
             return false;
         }
 
+        @Override
         public void setVisible(boolean visible) {
         }
 
+        @Override
         public void requestFocus() {
         }
 
+        @Override
         public float getHeight() {
             return 0;
         }
 
+        @Override
         public int getHeightUnits() {
             return 0;
         }
 
+        @Override
         public void setHeight(String height) {
         }
 
+        @Override
         public float getWidth() {
             return 0;
         }
 
+        @Override
         public int getWidthUnits() {
             return 0;
         }
 
+        @Override
         public void setWidth(String width) {
         }
 
+        @Override
         public Alignment getAlignment() {
             return Alignment.TOP_LEFT;
         }
 
+        @Override
         public void setAlignment(Alignment alignment) {
         }
 
+        @Override
         public String getStyleName() {
             return null;
         }
 
+        @Override
         public void setStyleName(String name) {
         }
 
+        @Override
         public <A extends IFrame> A getFrame() {
             return null;
         }
 
+        @Override
         public void setFrame(IFrame frame) {
         }
     }

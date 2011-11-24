@@ -10,7 +10,6 @@ import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
@@ -23,13 +22,12 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.filter.DenyingClause;
 import com.haulmont.cuba.gui.filter.QueryFilter;
@@ -48,7 +46,6 @@ import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.IntegerValidator;
-import com.vaadin.event.*;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
@@ -60,7 +57,6 @@ import org.dom4j.*;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import java.util.*;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -126,10 +122,12 @@ public class WebFilter
                             com.vaadin.event.ShortcutAction.KeyCode.ENTER,
                             new int[]{com.vaadin.event.ShortcutAction.ModifierKey.ALT});
 
+            @Override
             public com.vaadin.event.Action[] getActions(Object target, Object sender) {
                 return new com.vaadin.event.Action[]{shortcutAction};
             }
 
+            @Override
             public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
 
                 if (ObjectUtils.equals(action, shortcutAction)) {
@@ -169,6 +167,7 @@ public class WebFilter
         applyBtn = WebComponentsHelper.createButton("icons/search.png");
         applyBtn.setCaption(MessageProvider.getMessage(mainMessagesPack, "actions.Apply"));
         applyBtn.addListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 apply(false);
             }
@@ -202,6 +201,7 @@ public class WebFilter
         maxResultsCb.setValue(true);
         maxResultsCb.addListener(
                 new Button.ClickListener() {
+                    @Override
                     public void buttonClick(Button.ClickEvent event) {
                         maxResultsField.setEnabled(BooleanUtils.isTrue((Boolean) maxResultsCb.getValue()));
                     }
@@ -286,6 +286,7 @@ public class WebFilter
         }
     }
 
+    @Override
     public boolean apply(boolean isNewWindow) {
         if (clientConfig.getGenericFilterChecking()) {
             if (filterEntity != null) {
@@ -546,6 +547,7 @@ public class WebFilter
         }
     }
 
+    @Override
     public void setFilterEntity(FilterEntity filterEntity) {
         changingFilter = true;
         try {
@@ -572,6 +574,7 @@ public class WebFilter
             apply(true);
     }
 
+    @Override
     public void loadFiltersAndApplyDefault() {
         loadFilterEntities();
 
@@ -610,12 +613,14 @@ public class WebFilter
         }
     }
 
+    @Override
     public void setUseMaxResults(boolean useMaxResults) {
         this.useMaxResults = useMaxResults;
         maxResultsLayout.setVisible(useMaxResults
                 && UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.maxResults"));
     }
 
+    @Override
     public boolean getUseMaxResults() {
         return useMaxResults;
     }
@@ -661,6 +666,7 @@ public class WebFilter
         Collections.sort(
                 list,
                 new Comparator<FilterEntity>() {
+                    @Override
                     public int compare(FilterEntity f1, FilterEntity f2) {
                         return captions.get(f1).compareTo(captions.get(f2));
                     }
@@ -745,6 +751,7 @@ public class WebFilter
         Collections.sort(
                 filters,
                 new Comparator<FilterEntity>() {
+                    @Override
                     public int compare(FilterEntity f1, FilterEntity f2) {
                         return captions.get(f1).compareTo(captions.get(f2));
                     }
@@ -850,7 +857,7 @@ public class WebFilter
         editor = new FilterEditor(this, filterEntity, getXmlDescriptor(), names);
         editor.init();
         editor.getSaveButton().addListener(new Button.ClickListener() {
-
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (BooleanUtils.isTrue(filterEntity.getIsDefault())) {
                     Collection<FilterEntity> filters = (Collection<FilterEntity>) select.getItemIds();
@@ -864,10 +871,12 @@ public class WebFilter
         editLayout.addComponent(editor.getLayout());
     }
 
+    @Override
     public CollectionDatasource getDatasource() {
         return datasource;
     }
 
+    @Override
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
         this.dsQueryFilter = datasource.getQueryFilter();
@@ -930,14 +939,17 @@ public class WebFilter
             return UserSessionProvider.getUserSession().isSpecificPermitted(GLOBAL_FILTER_PERMISSION);
     }
 
+    @Override
     public void add(Component component) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void remove(Component component) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public <T extends Component> T getOwnComponent(String id) {
         List<AbstractCondition> list = editor == null ? conditions.toConditionsList() : editor.getConditions();
 
@@ -963,6 +975,7 @@ public class WebFilter
         return null;
     }
 
+    @Override
     public <T extends Component> T getComponent(String id) {
         String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1)
@@ -971,10 +984,12 @@ public class WebFilter
             throw new UnsupportedOperationException("Filter contains only one level of subcomponents");
     }
 
+    @Override
     public Collection<Component> getOwnComponents() {
         return Collections.EMPTY_LIST;
     }
 
+    @Override
     public Collection<Component> getComponents() {
         return getOwnComponents();
     }
@@ -989,10 +1004,12 @@ public class WebFilter
         }
     }
 
+    @Override
     public void applySettings(Element element) {
         // logic moved to loadFiltersAndApplyDefault()
     }
 
+    @Override
     public boolean saveSettings(Element element) {
         Boolean changed = false;
         Element e = element.element("defaultFilter");
@@ -1039,10 +1056,12 @@ public class WebFilter
         return changed;
     }
 
+    @Override
     public Component getApplyTo() {
         return applyTo;
     }
 
+    @Override
     public void setApplyTo(Component component) {
         applyTo = component;
         if ((applyTo != null) && (Table.class.isAssignableFrom(applyTo.getClass()))) {
@@ -1084,6 +1103,7 @@ public class WebFilter
         Runnable commitHandler;
         if (isAppFolder) {
             commitHandler = new Runnable() {
+                @Override
                 public void run() {
                     AppFolder savedFolder = saveAppFolder((AppFolder) folder);
                     filterEntity.setFolder(savedFolder);
@@ -1094,6 +1114,7 @@ public class WebFilter
             };
         } else {
             commitHandler = new Runnable() {
+                @Override
                 public void run() {
                     SearchFolder savedFolder = saveFolder((SearchFolder) folder);
                     filterEntity.setFolder(savedFolder);
@@ -1142,6 +1163,7 @@ public class WebFilter
 
         final FolderEditWindow window = AppFolderEditWindow.create(isAppFolder, false, folder, presentations, commitHandler);
         window.addListener(new com.vaadin.ui.Window.CloseListener() {
+            @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                 App.getInstance().getAppWindow().removeWindow(window);
             }
@@ -1220,7 +1242,7 @@ public class WebFilter
     }
 
     private class SelectListener implements Property.ValueChangeListener {
-
+        @Override
         public void valueChange(Property.ValueChangeEvent event) {
             if (changingFilter)
                 return;
@@ -1267,6 +1289,7 @@ public class WebFilter
             return MessageProvider.getMessage(MESSAGES_PACK, getId());
         }
 
+        @Override
         public void actionPerform(Component component) {
             createFilterEntity();
             parseFilterXml();
@@ -1371,6 +1394,7 @@ public class WebFilter
             this.param = param;
         }
 
+        @Override
         public <T> T getValue() {
             Object value = param.getValue();
             if (value instanceof String
@@ -1424,95 +1448,129 @@ public class WebFilter
             return ParametersHelper.CASE_INSENSITIVE_MARKER + (before ? "%" : "") + value + (after ? "%" : "");
         }
 
+        @Override
         public void setValue(Object value) {
         }
 
+        @Override
         public void addListener(ValueListener listener) {
             param.addListener(listener);
         }
 
+        @Override
         public void removeListener(ValueListener listener) {
             param.removeListener(listener);
         }
 
+        @Override
+        public void setValueChangingListener(ValueChangingListener listener) {
+        }
+
+        @Override
+        public void removeValueChangingListener() {
+        }
+
+        @Override
         public boolean isEditable() {
             return false;
         }
 
+        @Override
         public void setEditable(boolean editable) {
         }
 
+        @Override
         public String getId() {
             return param.getName();
         }
 
+        @Override
         public void setId(String id) {
         }
 
+        @Override
         public String getDebugId() {
             return null;
         }
 
+        @Override
         public void setDebugId(String id) {
         }
 
+        @Override
         public boolean isEnabled() {
             return false;
         }
 
+        @Override
         public void setEnabled(boolean enabled) {
         }
 
+        @Override
         public boolean isVisible() {
             return false;
         }
 
+        @Override
         public void setVisible(boolean visible) {
         }
 
+        @Override
         public void requestFocus() {
         }
 
+        @Override
         public float getHeight() {
             return 0;
         }
 
+        @Override
         public int getHeightUnits() {
             return 0;
         }
 
+        @Override
         public void setHeight(String height) {
         }
 
+        @Override
         public float getWidth() {
             return 0;
         }
 
+        @Override
         public int getWidthUnits() {
             return 0;
         }
 
+        @Override
         public void setWidth(String width) {
         }
 
+        @Override
         public Alignment getAlignment() {
             return Alignment.TOP_LEFT;
         }
 
+        @Override
         public void setAlignment(Alignment alignment) {
         }
 
+        @Override
         public String getStyleName() {
             return null;
         }
 
+        @Override
         public void setStyleName(String name) {
         }
 
+        @Override
         public <A extends IFrame> A getFrame() {
             return null;
         }
 
+        @Override
         public void setFrame(IFrame frame) {
         }
     }

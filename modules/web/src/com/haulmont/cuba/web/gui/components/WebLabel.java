@@ -12,6 +12,7 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.core.entity.Entity;
@@ -48,14 +49,17 @@ public class WebLabel
         component = new com.vaadin.ui.Label();
     }
 
+    @Override
     public Datasource getDatasource() {
         return datasource;
     }
 
+    @Override
     public MetaProperty getMetaProperty() {
         return metaProperty;
     }
 
+    @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
         this.dsManager = new DsManager(datasource, this);
@@ -89,35 +93,51 @@ public class WebLabel
         };
     }
 
+    @Override
     public <T> T getValue() {
         return (T) component.getValue();
     }
 
+    @Override
     public void setValue(Object value) {
         final Object prevValue = getValue();
         component.setValue(value);
         fireValueChanged(prevValue, value);
     }
 
+    @Override
     public boolean isEditable() {
         return false;
     }
 
+    @Override
     public void setEditable(boolean editable) {
     }
 
+    @Override
     public void addListener(ValueListener listener) {
         if (!listeners.contains(listener)) listeners.add(listener);
     }
 
+    @Override
     public void removeListener(ValueListener listener) {
         listeners.remove(listener);
     }
 
+    @Override
+    public void setValueChangingListener(ValueChangingListener listener) {
+    }
+
+    @Override
+    public void removeValueChangingListener() {
+    }
+
+    @Override
     public Formatter getFormatter() {
         return formatter;
     }
 
+    @Override
     public void setFormatter(Formatter formatter) {
         this.formatter = formatter;
     }

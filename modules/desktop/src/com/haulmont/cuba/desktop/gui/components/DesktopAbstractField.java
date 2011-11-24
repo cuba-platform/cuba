@@ -9,6 +9,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
+import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 
 import javax.swing.*;
@@ -26,6 +27,7 @@ public abstract class DesktopAbstractField<C extends JComponent>
         implements Field
 {
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
+    protected ValueChangingListener valueChangingListener;
 
     protected boolean required;
     protected String requiredMessage;
@@ -41,6 +43,23 @@ public abstract class DesktopAbstractField<C extends JComponent>
     @Override
     public void removeListener(ValueListener listener) {
         listeners.remove(listener);
+    }
+
+    @Override
+    public void setValueChangingListener(ValueChangingListener listener) {
+        valueChangingListener = listener;
+    }
+
+    @Override
+    public void removeValueChangingListener() {
+        valueChangingListener = null;
+    }
+
+    protected Object fileValueChanging(Object prevValue, Object value) {
+        if (valueChangingListener != null)
+            return valueChangingListener.valueChanging(this, "value", prevValue, value);
+        else
+            return value;
     }
 
     protected void fireValueChanged(Object prevValue, Object value) {
@@ -92,10 +111,12 @@ public abstract class DesktopAbstractField<C extends JComponent>
         }
     }
 
+    @Override
     public boolean isRequired() {
         return required;
     }
 
+    @Override
     public void setRequired(boolean required) {
         this.required = required;
         if (required)
@@ -104,6 +125,7 @@ public abstract class DesktopAbstractField<C extends JComponent>
             getImpl().setBackground(Color.white);
     }
 
+    @Override
     public void setRequiredMessage(String msg) {
         requiredMessage = msg;
     }

@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.gui.components;
 
+import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsChangeListener;
@@ -152,10 +153,14 @@ public interface Component {
      */
     interface HasValue extends Editable, BelongToFrame {
         <T> T getValue();
+
         void setValue(Object value);
 
         void addListener(ValueListener listener);
         void removeListener(ValueListener listener);
+
+        void setValueChangingListener(ValueChangingListener listener);
+        void removeValueChangingListener();
     }
 
     /**
