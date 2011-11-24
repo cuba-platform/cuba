@@ -9,7 +9,6 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
@@ -40,19 +39,22 @@ public class WebLookupField
         this.component = new FilterSelect() {
             @Override
             public void setPropertyDataSource(Property newDataSource) {
-
                 if (newDataSource == null) {
                     super.setPropertyDataSource(null);
                 } else {
                     super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
+                        @Override
                         public Object getValue() {
                             final Object o = itemProperty.getValue();
                             return getKeyFromValue(o);
                         }
 
+                        @Override
                         public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
-                            final Object v = getValueFromKey(newValue);
-                            itemProperty.setValue(v);
+                            if (!optionsInitialization) {
+                                final Object v = getValueFromKey(newValue);
+                                itemProperty.setValue(v);
+                            }
                         }
                     });
                 }
@@ -69,6 +71,7 @@ public class WebLookupField
 
         setNewOptionAllowed(false);
         component.setNewItemHandler(new AbstractSelect.NewItemHandler() {
+            @Override
             public void addNewItem(String newItemCaption) {
                 if (newOptionHandler == null) {
                     throw new IllegalStateException("New item handler cannot be NULL");
@@ -88,6 +91,7 @@ public class WebLookupField
         // Don't support multiselection for Lookup
     }
 
+    @Override
     protected Object getKeyFromValue(Object value) {
         if (value instanceof Enum) {
             return value;
@@ -102,6 +106,7 @@ public class WebLookupField
         }
     }
 
+    @Override
     protected <T> T getValueFromKey(Object key) {
         if (key == null) return null;
         if (key instanceof Enum) {
@@ -121,11 +126,13 @@ public class WebLookupField
         return (T) v;
     }
 
+    @Override
     public void setFilterMode(FilterMode mode) {
         filterMode = mode;
         component.setFilteringMode(WebComponentsHelper.convertFilterMode(mode));
     }
 
+    @Override
     public FilterMode getFilterMode() {
         return filterMode;
     }
@@ -145,6 +152,7 @@ public class WebLookupField
     @Override
     protected void attachListener(FilterSelect component) {
         component.addListener(new Property.ValueChangeListener() {
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 final Object value = getValue();
                 fireValueChanged(prevValue, value);
@@ -161,10 +169,12 @@ public class WebLookupField
         super.setValue(getKeyFromValue(value));
     }
 
+    @Override
     public Object getNullOption() {
         return nullOption;
     }
 
+    @Override
     public void setNullOption(Object nullOption) {
         this.nullOption = nullOption;
         component.setNullSelectionItemId(nullOption);
@@ -181,18 +191,22 @@ public class WebLookupField
         }
     }
 
+    @Override
     public boolean isNewOptionAllowed() {
         return component.isNewItemsAllowed();
     }
 
+    @Override
     public void setNewOptionAllowed(boolean newItemAllowed) {
         component.setNewItemsAllowed(newItemAllowed);
     }
 
+    @Override
     public NewOptionHandler getNewOptionHandler() {
         return newOptionHandler;
     }
 
+    @Override
     public void setNewOptionHandler(NewOptionHandler newItemHandler) {
         this.newOptionHandler = newItemHandler;
     }
@@ -206,6 +220,7 @@ public class WebLookupField
         }
     }
 
+    @Override
     public void disablePaging() {
         component.disablePaging();
     }
@@ -285,6 +300,7 @@ public class WebLookupField
             }
         }
 
+        @Override
         public Object nextItemId(Object itemId) {
             if (datasource instanceof CollectionDatasource.Ordered)
                 return ((CollectionDatasource.Ordered) datasource).nextItemId(itemId);
@@ -292,6 +308,7 @@ public class WebLookupField
                 throw new UnsupportedOperationException();
         }
 
+        @Override
         public Object prevItemId(Object itemId) {
             if (datasource instanceof CollectionDatasource.Ordered)
                 return ((CollectionDatasource.Ordered) datasource).prevItemId(itemId);
@@ -299,6 +316,7 @@ public class WebLookupField
                 throw new UnsupportedOperationException();
         }
 
+        @Override
         public Object firstItemId() {
             if (datasource instanceof CollectionDatasource.Ordered) {
                 Object itemId = ((CollectionDatasource.Ordered) datasource).firstItemId();
@@ -321,6 +339,7 @@ public class WebLookupField
                 throw new UnsupportedOperationException();
         }
 
+        @Override
         public Object lastItemId() {
             if (datasource instanceof CollectionDatasource.Ordered)
                 return ((CollectionDatasource.Ordered) datasource).lastItemId();
@@ -328,6 +347,7 @@ public class WebLookupField
                 throw new UnsupportedOperationException();
         }
 
+        @Override
         public boolean isFirstId(Object itemId) {
             if (datasource instanceof CollectionDatasource.Ordered)
                 return ((CollectionDatasource.Ordered) datasource).isFirstId(itemId);
@@ -335,6 +355,7 @@ public class WebLookupField
                 throw new UnsupportedOperationException();
         }
 
+        @Override
         public boolean isLastId(Object itemId) {
             if (datasource instanceof CollectionDatasource.Ordered)
                 return ((CollectionDatasource.Ordered) datasource).isLastId(itemId);
@@ -342,10 +363,12 @@ public class WebLookupField
                 throw new UnsupportedOperationException();
         }
 
+        @Override
         public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public Item addItemAfter(Object previousItemId, Object newItemId) throws UnsupportedOperationException {
             throw new UnsupportedOperationException();
         }

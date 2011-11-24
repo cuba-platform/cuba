@@ -37,6 +37,11 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
     protected DsManager optionsDsManager;
 
+    /**
+     * In the initialization list of options updating the data source is prohibited
+     */
+    protected boolean optionsInitialization = false;
+
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
@@ -64,7 +69,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             final Class<Enum> javaClass = enumeration.getJavaClass();
 
             optionsList = Arrays.asList(javaClass.getEnumConstants());
-            component.setContainerDataSource(new EnumerationContainer(optionsList));
+            setComponentContainerDs(new EnumerationContainer(optionsList));
             setCaptionMode(CaptionMode.ITEM);
         }
     }
@@ -83,7 +88,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
                 opts.add(itemId);
             }
             this.optionsList = opts;
-            component.setContainerDataSource(new EnumerationContainer(opts));
+            setComponentContainerDs(new EnumerationContainer(opts));
             setCaptionMode(CaptionMode.ITEM);
         } else {
             List opts = new ArrayList();
@@ -92,33 +97,41 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
                 component.setItemCaption(itemId, key);
                 opts.add(itemId);
             }
-            component.setContainerDataSource(new ObjectContainer(opts));
+            setComponentContainerDs(new ObjectContainer(opts));
             component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT_DEFAULTS_ID);
             this.optionsMap = options;
         }
     }
 
+    protected void setComponentContainerDs(com.vaadin.data.Container newDataSource) {
+        optionsInitialization = true;
+        component.setContainerDataSource(newDataSource);
+        optionsInitialization = false;
+    }
+
     public void setOptionsList(List optionsList) {
         if (metaProperty != null) {
+            Object currentValue = component.getValue();
             if (metaProperty.getRange().isEnum()) {
-                component.setContainerDataSource(new EnumerationContainer(optionsList));
+                setComponentContainerDs(new EnumerationContainer(optionsList));
                 setCaptionMode(CaptionMode.ITEM);
             } else {
-                component.setContainerDataSource(new ObjectContainer(optionsList));
+                setComponentContainerDs(new ObjectContainer(optionsList));
                 component.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_EXPLICIT_DEFAULTS_ID);
             }
+            component.setValue(currentValue);
             this.optionsList = optionsList;
         } else if (!optionsList.isEmpty()) {
             final Object o = optionsList.iterator().next();
             if (o instanceof Enum) {
-                component.setContainerDataSource(new EnumerationContainer(optionsList));
+                setComponentContainerDs(new EnumerationContainer(optionsList));
             } else {
-                component.setContainerDataSource(new ObjectContainer(optionsList));
+                setComponentContainerDs(new ObjectContainer(optionsList));
             }
             setCaptionMode(CaptionMode.ITEM);
             this.optionsList = optionsList;
         } else {
-            component.setContainerDataSource(new ObjectContainer(optionsList));
+            setComponentContainerDs(new ObjectContainer(optionsList));
             setCaptionMode(CaptionMode.ITEM);
             this.optionsList = optionsList;
         }
@@ -188,7 +201,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     public void setOptionsDatasource(CollectionDatasource datasource) {
         this.optionsDatasource = datasource;
         this.optionsDsManager = new DsManager(datasource, this);
-        component.setContainerDataSource(new CollectionDsWrapper(datasource, true, optionsDsManager));
+        setComponentContainerDs(new CollectionDsWrapper(datasource, true, optionsDsManager));
 
         if (captionProperty != null) {
             component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));

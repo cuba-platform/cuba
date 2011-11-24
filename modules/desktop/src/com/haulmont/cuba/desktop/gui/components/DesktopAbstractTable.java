@@ -698,6 +698,15 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     @Override
+    public void repaint() {
+        TableCellEditor cellEditor = impl.getCellEditor();
+        if (cellEditor instanceof DesktopAbstractTable.CellEditor) {
+            ((CellEditor) cellEditor).clearCache();
+            impl.repaint();
+        }
+    }
+
+    @Override
     public boolean isEditable() {
         return editable;
     }

@@ -110,10 +110,12 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     private List<ColumnCollapseListener> columnCollapseListeners = new ArrayList<ColumnCollapseListener>();
 
+    @Override
     public java.util.List<Table.Column> getColumns() {
         return columnsOrder;
     }
 
+    @Override
     public Table.Column getColumn(String id) {
         for (Table.Column column : columnsOrder) {
             if (column.getId().toString().equals(id))
@@ -122,6 +124,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         return null;
     }
 
+    @Override
     public void addColumn(Table.Column column) {
         component.addContainerProperty(column.getId(), column.getType(), null);
         columns.put(column.getId(), column);
@@ -131,6 +134,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
+    @Override
     public void removeColumn(Table.Column column) {
         component.removeContainerProperty(column.getId());
         //noinspection RedundantCast
@@ -146,10 +150,12 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.removeGeneratedColumn(id);
     }
 
+    @Override
     public boolean isEditable() {
         return editable;
     }
 
+    @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
         if (datasource != null) {
@@ -162,14 +168,17 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.setEditableColumns(editableColumns.toArray());
     }
 
+    @Override
     public boolean isSortable() {
         return sortable;
     }
 
+    @Override
     public void setSortable(boolean sortable) {
         this.sortable = sortable;
     }
 
+    @Override
     public void sortBy(Object propertyId, boolean ascending) {
         if (isSortable()) {
             component.setSortAscending(ascending);
@@ -178,10 +187,12 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
+    @Override
     public RowsCount getRowsCount() {
         return rowsCount;
     }
 
+    @Override
     public void setRowsCount(RowsCount rowsCount) {
         if (this.rowsCount != null && topPanel != null) {
             topPanel.removeComponent(WebComponentsHelper.unwrap(this.rowsCount));
@@ -199,26 +210,32 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
+    @Override
     public boolean isAllowMultiStringCells() {
         return component.isAllowMultiStringCells();
     }
 
+    @Override
     public void setAllowMultiStringCells(boolean value) {
         component.setAllowMultiStringCells(value);
     }
 
+    @Override
     public boolean isAggregatable() {
         return component.isAggregatable();
     }
 
+    @Override
     public void setAggregatable(boolean aggregatable) {
         component.setAggregatable(aggregatable);
     }
 
+    @Override
     public void setShowTotalAggregation(boolean showAggregation) {
         component.setShowTotalAggregation(showAggregation);
     }
 
+    @Override
     public boolean isShowTotalAggregation() {
         return component.isShowTotalAggregation();
     }
@@ -273,6 +290,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         setPagingMode(Table.PagingMode.SCROLLING);
 
         component.addListener(new Property.ValueChangeListener() {
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (datasource == null) return;
 
@@ -418,6 +436,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         createColumns(ds);
     }
 
+    @Override
     public void setDatasource(CollectionDatasource datasource) {
         UserSession userSession = UserSessionProvider.getUserSession();
         if (!userSession.isEntityOpPermitted(datasource.getMetaClass(), EntityOp.READ)) {
@@ -571,6 +590,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.setColumnHeader(columnId, caption);
     }
 
+    @Override
     public void setRowHeaderMode(com.haulmont.cuba.gui.components.Table.RowHeaderMode rowHeaderMode) {
         switch (rowHeaderMode) {
             case NONE: {
@@ -587,6 +607,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
+    @Override
     public void setRequired(Table.Column column, boolean required, String message) {
         if (required)
             requiredColumns.put(column, message);
@@ -594,6 +615,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             requiredColumns.remove(column);
     }
 
+    @Override
     public void addValidator(Table.Column column, final com.haulmont.cuba.gui.components.Field.Validator validator) {
         Set<com.haulmont.cuba.gui.components.Field.Validator> validators = validatorsMap.get(column);
         if (validators == null) {
@@ -603,6 +625,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         validators.add(validator);
     }
 
+    @Override
     public void addValidator(final com.haulmont.cuba.gui.components.Field.Validator validator) {
         tableValidators.add(validator);
     }
@@ -613,6 +636,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
+    @Override
     public void setStyleProvider(final Table.StyleProvider styleProvider) {
         this.styleProvider = styleProvider;
         if (styleProvider == null) {
@@ -629,6 +653,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         });
     }
 
+    @Override
     public void applySettings(Element element) {
         final Element columnsElem = element.element("columns");
         if (columnsElem != null) {
@@ -695,6 +720,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
+    @Override
     public boolean saveSettings(Element element) {
         Element columnsElem = element.element("columns");
         if (columnsElem != null)
@@ -735,6 +761,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         return enterPressAction;
     }
 
+    @Override
     public void setItemClickAction(Action action) {
         if (itemClickAction != null) {
             removeAction(itemClickAction);
@@ -745,6 +772,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
+    @Override
     public Action getItemClickAction() {
         return itemClickAction;
     }
@@ -761,6 +789,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         return pagingMode;
     }
 
+    @Override
     public void setPagingMode(Table.PagingMode pagingMode) {
         this.pagingMode = pagingMode;
         component.setPagingMode(WebComponentsHelper.convertPagingMode(pagingMode));
@@ -775,10 +804,12 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         super.setMultiSelect(multiselect);
     }
 
+    @Override
     public ButtonsPanel getButtonsPanel() {
         return buttonsPanel;
     }
 
+    @Override
     public void setButtonsPanel(ButtonsPanel panel) {
         if (buttonsPanel != null && topPanel != null) {
             topPanel.removeComponent(WebComponentsHelper.unwrap(buttonsPanel));
@@ -794,6 +825,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
+    @Override
     public void setPagingProvider(final Table.PagingProvider pagingProvider) {
         this.pagingProvider = pagingProvider;
         component.setPagingProvider(new com.haulmont.cuba.web.toolkit.ui.Table.PagingProvider() {
@@ -827,6 +859,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         });
     }
 
+    @Override
     public void addGeneratedColumn(String columnId, final ColumnGenerator generator) {
         if (columnId == null)
             throw new IllegalArgumentException("columnId is null");
@@ -851,9 +884,18 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         );
     }
 
+    @Override
     public void removeGeneratedColumn(String columnId) {
         MetaPropertyPath targetCol = getDatasource().getMetaClass().getPropertyPath(columnId);
         removeGeneratedColumn(targetCol);
+    }
+
+    @Override
+    public void repaint() {
+        if (datasource != null) {
+            refreshColumns(component.getContainerDataSource());
+        }
+        component.requestRepaintAll();
     }
 
     protected Map<Object, Object> __aggregate(AggregationContainer container, AggregationContainer.Context context) {
@@ -1254,30 +1296,37 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     class DefaultPagingProvider implements Table.PagingProvider {
+        @Override
         public String firstCaption() {
             return null;
         }
 
+        @Override
         public String prevCaption() {
             return MessageProvider.getMessage(App.class, "paging.prevCaption");
         }
 
+        @Override
         public String nextCaption() {
             return MessageProvider.getMessage(App.class, "paging.nextCaption");
         }
 
+        @Override
         public String lastCaption() {
             return null;
         }
 
+        @Override
         public String pageLengthSelectorCaption() {
             return null;
         }
 
+        @Override
         public boolean showPageLengthSelector() {
             return false;
         }
 
+        @Override
         public int[] pageLengths() {
             return new int[0];
         }
@@ -1315,6 +1364,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
+    @Override
     public List<Table.Column> getNotCollapsedColumns() {
         final List<Table.Column> visibleColumns = new ArrayList<Table.Column>(component.getVisibleColumns().length);
         Object[] keys = component.getVisibleColumns();
@@ -1326,14 +1376,17 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         return visibleColumns;
     }
 
+    @Override
     public void usePresentations(boolean use) {
         usePresentations = use;
     }
 
+    @Override
     public boolean isUsePresentations() {
         return usePresentations;
     }
 
+    @Override
     public void loadPresentations() {
         if (isUsePresentations()) {
             presentations = new PresentationsImpl(this);
@@ -1344,6 +1397,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
+    @Override
     public Presentations getPresentations() {
         if (isUsePresentations()) {
             return presentations;
@@ -1352,6 +1406,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
+    @Override
     public void applyPresentation(Object id) {
         if (isUsePresentations()) {
             Presentation p = presentations.getPresentation(id);
@@ -1361,6 +1416,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
     }
 
+    @Override
     public void applyPresentationAsDefault(Object id) {
         if (isUsePresentations()) {
             Presentation p = presentations.getPresentation(id);
@@ -1380,6 +1436,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.requestRepaint();
     }
 
+    @Override
     public Object getDefaultPresentationId() {
         Presentation def = presentations.getDefault();
         return def == null ? null : def.getId();

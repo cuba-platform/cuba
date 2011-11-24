@@ -196,9 +196,9 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     @Override
     public void setValue(Object value) {
        if (!ObjectUtils.equals(prevValue, value)) {
-           fireChangeListeners(value);
            updateInstance(value);
            updateComponent(value);
+           fireChangeListeners(value);
        }
     }
 
