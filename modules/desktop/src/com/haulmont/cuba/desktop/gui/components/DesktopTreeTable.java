@@ -63,6 +63,12 @@ public class DesktopTreeTable
     }
 
     @Override
+    public void setEditable(boolean editable) {
+        super.setEditable(editable);
+        impl.setEditable(editable);
+    }
+
+    @Override
     protected void initTableModel(CollectionDatasource datasource) {
         tableModel = new TreeTableModelAdapter(
                 impl,

@@ -37,4 +37,10 @@ public class DesktopTable extends DesktopAbstractTable<JXTable> {
         super.setSortable(sortable);
         impl.setSortable(sortable);
     }
+
+    @Override
+    public void setEditable(boolean editable) {
+        super.setEditable(editable);
+        impl.setEditable(editable);
+    }
 }

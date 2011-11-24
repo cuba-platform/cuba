@@ -58,4 +58,10 @@ public class DesktopGroupTable extends DesktopAbstractTable<JXTable> implements 
         super.setSortable(sortable);
         impl.setSortable(sortable);
     }
+
+    @Override
+    public void setEditable(boolean editable) {
+        super.setEditable(editable);
+        impl.setEditable(editable);
+    }
 }
