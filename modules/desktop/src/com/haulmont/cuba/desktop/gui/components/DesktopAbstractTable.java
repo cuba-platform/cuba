@@ -704,6 +704,13 @@ public abstract class DesktopAbstractTable<C extends JTable>
             ((CellEditor) cellEditor).clearCache();
             impl.repaint();
         }
+        for (Column column : getColumns()) {
+            TableCellEditor columnCellEditor = impl.getColumn(column).getCellEditor();
+            if (columnCellEditor instanceof DesktopAbstractTable.CellEditor) {
+                ((CellEditor) columnCellEditor).clearCache();
+                impl.repaint();
+            }
+        }
     }
 
     @Override
