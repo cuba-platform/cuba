@@ -101,27 +101,33 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         return new WindowDelegate(this, App.getInstance().getWindowManager());
     }
 
+    @Override
     public Element getXmlDescriptor() {
         return xmlDescriptor;
     }
 
+    @Override
     public void setXmlDescriptor(Element element) {
         xmlDescriptor = element;
     }
 
+    @Override
     public void addListener(CloseListener listener) {
         if (!listeners.contains(listener))
             listeners.add(listener);
     }
 
+    @Override
     public void removeListener(CloseListener listener) {
         listeners.remove(listener);
     }
 
+    @Override
     public void applySettings(Settings settings) {
         delegate.applySettings(settings);
     }
 
+    @Override
     public void saveSettings() {
         delegate.saveSettings();
     }
@@ -131,10 +137,12 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         getComponent(componentId).requestFocus();
     }
 
+    @Override
     public Settings getSettings() {
         return delegate.getSettings();
     }
 
+    @Override
     public boolean close(final String actionId) {
         WindowManager windowManager = App.getInstance().getWindowManager();
 
@@ -171,19 +179,28 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         if (res && doAfterClose != null) {
             doAfterClose.run();
         }
+
+        // hard stop timers
+        for (Timer timer : timers) {
+            ((DesktopTimer)timer).disposeTimer();
+        }
+
         return res;
     }
 
+    @Override
     public boolean close(String actionId, boolean force) {
         forceClose = force;
         return close(actionId);
     }
 
+    @Override
     public void closeAndRun(String actionId, Runnable runnable) {
         this.doAfterClose = runnable;
         close(actionId);
     }
 
+    @Override
     public void addTimer(Timer timer) {
         if (timer instanceof DesktopTimer) {
             timers.add(timer);
@@ -191,6 +208,7 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         }
     }
 
+    @Override
     public Timer getTimer(String id) {
         if (id == null)
             throw new IllegalArgumentException("id is null");
@@ -237,10 +255,12 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         actionsOrder.remove(action);
     }
 
+    @Override
     public Collection<Action> getActions() {
         return Collections.unmodifiableCollection(actionsOrder);
     }
 
+    @Override
     public Action getAction(String id) {
         for (com.haulmont.cuba.gui.components.Action action : getActions()) {
             if (ObjectUtils.equals(action.getId(), id)) {
@@ -250,137 +270,170 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         return null;
     }
 
+    @Override
     public String getCaption() {
         return caption;
     }
 
+    @Override
     public void setCaption(String caption) {
         this.caption = caption;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public WindowContext getContext() {
         return context;
     }
 
+    @Override
     public void setContext(WindowContext ctx) {
         context = ctx;
     }
 
+    @Override
     public DsContext getDsContext() {
         return dsContext;
     }
 
+    @Override
     public void setDsContext(DsContext dsContext) {
         this.dsContext = dsContext;
     }
 
+    @Override
     public String getMessagesPack() {
         return messagePack;
     }
 
+    @Override
     public void setMessagesPack(String name) {
         messagePack = name;
     }
 
+    @Override
     public String getMessage(String key) {
         if (messagePack == null)
             throw new IllegalStateException("MessagePack is not set");
         return MessageProvider.getMessage(messagePack, key);
     }
 
+    @Override
     public void registerComponent(Component component) {
         if (component.getId() != null)
             allComponents.put(component.getId(), component);
     }
 
+    @Override
     public boolean isValid() {
         return delegate.isValid();
     }
 
+    @Override
     public void validate() throws ValidationException {
         delegate.validate();
     }
 
+    @Override
     public DialogParams getDialogParams() {
         return App.getInstance().getWindowManager().getDialogParams();
     }
 
+    @Override
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         return delegate.<T>openWindow(windowAlias, openType, params);
     }
 
+    @Override
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
         return delegate.<T>openWindow(windowAlias, openType);
     }
 
+    @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         return delegate.<T>openEditor(windowAlias, item, openType, params, parentDs);
     }
 
+    @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
         return delegate.<T>openEditor(windowAlias, item, openType, params);
     }
 
+    @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
         return delegate.<T>openEditor(windowAlias, item, openType, parentDs);
     }
 
+    @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         return delegate.<T>openEditor(windowAlias, item, openType);
     }
 
+    @Override
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         return delegate.<T>openLookup(windowAlias, handler, openType, params);
     }
 
+    @Override
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         return delegate.<T>openLookup(windowAlias, handler, openType);
     }
 
+    @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
         return delegate.<T>openFrame(parent, windowAlias);
     }
 
+    @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         return delegate.<T>openFrame(parent, windowAlias, params);
     }
 
+    @Override
     public void showMessageDialog(String title, String message, MessageType messageType) {
         App.getInstance().getWindowManager().showMessageDialog(title, message, messageType);
     }
 
+    @Override
     public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
         App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions);
     }
 
+    @Override
     public void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions) {
         App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
     }
 
+    @Override
     public void showNotification(String caption, NotificationType type) {
         App.getInstance().getWindowManager().showNotification(caption, type);
     }
 
+    @Override
     public void showNotification(String caption, String description, NotificationType type) {
         App.getInstance().getWindowManager().showNotification(caption, description, type);
     }
 
+    @Override
     public <A extends IFrame> A getFrame() {
         return (A) this;
     }
 
+    @Override
     public void setFrame(IFrame frame) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void expand(Component component, String height, String width) {
         if (expandedComponent != null && expandedComponent instanceof DesktopComponent) {
             ((DesktopComponent) expandedComponent).setExpanded(false);
@@ -396,10 +449,12 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         expandedComponent = component;
     }
 
+    @Override
     public void expand(Component component) {
         expand(component, "", "");
     }
 
+    @Override
     public void add(Component component) {
         ComponentCaption caption = null;
         boolean haveDescription = false;
@@ -438,6 +493,7 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         DesktopContainerHelper.assignContainer(component, this);
     }
 
+    @Override
     public void remove(Component component) {
         if (wrappers.containsKey(component)) {
             getContainer().remove(wrappers.get(component));
@@ -461,10 +517,12 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         }
     }
 
+    @Override
     public <T extends Component> T getOwnComponent(String id) {
         return (T) componentByIds.get(id);
     }
 
+    @Override
     public <T extends Component> T getComponent(String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
@@ -480,67 +538,84 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         }
     }
 
+    @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(ownComponents);
     }
 
+    @Override
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
     }
 
+    @Override
     public void expandLayout(boolean expandLayout) {
     }
 
+    @Override
     public <T> T getComponent() {
         return (T) panel;
     }
 
+    @Override
     public JComponent getComposition() {
         return panel;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
 
+    @Override
     public String getDebugId() {
         return null;
     }
 
+    @Override
     public void setDebugId(String id) {
     }
 
+    @Override
     public boolean isEnabled() {
         return panel.isEnabled();
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         panel.setEnabled(enabled);
     }
 
+    @Override
     public boolean isVisible() {
         return true;
     }
 
+    @Override
     public void setVisible(boolean visible) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void requestFocus() {
     }
 
+    @Override
     public float getHeight() {
         return 0;
     }
 
+    @Override
     public int getHeightUnits() {
         return 0;
     }
 
+    @Override
     public void setHeight(String height) {
         int w = getContainer().getWidth();
 
@@ -560,47 +635,59 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         }
     }
 
+    @Override
     public float getWidth() {
         return 0;
     }
 
+    @Override
     public int getWidthUnits() {
         return 0;
     }
 
+    @Override
     public void setWidth(String width) {
     }
 
+    @Override
     public Alignment getAlignment() {
         return null;
     }
 
+    @Override
     public void setAlignment(Alignment alignment) {
     }
 
+    @Override
     public String getStyleName() {
         return null;
     }
 
+    @Override
     public void setStyleName(String name) {
     }
 
+    @Override
     public void setMargin(boolean enable) {
         layoutAdapter.setMargin(enable);
     }
 
+    @Override
     public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
         layoutAdapter.setMargin(topEnable, rightEnable, bottomEnable, leftEnable);
     }
 
+    @Override
     public void setSpacing(boolean enabled) {
         layoutAdapter.setSpacing(enabled);
     }
 
+    @Override
     public Window wrapBy(Class<Window> wrapperClass) {
         return delegate.wrapBy(wrapperClass);
     }
 
+    @Override
     public Window getWrapper() {
         return delegate.getWrapper();
     }

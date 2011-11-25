@@ -96,6 +96,19 @@ public class DesktopTimer implements com.haulmont.cuba.gui.components.Timer {
         }
     }
 
+    /**
+     * Remove all listeners and stop timer
+     */
+    public void disposeTimer() {
+        if (timer == null)
+            return;
+
+        timerListeners.clear();
+
+        timer.stop();
+        timer = null;
+    }
+
     @Override
     public void addTimerListener(TimerListener listener) {
         if (!timerListeners.contains(listener))
