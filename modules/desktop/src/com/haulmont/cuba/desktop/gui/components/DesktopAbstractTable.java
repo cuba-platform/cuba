@@ -697,6 +697,9 @@ public abstract class DesktopAbstractTable<C extends JTable>
         tableModel.removeGeneratedColumn(col);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void repaint() {
         TableCellEditor cellEditor = impl.getCellEditor();

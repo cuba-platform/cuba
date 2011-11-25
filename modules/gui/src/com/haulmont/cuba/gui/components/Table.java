@@ -258,5 +258,8 @@ public interface Table
 
     void removeGeneratedColumn(String columnId);
 
+    /**
+     * Repaint ui representation of table (columns, generated columns) without refresh table data
+     */
     void repaint();
 }

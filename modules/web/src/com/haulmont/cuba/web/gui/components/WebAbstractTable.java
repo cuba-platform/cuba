@@ -890,6 +890,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         removeGeneratedColumn(targetCol);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void repaint() {
         if (datasource != null) {
