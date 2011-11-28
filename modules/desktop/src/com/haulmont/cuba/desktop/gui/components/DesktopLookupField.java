@@ -24,7 +24,10 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.List;
 
 /**
@@ -33,9 +36,8 @@ import java.util.List;
  * @author krivopustov
  */
 public class DesktopLookupField
-    extends DesktopAbstractOptionsField<ExtendedComboBox>
-    implements LookupField
-{
+        extends DesktopAbstractOptionsField<ExtendedComboBox>
+        implements LookupField {
     private static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
 
     private BasicEventList<Object> items = new BasicEventList<Object>();
@@ -91,7 +93,7 @@ public class DesktopLookupField
                                 setValue(selectedValue);
                             } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
                                 newOptionHandler.addNewOption((String) selectedItem);
-                            } else if ((selectedItem!=null) && !newOptionAllowed) {
+                            } else if ((selectedItem != null) && !newOptionAllowed) {
                                 updateComponent(prevValue);
                             }
                         }
@@ -196,7 +198,7 @@ public class DesktopLookupField
                 title = InstanceUtils.getInstanceName((Instance) value);
 
             if (value instanceof Enum)
-                title =  MessageProvider.getMessage((Enum) value);
+                title = MessageProvider.getMessage((Enum) value);
 
             return new MapKeyWrapper(title);
         } else if (optionsList != null) {
@@ -298,7 +300,7 @@ public class DesktopLookupField
     @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
-        impl.setEnabled(editable);
+        impl.setEditable(editable);
     }
 
     @Override

@@ -33,10 +33,11 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 
 import javax.swing.AbstractAction;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellEditor;
@@ -56,8 +57,7 @@ import java.util.List;
  */
 public abstract class DesktopAbstractTable<C extends JTable>
         extends DesktopAbstractActionOwnerComponent<C>
-        implements Table
-{
+        implements Table {
     private static final int HEIGHT_MARGIN_FOR_ROWS = 2;
     private static final int WIDTH_MARGIN_FOR_CELL = 2;
 
@@ -201,7 +201,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
             if (!notInited.isEmpty() && (componentWidth > summaryWidth)) {
                 int defaultWidth = (componentWidth - summaryWidth) / notInited.size();
                 for (TableColumn column : notInited)
-                    column.setPreferredWidth( Math.max(defaultWidth, column.getWidth()) );
+                    column.setPreferredWidth(Math.max(defaultWidth, column.getWidth()));
             }
         }
     }
@@ -257,8 +257,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
             if (identifier instanceof String) {
                 if (identifier.equals(name))
                     tableColumn = xColumn;
-            } else
-            if (column.equals(identifier))
+            } else if (column.equals(identifier))
                 tableColumn = xColumn;
         }
 
@@ -428,15 +427,17 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     protected void onDataChange() {
+        StopWatch sw = new Log4JStopWatch("DAT onDataChange " + id);
         Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
         while (columnEnumeration.hasMoreElements()) {
             TableColumn tableColumn = columnEnumeration.nextElement();
             TableCellEditor cellEditor = tableColumn.getCellEditor();
-            if (cellEditor instanceof DesktopAbstractTable.CellEditor) {
-                ((CellEditor) cellEditor).clearCache();
+            if (cellEditor instanceof DesktopTableCellEditor) {
+                ((DesktopTableCellEditor) cellEditor).clearCache();
             }
         }
         impl.repaint();
+        sw.stop();
     }
 
     protected void initChangeListener() {
@@ -647,11 +648,9 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
                     if (hasFocus) {
                         properties.add("focused");
-                    }
-                    else if (isSelected) {
+                    } else if (isSelected) {
                         properties.add("selected");
-                    }
-                    else {
+                    } else {
                         properties.add("unselected");
                     }
                     theme.applyStyle(component, style, properties);
@@ -681,7 +680,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
         col.setEditable(false); // generated column must be non-editable, see TableModelAdapter.setValueAt()
         TableColumnModel columnModel = impl.getColumnModel();
         TableColumn tableColumn = columnModel.getColumn(columnModel.getColumnIndex(col));
-        CellEditor cellEditor = new CellEditor(generator);
+        DesktopTableCellEditor cellEditor = new DesktopTableCellEditor(this, generator);
         tableColumn.setCellEditor(cellEditor);
         tableColumn.setCellRenderer(cellEditor);
 
@@ -689,7 +688,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     @Override
-    public void removeGeneratedColumn(String columnId){
+    public void removeGeneratedColumn(String columnId) {
         if (id == null)
             throw new IllegalArgumentException("columnId is null");
 
@@ -703,14 +702,14 @@ public abstract class DesktopAbstractTable<C extends JTable>
     @Override
     public void repaint() {
         TableCellEditor cellEditor = impl.getCellEditor();
-        if (cellEditor instanceof DesktopAbstractTable.CellEditor) {
-            ((CellEditor) cellEditor).clearCache();
+        if (cellEditor instanceof DesktopTableCellEditor) {
+            ((DesktopTableCellEditor) cellEditor).clearCache();
             impl.repaint();
         }
         for (Column column : getColumns()) {
             TableCellEditor columnCellEditor = impl.getColumn(column).getCellEditor();
-            if (columnCellEditor instanceof DesktopAbstractTable.CellEditor) {
-                ((CellEditor) columnCellEditor).clearCache();
+            if (columnCellEditor instanceof DesktopTableCellEditor) {
+                ((DesktopTableCellEditor) columnCellEditor).clearCache();
                 impl.repaint();
             }
         }
@@ -885,6 +884,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     /**
      * Returns the preferred height of a row.
      * The result is equal to the tallest cell in the row.
+     *
      * @param rowIndex row index
      * @return row height
      */
@@ -907,6 +907,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
      * tallest cell in that row.
      */
     public void packRows() {
+        StopWatch sw = new Log4JStopWatch("DAT packRows " + id);
         for (int r = 0; r < impl.getRowCount(); r++) {
             int h = getPreferredRowHeight(r);
 
@@ -914,70 +915,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 impl.setRowHeight(r, h);
             }
         }
-    }
-
-    protected class ComponentWrapper extends JPanel {
-        protected ComponentWrapper(Component component) {
-            setOpaque(true);
-            setLayout(new BorderLayout());
-            setBorder(new EmptyBorder(HEIGHT_MARGIN_FOR_ROWS, WIDTH_MARGIN_FOR_CELL,
-                    HEIGHT_MARGIN_FOR_ROWS, WIDTH_MARGIN_FOR_CELL));
-            add(component, BorderLayout.CENTER);
-        }
-    }
-
-    protected class CellEditor extends AbstractCellEditor implements TableCellEditor, TableCellRenderer {
-
-        private static final long serialVersionUID = 5217563286634642347L;
-
-        private ColumnGenerator columnGenerator;
-        private Component activeComponent;
-        private Map<Integer, Component> cache = new HashMap<Integer, Component>();
-
-        public CellEditor(ColumnGenerator columnGenerator) {
-            this.columnGenerator = columnGenerator;
-        }
-
-        protected Component getCellComponent(int row) {
-            Entity item = tableModel.getItem(row);
-            com.haulmont.cuba.gui.components.Component component = columnGenerator.generateCell(DesktopAbstractTable.this, item.getId());
-            Component comp;
-            if (component == null)
-                comp = new ComponentWrapper(new JLabel(""));
-            else
-                comp = new ComponentWrapper(DesktopComponentsHelper.getComposition(component));
-
-            cache.put(row, comp);
-            return comp;
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            return getCellComponent(row);
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            if (activeComponent != null) {
-                // normally handle focus lost
-                activeComponent.dispatchEvent(new FocusEvent(activeComponent, FocusEvent.FOCUS_LOST));
-            }
-            return "";
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            activeComponent = cache.get(row);
-            if (activeComponent == null) {
-                activeComponent = getCellComponent(row);
-                cache.put(row, activeComponent);
-            }
-            return activeComponent;
-        }
-
-        public void clearCache() {
-            cache.clear();
-        }
+        sw.stop();
     }
 
     @Override
@@ -986,5 +924,28 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
     @Override
     public void removeColumnCollapseListener(ColumnCollapseListener columnCollapseListener) {
+    }
+
+    public AnyTableModelAdapter getTableModel() {
+        return tableModel;
+    }
+
+    /**
+     * Obtain table cell editor for additional desktop UI tweaking.
+     * Column must be custom-generated.
+     *
+     * @param columnId column ID
+     * @return table cell editor
+     */
+    public DesktopTableCellEditor getCellEditor(String columnId) {
+        if (columnId == null)
+            throw new IllegalArgumentException("columnId is null");
+
+        Column col = getColumn(columnId);
+        TableColumnModel columnModel = impl.getColumnModel();
+        TableColumn tableColumn = columnModel.getColumn(columnModel.getColumnIndex(col));
+        DesktopTableCellEditor res = (DesktopTableCellEditor) tableColumn.getCellEditor();
+
+        return res;
     }
 }

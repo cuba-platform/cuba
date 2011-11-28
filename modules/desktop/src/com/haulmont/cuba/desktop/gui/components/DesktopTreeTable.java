@@ -13,14 +13,12 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import org.jdesktop.swingx.JXTreeTable;
 
-import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import java.awt.*;
 import java.util.*;
 
 /**
@@ -29,18 +27,17 @@ import java.util.*;
  * @author krivopustov
  */
 public class DesktopTreeTable
-    extends DesktopAbstractTable<JXTreeTable>
-    implements TreeTable
-{
+        extends DesktopAbstractTable<JXTreeTable>
+        implements TreeTable {
     private String hierarchyProperty;
 
-    protected Map<Integer,CellRenderer> cellRenderers = new HashMap<Integer, CellRenderer>();
+    protected Map<Integer, TableCellRenderer> cellRenderers = new HashMap<Integer, TableCellRenderer>();
 
     public DesktopTreeTable() {
         impl = new JXTreeTable() {
             @Override
             public TableCellRenderer getCellRenderer(int row, int column) {
-                CellRenderer cellRenderer = cellRenderers.get(column);
+                TableCellRenderer cellRenderer = cellRenderers.get(column);
                 if (cellRenderer != null)
                     return cellRenderer;
                 else
@@ -227,27 +224,6 @@ public class DesktopTreeTable
         int columnIndex = columnModel.getColumnIndex(col);
         if (columnIndex == 0)
             throw new UnsupportedOperationException("Unable to add cell renderer for hierarchical column in TreeTable");
-        cellRenderers.put(columnIndex, new CellRenderer(generator));
-    }
-
-    protected class CellRenderer implements TableCellRenderer {
-
-        private ColumnGenerator columnGenerator;
-
-        public CellRenderer(ColumnGenerator generator) {
-            this.columnGenerator = generator;
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Entity item = tableModel.getItem(row);
-            com.haulmont.cuba.gui.components.Component component = columnGenerator.generateCell(DesktopTreeTable.this, item.getId());
-            Component comp;
-            if (component == null)
-                comp = new ComponentWrapper(new JLabel(""));
-            else
-                comp = new ComponentWrapper(DesktopComponentsHelper.getComposition(component));
-            return comp;
-        }
+        cellRenderers.put(columnIndex, new DesktopTableCellEditor(this, generator));
     }
 }
