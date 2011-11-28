@@ -31,6 +31,7 @@ public class PermissionsLookup extends AbstractLookup {
     protected String type;
     @SuppressWarnings({"unchecked"})
     protected LinkedList<PermissionConfig.Target> targets;
+    private CollectionDatasource<PermissionConfig.Target,String> entityPermissionsDs;
     private Companion companion;
 
     public interface Companion {
@@ -48,10 +49,7 @@ public class PermissionsLookup extends AbstractLookup {
         companion = getCompanion();
 
         permissionsTree = getComponent("permissions-tree");
-
-        @SuppressWarnings({"unchecked"})
-        CollectionDatasource<PermissionConfig.Target, String> entityPermissionsDs =
-                permissionsTree.getDatasource();
+        entityPermissionsDs = permissionsTree.getDatasource();
 
         entityPermissionsDs.refresh();
         permissionsTree.expandTree();
@@ -166,5 +164,39 @@ public class PermissionsLookup extends AbstractLookup {
         } else{
             permissionsType.setVisible(false);
         }
+
+        initOptionsGroup();
+    }
+
+    private void initOptionsGroup() {
+        OptionsGroup targetsGroup = getComponent("permissions");
+        targetsGroup.addListener(new ValueListener<OptionsGroup>() {
+            @Override
+            public void valueChanged(OptionsGroup source, String property, Object prevValue, Object value) {
+                Set<PermissionConfig.Target> current = new HashSet<PermissionConfig.Target>();
+                if (value != null) {
+                    for (Object obj : ((Collection) value)) {
+                        if (obj != null)
+                            current.add((PermissionConfig.Target) obj);
+                    }
+                }
+
+                PermissionConfig.Target item = entityPermissionsDs.getItem();
+                for (PermissionConfig.Target target : new ArrayList<PermissionConfig.Target>(targets)) {
+                    if (sameEntity(item, target))
+                        targets.remove(target);
+                }
+
+                for (PermissionConfig.Target target : current) {
+                    targets.add(target);
+                }
+            }
+
+            private boolean sameEntity(PermissionConfig.Target t1, PermissionConfig.Target t2) {
+                String[] s1 = t1.getId().split(":");
+                String[] s2 = t2.getId().split(":");
+                return s1[1].equals(s2[1]);
+            }
+        });
     }
 }
