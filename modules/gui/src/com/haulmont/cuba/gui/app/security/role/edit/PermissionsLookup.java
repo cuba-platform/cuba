@@ -9,21 +9,14 @@ package com.haulmont.cuba.gui.app.security.role.edit;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.AbstractAction;
-import com.haulmont.cuba.gui.components.BoxLayout;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-
-import java.util.*;
-
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.BooleanUtils;
+
+import java.util.*;
 
 public class PermissionsLookup extends AbstractLookup {
 
@@ -31,7 +24,7 @@ public class PermissionsLookup extends AbstractLookup {
     protected String type;
     @SuppressWarnings({"unchecked"})
     protected LinkedList<PermissionConfig.Target> targets;
-    private CollectionDatasource<PermissionConfig.Target,String> entityPermissionsDs;
+    protected CollectionDatasource<PermissionConfig.Target,String> entityPermissionsDs;
     private Companion companion;
 
     public interface Companion {
@@ -57,6 +50,7 @@ public class PermissionsLookup extends AbstractLookup {
         targets = new LinkedList<PermissionConfig.Target>();
 
         addListener(new CloseListener(){
+            @Override
             public void windowClosed(String actionId) {
                 if("select".equals(actionId))
                     getLookupHandler().handleLookup(targets);
@@ -66,6 +60,7 @@ public class PermissionsLookup extends AbstractLookup {
         Button checkAll = getComponent("checkAll");
         if(checkAll != null)
             checkAll.setAction(new AbstractAction("checkAll"){
+                @Override
                 public void actionPerform(Component component) {
                     HierarchicalDatasource datasource = (HierarchicalDatasource) permissionsTree.getDatasource();
                     if(datasource != null){
@@ -87,11 +82,12 @@ public class PermissionsLookup extends AbstractLookup {
         Button uncheckAll = getComponent("uncheckAll");
         if(uncheckAll != null)
             uncheckAll.setAction(new AbstractAction("uncheckAll"){
+                @Override
                 public void actionPerform(Component component) {
                     targets.clear();
                     permissionsTree.refresh();
                 }
-    
+
                 @Override
                 public String getCaption() {
                     return "";
@@ -164,39 +160,5 @@ public class PermissionsLookup extends AbstractLookup {
         } else{
             permissionsType.setVisible(false);
         }
-
-        initOptionsGroup();
-    }
-
-    private void initOptionsGroup() {
-        OptionsGroup targetsGroup = getComponent("permissions");
-        targetsGroup.addListener(new ValueListener<OptionsGroup>() {
-            @Override
-            public void valueChanged(OptionsGroup source, String property, Object prevValue, Object value) {
-                Set<PermissionConfig.Target> current = new HashSet<PermissionConfig.Target>();
-                if (value != null) {
-                    for (Object obj : ((Collection) value)) {
-                        if (obj != null)
-                            current.add((PermissionConfig.Target) obj);
-                    }
-                }
-
-                PermissionConfig.Target item = entityPermissionsDs.getItem();
-                for (PermissionConfig.Target target : new ArrayList<PermissionConfig.Target>(targets)) {
-                    if (sameEntity(item, target))
-                        targets.remove(target);
-                }
-
-                for (PermissionConfig.Target target : current) {
-                    targets.add(target);
-                }
-            }
-
-            private boolean sameEntity(PermissionConfig.Target t1, PermissionConfig.Target t2) {
-                String[] s1 = t1.getId().split(":");
-                String[] s2 = t2.getId().split(":");
-                return s1[1].equals(s2[1]);
-            }
-        });
     }
 }

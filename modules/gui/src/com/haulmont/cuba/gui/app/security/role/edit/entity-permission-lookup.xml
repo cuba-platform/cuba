@@ -7,7 +7,7 @@
 <window
     xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
     caption="msg://entity-permissions"
-    class="com.haulmont.cuba.gui.app.security.role.edit.PermissionsLookup"
+    class="com.haulmont.cuba.gui.app.security.role.edit.EntityPermissionsLookup"
     lookupComponent="permissions"
     focusComponent="permissions-tree"
     >
