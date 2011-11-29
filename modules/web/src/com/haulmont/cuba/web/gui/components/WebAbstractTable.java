@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.bali.datastruct.Pair;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.impl.BooleanDatatype;
@@ -536,7 +537,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 columnsOrder.add(column.getId());
             }
             if (editable && column.getAggregation() != null
-                    && (BooleanUtils.isTrue(column.isEditable()) || BooleanUtils.isTrue(column.isCalculatable()))) 
+                    && (BooleanUtils.isTrue(column.isEditable()) || BooleanUtils.isTrue(column.isCalculatable())))
             {
                 addAggregationCell(column);
             }
@@ -896,7 +897,26 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     @Override
     public void repaint() {
         if (datasource != null) {
-            refreshColumns(component.getContainerDataSource());
+            com.vaadin.data.Container ds = component.getContainerDataSource();
+
+            final Collection<MetaPropertyPath> propertyIds = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
+            // added generated columns
+            final List<Pair<Object, com.vaadin.ui.Table.ColumnGenerator>> columnGenerators =
+                    new LinkedList<Pair<Object, com.vaadin.ui.Table.ColumnGenerator>>();
+
+            for (final MetaPropertyPath id : propertyIds) {
+                com.vaadin.ui.Table.ColumnGenerator generator = component.getColumnGenerator(id);
+                if (generator != null) {
+                    columnGenerators.add(new Pair<Object, com.vaadin.ui.Table.ColumnGenerator>(id, generator));
+                }
+            }
+
+            refreshColumns(ds);
+
+            // restore generated columns
+            for (Pair<Object, com.vaadin.ui.Table.ColumnGenerator> generatorEntry : columnGenerators) {
+                component.addGeneratedColumn(generatorEntry.getFirst(), generatorEntry.getSecond());
+            }
         }
         component.requestRepaintAll();
     }
@@ -1291,7 +1311,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             if (cubaField instanceof WebDateField) {
                 initDateField(field, metaProperty, column.getXmlDescriptor());
             }
-            
+
             if (field instanceof CheckBox) {
                 ((CheckBox) field).setLayoutCaption(true);
             }
