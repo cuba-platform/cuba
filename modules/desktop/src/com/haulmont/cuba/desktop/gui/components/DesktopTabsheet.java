@@ -29,9 +29,8 @@ import java.util.*;
  * @author krivopustov
  */
 public class DesktopTabsheet
-    extends DesktopAbstractComponent<JTabbedPane>
-    implements Tabsheet, Component.Container, AutoExpanding
-{
+        extends DesktopAbstractComponent<JTabbedPane>
+        implements Tabsheet, Component.Container, AutoExpanding {
     protected Map<Component, String> components = new HashMap<Component, String>();
 
     protected List<TabImpl> tabs = new ArrayList<TabImpl>();
@@ -278,12 +277,14 @@ public class DesktopTabsheet
                 idx++;
         }
 
+        JComponent comp = DesktopComponentsHelper.getComposition(tab.getComponent());
         if (tab.isVisible()) {
-            JComponent comp = DesktopComponentsHelper.getComposition(tab.getComponent());
             impl.insertTab(tab.getCaption(), null, comp, null, idx);
         } else {
             impl.removeTabAt(idx);
         }
+        // if we just detach component, it will return isVisible() == true
+        comp.setVisible(tab.isVisible());
     }
 
     public boolean expandsWidth() {
@@ -366,8 +367,7 @@ public class DesktopTabsheet
             if (closable != this.closable) {
                 if (closable) {
                     addCloseComponent();
-                }
-                else {
+                } else {
                     removeCloseComponent();
                 }
                 this.closable = closable;
@@ -380,19 +380,18 @@ public class DesktopTabsheet
 
         private void addCloseComponent() {
             ButtonTabComponent tabComponent = new ButtonTabComponent(
-                impl,
-                new ButtonTabComponent.CloseListener() {
-                    public void onTabClose(int tabIndex) {
-                        if (closeHandler != null) {
-                            closeHandler.onTabClose(TabImpl.this);
-                        }
-                        else {
-                            removeTab(getName());
+                    impl,
+                    new ButtonTabComponent.CloseListener() {
+                        public void onTabClose(int tabIndex) {
+                            if (closeHandler != null) {
+                                closeHandler.onTabClose(TabImpl.this);
+                            } else {
+                                removeTab(getName());
+                            }
                         }
                     }
-                }
-          );
-          impl.setTabComponentAt(getTabIndex(), tabComponent);
+            );
+            impl.setTabComponentAt(getTabIndex(), tabComponent);
         }
 
         private void setTabComponentCaption(String caption) {
