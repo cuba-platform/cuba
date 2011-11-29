@@ -203,7 +203,7 @@ public class RoleEditor extends AbstractEditor {
                 if (permission != null)
                     screenPermissionsGrants.removeItem(permission);
             }
-            screenPermissionsTree.refresh();
+            screenPermissionsTree.repaint();
         }
     }
 
@@ -257,6 +257,7 @@ public class RoleEditor extends AbstractEditor {
         table.addGeneratedColumn(
                 "target",
                 new Table.ColumnGenerator() {
+                    @Override
                     public Component generateCell(Table table, Object itemId) {
                         Permission permission = (Permission) table.getDatasource().getItem(itemId);
                         if (permission.getTarget() == null)
@@ -277,6 +278,7 @@ public class RoleEditor extends AbstractEditor {
         table.addGeneratedColumn(
                 "value",
                 new Table.ColumnGenerator() {
+                    @Override
                     public Component generateCell(Table table, Object itemId) {
                         Permission permission = (Permission) table.getDatasource().getItem(itemId);
                         if (permission.getValue() == null)
@@ -354,10 +356,12 @@ public class RoleEditor extends AbstractEditor {
             this.name = name;
             this.value = value;
         }
+        @Override
         public void actionPerform(Component component) {
             final PermissionsLookup permissionsLookup = openLookup(lookupAction, null, WindowManager.OpenType.THIS_TAB,
                     Collections.<String, Object>singletonMap("param$PermissionValue", name));
             permissionsLookup.setLookupHandler(new Lookup.Handler() {
+                @Override
                 public void handleLookup(Collection items) {
                     @SuppressWarnings({"unchecked"})
                     Collection<PermissionConfig.Target> targets = items;
@@ -369,6 +373,7 @@ public class RoleEditor extends AbstractEditor {
                 }
             });
             permissionsLookup.addListener(new CloseListener() {
+                @Override
                 public void windowClosed(String actionId) {
                     hideMenuPopupButton();
                 }
