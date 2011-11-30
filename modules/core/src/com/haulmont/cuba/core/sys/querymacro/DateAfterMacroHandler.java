@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 @Scope("prototype")
 public class DateAfterMacroHandler implements QueryMacroHandler {
 
-    protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateAfter\\(([^\\)]+)\\)");
+    protected static final Pattern MACRO_PATTERN = Pattern.compile("@dateAfter\\s*\\(([^\\)]+)\\)");
 
     protected int count;
     protected Map<String, Object> namedParameters;

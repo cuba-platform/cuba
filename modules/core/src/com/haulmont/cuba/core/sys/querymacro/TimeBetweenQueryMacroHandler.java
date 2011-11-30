@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 @Scope("prototype")
 public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
 
-    protected static final Pattern MACRO_PATTERN = Pattern.compile("@between\\(([^\\)]+)\\)");
+    protected static final Pattern MACRO_PATTERN = Pattern.compile("@between\\s*\\(([^\\)]+)\\)");
     protected static final Pattern PARAM_PATTERN = Pattern.compile("(now)\\s*([+-]*)\\s*(\\d*)");
     
     protected static Map<String, Object> units = new HashMap<String, Object>();
@@ -77,7 +77,7 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
     }
 
     protected String getParam(String[] args, int idx) {
-        String arg = args[idx];
+        String arg = args[idx].trim();
         String unit = args[3].trim();
 
         Matcher matcher = PARAM_PATTERN.matcher(arg);
@@ -98,7 +98,7 @@ public class TimeBetweenQueryMacroHandler implements QueryMacroHandler {
 
         Date date = computeDate(num, unit);
 
-        String paramName = args[0].replace(".", "_") + "_" + count + "_" + idx;
+        String paramName = args[0].trim().replace(".", "_") + "_" + count + "_" + idx;
         params.put(paramName, date);
 
         return paramName;

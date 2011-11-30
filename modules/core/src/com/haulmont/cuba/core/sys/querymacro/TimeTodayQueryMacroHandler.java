@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 @Scope("prototype")
 public class TimeTodayQueryMacroHandler implements QueryMacroHandler {
 
-    private static final Pattern MACRO_PATTERN = Pattern.compile("@today\\(([^\\)]+)\\)");
+    private static final Pattern MACRO_PATTERN = Pattern.compile("@today\\s*\\(([^\\)]+)\\)");
 
     private int count;
     private Map<String, Object> params = new HashMap<String, Object>();
