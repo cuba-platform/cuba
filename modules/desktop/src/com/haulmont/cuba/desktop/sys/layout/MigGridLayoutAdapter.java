@@ -80,8 +80,8 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
 
     @Override
     public CC getConstraints(com.haulmont.cuba.gui.components.Component component, int col, int row, int col2, int row2) {
-        int spanX = col2 - col;
-        int spanY = row2 - row;
+        int spanX = col2 - col + 1;
+        int spanY = row2 - row + 1;
 
         CC constraints = MigLayoutHelper.getConstraints(component);
         constraints.cell(col, row, spanX, spanY);
