@@ -502,48 +502,66 @@ public class WebFilter
         if (addToSet != null)
             table.removeAction(addToSet);
         if (addToSetBtn != null)
-            buttons.removeButton(addToSetBtn);
+            addToSetBtn.setVisible(false);
         if (addToCurrSet != null) {
             table.removeAction(addToCurrSet);
         }
         if (addToCurSetBtn != null) {
-            buttons.removeButton(addToCurSetBtn);
+            addToCurSetBtn.setVisible(false);
         }
         if (removeFromCurrSet != null) {
             table.removeAction(removeFromCurrSet);
         }
         if (removeFromCurSetBtn != null) {
-            buttons.removeButton(removeFromCurSetBtn);
+            removeFromCurSetBtn.setVisible(false);
         }
         if ((filterEntity != null) && (BooleanUtils.isTrue(filterEntity.getIsSet()))) {
             addToCurrSet = new AddToCurrSetAction();
 
-            addToCurSetBtn = new WebButton();
-            addToCurSetBtn.setIcon("icons/join-to-set.png");
+            if (addToCurSetBtn == null) {
+                addToCurSetBtn = new WebButton();
+                addToCurSetBtn.setId("addToCurSetBtn");
+                addToCurSetBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "addToCurSet"));
+                buttons.addButton(addToCurSetBtn);
+            } else {
+                addToCurSetBtn.setVisible(true);
+            }
+            if (StringUtils.isEmpty(addToCurSetBtn.getIcon())) {
+                addToCurSetBtn.setIcon("icons/join-to-set.png");
+            }
             addToCurSetBtn.setAction(addToCurrSet);
-            addToCurSetBtn.setId("addToCurSetBtn");
-            addToCurSetBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "addToCurSet"));
-            buttons.addButton(addToCurSetBtn);
+            table.addAction(addToCurrSet);
 
             removeFromCurrSet = new RemoveFromSetAction(table);
-            removeFromCurSetBtn = new WebButton();
-            removeFromCurSetBtn.setIcon("icons/delete-from-set.png");
+            if (removeFromCurSetBtn == null) {
+                removeFromCurSetBtn = new WebButton();
+                removeFromCurSetBtn.setId("removeFromCurSetBtn");
+                removeFromCurSetBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "removeFromCurSet"));
+                buttons.addButton(removeFromCurSetBtn);
+            } else {
+                removeFromCurSetBtn.setVisible(true);
+            }
+            if (StringUtils.isEmpty(removeFromCurSetBtn.getIcon())) {
+                removeFromCurSetBtn.setIcon("icons/delete-from-set.png");
+            }
             removeFromCurSetBtn.setAction(removeFromCurrSet);
-            removeFromCurSetBtn.setId("removeFromCurSetBtn");
-            removeFromCurSetBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "removeFromCurSet"));
-            buttons.addButton(removeFromCurSetBtn);
 
             table.addAction(removeFromCurrSet);
         } else {
             addToSet = new AddToSetAction(table);
-            addToSetBtn = new WebButton();
-            addToSetBtn.setIcon("icons/insert-to-set.png");
+            if (addToSetBtn == null) {
+                addToSetBtn = new WebButton();
+                addToSetBtn.setId("addToSetBtn");
+                addToSetBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "addToSet"));
+                buttons.addButton(addToSetBtn);
+            } else {
+                addToSetBtn.setVisible(true);
+            }
+            if (StringUtils.isEmpty(addToSetBtn.getIcon())) {
+                addToSetBtn.setIcon("icons/insert-to-set.png");
+            }
             addToSetBtn.setAction(addToSet);
-            addToSetBtn.setId("addToSetBtn");
-            addToSetBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "addToSet"));
-
             table.addAction(addToSet);
-            buttons.addButton(addToSetBtn);
         }
     }
 
