@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.app.DataCacheAPI;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.global.UserSession;
@@ -87,6 +88,9 @@ public class EntityManagerImpl implements EntityManager {
 
     public void remove(Entity entity) {
         if (entity instanceof SoftDelete && softDeletion) {
+            if (PersistenceHelper.isDetached(entity)) {
+                entity = delegate.merge(entity);
+            }
             ((SoftDelete) entity).setDeleteTs(TimeProvider.currentTimestamp());
             ((SoftDelete) entity).setDeletedBy(userSession != null ? userSession.getUser().getLogin() : "<unknown>");
         } else {

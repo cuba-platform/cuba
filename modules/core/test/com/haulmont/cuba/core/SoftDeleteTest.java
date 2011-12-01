@@ -161,10 +161,10 @@ public class SoftDeleteTest extends CubaTestCase
                             .addProperty("name")
                             .addProperty("login")
                             .addProperty("userRoles",
-                                new View(UserRole.class, "testView")
-                                    .addProperty("role",
-                                        new View(Role.class, "testView")
-                                            .addProperty("name")))
+                                    new View(UserRole.class, "testView")
+                                            .addProperty("role",
+                                                    new View(Role.class, "testView")
+                                                            .addProperty("name")))
             );
             User user = em.find(User.class, userId);
 
@@ -342,6 +342,32 @@ public class SoftDeleteTest extends CubaTestCase
             tx.end();
         }
         System.out.println("===================== END testQueryWithoutConditions =====================");
+    }
+
+    public void testRemoveNotManaged() {
+        System.out.println("===================== BEGIN testRemoveNotManaged =====================");
+
+        Transaction tx = Locator.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            UserRole userRole = em.find(UserRole.class, userRole1Id);
+
+            tx.commitRetaining();
+
+            em = PersistenceProvider.getEntityManager();
+            em.remove(userRole);
+
+            tx.commitRetaining();
+
+            em = PersistenceProvider.getEntityManager();
+            UserRole deletedUserRole = em.find(UserRole.class, userRole1Id);
+            assertNull(deletedUserRole);
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+        System.out.println("===================== END testRemoveNotManaged =====================");
     }
 
 }
