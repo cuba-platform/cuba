@@ -58,8 +58,7 @@ import java.util.List;
 public abstract class DesktopAbstractTable<C extends JTable>
         extends DesktopAbstractActionOwnerComponent<C>
         implements Table {
-    private static final int HEIGHT_MARGIN_FOR_ROWS = 2;
-    private static final int WIDTH_MARGIN_FOR_CELL = 2;
+    private static final int DEFAULT_ROW_HEIGHT = 24;
 
     protected MigLayout layout;
     protected JPanel panel;
@@ -79,6 +78,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     private Action enterPressAction;
 
     private boolean columnsInitialized = false;
+    private int generatedColumnsCount = 0;
 
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
@@ -684,6 +684,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
         tableColumn.setCellEditor(cellEditor);
         tableColumn.setCellRenderer(cellEditor);
 
+        generatedColumnsCount++;
+
         packRows();
     }
 
@@ -693,7 +695,10 @@ public abstract class DesktopAbstractTable<C extends JTable>
             throw new IllegalArgumentException("columnId is null");
 
         Column col = getColumn(columnId);
-        tableModel.removeGeneratedColumn(col);
+        if (col != null) {
+            tableModel.removeGeneratedColumn(col);
+            generatedColumnsCount--;
+        }
     }
 
     /**
@@ -907,12 +912,16 @@ public abstract class DesktopAbstractTable<C extends JTable>
      * tallest cell in that row.
      */
     public void packRows() {
-        StopWatch sw = new Log4JStopWatch("DAT packRows " + id);
-        for (int r = 0; r < impl.getRowCount(); r++) {
-            int h = getPreferredRowHeight(r);
+        impl.setRowHeight(DEFAULT_ROW_HEIGHT);
 
-            if (impl.getRowHeight(r) != h) {
-                impl.setRowHeight(r, h);
+        StopWatch sw = new Log4JStopWatch("DAT packRows " + id);
+        if (generatedColumnsCount > 0) {
+            for (int r = 0; r < impl.getRowCount(); r++) {
+                int h = getPreferredRowHeight(r);
+
+                if (impl.getRowHeight(r) != h) {
+                    impl.setRowHeight(r, h);
+                }
             }
         }
         sw.stop();
