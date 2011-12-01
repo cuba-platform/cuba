@@ -150,7 +150,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
                 settingValue = true;
 
                 final Object value = getValue();
-                Object newValue = fileValueChanging(prevValue, value);
+                Object newValue = fireValueChanging(prevValue, value);
                 fireValueChanged(prevValue, newValue);
                 prevValue = newValue;
 
@@ -172,7 +172,7 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
         valueChangingListener = null;
     }
 
-    protected Object fileValueChanging(Object prevValue, Object value) {
+    protected Object fireValueChanging(Object prevValue, Object value) {
         if (valueChangingListener != null)
             return valueChangingListener.valueChanging(this, "value", prevValue, value);
         else

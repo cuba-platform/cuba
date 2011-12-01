@@ -196,9 +196,14 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     @Override
     public void setValue(Object value) {
        if (!ObjectUtils.equals(prevValue, value)) {
-           updateInstance(value);
-           updateComponent(value);
-           fireChangeListeners(value);
+           if (valueChangingListener != null)
+               value = fireValueChanging(prevValue, value);
+
+           if (!ObjectUtils.equals(prevValue, value)) {
+               updateInstance(value);
+               updateComponent(value);
+               fireChangeListeners(value);
+           }
        }
     }
 
@@ -310,7 +315,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     }
 
     private void fireChangeListeners() {
-        fireChangeListeners(getValue());
+         fireChangeListeners(getValue());
     }
 
     private void fireChangeListeners(Object newValue) {
@@ -421,9 +426,6 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
                 Object newValue = validateRawValue(getImpl().getText());
                 if ("".equals(newValue))
                     newValue = null;
-
-                if (valueChangingListener != null)
-                    newValue = fileValueChanging(prevValue, newValue);
 
                 if (!ObjectUtils.equals(prevValue, newValue))
                     setValue(newValue);

@@ -55,7 +55,7 @@ public abstract class DesktopAbstractField<C extends JComponent>
         valueChangingListener = null;
     }
 
-    protected Object fileValueChanging(Object prevValue, Object value) {
+    protected Object fireValueChanging(Object prevValue, Object value) {
         if (valueChangingListener != null)
             return valueChangingListener.valueChanging(this, "value", prevValue, value);
         else
