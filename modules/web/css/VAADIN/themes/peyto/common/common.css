@@ -187,7 +187,7 @@ input.v-modified,
 }
 
 .v-contextmenu .gwt-MenuItem div { /*border: 1px solid #f6f7f7;*/
-	padding: 1px 20px 1px 8px;
+	padding: 1px 8px 1px 8px;
 	cursor: pointer;
 	vertical-align: middle;
 	white-space: nowrap;
