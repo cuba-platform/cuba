@@ -328,6 +328,9 @@ public class CollapsiblePanel extends JPanel {
         @Override
         public Insets getBorderInsets(Component c, Insets insets) {
             Insets borderInsets = (Insets) UIManager.getLookAndFeelDefaults().get("CollapsiblePanel.borderInsets");
+            if (borderInsets == null) {
+                borderInsets = new Insets(10, 3, 3, 3);
+            }
             insets.top = EDGE_SPACING + TEXT_SPACING + borderInsets.top;
             insets.right = EDGE_SPACING + TEXT_SPACING + borderInsets.right;
             insets.bottom = EDGE_SPACING + TEXT_SPACING + borderInsets.bottom;
