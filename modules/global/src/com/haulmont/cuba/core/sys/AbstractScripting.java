@@ -201,6 +201,26 @@ public abstract class AbstractScripting implements Scripting {
         try {
             return (T) getGroovyScriptEngine().run(name, binding);
         } catch (ResourceException e) {
+            // Perhaps the Groovy source not found - it is possible when we run tests. Let's try to find a
+            // compiled script in the classpath
+            if (name.endsWith(".groovy"))
+                name = name.substring(0, name.length() - 7);
+            if (name.startsWith("/"))
+                name = name.substring(1);
+            name = name.replace("/", ".");
+
+            Class scriptClass = loadClass(name);
+            if (scriptClass != null && groovy.lang.Script.class.isAssignableFrom(scriptClass)) {
+                try {
+                    Script script = (Script) scriptClass.newInstance();
+                    script.setBinding(binding);
+                    return (T) script.run();
+                } catch (InstantiationException e1) {
+                    throw new RuntimeException(e1);
+                } catch (IllegalAccessException e1) {
+                    throw new RuntimeException(e1);
+                }
+            }
             throw new RuntimeException(e);
         } catch (ScriptException e) {
             throw new RuntimeException(e);
@@ -256,6 +276,13 @@ public abstract class AbstractScripting implements Scripting {
 
     protected class CubaResourceConnector implements ResourceConnector {
 
+        /**
+         * This implementation works for sources located in conf directory or packed into JARs.
+         * It will throw ResourceException for resources in class directories, which is the case for running tests.
+         * @param resourceName          resource to load
+         * @return                      connection to the resource
+         * @throws ResourceException    if the requested resource can not be loaded
+         */
         @Override
         public URLConnection getResourceConnection(String resourceName) throws ResourceException {
             URLConnection groovyScriptConn = null;
