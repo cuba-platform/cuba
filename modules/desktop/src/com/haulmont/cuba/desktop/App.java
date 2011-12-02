@@ -432,6 +432,7 @@ public class App implements ConnectionListener {
     public void showNotificationPopup(String caption, IFrame.NotificationType type) {
         JPanel panel = new JPanel(new MigLayout("flowy"));
         panel.setBorder(BorderFactory.createLineBorder(Color.gray));
+        JFrame frame = getMainFrame();
 
         switch (type) {
             case WARNING:
