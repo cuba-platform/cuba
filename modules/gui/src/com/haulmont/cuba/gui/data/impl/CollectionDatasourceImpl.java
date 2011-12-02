@@ -425,11 +425,6 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     protected void loadData(Map<String, Object> params) {
         StopWatch sw = new Log4JStopWatch("CDS " + id);
 
-        for (Object entity : data.values()) {
-            detachListener((Instance) entity);
-        }
-        data.clear();
-
         if (needLoading()) {
             final LoadContext context = new LoadContext(metaClass);
 
@@ -454,6 +449,11 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             dataLoadError = null;
             try {
                 final Collection<T> entities = dataservice.loadList(context);
+
+                for (Object entity : data.values()) {
+                    detachListener((Instance) entity);
+                }
+                data.clear();
 
                 for (T entity : entities) {
                     data.put(entity.getId(), entity);

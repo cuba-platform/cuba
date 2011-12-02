@@ -7,6 +7,9 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.gui.components.Window;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import javax.swing.*;
@@ -30,6 +33,8 @@ public class DesktopTimer implements com.haulmont.cuba.gui.components.Timer {
 
     private List<TimerListener> timerListeners = new ArrayList<TimerListener>();
     protected Timer timer;
+
+    private Log log = LogFactory.getLog(getClass());
 
     @Override
     public String getId() {
@@ -76,7 +81,15 @@ public class DesktopTimer implements com.haulmont.cuba.gui.components.Timer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for (TimerListener listener : timerListeners) {
-                    listener.onTimer(DesktopTimer.this);
+                    try {
+                        listener.onTimer(DesktopTimer.this);
+                    } catch (RuntimeException ex) {
+                        if (ExceptionUtils.indexOfType(ex, java.net.ConnectException.class) > -1) {
+                            log.warn("onTimer error: " + ex.getMessage());
+                        } else {
+                            throw ex;
+                        }
+                    }
                 }
             }
         });

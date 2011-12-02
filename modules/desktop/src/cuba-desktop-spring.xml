@@ -60,6 +60,7 @@
             <list>
                 <value>com.haulmont.cuba.desktop.exception.NoUserSessionHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.SilentExceptionHandler</value>
+                <value>com.haulmont.cuba.desktop.exception.ConnectExceptionHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.UniqueConstraintViolationHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.AccessDeniedHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.NoSuchScreenHandler</value>
