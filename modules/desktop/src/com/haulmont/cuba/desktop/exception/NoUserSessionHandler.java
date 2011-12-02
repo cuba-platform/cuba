@@ -25,12 +25,17 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
 
     private static Log log = LogFactory.getLog(NoUserSessionHandler.class);
 
+    private boolean fired;
+
     public NoUserSessionHandler() {
         super(NoUserSessionException.class.getName());
     }
 
     @Override
     protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
+        if (fired) // This handler should fire only once in a session
+            return;
+
         try {
             App.getInstance().getWindowManager().showOptionDialog(
                     getMessage("dialogs.Information"),
@@ -41,6 +46,7 @@ public class NoUserSessionHandler extends AbstractExceptionHandler {
                             new ExitAction()
                     }
             );
+            fired = true;
         } catch (Throwable th) {
             log.error(th);
         }

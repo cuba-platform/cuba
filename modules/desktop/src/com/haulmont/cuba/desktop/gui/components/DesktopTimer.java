@@ -6,7 +6,9 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.core.global.RemoteException;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.security.global.NoUserSessionException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -85,8 +87,21 @@ public class DesktopTimer implements com.haulmont.cuba.gui.components.Timer {
                         listener.onTimer(DesktopTimer.this);
                     } catch (RuntimeException ex) {
                         if (ExceptionUtils.indexOfType(ex, java.net.ConnectException.class) > -1) {
+                            // If a ConnectException occured, just log it and ignore
                             log.warn("onTimer error: " + ex.getMessage());
                         } else {
+                            // Otherwise throw the exception, but first search for NoUserSessionException in chain,
+                            // if found - stop the timer
+                            int reIdx = ExceptionUtils.indexOfType(ex, RemoteException.class);
+                            if (reIdx > -1) {
+                                RemoteException re = (RemoteException) ExceptionUtils.getThrowableList(ex).get(reIdx);
+                                for (RemoteException.Cause cause : re.getCauses()) {
+                                    if (cause.getThrowable() instanceof NoUserSessionException) {
+                                        timer.stop();
+                                        throw ex;
+                                    }
+                                }
+                            }
                             throw ex;
                         }
                     }
