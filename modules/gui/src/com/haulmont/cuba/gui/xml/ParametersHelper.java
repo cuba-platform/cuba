@@ -65,6 +65,9 @@ public class ParametersHelper {
     }
 
     public static ParameterInfo[] parseQuery(String query, @Nullable QueryFilter filter) {
+        if (StringUtils.isEmpty(query)) {
+            return new ParameterInfo[0];
+        }
         Set<ParameterInfo> infos = new HashSet<ParameterInfo>();
 
         Matcher matcher = QUERY_PARAMETERS_PATTERN.matcher(query);
