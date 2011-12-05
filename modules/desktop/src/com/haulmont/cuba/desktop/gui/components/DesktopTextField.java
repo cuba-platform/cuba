@@ -413,7 +413,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
 
         @Override
         public void keyPressed(KeyEvent e) {
-            if (ENTER_CODE == e.getKeyCode())
+            if (ENTER_CODE == e.getKeyCode() && !(impl instanceof JTextArea))
                 fireEvent();
         }
 
