@@ -118,18 +118,17 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         jcomponent.setOpaque(true);
 
         if (isSelected) {
-            jcomponent.setBackground(table.getSelectionBackground());
+            if (jcomponent instanceof JTextField) {
+                // another JTextField dirty workaround. If use selectionBackground, then it's all blue
+                jcomponent.setBackground(Color.WHITE);
+            } else {
+                jcomponent.setBackground(table.getSelectionBackground());
+            }
             jcomponent.setForeground(table.getSelectionForeground());
         } else {
-            Color background = table.getBackground();
-            if (background == null || background instanceof javax.swing.plaf.UIResource) {
-                Color alternateColor = DefaultLookup.getColor(jcomponent, table.getUI(), "Table.alternateRowColor");
-                if (alternateColor != null && row % 2 == 0)
-                    background = alternateColor;
-            }
             jcomponent.setForeground(table.getForeground());
-            //jcomponent.setBackground(background != null ? new Color(background.getRGB()) : null);
-            jcomponent.setBackground(DefaultLookup.getColor(jcomponent, table.getUI(), "Table:\"Table.cellRenderer\".background"));
+            Color background = DefaultLookup.getColor(jcomponent, table.getUI(), "Table:\"Table.cellRenderer\".background");
+            jcomponent.setBackground(background);
         }
 
         jcomponent.setFont(table.getFont());
@@ -139,7 +138,9 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
     }
 
     private void assignBorder(JTable table, boolean isSelected, boolean hasFocus, JComponent jcomponent) {
-        if (border != null) {
+        if (jcomponent instanceof JTextField) {
+            // looks bad with empty border
+        } else if (border != null) {
             jcomponent.setBorder(border);
         } else if (jcomponent instanceof JComboBox || jcomponent instanceof JXHyperlink) {
             // empty borders for fields except text fields in tables
