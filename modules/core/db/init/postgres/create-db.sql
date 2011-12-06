@@ -553,8 +553,8 @@ values ('60885987-1b61-4247-94c7-dff348347f94', now(), 0, 'emailer', 'emailer', 
 insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
 values ('83075c20-fe23-11df-abc9-3f87313a5ebe', now(), 0, 'SchedulerUser', 'scheduleruser', '7e0ffe513f4e8c8f1376da12fe9c5561', 'SchedulerUser', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true)^
 
-insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, IS_SUPER)
-values ('0c018061-b26f-4de2-a5be-dff348347f93', now(), 0, 'Administrators', true)^
+insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, TYPE)
+values ('0c018061-b26f-4de2-a5be-dff348347f93', now(), 0, 'Administrators', 10)^
 
 INSERT INTO sec_filter (id,create_ts,created_by,version,update_ts,updated_by,delete_ts,deleted_by,component,name,xml,user_id) VALUES ('b61d18cb-e79a-46f3-b16d-eaf4aebb10dd',{ts '2010-03-01 11:14:06.830'},'admin',2,{ts '2010-03-01 11:52:53.170'},'admin',null,null,'[sec$User.browse].genericFilter','Search by role','<?xml version="1.0" encoding="UTF-8"?>\n
 <filter>\n  <and>\n    <c name="UrMxpkfMGn" class="com.haulmont.cuba.security.entity.Role" type="CUSTOM" locCaption="Role" entityAlias="u" join="join u.userRoles ur">ur.role.id = :component$genericFilter.UrMxpkfMGn32565\n      <param name="component$genericFilter.UrMxpkfMGn32565">NULL</param>\n    </c>\n  </and>\n</filter>\n','60885987-1b61-4247-94c7-dff348347f93')^
