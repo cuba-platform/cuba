@@ -6,10 +6,12 @@
 
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -35,7 +37,7 @@ public class TestUserSessionSource extends AbstractUserSessionSource {
         user.setName("Test Administrator");
         user.setPassword(DigestUtils.md5Hex("test_admin"));
 
-        UserSession session = new UserSession(user, new String[]{"Administrators"}, Locale.getDefault(), false);
+        UserSession session = new UserSession(user, Collections.<Role>emptyList(), Locale.getDefault(), false);
         session.addConstraint("sec$Group", "", "a.createdBy = :currentUserLogin");
 
         return session;
