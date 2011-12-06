@@ -66,7 +66,7 @@ public abstract class SecurityProvider
      */
     public static boolean currentUserInRole(String role) {
         UserSession session = getUserSessionSource().getUserSession();
-        return (Arrays.binarySearch(session.getRoles(), role) >= 0);
+        return session.getRoles().contains(role);
     }
 
     /**

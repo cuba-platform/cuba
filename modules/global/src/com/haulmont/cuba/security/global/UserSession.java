@@ -8,10 +8,7 @@ package com.haulmont.cuba.security.global;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.global.UuidProvider;
-import com.haulmont.cuba.security.entity.EntityAttrAccess;
-import com.haulmont.cuba.security.entity.EntityOp;
-import com.haulmont.cuba.security.entity.PermissionType;
-import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.*;
 
 import java.io.Serializable;
 import java.util.*;
@@ -37,7 +34,8 @@ public class UserSession implements Serializable
     protected UUID id;
     protected User user;
     protected User substitutedUser;
-    protected String[] roles;
+    private List<String> roles = new ArrayList<String>();
+    private EnumSet<RoleType> roleTypes = EnumSet.noneOf(RoleType.class);
     protected Locale locale;
     protected String address;
     protected String clientInfo;
@@ -64,13 +62,16 @@ public class UserSession implements Serializable
         return name;
     }
 
-    public UserSession(User user, String[] roles, Locale locale, boolean system) {
+    public UserSession(User user, Collection<Role> roles, Locale locale, boolean system) {
         this.id = UuidProvider.createUuid();
         this.user = user;
         this.system = system;
 
-        this.roles = roles;
-        Arrays.sort(this.roles);
+        for (Role role : roles) {
+            this.roles.add(role.getName());
+            if (role.getType() != null)
+                roleTypes.add(role.getType());
+        }
 
         this.locale = locale;
 
@@ -83,7 +84,7 @@ public class UserSession implements Serializable
         attributes = new ConcurrentHashMap<String, Serializable>();
     }
     
-    public UserSession(UserSession src, User user, String[] roles, Locale locale) {
+    public UserSession(UserSession src, User user, Collection<Role> roles, Locale locale) {
         this(user, roles, locale, src.system);
         this.id = src.id;
         this.user = src.user;
@@ -147,8 +148,8 @@ public class UserSession implements Serializable
     /**
      * User role names
      */
-    public String[] getRoles() {
-        return roles;
+    public Collection<String> getRoles() {
+        return Collections.unmodifiableList(roles);
     }
 
     /**
@@ -184,7 +185,10 @@ public class UserSession implements Serializable
      * This method is used by security subsystem
      */
     public void addPermission(PermissionType type, String target, int value) {
-        permissions[type.ordinal()].put(target, value);
+        Integer currentValue = permissions[type.ordinal()].get(target);
+        if (currentValue == null || currentValue < value) {
+            permissions[type.ordinal()].put(target, value);
+        }
     }
 
     /**
@@ -238,7 +242,7 @@ public class UserSession implements Serializable
     }
 
     /**
-     * Check user permission for specified value
+     * Check user permission for the specified value.
      * @param type permission type
      * @param target permission target:<ul>
      * <li>screen
@@ -251,8 +255,20 @@ public class UserSession implements Serializable
      * @return true if permitted, false otherwise
      */
     public boolean isPermitted(PermissionType type, String target, int value) {
-        Integer p = permissions[type.ordinal()].get(target);
-        return p == null || p >= value;
+        // If we have super-role no need to check anything
+        if (roleTypes.contains(RoleType.SUPER))
+            return true;
+        // Get permission value assigned by the set of permissions
+        Integer v = permissions[type.ordinal()].get(target);
+        // Get permission value assigned by non-standard roles
+        for (RoleType roleType : roleTypes) {
+            Integer v1 = roleType.permissionValue(type, target);
+            if (v1 != null && (v == null || v < v1)) {
+                v = v1;
+            }
+        }
+        // Return true if no value set for this target, or if the value is more than requested
+        return v == null || v >= value;
     }
 
     /**

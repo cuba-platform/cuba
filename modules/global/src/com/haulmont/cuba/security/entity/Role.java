@@ -48,8 +48,8 @@ public class Role extends StandardEntity
     @Column(name = "DESCRIPTION", length = 1000)
     private String description;
 
-    @Column(name = "IS_SUPER")
-    private Boolean superRole;
+    @Column(name = "TYPE")
+    private Integer type;
 
     @Column(name = "IS_DEFAULT_ROLE")
     private Boolean defaultRole;
@@ -66,12 +66,12 @@ public class Role extends StandardEntity
         this.name = name;
     }
 
-    public Boolean getSuperRole() {
-        return superRole;
+    public RoleType getType() {
+        return RoleType.fromId(type);
     }
 
-    public void setSuperRole(Boolean superRole) {
-        this.superRole = superRole;
+    public void setType(RoleType type) {
+        this.type = type.getId();
     }
 
     public Set<Permission> getPermissions() {

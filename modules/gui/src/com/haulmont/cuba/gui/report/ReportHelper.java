@@ -29,6 +29,7 @@ import com.haulmont.cuba.report.ReportOutputDocument;
 import com.haulmont.cuba.report.ReportScreen;
 import com.haulmont.cuba.report.app.ReportService;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.RoleType;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import org.apache.commons.lang.StringUtils;
@@ -180,7 +181,7 @@ public class ReportHelper {
                 Set<UserRole> userRoles = user.getUserRoles();
                 for (UserRole userRole : userRoles) {
                     if (reportRoles.contains(userRole.getRole()) ||
-                            Boolean.TRUE.equals(userRole.getRole().getSuperRole())) {
+                            RoleType.SUPER.equals(userRole.getRole().getType())) {
                         filter.add(report);
                         break;
                     }

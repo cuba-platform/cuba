@@ -41,13 +41,11 @@ public class PermissionTest extends CubaTestCase
             Role role1 = new Role();
             role1Id = role1.getId();
             role1.setName("testRole1");
-            role1.setSuperRole(false);
             em.persist(role1);
 
             Role role2 = new Role();
             role2Id = role2.getId();
             role2.setName("testRole2");
-            role2.setSuperRole(false);
             em.persist(role2);
 
             Permission permission1 = new Permission();

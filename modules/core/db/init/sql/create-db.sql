@@ -161,7 +161,7 @@ create table SEC_ROLE (
     LOC_NAME varchar(255),
     DESCRIPTION varchar(1000),
     IS_DEFAULT_ROLE smallint,
-    IS_SUPER smallint,
+    TYPE integer,
 
     primary key (ID)
 );

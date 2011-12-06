@@ -102,8 +102,8 @@
                     </columns>
                     <rows>
                         <row>
-                            <label value="msg://superRole"/>
-                            <checkBox id="superRole" datasource="role" property="superRole"/>
+                            <label value="msg://roleType"/>
+                            <lookupField id="typeLookup" datasource="role" property="type" required="true"/>
                         </row>
                         <row>
                             <label value="msg://defaultRole"/>

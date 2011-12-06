@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.util.*;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -42,6 +41,9 @@ public class UserSessionManager
     @Inject
     private UserSessionSource userSessionSource;
 
+    @Inject
+    private Persistence persistence;
+
     private UserSession NO_USER_SESSION;
 
     private static Log log = LogFactory.getLog(UserSessionManager.class);
@@ -49,7 +51,7 @@ public class UserSessionManager
     private UserSessionManager() {
         User noUser = new User();
         noUser.setLogin("server");
-        NO_USER_SESSION = new UserSession(noUser, new String[0], Locale.getDefault(), true) {
+        NO_USER_SESSION = new UserSession(noUser, Collections.<Role>emptyList(), Locale.getDefault(), true) {
             @Override
             public UUID getId() {
                 return AppContext.NO_USER_CONTEXT.getSessionId();
@@ -58,16 +60,13 @@ public class UserSessionManager
     }
 
     public UserSession createSession(User user, Locale locale, boolean system) {
-        List<String> roleNames = new ArrayList<String>();
         List<Role> roles = new ArrayList<Role>();
         for (UserRole userRole : user.getUserRoles()) {
             if (userRole.getRole() != null) {
-                roleNames.add(userRole.getRole().getName());
                 roles.add(userRole.getRole());
             }
         }
-        UserSession session = new UserSession(
-                user, roleNames.toArray(new String[roleNames.size()]), locale, system);
+        UserSession session = new UserSession(user, roles, locale, system);
         compilePermissions(session, roles);
         compileConstraints(session, user.getGroup());
         compileSessionAttributes(session, user.getGroup());
@@ -76,16 +75,13 @@ public class UserSessionManager
     }
 
     public UserSession updateSession(UserSession src, User user) {
-        List<String> roleNames = new ArrayList<String>();
         List<Role> roles = new ArrayList<Role>();
         for (UserRole userRole : user.getUserRoles()) {
             if (userRole.getRole() != null) {
-                roleNames.add(userRole.getRole().getName());
                 roles.add(userRole.getRole());
             }
         }
-        UserSession session = new UserSession(
-                src, user, roleNames.toArray(new String[roleNames.size()]), src.getLocale());
+        UserSession session = new UserSession(src, user, roles, src.getLocale());
         compilePermissions(session, roles);
         compileConstraints(session, user.getGroup());
         compileSessionAttributes(session, user.getGroup());
@@ -96,24 +92,23 @@ public class UserSessionManager
 
     private void compilePermissions(UserSession session, List<Role> roles) {
         for (Role role : roles) {
-            if (BooleanUtils.isTrue(role.getSuperRole()))
+            if (RoleType.SUPER.equals(role.getType())) {
+                // Don't waste memory, as the user with SUPER role has all permissions.
                 return;
+            }
         }
         for (Role role : roles) {
             for (Permission permission : role.getPermissions()) {
                 PermissionType type = permission.getType();
                 if (type != null && permission.getValue() != null) {
-                    Integer value = session.getPermissionValue(type, permission.getTarget());
-                    if (value == null || value < permission.getValue()) {
-                        session.addPermission(type, permission.getTarget(), permission.getValue());
-                    }
+                    session.addPermission(type, permission.getTarget(), permission.getValue());
                 }
             }
         }
     }
 
     private void compileConstraints(UserSession session, Group group) {
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
         Query q = em.createQuery("select c from sec$GroupHierarchy h join h.parent.constraints c " +
                 "where h.group.id = ?1");
         q.setParameter(1, group);
@@ -128,7 +123,7 @@ public class UserSessionManager
     private void compileSessionAttributes(UserSession session, Group group) {
         List<SessionAttribute> list = new ArrayList<SessionAttribute>(group.getSessionAttributes());
 
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
         Query q = em.createQuery("select a from sec$GroupHierarchy h join h.parent.sessionAttributes a " +
                 "where h.group.id = ?1 order by h.level desc");
         q.setParameter(1, group);
@@ -136,7 +131,7 @@ public class UserSessionManager
         list.addAll(attributes);
 
         for (SessionAttribute attribute : list) {
-            Datatype datatype = Datatypes.getInstance().get(attribute.getDatatype());
+            Datatype datatype = Datatypes.get(attribute.getDatatype());
             try {
                 if (session.getAttributeNames().contains(attribute.getName())) {
                     log.warn("Duplicate definition of '" + attribute.getName() + "' session attribute in the group hierarchy");
@@ -173,21 +168,18 @@ public class UserSessionManager
 
     public Integer getPermissionValue(User user, PermissionType permissionType, String target) {
         Integer result;
-        List<String> roleNames = new ArrayList<String>();
         List<Role> roles = new ArrayList<Role>();
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             user = em.find(User.class, user.getId());
             for (UserRole userRole : user.getUserRoles()) {
                 if (userRole.getRole() != null) {
-                    roleNames.add(userRole.getRole().getName());
                     roles.add(userRole.getRole());
                 }
             }
-            UserSession session = new UserSession(
-                    user, roleNames.toArray(new String[roleNames.size()]), userSessionSource.getLocale(), false);
+            UserSession session = new UserSession(user, roles, userSessionSource.getLocale(), false);
             compilePermissions(session, roles);
             result = session.getPermissionValue(permissionType, target);
             tx.commit();

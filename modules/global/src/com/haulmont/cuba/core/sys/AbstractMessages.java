@@ -17,6 +17,8 @@ import org.apache.commons.logging.LogFactory;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>$Id$</p>
@@ -28,6 +30,8 @@ public abstract class AbstractMessages implements Messages {
     public static final String BUNDLE_NAME = "messages";
     public static final String EXT = ".properties";
     public static final String ENCODING = "UTF-8";
+
+    private Pattern enumSubclassPattern = Pattern.compile("\\$[1-9]");
 
     private Log log = LogFactory.getLog(getClass());
 
@@ -82,6 +86,11 @@ public abstract class AbstractMessages implements Messages {
         int i = className.lastIndexOf('.');
         if (i > -1)
             className = className.substring(i + 1);
+        // If enum has inner subclasses, its class name ends with "$1", "$2", ... suffixes. Cut them off.
+        Matcher matcher = enumSubclassPattern.matcher(className);
+        if (matcher.find()) {
+            className = className.substring(0, matcher.start());
+        }
 
         return getMessage(
                 getPackName(caller.getClass()),

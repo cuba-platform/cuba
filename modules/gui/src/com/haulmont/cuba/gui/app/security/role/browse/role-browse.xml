@@ -37,6 +37,7 @@
                     <column id="locName" caption="msg://role.locName"/>
                     <column id="description" caption="msg://role.description"/>
                     <column id="defaultRole" caption="msg://role.defaultRole"/>
+                    <column id="type" caption="msg://role.type"/>
                 </columns>
                 <rows datasource="roles"/>
             </table>

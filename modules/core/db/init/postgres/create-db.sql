@@ -153,7 +153,7 @@ create table SEC_ROLE (
     LOC_NAME varchar(255),
     DESCRIPTION varchar(1000),
     IS_DEFAULT_ROLE boolean, 
-    IS_SUPER boolean,
+    TYPE integer,
 
     primary key (ID)
 )^

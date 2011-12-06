@@ -12,9 +12,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-
 /**
  * Utility class to get localized messages by references defined in XML descriptors
  *
@@ -203,8 +200,7 @@ public class MessageUtils {
             Datatype datatype = range.asDatatype();
             return datatype.format(value, UserSessionProvider.getLocale());
         } else if (range.isEnum()) {
-            String nameKey = value.getClass().getSimpleName() + "." + value.toString();
-            return MessageProvider.getMessage(value.getClass(), nameKey);
+            return MessageProvider.getMessage((Enum) value);
         } else {
             if (value instanceof Instance)
                 return ((Instance) value).getInstanceName();
