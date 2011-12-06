@@ -751,6 +751,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             }
             if (row.isSelected()) {
                 row.addStyleName("v-selected");
+                focusedRow = row;
             }
             tBody.appendChild(row.getElement());
             adopt(row);
