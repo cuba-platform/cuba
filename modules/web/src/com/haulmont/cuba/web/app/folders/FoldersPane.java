@@ -10,14 +10,13 @@
  */
 package com.haulmont.cuba.web.app.folders;
 
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.FoldersService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Folder;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -756,28 +755,12 @@ public class FoldersPane extends VerticalLayout {
         }
 
         public void perform(final Folder folder) {
-            AbstractSearchFolder oldFolder = (AbstractSearchFolder) folder;
-            final AbstractSearchFolder newFolder = (folder instanceof AppFolder) ? (new AppFolder()) : (new SearchFolder());
-            newFolder.setCreatedBy(folder.getCreatedBy());
-            newFolder.setCreateTs(folder.getCreateTs());
-            newFolder.setDeletedBy(folder.getDeletedBy());
-            newFolder.setDeleteTs(folder.getDeleteTs());
-            newFolder.setFilterComponentId(oldFolder.getFilterComponentId());
-            newFolder.setFilterXml(oldFolder.getFilterXml());
-            newFolder.setName(oldFolder.getCaption());
-            newFolder.setTabName(oldFolder.getTabName());
-            newFolder.setParent(oldFolder.getParent());
-            newFolder.setItemStyle(oldFolder.getItemStyle());
-            newFolder.setSortOrder(oldFolder.getSortOrder());
+            Folder newFolder = (Folder) InstanceUtils.copy(folder);
+            newFolder.setId(UuidProvider.createUuid());
             if (newFolder instanceof SearchFolder) {
-
-                ((SearchFolder) newFolder).setUser(UserSessionClient.getUserSession().getUser());
-            } else {
-                ((AppFolder) newFolder).setQuantityScript(((AppFolder) oldFolder).getQuantityScript());
-                ((AppFolder) newFolder).setVisibilityScript(((AppFolder) oldFolder).getVisibilityScript());
+                ((SearchFolder) newFolder).setUser(UserSessionProvider.getUserSession().getUser());
             }
             new EditAction().perform(newFolder);
-
         }
     }
 
