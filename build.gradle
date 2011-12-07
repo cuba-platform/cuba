@@ -1,4 +1,4 @@
-/*
+﻿/*
 * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
 * Haulmont Technology proprietary and confidential.
 * Use is subject to license terms.
@@ -6,7 +6,7 @@
 
 allprojects {
     artifactGroup = 'com.haulmont.cuba'
-    artifactVersion = '3.1'
+    artifactVersion = '3.1.1'
     isSnapshot = true
     //tomcatDir = rootDir.absolutePath + '/../tomcat'
 }
@@ -53,6 +53,8 @@ def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.7.20110830
 def postgres = [group: 'postgresql', name: 'postgresql', version: '8.3-603.jdbc4']
 def hsqldb = [group: 'hsqldb', name: 'hsqldb', version: '1.8.0.10']
 
+def baseVersion = artifactVersion + (isSnapshot ? '-SNAPSHOT' : '')
+
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webToolkitModule,
         webModule, desktopModule, uiTestModule]) {
     apply(plugin: 'java')
@@ -62,9 +64,9 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
     apply(plugin: 'cuba')
 
     dependencies {
-        compile(group: 'com.haulmont.bali', name: 'bali', version: '3.1-SNAPSHOT')
-        compile(group: 'com.haulmont.chile', name: 'chile-core', version: '3.1-SNAPSHOT')
-        compile(group: 'com.haulmont.chile', name: 'chile-jpa', version: '3.1-SNAPSHOT')
+        compile(group: 'com.haulmont.bali', name: 'bali', version: baseVersion)
+        compile(group: 'com.haulmont.chile', name: 'chile-core', version: baseVersion)
+        compile(group: 'com.haulmont.chile', name: 'chile-jpa', version: baseVersion)
 
         compile(group: 'antlr', name: 'antlr', version: '2.7.7')
         compile(group: 'aopalliance', name: 'aopalliance', version: '1.0')
