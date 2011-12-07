@@ -70,7 +70,9 @@ public class FrameContext implements WindowContext {
             component = frame.getComponent(ValuePathHelper.format(path));
         }
 
-        if (component == null || component == frame) {
+        if (component == null || component == frame
+                || ((component instanceof Component.Wrapper) && ((Component.Wrapper) component).getComponent() == frame))
+        {
             // if component not found or found the frame itself, try to search in parent frame
             if (frame.getFrame() != null)
                 return frame.getFrame().getContext().<T>getValue(property);
