@@ -46,7 +46,7 @@ public final class HSSFCellHelper {
 
         if (StringUtils.isEmpty(parameterName)) return;
 
-        if (!band.getData().containsKey(parameterName)) {
+        if (band.getData().get(parameterName) == null) {
             resultCell.setCellValue(templateCell.getRichStringCellValue());
             return;
         }
