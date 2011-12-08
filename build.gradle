@@ -120,6 +120,7 @@ configure(globalModule) {
 
     task enhance(type: CubaEnhancing) {
         persistenceXml = "$globalModule.projectDir/src/cuba-persistence.xml"
+        metadataXml = "$globalModule.projectDir/src/cuba-metadata.xml"
     }
     compileJava << {
         enhance.execute()
