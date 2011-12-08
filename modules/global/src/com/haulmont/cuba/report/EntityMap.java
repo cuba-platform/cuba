@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
+import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,11 +44,21 @@ public class EntityMap implements Map<String, Object> {
 
     @Override
     public boolean containsKey(Object key) {
-        return explicitData.containsKey(key);
+        if (explicitData.containsKey(key))
+            return true;
+        else {
+            MetaClass metaClass = instance.getMetaClass();
+            for (MetaProperty property : metaClass.getProperties()) {
+                if (ObjectUtils.equals(property.getName(), key))
+                    return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public boolean containsValue(Object value) {
+        loadAllProperties();
         return explicitData.containsValue(value);
     }
 
