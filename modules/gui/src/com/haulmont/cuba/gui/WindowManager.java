@@ -95,7 +95,7 @@ public abstract class WindowManager implements Serializable {
 
     public abstract Collection<Window> getOpenWindows();
 
-    private Integer getHash(WindowInfo windowInfo, Map<String, Object> params) {
+    protected Integer getHash(WindowInfo windowInfo, Map<String, Object> params) {
         return windowInfo.hashCode() + params.hashCode();
     }
 

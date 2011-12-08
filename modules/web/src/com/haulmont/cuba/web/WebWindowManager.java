@@ -1093,12 +1093,16 @@ public class WebWindowManager extends WindowManager {
     @Override
     protected void checkCanOpenWindow(WindowInfo windowInfo, OpenType openType, Map<String, Object> params) {
         if (OpenType.NEW_TAB.equals(openType)) {
-            int maxCount = ConfigProvider.getConfig(WebConfig.class).getMaxTabCount();
-            if (maxCount > 0 && maxCount <= getCurrentWindowData().tabs.size()) {
-                app.getAppWindow().showNotification(
-                        MessageProvider.formatMessage(AppConfig.getMessagesPack(),"tooManyOpenTabs.message",maxCount),
-                        com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE);
-                throw new SilentException();
+            if (!windowInfo.getMultipleOpen() && getWindow(getHash(windowInfo, params)) != null) {
+                //window already opened
+            } else {
+                int maxCount = ConfigProvider.getConfig(WebConfig.class).getMaxTabCount();
+                if (maxCount > 0 && maxCount <= getCurrentWindowData().tabs.size()) {
+                    app.getAppWindow().showNotification(
+                            MessageProvider.formatMessage(AppConfig.getMessagesPack(), "tooManyOpenTabs.message", maxCount),
+                            com.vaadin.ui.Window.Notification.TYPE_WARNING_MESSAGE);
+                    throw new SilentException();
+                }
             }
         }
     }
