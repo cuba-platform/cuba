@@ -203,6 +203,8 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
                updateInstance(value);
                updateComponent(value);
                fireChangeListeners(value);
+           } else {
+               updateComponent(value);
            }
        }
     }
