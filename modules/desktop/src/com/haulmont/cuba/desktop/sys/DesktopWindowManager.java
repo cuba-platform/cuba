@@ -484,29 +484,34 @@ public class DesktopWindowManager extends WindowManager {
     @Override
     public void showOptionDialog(String title, String message, IFrame.MessageType messageType,final Action[] actions) {
 
-        class ActionWrapper {
-            Action action;
-
-            ActionWrapper(Action action) {
-                this.action = action;
-            }
-
-            Action getAction() {
-                return action;
-            }
-
-            @Override
-            public String toString() {
-                return action.getCaption();
-            }
-        }
+        final JDialog dialog = new JDialog(App.getInstance().getMainFrame(), title, false);
 
         Object[] options = new Object[actions.length];
         for (int i = 0; i < actions.length; i++) {
-            Action action = actions[i];
-            options[i] = new ActionWrapper(action);
+            final Action action = actions[i];
+            JButton btn = new JButton(action.getCaption());
+
+            String icon = action.getIcon();
+
+            if (icon != null)
+                btn.setIcon(App.getInstance().getResources().getIcon(icon));
+
+            btn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    action.actionPerform(null);
+                    App.getInstance().enable();
+                    dialog.setVisible(false);
+                }
+            });
+
+            btn.setPreferredSize(new Dimension(btn.getPreferredSize().width, DesktopComponentsHelper.BUTTON_HEIGHT));
+            btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, DesktopComponentsHelper.BUTTON_HEIGHT));
+            options[i] = btn;
         }
+
         int optionType;
+
         if (options.length == 1)
             optionType = JOptionPane.DEFAULT_OPTION;
         else if (options.length == 2)
@@ -524,7 +529,7 @@ public class DesktopWindowManager extends WindowManager {
                 options,
                 null
         );
-        final JDialog dialog = new JDialog(App.getInstance().getMainFrame(), title, false);
+
         dialog.setContentPane(optionPane);
         dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         optionPane.addPropertyChangeListener(
@@ -533,11 +538,9 @@ public class DesktopWindowManager extends WindowManager {
                         String prop = e.getPropertyName();
                         if (dialog.isVisible()
                                 && (e.getSource() == optionPane)
-                                && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
-                            if (e.getNewValue() instanceof ActionWrapper) {
-                                ActionWrapper actionWrapper = (ActionWrapper) e.getNewValue();
-                                actionWrapper.getAction().actionPerform(null);
-                            }
+                                && (prop.equals(JOptionPane.VALUE_PROPERTY))
+                                && new Integer(-1).equals(e.getNewValue())) {
+
                             App.getInstance().enable();
                             dialog.setVisible(false);
                         }
