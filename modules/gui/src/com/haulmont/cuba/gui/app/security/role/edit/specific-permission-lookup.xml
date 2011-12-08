@@ -24,7 +24,7 @@
     <dsContext>
         <hierarchicalDatasource
             id="permissions"
-            class="com.haulmont.cuba.gui.config.PermissionConfig$Target"
+            class="com.haulmont.cuba.security.entity.PermissionTarget"
             view="role.edit"
         >
             <datasourceClass>com.haulmont.cuba.gui.security.SpecificPermissionTargetsDatasource</datasourceClass>

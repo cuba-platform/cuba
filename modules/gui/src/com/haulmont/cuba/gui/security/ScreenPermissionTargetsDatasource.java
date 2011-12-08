@@ -18,21 +18,28 @@ import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
+import com.haulmont.cuba.security.entity.PermissionTarget;
 
 import java.util.Map;
+
 
 /**
  * Datasource for manage screen permissions
  */
-public class ScreenPermissionTargetsDatasource extends AbstractTreeDatasource {
+public class ScreenPermissionTargetsDatasource extends AbstractTreeDatasource<PermissionTarget, String> {
     public ScreenPermissionTargetsDatasource(
             DsContext context, DataService dataservice,
-                String id, MetaClass metaClass, String viewName)
-    {
+            String id, MetaClass metaClass, String viewName) {
         super(context, dataservice, id, metaClass, viewName);
     }
 
-    protected Tree<PermissionConfig.Target> loadTree(Map params) {
+    @Override
+    public boolean isModified() {
+        return false;
+    }
+
+    @Override
+    protected Tree<PermissionTarget> loadTree(Map params) {
         return AppContext.getBean(PermissionConfig.class).getScreens(UserSessionProvider.getLocale());
     }
 }

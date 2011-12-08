@@ -1,0 +1,41 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        messagesPack="com.haulmont.cuba.gui.app.security.role.edit">
+
+    <dsContext>
+        <collectionDatasource id="propertyPermissionsDs"
+                              class="com.haulmont.cuba.security.entity.Permission"
+                              view="role.edit">
+            <query>select p from sec$Permission p where p.role.id = :ds$roleDs and p.type = 30</query>
+        </collectionDatasource>
+    </dsContext>
+
+    <#assign width = 200>
+    <#assign treeHeight = 400>
+    <#assign treeWidth = 500>
+    <#assign widthPPB = 120>
+    <#assign widthPPBMenu = 100>
+    <layout expandLayout="true">
+        <vbox expand="propertyPermissionsTable" margin="true" spacing="true">
+            <buttonsPanel>
+                <popupButton id="propertyPermissionsGrant" icon="icons/add.png"
+                             caption="msg://permissions.grant"
+                             width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
+                <button id="propertyPermissionsRemove" action="propertyPermissionsTable.remove"
+                        caption="msg://permissions.remove" icon="icons/remove.png"/>
+            </buttonsPanel>
+            <table id="propertyPermissionsTable">
+                <columns>
+                    <column id="target" caption="msg://target"/>
+                    <column id="value" caption="msg://value"/>
+                </columns>
+                <rows datasource="propertyPermissionsDs"/>
+            </table>
+        </vbox>
+    </layout>
+</window>

@@ -2,7 +2,7 @@
 <metadata xmlns="http://www.haulmont.com/schema/cuba/metadata.xsd">
 
     <metadata-model>
-        <class>com.haulmont.cuba.gui.config.PermissionConfig$Target</class>
+        <class>com.haulmont.cuba.security.entity.PermissionTarget</class>
         <class>com.haulmont.cuba.security.entity.UserSessionEntity</class>
         <class>com.haulmont.cuba.core.global.LockInfo</class>
         <class>com.haulmont.cuba.security.entity.EntityLogAttrWrapper</class>

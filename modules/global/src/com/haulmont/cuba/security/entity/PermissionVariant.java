@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.gui.config;
+package com.haulmont.cuba.security.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import org.apache.commons.lang.ObjectUtils;
@@ -33,6 +33,7 @@ public enum PermissionVariant implements EnumClass<Integer> {
 
     private Integer id;
 
+    @Override
     public Integer getId() {
         return id;
     }

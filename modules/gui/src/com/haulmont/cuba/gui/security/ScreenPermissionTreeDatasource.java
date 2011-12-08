@@ -10,12 +10,12 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionValue;
-import com.haulmont.cuba.gui.config.PermissionConfig;
-import com.haulmont.cuba.gui.config.PermissionVariant;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.security.entity.Permission;
+import com.haulmont.cuba.security.entity.PermissionTarget;
+import com.haulmont.cuba.security.entity.PermissionVariant;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import java.util.UUID;
  */
 public class ScreenPermissionTreeDatasource extends ScreenPermissionTargetsDatasource {
 
-    private Tree<PermissionConfig.Target> screensTree;
+    private Tree<PermissionTarget> screensTree;
     private CollectionDatasource<Permission, UUID> permissionDs;
 
     public ScreenPermissionTreeDatasource(DsContext context, DataService dataservice, String id, MetaClass metaClass, String viewName) {
@@ -38,46 +38,46 @@ public class ScreenPermissionTreeDatasource extends ScreenPermissionTargetsDatas
     }
 
     @Override
-    protected Tree<PermissionConfig.Target> loadTree(Map params) {
+    protected Tree<PermissionTarget> loadTree(Map params) {
         if (screensTree == null) {
-            List<Node<PermissionConfig.Target>> nodes = super.loadTree(params).getRootNode().getChildren();
+            List<Node<PermissionTarget>> nodes = super.loadTree(params).getRootNode().getChildren();
 
-            List<Node<PermissionConfig.Target>> clonedNodes = new ArrayList<Node<PermissionConfig.Target>>();
-            for (Node<PermissionConfig.Target> node : nodes)
+            List<Node<PermissionTarget>> clonedNodes = new ArrayList<Node<PermissionTarget>>();
+            for (Node<PermissionTarget> node : nodes)
                 clonedNodes.add(cloneNode(node));
 
-            screensTree = new Tree<PermissionConfig.Target>(clonedNodes);
+            screensTree = new Tree<PermissionTarget>(clonedNodes);
         }
         if (permissionDs != null)
-            for (Node<PermissionConfig.Target> node : screensTree.getRootNodes())
+            for (Node<PermissionTarget> node : screensTree.getRootNodes())
                 applyPermissions(node);
         // Set permission variants for targets
         return screensTree;
     }
 
-    private Node<PermissionConfig.Target> cloneNode(Node<PermissionConfig.Target> node) {
-        Node<PermissionConfig.Target> clone = new Node<PermissionConfig.Target>();
+    private Node<PermissionTarget> cloneNode(Node<PermissionTarget> node) {
+        Node<PermissionTarget> clone = new Node<PermissionTarget>();
         clone.setData(cloneTarget(node.data));
-        for (Node<PermissionConfig.Target> childNode : node.getChildren()) {
+        for (Node<PermissionTarget> childNode : node.getChildren()) {
             clone.addChild(cloneNode(childNode));
         }
         return clone;
     }
 
-    private PermissionConfig.Target cloneTarget(PermissionConfig.Target target) {
-        return new PermissionConfig.Target(
+    private PermissionTarget cloneTarget(PermissionTarget target) {
+        return new PermissionTarget(
                 target.getId(), target.getCaption(),
                 target.getPermissionValue(), target.getPermissionVariant());
     }
 
-    private void applyPermissions(Node<PermissionConfig.Target> node) {
+    private void applyPermissions(Node<PermissionTarget> node) {
         loadPermissionVariant(node.data);
-        for (Node<PermissionConfig.Target> child : node.getChildren()) {
+        for (Node<PermissionTarget> child : node.getChildren()) {
             applyPermissions(child);
         }
     }
 
-    private void loadPermissionVariant(PermissionConfig.Target target) {
+    private void loadPermissionVariant(PermissionTarget target) {
         Permission permission = null;
         for (UUID id : permissionDs.getItemIds()) {
             Permission p = permissionDs.getItem(id);

@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
+import com.haulmont.cuba.security.entity.PermissionTarget;
 
 import java.util.Map;
 
@@ -29,7 +30,8 @@ public class EntityPermissionTargetsDatasource extends AbstractTreeDatasource {
         super(context, dataservice, id, metaClass, viewName);
     }
 
-    protected Tree<PermissionConfig.Target> loadTree(Map params) {
+    @Override
+    protected Tree<PermissionTarget> loadTree(Map params) {
         return AppContext.getBean(PermissionConfig.class).getEntities(UserSessionProvider.getLocale());
     }
 }

@@ -52,6 +52,7 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
             final K id = entity.getId();
 
             data.put(id, entity);
+            attachListener(entity);
 
             targetNodes.put(id, node);
         }

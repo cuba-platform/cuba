@@ -14,13 +14,12 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.*;
-import com.haulmont.chile.core.model.impl.AbstractInstance;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.security.entity.PermissionTarget;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -46,79 +45,12 @@ public class PermissionConfig {
 
     public static final String PERMISSION_CONFIG_XML_PROP = "cuba.permissionConfig";
 
-    /**
-     * Non-persistent entity to show permission targets in UI
-     */
-    @com.haulmont.chile.core.annotations.MetaClass(name = "sec$Target")
-    public static class Target
-            extends AbstractInstance
-            implements Entity<String> {
-
-        @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
-        private String id;
-
-        @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
-        private String caption;
-
-        @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
-        private String permissionValue;
-
-        @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
-        private PermissionVariant permissionVariant = PermissionVariant.NOTSET;
-
-        private UUID uuid = UuidProvider.createUuid();
-
-        public Target(String id, String caption, String permissionValue) {
-            this(id, caption, permissionValue, PermissionVariant.NOTSET);
-        }
-
-        public Target(String id, String caption, String permissionValue, PermissionVariant permissionVariant) {
-            this.caption = caption;
-            this.id = id;
-            this.permissionValue = permissionValue;
-            this.permissionVariant = permissionVariant;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public String getCaption() {
-            return caption;
-        }
-
-        public String getPermissionValue() {
-            return permissionValue;
-        }
-
-        public String toString() {
-            return caption;
-        }
-
-        public UUID getUuid() {
-            return uuid;
-        }
-
-        public MetaClass getMetaClass() {
-            return MetadataProvider.getSession().getClass(getClass());
-        }
-
-        public PermissionVariant getPermissionVariant() {
-            return permissionVariant;
-        }
-
-        public void setPermissionVariant(PermissionVariant permissionVariant) {
-            this.permissionVariant = permissionVariant;
-        }
-
-    }
-
     private class Item {
         private Locale locale;
 
-        private Tree<Target> screens;
-        private Tree<Target> entities;
-        private Tree<Target> specific;
+        private Tree<PermissionTarget> screens;
+        private Tree<PermissionTarget> entities;
+        private Tree<PermissionTarget> specific;
 
         private Item(Locale locale) {
             this.locale = locale;
@@ -133,50 +65,50 @@ public class PermissionConfig {
         }
 
         private void compileScreens() {
-            Node<Target> root = new Node<Target>(
-                    new Target("menu", getMessage("permissionConfig.screenRoot"), null)
+            Node<PermissionTarget> root = new Node<PermissionTarget>(
+                    new PermissionTarget("menu", getMessage("permissionConfig.screenRoot"), null)
             );
-            screens = new Tree<Target>(root);
+            screens = new Tree<PermissionTarget>(root);
 
             walkMenu(root);
         }
 
-        private void walkMenu(Node<Target> node) {
+        private void walkMenu(Node<PermissionTarget> node) {
             for (MenuItem info : menuConfig.getRootItems()) {
                 walkMenu(info, node);
             }
         }
 
-        private void walkMenu(MenuItem info, Node<Target> node) {
+        private void walkMenu(MenuItem info, Node<PermissionTarget> node) {
             String id = info.getId();
             String caption = MenuConfig.getMenuItemCaption(id).replaceAll("<.+?>", "").replaceAll("&gt;","");
             caption = StringEscapeUtils.unescapeHtml(caption);
 
             if (info.getChildren() != null && !info.getChildren().isEmpty()) {
-                Node<Target> n = new Node<Target>(new Target("category:" + id, caption, UserSession.getScreenPermissionTarget(clientType, id)));
+                Node<PermissionTarget> n = new Node<PermissionTarget>(new PermissionTarget("category:" + id, caption, UserSession.getScreenPermissionTarget(clientType, id)));
                 node.addChild(n);
                 for (MenuItem item : info.getChildren()) {
                     walkMenu(item, n);
                 }
             } else {
                 if (!"-".equals(info.getId())) {
-                    Node<Target> n = new Node<Target>(
-                            new Target("item:" + id, caption, UserSession.getScreenPermissionTarget(clientType, id)));
+                    Node<PermissionTarget> n = new Node<PermissionTarget>(
+                            new PermissionTarget("item:" + id, caption, UserSession.getScreenPermissionTarget(clientType, id)));
                     node.addChild(n);
                 }
             }
         }
 
         private void compileEntities() {
-            Node<Target> root = new Node<Target>(new Target("session", getMessage("permissionConfig.entityRoot"), null));
-            entities = new Tree<Target>(root);
+            Node<PermissionTarget> root = new Node<PermissionTarget>(new PermissionTarget("session", getMessage("permissionConfig.entityRoot"), null));
+            entities = new Tree<PermissionTarget>(root);
 
             Session session = MetadataProvider.getSession();
             List<MetaModel> modelList = new ArrayList<MetaModel>(session.getModels());
             Collections.sort(modelList, new MetadataObjectAlphabetComparator());
 
             for (MetaModel model : modelList) {
-                Node<Target> modelNode = new Node<Target>(new Target("model:" + model.getName(), model.getName(), null));
+                Node<PermissionTarget> modelNode = new Node<PermissionTarget>(new PermissionTarget("model:" + model.getName(), model.getName(), null));
                 root.addChild(modelNode);
 
                 List<MetaClass> classList = new ArrayList<MetaClass>(model.getClasses());
@@ -186,7 +118,7 @@ public class PermissionConfig {
                     String name = metaClass.getName();
                     if (name.contains("$")) {
                         String caption = name + " (" + MessageUtils.getEntityCaption(metaClass) + ")";
-                        Node<Target> node = new Node<Target>(new Target("entity:" + name, caption, name));
+                        Node<PermissionTarget> node = new Node<PermissionTarget>(new PermissionTarget("entity:" + name, caption, name));
                         modelNode.addChild(node);
                     }
                 }
@@ -194,8 +126,8 @@ public class PermissionConfig {
         }
 
         private void compileSpecific() {
-            Node<Target> root = new Node<Target>(new Target("specific", getMessage("permissionConfig.specificRoot"), null));
-            specific = new Tree<Target>(root);
+            Node<PermissionTarget> root = new Node<PermissionTarget>(new PermissionTarget("specific", getMessage("permissionConfig.specificRoot"), null));
+            specific = new Tree<PermissionTarget>(root);
 
             final String configName = AppContext.getProperty(PERMISSION_CONFIG_XML_PROP);
             ConfigurationResourceLoader resourceLoader = new ConfigurationResourceLoader();
@@ -219,7 +151,7 @@ public class PermissionConfig {
             }
         }
 
-        private void compileSpecific(String xml, Node<Target> root) {
+        private void compileSpecific(String xml, Node<PermissionTarget> root) {
             Document doc = Dom4j.readDocument(xml);
             Element rootElem = doc.getRootElement();
 
@@ -241,17 +173,17 @@ public class PermissionConfig {
             walkSpecific(specElem, root);
         }
 
-        private void walkSpecific(Element element, Node<Target> node) {
+        private void walkSpecific(Element element, Node<PermissionTarget> node) {
             //noinspection unchecked
             for (Element elem : (List<Element>) element.elements()) {
                 String id = elem.attributeValue("id");
                 String caption = getMessage("permission-config." + id);
                 if ("category".equals(elem.getName())) {
-                    Node<Target> n = new Node<Target>(new Target("category:" + id, caption, null));
+                    Node<PermissionTarget> n = new Node<PermissionTarget>(new PermissionTarget("category:" + id, caption, null));
                     node.addChild(n);
                     walkSpecific(elem, n);
                 } else if ("permission".equals(elem.getName())) {
-                    Node<Target> n = new Node<Target>(new Target("permission:" + id, caption, id));
+                    Node<PermissionTarget> n = new Node<PermissionTarget>(new PermissionTarget("permission:" + id, caption, id));
                     node.addChild(n);
                 }
             }
@@ -286,29 +218,29 @@ public class PermissionConfig {
     /**
      * All registered screens
      */
-    public Tree<Target> getScreens(Locale locale) {
+    public Tree<PermissionTarget> getScreens(Locale locale) {
         return getItem(locale).screens;
     }
 
     /**
      * All registered entities
      */
-    public Tree<Target> getEntities(Locale locale) {
+    public Tree<PermissionTarget> getEntities(Locale locale) {
         return getItem(locale).entities;
     }
 
     /**
      * All specific permissions
      */
-    public Tree<Target> getSpecific(Locale locale) {
+    public Tree<PermissionTarget> getSpecific(Locale locale) {
         return getItem(locale).specific;
     }
 
     /**
      * Entity operations for specified target
-     * @return list of {@link Target} objects
+     * @return list of {@link com.haulmont.cuba.security.entity.PermissionTarget} objects
      */
-    public List<Target> getEntityOperations(Target entityTarget) {
+    public List<PermissionTarget> getEntityOperations(PermissionTarget entityTarget) {
         if (entityTarget == null) return Collections.emptyList();
 
         final String id = entityTarget.getId();
@@ -317,20 +249,20 @@ public class PermissionConfig {
         MetaClass metaClass = MetadataProvider.getSession().getClass(id.substring("entity:".length()));
         if (metaClass == null) return Collections.emptyList();
 
-        List<Target> result = new ArrayList<Target>();
+        List<PermissionTarget> result = new ArrayList<PermissionTarget>();
         final String value = entityTarget.getPermissionValue();
 
-        result.add(new Target(id + ":read", "read", value + ":read"));
+        result.add(new PermissionTarget(id + ":read", "read", value + ":read"));
 
         Class javaClass = metaClass.getJavaClass();
 
         if (javaClass.isAnnotationPresent(javax.persistence.Entity.class)) {
-            result.add(new Target(id + ":create", "create", value + ":create"));
-            result.add(new Target(id + ":delete", "delete", value + ":delete"));
+            result.add(new PermissionTarget(id + ":create", "create", value + ":create"));
+            result.add(new PermissionTarget(id + ":delete", "delete", value + ":delete"));
         }
 
         if (Updatable.class.isAssignableFrom(javaClass)) {
-            result.add(new Target(id + ":update", "update", value + ":update"));
+            result.add(new PermissionTarget(id + ":update", "update", value + ":update"));
         }
 
         return result;
@@ -338,9 +270,9 @@ public class PermissionConfig {
 
     /**
      * Entity attributes for specified target
-     * @return list of {@link Target} objects
+     * @return list of {@link com.haulmont.cuba.security.entity.PermissionTarget} objects
      */
-    public List<Target> getEntityAttributes(Target entityTarget) {
+    public List<PermissionTarget> getEntityAttributes(PermissionTarget entityTarget) {
         if (entityTarget == null) return Collections.emptyList();
 
         final String id = entityTarget.getId();
@@ -354,10 +286,10 @@ public class PermissionConfig {
         List<MetaProperty> propertyList = new ArrayList<MetaProperty>(metaClass.getProperties());
         Collections.sort(propertyList, new MetadataObjectAlphabetComparator());
 
-        List<Target> result = new ArrayList<Target>();
+        List<PermissionTarget> result = new ArrayList<PermissionTarget>();
         for (MetaProperty metaProperty : propertyList) {
             String caption = metaProperty.getName() + " (" + MessageUtils.getPropertyCaption(metaProperty) + ")";
-            result.add(new Target(id + ":" + metaProperty.getName(), caption, value + ":" + metaProperty.getName()));
+            result.add(new PermissionTarget(id + ":" + metaProperty.getName(), caption, value + ":" + metaProperty.getName()));
         }
 
         return result;

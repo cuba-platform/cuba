@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.WindowContext;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -240,7 +241,7 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
     }
 
     public <T extends Window> T openLookup(
-            String windowAlias, Window.Lookup.Handler handler,
+            String windowAlias, @Nullable Window.Lookup.Handler handler,
             WindowManager.OpenType openType, Map<String, Object> params) {
         return frame.<T>openLookup(windowAlias, handler, openType, params);
     }

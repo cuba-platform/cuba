@@ -15,7 +15,6 @@ import com.haulmont.cuba.gui.app.security.role.edit.PermissionsLookup;
 import com.haulmont.cuba.gui.app.security.user.NameBuilderListener;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
-import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -80,6 +79,7 @@ public class UserEditor extends AbstractEditor {
         void initLanguageLook(LookupField languageLook);
     }
 
+    @Override
     public void init(Map<String, Object> params) {
         userDs.addListener(new NameBuilderListener(fieldGroup));
 
@@ -219,7 +219,7 @@ public class UserEditor extends AbstractEditor {
                         UserSessionService uss = ServiceLocator.lookup(UserSessionService.NAME);
                         for (Object item : items) {
                             if (item == null) continue;
-                            PermissionConfig.Target target = (PermissionConfig.Target)item;
+                            PermissionTarget target = (PermissionTarget)item;
                             Integer permissionValue =  uss.getPermissionValue(userDs.getItem(), permissionType, target.getPermissionValue());
                             String permissionStringValue = "";
                             if (permissionType == PermissionType.ENTITY_ATTR) {
@@ -294,6 +294,7 @@ public class UserEditor extends AbstractEditor {
         }
     }
 
+    @Override
     public boolean commit() {
         return _commit() && super.commit();
     }

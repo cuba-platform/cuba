@@ -9,26 +9,29 @@ package com.haulmont.cuba.gui.app.security.role.edit;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.security.entity.PermissionTarget;
 import org.apache.commons.lang.BooleanUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
 
 public class PermissionsLookup extends AbstractLookup {
 
     protected Tree permissionsTree;
     protected String type;
     @SuppressWarnings({"unchecked"})
-    protected LinkedList<PermissionConfig.Target> targets;
-    protected CollectionDatasource<PermissionConfig.Target,String> entityPermissionsDs;
+    protected LinkedList<PermissionTarget> targets;
+    protected CollectionDatasource<PermissionTarget, String> entityPermissionsDs;
     private Companion companion;
 
     public interface Companion {
         void initPermissionsTree(WidgetsTree tree);
+
         void initPermissionsTreeComponents(BoxLayout box, Label label, CheckBox checkBox);
     }
 
@@ -47,26 +50,26 @@ public class PermissionsLookup extends AbstractLookup {
         entityPermissionsDs.refresh();
         permissionsTree.expandTree();
 
-        targets = new LinkedList<PermissionConfig.Target>();
+        targets = new LinkedList<PermissionTarget>();
 
-        addListener(new CloseListener(){
+        addListener(new CloseListener() {
             @Override
             public void windowClosed(String actionId) {
-                if("select".equals(actionId))
+                if ("select".equals(actionId))
                     getLookupHandler().handleLookup(targets);
             }
         });
 
         Button checkAll = getComponent("checkAll");
-        if(checkAll != null)
-            checkAll.setAction(new AbstractAction("checkAll"){
+        if (checkAll != null)
+            checkAll.setAction(new AbstractAction("checkAll") {
                 @Override
                 public void actionPerform(Component component) {
                     HierarchicalDatasource datasource = (HierarchicalDatasource) permissionsTree.getDatasource();
-                    if(datasource != null){
-                        for (String uuid : (Collection<String>) datasource.getItemIds() ){
-                            PermissionConfig.Target target = (PermissionConfig.Target)datasource.getItem(uuid);
-                            if (!targets.contains(target)&&target.getPermissionValue() != null)
+                    if (datasource != null) {
+                        for (String uuid : (Collection<String>) datasource.getItemIds()) {
+                            PermissionTarget target = (PermissionTarget) datasource.getItem(uuid);
+                            if (!targets.contains(target) && target.getPermissionValue() != null)
                                 targets.add(target);
                         }
                         permissionsTree.refresh();
@@ -80,8 +83,8 @@ public class PermissionsLookup extends AbstractLookup {
             });
 
         Button uncheckAll = getComponent("uncheckAll");
-        if(uncheckAll != null)
-            uncheckAll.setAction(new AbstractAction("uncheckAll"){
+        if (uncheckAll != null)
+            uncheckAll.setAction(new AbstractAction("uncheckAll") {
                 @Override
                 public void actionPerform(Component component) {
                     targets.clear();
@@ -94,7 +97,7 @@ public class PermissionsLookup extends AbstractLookup {
                 }
             });
 
-        if(permissionsTree instanceof WidgetsTree) {
+        if (permissionsTree instanceof WidgetsTree) {
             if (companion != null)
                 companion.initPermissionsTree((WidgetsTree) permissionsTree);
 
@@ -102,7 +105,7 @@ public class PermissionsLookup extends AbstractLookup {
                     new WidgetsTree.WidgetBuilder() {
                         @Override
                         public Component build(HierarchicalDatasource datasource, Object itemId, boolean leaf) {
-                            final PermissionConfig.Target target = (PermissionConfig.Target) datasource.getItem(itemId);
+                            final PermissionTarget target = (PermissionTarget) datasource.getItem(itemId);
 
                             ComponentsFactory factory = AppConfig.getFactory();
                             BoxLayout box = factory.createComponent(BoxLayout.HBOX);
@@ -146,18 +149,18 @@ public class PermissionsLookup extends AbstractLookup {
         }
 
         Label permissionsType = getComponent("permissionsType");
-        type = (String)params.get("param$PermissionValue");
-        if(PermissionValue.ALLOW.name().equals(type)){
-            permissionsType.setValue(MessageProvider.getMessage(ScreenPermissionsLookup.class,"PermissionValue.ALLOW"));
-        }else if(PermissionValue.DENY.name().equals(type)){
-            permissionsType.setValue(MessageProvider.getMessage(ScreenPermissionsLookup.class,"PermissionValue.DENY"));
-        }else if (PropertyPermissionValue.MODIFY.name().equals(type)){
-            permissionsType.setValue(MessageProvider.getMessage(ScreenPermissionsLookup.class,"PropertyPermissionValue.MODIFY"));
-        }else if(PropertyPermissionValue.VIEW.name().equals(type)){
-            permissionsType.setValue(MessageProvider.getMessage(ScreenPermissionsLookup.class,"PropertyPermissionValue.VIEW"));
-        }else if("FORBID".equals(type)){
-            permissionsType.setValue(MessageProvider.getMessage(ScreenPermissionsLookup.class,"PropertyPermissionValue.DENY"));
-        } else{
+        type = (String) params.get("param$PermissionValue");
+        if (PermissionValue.ALLOW.name().equals(type)) {
+            permissionsType.setValue(MessageProvider.getMessage(ScreenPermissionsLookup.class, "PermissionValue.ALLOW"));
+        } else if (PermissionValue.DENY.name().equals(type)) {
+            permissionsType.setValue(MessageProvider.getMessage(ScreenPermissionsLookup.class, "PermissionValue.DENY"));
+        } else if (PropertyPermissionValue.MODIFY.name().equals(type)) {
+            permissionsType.setValue(MessageProvider.getMessage(ScreenPermissionsLookup.class, "PropertyPermissionValue.MODIFY"));
+        } else if (PropertyPermissionValue.VIEW.name().equals(type)) {
+            permissionsType.setValue(MessageProvider.getMessage(ScreenPermissionsLookup.class, "PropertyPermissionValue.VIEW"));
+        } else if ("FORBID".equals(type)) {
+            permissionsType.setValue(MessageProvider.getMessage(ScreenPermissionsLookup.class, "PropertyPermissionValue.DENY"));
+        } else {
             permissionsType.setVisible(false);
         }
     }

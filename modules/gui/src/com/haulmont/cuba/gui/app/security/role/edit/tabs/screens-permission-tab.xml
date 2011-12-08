@@ -1,0 +1,51 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        messagesPack="com.haulmont.cuba.gui.app.security.role.edit"
+        class="com.haulmont.cuba.gui.app.security.role.edit.tabs.ScreenPermissionsFrame">
+
+    <dsContext>
+        <collectionDatasource id="screenPermissionsDs"
+                              class="com.haulmont.cuba.security.entity.Permission"
+                              view="role.edit">
+            <query>select p from sec$Permission p where p.role.id = :ds$roleDs and p.type = 10</query>
+        </collectionDatasource>
+
+        <collectionDatasource id="screenPermissionsTreeDs"
+                              class="com.haulmont.cuba.security.entity.PermissionTarget"
+                              view="_local">
+            <datasourceClass>com.haulmont.cuba.gui.security.ScreenPermissionTreeDatasource</datasourceClass>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expandLayout="true">
+        <hbox expand="screenPermissionsTree" margin="true" spacing="true">
+            <treeTable id="screenPermissionsTree">
+                <columns>
+                    <column id="caption" caption="msg://target"/>
+                    <column id="permissionVariant" caption="msg://value"/>
+                </columns>
+                <rows datasource="screenPermissionsTreeDs"/>
+            </treeTable>
+
+            <groupBox width="250" height="100%">
+                <caption label="msg://permissions"/>
+
+                <vbox id="selectedScreenPanel" expand="spacer" width="100" visible="false">
+                    <hbox width="100%">
+                        <label property="caption" datasource="screenPermissionsTreeDs" stylename="h2"/>
+                    </hbox>
+                    <hbox height="20" width="100%">
+                        <checkBox id="allowCheckBox" caption="msg://checkbox.allow" height="100%"/>
+                        <checkBox id="disallowCheckBox" caption="msg://checkbox.deny" height="100%"/>
+                    </hbox>
+                    <hbox id="spacer"/>
+                </vbox>
+            </groupBox>
+        </hbox>
+    </layout>
+</window>

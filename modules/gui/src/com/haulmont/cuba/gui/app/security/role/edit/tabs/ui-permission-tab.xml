@@ -1,0 +1,21 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        messagesPack="com.haulmont.cuba.gui.app.security.role.edit">
+
+    <dsContext>
+        <collectionDatasource id="specificPermissionsDs"
+                              class="com.haulmont.cuba.security.entity.Permission"
+                              view="role.edit">
+            <query>select p from sec$Permission p where p.role.id = :ds$roleDs and p.type = 50</query>
+        </collectionDatasource>
+    </dsContext>
+
+    <layout expandLayout="true">
+
+    </layout>
+</window>
