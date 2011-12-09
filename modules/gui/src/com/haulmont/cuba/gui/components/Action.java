@@ -21,20 +21,39 @@ public interface Action extends Serializable {
     public static final String PROP_ENABLED = "enabled";
     public static final String PROP_ICON = "icon";
 
+    /**
+     * @return  action's identifier
+     */
     String getId();
 
+    /**
+     * @return  action's localized caption
+     */
     String getCaption();
     void setCaption(String caption);
 
+    /**
+     * @return  action's icon
+     */
     String getIcon();
     void setIcon(String icon);
 
+    /**
+     * @return  whether the action is currently enabled
+     */
     boolean isEnabled();
     void setEnabled(boolean enabled);
 
+    /**
+     * @return  a component owning the action
+     */
     Component.ActionOwner getOwner();
     void setOwner(Component.ActionOwner actionOwner);
 
+    /**
+     * This method is invoked by owning component.
+     * @param component invoking component
+     */
     void actionPerform(Component component);
 
     /**

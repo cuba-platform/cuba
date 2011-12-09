@@ -25,52 +25,104 @@ import com.haulmont.cuba.security.entity.EntityOp;
 
 import java.util.Set;
 
+/**
+ * Standard list action to remove an entity instance.
+ * <p>
+ *      Action's behaviour can be customized by providing arguments to constructor, as well as overriding the following
+ *      methods:
+ *      <ul>
+ *          <li>{@link #getCaption()}</li>
+ *          <li>{@link #isEnabled()}</li>
+ *          <li>{@link #getConfirmationMessage(String)}</li>
+ *          <li>{@link #getConfirmationTitle(String)}</li>
+ *          <li>{@link #afterRemove(java.util.Set)} )}</li>
+ *      </ul>
+ * </p>
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public class RemoveAction extends AbstractAction implements CollectionDatasourceListener {
 
     private static final long serialVersionUID = -8700360141431140203L;
 
-    public static final String ACTION_ID = "remove";
+    public static final String ACTION_ID = ListActionType.REMOVE.getId();
 
-    protected final ListComponent owner;
+    protected final ListComponent holder;
     protected final boolean autocommit;
     protected final CollectionDatasource datasource;
     protected MetaProperty metaProperty;
 
-    public RemoveAction(ListComponent owner) {
-        this(owner, true, ACTION_ID);
+    /**
+     * The simplest constructor. The action has default name and autocommit=true.
+     * @param holder    component containing this action
+     */
+    public RemoveAction(ListComponent holder) {
+        this(holder, true, ACTION_ID);
     }
 
-    public RemoveAction(ListComponent owner, boolean autocommit) {
-        this(owner, autocommit, ACTION_ID);
+    /**
+     * Constructor that allows to specify autocommit value. The action has default name.
+     * @param holder        component containing this action
+     * @param autocommit    whether to commit datasource immediately
+     */
+    public RemoveAction(ListComponent holder, boolean autocommit) {
+        this(holder, autocommit, ACTION_ID);
     }
 
-    public RemoveAction(ListComponent owner, boolean autocommit, String id) {
+    /**
+     * Constructor that allows to specify action's identifier and autocommit value.
+     * @param holder        component containing this action
+     * @param autocommit    whether to commit datasource immediately
+     * @param id            action's identifier
+     */
+    public RemoveAction(ListComponent holder, boolean autocommit, String id) {
         super(id);
-        this.owner = owner;
+        this.holder = holder;
         this.autocommit = autocommit;
-        this.datasource = owner.getDatasource();
+        this.datasource = holder.getDatasource();
         if (datasource instanceof PropertyDatasource) {
             metaProperty = ((PropertyDatasource) datasource).getProperty();
         }
     }
 
+    /**
+     * Returns the action's caption. Override to provide a specific caption.
+     * @return  localized caption
+     */
     public String getCaption() {
         final String messagesPackage = AppConfig.getMessagesPack();
         return MessageProvider.getMessage(messagesPackage, "actions.Remove");
     }
 
+    /**
+     * @return  true if this list is connected to PropertyDatasource and this datasource contains ManyToMany property
+     */
     public boolean isManyToMany() {
-        return metaProperty != null && metaProperty.getRange() != null && metaProperty.getRange().getCardinality() != null && metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_MANY;
+        return metaProperty != null && metaProperty.getRange() != null
+                && metaProperty.getRange().getCardinality() != null
+                && metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_MANY;
     }
 
+    /**
+     * Whether the action is currently enabled. Override to provide specific behaviour.
+     * @return  true if enabled
+     */
     public boolean isEnabled() {
         return super.isEnabled() &&
                 (isManyToMany() || UserSessionProvider.getUserSession().isEntityOpPermitted(datasource.getMetaClass(), EntityOp.DELETE));
     }
 
+    /**
+     * This method is invoked by action owner component. Don't override it, there are special methods to
+     * customize behaviour below.
+     * @param component component invoking action
+     */
     public void actionPerform(Component component) {
-        if(!isEnabled()) return;
-        final Set selected = owner.getSelected();
+        if (!isEnabled())
+            return;
+        Set selected = holder.getSelected();
         if (!selected.isEmpty()) {
             confirmAndRemove(selected);
         }
@@ -78,7 +130,7 @@ public class RemoveAction extends AbstractAction implements CollectionDatasource
 
     protected void confirmAndRemove(final Set selected) {
         final String messagesPackage = AppConfig.getMessagesPack();
-        owner.getFrame().showOptionDialog(
+        holder.getFrame().showOptionDialog(
                 getConfirmationTitle(messagesPackage),
                 getConfirmationMessage(messagesPackage),
                 IFrame.MessageType.CONFIRMATION,
@@ -98,10 +150,20 @@ public class RemoveAction extends AbstractAction implements CollectionDatasource
         );
     }
 
+    /**
+     * Provides confirmation dialog message.
+     * @param   messagesPackage   message pack containing the message
+     * @return  localized message
+     */
     protected String getConfirmationMessage(String messagesPackage) {
         return MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove");
     }
 
+    /**
+     * Provides confirmation dialog title.
+     * @param   messagesPackage   message pack containing the title
+     * @return  localized title
+     */
     protected String getConfirmationTitle(String messagesPackage) {
         return MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation");
     }
@@ -121,6 +183,10 @@ public class RemoveAction extends AbstractAction implements CollectionDatasource
         }
     }
 
+    /**
+     * Hook invoked after remove.
+     * @param selected  set of removed instances
+     */
     protected void afterRemove(Set selected) {
     }
 

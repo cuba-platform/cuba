@@ -22,28 +22,69 @@ import com.haulmont.cuba.gui.export.ExportDisplay;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Standard table action to export the list of entities to XLS.
+ * <p>
+ *      Action's behaviour can be customized by providing arguments to constructor, as well as overriding the following
+ *      methods:
+ *      <ul>
+ *          <li>{@link #getCaption()}</li>
+ *          <li>{@link #isEnabled()}</li>
+ *      </ul>
+ * </p>
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public class ExcelAction extends AbstractAction {
 
     private static final long serialVersionUID = -1811807609363983998L;
 
-    public static final String ACTION_ID = "excel";
+    public static final String ACTION_ID = ListActionType.EXCEL.getId();
 
     protected final Table table;
     protected final ExportDisplay display;
     private boolean parameterized;
 
+    /**
+     * The simplest constructor. The action uses default name and other parameters.
+     * @param table     table containing this action
+     */
     public ExcelAction(Table table) {
         this(table, AppConfig.createExportDisplay(), false, ACTION_ID);
     }
 
+    /**
+     * Constructor that allows to specify the ExportDisplay implementation. The action uses default name
+     * and other parameters.
+     * @param table     table containing this action
+     * @param display   ExportDisplay implementation
+     */
     public ExcelAction(Table table, ExportDisplay display) {
         this(table, display, false, ACTION_ID);
     }
 
+    /**
+     * Constructor that allows to specify the ExportDisplay implementation and parameterized flag.
+     * The action uses default name.
+     * @param table         table containing this action
+     * @param display       ExportDisplay implementation
+     * @param parameterized if true, the special window "cuba$ExcelExport" will be opened instead of direct export via
+     * {@link ExcelExporter}
+     */
     public ExcelAction(Table table, ExportDisplay display, boolean parameterized) {
         this(table, display, parameterized, ACTION_ID);
     }
 
+    /**
+     * Constructor that allows to specify all parameters.
+     * @param table         table containing this action
+     * @param display       ExportDisplay implementation
+     * @param parameterized if true, the special window "cuba$ExcelExport" will be opened instead of direct export via
+     * {@link ExcelExporter}
+     * @param id            action's name
+     */
     public ExcelAction(Table table, ExportDisplay display, boolean parameterized, String id) {
         super(id);
         this.table = table;
@@ -51,11 +92,19 @@ public class ExcelAction extends AbstractAction {
         this.parameterized = parameterized;
     }
 
+    /**
+     * Returns the action's caption. Override to provide a specific caption.
+     * @return  localized caption
+     */
     public String getCaption() {
         final String messagesPackage = AppConfig.getMessagesPack();
         return MessageProvider.getMessage(messagesPackage, "actions.Excel");
     }
 
+    /**
+     * This method is invoked by action owner component.
+     * @param component component invoking action
+     */
     public void actionPerform(Component component) {
         if (parameterized)
             parameterizedExport();
@@ -63,11 +112,17 @@ public class ExcelAction extends AbstractAction {
             export();
     }
 
+    /**
+     * Export via {@link ExcelExporter}.
+     */
     protected void export() {
         ExcelExporter exporter = new ExcelExporter();
         exporter.exportTable(table, table.getNotCollapsedColumns(), display);
     }
 
+    /**
+     * Export via screen "cuba$ExcelExport".
+     */
     protected void parameterizedExport() {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("table", table);

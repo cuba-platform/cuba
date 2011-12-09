@@ -10,10 +10,11 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
     protected Component.ActionOwner component;
@@ -30,24 +31,23 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
         final String[] elements = ValuePathHelper.parse(actionName);
         if (elements.length > 1) {
             final String id = elements[elements.length - 1];
+            String[] subPath = (String[]) ArrayUtils.subarray(elements, 0, elements.length - 1);
 
-            final List<String> subList = Arrays.asList(elements).subList(0, elements.length - 1);
-            String[] subPath = subList.toArray(new String[]{});
             // using this.frame to look up the component inside the actual frame
-            final Component component = this.frame.getComponent(ValuePathHelper.format(subPath));
-            if (component != null) {
-                if (component instanceof Component.ActionsHolder) {
-                    final Action action = ((Component.ActionsHolder) component).getAction(id);
+            final Component holder = this.frame.getComponent(ValuePathHelper.format(subPath));
+            if (holder != null) {
+                if (holder instanceof Component.ActionsHolder) {
+                    final Action action = ((Component.ActionsHolder) holder).getAction(id);
                     if (action != null) {
                         this.component.setAction(action);
                     } else {
-                        throw new IllegalStateException(String.format("Can't find action '%s' in '%s'", id, subList));
+                        tryAutoCreateAction(holder, id);
                     }
                 } else {
-                    throw new IllegalStateException(String.format("Component '%s' have no actions", subList));
+                    throw new IllegalStateException(String.format("Component '%s' can't contain actions", holder.getId()));
                 }
             } else {
-                throw new IllegalStateException(String.format("Can't find component '%s'", subList));
+                throw new IllegalStateException(String.format("Can't find component '%s'", Arrays.toString(subPath)));
             }
         } else if (elements.length == 1) {
             final String id = elements[0];
@@ -61,5 +61,19 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
         } else {
             throw new IllegalStateException();
         }
+    }
+
+    protected void tryAutoCreateAction(Component holder, String actionId) {
+        if (holder instanceof ListComponent) {
+            for (ListActionType type : ListActionType.values()) {
+                if (type.getId().equals(actionId)) {
+                    Action action = type.createAction((ListComponent) holder);
+                    ((ListComponent) holder).addAction(action);
+                    this.component.setAction(action);
+                    return;
+                }
+            }
+        }
+        throw new IllegalStateException(String.format("Can't find action '%s' in '%s'", actionId, holder.getId()));
     }
 }

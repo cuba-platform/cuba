@@ -30,41 +30,84 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Standard list action to edit an entity instance.
+ * <p>
+ *      Action's behaviour can be customized by providing arguments to constructor, as well as overriding the following
+ *      methods:
+ *      <ul>
+ *          <li>{@link #getCaption()}</li>
+ *          <li>{@link #isEnabled()}</li>
+ *          <li>{@link #getWindowId()}</li>
+ *          <li>{@link #getWindowParams()}</li>
+ *          <li>{@link #afterCommit(com.haulmont.cuba.core.entity.Entity)}</li>
+ *          <li>{@link #afterWindowClosed(com.haulmont.cuba.gui.components.Window)}</li>
+ *      </ul>
+ * </p>
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public class EditAction extends AbstractAction implements CollectionDatasourceListener {
 
     private static final long serialVersionUID = -4849373795449480016L;
 
-    public static final String ACTION_ID = "edit";
+    public static final String ACTION_ID = ListActionType.EDIT.getId();
 
-    protected ListComponent owner;
+    protected ListComponent holder;
     protected WindowManager.OpenType openType;
     protected CollectionDatasource datasource;
 
-    public EditAction(ListComponent owner) {
-        this(owner, WindowManager.OpenType.THIS_TAB, ACTION_ID);
+    /**
+     * The simplest constructor. The action has default name and opens the editor screen in THIS tab.
+     * @param holder    component containing this action
+     */
+    public EditAction(ListComponent holder) {
+        this(holder, WindowManager.OpenType.THIS_TAB, ACTION_ID);
     }
 
-    public EditAction(ListComponent owner, WindowManager.OpenType openType) {
-        this(owner, openType, ACTION_ID);
+    /**
+     * Constructor that allows to specify how the editor screen opens. The action has default name.
+     * @param holder    component containing this action
+     * @param openType  how to open the editor screen
+     */
+    public EditAction(ListComponent holder, WindowManager.OpenType openType) {
+        this(holder, openType, ACTION_ID);
     }
 
-    public EditAction(ListComponent owner, WindowManager.OpenType openType, String id) {
+    /**
+     * Constructor that allows to specify the action name and how the editor screen opens.
+     * @param holder    component containing this action
+     * @param openType  how to open the editor screen
+     * @param id        action name
+     */
+    public EditAction(ListComponent holder, WindowManager.OpenType openType, String id) {
         super(id);
-        this.owner = owner;
+        this.holder = holder;
         this.openType = openType;
-        this.datasource = owner.getDatasource();
+        this.datasource = holder.getDatasource();
     }
 
+    /**
+     * Returns the action's caption. Override to provide a specific caption.
+     * @return  localized caption
+     */
     public String getCaption() {
         final String messagesPackage = AppConfig.getMessagesPack();
-        if (UserSessionProvider.getUserSession().isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.UPDATE))
+        if (UserSessionProvider.getUserSession().isEntityOpPermitted(holder.getDatasource().getMetaClass(), EntityOp.UPDATE))
             return MessageProvider.getMessage(messagesPackage, "actions.Edit");
         else
             return MessageProvider.getMessage(messagesPackage, "actions.View");
     }
 
+    /**
+     * This method is invoked by action owner component. Don't override it, there are special methods to
+     * customize behaviour below.
+     * @param component component invoking action
+     */
     public void actionPerform(Component component) {
-        final Set selected = owner.getSelected();
+        final Set selected = holder.getSelected();
         if (selected.size() == 1) {
             String windowID = getWindowId();
 
@@ -81,7 +124,7 @@ public class EditAction extends AbstractAction implements CollectionDatasourceLi
             if (params == null)
                 params = new HashMap<String, Object>();
 
-            final Window window = owner.getFrame().openEditor(windowID, datasource.getItem(), openType, params, parentDs);
+            final Window window = holder.getFrame().openEditor(windowID, datasource.getItem(), openType, params, parentDs);
 
             window.addListener(new Window.CloseListener() {
                 public void windowClosed(String actionId) {
@@ -100,17 +143,33 @@ public class EditAction extends AbstractAction implements CollectionDatasourceLi
         }
     }
 
+    /**
+     * Provides editor screen identifier. Override to provide a specific value.
+     * @return  editor screen id
+     */
     protected String getWindowId() {
         return datasource.getMetaClass().getName() + ".edit";
     }
 
+    /**
+     * Provides editor screen parameters. Override to provide a specific value.
+     * @return  editor screen parameters
+     */
     protected Map<String, Object> getWindowParams() {
         return null;
     }
 
+    /**
+     * Hook invoked after the editor was committed and closed
+     * @param entity    new committed entity instance
+     */
     protected void afterCommit(Entity entity) {
     }
 
+    /**
+     * Hook invoked always after the editor was closed
+     * @param window    the editor window
+     */
     protected void afterWindowClosed(Window window) {
     }
 

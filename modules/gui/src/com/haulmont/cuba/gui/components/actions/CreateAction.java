@@ -13,8 +13,8 @@ package com.haulmont.cuba.gui.components.actions;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -28,48 +28,95 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Standard list action to create a new entity instance.
+ * <p>
+ *      Action's behaviour can be customized by providing arguments to constructor, as well as overriding the following
+ *      methods:
+ *      <ul>
+ *          <li>{@link #getCaption()}</li>
+ *          <li>{@link #isEnabled()}</li>
+ *          <li>{@link #getWindowId()}</li>
+ *          <li>{@link #getWindowParams()}</li>
+ *          <li>{@link #afterCommit(com.haulmont.cuba.core.entity.Entity)}</li>
+ *          <li>{@link #afterWindowClosed(com.haulmont.cuba.gui.components.Window)}</li>
+ *      </ul>
+ * </p>
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public class CreateAction extends AbstractAction {
 
     private static final long serialVersionUID = 442122838693493665L;
 
-    public static final String ACTION_ID = "create";
+    public static final String ACTION_ID = ListActionType.CREATE.getId();
 
-    protected final ListComponent owner;
+    protected final ListComponent holder;
     protected final WindowManager.OpenType openType;
     protected final CollectionDatasource datasource;
 
-    public CreateAction(ListComponent owner) {
-        this(owner, WindowManager.OpenType.THIS_TAB, ACTION_ID);
+    /**
+     * The simplest constructor. The action has default name and opens the editor screen in THIS tab.
+     * @param holder    component containing this action
+     */
+    public CreateAction(ListComponent holder) {
+        this(holder, WindowManager.OpenType.THIS_TAB, ACTION_ID);
     }
 
-    public CreateAction(ListComponent owner, WindowManager.OpenType openType) {
-        this(owner, openType, ACTION_ID);
+    /**
+     * Constructor that allows to specify how the editor screen opens. The action has default name.
+     * @param holder    component containing this action
+     * @param openType  how to open the editor screen
+     */
+    public CreateAction(ListComponent holder, WindowManager.OpenType openType) {
+        this(holder, openType, ACTION_ID);
     }
 
-    public CreateAction(ListComponent owner, WindowManager.OpenType openType, String id) {
+    /**
+     * Constructor that allows to specify the action name and how the editor screen opens.
+     * @param holder    component containing this action
+     * @param openType  how to open the editor screen
+     * @param id        action name
+     */
+    public CreateAction(ListComponent holder, WindowManager.OpenType openType, String id) {
         super(id);
-        this.owner = owner;
+        this.holder = holder;
         this.openType = openType;
-        datasource = owner.getDatasource();
+        datasource = holder.getDatasource();
     }
 
+    /**
+     * Returns the action's caption. Override to provide a specific caption.
+     * @return  localized caption
+     */
     public String getCaption() {
         final String messagesPackage = AppConfig.getMessagesPack();
         return MessageProvider.getMessage(messagesPackage, "actions.Create");
     }
 
+    /**
+     * Whether the action is currently enabled. Override to provide specific behaviour.
+     * @return  true if enabled
+     */
     public boolean isEnabled() {
         return super.isEnabled() &&
-                UserSessionClient.getUserSession().isEntityOpPermitted(datasource.getMetaClass(), EntityOp.CREATE);
+                UserSessionProvider.getUserSession().isEntityOpPermitted(datasource.getMetaClass(), EntityOp.CREATE);
     }
 
+    /**
+     * This method is invoked by action owner component. Don't override it, there are special methods to
+     * customize behaviour below.
+     * @param component component invoking action
+     */
     public void actionPerform(Component component) {
         final DataService dataservice = datasource.getDataService();
 
         final Entity item = dataservice.newInstance(datasource.getMetaClass());
 
-        if (owner instanceof Tree) {
-            String hierarchyProperty = ((Tree) owner).getHierarchyProperty();
+        if (holder instanceof Tree) {
+            String hierarchyProperty = ((Tree) holder).getHierarchyProperty();
 
             Entity parentItem = datasource.getItem();
             // datasource.getItem() may contain deleted item
@@ -112,7 +159,7 @@ public class CreateAction extends AbstractAction {
         if (params == null)
             params = new HashMap<String, Object>();
 
-        final Window window = owner.getFrame().openEditor(getWindowId(), item, openType, params, parentDs);
+        final Window window = holder.getFrame().openEditor(getWindowId(), item, openType, params, parentDs);
 
         window.addListener(new Window.CloseListener() {
             public void windowClosed(String actionId) {
@@ -124,7 +171,7 @@ public class CreateAction extends AbstractAction {
                             datasource.addItem((Entity) item);
                             ((DatasourceImplementation) datasource).setModified(modified);
                         }
-                        owner.setSelected((Entity) item);
+                        holder.setSelected((Entity) item);
                         afterCommit((Entity) item);
                     }
                 }
@@ -133,21 +180,41 @@ public class CreateAction extends AbstractAction {
         });
     }
 
+    /**
+     * Provides editor screen identifier. Override to provide a specific value.
+     * @return  editor screen id
+     */
     protected String getWindowId() {
         return datasource.getMetaClass().getName() + ".edit";
     }
 
+    /**
+     * Provides editor screen parameters. Override to provide a specific value.
+     * @return  editor screen parameters
+     */
     protected Map<String, Object> getWindowParams() {
         return null;
     }
 
+    /**
+     * Provides initial values for attributes of creating entity. Override to provide a specific value.
+     * @return  a map of attribute name to an initial value
+     */
     protected Map<String, Object> getInitialValues() {
         return null;
     }
 
+    /**
+     * Hook invoked after the editor was committed and closed
+     * @param entity    new committed entity instance
+     */
     protected void afterCommit(Entity entity) {
     }
 
+    /**
+     * Hook invoked always after the editor was closed
+     * @param window    the editor window
+     */
     protected void afterWindowClosed(Window window) {
     }
 }
