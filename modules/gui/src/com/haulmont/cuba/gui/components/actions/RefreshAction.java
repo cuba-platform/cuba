@@ -41,24 +41,24 @@ public class RefreshAction extends AbstractAction {
 
     public static final String ACTION_ID = ListActionType.REFRESH.getId();
 
-    protected ListComponent holder;
+    protected ListComponent owner;
 
     /**
      * The simplest constructor. The action has default name.
-     * @param holder    component containing this action
+     * @param owner    component containing this action
      */
-    public RefreshAction(ListComponent holder) {
-        this(holder, ACTION_ID);
+    public RefreshAction(ListComponent owner) {
+        this(owner, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify action's name.
-     * @param holder        component containing this action
+     * @param owner        component containing this action
      * @param id            action's identifier
      */
-    public RefreshAction(ListComponent holder, String id) {
+    public RefreshAction(ListComponent owner, String id) {
         super(id);
-        this.holder = holder;
+        this.owner = owner;
     }
 
     /**
@@ -76,7 +76,7 @@ public class RefreshAction extends AbstractAction {
      * @param component component invoking action
      */
     public void actionPerform(Component component) {
-        CollectionDatasource datasource = holder.getDatasource();
+        CollectionDatasource datasource = owner.getDatasource();
 
         Map<String, Object> params = getRefreshParams();
         if (params != null) {

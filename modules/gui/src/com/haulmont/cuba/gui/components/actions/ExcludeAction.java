@@ -37,23 +37,23 @@ public class ExcludeAction extends RemoveAction {
 
     /**
      * Constructor that allows to specify autocommit and confirm value. The action has default name.
-     * @param holder        component containing this action
+     * @param owner        component containing this action
      * @param autocommit    whether to commit datasource immediately
      * @param confirm       whether to show the confirmation dialog to user
      */
-    public ExcludeAction(ListComponent holder, boolean autocommit, boolean confirm) {
-        this(holder, autocommit, confirm, ACTION_ID);
+    public ExcludeAction(ListComponent owner, boolean autocommit, boolean confirm) {
+        this(owner, autocommit, confirm, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify all parameters.
-     * @param holder        component containing this action
+     * @param owner        component containing this action
      * @param autocommit    whether to commit datasource immediately
      * @param confirm       whether to show the confirmation dialog to user
      * @param id            action's name
      */
-    public ExcludeAction(ListComponent holder, boolean autocommit, boolean confirm, String id) {
-        super(holder, autocommit, id);
+    public ExcludeAction(ListComponent owner, boolean autocommit, boolean confirm, String id) {
+        super(owner, autocommit, id);
         this.confirm = confirm;
     }
 
@@ -66,7 +66,7 @@ public class ExcludeAction extends RemoveAction {
     @Override
     public void actionPerform(Component component) {
         if(!isEnabled()) return;
-        final Set selected = holder.getSelected();
+        final Set selected = owner.getSelected();
         if (!selected.isEmpty()) {
             if (confirm) {
                 confirmAndRemove(selected);
@@ -80,7 +80,7 @@ public class ExcludeAction extends RemoveAction {
     @Override
     protected void doRemove(Set selected, boolean autocommit) {
         @SuppressWarnings({"unchecked"})
-        final CollectionDatasource ds = holder.getDatasource();
+        final CollectionDatasource ds = owner.getDatasource();
         for (Object item : selected) {
             ds.excludeItem((Entity) item);
         }

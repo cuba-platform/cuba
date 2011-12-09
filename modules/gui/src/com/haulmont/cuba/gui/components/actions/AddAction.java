@@ -45,43 +45,43 @@ public class AddAction extends AbstractAction {
 
     public static final String ACTION_ID = "add";
 
-    protected ListComponent holder;
+    protected ListComponent owner;
     protected final Window.Lookup.Handler handler;
     protected final WindowManager.OpenType openType;
     protected CollectionDatasource datasource;
 
     /**
      * The simplest constructor. The action has default name and opens the lookup screen in THIS tab.
-     * @param holder    component containing this action
+     * @param owner    component containing this action
      * @param handler   lookup handler
      */
-    public AddAction(ListComponent holder, Window.Lookup.Handler handler) {
-        this(holder, handler, WindowManager.OpenType.THIS_TAB, ACTION_ID);
+    public AddAction(ListComponent owner, Window.Lookup.Handler handler) {
+        this(owner, handler, WindowManager.OpenType.THIS_TAB, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify how the lookup screen opens. The action has default name.
-     * @param holder    component containing this action
+     * @param owner    component containing this action
      * @param handler   lookup handler
      * @param openType  how to open the editor screen
      */
-    public AddAction(ListComponent holder, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
-        this(holder, handler, openType, ACTION_ID);
+    public AddAction(ListComponent owner, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
+        this(owner, handler, openType, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify the action name and how the lookup screen opens.
-     * @param holder    component containing this action
+     * @param owner    component containing this action
      * @param handler   lookup handler
      * @param openType  how to open the editor screen
      * @param id        action's name
      */
-    public AddAction(ListComponent holder, Window.Lookup.Handler handler, WindowManager.OpenType openType, String id) {
+    public AddAction(ListComponent owner, Window.Lookup.Handler handler, WindowManager.OpenType openType, String id) {
         super(id);
-        this.holder = holder;
+        this.owner = owner;
         this.handler = handler;
         this.openType = openType;
-        this.datasource = holder.getDatasource();
+        this.datasource = owner.getDatasource();
     }
 
     /**
@@ -103,7 +103,7 @@ public class AddAction extends AbstractAction {
         if (params == null)
             params = new HashMap<String, Object>();
 
-        holder.getFrame().openLookup(getWindowId(), handler, openType, params);
+        owner.getFrame().openLookup(getWindowId(), handler, openType, params);
     }
 
     /**

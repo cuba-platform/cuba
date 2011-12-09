@@ -49,39 +49,39 @@ public class RemoveAction extends AbstractAction implements CollectionDatasource
 
     public static final String ACTION_ID = ListActionType.REMOVE.getId();
 
-    protected final ListComponent holder;
+    protected final ListComponent owner;
     protected final boolean autocommit;
     protected final CollectionDatasource datasource;
     protected MetaProperty metaProperty;
 
     /**
      * The simplest constructor. The action has default name and autocommit=true.
-     * @param holder    component containing this action
+     * @param owner    component containing this action
      */
-    public RemoveAction(ListComponent holder) {
-        this(holder, true, ACTION_ID);
+    public RemoveAction(ListComponent owner) {
+        this(owner, true, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify autocommit value. The action has default name.
-     * @param holder        component containing this action
+     * @param owner        component containing this action
      * @param autocommit    whether to commit datasource immediately
      */
-    public RemoveAction(ListComponent holder, boolean autocommit) {
-        this(holder, autocommit, ACTION_ID);
+    public RemoveAction(ListComponent owner, boolean autocommit) {
+        this(owner, autocommit, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify action's identifier and autocommit value.
-     * @param holder        component containing this action
+     * @param owner        component containing this action
      * @param autocommit    whether to commit datasource immediately
      * @param id            action's identifier
      */
-    public RemoveAction(ListComponent holder, boolean autocommit, String id) {
+    public RemoveAction(ListComponent owner, boolean autocommit, String id) {
         super(id);
-        this.holder = holder;
+        this.owner = owner;
         this.autocommit = autocommit;
-        this.datasource = holder.getDatasource();
+        this.datasource = owner.getDatasource();
         if (datasource instanceof PropertyDatasource) {
             metaProperty = ((PropertyDatasource) datasource).getProperty();
         }
@@ -122,7 +122,7 @@ public class RemoveAction extends AbstractAction implements CollectionDatasource
     public void actionPerform(Component component) {
         if (!isEnabled())
             return;
-        Set selected = holder.getSelected();
+        Set selected = owner.getSelected();
         if (!selected.isEmpty()) {
             confirmAndRemove(selected);
         }
@@ -130,7 +130,7 @@ public class RemoveAction extends AbstractAction implements CollectionDatasource
 
     protected void confirmAndRemove(final Set selected) {
         final String messagesPackage = AppConfig.getMessagesPack();
-        holder.getFrame().showOptionDialog(
+        owner.getFrame().showOptionDialog(
                 getConfirmationTitle(messagesPackage),
                 getConfirmationMessage(messagesPackage),
                 IFrame.MessageType.CONFIRMATION,

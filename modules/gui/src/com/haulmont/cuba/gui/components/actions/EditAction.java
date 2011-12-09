@@ -55,38 +55,38 @@ public class EditAction extends AbstractAction implements CollectionDatasourceLi
 
     public static final String ACTION_ID = ListActionType.EDIT.getId();
 
-    protected ListComponent holder;
+    protected ListComponent owner;
     protected WindowManager.OpenType openType;
     protected CollectionDatasource datasource;
 
     /**
      * The simplest constructor. The action has default name and opens the editor screen in THIS tab.
-     * @param holder    component containing this action
+     * @param owner    component containing this action
      */
-    public EditAction(ListComponent holder) {
-        this(holder, WindowManager.OpenType.THIS_TAB, ACTION_ID);
+    public EditAction(ListComponent owner) {
+        this(owner, WindowManager.OpenType.THIS_TAB, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify how the editor screen opens. The action has default name.
-     * @param holder    component containing this action
+     * @param owner    component containing this action
      * @param openType  how to open the editor screen
      */
-    public EditAction(ListComponent holder, WindowManager.OpenType openType) {
-        this(holder, openType, ACTION_ID);
+    public EditAction(ListComponent owner, WindowManager.OpenType openType) {
+        this(owner, openType, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify the action name and how the editor screen opens.
-     * @param holder    component containing this action
+     * @param owner    component containing this action
      * @param openType  how to open the editor screen
      * @param id        action name
      */
-    public EditAction(ListComponent holder, WindowManager.OpenType openType, String id) {
+    public EditAction(ListComponent owner, WindowManager.OpenType openType, String id) {
         super(id);
-        this.holder = holder;
+        this.owner = owner;
         this.openType = openType;
-        this.datasource = holder.getDatasource();
+        this.datasource = owner.getDatasource();
     }
 
     /**
@@ -95,7 +95,7 @@ public class EditAction extends AbstractAction implements CollectionDatasourceLi
      */
     public String getCaption() {
         final String messagesPackage = AppConfig.getMessagesPack();
-        if (UserSessionProvider.getUserSession().isEntityOpPermitted(holder.getDatasource().getMetaClass(), EntityOp.UPDATE))
+        if (UserSessionProvider.getUserSession().isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.UPDATE))
             return MessageProvider.getMessage(messagesPackage, "actions.Edit");
         else
             return MessageProvider.getMessage(messagesPackage, "actions.View");
@@ -107,7 +107,7 @@ public class EditAction extends AbstractAction implements CollectionDatasourceLi
      * @param component component invoking action
      */
     public void actionPerform(Component component) {
-        final Set selected = holder.getSelected();
+        final Set selected = owner.getSelected();
         if (selected.size() == 1) {
             String windowID = getWindowId();
 
@@ -124,7 +124,7 @@ public class EditAction extends AbstractAction implements CollectionDatasourceLi
             if (params == null)
                 params = new HashMap<String, Object>();
 
-            final Window window = holder.getFrame().openEditor(windowID, datasource.getItem(), openType, params, parentDs);
+            final Window window = owner.getFrame().openEditor(windowID, datasource.getItem(), openType, params, parentDs);
 
             window.addListener(new Window.CloseListener() {
                 public void windowClosed(String actionId) {

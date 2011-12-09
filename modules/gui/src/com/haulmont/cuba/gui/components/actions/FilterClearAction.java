@@ -40,27 +40,27 @@ public class FilterClearAction extends AbstractAction {
 
     public static final String ACTION_ID = "clear";
 
-    protected final ListComponent holder;
+    protected final ListComponent owner;
     protected final String containerName;
 
     /**
      * The simplest constructor. The action has default name.
-     * @param holder        component containing this action
+     * @param owner        component containing this action
      * @param containerName component containing fields to clear
      */
-    public FilterClearAction(ListComponent holder, String containerName) {
-        this(holder, containerName, ACTION_ID);
+    public FilterClearAction(ListComponent owner, String containerName) {
+        this(owner, containerName, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify the action name.
-     * @param holder    component containing this action
+     * @param owner    component containing this action
      * @param containerName component containing fields to clear
      * @param id        action name
      */
-    public FilterClearAction(ListComponent holder, String containerName, String id) {
+    public FilterClearAction(ListComponent owner, String containerName, String id) {
         super(id);
-        this.holder = holder;
+        this.owner = owner;
         this.containerName = containerName;
     }
 
@@ -75,7 +75,7 @@ public class FilterClearAction extends AbstractAction {
 
     @Override
     public void actionPerform(Component component) {
-        Component.Container container = holder.getFrame().getComponent(containerName);
+        Component.Container container = owner.getFrame().getComponent(containerName);
         ComponentsHelper.walkComponents(container,
                 new ComponentVisitor() {
                     public void visit(Component component, String name) {

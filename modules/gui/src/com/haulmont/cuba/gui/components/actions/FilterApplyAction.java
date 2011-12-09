@@ -37,24 +37,24 @@ public class FilterApplyAction extends AbstractAction {
 
     public static final String ACTION_ID = "apply";
 
-    protected final ListComponent holder;
+    protected final ListComponent owner;
 
     /**
      * The simplest constructor. The action has default name.
-     * @param holder    component containing this action
+     * @param owner    component containing this action
      */
-    public FilterApplyAction(ListComponent holder) {
-        this(holder, ACTION_ID);
+    public FilterApplyAction(ListComponent owner) {
+        this(owner, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify the action name.
-     * @param holder    component containing this action
+     * @param owner    component containing this action
      * @param id        action name
      */
-    public FilterApplyAction(ListComponent holder, String id) {
+    public FilterApplyAction(ListComponent owner, String id) {
         super(id);
-        this.holder = holder;
+        this.owner = owner;
     }
 
     /**
@@ -68,6 +68,6 @@ public class FilterApplyAction extends AbstractAction {
 
     @Override
     public void actionPerform(Component component) {
-        holder.getDatasource().refresh();
+        owner.getDatasource().refresh();
     }
 }

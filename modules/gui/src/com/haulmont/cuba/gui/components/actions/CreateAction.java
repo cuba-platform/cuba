@@ -53,38 +53,38 @@ public class CreateAction extends AbstractAction {
 
     public static final String ACTION_ID = ListActionType.CREATE.getId();
 
-    protected final ListComponent holder;
+    protected final ListComponent owner;
     protected final WindowManager.OpenType openType;
     protected final CollectionDatasource datasource;
 
     /**
      * The simplest constructor. The action has default name and opens the editor screen in THIS tab.
-     * @param holder    component containing this action
+     * @param owner    component containing this action
      */
-    public CreateAction(ListComponent holder) {
-        this(holder, WindowManager.OpenType.THIS_TAB, ACTION_ID);
+    public CreateAction(ListComponent owner) {
+        this(owner, WindowManager.OpenType.THIS_TAB, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify how the editor screen opens. The action has default name.
-     * @param holder    component containing this action
+     * @param owner    component containing this action
      * @param openType  how to open the editor screen
      */
-    public CreateAction(ListComponent holder, WindowManager.OpenType openType) {
-        this(holder, openType, ACTION_ID);
+    public CreateAction(ListComponent owner, WindowManager.OpenType openType) {
+        this(owner, openType, ACTION_ID);
     }
 
     /**
      * Constructor that allows to specify the action name and how the editor screen opens.
-     * @param holder    component containing this action
+     * @param owner    component containing this action
      * @param openType  how to open the editor screen
      * @param id        action name
      */
-    public CreateAction(ListComponent holder, WindowManager.OpenType openType, String id) {
+    public CreateAction(ListComponent owner, WindowManager.OpenType openType, String id) {
         super(id);
-        this.holder = holder;
+        this.owner = owner;
         this.openType = openType;
-        datasource = holder.getDatasource();
+        datasource = owner.getDatasource();
     }
 
     /**
@@ -115,8 +115,8 @@ public class CreateAction extends AbstractAction {
 
         final Entity item = dataservice.newInstance(datasource.getMetaClass());
 
-        if (holder instanceof Tree) {
-            String hierarchyProperty = ((Tree) holder).getHierarchyProperty();
+        if (owner instanceof Tree) {
+            String hierarchyProperty = ((Tree) owner).getHierarchyProperty();
 
             Entity parentItem = datasource.getItem();
             // datasource.getItem() may contain deleted item
@@ -159,7 +159,7 @@ public class CreateAction extends AbstractAction {
         if (params == null)
             params = new HashMap<String, Object>();
 
-        final Window window = holder.getFrame().openEditor(getWindowId(), item, openType, params, parentDs);
+        final Window window = owner.getFrame().openEditor(getWindowId(), item, openType, params, parentDs);
 
         window.addListener(new Window.CloseListener() {
             public void windowClosed(String actionId) {
@@ -171,7 +171,7 @@ public class CreateAction extends AbstractAction {
                             datasource.addItem((Entity) item);
                             ((DatasourceImplementation) datasource).setModified(modified);
                         }
-                        holder.setSelected((Entity) item);
+                        owner.setSelected((Entity) item);
                         afterCommit((Entity) item);
                     }
                 }
