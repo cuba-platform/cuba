@@ -174,6 +174,8 @@ public class TreeModelAdapter implements TreeModel {
                 node.setParent(parentNode);
                 node = parentNode;
             }
+            list.add(0, rootNode);
+            node.setParent(rootNode);
         } else if (object instanceof Node) {
             list.add(object);
             Node n = (Node) object;
