@@ -9,13 +9,17 @@ package com.haulmont.cuba.gui.security;
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionValue;
+import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
 import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.security.entity.PermissionTarget;
-import com.haulmont.cuba.security.entity.PermissionVariant;
+import com.haulmont.cuba.security.ui.BasicPermissionTarget;
+import com.haulmont.cuba.security.ui.PermissionVariant;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.ArrayList;
@@ -28,9 +32,9 @@ import java.util.UUID;
  *
  * @author artamonov
  */
-public class ScreenPermissionTreeDatasource extends ScreenPermissionTargetsDatasource {
+public class ScreenPermissionTreeDatasource extends AbstractTreeDatasource<BasicPermissionTarget, String> {
 
-    private Tree<PermissionTarget> screensTree;
+    private Tree<BasicPermissionTarget> screensTree;
     private CollectionDatasource<Permission, UUID> permissionDs;
 
     public ScreenPermissionTreeDatasource(DsContext context, DataService dataservice, String id, MetaClass metaClass, String viewName) {
@@ -38,46 +42,54 @@ public class ScreenPermissionTreeDatasource extends ScreenPermissionTargetsDatas
     }
 
     @Override
-    protected Tree<PermissionTarget> loadTree(Map params) {
-        if (screensTree == null) {
-            List<Node<PermissionTarget>> nodes = super.loadTree(params).getRootNode().getChildren();
+    public boolean isModified() {
+        return false;
+    }
 
-            List<Node<PermissionTarget>> clonedNodes = new ArrayList<Node<PermissionTarget>>();
-            for (Node<PermissionTarget> node : nodes)
+    @Override
+    protected Tree<BasicPermissionTarget> loadTree(Map params) {
+        if (screensTree == null) {
+            Tree<BasicPermissionTarget> screens =
+                    AppContext.getBean(PermissionConfig.class).getScreens(UserSessionProvider.getLocale());
+
+            List<Node<BasicPermissionTarget>> nodes = screens.getRootNode().getChildren();
+
+            List<Node<BasicPermissionTarget>> clonedNodes = new ArrayList<Node<BasicPermissionTarget>>();
+            for (Node<BasicPermissionTarget> node : nodes)
                 clonedNodes.add(cloneNode(node));
 
-            screensTree = new Tree<PermissionTarget>(clonedNodes);
+            screensTree = new Tree<BasicPermissionTarget>(clonedNodes);
         }
         if (permissionDs != null)
-            for (Node<PermissionTarget> node : screensTree.getRootNodes())
+            for (Node<BasicPermissionTarget> node : screensTree.getRootNodes())
                 applyPermissions(node);
         // Set permission variants for targets
         return screensTree;
     }
 
-    private Node<PermissionTarget> cloneNode(Node<PermissionTarget> node) {
-        Node<PermissionTarget> clone = new Node<PermissionTarget>();
-        clone.setData(cloneTarget(node.data));
-        for (Node<PermissionTarget> childNode : node.getChildren()) {
+    private Node<BasicPermissionTarget> cloneNode(Node<BasicPermissionTarget> node) {
+        Node<BasicPermissionTarget> clone = new Node<BasicPermissionTarget>();
+        try {
+            BasicPermissionTarget targetClone = node.data.clone();
+            clone.setData(targetClone);
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (Node<BasicPermissionTarget> childNode : node.getChildren()) {
             clone.addChild(cloneNode(childNode));
         }
         return clone;
     }
 
-    private PermissionTarget cloneTarget(PermissionTarget target) {
-        return new PermissionTarget(
-                target.getId(), target.getCaption(),
-                target.getPermissionValue(), target.getPermissionVariant());
-    }
-
-    private void applyPermissions(Node<PermissionTarget> node) {
+    private void applyPermissions(Node<BasicPermissionTarget> node) {
         loadPermissionVariant(node.data);
-        for (Node<PermissionTarget> child : node.getChildren()) {
+        for (Node<BasicPermissionTarget> child : node.getChildren()) {
             applyPermissions(child);
         }
     }
 
-    private void loadPermissionVariant(PermissionTarget target) {
+    private void loadPermissionVariant(BasicPermissionTarget target) {
         Permission permission = null;
         for (UUID id : permissionDs.getItemIds()) {
             Permission p = permissionDs.getItem(id);

@@ -24,6 +24,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.app.UserSessionService;
 import com.haulmont.cuba.security.entity.*;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.ui.BasicPermissionTarget;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -219,7 +220,7 @@ public class UserEditor extends AbstractEditor {
                         UserSessionService uss = ServiceLocator.lookup(UserSessionService.NAME);
                         for (Object item : items) {
                             if (item == null) continue;
-                            PermissionTarget target = (PermissionTarget)item;
+                            BasicPermissionTarget target = (BasicPermissionTarget)item;
                             Integer permissionValue =  uss.getPermissionValue(userDs.getItem(), permissionType, target.getPermissionValue());
                             String permissionStringValue = "";
                             if (permissionType == PermissionType.ENTITY_ATTR) {

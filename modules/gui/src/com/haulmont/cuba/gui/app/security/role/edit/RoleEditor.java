@@ -18,7 +18,7 @@ import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.security.entity.PermissionTarget;
+import com.haulmont.cuba.security.ui.BasicPermissionTarget;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
 import org.apache.commons.lang.ObjectUtils;
@@ -29,7 +29,7 @@ import java.util.*;
 public class RoleEditor extends AbstractEditor {
 
     private Set<String> initialized = new HashSet<String>();
-    private PopupButton entityPermissionsGrant;
+//    private PopupButton entityPermissionsGrant;
     private PopupButton propertyPermissionsGrant;
     private PopupButton specificPermissionsGrant;
 
@@ -61,8 +61,8 @@ public class RoleEditor extends AbstractEditor {
     }
 
     private void hideMenuPopupButton() {
-        if (entityPermissionsGrant != null)
-            entityPermissionsGrant.setPopupVisible(false);
+//        if (entityPermissionsGrant != null)
+//            entityPermissionsGrant.setPopupVisible(false);
         if (propertyPermissionsGrant != null)
             propertyPermissionsGrant.setPopupVisible(false);
         if (specificPermissionsGrant != null)
@@ -151,7 +151,7 @@ public class RoleEditor extends AbstractEditor {
         );
     }
 
-    protected void createPermissionItem(String dsName, PermissionTarget target, PermissionType type, Integer value) {
+    protected void createPermissionItem(String dsName, BasicPermissionTarget target, PermissionType type, Integer value) {
         final CollectionDatasource<Permission, UUID> ds = getDsContext().get(dsName);
         final Collection<UUID> permissionIds = ds.getItemIds();
 
@@ -202,10 +202,10 @@ public class RoleEditor extends AbstractEditor {
                 @Override
                 public void handleLookup(Collection items) {
                     @SuppressWarnings({"unchecked"})
-                    Collection<PermissionTarget> targets =
-                            Collections.checkedCollection(items, PermissionTarget.class);
+                    Collection<BasicPermissionTarget> targets =
+                            Collections.checkedCollection(items, BasicPermissionTarget.class);
 
-                    for (PermissionTarget target : targets) {
+                    for (BasicPermissionTarget target : targets) {
                         createPermissionItem(permissionsStorage, target, permissionType, value);
                     }
                 }
@@ -230,18 +230,26 @@ public class RoleEditor extends AbstractEditor {
     private class PermissionTabChangeListener implements Tabsheet.TabChangeListener {
         @Override
         public void tabChanged(Tabsheet.Tab newTab) {
-            if ("entityPermissionsTab".equals(newTab.getName())) {
-                initPermissionControls(
-                        "sec$Target.entityPermissions.lookup",
-                        "entitiesTabFrame.entityPermissionsTable",
-                        PermissionType.ENTITY_OP);
-                Table table = getComponent("entitiesTabFrame.entityPermissionsTable");
-                entityPermissionsGrant = getComponent("entitiesTabFrame.entityPermissionsGrant");
-                if (entityPermissionsGrant.getActions().isEmpty()) {
-                    entityPermissionsGrant.addAction(table.getAction("allow"));
-                    entityPermissionsGrant.addAction(table.getAction("deny"));
-                }
-            } else if ("propertyPermissionsTab".equals(newTab.getName())) {
+//            if ("entityPermissionsTab".equals(newTab.getName())) {
+//                if (!initialized.contains("entityPermissionsTab")) {
+//                    EntityPermissionsFrame entitiesTabFrame = getComponent("entitiesTabFrame");
+//
+//                    entitiesTabFrame.init(Collections.<String, Object>emptyMap());
+//                    initialized.add("entityPermissionsTab");
+//                }
+//
+//                initPermissionControls(
+//                        "sec$Target.entityPermissions.lookup",
+//                        "entitiesTabFrame.entityPermissionsTable",
+//                        PermissionType.ENTITY_OP);
+//                Table table = getComponent("entitiesTabFrame.entityPermissionsTable");
+//                entityPermissionsGrant = getComponent("entitiesTabFrame.entityPermissionsGrant");
+//                if (entityPermissionsGrant.getActions().isEmpty()) {
+//                    entityPermissionsGrant.addAction(table.getAction("allow"));
+//                    entityPermissionsGrant.addAction(table.getAction("deny"));
+//                }
+//            } else
+            if ("propertyPermissionsTab".equals(newTab.getName())) {
                 initPermissionControls(
                         "sec$Target.propertyPermissions.lookup",
                         "attributesTabFrame.propertyPermissionsTable",

@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.security.entity;
+package com.haulmont.cuba.security.ui;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
@@ -16,15 +16,13 @@ import com.haulmont.cuba.core.global.UuidProvider;
 import java.util.UUID;
 
 /**
- * Non-persistent entity to show permission targets in UI
  * <p>$Id$</p>
  *
- * @author krivopustov
+ * @author artamonov
  */
-@com.haulmont.chile.core.annotations.MetaClass(name = "sec$Target")
+@com.haulmont.chile.core.annotations.MetaClass(name = "sec$UiTarget")
 @SystemLevel
-public class PermissionTarget
-        extends AbstractInstance
+public class UiPermissionTarget extends AbstractInstance
         implements Entity<String> {
 
     @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
@@ -37,17 +35,22 @@ public class PermissionTarget
     private String permissionValue;
 
     @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
-    private PermissionVariant permissionVariant = PermissionVariant.NOTSET;
+    private UiPermissionVariant permissionVariant = UiPermissionVariant.NOTSET;
+
+    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    private String componentType;
 
     private UUID uuid = UuidProvider.createUuid();
 
-    public PermissionTarget(String id, String caption, String permissionValue) {
-        this(id, caption, permissionValue, PermissionVariant.NOTSET);
+    public UiPermissionTarget(String id, String caption, String permissionValue) {
+        this.id = id;
+        this.caption = caption;
+        this.permissionValue = permissionValue;
     }
 
-    public PermissionTarget(String id, String caption, String permissionValue, PermissionVariant permissionVariant) {
-        this.caption = caption;
+    public UiPermissionTarget(String id, String caption, String permissionValue, UiPermissionVariant permissionVariant) {
         this.id = id;
+        this.caption = caption;
         this.permissionValue = permissionValue;
         this.permissionVariant = permissionVariant;
     }
@@ -55,19 +58,6 @@ public class PermissionTarget
     @Override
     public String getId() {
         return id;
-    }
-
-    public String getCaption() {
-        return caption;
-    }
-
-    public String getPermissionValue() {
-        return permissionValue;
-    }
-
-    @Override
-    public String toString() {
-        return caption;
     }
 
     @Override
@@ -80,11 +70,40 @@ public class PermissionTarget
         return MetadataProvider.getSession().getClass(getClass());
     }
 
-    public PermissionVariant getPermissionVariant() {
+    @Override
+    public String toString() {
+        return caption;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    public String getPermissionValue() {
+        return permissionValue;
+    }
+
+    public void setPermissionValue(String permissionValue) {
+        this.permissionValue = permissionValue;
+    }
+
+    public String getComponentType() {
+        return componentType;
+    }
+
+    public void setComponentType(String componentType) {
+        this.componentType = componentType;
+    }
+
+    public UiPermissionVariant getPermissionVariant() {
         return permissionVariant;
     }
 
-    public void setPermissionVariant(PermissionVariant permissionVariant) {
+    public void setPermissionVariant(UiPermissionVariant permissionVariant) {
         this.permissionVariant = permissionVariant;
     }
 }

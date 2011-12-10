@@ -16,7 +16,7 @@
         </collectionDatasource>
 
         <collectionDatasource id="screenPermissionsTreeDs"
-                              class="com.haulmont.cuba.security.entity.PermissionTarget"
+                              class="com.haulmont.cuba.security.ui.BasicPermissionTarget"
                               view="_local">
             <datasourceClass>com.haulmont.cuba.gui.security.ScreenPermissionTreeDatasource</datasourceClass>
         </collectionDatasource>

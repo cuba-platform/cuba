@@ -8,15 +8,17 @@ package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionValue;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.security.ScreenPermissionTreeDatasource;
 import com.haulmont.cuba.security.entity.*;
+import com.haulmont.cuba.security.ui.BasicPermissionTarget;
+import com.haulmont.cuba.security.ui.PermissionVariant;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
-import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 
@@ -54,14 +56,14 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        screenPermissionsTreeDs.addListener(new CollectionDatasourceListener<PermissionTarget>() {
+        screenPermissionsTreeDs.addListener(new CollectionDatasourceListener<BasicPermissionTarget>() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation) {
             }
 
             @Override
-            public void itemChanged(Datasource<PermissionTarget> ds,
-                                    PermissionTarget prevItem, PermissionTarget item) {
+            public void itemChanged(Datasource<BasicPermissionTarget> ds,
+                                    BasicPermissionTarget prevItem, BasicPermissionTarget item) {
                 if (!selectedScreenPanel.isVisible() && (item != null))
                     selectedScreenPanel.setVisible(true);
                 if (selectedScreenPanel.isVisible() && (item == null))
@@ -69,11 +71,11 @@ public class ScreenPermissionsFrame extends AbstractFrame {
             }
 
             @Override
-            public void stateChanged(Datasource<PermissionTarget> ds, Datasource.State prevState, Datasource.State state) {
+            public void stateChanged(Datasource<BasicPermissionTarget> ds, Datasource.State prevState, Datasource.State state) {
             }
 
             @Override
-            public void valueChanged(PermissionTarget source, String property, Object prevValue, Object value) {
+            public void valueChanged(BasicPermissionTarget source, String property, Object prevValue, Object value) {
             }
         });
 
@@ -101,27 +103,27 @@ public class ScreenPermissionsFrame extends AbstractFrame {
             }
         });
 
-        screenPermissionsTreeDs.addListener(new DatasourceListener<PermissionTarget>() {
+        screenPermissionsTreeDs.addListener(new DatasourceListener<BasicPermissionTarget>() {
             @Override
-            public void itemChanged(Datasource<PermissionTarget> ds,
-                                    PermissionTarget prevItem, PermissionTarget item) {
+            public void itemChanged(Datasource<BasicPermissionTarget> ds,
+                                    BasicPermissionTarget prevItem, BasicPermissionTarget item) {
                 updateCheckBoxes(item);
             }
 
             @Override
-            public void stateChanged(Datasource<PermissionTarget> ds,
+            public void stateChanged(Datasource<BasicPermissionTarget> ds,
                                      Datasource.State prevState, Datasource.State state) {
                 // Do nothing
             }
 
             @Override
-            public void valueChanged(PermissionTarget source,
+            public void valueChanged(BasicPermissionTarget source,
                                      String property, Object prevValue, Object value) {
                 if ("permissionVariant".equals(property))
                     updateCheckBoxes(source);
             }
 
-            private void updateCheckBoxes(PermissionTarget item) {
+            private void updateCheckBoxes(BasicPermissionTarget item) {
                 itemChanged = true;
                 if (item != null) {
                     if (item.getPermissionVariant() == PermissionVariant.ALLOWED) {
@@ -180,7 +182,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     }
 
     private void markItemPermission(PermissionVariant permissionVariant) {
-        PermissionTarget target = screenPermissionsTree.getSingleSelected();
+        BasicPermissionTarget target = screenPermissionsTree.getSingleSelected();
         if (target != null) {
             int value = 0;
             target.setPermissionVariant(permissionVariant);
@@ -195,7 +197,8 @@ public class ScreenPermissionsFrame extends AbstractFrame {
                         value = PermissionValue.DENY.getValue();
                         break;
                 }
-                createPermissionItem("screenPermissionsDs", target, PermissionType.SCREEN, value);
+                PermissionUiHelper.createPermissionItem(screenPermissionsDs, roleDs,
+                        target.getPermissionValue(), PermissionType.SCREEN, value);
             } else {
                 // Remove permission
                 Permission permission = null;
@@ -213,32 +216,6 @@ public class ScreenPermissionsFrame extends AbstractFrame {
         }
     }
 
-    protected void createPermissionItem(String dsName, PermissionTarget target, PermissionType type, Integer value) {
-        final CollectionDatasource<Permission, UUID> ds = getDsContext().get(dsName);
-        final Collection<UUID> permissionIds = ds.getItemIds();
-
-        Permission permission = null;
-        for (UUID id : permissionIds) {
-            Permission p = ds.getItem(id);
-            if (ObjectUtils.equals(p.getTarget(), target.getPermissionValue())) {
-                permission = p;
-                break;
-            }
-        }
-
-        if (permission == null) {
-            final Permission newPermission = new Permission();
-            newPermission.setRole(roleDs.getItem());
-            newPermission.setTarget(target.getPermissionValue());
-            newPermission.setType(type);
-            newPermission.setValue(value);
-
-            ds.addItem(newPermission);
-        } else {
-            permission.setValue(value);
-        }
-    }
-
     public void setItem() {
         screenPermissionsDs.refresh();
         screenPermissionsTreeDs.setPermissionDs(screenPermissionsDs);
@@ -252,8 +229,8 @@ public class ScreenPermissionsFrame extends AbstractFrame {
             if (property != null) {
                 MetaPropertyPath metaPropertyPath = (MetaPropertyPath) property;
                 if ("caption".equals(metaPropertyPath.getMetaProperty().getName())) {
-                    if (item instanceof PermissionTarget) {
-                        PermissionVariant permissionVariant = ((PermissionTarget) item).getPermissionVariant();
+                    if (item instanceof BasicPermissionTarget) {
+                        PermissionVariant permissionVariant = ((BasicPermissionTarget) item).getPermissionVariant();
                         switch (permissionVariant) {
                             case ALLOWED:
                                 return "allowedItem";
