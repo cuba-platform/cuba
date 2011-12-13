@@ -18,9 +18,9 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -29,7 +29,6 @@ import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,10 +70,9 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     protected Map<Component, ComponentCaption> captions = new HashMap<Component, ComponentCaption>();
     protected Map<Component, JPanel> wrappers = new HashMap<Component, JPanel>();
 
-    protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<com.haulmont.cuba.gui.components.Action>();
-    protected Map<ShortcutAction,KeyStroke> shortcutActions = new HashMap<ShortcutAction,KeyStroke>();
-
     protected WindowDelegate delegate;
+
+    protected DesktopFrameActionsHolder actionsHolder;
 
     private List<CloseListener> listeners = new ArrayList<CloseListener>();
 
@@ -88,6 +86,7 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
     public DesktopWindow() {
         initLayout();
         delegate = createDelegate();
+        actionsHolder = new DesktopFrameActionsHolder(this, panel);
     }
 
     protected void initLayout() {
@@ -222,52 +221,22 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
 
     @Override
     public void addAction(final Action action) {
-        if (action instanceof ShortcutAction) {
-            ShortcutAction.KeyCombination combination = ((ShortcutAction) action).getKeyCombination();
-
-            KeyStroke keyStroke = DesktopComponentsHelper.convertKeyCombination(combination);
-            InputMap inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-            inputMap.put(keyStroke, action.getId());
-            ActionMap actionMap = panel.getActionMap();
-            actionMap.put(action.getId(), new javax.swing.AbstractAction() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    action.actionPerform(DesktopWindow.this);
-                }
-            });
-            shortcutActions.put((ShortcutAction) action, keyStroke);
-        }
-        actionsOrder.add(action);
+        actionsHolder.addAction(action);
     }
 
     @Override
     public void removeAction(Action action) {
-        if (action instanceof ShortcutAction) {
-            InputMap inputMap = panel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-            ActionMap actionMap = panel.getActionMap();
-            KeyStroke keyStroke = shortcutActions.get(action);
-            if (keyStroke != null) {
-                inputMap.remove(keyStroke);
-                actionMap.remove(action.getId());
-            }
-        }
-        actionsOrder.remove(action);
+        actionsHolder.removeAction(action);
     }
 
     @Override
     public Collection<Action> getActions() {
-        return Collections.unmodifiableCollection(actionsOrder);
+        return actionsHolder.getActions();
     }
 
     @Override
     public Action getAction(String id) {
-        for (com.haulmont.cuba.gui.components.Action action : getActions()) {
-            if (ObjectUtils.equals(action.getId(), id)) {
-                return action;
-            }
-        }
-        return null;
+        return actionsHolder.getAction(id);
     }
 
     @Override

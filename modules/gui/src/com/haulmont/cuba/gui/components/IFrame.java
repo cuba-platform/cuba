@@ -24,8 +24,13 @@ import java.util.Map;
  * Includes functionality for work with datasources and other windows.
  */
 public interface IFrame
-        extends ExpandingLayout, Component.BelongToFrame, Component.HasLayout, Component.Spacing, Component.Margin {
-
+        extends ExpandingLayout,
+                Component.BelongToFrame,
+                Component.HasLayout,
+                Component.Spacing,
+                Component.Margin,
+                Component.ActionsHolder
+{
     String NAME = "iframe";
 
     WindowContext getContext();

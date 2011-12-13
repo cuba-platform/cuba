@@ -64,7 +64,7 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
             setIcon(action.getIcon());
         }
 
-        action.setOwner(this);
+        action.addOwner(this);
 
         action.addPropertyChangeListener(
                 new PropertyChangeListener() {
@@ -76,6 +76,8 @@ public class DesktopButton extends DesktopAbstractComponent<JButton> implements 
                             setCaption(DesktopButton.this.action.getCaption());
                         } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
                             setEnabled(DesktopButton.this.action.isEnabled());
+                        } else if (Action.PROP_VISIBLE.equals(evt.getPropertyName())) {
+                            setVisible(DesktopButton.this.action.isVisible());
                         }
                     }
                 }

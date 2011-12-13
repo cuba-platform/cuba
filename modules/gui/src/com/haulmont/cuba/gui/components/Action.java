@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.components;
 
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
+import java.util.Collection;
 
 /**
  * A named listener to UI events
@@ -18,8 +19,9 @@ import java.io.Serializable;
 public interface Action extends Serializable {
 
     public static final String PROP_CAPTION = "caption";
-    public static final String PROP_ENABLED = "enabled";
     public static final String PROP_ICON = "icon";
+    public static final String PROP_ENABLED = "enabled";
+    public static final String PROP_VISIBLE = "visible";
 
     /**
      * @return  action's identifier
@@ -45,10 +47,32 @@ public interface Action extends Serializable {
     void setEnabled(boolean enabled);
 
     /**
-     * @return  a component owning the action
+     * @return  whether the action is currently visible
+     */
+    boolean isVisible();
+    void setVisible(boolean visible);
+
+    /**
+     * @return  a single component owning the action. If there are several owners, first will be returned.
      */
     Component.ActionOwner getOwner();
-    void setOwner(Component.ActionOwner actionOwner);
+
+    /**
+     * @return the collection of owners
+     */
+    Collection<Component.ActionOwner> getOwners();
+
+    /**
+     * Add an owner component.
+     * @param actionOwner   owner component
+     */
+    void addOwner(Component.ActionOwner actionOwner);
+
+    /**
+     * Remove an owner component.
+     * @param actionOwner   owner component
+     */
+    void removeOwner(Component.ActionOwner actionOwner);
 
     /**
      * This method is invoked by owning component.

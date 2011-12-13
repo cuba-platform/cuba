@@ -63,6 +63,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         }
 
         public void setEditable(boolean editable) {
+            ActionOwner owner = getOwner();
             if (owner != null && owner instanceof Component) {
                 ((Component) owner).setVisible(editable);
             }

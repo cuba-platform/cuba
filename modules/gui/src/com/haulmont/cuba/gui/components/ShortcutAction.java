@@ -1,15 +1,17 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 29.05.2010 13:30:49
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.components;
 
+/**
+ * Keyboard shortcut action.
+ *
+ * <p>$Id$</p>
+ *
+ * @author Nikolay Gorodnov
+ */
 public interface ShortcutAction extends Action {
 
     KeyCombination getKeyCombination();
@@ -17,6 +19,45 @@ public interface ShortcutAction extends Action {
     class KeyCombination {
         private final Key key;
         private final Modifier[] modifiers;
+
+        /**
+         * Creates a new <code>KeyCombination</code> instance from a string representation.
+         * @param keyString string of type "Modifiers-Key", e.g. "Alt-N". Case-insensitive.
+         * @return          new instance
+         */
+        public static KeyCombination create(String keyString) {
+            if (keyString == null) return null;
+            keyString = keyString.toUpperCase();
+
+            ShortcutAction.Key key;
+            ShortcutAction.Modifier[] modifiers = null;
+
+            if (keyString.indexOf("-") > -1) {
+                String[] keys = keyString.split("-", -1);
+
+                int modifiersCnt = keys.length;
+
+                //try {
+                    key = ShortcutAction.Key.valueOf(keys[modifiersCnt - 1]);
+                    --modifiersCnt;
+                /*} catch (IllegalArgumentException e) {
+                    //ignore
+                }*/
+                modifiers = new ShortcutAction.Modifier[modifiersCnt];
+                for (int i = 0; i < modifiersCnt; i++) {
+                    modifiers[i] = ShortcutAction.Modifier.valueOf(keys[i]);
+                }
+            } else {
+                //try {
+                    key = ShortcutAction.Key.valueOf(keyString);
+                /*} catch (IllegalArgumentException e) {
+                    modifiers = new ShortcutAction.Modifier[] {
+                            ShortcutAction.Modifier.valueOf(keyString)
+                    };
+                }*/
+            }
+            return new ShortcutAction.KeyCombination(key, modifiers);
+        }
 
         public KeyCombination(Key key, Modifier... modifiers) {
             if (key == null && modifiers == null) {

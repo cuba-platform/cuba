@@ -10,8 +10,6 @@
  */
 package com.haulmont.cuba.web.gui;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
@@ -29,6 +27,7 @@ import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
+import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.terminal.Sizeable;
@@ -36,7 +35,6 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Layout;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -84,22 +82,20 @@ public class WebWindow
 
     protected WindowDelegate delegate;
 
-    protected List<com.haulmont.cuba.gui.components.Action> actionsOrder = new LinkedList<com.haulmont.cuba.gui.components.Action>();
-    protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
+    protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
 
     public WebWindow() {
         component = createLayout();
         delegate = createDelegate();
         ((com.vaadin.event.Action.Container) component).addActionHandler(new com.vaadin.event.Action.Handler() {
             public com.vaadin.event.Action[] getActions(Object target, Object sender) {
-                final Set<com.vaadin.event.Action> keys = actions.keySet();
-                return keys.toArray(new com.vaadin.event.Action[keys.size()]);
+                return actionsHolder.getActionImplementations();
             }
 
-            public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
-                Action act = actions.get(action);
-                if (act != null && act.isEnabled()) {
-                    act.actionPerform(WebWindow.this);
+            public void handleAction(com.vaadin.event.Action actionImpl, Object sender, Object target) {
+                Action action = actionsHolder.getAction(actionImpl);
+                if (action != null && action.isEnabled() && action.isVisible()) {
+                    action.actionPerform(WebWindow.this);
                 }
             }
         });
@@ -167,29 +163,19 @@ public class WebWindow
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void addAction(final com.haulmont.cuba.gui.components.Action action) {
-        if (action instanceof ShortcutAction) {
-            actions.put(WebComponentsHelper.createShortcutAction((ShortcutAction) action), action);
-        }
-        actionsOrder.add(action);
+        actionsHolder.addAction(action);
     }
 
     public void removeAction(com.haulmont.cuba.gui.components.Action action) {
-        actionsOrder.remove(action);
-        actions.inverse().remove(action);
+        actionsHolder.removeAction(action);
     }
 
     public Collection<com.haulmont.cuba.gui.components.Action> getActions() {
-        return Collections.unmodifiableCollection(actionsOrder);
+        return actionsHolder.getActions();
     }
 
     public com.haulmont.cuba.gui.components.Action getAction(String id) {
-        for (com.haulmont.cuba.gui.components.Action action : getActions()) {
-            if (ObjectUtils.equals(action.getId(), id)) {
-                return action;
-            }
-        }
-
-        return null;
+        return actionsHolder.getAction(id);
     }
 
     public boolean isValid() {

@@ -8,8 +8,10 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.Resources;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.PopupButton;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.components.Component;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,6 +19,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * <p>$Id$</p>
@@ -24,7 +28,7 @@ import java.beans.PropertyChangeListener;
  * @author krivopustov
  */
 public class DesktopPopupButton
-        extends DesktopAbstractActionOwnerComponent<JButton>
+        extends DesktopAbstractActionsHolderComponent<JButton>
         implements PopupButton
 {
     private JPopupMenu popup;
@@ -35,6 +39,8 @@ public class DesktopPopupButton
     public static final String DEFAULT_ICON = "/popupbutton/open-popup.png";
 
     private Resources resources = App.getInstance().getResources();
+
+    private List<Action> initializedActions = new ArrayList<Action>();
 
     public DesktopPopupButton() {
         popup = new JPopupMenu();
@@ -63,24 +69,14 @@ public class DesktopPopupButton
                     new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            action.actionPerform(DesktopPopupButton.this);
+                            action.actionPerform((Component) action.getOwner());
                         }
                     }
             );
             menuItem.setEnabled(action.isEnabled());
+            menuItem.setVisible(action.isVisible());
 
-            action.addPropertyChangeListener(
-                    new PropertyChangeListener() {
-                        @Override
-                        public void propertyChange(PropertyChangeEvent evt) {
-                            if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
-                                menuItem.setText(action.getCaption());
-                            } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
-                                menuItem.setEnabled(action.isEnabled());
-                            }
-                        }
-                    }
-            );
+            initAction(action, menuItem);
 
             popup.add(menuItem);
         }
@@ -98,6 +94,28 @@ public class DesktopPopupButton
         }
 
         popup.show(impl, 0, y);
+    }
+
+    private void initAction(final Action action, final JMenuItem menuItem) {
+        if (initializedActions.contains(action))
+            return;
+
+        action.addPropertyChangeListener(
+                new PropertyChangeListener() {
+                    @Override
+                    public void propertyChange(PropertyChangeEvent evt) {
+                        if (Action.PROP_CAPTION.equals(evt.getPropertyName())) {
+                            menuItem.setText(action.getCaption());
+                        } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
+                            menuItem.setEnabled(action.isEnabled());
+                        } else if (Action.PROP_VISIBLE.equals(evt.getPropertyName())) {
+                            menuItem.setVisible(action.isVisible());
+                        }
+                    }
+                }
+        );
+
+        initializedActions.add(action);
     }
 
     @Override
@@ -154,5 +172,163 @@ public class DesktopPopupButton
             impl.setIcon(resources.getIcon(icon));
         else
             impl.setIcon(resources.getIcon(DEFAULT_ICON));
+    }
+
+    @Override
+    public void addAction(Action action) {
+        super.addAction(action);
+        action.addOwner(new ButtonStub(action));
+    }
+
+    /**
+     * This class is only needed to serve as a pseudo-owner for actions.
+     */
+    private class ButtonStub implements Button {
+
+        private Action action;
+
+        public ButtonStub(Action action) {
+            this.action = action;
+        }
+
+        @Override
+        public Action getAction() {
+            return action;
+        }
+
+        @Override
+        public void setAction(Action action) {
+        }
+
+        @Override
+        public <A extends IFrame> A getFrame() {
+            return DesktopPopupButton.this.getFrame();
+        }
+
+        @Override
+        public void setFrame(IFrame frame) {
+        }
+
+        @Override
+        public void setExpandable(boolean expandable) {
+        }
+
+        @Override
+        public boolean isExpandable() {
+            return false;
+        }
+
+        @Override
+        public String getId() {
+            return "__" + action.getId() + "_button";
+        }
+
+        @Override
+        public void setId(String id) {
+        }
+
+        @Override
+        public String getDebugId() {
+            return getId();
+        }
+
+        @Override
+        public void setDebugId(String id) {
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return action.isEnabled();
+        }
+
+        @Override
+        public void setEnabled(boolean enabled) {
+        }
+
+        @Override
+        public boolean isVisible() {
+            return DesktopPopupButton.this.isVisible();
+        }
+
+        @Override
+        public void setVisible(boolean visible) {
+        }
+
+        @Override
+        public void requestFocus() {
+        }
+
+        @Override
+        public float getHeight() {
+            return 0;
+        }
+
+        @Override
+        public int getHeightUnits() {
+            return 0;
+        }
+
+        @Override
+        public void setHeight(String height) {
+        }
+
+        @Override
+        public float getWidth() {
+            return 0;
+        }
+
+        @Override
+        public int getWidthUnits() {
+            return 0;
+        }
+
+        @Override
+        public void setWidth(String width) {
+        }
+
+        @Override
+        public Alignment getAlignment() {
+            return DesktopPopupButton.this.getAlignment();
+        }
+
+        @Override
+        public void setAlignment(Alignment alignment) {
+        }
+
+        @Override
+        public String getStyleName() {
+            return DesktopPopupButton.this.getStyleName();
+        }
+
+        @Override
+        public void setStyleName(String name) {
+        }
+
+        @Override
+        public String getCaption() {
+            return action.getCaption();
+        }
+
+        @Override
+        public void setCaption(String caption) {
+        }
+
+        @Override
+        public String getDescription() {
+            return DesktopPopupButton.this.getDescription();
+        }
+
+        @Override
+        public void setDescription(String description) {
+        }
+
+        @Override
+        public String getIcon() {
+            return action.getIcon();
+        }
+
+        @Override
+        public void setIcon(String icon) {
+        }
     }
 }

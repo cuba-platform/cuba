@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 11.12.2008 15:13:56
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.config;
 
@@ -15,7 +10,6 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.ShortcutAction;
-import com.haulmont.cuba.gui.xml.layout.loaders.util.ComponentLoaderHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -39,7 +33,10 @@ import java.util.MissingResourceException;
 
 /**
  * GenericUI class holding information about main menu structure.
- * <br>Reference can be obtained via {@link com.haulmont.cuba.gui.AppConfig#getMenuConfig()}
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 @ManagedBean("cuba_MenuConfig")
 public class MenuConfig implements Serializable
@@ -169,10 +166,8 @@ public class MenuConfig implements Serializable
         }
 
         try {
-            ShortcutAction.KeyCombination keyCombination = ComponentLoaderHelper.keyCombination(shortcut);
-            menuItem.setShortcut(keyCombination);
-        }
-        catch (IllegalArgumentException e) {
+            menuItem.setShortcut(ShortcutAction.KeyCombination.create(shortcut));
+        } catch (IllegalArgumentException e) {
             log.warn("Invalid menu shortcut value: '" + shortcut + "'");
         }
     }

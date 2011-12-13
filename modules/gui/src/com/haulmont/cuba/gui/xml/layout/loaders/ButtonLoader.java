@@ -11,7 +11,9 @@ package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Button;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.xml.DeclarativeAction;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoader {
@@ -41,6 +43,21 @@ public class ButtonLoader extends com.haulmont.cuba.gui.xml.layout.loaders.Compo
 
         assignFrame(component);
 
+        loadInvoke(component, element);
+
         return component;
+    }
+
+    private void loadInvoke(Button component, Element element) {
+        if (!StringUtils.isBlank(element.attributeValue("action")))
+            return;
+
+        String methodName = element.attributeValue("invoke");
+        if (StringUtils.isBlank(methodName))
+            return;
+
+        DeclarativeAction action = new DeclarativeAction(component.getId() + "_action",
+                component.getCaption(), component.getIcon(), methodName, component.getFrame());
+        component.setAction(action);
     }
 }

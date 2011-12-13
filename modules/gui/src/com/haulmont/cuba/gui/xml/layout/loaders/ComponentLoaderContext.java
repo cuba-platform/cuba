@@ -69,7 +69,7 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
 
     public void executePostInitTasks() {
         if (!getPostInitTasks().isEmpty()) {
-            new TastExecutor(getPostInitTasks().get(0)).run();
+            new TaskExecutor(getPostInitTasks().get(0)).run();
         }
     }
 
@@ -83,12 +83,12 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
         }
     }
 
-    private class TastExecutor implements Runnable, Serializable {
+    private class TaskExecutor implements Runnable, Serializable {
         private final ComponentLoader.PostInitTask task;
 
         private static final long serialVersionUID = 4776677725415883750L;
 
-        private TastExecutor(ComponentLoader.PostInitTask task) {
+        private TaskExecutor(ComponentLoader.PostInitTask task) {
             this.task = task;
         }
 
@@ -96,7 +96,7 @@ public class ComponentLoaderContext implements ComponentLoader.Context {
             removeTask(task, ComponentLoaderContext.this);
             task.execute(ComponentLoaderContext.this, frame);
             if (!getPostInitTasks().isEmpty()) {
-                new TastExecutor(getPostInitTasks().get(0)).run();
+                new TaskExecutor(getPostInitTasks().get(0)).run();
             }
         }
     }

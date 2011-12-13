@@ -9,12 +9,13 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Timer;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.xml.layout.loaders.util.ComponentLoaderHelper;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -37,6 +38,7 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         assignXmlDescriptor(window, element);
         loadMessagesPack(window, element);
         loadCaption(window, element);
+        loadActions(window, element);
 
         final Element layoutElement = element.element("layout");
         loadExpandLayout(window, layoutElement);
@@ -49,7 +51,6 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
 
         loadTimers(factory, window, element);
 
-        loadShortcuts(window, element);
         loadFocusedComponent(window,element);
 
         return window;
@@ -135,63 +136,6 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         }
     }
 
-    private void loadShortcuts(Window component, Element element) throws InstantiationException {
-        Element shortcutsElement = element.element("shortcuts");
-        if (shortcutsElement != null) {
-            final List<Element> shortcutElements = shortcutsElement.elements("shortcut");
-            for (final Element shortcutElement : shortcutElements) {
-                loadShortcut(component, shortcutElement);
-            }
-        }
-    }
-
-    private void loadShortcut(final Window component, Element element) throws InstantiationException {
-        final String keyCode = element.attributeValue("code");
-        if (StringUtils.isEmpty(keyCode)) {
-            throw new InstantiationException("Shortcut must contains \"code\" attribute");
-        }
-
-        final ShortcutAction.KeyCombination combination = keyCombination(keyCode);
-
-        final String actionName = element.attributeValue("action");
-        if (!StringUtils.isEmpty(actionName)) {
-            context.addPostInitTask(new PostInitTask() {
-                public void execute(Context context, final IFrame window) {
-                    component.addAction(new AbstractShortcutAction(keyCode, combination) {
-                        public void actionPerform(Component component) {
-                            //todo
-                            final Action action = ComponentsHelper.findAction(actionName, window);
-                            if (action == null) {
-                                throw new IllegalArgumentException(String.format("Can't find action '%s'", actionName));
-                            }
-                            action.actionPerform(component);
-                        }
-                    });
-                }
-            });
-        } else {
-            final String methodName = element.attributeValue("invoke");
-            if (!StringUtils.isEmpty(methodName)) {
-                context.addPostInitTask(new PostInitTask() {
-                    public void execute(Context context, final IFrame window) {
-                        component.addAction(new AbstractShortcutAction(keyCode, combination) {
-                            public void actionPerform(Component component) {
-                                try {
-                                    Method method = window.getClass().getMethod(methodName);
-                                    method.invoke(window);
-                                } catch (Throwable e) {
-                                    throw new RuntimeException(String.format("Unable to invoke method '%s'", methodName), e);
-                                }
-                            }
-                        });
-                    }
-                });
-            } else {
-                throw new InstantiationException("Shortcut must contains \"action\" or \"invoke\" attribute");
-            }
-        }
-    }
-
     protected void loadFocusedComponent(Window window, Element element) {
         String componentId = element.attributeValue("focusComponent");
         if (componentId != null) {
@@ -206,14 +150,4 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
             }
         });
     }
-
-    private ShortcutAction.KeyCombination keyCombination(String keyString) {
-        try {
-            return ComponentLoaderHelper.keyCombination(keyString);
-        }
-        catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
-
 }

@@ -13,7 +13,6 @@ import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.components.Tree;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 
@@ -32,7 +31,7 @@ import java.util.Set;
  * @author krivopustov
  */
 public class DesktopTree
-    extends DesktopAbstractActionOwnerComponent<JTree>
+    extends DesktopAbstractActionsHolderComponent<JTree>
     implements Tree
 {
     protected String hierarchyProperty;

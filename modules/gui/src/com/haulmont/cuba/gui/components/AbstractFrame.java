@@ -335,4 +335,20 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
     public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
         frame.setMargin(topEnable, rightEnable, bottomEnable, leftEnable);
     }
+
+    public void addAction(Action action) {
+        frame.addAction(action);
+    }
+
+    public void removeAction(Action action) {
+        frame.removeAction(action);
+    }
+
+    public Collection<Action> getActions() {
+        return frame.getActions();
+    }
+
+    public Action getAction(String id) {
+        return frame.getAction(id);
+    }
 }

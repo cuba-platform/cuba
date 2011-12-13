@@ -19,7 +19,7 @@ import java.util.LinkedList;
  *
  * @author krivopustov
  */
-public class DesktopAbstractActionOwnerComponent<C extends JComponent> extends DesktopAbstractComponent<C> {
+public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends DesktopAbstractComponent<C> {
 
     protected java.util.List<Action> actionsOrder = new LinkedList<com.haulmont.cuba.gui.components.Action>();
 

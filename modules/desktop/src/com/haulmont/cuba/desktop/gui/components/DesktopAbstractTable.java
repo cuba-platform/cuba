@@ -56,7 +56,7 @@ import java.util.List;
  * @author krivopustov
  */
 public abstract class DesktopAbstractTable<C extends JTable>
-        extends DesktopAbstractActionOwnerComponent<C>
+        extends DesktopAbstractActionsHolderComponent<C>
         implements Table {
     private static final int DEFAULT_ROW_HEIGHT = 24;
 
@@ -873,6 +873,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 menuItem.setIcon(App.getInstance().getResources().getIcon(action.getIcon()));
             }
             menuItem.setEnabled(action.isEnabled());
+            menuItem.setVisible(action.isVisible());
             menuItem.addActionListener(
                     new ActionListener() {
                         @Override

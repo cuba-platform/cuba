@@ -44,6 +44,8 @@ public class TreeLoader extends ComponentLoader
 
         loadStyleName(component, element);
 
+        loadActions(component, element);
+
         Element itemsElem = element.element("treechildren");
         String datasource = itemsElem.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {

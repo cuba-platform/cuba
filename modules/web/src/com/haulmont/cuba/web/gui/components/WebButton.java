@@ -81,7 +81,7 @@ public class WebButton
             setIcon(action.getIcon());
         }
 
-        action.setOwner(this);
+        action.addOwner(this);
 
         action.addPropertyChangeListener(
                 new PropertyChangeListener() {

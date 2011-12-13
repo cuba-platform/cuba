@@ -101,38 +101,6 @@ public class AbstractWindow extends AbstractFrame
         return (T) frame;
     }
 
-    public void addAction(Action action) {
-        if (frame instanceof Window) {
-            ((Window) frame).addAction(action);
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    public void removeAction(Action action) {
-        if (frame instanceof Window) {
-            ((Window) frame).removeAction(action);
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    public Collection<Action> getActions() {
-        if (frame instanceof Window) {
-            return ((Window) frame).getActions();
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    public Action getAction(String id) {
-        if (frame instanceof Window) {
-            return ((Window) frame).getAction(id);
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
     public void applySettings(Settings settings) {
         if (frame instanceof Window) {
             ((Window) frame).applySettings(settings);

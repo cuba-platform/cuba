@@ -50,11 +50,7 @@ public class PopupButtonLoader extends ComponentLoader {
 
         assignFrame(component);
 
-//        if (element.elementIterator().hasNext()) {
-//            Element popupElement = (Element) element.elementIterator().next();
-//            Component popupComponent = getLoader(popupElement.getName()).loadComponent(factory, popupElement, component);
-//            component.setPopupComponent(popupComponent);
-//        }
+        loadActions(component, element);
 
         String menuWidth = element.attributeValue("menuWidth");
         if (!StringUtils.isEmpty(menuWidth)) {
@@ -63,27 +59,4 @@ public class PopupButtonLoader extends ComponentLoader {
 
         return component;
     }
-
-//    protected com.haulmont.cuba.gui.xml.layout.ComponentLoader getLoader(String name) throws IllegalAccessException, InstantiationException {
-//        Class<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> loaderClass = config.getLoader(name);
-//        if (loaderClass == null) {
-//            throw new IllegalStateException(String.format("Unknown component '%s'", name));
-//        }
-//
-//        com.haulmont.cuba.gui.xml.layout.ComponentLoader loader;
-//        try {
-//            final Constructor<? extends com.haulmont.cuba.gui.xml.layout.ComponentLoader> constructor =
-//                    loaderClass.getConstructor(Context.class, LayoutLoaderConfig.class, ComponentsFactory.class);
-//            loader = constructor.newInstance(context, config, factory);
-//
-//            loader.setLocale(locale);
-//            loader.setMessagesPack(messagesPack);
-//        } catch (Throwable e) {
-//            loader = loaderClass.newInstance();
-//            loader.setLocale(locale);
-//            loader.setMessagesPack(messagesPack);
-//        }
-//
-//        return loader;
-//    }
 }

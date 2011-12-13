@@ -14,6 +14,10 @@ import org.apache.commons.lang.ObjectUtils;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Base class for actions
@@ -28,7 +32,9 @@ public abstract class AbstractAction implements Action {
 
     protected boolean enabled = true;
 
-    protected Component.ActionOwner owner;
+    protected boolean visible = true;
+
+    protected List<Component.ActionOwner> owners = new ArrayList<Component.ActionOwner>();
 
     protected PropertyChangeSupport changeSupport;
 
@@ -36,14 +42,17 @@ public abstract class AbstractAction implements Action {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public String getCaption() {
         return caption == null ? MessageProvider.getMessage(getClass(), id) : caption;
     }
 
+    @Override
     public void setCaption(String caption) {
         String oldValue = this.caption;
         if (!ObjectUtils.equals(oldValue, caption)) {
@@ -52,27 +61,63 @@ public abstract class AbstractAction implements Action {
         }
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         boolean oldValue = this.enabled;
         if (oldValue != enabled) {
             this.enabled = enabled;
-            if (owner != null && owner instanceof Component) {
-                ((Component) owner).setEnabled(enabled);
+            for (Component.ActionOwner owner : owners) {
+                if (owner != null && owner instanceof Component) {
+                    ((Component) owner).setEnabled(enabled);
+                }
             }
             firePropertyChange(PROP_ENABLED, oldValue, enabled);
         }
     }
 
-    public Component.ActionOwner getOwner() {
-        return owner;
+    @Override
+    public boolean isVisible() {
+        return visible;
     }
 
-    public void setOwner(Component.ActionOwner actionOwner) {
-        this.owner = actionOwner;
+    @Override
+    public void setVisible(boolean visible) {
+        boolean oldValue = this.visible;
+        if (oldValue != visible) {
+            this.visible = visible;
+            for (Component.ActionOwner owner : owners) {
+                if (owner != null && owner instanceof Component) {
+                    ((Component) owner).setVisible(visible);
+                }
+            }
+            firePropertyChange(PROP_VISIBLE, oldValue, visible);
+        }
+    }
+
+    @Override
+    public Collection<Component.ActionOwner> getOwners() {
+        return Collections.unmodifiableCollection(owners);
+    }
+
+    @Override
+    public Component.ActionOwner getOwner() {
+        return owners.isEmpty() ? null : owners.get(0);
+    }
+
+    @Override
+    public void addOwner(Component.ActionOwner actionOwner) {
+        if (!owners.contains(actionOwner))
+            owners.add(actionOwner);
+    }
+
+    @Override
+    public void removeOwner(Component.ActionOwner actionOwner) {
+        owners.remove(actionOwner);
     }
 
     @Override
@@ -97,10 +142,12 @@ public abstract class AbstractAction implements Action {
         changeSupport.firePropertyChange(propertyName, oldValue, newValue);
     }
 
+    @Override
     public String getIcon() {
         return icon;
     }
 
+    @Override
     public void setIcon(String icon) {
         String oldValue = this.icon;
         if (!ObjectUtils.equals(oldValue, icon)) {

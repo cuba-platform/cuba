@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
@@ -19,14 +20,12 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.UserSessionClient;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DatasourceComponent;
-import com.haulmont.cuba.gui.components.Field;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
 import com.haulmont.cuba.gui.components.validators.IntegerValidator;
 import com.haulmont.cuba.gui.components.validators.ScriptValidator;
+import com.haulmont.cuba.gui.xml.DeclarativeAction;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
@@ -335,20 +334,43 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         Field.Validator validator = null;
         if (property.getRange().isDatatype()) {
             Datatype<Object> dt = property.getRange().asDatatype();
-            Datatypes datatypes = Datatypes.getInstance();
-            if (dt.equals(datatypes.get(IntegerDatatype.NAME)) || dt.equals(datatypes.get(LongDatatype.NAME))) {
+            if (dt.equals(Datatypes.get(IntegerDatatype.NAME)) || dt.equals(Datatypes.get(LongDatatype.NAME))) {
                 validator = new IntegerValidator(
                         MessageProvider.getMessage(AppConfig.getMessagesPack(),
                                 "validation.invalidNumber"));
-            } else if (dt.equals(datatypes.get(DoubleDatatype.NAME)) || dt.equals(datatypes.get(BigDecimalDatatype.NAME))) {
+            } else if (dt.equals(Datatypes.get(DoubleDatatype.NAME)) || dt.equals(Datatypes.get(BigDecimalDatatype.NAME))) {
                 validator = new DoubleValidator(
                         MessageProvider.getMessage(AppConfig.getMessagesPack(),
                                 "validation.invalidNumber"));
-            } else if (dt.equals(datatypes.get(DateDatatype.NAME))) {
+            } else if (dt.equals(Datatypes.get(DateDatatype.NAME))) {
                 validator = new DateValidator(MessageProvider.getMessage(AppConfig.getMessagesPack(),
                         "validation.invalidDate"));
             }
         }
         return validator;
+    }
+
+    protected void loadActions(Component.ActionsHolder actionsHolder, Element element) {
+        Element actionsEl = element.element("actions");
+        if (actionsEl == null)
+            return;
+
+        for (Element actionEl : Dom4j.elements(actionsEl, "action")) {
+            actionsHolder.addAction(loadDeclarativeAction(actionsHolder, actionEl));
+        }
+    }
+
+    protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
+        String id = element.attributeValue("id");
+        if (id == null)
+            throw new IllegalStateException("No action id provided");
+
+        return new DeclarativeAction(
+                id,
+                loadResourceString(element.attributeValue("caption")),
+                loadResourceString(element.attributeValue("icon")),
+                element.attributeValue("invoke"),
+                actionsHolder
+        );
     }
 }

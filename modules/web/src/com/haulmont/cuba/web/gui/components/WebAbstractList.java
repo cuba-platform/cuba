@@ -12,7 +12,7 @@ import java.util.Set;
 
 public abstract class WebAbstractList<T extends AbstractSelect>
     extends
-        WebAbstractActionOwnerComponent<T>
+        WebAbstractActionsHolderComponent<T>
     implements
         ListComponent
 {

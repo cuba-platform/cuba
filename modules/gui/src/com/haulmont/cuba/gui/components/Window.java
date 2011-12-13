@@ -19,7 +19,7 @@ import java.util.Collection;
 /**
  * Represents an independent window
  */
-public interface Window extends Serializable, IFrame, Component.HasCaption, Component.ActionsHolder {
+public interface Window extends Serializable, IFrame, Component.HasCaption {
 
     String NAME = "window";
 

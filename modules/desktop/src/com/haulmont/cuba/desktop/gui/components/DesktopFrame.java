@@ -40,6 +40,12 @@ public class DesktopFrame
 
     private WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
 
+    private DesktopFrameActionsHolder actionsHolder;
+
+    public DesktopFrame() {
+        actionsHolder = new DesktopFrameActionsHolder(this, impl);
+    }
+
     public WindowContext getContext() {
         return context == null ? getFrame().getContext() : context;
     }
@@ -227,5 +233,25 @@ public class DesktopFrame
     @Override
     public boolean expandsHeight() {
         return false;
+    }
+
+    @Override
+    public void addAction(final Action action) {
+        actionsHolder.addAction(action);
+    }
+
+    @Override
+    public void removeAction(Action action) {
+        actionsHolder.removeAction(action);
+    }
+
+    @Override
+    public Collection<Action> getActions() {
+        return actionsHolder.getActions();
+    }
+
+    @Override
+    public Action getAction(String id) {
+        return actionsHolder.getAction(id);
     }
 }

@@ -348,9 +348,18 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="keyboardShortcut">
-        <xs:attribute name="code" type="xs:string" use="required"/>
-        <xs:attribute name="action" type="xs:string" use="optional"/>
+    <xs:complexType name="frameAction">
+        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasCaptionProp"/>
+        <xs:attribute name="icon" type="xs:string" use="optional"/>
+        <xs:attribute name="invoke" type="xs:string" use="optional"/>
+        <xs:attribute name="shortcut" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="componentAction">
+        <xs:attributeGroup ref="requiresId"/>
+        <xs:attributeGroup ref="hasCaptionProp"/>
+        <xs:attribute name="icon" type="xs:string" use="optional"/>
         <xs:attribute name="invoke" type="xs:string" use="optional"/>
     </xs:complexType>
 
@@ -558,6 +567,7 @@
     <!-- Tree -->
     <xs:complexType name="treeComponent">
         <xs:sequence>
+            <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
             <xs:element name="treechildren" minOccurs="1" maxOccurs="1">
                 <xs:complexType>
                     <xs:attributeGroup ref="hasCaptionSource"/>
@@ -583,20 +593,37 @@
         <xs:attributeGroup ref="hasAlign"/>
 
         <xs:attribute name="action" type="xs:string" use="optional"/>
-        <xs:attribute name="icon" type="xs:string" use="optional" default="icon://"/>
+        <xs:attribute name="icon" type="xs:string" use="optional"/>
+
+        <xs:attribute name="invoke" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <!-- PopupButton -->
     <xs:complexType name="popupButtonComponent">
-        <xs:complexContent>
-            <xs:extension base="buttonComponent">
-                <xs:choice minOccurs="0" maxOccurs="1">
-                    <xs:group ref="component"/>
-                    <xs:group ref="layout"/>
-                </xs:choice>
-                <xs:attribute name="menuWidth" type="xs:string" use="optional"/>
-            </xs:extension>
-        </xs:complexContent>
+        <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasCaption"/>
+
+        <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasVisibility"/>
+        <xs:attributeGroup ref="hasWidthProp"/>
+        <xs:attributeGroup ref="hasAlign"/>
+
+        <xs:attribute name="icon" type="xs:string" use="optional"/>
+
+        <xs:sequence>
+            <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
+        </xs:sequence>
+
+        <!--<xs:complexContent>-->
+            <!--<xs:extension base="buttonComponent">-->
+                <!--<xs:choice minOccurs="0" maxOccurs="1">-->
+                    <!--<xs:group ref="component"/>-->
+                    <!--<xs:group ref="layout"/>-->
+                <!--</xs:choice>-->
+                <!--<xs:attribute name="menuWidth" type="xs:string" use="optional"/>-->
+            <!--</xs:extension>-->
+        <!--</xs:complexContent>-->
     </xs:complexType>
 
     <!-- ButtonsPanel -->
@@ -656,6 +683,7 @@
     <!-- Table -->
     <xs:complexType name="tableComponent">
         <xs:sequence>
+            <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
             <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelComponent"/>
             <xs:element name="rowsCount" minOccurs="0" maxOccurs="1">
                 <xs:complexType/>
@@ -677,6 +705,7 @@
     <!-- GroupTable -->
     <xs:complexType name="groupTableComponent">
         <xs:sequence>
+            <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
             <xs:element name="buttonsPanel" minOccurs="0" maxOccurs="1" type="buttonsPanelComponent"/>
             <xs:element name="rowsCount" minOccurs="0" maxOccurs="1">
                 <xs:complexType/>
@@ -816,7 +845,7 @@
             <xs:element name="button" maxOccurs="1">
                 <xs:complexType>
                     <xs:attribute name="caption" type="xs:string" use="required" default="msg://"/>
-                    <xs:attribute name="icon" type="xs:string" use="optional" default="icon://"/>
+                    <xs:attribute name="icon" type="xs:string" use="optional"/>
                 </xs:complexType>
             </xs:element>
         </xs:choice>
@@ -1255,7 +1284,7 @@
             <xs:choice minOccurs="1" maxOccurs="unbounded">
                 <xs:element name="button" type="buttonComponent"/>
                 <xs:element name="linkButton" type="buttonComponent"/>
-                <xs:element name="popupButton" type="buttonComponent"/>
+                <xs:element name="popupButton" type="popupButtonComponent"/>
 
                 <xs:element name="label" type="labelComponent"/>
                 <xs:element name="checkBox" type="checkBoxComponent"/>
@@ -1358,15 +1387,7 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
-                <xs:element name="shortcuts" minOccurs="0">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:choice minOccurs="1" maxOccurs="unbounded">
-                                <xs:element name="shortcut" type="keyboardShortcut"/>
-                            </xs:choice>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
+                <xs:element name="actions" minOccurs="0" maxOccurs="1" type="frameActions"/>
                 <xs:element name="layout" minOccurs="1" maxOccurs="1">
                     <xs:complexType>
                         <xs:group ref="layoutOrComponent"/>
@@ -1391,5 +1412,21 @@
             <xs:attribute name="focusComponent" type="xs:string" use="optional"/>
         </xs:complexType>
     </xs:element>
+
+    <xs:complexType name="frameActions">
+        <xs:sequence>
+            <xs:choice minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="action" type="frameAction"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="componentActions">
+        <xs:sequence>
+            <xs:choice minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="action" type="componentAction"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
 
 </xs:schema>

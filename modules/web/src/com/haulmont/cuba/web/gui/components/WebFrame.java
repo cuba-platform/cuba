@@ -56,8 +56,22 @@ public class WebFrame extends WebVBoxLayout
 
     private WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
 
+    protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
+
     public WebFrame() {
         super();
+        addActionHandler(new com.vaadin.event.Action.Handler() {
+            public com.vaadin.event.Action[] getActions(Object target, Object sender) {
+                return actionsHolder.getActionImplementations();
+            }
+
+            public void handleAction(com.vaadin.event.Action actionImpl, Object sender, Object target) {
+                Action action = actionsHolder.getAction(actionImpl);
+                if (action != null && action.isEnabled() && action.isVisible()) {
+                    action.actionPerform(WebFrame.this);
+                }
+            }
+        });
     }
 
     public IFrame wrapBy(Class<? extends IFrame> aClass) {
@@ -287,5 +301,21 @@ public class WebFrame extends WebVBoxLayout
         if (actionManager != null) {
             actionManager.handleActions(variables, this);
         }
+    }
+
+    public void addAction(Action action) {
+        actionsHolder.addAction(action);
+    }
+
+    public void removeAction(Action action) {
+        actionsHolder.removeAction(action);
+    }
+
+    public Collection<com.haulmont.cuba.gui.components.Action> getActions() {
+        return actionsHolder.getActions();
+    }
+
+    public com.haulmont.cuba.gui.components.Action getAction(String id) {
+        return actionsHolder.getAction(id);
     }
 }
