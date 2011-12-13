@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,8 +27,10 @@ import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.util.UUID;
 
 @Controller
@@ -53,8 +56,13 @@ public class FileDownloadController {
 
         AppContext.setSecurityContext(new SecurityContext(userSession));
         try {
-            FileDescriptor fd = getFileDescriptor(request, response);
-            if (fd == null)
+            File file = null;
+            FileDescriptor fd = null;
+            if (request.getParameter("p") != null)
+                file = getFile(request, response);
+            else
+                fd = getFileDescriptor(request, response);
+            if (fd == null && file == null)
                 return;
 
             response.setHeader("Cache-Control", "no-cache");
@@ -65,7 +73,7 @@ public class FileDownloadController {
             InputStream is = null;
             ServletOutputStream os = null;
             try {
-                is = fileStorage.openFileInputStream(fd);
+                is = fd != null ? fileStorage.openFileInputStream(fd) : FileUtils.openInputStream(file);
                 os = response.getOutputStream();
 
                 byte[] buffer = new byte[1024 * 64];
@@ -120,5 +128,41 @@ public class FileDownloadController {
         if (fileDescriptor == null)
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         return fileDescriptor;
+    }
+
+
+    public File getFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String filePath = decodeUTF8(request.getParameter("p"));
+        if (filePath != null) {
+            if (isPermittedDirectory(filePath)) {
+                return new File(filePath);
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
+        } else {            
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        return null;
+    }
+
+    protected boolean isPermittedDirectory(String directory) {
+        String directories = AppContext.getProperty("cuba.download.directories");
+        if (directories != null && directory != null ) {
+            for (String d : directories.split(";")) {
+                if (directory.startsWith(directory)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    protected String decodeUTF8(String str) {
+        try {
+            return URLDecoder.decode(str, "UTF8");
+        } catch (Exception e) {
+            log.error("Decode string from URL param failed", e);
+            return null;
+        }
     }
 }
