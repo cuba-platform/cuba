@@ -202,7 +202,7 @@ public class DesktopPopupButton
 
         @Override
         public <A extends IFrame> A getFrame() {
-            return DesktopPopupButton.this.getFrame();
+            return (A) DesktopPopupButton.this.getFrame();
         }
 
         @Override
