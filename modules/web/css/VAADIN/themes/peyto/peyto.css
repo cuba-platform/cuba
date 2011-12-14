@@ -30,6 +30,10 @@
     padding-bottom: 0;
 }
 
+.v-tableColumnSelector .gwt-MenuItem div {
+    padding-left: 20px !important;
+}
+
 /*
  * Title bar
  */

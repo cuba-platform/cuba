@@ -1921,6 +1921,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
                         clickedSelector = columnSelector;
 
+                        client.getContextMenu().addStyleName("v-tableColumnSelector");
                         client.getContextMenu().showAt(this, left, top);
                     } else if (target.cast() == presentationSelector || DOM.getParent(target.<Element>cast()) == presentationSelector) {
                         final int left = DOM.getAbsoluteLeft(presentationSelector);
@@ -1960,6 +1961,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             @Override
             public void execute() {
                 if (enabled) {
+                    client.getContextMenu().removeStyleName("v-tableColumnSelector");
                     client.getContextMenu().hide();
                     // toggle selected column
                     if (collapsedColumns.contains(colKey)) {
