@@ -61,8 +61,6 @@ public class RoleEditor extends AbstractEditor {
     }
 
     private void hideMenuPopupButton() {
-//        if (entityPermissionsGrant != null)
-//            entityPermissionsGrant.setPopupVisible(false);
         if (propertyPermissionsGrant != null)
             propertyPermissionsGrant.setPopupVisible(false);
         if (specificPermissionsGrant != null)

@@ -21,33 +21,100 @@
         </collectionDatasource>
     </dsContext>
 
-    <#assign width = 200>
-    <#assign treeHeight = 400>
-    <#assign treeWidth = 500>
-    <#assign widthPPB = 120>
-    <#assign widthPPBMenu = 100>
+    <#assign columnWidth=75>
+
     <layout expandLayout="true" expand="contentPane">
-        <hbox expand="spacer" width="100%" spacing="true">
+        <hbox expand="spacer" width="100%" spacing="true" margin="true">
             <checkBox id="assignedOnlyCheckBox" caption="msg://assignedOnly"/>
+            <label width="100"/>
             <label value="msg://entityFilter"/>
             <textField id="entityFilter"/>
-            <button id="applyFilterBtn"/>
+            <button id="applyFilterBtn" caption="msg://action.apply"/>
+            <label id="spacer"/>
         </hbox>
-        <hbox id="contentPane" expand="tablePane">
-            <vbox id="tablePane" expand="entityPermissionsTable" margin="true" spacing="true">
-                <table id="entityPermissionsTable">
+        <hbox id="contentPane" expand="tablePane" spacing="true" margin="true">
+            <vbox id="tablePane" expand="entityPermissionsTable">
+                <table id="entityPermissionsTable" multiselect="true">
                     <columns>
-                        <column id="target" caption="msg://target"/>
-                        <column id="value" caption="msg://value"/>
+                        <column id="caption" caption="msg://entities"/>
+                        <column id="createPermissionVariant"/>
+                        <column id="readPermissionVariant"/>
+                        <column id="updatePermissionVariant"/>
+                        <column id="deletePermissionVariant"/>
                     </columns>
-                    <rows datasource="entityPermissionsDs"/>
+                    <rows datasource="entityTargetsDs"/>
                 </table>
             </vbox>
-            <groupBox id="editPane">
-                <caption label=""/>
 
-                <vbox>
+            <groupBox id="editPane" width="300" height="100%">
+                <caption label="msg://permissions"/>
 
+                <vbox expand="panelSpacer" width="100%">
+                    <hbox>
+                        <grid margin="true" spacing="true">
+                            <columns>
+                                <column/>
+                                <column/>
+                                <column/>
+                            </columns>
+                            <rows>
+                                <row>
+                                    <label width="75"/>
+                                    <label value="msg://checkbox.allow" width="${columnWidth}" stylename="label-center"/>
+                                    <label value="msg://checkbox.deny" width="${columnWidth}" stylename="label-center"/>
+                                </row>
+                                <row>
+                                    <label value="msg://EntityOp.CREATE"/>
+
+                                    <checkBox id="createAllowCheck" align="MIDDLE_CENTER"/>
+                                    <checkBox id="createDenyCheck" align="MIDDLE_CENTER"/>
+                                </row>
+                                <row>
+                                    <label value="msg://EntityOp.READ"/>
+
+                                    <checkBox id="readAllowCheck" align="MIDDLE_CENTER"/>
+                                    <checkBox id="readDenyCheck" align="MIDDLE_CENTER"/>
+                                </row>
+                                <row>
+                                    <label value="msg://EntityOp.UPDATE"/>
+
+                                    <checkBox id="updateAllowCheck" align="MIDDLE_CENTER"/>
+                                    <checkBox id="updateDenyCheck" align="MIDDLE_CENTER"/>
+                                </row>
+                                <row>
+                                    <label value="msg://EntityOp.DELETE"/>
+
+                                    <checkBox id="deleteAllowCheck" align="MIDDLE_CENTER"/>
+                                    <checkBox id="deleteDenyCheck" align="MIDDLE_CENTER"/>
+                                </row>
+                            </rows>
+                        </grid>
+                    </hbox>
+
+                    <label id="panelSpacer" stylename="border-bottom"/>
+
+                    <hbox margin="true" spacing="true">
+                        <grid margin="true" spacing="true">
+                            <columns>
+                                <column/>
+                                <column/>
+                                <column/>
+                            </columns>
+                            <rows>
+                                <row>
+                                    <label value="msg://allEntities" width="70"/>
+
+                                    <vbox width="${columnWidth}">
+                                        <checkBox id="allAllowCheck" align="MIDDLE_CENTER"/>
+                                    </vbox>
+
+                                    <vbox width="${columnWidth}">
+                                        <checkBox id="allDenyCheck" align="MIDDLE_CENTER"/>
+                                    </vbox>
+                                </row>
+                            </rows>
+                        </grid>
+                    </hbox>
                 </vbox>
             </groupBox>
         </hbox>

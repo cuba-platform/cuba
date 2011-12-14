@@ -26,6 +26,8 @@ public class Permission extends StandardEntity
 {
     private static final long serialVersionUID = 4188184934170706381L;
 
+    public static final String TARGET_PATH_DELIMETER = ":";
+
     /** @see com.haulmont.cuba.security.entity.PermissionType PermissionType.getId() */
     @Column(name = "TYPE")
     private Integer type;

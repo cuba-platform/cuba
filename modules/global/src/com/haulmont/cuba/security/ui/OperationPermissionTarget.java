@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.security.ui;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
@@ -69,6 +70,14 @@ public class OperationPermissionTarget extends AbstractInstance
         return MetadataProvider.getSession().getClass(getClass());
     }
 
+    @MetaProperty
+    public boolean isAssigned() {
+        return (createPermissionVariant != PermissionVariant.NOTSET) ||
+                (readPermissionVariant != PermissionVariant.NOTSET) ||
+                (updatePermissionVariant != PermissionVariant.NOTSET) ||
+                (deletePermissionVariant != PermissionVariant.NOTSET);
+    }
+
     public String getCaption() {
         return caption;
     }
@@ -123,7 +132,7 @@ public class OperationPermissionTarget extends AbstractInstance
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
+    public OperationPermissionTarget clone() throws CloneNotSupportedException {
         OperationPermissionTarget target = (OperationPermissionTarget) super.clone();
 
         target.id = id;

@@ -102,32 +102,6 @@ public class PermissionConfig {
             }
         }
 
-/*        private void compileEntities() {
-            Node<BasicPermissionTarget> root = new Node<BasicPermissionTarget>(new BasicPermissionTarget("session", getMessage("permissionConfig.entityRoot"), null));
-            entities = new Tree<BasicPermissionTarget>(root);
-
-            Session session = MetadataProvider.getSession();
-            List<MetaModel> modelList = new ArrayList<MetaModel>(session.getModels());
-            Collections.sort(modelList, new MetadataObjectAlphabetComparator());
-
-            for (MetaModel model : modelList) {
-                Node<BasicPermissionTarget> modelNode = new Node<BasicPermissionTarget>(new BasicPermissionTarget("model:" + model.getName(), model.getName(), null));
-                root.addChild(modelNode);
-
-                List<MetaClass> classList = new ArrayList<MetaClass>(model.getClasses());
-                Collections.sort(classList, new MetadataObjectAlphabetComparator());
-
-                for (MetaClass metaClass : classList) {
-                    String name = metaClass.getName();
-                    if (name.contains("$")) {
-                        String caption = name + " (" + MessageUtils.getEntityCaption(metaClass) + ")";
-                        Node<BasicPermissionTarget> node = new Node<BasicPermissionTarget>(new BasicPermissionTarget("entity:" + name, caption, name));
-                        modelNode.addChild(node);
-                    }
-                }
-            }
-        }*/
-
         private void compileEntities() {
             entities = new ArrayList<OperationPermissionTarget>();
 
@@ -142,7 +116,9 @@ public class PermissionConfig {
 
                 for (MetaClass metaClass : classList) {
                     String name = metaClass.getName();
-                    entities.add(new OperationPermissionTarget("entity:" + name, name, name));
+                    // Filter base entity classes
+                    if (name.contains("$"))
+                        entities.add(new OperationPermissionTarget("entity:" + name, name, name));
                 }
             }
         }
@@ -331,6 +307,7 @@ public class PermissionConfig {
     }
 
     private class MetadataObjectAlphabetComparator implements Comparator<MetadataObject> {
+        @Override
         public int compare(MetadataObject o1, MetadataObject o2) {
             String n1 = o1 != null ? o1.getName() : null;
             String n2 = o2 != null ? o2.getName() : null;

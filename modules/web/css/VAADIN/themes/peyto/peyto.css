@@ -244,6 +244,14 @@
     padding-left: 19px;
 }
 
+.border-bottom {
+    border-bottom: solid 1px gray;
+}
+
+.label-center {
+    text-align: center;
+}
+
 /*
  *  e.g. text labels for fields
  *  at popup dialog editors
@@ -385,12 +393,14 @@
 .v-expanded .v-table-cell-content-categoryItem .v-table-float {
      background: transparent url(icons/category.png) 0 center no-repeat;
      padding-left: 19px;
+     margin-right: -21px;
 }
 
 .v-table-cell-content-addedItem,
 .v-collapsed .v-table-cell-content-addedItem .v-table-float,
 .v-expanded .v-table-cell-content-addedItem .v-table-float {
     padding-left: 19px;
+    margin-right: -21px;
     color : green !important;
     background: transparent url(icons/plus.png) 0 center no-repeat;
 }
@@ -399,6 +409,7 @@
 .v-collapsed .v-table-cell-content-removedItem .v-table-float,
 .v-expanded .v-table-cell-content-removedItem .v-table-float {
     padding-left: 19px;
+    margin-right: -21px;
     color : red !important;
     background: transparent url(icons/minus.png) 0 center no-repeat;
 }
@@ -407,6 +418,7 @@
 .v-collapsed .v-table-cell-content-modifiedItem .v-table-float,
 .v-expanded .v-table-cell-content-modifiedItem .v-table-float {
     padding-left: 19px;
+    margin-right: -21px;
     color : blue !important;
     background: transparent url(icons/edit.png) 0 center no-repeat;
 }
@@ -415,6 +427,7 @@
 .v-collapsed .v-table-cell-content-chainItem .v-table-float,
 .v-expanded .v-table-cell-content-chainItem .v-table-float {
     padding-left: 19px;
+    margin-right: -21px;
     color : blue !important;
     background: transparent url(icons/chain.png) 0 center no-repeat;
 }
@@ -449,6 +462,7 @@
      background: transparent url(icons/tag-green.png) 0 center no-repeat;
      color: green !important;
      padding-left: 19px;
+     margin-right: -21px;
 }
 
 .v-table-cell-content-disallowedItem,
@@ -457,6 +471,7 @@
      background: transparent url(icons/tag-red.png) 0 center no-repeat;
      color: red !important;
      padding-left: 19px;
+     margin-right: -21px;
 }
 
 .v-table-cell-content-notsetItem,
@@ -465,6 +480,7 @@
      background: transparent url(icons/tag-gray.png) 0 center no-repeat;
      color: gray !important;
      padding-left: 19px;
+     margin-right: -21px;
 }
 
 .v-collapsed .v-table-cell-content-serviceItem,

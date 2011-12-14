@@ -29,7 +29,10 @@ public enum PermissionType implements EnumClass<Integer>
     ENTITY_ATTR(30),
 
     /** Application-specific permission */
-    SPECIFIC(40);
+    SPECIFIC(40),
+
+    /** Permissions for UI components in screens */
+    UI(50);
 
     private int id;
 
@@ -38,6 +41,7 @@ public enum PermissionType implements EnumClass<Integer>
     }
 
     /** Returns corresponding database value */
+    @Override
     public Integer getId() {
         return id;
     }
