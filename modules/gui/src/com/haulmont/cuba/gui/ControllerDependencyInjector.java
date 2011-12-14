@@ -8,6 +8,7 @@ package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.AbstractFrame;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.DataService;
@@ -21,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -94,7 +96,9 @@ public class ControllerDependencyInjector {
     }
 
     private Class injectionAnnotation(AnnotatedElement element) {
-        if (element.isAnnotationPresent(Resource.class))
+        if (element.isAnnotationPresent(Named.class))
+            return Named.class;
+        else if (element.isAnnotationPresent(Resource.class))
             return Resource.class;
         else if (element.isAnnotationPresent(Inject.class))
             return Inject.class;
@@ -105,7 +109,9 @@ public class ControllerDependencyInjector {
     private void doInjection(AnnotatedElement element, Class annotationClass) {
         Class<?> type;
         String name = null;
-        if (annotationClass == Resource.class)
+        if (annotationClass == Named.class)
+            name = element.getAnnotation(Named.class).value();
+        else if (annotationClass == Resource.class)
             name = element.getAnnotation(Resource.class).name();
 
         if (element instanceof Field) {
@@ -155,6 +161,10 @@ public class ControllerDependencyInjector {
             // Injecting the WindowContext
             return frame.getContext();
 
+        } else if (Action.class.isAssignableFrom(type)) {
+            // Injecting an action
+            return ComponentsHelper.findAction(name, frame);
+
         } else {
             Object instance;
             // Try to find a Spring bean
@@ -167,7 +177,7 @@ public class ControllerDependencyInjector {
                 else
                     return beans.values().iterator().next();
             }
-            // There is no Spring beans of required type - the last option is Companion
+            // There are no Spring beans of required type - the last option is Companion
             if (frame instanceof AbstractFrame) {
                 instance = ((AbstractFrame) frame).getCompanion();
                 if (instance != null && type.isAssignableFrom(instance.getClass()))

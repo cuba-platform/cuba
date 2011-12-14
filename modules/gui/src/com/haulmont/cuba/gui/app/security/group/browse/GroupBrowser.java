@@ -10,23 +10,53 @@ import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.*;
+import com.haulmont.cuba.gui.components.actions.CreateAction;
+import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.security.entity.Constraint;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.SessionAttribute;
 import com.haulmont.cuba.security.entity.User;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.*;
 
 public class GroupBrowser extends AbstractWindow {
 
+    @Named("groups")
     protected Tree tree;
 
+    @Named("groups.create")
+    protected CreateAction groupCreateAction;
+
+    @Named("groups.copy")
+    protected Action groupCopyAction;
+
+    @Named("groups.edit")
+    protected EditAction groupEditAction;
+
+    @Inject
+    protected PopupButton groupCreateButton;
+
+    @Named("users.create")
+    protected CreateAction userCreateAction;
+
+    @Named("groups")
+    protected CollectionDatasource treeDs;
+
+    @Inject
+    protected Table users;
+
+    @Inject
+    protected Tabsheet tabsheet;
+
+    @Inject
+    protected DataService dataService;
     private boolean constraintsTabInitialized, attributesTabInitialized;
 
     public GroupBrowser(Window frame) {
@@ -34,62 +64,21 @@ public class GroupBrowser extends AbstractWindow {
     }
 
     public void init(final Map<String, Object> params) {
-        tree = getComponent("groups");
-
-        final CollectionDatasource treeDS = tree.getDatasource();
-        treeDS.refresh();
+        treeDs.refresh();
         tree.expandTree();
 
-        final Collection itemIds = treeDS.getItemIds();
+        final Collection itemIds = treeDs.getItemIds();
         if (!itemIds.isEmpty()) {
-            tree.setSelected(treeDS.getItem(itemIds.iterator().next()));
+            tree.setSelected(treeDs.getItem(itemIds.iterator().next()));
         }
 
-        tree.addAction(new CreateAction(tree, WindowManager.OpenType.DIALOG));
-        tree.addAction(new EditAction(tree, WindowManager.OpenType.DIALOG));
-        tree.addAction(new RemoveAction(tree));
-        ComponentsHelper.createActions(tree, EnumSet.of(ListActionType.REFRESH));
+        groupCreateAction.setOpenType(WindowManager.OpenType.DIALOG);
+        groupEditAction.setOpenType(WindowManager.OpenType.DIALOG);
 
-        PopupButton createButton = getComponent("createButton");
-        createButton.addAction(new CreateAction(tree, WindowManager.OpenType.DIALOG) {
-            @Override
-            public String getCaption() {
-                return getMessage("action.create");
-            }
-        });
-        createButton.addAction(new AbstractAction("copy") {
-            @Override
-            public void actionPerform(final Component component) {
-                Group group = (Group) treeDS.getItem();
-                if (group != null) {
-                    group = treeDS.getDsContext().getDataService().reload(group, "group.edit");
-                    List<Entity> toCommit = cloneGroup(group, group.getParent(), new ArrayList<Entity>());
-                    CommitContext ctx = new CommitContext(toCommit);
-                    ServiceLocator.getDataService().commit(ctx);
-                    treeDS.refresh();
-                }
-            }
+        groupCreateButton.addAction(groupCreateAction);
+        groupCreateButton.addAction(groupCopyAction);
 
-            @Override
-            public String getCaption() {
-                return getMessage("action.copy");
-            }
-        });
-
-        tree.addAction(createButton.getAction("copy"));
-
-        final Table users = getComponent("users");
-
-        users.addAction(
-                new CreateAction(users) {
-                    @Override
-                    protected Map<String, Object> getInitialValues() {
-                        final Map<String, Object> map = new HashMap<String, Object>();
-                        map.put("group", tree.getSelected());
-                        return map;
-                    }
-                }
-        );
+        userCreateAction.setInitialValues(Collections.<String, Object>singletonMap("group", tree.getSelected()));
 
         users.addAction(
                 new EditAction(users) {
@@ -102,41 +91,6 @@ public class GroupBrowser extends AbstractWindow {
                 }
         );
 
-        users.addAction(new AbstractAction("moveToGroup") {
-            public String getCaption() {
-                return getMessage("users.moveToGroup");
-            }
-
-            public boolean isEnabled() {
-                return true;
-            }
-
-            public void actionPerform(Component component) {
-                final Set<User> selected = users.getSelected();
-                if (!selected.isEmpty()) {
-                    getDialogParams().setResizable(false);
-                    getDialogParams().setHeight(400);
-                    openLookup("sec$Group.lookup", new Lookup.Handler() {
-                                public void handleLookup(Collection items) {
-                                    if (items.size() == 1) {
-                                        Group group = (Group) items.iterator().next();
-                                        for (User user : selected) {
-                                            user.setGroup(group);
-                                        }
-                                        final CollectionDatasource ds = users.getDatasource();
-                                        ds.commit();
-                                        ds.refresh();
-                                        users.setSelected((Entity) null);
-                                    }
-                                }
-                            }, WindowManager.OpenType.DIALOG);
-                }
-            }
-        });
-
-        users.addAction(new RefreshAction(users));
-
-        Tabsheet tabsheet = getComponent("tabsheet");
         tabsheet.addListener(
                 new Tabsheet.TabChangeListener() {
                     public void tabChanged(Tabsheet.Tab newTab) {
@@ -147,6 +101,17 @@ public class GroupBrowser extends AbstractWindow {
                     }
                 }
         );
+    }
+
+    public void copyGroup(Component component) {
+        Group group = (Group) treeDs.getItem();
+        if (group != null) {
+            group = dataService.reload(group, "group.edit");
+            List<Entity> toCommit = cloneGroup(group, group.getParent(), new ArrayList<Entity>());
+            CommitContext ctx = new CommitContext(toCommit);
+            ServiceLocator.getDataService().commit(ctx);
+            treeDs.refresh();
+        }
     }
 
     private List<Entity> cloneGroup(Group group, Group parent, List<Entity> list) {
@@ -190,6 +155,28 @@ public class GroupBrowser extends AbstractWindow {
         return resultConstraint;
     }
 
+    public void moveUser(Component component) {
+        final Set<User> selected = users.getSelected();
+        if (!selected.isEmpty()) {
+            getDialogParams().setResizable(false);
+            getDialogParams().setHeight(400);
+            openLookup("sec$Group.lookup", new Lookup.Handler() {
+                public void handleLookup(Collection items) {
+                    if (items.size() == 1) {
+                        Group group = (Group) items.iterator().next();
+                        for (User user : selected) {
+                            user.setGroup(group);
+                        }
+                        final CollectionDatasource ds = users.getDatasource();
+                        ds.commit();
+                        ds.refresh();
+                        users.setSelected((Entity) null);
+                    }
+                }
+            }, WindowManager.OpenType.DIALOG);
+        }
+    }
+
     private void initConstraintsTab() {
         if (constraintsTabInitialized)
             return;
@@ -200,8 +187,12 @@ public class GroupBrowser extends AbstractWindow {
 
                     @Override
                     public String getCaption() {
-                        String mp = AppConfig.getMessagesPack();
-                        return MessageProvider.getMessage(mp, "actions.Create");
+                        return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Create");
+                    }
+
+                    @Override
+                    public String getIcon() {
+                        return "icons/create.png";
                     }
 
                     public void actionPerform(Component component) {
@@ -229,8 +220,6 @@ public class GroupBrowser extends AbstractWindow {
                 }
         );
 
-        ComponentsHelper.createActions(constraints, EnumSet.of(ListActionType.EDIT, ListActionType.REMOVE, ListActionType.REFRESH));
-
         constraintsTabInitialized = true;
     }
 
@@ -244,8 +233,12 @@ public class GroupBrowser extends AbstractWindow {
 
                     @Override
                     public String getCaption() {
-                        String mp = AppConfig.getMessagesPack();
-                        return MessageProvider.getMessage(mp, "actions.Create");
+                        return MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Create");
+                    }
+
+                    @Override
+                    public String getIcon() {
+                        return "icons/create.png";
                     }
 
                     public void actionPerform(Component component) {
@@ -272,8 +265,6 @@ public class GroupBrowser extends AbstractWindow {
                     }
                 }
         );
-
-        ComponentsHelper.createActions(attributes, EnumSet.of(ListActionType.EDIT, ListActionType.REMOVE, ListActionType.REFRESH));
 
         attributesTabInitialized = true;
     }

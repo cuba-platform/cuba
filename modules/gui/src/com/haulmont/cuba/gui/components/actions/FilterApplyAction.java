@@ -19,12 +19,7 @@ import com.haulmont.cuba.gui.components.ListComponent;
 /**
  * List action to apply current filter by refreshing the underlying datasource.
  * <p>
- *      Action's behaviour can be customized by providing arguments to constructor, as well as overriding the following
- *      methods:
- *      <ul>
- *          <li>{@link #getCaption()}</li>
- *          <li>{@link #isEnabled()}</li>
- *      </ul>
+ * Action's behaviour can be customized by providing arguments to constructor or setting properties.
  * </p>
  *
  * <p>$Id$</p>
@@ -55,15 +50,7 @@ public class FilterApplyAction extends AbstractAction {
     public FilterApplyAction(ListComponent owner, String id) {
         super(id);
         this.owner = owner;
-    }
-
-    /**
-     * Returns the action's caption. Override to provide a specific caption.
-     * @return  localized caption
-     */
-    public String getCaption() {
-        final String messagesPackage = AppConfig.getMessagesPack();
-        return MessageProvider.getMessage(messagesPackage, "actions.Apply");
+        this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Apply");
     }
 
     @Override

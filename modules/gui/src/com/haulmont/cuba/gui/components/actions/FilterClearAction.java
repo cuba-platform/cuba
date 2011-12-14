@@ -22,12 +22,7 @@ import com.haulmont.cuba.gui.components.ListComponent;
 /**
  * List action to clear all fields in the specific container.
  * <p>
- *      Action's behaviour can be customized by providing arguments to constructor, as well as overriding the following
- *      methods:
- *      <ul>
- *          <li>{@link #getCaption()}</li>
- *          <li>{@link #isEnabled()}</li>
- *      </ul>
+ * Action's behaviour can be customized by providing arguments to constructor or setting properties.
  * </p>
  *
  * <p>$Id$</p>
@@ -62,15 +57,7 @@ public class FilterClearAction extends AbstractAction {
         super(id);
         this.owner = owner;
         this.containerName = containerName;
-    }
-
-    /**
-     * Returns the action's caption. Override to provide a specific caption.
-     * @return  localized caption
-     */
-    public String getCaption() {
-        final String messagesPackage = AppConfig.getMessagesPack();
-        return MessageProvider.getMessage(messagesPackage, "actions.Clear");
+        this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Clear");
     }
 
     @Override

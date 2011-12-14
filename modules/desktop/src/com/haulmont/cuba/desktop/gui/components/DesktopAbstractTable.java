@@ -867,7 +867,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected JPopupMenu createPopupMenu() {
         JPopupMenu popup = new JPopupMenu();
         JMenuItem menuItem;
-        for (final Action action : actionsOrder) {
+        for (final Action action : actionList) {
             menuItem = new JMenuItem(action.getCaption());
             if (action.getIcon() != null) {
                 menuItem.setIcon(App.getInstance().getResources().getIcon(action.getIcon()));

@@ -10,9 +10,8 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.CaptionMode;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.Tree;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
@@ -44,6 +43,8 @@ public class TreeLoader extends ComponentLoader
 
         loadStyleName(component, element);
 
+        assignFrame(component);
+
         loadActions(component, element);
 
         Element itemsElem = element.element("treechildren");
@@ -59,8 +60,26 @@ public class TreeLoader extends ComponentLoader
             }
         }
 
-        assignFrame(component);
-
         return component;
+    }
+
+    @Override
+    protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
+        String id = element.attributeValue("id");
+        if (id == null)
+            throw new IllegalStateException("No action id provided");
+
+        if (StringUtils.isBlank(element.attributeValue("invoke"))) {
+            // Try to create a standard list action
+            for (ListActionType type : ListActionType.values()) {
+                if (type.getId().equals(id)) {
+                    Action action = type.createAction((ListComponent) actionsHolder);
+                    actionsHolder.addAction(action);
+                    return action;
+                }
+            }
+        }
+
+        return super.loadDeclarativeAction(actionsHolder, element);
     }
 }

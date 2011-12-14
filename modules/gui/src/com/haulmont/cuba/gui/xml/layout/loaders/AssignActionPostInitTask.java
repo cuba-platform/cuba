@@ -9,8 +9,10 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.ListActionType;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.ValuePathHelper;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
 import org.apache.commons.lang.ArrayUtils;
 
@@ -41,7 +43,7 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
                     if (action != null) {
                         this.component.setAction(action);
                     } else {
-                        tryAutoCreateAction(holder, id);
+                        throw new IllegalStateException(String.format("Can't find action '%s' in '%s'", id, holder.getId()));
                     }
                 } else {
                     throw new IllegalStateException(String.format("Component '%s' can't contain actions", holder.getId()));
@@ -61,19 +63,5 @@ public class AssignActionPostInitTask implements ComponentLoader.PostInitTask {
         } else {
             throw new IllegalStateException();
         }
-    }
-
-    protected void tryAutoCreateAction(Component holder, String actionId) {
-        if (holder instanceof ListComponent) {
-            for (ListActionType type : ListActionType.values()) {
-                if (type.getId().equals(actionId)) {
-                    Action action = type.createAction((ListComponent) holder);
-                    ((ListComponent) holder).addAction(action);
-                    this.component.setAction(action);
-                    return;
-                }
-            }
-        }
-        throw new IllegalStateException(String.format("Can't find action '%s' in '%s'", actionId, holder.getId()));
     }
 }

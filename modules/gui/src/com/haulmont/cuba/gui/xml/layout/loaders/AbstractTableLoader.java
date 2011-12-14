@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -16,12 +17,14 @@ import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.groovy.util.StringUtil;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
@@ -412,4 +415,23 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         return loader;
     }
 
+    @Override
+    protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
+        String id = element.attributeValue("id");
+        if (id == null)
+            throw new IllegalStateException("No action id provided");
+
+        if (StringUtils.isBlank(element.attributeValue("invoke"))) {
+            // Try to create a standard list action
+            for (ListActionType type : ListActionType.values()) {
+                if (type.getId().equals(id)) {
+                    Action action = type.createAction((ListComponent) actionsHolder);
+                    actionsHolder.addAction(action);
+                    return action;
+                }
+            }
+        }
+
+        return super.loadDeclarativeAction(actionsHolder, element);
+    }
 }

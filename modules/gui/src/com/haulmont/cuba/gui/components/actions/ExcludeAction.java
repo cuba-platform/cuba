@@ -31,13 +31,21 @@ public class ExcludeAction extends RemoveAction {
 
     private static final long serialVersionUID = 62824552031621792L;
 
-    public static final String ACTION_ID = "exclude";
+    public static final String ACTION_ID = ListActionType.EXCLUDE.getId();
 
-    protected final boolean confirm;
+    protected boolean confirm;
+
+    /**
+     * The simplest constructor. Autocommit and Confirm properties are set to false, the action has default name.
+     * @param owner     component containing this action
+     */
+    public ExcludeAction(ListComponent owner) {
+        this(owner, false, false, ACTION_ID);
+    }
 
     /**
      * Constructor that allows to specify autocommit and confirm value. The action has default name.
-     * @param owner        component containing this action
+     * @param owner         component containing this action
      * @param autocommit    whether to commit datasource immediately
      * @param confirm       whether to show the confirmation dialog to user
      */
@@ -47,7 +55,7 @@ public class ExcludeAction extends RemoveAction {
 
     /**
      * Constructor that allows to specify all parameters.
-     * @param owner        component containing this action
+     * @param owner         component containing this action
      * @param autocommit    whether to commit datasource immediately
      * @param confirm       whether to show the confirmation dialog to user
      * @param id            action's name
@@ -55,12 +63,7 @@ public class ExcludeAction extends RemoveAction {
     public ExcludeAction(ListComponent owner, boolean autocommit, boolean confirm, String id) {
         super(owner, autocommit, id);
         this.confirm = confirm;
-    }
-
-    @Override
-    public String getCaption() {
-        final String messagesPackage = AppConfig.getMessagesPack();
-        return MessageProvider.getMessage(messagesPackage, "actions.Exclude");
+        this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Exclude");
     }
 
     @Override
@@ -93,5 +96,19 @@ public class ExcludeAction extends RemoveAction {
                 throw e;
             }
         }
+    }
+
+    /**
+     * @return  whether to show the confirmation dialog to user
+     */
+    public boolean isConfirm() {
+        return confirm;
+    }
+
+    /**
+     * @param confirm   whether to show the confirmation dialog to user
+     */
+    public void setConfirm(boolean confirm) {
+        this.confirm = confirm;
     }
 }

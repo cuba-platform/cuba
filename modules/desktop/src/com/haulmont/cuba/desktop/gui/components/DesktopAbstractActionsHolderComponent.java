@@ -21,18 +21,25 @@ import java.util.LinkedList;
  */
 public class DesktopAbstractActionsHolderComponent<C extends JComponent> extends DesktopAbstractComponent<C> {
 
-    protected java.util.List<Action> actionsOrder = new LinkedList<com.haulmont.cuba.gui.components.Action>();
+    protected java.util.List<Action> actionList = new LinkedList<com.haulmont.cuba.gui.components.Action>();
 
     public void addAction(Action action) {
-        actionsOrder.add(action);
+        for (int i = 0; i < actionList.size(); i++) {
+            Action a = actionList.get(i);
+            if (ObjectUtils.equals(a.getId(), action.getId())) {
+                actionList.set(i, action);
+                return;
+            }
+        }
+        actionList.add(action);
     }
 
     public void removeAction(Action action) {
-        actionsOrder.remove(action);
+        actionList.remove(action);
     }
 
     public Collection<Action> getActions() {
-        return Collections.unmodifiableCollection(actionsOrder);
+        return Collections.unmodifiableCollection(actionList);
     }
 
     public Action getAction(String id) {

@@ -6,23 +6,19 @@
 package com.haulmont.cuba.gui.app.security.group.lookup;
 
 import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Tree;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 
+import javax.inject.Inject;
 import java.util.Map;
 
 public class GroupLookup extends AbstractLookup {
-    public GroupLookup(IFrame frame) {
-        super(frame);
-    }
+
+    @Inject
+    protected Tree groups;
 
     @Override
     public void init(Map<String, Object> params) {
-        final Tree tree = getComponent("groups");
-
-        final CollectionDatasource treeDS = tree.getDatasource();
-        treeDS.refresh();
-        tree.expandTree();
+        groups.getDatasource().refresh();
+        groups.expandTree();
     }
 }

@@ -59,11 +59,16 @@
                 <vbox id="roles-panel" expand="rolesTable" spacing="true" margin="false;true;false;false">
                     <label value="msg://roles" stylename="h2"/>
                     <buttonsPanel>
-                        <button action="rolesTable.add" icon="icons/add.png"/>
-                        <button action="rolesTable.edit" icon="icons/edit.png"/>
-                        <button action="rolesTable.remove" icon="icons/remove.png"/>
+                        <button action="rolesTable.add"/>
+                        <button action="rolesTable.edit"/>
+                        <button action="rolesTable.remove"/>
                     </buttonsPanel>
                     <table id="rolesTable" editable="false">
+                        <actions>
+                            <action id="add"/>
+                            <action id="edit"/>
+                            <action id="remove"/>
+                        </actions>
                         <columns>
                             <column id="role.name" caption="msg://roleName"/>
                             <column id="role.locName" caption="msg://localizedRoleName"/>
@@ -75,11 +80,16 @@
                 <vbox id="subst-panel" expand="substTable" spacing="true" margin="false;false;false;true">
                     <label value="msg://substUsers" stylename="h2"/>
                     <buttonsPanel>
-                        <button action="substTable.add" icon="icons/add.png"/>
-                        <button action="substTable.edit" icon="icons/edit.png"/>
-                        <button action="substTable.remove" icon="icons/remove.png"/>
+                        <button action="substTable.add"/>
+                        <button action="substTable.edit"/>
+                        <button action="substTable.remove"/>
                     </buttonsPanel>
                     <table id="substTable" editable="false">
+                        <actions>
+                            <action id="add"/>
+                            <action id="edit"/>
+                            <action id="remove"/>
+                        </actions>
                         <columns>
                             <column id="substitutedUser.login" caption="msg://login"/>
                             <column id="substitutedUser.name" caption="msg://name"/>

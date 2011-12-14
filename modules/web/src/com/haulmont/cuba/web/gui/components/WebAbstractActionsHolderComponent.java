@@ -16,21 +16,29 @@ import java.util.*;
 public class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component>
         extends WebAbstractComponent<T>
 {
-    protected List<Action> actionsOrder = new LinkedList<Action>();
+    protected List<Action> actionList = new LinkedList<Action>();
     protected BiMap<Action, com.vaadin.event.Action> actions = HashBiMap.create();
 
     public void addAction(final Action action) {
         actions.put(action, new WebActionWrapper(action));
-        actionsOrder.add(action);
+
+        for (int i = 0; i < actionList.size(); i++) {
+            Action a = actionList.get(i);
+            if (ObjectUtils.equals(a.getId(), action.getId())) {
+                actionList.set(i, action);
+                return;
+            }
+        }
+        actionList.add(action);
     }
 
     public void removeAction(Action action) {
         actions.remove(action);
-        actionsOrder.remove(action);
+        actionList.remove(action);
     }
 
     public Collection<Action> getActions() {
-        return Collections.unmodifiableCollection(actionsOrder);
+        return Collections.unmodifiableCollection(actionList);
     }
 
     public Action getAction(String id) {
@@ -46,7 +54,7 @@ public class WebAbstractActionsHolderComponent<T extends com.vaadin.ui.Component
 
         public com.vaadin.event.Action[] getActions(Object target, Object sender) {
             final List<com.vaadin.event.Action> res = new ArrayList<com.vaadin.event.Action>();
-            for (Action action : actionsOrder) {
+            for (Action action : actionList) {
 //                if (action.isEnabled()) {
                     res.add(actions.get(action));
 //                }

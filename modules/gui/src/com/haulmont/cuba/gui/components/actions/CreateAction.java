@@ -31,16 +31,8 @@ import java.util.Map;
 /**
  * Standard list action to create a new entity instance.
  * <p>
- *      Action's behaviour can be customized by providing arguments to constructor, as well as overriding the following
- *      methods:
- *      <ul>
- *          <li>{@link #getCaption()}</li>
- *          <li>{@link #isEnabled()}</li>
- *          <li>{@link #getWindowId()}</li>
- *          <li>{@link #getWindowParams()}</li>
- *          <li>{@link #afterCommit(com.haulmont.cuba.core.entity.Entity)}</li>
- *          <li>{@link #afterWindowClosed(com.haulmont.cuba.gui.components.Window)}</li>
- *      </ul>
+ * Action's behaviour can be customized by providing arguments to constructor, setting properties, or overriding
+ * methods {@link #afterCommit(com.haulmont.cuba.core.entity.Entity)}, {@link #afterWindowClosed(com.haulmont.cuba.gui.components.Window)}
  * </p>
  *
  * <p>$Id$</p>
@@ -54,8 +46,11 @@ public class CreateAction extends AbstractAction {
     public static final String ACTION_ID = ListActionType.CREATE.getId();
 
     protected final ListComponent owner;
-    protected final WindowManager.OpenType openType;
-    protected final CollectionDatasource datasource;
+    protected WindowManager.OpenType openType;
+
+    protected String windowId;
+    protected Map<String, Object> windowParams;
+    protected Map<String, Object> initialValues;
 
     /**
      * The simplest constructor. The action has default name and opens the editor screen in THIS tab.
@@ -84,16 +79,8 @@ public class CreateAction extends AbstractAction {
         super(id);
         this.owner = owner;
         this.openType = openType;
-        datasource = owner.getDatasource();
-    }
-
-    /**
-     * Returns the action's caption. Override to provide a specific caption.
-     * @return  localized caption
-     */
-    public String getCaption() {
-        final String messagesPackage = AppConfig.getMessagesPack();
-        return MessageProvider.getMessage(messagesPackage, "actions.Create");
+        this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Create");
+        this.icon = "icons/create.png";
     }
 
     /**
@@ -102,7 +89,7 @@ public class CreateAction extends AbstractAction {
      */
     public boolean isEnabled() {
         return super.isEnabled() &&
-                UserSessionProvider.getUserSession().isEntityOpPermitted(datasource.getMetaClass(), EntityOp.CREATE);
+                UserSessionProvider.getUserSession().isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.CREATE);
     }
 
     /**
@@ -111,6 +98,7 @@ public class CreateAction extends AbstractAction {
      * @param component component invoking action
      */
     public void actionPerform(Component component) {
+        final CollectionDatasource datasource = owner.getDatasource();
         final DataService dataservice = datasource.getDataService();
 
         final Entity item = dataservice.newInstance(datasource.getMetaClass());
@@ -181,27 +169,62 @@ public class CreateAction extends AbstractAction {
     }
 
     /**
-     * Provides editor screen identifier. Override to provide a specific value.
-     * @return  editor screen id
+     * @return  editor screen open type
      */
-    protected String getWindowId() {
-        return datasource.getMetaClass().getName() + ".edit";
+    public WindowManager.OpenType getOpenType() {
+        return openType;
     }
 
     /**
-     * Provides editor screen parameters. Override to provide a specific value.
+     * @param openType  editor screen open type
+     */
+    public void setOpenType(WindowManager.OpenType openType) {
+        this.openType = openType;
+    }
+
+    /**
+     * @return  editor screen identifier
+     */
+    public String getWindowId() {
+        if (windowId != null)
+            return windowId;
+        else
+            return owner.getDatasource().getMetaClass().getName() + ".edit";
+    }
+
+    /**
+     * @param windowId  editor screen identifier
+     */
+    public void setWindowId(String windowId) {
+        this.windowId = windowId;
+    }
+
+    /**
      * @return  editor screen parameters
      */
-    protected Map<String, Object> getWindowParams() {
-        return null;
+    public Map<String, Object> getWindowParams() {
+        return windowParams;
     }
 
     /**
-     * Provides initial values for attributes of creating entity. Override to provide a specific value.
-     * @return  a map of attribute name to an initial value
+     * @param windowParams  editor screen parameters
      */
-    protected Map<String, Object> getInitialValues() {
-        return null;
+    public void setWindowParams(Map<String, Object> windowParams) {
+        this.windowParams = windowParams;
+    }
+
+    /**
+     * @return  map of initial values for attributes of created entity
+     */
+    public Map<String, Object> getInitialValues() {
+        return initialValues;
+    }
+
+    /**
+     * @param initialValues map of initial values for attributes of created entity
+     */
+    public void setInitialValues(Map<String, Object> initialValues) {
+        this.initialValues = initialValues;
     }
 
     /**

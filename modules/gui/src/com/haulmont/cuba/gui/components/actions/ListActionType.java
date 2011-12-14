@@ -51,6 +51,20 @@ public enum ListActionType {
         }
     },
 
+    ADD("add") {
+        @Override
+        public Action createAction(ListComponent holder) {
+            return new AddAction(holder);
+        }
+    },
+
+    EXCLUDE("exclude") {
+        @Override
+        public Action createAction(ListComponent holder) {
+            return new ExcludeAction(holder);
+        }
+    },
+
     EXCEL("excel") {
         @Override
         public Action createAction(ListComponent holder) {

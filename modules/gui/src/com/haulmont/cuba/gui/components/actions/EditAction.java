@@ -33,16 +33,8 @@ import java.util.Set;
 /**
  * Standard list action to edit an entity instance.
  * <p>
- *      Action's behaviour can be customized by providing arguments to constructor, as well as overriding the following
- *      methods:
- *      <ul>
- *          <li>{@link #getCaption()}</li>
- *          <li>{@link #isEnabled()}</li>
- *          <li>{@link #getWindowId()}</li>
- *          <li>{@link #getWindowParams()}</li>
- *          <li>{@link #afterCommit(com.haulmont.cuba.core.entity.Entity)}</li>
- *          <li>{@link #afterWindowClosed(com.haulmont.cuba.gui.components.Window)}</li>
- *      </ul>
+ * Action's behaviour can be customized by providing arguments to constructor, setting properties, or overriding
+ * methods {@link #afterCommit(com.haulmont.cuba.core.entity.Entity)}, {@link #afterWindowClosed(com.haulmont.cuba.gui.components.Window)}
  * </p>
  *
  * <p>$Id$</p>
@@ -55,9 +47,11 @@ public class EditAction extends AbstractAction implements CollectionDatasourceLi
 
     public static final String ACTION_ID = ListActionType.EDIT.getId();
 
-    protected ListComponent owner;
+    protected final ListComponent owner;
     protected WindowManager.OpenType openType;
-    protected CollectionDatasource datasource;
+
+    protected String windowId;
+    protected Map<String, Object> windowParams;
 
     /**
      * The simplest constructor. The action has default name and opens the editor screen in THIS tab.
@@ -86,14 +80,14 @@ public class EditAction extends AbstractAction implements CollectionDatasourceLi
         super(id);
         this.owner = owner;
         this.openType = openType;
-        this.datasource = owner.getDatasource();
+        this.icon = "icons/edit.png";
     }
 
-    /**
-     * Returns the action's caption. Override to provide a specific caption.
-     * @return  localized caption
-     */
+    @Override
     public String getCaption() {
+        if (caption != null)
+            return caption;
+
         final String messagesPackage = AppConfig.getMessagesPack();
         if (UserSessionProvider.getUserSession().isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.UPDATE))
             return MessageProvider.getMessage(messagesPackage, "actions.Edit");
@@ -112,6 +106,7 @@ public class EditAction extends AbstractAction implements CollectionDatasourceLi
             String windowID = getWindowId();
 
             Datasource parentDs = null;
+            final CollectionDatasource datasource = owner.getDatasource();
             if (datasource instanceof PropertyDatasource) {
                 MetaProperty metaProperty = ((PropertyDatasource) datasource).getProperty();
                 if (metaProperty.getType().equals(MetaProperty.Type.AGGREGATION)) {
@@ -144,19 +139,48 @@ public class EditAction extends AbstractAction implements CollectionDatasourceLi
     }
 
     /**
-     * Provides editor screen identifier. Override to provide a specific value.
-     * @return  editor screen id
+     * @return  editor screen open type
      */
-    protected String getWindowId() {
-        return datasource.getMetaClass().getName() + ".edit";
+    public WindowManager.OpenType getOpenType() {
+        return openType;
     }
 
     /**
-     * Provides editor screen parameters. Override to provide a specific value.
+     * @param openType  editor screen open type
+     */
+    public void setOpenType(WindowManager.OpenType openType) {
+        this.openType = openType;
+    }
+
+    /**
+     * @return  editor screen identifier
+     */
+    public String getWindowId() {
+        if (windowId != null)
+            return windowId;
+        else
+            return owner.getDatasource().getMetaClass().getName() + ".edit";
+    }
+
+    /**
+     * @param windowId  editor screen identifier
+     */
+    public void setWindowId(String windowId) {
+        this.windowId = windowId;
+    }
+
+    /**
      * @return  editor screen parameters
      */
-    protected Map<String, Object> getWindowParams() {
-        return null;
+    public Map<String, Object> getWindowParams() {
+        return windowParams;
+    }
+
+    /**
+     * @param windowParams  editor screen parameters
+     */
+    public void setWindowParams(Map<String, Object> windowParams) {
+        this.windowParams = windowParams;
     }
 
     /**

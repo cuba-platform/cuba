@@ -28,15 +28,8 @@ import java.util.Set;
 /**
  * Standard list action to remove an entity instance.
  * <p>
- *      Action's behaviour can be customized by providing arguments to constructor, as well as overriding the following
- *      methods:
- *      <ul>
- *          <li>{@link #getCaption()}</li>
- *          <li>{@link #isEnabled()}</li>
- *          <li>{@link #getConfirmationMessage(String)}</li>
- *          <li>{@link #getConfirmationTitle(String)}</li>
- *          <li>{@link #afterRemove(java.util.Set)} )}</li>
- *      </ul>
+ * Action's behaviour can be customized by providing arguments to constructor, setting properties, or overriding
+ * method {@link #afterRemove(java.util.Set)} )}
  * </p>
  *
  * <p>$Id$</p>
@@ -50,9 +43,11 @@ public class RemoveAction extends AbstractAction implements CollectionDatasource
     public static final String ACTION_ID = ListActionType.REMOVE.getId();
 
     protected final ListComponent owner;
-    protected final boolean autocommit;
-    protected final CollectionDatasource datasource;
+    protected boolean autocommit;
     protected MetaProperty metaProperty;
+
+    protected String confirmationMessage;
+    protected String confirmationTitle;
 
     /**
      * The simplest constructor. The action has default name and autocommit=true.
@@ -81,19 +76,15 @@ public class RemoveAction extends AbstractAction implements CollectionDatasource
         super(id);
         this.owner = owner;
         this.autocommit = autocommit;
-        this.datasource = owner.getDatasource();
-        if (datasource instanceof PropertyDatasource) {
-            metaProperty = ((PropertyDatasource) datasource).getProperty();
-        }
+        this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Remove");
+        this.icon = "icons/remove.png";
     }
 
-    /**
-     * Returns the action's caption. Override to provide a specific caption.
-     * @return  localized caption
-     */
-    public String getCaption() {
-        final String messagesPackage = AppConfig.getMessagesPack();
-        return MessageProvider.getMessage(messagesPackage, "actions.Remove");
+    protected MetaProperty getMetaProperty() {
+        if (owner.getDatasource() instanceof PropertyDatasource)
+            return ((PropertyDatasource) owner.getDatasource()).getProperty();
+        else
+            return null;
     }
 
     /**
@@ -111,7 +102,8 @@ public class RemoveAction extends AbstractAction implements CollectionDatasource
      */
     public boolean isEnabled() {
         return super.isEnabled() &&
-                (isManyToMany() || UserSessionProvider.getUserSession().isEntityOpPermitted(datasource.getMetaClass(), EntityOp.DELETE));
+                (isManyToMany() || UserSessionProvider.getUserSession().isEntityOpPermitted(
+                                                                owner.getDatasource().getMetaClass(), EntityOp.DELETE));
     }
 
     /**
@@ -151,12 +143,36 @@ public class RemoveAction extends AbstractAction implements CollectionDatasource
     }
 
     /**
+     * @return  whether to commit datasource immediately after deletion
+     */
+    public boolean isAutocommit() {
+        return autocommit;
+    }
+
+    /**
+     * @param autocommit    whether to commit datasource immediately after deletion
+     */
+    public void setAutocommit(boolean autocommit) {
+        this.autocommit = autocommit;
+    }
+
+    /**
      * Provides confirmation dialog message.
      * @param   messagesPackage   message pack containing the message
      * @return  localized message
      */
-    protected String getConfirmationMessage(String messagesPackage) {
-        return MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove");
+    public String getConfirmationMessage(String messagesPackage) {
+        if (confirmationMessage != null)
+            return confirmationMessage;
+        else
+            return MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove");
+    }
+
+    /**
+     * @param confirmationMessage   confirmation dialog message
+     */
+    public void setConfirmationMessage(String confirmationMessage) {
+        this.confirmationMessage = confirmationMessage;
     }
 
     /**
@@ -164,11 +180,22 @@ public class RemoveAction extends AbstractAction implements CollectionDatasource
      * @param   messagesPackage   message pack containing the title
      * @return  localized title
      */
-    protected String getConfirmationTitle(String messagesPackage) {
-        return MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation");
+    public String getConfirmationTitle(String messagesPackage) {
+        if (confirmationTitle != null)
+            return confirmationTitle;
+        else
+            return MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation");
+    }
+
+    /**
+     * @param confirmationTitle confirmation dialog title.
+     */
+    public void setConfirmationTitle(String confirmationTitle) {
+        this.confirmationTitle = confirmationTitle;
     }
 
     protected void doRemove(Set selected, boolean autocommit) {
+        CollectionDatasource datasource = owner.getDatasource();
         for (Object item : selected) {
             datasource.removeItem((Entity) item);
         }

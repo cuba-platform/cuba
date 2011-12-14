@@ -317,6 +317,7 @@ public class UserEditor extends AbstractEditor {
 
         public AddRoleAction() {
             super("add");
+            icon = "icons/add.png";
         }
 
         public void actionPerform(Component component) {
@@ -358,6 +359,7 @@ public class UserEditor extends AbstractEditor {
 
         public EditRoleAction() {
             super("edit");
+            icon = "icons/edit.png";
         }
 
         public void actionPerform(Component component) {
@@ -394,7 +396,7 @@ public class UserEditor extends AbstractEditor {
         }
 
         @Override
-        protected String getConfirmationMessage(String messagesPackage) {
+        public String getConfirmationMessage(String messagesPackage) {
             if (hasDefaultRole)
                 return getMessage("dialogs.Confirmation.RemoveDefaultRole");
             else
@@ -412,8 +414,10 @@ public class UserEditor extends AbstractEditor {
     }
 
     private class AddSubstitutedAction extends AbstractAction {
+
         public AddSubstitutedAction() {
             super("add");
+            icon = "icons/add.png";
         }
 
         public void actionPerform(Component component) {
@@ -438,8 +442,10 @@ public class UserEditor extends AbstractEditor {
     }
 
     private class EditSubstitutedAction extends AbstractAction {
+
         public EditSubstitutedAction() {
             super("edit");
+            icon = "icons/edit.png";
         }
 
         public void actionPerform(Component component) {

@@ -1,28 +1,34 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Nikolay Gorodnov
- * Created: 27.08.2009 15:58:58
- *
- * $Id$
  */
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.actions.*;
+import org.apache.commons.lang.ArrayUtils;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
- * Utility class to work for GenericUI components
+ * Utility class working with GenericUI components.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 public abstract class ComponentsHelper {
     public static final String[] UNIT_SYMBOLS = { "px", "pt", "pc", "em", "ex",
             "mm", "cm", "in", "%" };
 
+    /**
+     * Returns the collection of components within the specified container and all of its children.
+     * @param container container to start from
+     * @return          collection of components
+     */
     public static Collection<Component> getComponents(Component.Container container) {
         final Collection<Component> ownComponents = container.getOwnComponents();
         Set<Component> res = new HashSet<Component>(ownComponents);
@@ -36,6 +42,13 @@ public abstract class ComponentsHelper {
         return res;
     }
 
+    /**
+     * Searches for a component by identifier, down by the hierarchy of frames.
+     * @param frame frame to start from
+     * @param id    component identifier
+     * @return      component instance or null if not found
+     */
+    @Nullable
     public static Component findComponent(IFrame frame, String id) {
         Component find = frame.getComponent(id);
         if (find != null) {
@@ -56,7 +69,9 @@ public abstract class ComponentsHelper {
     }
 
     /**
-     * Visit all components below the specified container
+     * Visit all components below the specified container.
+     * @param container container to start from
+     * @param visitor   visitor instance
      */
     public static void walkComponents(
             com.haulmont.cuba.gui.components.Component.Container container,
@@ -88,7 +103,10 @@ public abstract class ComponentsHelper {
     }
 
     /**
-     * Get the topmost window for the specified component
+     * Get the topmost window for the specified component.
+     * @param component component instance
+     * @return          topmost window in the hierarchy of frames for this component. Can be null only if the component
+     * was not properly initialized.
      */
     public static Window getWindow(Component.BelongToFrame component) {
         IFrame frame = component.getFrame();
@@ -100,28 +118,37 @@ public abstract class ComponentsHelper {
         return null;
     }
 
+    /**
+     * Searches for an action by name.
+     * @param actionName    action name, can be a path to an action contained in some {@link Component.ActionsHolder}
+     * @param frame         current frame
+     * @return              action instance or null if there is no action with the specified name
+     * @throws IllegalStateException    if the component denoted by the path doesn't exist or is not an ActionsHolder
+     */
+    @Nullable
     public static Action findAction(String actionName, IFrame frame) {
-        final String[] elements = ValuePathHelper.parse(actionName);
+        String[] elements = ValuePathHelper.parse(actionName);
         if (elements.length > 1) {
-            final String id = elements[elements.length - 1];
+            String id = elements[elements.length - 1];
 
-            final java.util.List<String> subList = Arrays.asList(elements).subList(0, elements.length - 1);
-            String[] subPath = subList.toArray(new String[]{});
-            final Component component = frame.getComponent(ValuePathHelper.format(subPath));
+            String[] subPath = (String[]) ArrayUtils.subarray(elements, 0, elements.length - 1);
+            Component component = frame.getComponent(ValuePathHelper.format(subPath));
             if (component != null) {
                 if (component instanceof Component.ActionsHolder) {
                     return ((Component.ActionsHolder) component).getAction(id);
                 } else {
-                    throw new IllegalStateException(String.format("Component '%s' have no actions", subList));
+                    throw new IllegalArgumentException(
+                            String.format("Component '%s' can't contain actions", Arrays.toString(subPath)));
                 }
             } else {
-                throw new IllegalStateException(String.format("Can't find component '%s'", subList));
+                throw new IllegalArgumentException(
+                        String.format("Can't find component '%s'", Arrays.toString(subPath)));
             }
         } else if (elements.length == 1) {
-            final String id = elements[0];
-            return ((Window) frame).getAction(id);
+            String id = elements[0];
+            return frame.getAction(id);
         } else {
-            throw new IllegalStateException();
+            throw new IllegalArgumentException("Invalid action name: " + actionName);
         }
     }
 

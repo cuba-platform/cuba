@@ -23,16 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * List action to add an entity instance to list from a lookup screen.
+ * Standard list action adding an entity instance to list from a lookup screen.
  * <p>
- *      Action's behaviour can be customized by providing arguments to constructor, as well as overriding the following
- *      methods:
- *      <ul>
- *          <li>{@link #getCaption()}</li>
- *          <li>{@link #isEnabled()}</li>
- *          <li>{@link #getWindowId()}</li>
- *          <li>{@link #getWindowParams()}</li>
- *      </ul>
+ * Action's behaviour can be customized by providing arguments to constructor or setting properties.
  * </p>
  *
  * <p>$Id$</p>
@@ -43,12 +36,23 @@ public class AddAction extends AbstractAction {
 
     private static final long serialVersionUID = -4102961617048369835L;
 
-    public static final String ACTION_ID = "add";
+    public static final String ACTION_ID = ListActionType.ADD.getId();
 
-    protected ListComponent owner;
-    protected final Window.Lookup.Handler handler;
-    protected final WindowManager.OpenType openType;
-    protected CollectionDatasource datasource;
+    protected final ListComponent owner;
+    protected Window.Lookup.Handler handler;
+    protected WindowManager.OpenType openType;
+
+    protected String windowId;
+    protected Map<String, Object> windowParams;
+
+    /**
+     * The simplest constructor. The action has default name and opens the lookup screen in THIS tab.
+     * Lookup handler must be set by subsequent call to {@link #setHandler(com.haulmont.cuba.gui.components.Window.Lookup.Handler)}
+     * @param owner    component containing this action
+     */
+    public AddAction(ListComponent owner) {
+        this(owner, null, WindowManager.OpenType.THIS_TAB, ACTION_ID);
+    }
 
     /**
      * The simplest constructor. The action has default name and opens the lookup screen in THIS tab.
@@ -81,16 +85,8 @@ public class AddAction extends AbstractAction {
         this.owner = owner;
         this.handler = handler;
         this.openType = openType;
-        this.datasource = owner.getDatasource();
-    }
-
-    /**
-     * Returns the action's caption. Override to provide a specific caption.
-     * @return  localized caption
-     */
-    public String getCaption() {
-        final String messagesPackage = AppConfig.getMessagesPack();
-        return MessageProvider.getMessage(messagesPackage, "actions.Add");
+        this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Add");
+        this.icon = "icons/add.png";
     }
 
     /**
@@ -107,18 +103,61 @@ public class AddAction extends AbstractAction {
     }
 
     /**
-     * Provides the lookup screen identifier. Override to provide a specific value.
-     * @return  lookup screen id
+     * @return  handler to pass to lookup screen
      */
-    protected String getWindowId() {
-        return datasource.getMetaClass().getName() + ".browse";
+    public Window.Lookup.Handler getHandler() {
+        return handler;
     }
 
     /**
-     * Provides the lookup screen parameters. Override to provide a specific value.
+     * @param handler   handler to pass to lookup screen
+     */
+    public void setHandler(Window.Lookup.Handler handler) {
+        this.handler = handler;
+    }
+
+    /**
+     * @return  lookup screen open type
+     */
+    public WindowManager.OpenType getOpenType() {
+        return openType;
+    }
+
+    /**
+     * @param openType  lookup screen open type
+     */
+    public void setOpenType(WindowManager.OpenType openType) {
+        this.openType = openType;
+    }
+
+    /**
+     * @return  lookup screen id
+     */
+    public String getWindowId() {
+        if (windowId != null)
+            return windowId;
+        else
+            return owner.getDatasource().getMetaClass().getName() + ".browse";
+    }
+
+    /**
+     * @param windowId  lookup screen id
+     */
+    public void setWindowId(String windowId) {
+        this.windowId = windowId;
+    }
+
+    /**
      * @return  lookup screen parameters
      */
-    protected Map<String, Object> getWindowParams() {
-        return null;
+    public Map<String, Object> getWindowParams() {
+        return windowParams;
+    }
+
+    /**
+     * @param windowParams  lookup screen parameters
+     */
+    public void setWindowParams(Map<String, Object> windowParams) {
+        this.windowParams = windowParams;
     }
 }

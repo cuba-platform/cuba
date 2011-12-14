@@ -25,7 +25,7 @@ import java.util.*;
  */
 public class DesktopFrameActionsHolder {
 
-    private List<Action> actionsOrder = new LinkedList<Action>();
+    private List<Action> actionList = new LinkedList<Action>();
     private Map<ShortcutAction,KeyStroke> shortcutActions = new HashMap<ShortcutAction,KeyStroke>();
 
     private Component component;
@@ -53,7 +53,15 @@ public class DesktopFrameActionsHolder {
             });
             shortcutActions.put((ShortcutAction) action, keyStroke);
         }
-        actionsOrder.add(action);
+
+        for (int i = 0; i < actionList.size(); i++) {
+            Action a = actionList.get(i);
+            if (ObjectUtils.equals(a.getId(), action.getId())) {
+                actionList.set(i, action);
+                return;
+            }
+        }
+        actionList.add(action);
     }
 
     public void removeAction(Action action) {
@@ -66,11 +74,11 @@ public class DesktopFrameActionsHolder {
                 actionMap.remove(action.getId());
             }
         }
-        actionsOrder.remove(action);
+        actionList.remove(action);
     }
 
     public Collection<Action> getActions() {
-        return Collections.unmodifiableCollection(actionsOrder);
+        return Collections.unmodifiableCollection(actionList);
     }
 
     public Action getAction(String id) {

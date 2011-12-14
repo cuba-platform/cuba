@@ -8,19 +8,14 @@ package com.haulmont.cuba.gui.app.security.user.browse;
 
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.Window;
 
-import javax.annotation.Resource;
+import javax.inject.Named;
 import java.util.Map;
 
 public class UserLookup extends AbstractLookup {
 
-    @Resource(name = "users")
+    @Named("users")
     protected Table table;
-
-    public UserLookup(Window frame) {
-        super(frame);
-    }
 
     public void init(Map<String, Object> params) {
         setHeight("400px");

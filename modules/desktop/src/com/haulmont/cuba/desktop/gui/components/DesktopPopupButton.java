@@ -63,7 +63,7 @@ public class DesktopPopupButton
 
     private void showPopup() {
         popup.removeAll();
-        for (final Action action : actionsOrder) {
+        for (final Action action : actionList) {
             final JMenuItem menuItem = new JMenuItem(action.getCaption());
             menuItem.addActionListener(
                     new ActionListener() {
@@ -81,7 +81,7 @@ public class DesktopPopupButton
             popup.add(menuItem);
         }
 
-        int popupHeight = actionsOrder.size() * 25;
+        int popupHeight = actionList.size() * 25;
 
         Point pt = new Point();
         SwingUtilities.convertPointToScreen(pt, impl);

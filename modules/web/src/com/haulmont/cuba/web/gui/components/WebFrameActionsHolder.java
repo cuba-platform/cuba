@@ -24,23 +24,31 @@ import java.util.*;
  */
 public class WebFrameActionsHolder {
 
-    protected List<Action> actionsOrder = new LinkedList<Action>();
+    protected List<Action> actionList = new LinkedList<Action>();
     protected BiMap<com.vaadin.event.Action, Action> actions = HashBiMap.create();
 
     public void addAction(Action action) {
         if (action instanceof ShortcutAction) {
             actions.put(WebComponentsHelper.createShortcutAction((ShortcutAction) action), action);
         }
-        actionsOrder.add(action);
+
+        for (int i = 0; i < actionList.size(); i++) {
+            Action a = actionList.get(i);
+            if (ObjectUtils.equals(a.getId(), action.getId())) {
+                actionList.set(i, action);
+                return;
+            }
+        }
+        actionList.add(action);
     }
 
     public void removeAction(Action action) {
-        actionsOrder.remove(action);
+        actionList.remove(action);
         actions.inverse().remove(action);
     }
 
     public Collection<Action> getActions() {
-        return Collections.unmodifiableCollection(actionsOrder);
+        return Collections.unmodifiableCollection(actionList);
     }
 
     public Action getAction(String id) {

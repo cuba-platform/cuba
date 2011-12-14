@@ -50,12 +50,19 @@
             <split id="split" orientation="horizontal" pos="30">
                 <vbox expand="groups" spacing="true" margin="false;true;false;false">
                     <buttonsPanel>
-                        <popupButton id="createButton" caption="msg://create.caption" icon="icons/create.png"/>
-                        <button action="groups.edit" icon="icons/edit.png"/>
-                        <button action="groups.remove" icon="icons/remove.png"/>
-                        <button action="groups.refresh" icon="icons/refresh.png"/>
+                        <popupButton id="groupCreateButton" caption="msg://create.caption" icon="icons/create.png"/>
+                        <button action="groups.edit"/>
+                        <button action="groups.remove"/>
+                        <button action="groups.refresh"/>
                     </buttonsPanel>
                     <tree id="groups">
+                        <actions>
+                            <action id="create"/>
+                            <action id="copy" caption="msg://action.copy" icon="icons/copy.png" invoke="copyGroup"/>
+                            <action id="edit"/>
+                            <action id="remove"/>
+                            <action id="refresh"/>
+                        </actions>
                         <treechildren datasource="groups" captionProperty="name" hierarchyProperty="parent"/>
                     </tree>
                 </vbox>
@@ -72,11 +79,18 @@
                                     <!--<label value="msg://showDescendants"/>-->
                                 <!--</hbox>-->
                                 <buttonsPanel>
-                                    <button id="users.create" action="users.create" icon="icons/create.png"/>
-                                    <button id="users.edit" action="users.edit" icon="icons/edit.png"/>
-                                    <button id="users.moveToGroup" action="users.moveToGroup" icon="icons/move.png"/>
+                                    <button id="users.create" action="users.create"/>
+                                    <button id="users.edit" action="users.edit"/>
+                                    <button id="users.moveToGroup" action="users.moveToGroup"/>
                                 </buttonsPanel>
                                 <table id="users">
+                                    <actions>
+                                        <action id="create"/>
+                                        <action id="edit"/>
+                                        <action id="moveToGroup" caption="msg://users.moveToGroup" icon="icons/move.png"
+                                                invoke="moveUser"/>
+                                        <action id="refresh"/>
+                                    </actions>
                                     <columns>
                                         <column id="name" caption="msg://user.name"/>
                                         <column id="login" caption="msg://user.login"/>
@@ -88,11 +102,17 @@
                         <tab id="constraintsTab" caption="msg://tabsheet.constraints" lazy="true">
                             <vbox expand="constraints" spacing="true" margin="true">
                                 <buttonsPanel>
-                                    <button id="constraints.create" action="constraints.create" icon="icons/create.png"/>
-                                    <button id="constraints.edit" action="constraints.edit" icon="icons/edit.png"/>
-                                    <button id="constraints.remove" action="constraints.remove" icon="icons/remove.png"/>
+                                    <button id="constraints.create" action="constraints.create"/>
+                                    <button id="constraints.edit" action="constraints.edit"/>
+                                    <button id="constraints.remove" action="constraints.remove"/>
                                 </buttonsPanel>
                                 <table id="constraints">
+                                    <actions>
+                                        <action id="create"/>
+                                        <action id="edit"/>
+                                        <action id="remove"/>
+                                        <action id="refresh"/>
+                                    </actions>
                                     <columns>
                                         <column id="entityName" caption="msg://entity"/>
                                         <column id="joinClause" caption="msg://join"/>
@@ -105,11 +125,17 @@
                         <tab id="attributesTab" caption="msg://tabsheet.attributes" lazy="true">
                             <vbox expand="attributes" spacing="true" margin="true">
                                 <buttonsPanel>
-                                    <button id="attributes.create" action="attributes.create" icon="icons/create.png"/>
-                                    <button id="attributes.edit" action="attributes.edit" icon="icons/edit.png"/>
-                                    <button id="attributes.remove" action="attributes.remove" icon="icons/remove.png"/>
+                                    <button id="attributes.create" action="attributes.create"/>
+                                    <button id="attributes.edit" action="attributes.edit"/>
+                                    <button id="attributes.remove" action="attributes.remove"/>
                                 </buttonsPanel>
                                 <table id="attributes">
+                                    <actions>
+                                        <action id="create"/>
+                                        <action id="edit"/>
+                                        <action id="remove"/>
+                                        <action id="refresh"/>
+                                    </actions>
                                     <columns>
                                         <column id="name" caption="msg://attribute.name"/>
                                         <column id="datatypeCaption" caption="msg://attribute.datatype"/>

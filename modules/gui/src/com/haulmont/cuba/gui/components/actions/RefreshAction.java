@@ -22,13 +22,7 @@ import java.util.Map;
 /**
  * Standard list action to refresh a list of entities.
  * <p>
- *      Action's behaviour can be customized by providing arguments to constructor, as well as overriding the following
- *      methods:
- *      <ul>
- *          <li>{@link #getCaption()}</li>
- *          <li>{@link #isEnabled()}</li>
- *          <li>{@link #getRefreshParams()}</li>
- *      </ul>
+ * Action's behaviour can be customized by providing arguments to constructor or setting properties.
  * </p>
  *
  * <p>$Id$</p>
@@ -42,6 +36,8 @@ public class RefreshAction extends AbstractAction {
     public static final String ACTION_ID = ListActionType.REFRESH.getId();
 
     protected ListComponent owner;
+
+    protected Map<String, Object> refreshParams;
 
     /**
      * The simplest constructor. The action has default name.
@@ -59,15 +55,8 @@ public class RefreshAction extends AbstractAction {
     public RefreshAction(ListComponent owner, String id) {
         super(id);
         this.owner = owner;
-    }
-
-    /**
-     * Returns the action's caption. Override to provide a specific caption.
-     * @return  localized caption
-     */
-    public String getCaption() {
-        final String messagesPackage = AppConfig.getMessagesPack();
-        return MessageProvider.getMessage(messagesPackage, "actions.Refresh");
+        this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Refresh");
+        this.icon = "icons/refresh.png";
     }
 
     /**
@@ -87,11 +76,16 @@ public class RefreshAction extends AbstractAction {
     }
 
     /**
-     * Provides parameters for {@link CollectionDatasource#refresh(java.util.Map)} method. Override to provide specific
-     * value.
-     * @return  map of parameters
+     * @return  parameters for {@link CollectionDatasource#refresh(java.util.Map)} method
      */
-    protected Map<String, Object> getRefreshParams() {
-        return null;
+    public Map<String, Object> getRefreshParams() {
+        return refreshParams;
+    }
+
+    /**
+     * @param refreshParams parameters for {@link CollectionDatasource#refresh(java.util.Map)} method
+     */
+    public void setRefreshParams(Map<String, Object> refreshParams) {
+        this.refreshParams = refreshParams;
     }
 }

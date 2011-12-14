@@ -27,7 +27,7 @@
 
     <layout >
         <vbox expand="table-panel" spacing="true">
-            <vbox id="genericFilterBox" expand="genericFilter" stylename="edit-area">
+            <vbox id="genericFilterBox" expand="genericFilter" stylename="edit-area" margin="true">
                 <filter id="genericFilter" datasource="users" applyTo="users">
                     <properties include=".*" exclude="(password)|(loginLowerCase)"/>
                     <custom name="customByGroup" caption="msg://genericFilter.customByGroup"
@@ -42,14 +42,25 @@
             </vbox>
             <vbox id="table-panel" expand="users" spacing="true">
                 <groupTable id="users" editable="false" presentations="true" multiselect="true">
+                    <actions>
+                        <action id="create"/>
+                        <action id="edit"/>
+                        <action id="copy" caption="msg://copy" icon="icons/copy.png" invoke="copy"/>
+                        <action id="remove"/>
+                        <action id="copySettings" caption="msg://copySettings" icon="icons/copy.png"
+                                invoke="copySettings"/>
+                        <action id="changePassw" caption="msg://changePassw" icon="icons/change-pass.png"
+                                invoke="changePassword"/>
+                        <action id="excel"/>
+                    </actions>
                     <buttonsPanel align="MIDDLE_LEFT">
-                        <button action="users.create" icon="icons/create.png"/>
-                        <button action="users.edit" icon="icons/edit.png"/>
-                        <button action="users.copy" icon="icons/copy.png"/>
-                        <button action="users.remove" icon="icons/remove.png"/>
-                        <button action="users.copySettings" icon="icons/copy.png" />
-                        <button action="users.changePassw" icon="icons/change-pass.png"/>
-                        <button action="users.excel" icon="icons/excel.png"/>
+                        <button action="users.create"/>
+                        <button action="users.edit"/>
+                        <button action="users.copy"/>
+                        <button action="users.remove"/>
+                        <button action="users.copySettings"/>
+                        <button action="users.changePassw"/>
+                        <button action="users.excel"/>
                     </buttonsPanel>
                     <rowsCount/>
                     <columns>
