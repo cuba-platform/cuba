@@ -78,6 +78,22 @@ public class OperationPermissionTarget extends AbstractInstance
                 (deletePermissionVariant != PermissionVariant.NOTSET);
     }
 
+    @MetaProperty
+    public boolean isAllowedAll() {
+        return (createPermissionVariant == PermissionVariant.ALLOWED) &&
+                (readPermissionVariant == PermissionVariant.ALLOWED) &&
+                (updatePermissionVariant == PermissionVariant.ALLOWED) &&
+                (deletePermissionVariant == PermissionVariant.ALLOWED);
+    }
+
+    @MetaProperty
+    public boolean isDeniedAll() {
+        return (createPermissionVariant == PermissionVariant.DISALLOWED) &&
+                (readPermissionVariant == PermissionVariant.DISALLOWED) &&
+                (updatePermissionVariant == PermissionVariant.DISALLOWED) &&
+                (deletePermissionVariant == PermissionVariant.DISALLOWED);
+    }
+
     public String getCaption() {
         return caption;
     }

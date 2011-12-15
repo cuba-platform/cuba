@@ -26,6 +26,7 @@ import com.haulmont.cuba.security.ui.OperationPermissionTarget;
 import com.haulmont.cuba.security.ui.PermissionVariant;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -51,32 +52,30 @@ public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<
 
     @Override
     protected void loadData(Map<String, Object> params) {
-        if (targets == null)
-            targets = AppContext.getBean(PermissionConfig.class).getEntities(UserSessionProvider.getLocale());
+        if (permissionDs == null)
+            return;
+
+        if (targets == null) {
+            targets = new ArrayList<OperationPermissionTarget>();
+            PermissionConfig permissionConfig = AppContext.getBean(PermissionConfig.class);
+            List<OperationPermissionTarget> entities = permissionConfig.getEntities(UserSessionProvider.getLocale());
+            for (OperationPermissionTarget target : entities) {
+                try {
+                    OperationPermissionTarget cloneTarget = target.clone();
+                    loadPermissionVariants(cloneTarget);
+                    attachListener(cloneTarget);
+                    targets.add(cloneTarget);
+                } catch (CloneNotSupportedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
 
         data.clear();
 
-        if (filter != null) {
-            for (OperationPermissionTarget target : targets) {
-                if (filter.apply(target))
-                    addTarget(target);
-            }
-        } else {
-            for (OperationPermissionTarget target : targets) {
-                addTarget(target);
-            }
-        }
-    }
-
-    private void addTarget(OperationPermissionTarget target) {
-        try {
-            OperationPermissionTarget clonedTarget = target.clone();
-            if (permissionDs != null) {
-                loadPermissionVariants(clonedTarget);
-            }
-            data.put(clonedTarget.getId(), clonedTarget);
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
+        for (OperationPermissionTarget target : targets) {
+            if ((filter == null) || (filter.apply(target)))
+                data.put(target.getId(), target);
         }
     }
 
