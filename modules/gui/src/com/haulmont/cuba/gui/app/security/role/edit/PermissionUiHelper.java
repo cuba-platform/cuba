@@ -6,14 +6,17 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit;
 
+import com.google.common.base.Predicate;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.security.RestorablePermissionDatasource;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.ui.PermissionVariant;
 import org.apache.commons.lang.ObjectUtils;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -50,23 +53,50 @@ public class PermissionUiHelper {
         return value;
     }
 
+    /**
+     * Add or edit permission item in datasource
+     * @param ds Datasource
+     * @param roleDs Role darasource
+     * @param permissionTarget Permission identifier
+     * @param type Permission type
+     * @param value Permission value
+     */
     public static void createPermissionItem(CollectionDatasource<Permission, UUID> ds, Datasource<Role> roleDs,
-                                            String permissionValue, PermissionType type, Integer value) {
+                                            final String permissionTarget, PermissionType type, Integer value) {
         final Collection<UUID> permissionIds = ds.getItemIds();
 
         Permission permission = null;
         for (UUID id : permissionIds) {
             Permission p = ds.getItem(id);
-            if (ObjectUtils.equals(p.getTarget(), permissionValue)) {
+            if (ObjectUtils.equals(p.getTarget(), permissionTarget)) {
                 permission = p;
                 break;
             }
         }
 
         if (permission == null) {
+            // workaround for idx_sec_permission_unique
+            // restore entity instead of create
+            if (ds instanceof RestorablePermissionDatasource) {
+                RestorablePermissionDatasource datasource = (RestorablePermissionDatasource) ds;
+
+                permission = datasource.findRemovedEntity(new Predicate<Permission>() {
+                    @Override
+                    public boolean apply(@Nullable Permission p) {
+                        if (p != null)
+                            return ObjectUtils.equals(p.getTarget(), permissionTarget);
+                        return false;
+                    }
+                });
+                if (permission != null)
+                    datasource.restoreEntity(permission);
+            }
+        }
+
+        if (permission == null) {
             final Permission newPermission = new Permission();
             newPermission.setRole(roleDs.getItem());
-            newPermission.setTarget(permissionValue);
+            newPermission.setTarget(permissionTarget);
             newPermission.setType(type);
             newPermission.setValue(value);
 

@@ -11,6 +11,7 @@
         <collectionDatasource id="specificPermissionsDs"
                               class="com.haulmont.cuba.security.entity.Permission"
                               view="role.edit">
+            <datasourceClass>com.haulmont.cuba.gui.security.RestorablePermissionDatasource</datasourceClass>
             <query>select p from sec$Permission p where p.role.id = :ds$roleDs and p.type = 50</query>
         </collectionDatasource>
     </dsContext>

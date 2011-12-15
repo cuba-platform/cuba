@@ -9,10 +9,10 @@ package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 import com.google.common.base.Predicate;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import com.haulmont.cuba.gui.security.RestorablePermissionDatasource;
 import com.haulmont.cuba.gui.security.EntityPermissionTargetsDatasource;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
@@ -39,7 +39,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
     private Datasource<Role> roleDs;
 
     @Inject
-    private CollectionDatasource<Permission, UUID> entityPermissionsDs;
+    private RestorablePermissionDatasource entityPermissionsDs;
 
     @Inject
     private EntityPermissionTargetsDatasource entityTargetsDs;
@@ -256,6 +256,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
         if (target != null) {
             target.setValueEx(property, permissionVariant);
             String permissionValue = target.getPermissionValue() + Permission.TARGET_PATH_DELIMETER + operation.getId();
+
             if (permissionVariant != PermissionVariant.NOTSET) {
                 // Create permission
                 int value = PermissionUiHelper.getPermissionValue(permissionVariant);
@@ -271,6 +272,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
                         break;
                     }
                 }
+
                 if (permission != null)
                     entityPermissionsDs.removeItem(permission);
             }
