@@ -92,11 +92,11 @@ public class ServerLogWindow extends AbstractWindow {
     }
 
     public void download() {
-        String pathZipFile = logManagerService.packLog(logFileNamesField.<String>getValue());
-        if (pathZipFile != null) {
-            String nameZip = logFileNamesField.getValue().toString().replace(".log", ".zip");
-            AppConfig.createExportDisplay().show(new SimpleFileDataProvider(pathZipFile), nameZip);
-            logManagerService.deleteTempFile(pathZipFile);
+        String fileName = logFileNamesField.<String>getValue();
+        String zipName = logManagerService.packLog(fileName);
+        if (zipName != null) {
+            AppConfig.createExportDisplay().show(new SimpleFileDataProvider(zipName), fileName + ".zip");
+            logManagerService.deleteTempFile(zipName);
         } else {
             showNotification(getMessage("fileDownload"), NotificationType.HUMANIZED);
         }
@@ -146,6 +146,4 @@ public class ServerLogWindow extends AbstractWindow {
         levelList.add(Level.FATAL);
         return levelList;
     }
-
-
 }

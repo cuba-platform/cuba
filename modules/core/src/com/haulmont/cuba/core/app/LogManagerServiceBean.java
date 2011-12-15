@@ -7,6 +7,7 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -18,6 +19,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.io.*;
 import java.util.*;
 import java.util.zip.CRC32;
@@ -32,9 +34,16 @@ public class LogManagerServiceBean implements LogManagerService {
 
     private Log log = LogFactory.getLog(getClass());
 
+    protected String logDir;
+
+    @Inject
+    private void setConfiguration(Configuration configuration) {
+        logDir = configuration.getConfig(GlobalConfig.class).getLogDir();
+    }
+
     @Override
     public List<String> getLogFileNames() {
-        File pathFileLogs = new File(getPathCatalogLogs());
+        File pathFileLogs = new File(logDir);
         List<String> listFileNames = new ArrayList<String>();
         if (pathFileLogs.isDirectory()) {
             listFileNames = Arrays.asList(pathFileLogs.list());
@@ -50,7 +59,7 @@ public class LogManagerServiceBean implements LogManagerService {
         StringBuilder sb = new StringBuilder();
         RandomAccessFile randomAccessFile = null;
         try {
-            randomAccessFile = new RandomAccessFile(getPathCatalogLogs() + File.separator + fileName, "r");
+            randomAccessFile = new RandomAccessFile(logDir + File.separator + fileName, "r");
             long lengthFile = randomAccessFile.length();
             if (lengthFile >= AMOUNT_BYTES) {
                 randomAccessFile.seek(lengthFile - AMOUNT_BYTES);
@@ -102,7 +111,7 @@ public class LogManagerServiceBean implements LogManagerService {
 
         String pathTempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir()
                 + File.separator + UUID.randomUUID().toString() + FORMAT;
-        String pathFileLogs = getPathCatalogLogs() + File.separator + fileName;
+        String pathFileLogs = logDir + File.separator + fileName;
 
         File file = new File(pathFileLogs);
         if (!file.exists()) {
@@ -145,10 +154,6 @@ public class LogManagerServiceBean implements LogManagerService {
             file.delete();
             log.info("Temporary file " + filePath + " removed successfully");
         }
-    }
-
-    private String getPathCatalogLogs() {
-        return ConfigProvider.getConfig(GlobalConfig.class).getLogDir();
     }
 
     private static ArchiveEntry newEntry(String name, byte[] data) {
