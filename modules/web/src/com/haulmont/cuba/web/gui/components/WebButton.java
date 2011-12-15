@@ -76,7 +76,8 @@ public class WebButton
         }
 
         component.setEnabled(action.isEnabled());
-        
+        component.setVisible(action.isVisible());
+
         if (action.getIcon() != null) {
             setIcon(action.getIcon());
         }
@@ -93,6 +94,8 @@ public class WebButton
                             setCaption(WebButton.this.action.getCaption());
                         } else if (Action.PROP_ENABLED.equals(evt.getPropertyName())) {
                             setEnabled(WebButton.this.action.isEnabled());
+                        } else if (Action.PROP_VISIBLE.equals(evt.getPropertyName())) {
+                            setVisible(WebButton.this.action.isVisible());
                         }
                     }
                 }

@@ -21,12 +21,14 @@ public class DeclarativeAction extends AbstractAction {
     private IFrame frame;
     private String methodName;
 
-    public DeclarativeAction(String id, String caption, String icon, String methodName,
-                             Component.ActionsHolder holder)
+    public DeclarativeAction(String id, String caption, String icon, String enable, String visible,
+                             String methodName, Component.ActionsHolder holder)
     {
         super(id);
         this.caption = caption;
         this.icon = icon;
+        this.enabled = enable == null ? true : Boolean.valueOf(enable);
+        this.visible = visible == null ? true : Boolean.valueOf(visible);
         this.methodName = methodName;
         if (holder instanceof IFrame)
             frame = (IFrame) holder;

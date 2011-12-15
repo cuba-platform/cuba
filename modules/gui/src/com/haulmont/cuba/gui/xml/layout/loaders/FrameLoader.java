@@ -225,6 +225,8 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
                     id,
                     loadResourceString(element.attributeValue("caption")),
                     loadResourceString(element.attributeValue("icon")),
+                    element.attributeValue("enable"),
+                    element.attributeValue("visible"),
                     element.attributeValue("invoke"),
                     shortcut,
                     actionsHolder

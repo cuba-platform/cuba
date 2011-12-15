@@ -18,10 +18,10 @@ public class DeclarativeShortcutAction extends DeclarativeAction implements Shor
 
     private KeyCombination combination;
 
-    public DeclarativeShortcutAction(String id, String caption, String icon, String methodName,
-                                     String shortcut, Component.ActionsHolder holder)
+    public DeclarativeShortcutAction(String id, String caption, String icon, String enable, String visible,
+                                     String methodName, String shortcut, Component.ActionsHolder holder)
     {
-        super(id, caption, icon, methodName, holder);
+        super(id, caption, icon, enable, visible, methodName, holder);
         combination = ShortcutAction.KeyCombination.create(shortcut);
     }
 

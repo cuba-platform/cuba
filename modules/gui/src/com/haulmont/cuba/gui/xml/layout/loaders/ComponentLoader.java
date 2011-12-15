@@ -369,6 +369,8 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
                 id,
                 loadResourceString(element.attributeValue("caption")),
                 loadResourceString(element.attributeValue("icon")),
+                element.attributeValue("enable"),
+                element.attributeValue("visible"),
                 element.attributeValue("invoke"),
                 actionsHolder
         );

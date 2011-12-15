@@ -119,6 +119,7 @@ public class WebPopupButton
         if (action != null && vPopupComponent instanceof com.vaadin.ui.Layout) {
             WebButton button = new WebButton();
             button.setAction(action);
+            button.setIcon(null); // don't show icons to look the same as Table actions
 
             com.vaadin.ui.Button vButton = (com.vaadin.ui.Button) button.getComposition();
             vButton.setImmediate(true);            
