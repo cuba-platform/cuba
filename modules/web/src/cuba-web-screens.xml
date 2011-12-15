@@ -68,7 +68,7 @@
 
     <!-- JMX control -->
     <screen id="jmxcontrol$DisplayMbeans"
-            template="/com/haulmont/cuba/web/ui/jmxcontrol/browse/display-mbeans.xml"/>
+            template="/com/haulmont/cuba/web/ui/jmxcontrol/browse/display-mbeans.xml" multipleOpen="true"/>
 
     <screen id="jmxcontrol$InspectMbean"
             template="/com/haulmont/cuba/web/ui/jmxcontrol/inspect/mbean-inspect.xml"/>
@@ -89,5 +89,6 @@
             template="/com/haulmont/cuba/gui/categories/category-browse.xml"/>
 
     <screen id="serverLog"
-            template="/com/haulmont/cuba/web/app/ui/serverlogviewer/server-log-window.xml"/>
+            template="/com/haulmont/cuba/web/app/ui/serverlogviewer/server-log-window.xml" multipleOpen="true"/>
+
 </screen-config>
