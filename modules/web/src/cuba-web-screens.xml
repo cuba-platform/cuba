@@ -87,4 +87,7 @@
 
     <screen id="sys$Categories.browse"
             template="/com/haulmont/cuba/gui/categories/category-browse.xml"/>
+
+    <screen id="serverLog"
+            template="/com/haulmont/cuba/web/app/ui/serverlogviewer/server-log-window.xml"/>
 </screen-config>

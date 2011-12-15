@@ -1,0 +1,53 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.serverlogviewer.ServerLogWindow"
+        messagesPack="com.haulmont.cuba.web.app.ui.serverlogviewer"
+        caption="msg://serverLog"
+        focusComponent="logFileNamesField">
+
+    <timers>
+        <timer id="timer" delay="5000" repeating="true"/>
+    </timers>
+
+    <layout expand="logsBox">
+        <hbox spacing="true" margin="true">
+            <groupBox id="logOptionsBox">
+                <caption label="msg://logOptions"/>
+                <hbox margin="true" spacing="true" expandable="false">
+                    <label id="labelLogFile" value="msg://logFile"/>
+                    <lookupField id="logFileNamesField" width="150px"/>
+                    <button id="downloadButton" caption="msg://downloadButton" invoke="download"/>
+                    <button id="showTailButton" caption="msg://showTailButton" invoke="showTail"/>
+                    <checkBox id="autoRefreshCheck" caption="msg://autoRefreshCheck"/>
+                </hbox>
+            </groupBox>
+
+
+            <groupBox id="logLevelBox">
+                <caption label="msg://logLevel"/>
+                <hbox spacing="true" margin="true" expandable="false">
+                    <label id="labelLogName" value="msg://loggerName"/>
+                    <textField id="logNameField" width="300px"/>
+                    <label id="labelLevel" value="msg://level"/>
+                    <lookupField id="levelField" width="80px"/>
+                    <button id="getButton" invoke="getLevel" caption="msg://getButton"/>
+                    <button id="setButton" invoke="setLevel" caption="msg://setButton"/>
+                </hbox>
+            </groupBox>
+        </hbox>
+
+
+        <groupBox id="logsBox">
+            <caption label="msg://logs"/>
+            <hbox id="logFieldBox" margin="true" spacing="true">
+            </hbox>
+        </groupBox>
+    </layout>
+</window>
+
