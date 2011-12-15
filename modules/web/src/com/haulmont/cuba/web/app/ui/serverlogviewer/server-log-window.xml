@@ -21,7 +21,7 @@
                 <caption label="msg://logOptions"/>
                 <hbox margin="true" spacing="true" expandable="false">
                     <label id="labelLogFile" value="msg://logFile"/>
-                    <lookupField id="logFileNamesField" width="150px"/>
+                    <lookupField id="logFileNamesField" width="210px"/>
                     <button id="downloadButton" caption="msg://downloadButton" invoke="download"/>
                     <button id="showTailButton" caption="msg://showTailButton" invoke="showTail"/>
                     <checkBox id="autoRefreshCheck" caption="msg://autoRefreshCheck"/>

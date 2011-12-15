@@ -19,10 +19,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.zip.CRC32;
 
 /**
@@ -42,6 +39,7 @@ public class LogManagerServiceBean implements LogManagerService {
         if (pathFileLogs.isDirectory()) {
             listFileNames = Arrays.asList(pathFileLogs.list());
         }
+        Collections.sort(listFileNames);
         return listFileNames;
     }
 
