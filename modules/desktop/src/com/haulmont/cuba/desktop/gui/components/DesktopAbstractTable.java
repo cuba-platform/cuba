@@ -476,6 +476,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
                             return;
 
                         Entity entity = getSingleSelected();
+                        datasource.setItem(null);
                         datasource.setItem(entity);
                     }
                 }
