@@ -18,8 +18,8 @@ import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
 import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.security.ui.BasicPermissionTarget;
-import com.haulmont.cuba.security.ui.PermissionVariant;
+import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
+import com.haulmont.cuba.security.entity.ui.PermissionVariant;
 import org.apache.commons.lang.ObjectUtils;
 
 import java.util.ArrayList;

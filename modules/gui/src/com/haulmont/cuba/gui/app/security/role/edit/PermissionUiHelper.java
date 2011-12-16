@@ -13,7 +13,7 @@ import com.haulmont.cuba.gui.security.RestorablePermissionDatasource;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
-import com.haulmont.cuba.security.ui.PermissionVariant;
+import com.haulmont.cuba.security.entity.ui.PermissionVariant;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.annotation.Nullable;

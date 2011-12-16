@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.security.ui;
+package com.haulmont.cuba.security.entity.ui;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import org.apache.commons.lang.ObjectUtils;
@@ -14,22 +14,27 @@ import org.apache.commons.lang.ObjectUtils;
  *
  * @author artamonov
  */
-public enum UiPermissionVariant implements EnumClass<Integer> {
+public enum AttributePermissionVariant implements EnumClass<Integer> {
+
+    /**
+     * Full access
+     */
+    MODIFY(10),
 
     /**
      * Read-only
      */
-    READ_ONLY(10),
+    READ_ONLY(20),
 
     /**
      * Hide
      */
-    HIDE(20),
+    HIDE(30),
 
     /**
      * Permission not selected
      */
-    NOTSET(30);
+    NOTSET(40);
 
     private Integer id;
 
@@ -38,12 +43,12 @@ public enum UiPermissionVariant implements EnumClass<Integer> {
         return id;
     }
 
-    UiPermissionVariant(Integer id) {
+    AttributePermissionVariant(Integer id) {
         this.id = id;
     }
 
-    public static UiPermissionVariant fromId(Integer id) {
-        for (UiPermissionVariant variant : UiPermissionVariant.values()) {
+    public static AttributePermissionVariant fromId(Integer id) {
+        for (AttributePermissionVariant variant : AttributePermissionVariant.values()) {
             if (ObjectUtils.equals(variant.getId(), id)) {
                 return variant;
             }

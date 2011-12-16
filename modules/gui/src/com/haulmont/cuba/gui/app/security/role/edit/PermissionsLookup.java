@@ -12,7 +12,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.security.ui.BasicPermissionTarget;
+import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
 import org.apache.commons.lang.BooleanUtils;
 
 import java.util.Collection;

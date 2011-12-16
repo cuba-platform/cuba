@@ -19,9 +19,9 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.security.ui.BasicPermissionTarget;
+import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.cuba.security.ui.OperationPermissionTarget;
+import com.haulmont.cuba.security.entity.ui.OperationPermissionTarget;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -247,7 +247,7 @@ public class PermissionConfig {
      * Entity operations for specified target
      *
      * @param entityTarget
-     * @return list of {@link com.haulmont.cuba.security.ui.BasicPermissionTarget} objects
+     * @return list of {@link com.haulmont.cuba.security.entity.ui.BasicPermissionTarget} objects
      */
     public List<BasicPermissionTarget> getEntityOperations(BasicPermissionTarget entityTarget) {
         if (entityTarget == null) return Collections.emptyList();
@@ -281,7 +281,7 @@ public class PermissionConfig {
      * Entity attributes for specified target
      *
      * @param entityTarget
-     * @return list of {@link com.haulmont.cuba.security.ui.BasicPermissionTarget} objects
+     * @return list of {@link com.haulmont.cuba.security.entity.ui.BasicPermissionTarget} objects
      */
     public List<BasicPermissionTarget> getEntityAttributes(BasicPermissionTarget entityTarget) {
         if (entityTarget == null) return Collections.emptyList();

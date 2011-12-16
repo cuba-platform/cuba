@@ -22,8 +22,8 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.security.ui.OperationPermissionTarget;
-import com.haulmont.cuba.security.ui.PermissionVariant;
+import com.haulmont.cuba.security.entity.ui.OperationPermissionTarget;
+import com.haulmont.cuba.security.entity.ui.PermissionVariant;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;

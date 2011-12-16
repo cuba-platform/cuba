@@ -18,7 +18,7 @@ import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
-import com.haulmont.cuba.security.ui.BasicPermissionTarget;
+import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
 
 import java.util.Map;
 
