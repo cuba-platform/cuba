@@ -14,11 +14,14 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.*;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.ClientType;
+import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.security.entity.ui.AttributePermissionVariant;
+import com.haulmont.cuba.security.entity.ui.AttributeTarget;
 import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
 import com.haulmont.cuba.security.entity.ui.MultiplePermissionTarget;
 import com.haulmont.cuba.security.entity.ui.OperationPermissionTarget;
@@ -125,8 +128,13 @@ public class PermissionConfig {
 
                         // Target with entity attributes
                         MultiplePermissionTarget attrs = new MultiplePermissionTarget("entity:" + name, name, name);
-                        for (MetaProperty metaProperty : metaClass.getProperties()) {
-                            attrs.getPermissions().put(metaProperty.getName(), AttributePermissionVariant.NOTSET);
+
+                        List<MetaProperty> propertyList = new ArrayList<MetaProperty>(metaClass.getProperties());
+                        Collections.sort(propertyList, new MetadataObjectAlphabetComparator());
+
+                        for (MetaProperty metaProperty : propertyList) {
+                            String metaPropertyName = metaProperty.getName();
+                            attrs.getPermissions().add(new AttributeTarget(metaPropertyName));
                         }
                         entityAttributes.add(attrs);
                     }

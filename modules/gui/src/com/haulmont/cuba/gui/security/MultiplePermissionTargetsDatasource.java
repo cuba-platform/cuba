@@ -78,18 +78,17 @@ public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImp
         }
     }
 
-    private void loadPermissionVariants(MultiplePermissionTarget target) {
+    private void loadPermissionVariants(final MultiplePermissionTarget target) {
         for (UUID id : permissionDs.getItemIds()) {
             Permission p = permissionDs.getItem(id);
             String permissionTarget = p.getTarget();
             if (StringUtils.isNotEmpty(permissionTarget) && permissionTarget.startsWith(target.getPermissionValue())) {
                 int delimeterIndex = permissionTarget.lastIndexOf(Permission.TARGET_PATH_DELIMETER);
                 if (delimeterIndex >= 0) {
-                    String attribute = permissionTarget.substring(delimeterIndex + 1);
+                    final String attribute = permissionTarget.substring(delimeterIndex + 1);
                     AttributePermissionVariant permissionVariant = getPermissionVariant(p);
-                    if (target.getPermissions().containsKey(attribute)) {
-                        target.getPermissions().put(attribute, permissionVariant);
-                    }
+
+                    target.assignPermissionVariant(attribute, permissionVariant);
                 }
             }
         }

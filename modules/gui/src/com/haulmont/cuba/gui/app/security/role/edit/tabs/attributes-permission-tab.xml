@@ -44,34 +44,18 @@
                 </table>
             </vbox>
 
-            <groupBox id="editPane" width="350" height="100%">
+            <groupBox id="editPane" width="380" height="100%">
                 <caption label="msg://permissions"/>
 
-                <vbox id="selectedEntityPanel" expand="panelSpacer" width="100%" visible="true">
+                <vbox id="selectedEntityPanel" expand="panelScroll" width="100%" visible="true">
                     <label id="selectedTargetCaption" stylename="h2" align="MIDDLE_CENTER"/>
 
-                    <hbox width="100%">
-                        <grid margin="true" width="100%">
-                            <columns>
-                                <column flex="0.4"/>
-                                <column flex="0.2"/>
-                                <column flex="0.2"/>
-                                <column flex="0.2"/>
-                            </columns>
-                            <rows>
-                                <row>
-                                    <label/>
-                                    <label value="msg://checkbox.modify" stylename="label-center"/>
-                                    <label value="msg://checkbox.readOnly" stylename="label-center"/>
-                                    <label value="msg://checkbox.hide" stylename="label-center"/>
-                                </row>
-                            </rows>
-                        </grid>
-                    </hbox>
+                    <scrollbox id="panelScroll">
+                        <vbox id="editGridContainer" width="340">
+                        </vbox>
+                    </scrollbox>
 
-                    <label id="panelSpacer" stylename="border-bottom"/>
-
-                    <hbox width="100%">
+                    <hbox width="340">
                         <grid margin="true" width="100%">
                             <columns>
                                 <column flex="0.4"/>

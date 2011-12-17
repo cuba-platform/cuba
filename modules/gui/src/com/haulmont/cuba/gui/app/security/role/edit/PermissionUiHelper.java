@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.security.RestorablePermissionDatasource;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.ui.AttributePermissionVariant;
 import com.haulmont.cuba.security.entity.ui.PermissionVariant;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -36,6 +37,15 @@ public class PermissionUiHelper {
         return permissionVariant;
     }
 
+    public static AttributePermissionVariant getCheckBoxVariant(Object value, AttributePermissionVariant activeVariant) {
+        AttributePermissionVariant permissionVariant;
+        if (Boolean.TRUE.equals(value))
+            permissionVariant = activeVariant;
+        else
+            permissionVariant = AttributePermissionVariant.NOTSET;
+        return permissionVariant;
+    }
+
     public static int getPermissionValue(PermissionVariant permissionVariant) {
         int value = 0;
         if (permissionVariant != PermissionVariant.NOTSET) {
@@ -47,6 +57,27 @@ public class PermissionUiHelper {
 
                 case DISALLOWED:
                     value = PermissionValue.DENY.getValue();
+                    break;
+            }
+        }
+        return value;
+    }
+
+    public static int getPermissionValue(AttributePermissionVariant permissionVariant) {
+        int value = 0;
+        if (permissionVariant != AttributePermissionVariant.NOTSET) {
+            // Create permission
+            switch (permissionVariant) {
+                case MODIFY:
+                    value = PropertyPermissionValue.MODIFY.getValue();
+                    break;
+
+                case HIDE:
+                    value = PropertyPermissionValue.DENY.getValue();
+                    break;
+
+                case READ_ONLY:
+                    value = PropertyPermissionValue.VIEW.getValue();
                     break;
             }
         }
