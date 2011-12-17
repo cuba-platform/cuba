@@ -24,35 +24,38 @@ import java.util.UUID;
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$OperationTarget")
 @SystemLevel
 public class OperationPermissionTarget extends AbstractInstance
-        implements Entity<String>, Cloneable {
+        implements Entity<String>, Cloneable, AssignableTarget {
 
     private UUID uuid = UuidProvider.createUuid();
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private String id;
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private String caption;
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private String permissionValue;
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private PermissionVariant createPermissionVariant = PermissionVariant.NOTSET;
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private PermissionVariant readPermissionVariant = PermissionVariant.NOTSET;
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private PermissionVariant updatePermissionVariant = PermissionVariant.NOTSET;
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private PermissionVariant deletePermissionVariant = PermissionVariant.NOTSET;
 
-    public OperationPermissionTarget(String id, String caption, String permissionValue) {
+    private Class entityClass;
+
+    public OperationPermissionTarget(Class entityClass, String id, String caption, String permissionValue) {
         this.id = id;
         this.caption = caption;
         this.permissionValue = permissionValue;
+        this.entityClass = entityClass;
     }
 
     @Override
@@ -70,6 +73,7 @@ public class OperationPermissionTarget extends AbstractInstance
         return MetadataProvider.getSession().getClass(getClass());
     }
 
+    @Override
     @MetaProperty
     public boolean isAssigned() {
         return (createPermissionVariant != PermissionVariant.NOTSET) ||
@@ -98,16 +102,13 @@ public class OperationPermissionTarget extends AbstractInstance
         return caption;
     }
 
-    public void setCaption(String caption) {
-        this.caption = caption;
+    public Class getEntityClass() {
+        return entityClass;
     }
 
+    @Override
     public String getPermissionValue() {
         return permissionValue;
-    }
-
-    public void setPermissionValue(String permissionValue) {
-        this.permissionValue = permissionValue;
     }
 
     public PermissionVariant getCreatePermissionVariant() {

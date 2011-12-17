@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.security.entity.ui;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
@@ -25,18 +26,18 @@ import java.util.UUID;
 @SystemLevel
 public class BasicPermissionTarget
         extends AbstractInstance
-        implements Entity<String>, Cloneable {
+        implements Entity<String>, Cloneable, AssignableTarget {
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private String id;
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private String caption;
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private String permissionValue;
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private PermissionVariant permissionVariant = PermissionVariant.NOTSET;
 
     private UUID uuid = UuidProvider.createUuid();
@@ -61,6 +62,12 @@ public class BasicPermissionTarget
         return caption;
     }
 
+    @Override
+    public boolean isAssigned() {
+        return permissionVariant != PermissionVariant.NOTSET;
+    }
+
+    @Override
     public String getPermissionValue() {
         return permissionValue;
     }

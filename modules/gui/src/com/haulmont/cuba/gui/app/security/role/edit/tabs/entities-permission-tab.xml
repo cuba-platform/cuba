@@ -23,9 +23,8 @@
         </collectionDatasource>
     </dsContext>
 
-    <#assign columnWidth=75>
-
     <layout expandLayout="true" expand="contentPane">
+        <!-- Filter -->
         <hbox expand="spacer" width="100%" spacing="true" margin="true">
             <checkBox id="assignedOnlyCheckBox" caption="msg://assignedOnly"/>
             <label width="100"/>
@@ -35,6 +34,7 @@
             <label id="spacer"/>
         </hbox>
         <hbox id="contentPane" expand="tablePane" spacing="true" margin="true">
+            <!-- Table -->
             <vbox id="tablePane" expand="entityPermissionsTable">
                 <table id="entityPermissionsTable" multiselect="true">
                     <columns>
@@ -47,11 +47,13 @@
                     <rows datasource="entityTargetsDs"/>
                 </table>
             </vbox>
-
+            <!-- Edit pane -->
             <groupBox id="editPane" width="280" height="100%">
                 <caption label="msg://permissions"/>
 
                 <vbox id="selectedEntityPanel" expand="panelSpacer" width="100%" visible="false">
+                    <label id="selectedTargetCaption" stylename="h2" align="MIDDLE_CENTER"/>
+
                     <hbox width="100%">
                         <grid margin="true" width="100%">
                             <columns>
@@ -62,29 +64,29 @@
                             <rows>
                                 <row>
                                     <label/>
-                                    <label value="msg://checkbox.allow" stylename="label-center"/>
-                                    <label value="msg://checkbox.deny" stylename="label-center"/>
+                                    <label value="msg://checkbox.allow" align="MIDDLE_CENTER"/>
+                                    <label value="msg://checkbox.deny" align="MIDDLE_CENTER"/>
                                 </row>
                                 <row>
-                                    <label value="msg://EntityOp.CREATE"/>
+                                    <label id="createOpLabel" value="msg://EntityOp.CREATE"/>
 
                                     <checkBox id="createAllowCheck" align="MIDDLE_CENTER"/>
                                     <checkBox id="createDenyCheck" align="MIDDLE_CENTER"/>
                                 </row>
                                 <row>
-                                    <label value="msg://EntityOp.READ"/>
+                                    <label id="readOpLabel" value="msg://EntityOp.READ"/>
 
                                     <checkBox id="readAllowCheck" align="MIDDLE_CENTER"/>
                                     <checkBox id="readDenyCheck" align="MIDDLE_CENTER"/>
                                 </row>
                                 <row>
-                                    <label value="msg://EntityOp.UPDATE"/>
+                                    <label id="updateOpLabel" value="msg://EntityOp.UPDATE"/>
 
                                     <checkBox id="updateAllowCheck" align="MIDDLE_CENTER"/>
                                     <checkBox id="updateDenyCheck" align="MIDDLE_CENTER"/>
                                 </row>
                                 <row>
-                                    <label value="msg://EntityOp.DELETE"/>
+                                    <label id="deleteOpLabel" value="msg://EntityOp.DELETE"/>
 
                                     <checkBox id="deleteAllowCheck" align="MIDDLE_CENTER"/>
                                     <checkBox id="deleteDenyCheck" align="MIDDLE_CENTER"/>
@@ -105,9 +107,7 @@
                             <rows>
                                 <row>
                                     <label value="msg://allEntities"/>
-
                                     <checkBox id="allAllowCheck" align="MIDDLE_CENTER"/>
-
                                     <checkBox id="allDenyCheck" align="MIDDLE_CENTER"/>
                                 </row>
                             </rows>

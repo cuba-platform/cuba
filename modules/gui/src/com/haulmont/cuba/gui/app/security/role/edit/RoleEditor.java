@@ -18,9 +18,9 @@ import com.haulmont.cuba.gui.config.MenuConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.security.entity.Permission;
-import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
+import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.inject.Inject;
@@ -29,8 +29,7 @@ import java.util.*;
 public class RoleEditor extends AbstractEditor {
 
     private Set<String> initialized = new HashSet<String>();
-//    private PopupButton entityPermissionsGrant;
-    private PopupButton propertyPermissionsGrant;
+//    private PopupButton propertyPermissionsGrant;
     private PopupButton specificPermissionsGrant;
 
     @Inject
@@ -61,8 +60,8 @@ public class RoleEditor extends AbstractEditor {
     }
 
     private void hideMenuPopupButton() {
-        if (propertyPermissionsGrant != null)
-            propertyPermissionsGrant.setPopupVisible(false);
+//        if (propertyPermissionsGrant != null)
+//            propertyPermissionsGrant.setPopupVisible(false);
         if (specificPermissionsGrant != null)
             specificPermissionsGrant.setPopupVisible(false);
 
@@ -78,19 +77,19 @@ public class RoleEditor extends AbstractEditor {
         table.getDatasource().refresh();
         table.setMultiSelect(true);
 
-        if (permissionType != PermissionType.ENTITY_ATTR) {
-            table.addAction(new OpenPermissionAction("allow", lookupAction, permissionsStorage,
-                    permissionType, PermissionValue.ALLOW.name(), PermissionValue.ALLOW.getValue()));
-            table.addAction(new OpenPermissionAction("deny", lookupAction, permissionsStorage,
-                    permissionType, PermissionValue.DENY.name(), PermissionValue.DENY.getValue()));
-        } else {
-            table.addAction(new OpenPermissionAction("modify", lookupAction, permissionsStorage,
-                    permissionType, PropertyPermissionValue.MODIFY.name(), PropertyPermissionValue.MODIFY.getValue()));
-            table.addAction(new OpenPermissionAction("view", lookupAction, permissionsStorage,
-                    permissionType, PropertyPermissionValue.VIEW.name(), PropertyPermissionValue.VIEW.getValue()));
-            table.addAction(new OpenPermissionAction("forbid", lookupAction, permissionsStorage,
-                    permissionType, "FORBID", PropertyPermissionValue.DENY.getValue()));
-        }
+//        if (permissionType != PermissionType.ENTITY_ATTR) {
+//            table.addAction(new OpenPermissionAction("allow", lookupAction, permissionsStorage,
+//                    permissionType, PermissionValue.ALLOW.name(), PermissionValue.ALLOW.getValue()));
+//            table.addAction(new OpenPermissionAction("deny", lookupAction, permissionsStorage,
+//                    permissionType, PermissionValue.DENY.name(), PermissionValue.DENY.getValue()));
+//        } else {
+//            table.addAction(new OpenPermissionAction("modify", lookupAction, permissionsStorage,
+//                    permissionType, PropertyPermissionValue.MODIFY.name(), PropertyPermissionValue.MODIFY.getValue()));
+//            table.addAction(new OpenPermissionAction("view", lookupAction, permissionsStorage,
+//                    permissionType, PropertyPermissionValue.VIEW.name(), PropertyPermissionValue.VIEW.getValue()));
+//            table.addAction(new OpenPermissionAction("forbid", lookupAction, permissionsStorage,
+//                    permissionType, "FORBID", PropertyPermissionValue.DENY.getValue()));
+//        }
 
         table.addAction(new RemoveAction(table, false));
 
@@ -228,38 +227,20 @@ public class RoleEditor extends AbstractEditor {
     private class PermissionTabChangeListener implements Tabsheet.TabChangeListener {
         @Override
         public void tabChanged(Tabsheet.Tab newTab) {
-//            if ("entityPermissionsTab".equals(newTab.getName())) {
-//                if (!initialized.contains("entityPermissionsTab")) {
-//                    EntityPermissionsFrame entitiesTabFrame = getComponent("entitiesTabFrame");
-//
-//                    entitiesTabFrame.init(Collections.<String, Object>emptyMap());
-//                    initialized.add("entityPermissionsTab");
-//                }
-//
+//            if ("propertyPermissionsTab".equals(newTab.getName())) {
 //                initPermissionControls(
-//                        "sec$Target.entityPermissions.lookup",
-//                        "entitiesTabFrame.entityPermissionsTable",
-//                        PermissionType.ENTITY_OP);
-//                Table table = getComponent("entitiesTabFrame.entityPermissionsTable");
-//                entityPermissionsGrant = getComponent("entitiesTabFrame.entityPermissionsGrant");
-//                if (entityPermissionsGrant.getActions().isEmpty()) {
-//                    entityPermissionsGrant.addAction(table.getAction("allow"));
-//                    entityPermissionsGrant.addAction(table.getAction("deny"));
+//                        "sec$Target.propertyPermissions.lookup",
+//                        "attributesTabFrame.propertyPermissionsTable",
+//                        PermissionType.ENTITY_ATTR);
+//                Table table = getComponent("attributesTabFrame.propertyPermissionsTable");
+//                propertyPermissionsGrant = getComponent("attributesTabFrame.propertyPermissionsGrant");
+//                if (propertyPermissionsGrant.getActions().isEmpty()) {
+//                    propertyPermissionsGrant.addAction(table.getAction("modify"));
+//                    propertyPermissionsGrant.addAction(table.getAction("view"));
+//                    propertyPermissionsGrant.addAction(table.getAction("forbid"));
 //                }
 //            } else
-            if ("propertyPermissionsTab".equals(newTab.getName())) {
-                initPermissionControls(
-                        "sec$Target.propertyPermissions.lookup",
-                        "attributesTabFrame.propertyPermissionsTable",
-                        PermissionType.ENTITY_ATTR);
-                Table table = getComponent("attributesTabFrame.propertyPermissionsTable");
-                propertyPermissionsGrant = getComponent("attributesTabFrame.propertyPermissionsGrant");
-                if (propertyPermissionsGrant.getActions().isEmpty()) {
-                    propertyPermissionsGrant.addAction(table.getAction("modify"));
-                    propertyPermissionsGrant.addAction(table.getAction("view"));
-                    propertyPermissionsGrant.addAction(table.getAction("forbid"));
-                }
-            } else if ("specificPermissionsTab".equals(newTab.getName())) {
+            if ("specificPermissionsTab".equals(newTab.getName())) {
                 initPermissionControls(
                         "sec$Target.specificPermissions.lookup",
                         "specificTabFrame.specificPermissionsTable",

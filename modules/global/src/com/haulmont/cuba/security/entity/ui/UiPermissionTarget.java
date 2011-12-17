@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.security.entity.ui;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
@@ -23,21 +24,21 @@ import java.util.UUID;
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$UiTarget")
 @SystemLevel
 public class UiPermissionTarget extends AbstractInstance
-        implements Entity<String> {
+        implements Entity<String>, AssignableTarget {
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private String id;
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private String caption;
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private String permissionValue;
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private UiPermissionVariant permissionVariant = UiPermissionVariant.NOTSET;
 
-    @com.haulmont.chile.core.annotations.MetaProperty(mandatory = true)
+    @MetaProperty(mandatory = true)
     private String componentType;
 
     private UUID uuid = UuidProvider.createUuid();
@@ -83,6 +84,12 @@ public class UiPermissionTarget extends AbstractInstance
         this.caption = caption;
     }
 
+    @Override
+    public boolean isAssigned() {
+        return permissionVariant != UiPermissionVariant.NOTSET;
+    }
+
+    @Override
     public String getPermissionValue() {
         return permissionValue;
     }

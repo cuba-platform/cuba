@@ -14,14 +14,15 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.*;
-import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.security.entity.ui.AttributePermissionVariant;
 import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
-import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.security.entity.ui.MultiplePermissionTarget;
 import com.haulmont.cuba.security.entity.ui.OperationPermissionTarget;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -50,16 +51,16 @@ public class PermissionConfig {
         private Locale locale;
 
         private Tree<BasicPermissionTarget> screens;
-        //        private Tree<BasicPermissionTarget> entities;
         private Tree<BasicPermissionTarget> specific;
 
         private List<OperationPermissionTarget> entities;
+        private List<MultiplePermissionTarget> entityAttributes;
 
         private Item(Locale locale) {
             this.locale = locale;
 
             compileScreens();
-            compileEntities();
+            compileEntitiesAndAttributes();
             compileSpecific();
         }
 
@@ -102,8 +103,9 @@ public class PermissionConfig {
             }
         }
 
-        private void compileEntities() {
+        private void compileEntitiesAndAttributes() {
             entities = new ArrayList<OperationPermissionTarget>();
+            entityAttributes = new ArrayList<MultiplePermissionTarget>();
 
             Session session = MetadataProvider.getSession();
             List<MetaModel> modelList = new ArrayList<MetaModel>(session.getModels());
@@ -117,8 +119,17 @@ public class PermissionConfig {
                 for (MetaClass metaClass : classList) {
                     String name = metaClass.getName();
                     // Filter base entity classes
-                    if (name.contains("$"))
-                        entities.add(new OperationPermissionTarget("entity:" + name, name, name));
+                    if (name.contains("$")) {
+                        // Entity target
+                        entities.add(new OperationPermissionTarget(metaClass.getJavaClass(), "entity:" + name, name, name));
+
+                        // Target with entity attributes
+                        MultiplePermissionTarget attrs = new MultiplePermissionTarget("entity:" + name, name, name);
+                        for (MetaProperty metaProperty : metaClass.getProperties()) {
+                            attrs.getPermissions().put(metaProperty.getName(), AttributePermissionVariant.NOTSET);
+                        }
+                        entityAttributes.add(attrs);
+                    }
                 }
             }
         }
@@ -230,7 +241,17 @@ public class PermissionConfig {
      * @return
      */
     public List<OperationPermissionTarget> getEntities(Locale locale) {
-        return getItem(locale).entities; // getItem(locale).entities;
+        return getItem(locale).entities;
+    }
+
+    /**
+     * All registered entities with attributes
+     *
+     * @param locale
+     * @return
+     */
+    public List<MultiplePermissionTarget> getEntityAttributes(Locale locale) {
+        return getItem(locale).entityAttributes;
     }
 
     /**
@@ -249,7 +270,7 @@ public class PermissionConfig {
      * @param entityTarget
      * @return list of {@link com.haulmont.cuba.security.entity.ui.BasicPermissionTarget} objects
      */
-    public List<BasicPermissionTarget> getEntityOperations(BasicPermissionTarget entityTarget) {
+    /*public List<BasicPermissionTarget> getEntityOperations(BasicPermissionTarget entityTarget) {
         if (entityTarget == null) return Collections.emptyList();
 
         final String id = entityTarget.getId();
@@ -275,15 +296,15 @@ public class PermissionConfig {
         }
 
         return result;
-    }
+    }*/
 
     /**
      * Entity attributes for specified target
      *
-     * @param entityTarget
+     * @ param entityTarget
      * @return list of {@link com.haulmont.cuba.security.entity.ui.BasicPermissionTarget} objects
      */
-    public List<BasicPermissionTarget> getEntityAttributes(BasicPermissionTarget entityTarget) {
+    /* public List<BasicPermissionTarget> getEntityAttributes(BasicPermissionTarget entityTarget) {
         if (entityTarget == null) return Collections.emptyList();
 
         final String id = entityTarget.getId();
@@ -304,7 +325,7 @@ public class PermissionConfig {
         }
 
         return result;
-    }
+    }*/
 
     private class MetadataObjectAlphabetComparator implements Comparator<MetadataObject> {
         @Override
