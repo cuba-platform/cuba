@@ -46,12 +46,12 @@ public class DesktopGridLayout
         layoutAdapter.setColumnExpandRatio(col, ratio);
     }
 
-    public float getRowExpandRatio(int col) {
-        return layoutAdapter.getRowExpandRatio(col);
+    public float getRowExpandRatio(int row) {
+        return layoutAdapter.getRowExpandRatio(row);
     }
 
-    public void setRowExpandRatio(int col, float ratio) {
-        layoutAdapter.setRowExpandRatio(col, ratio);
+    public void setRowExpandRatio(int row, float ratio) {
+        layoutAdapter.setRowExpandRatio(row, ratio);
     }
 
     public void add(Component component, int col, int row) {

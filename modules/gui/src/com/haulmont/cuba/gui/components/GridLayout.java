@@ -17,8 +17,8 @@ public interface GridLayout
     float getColumnExpandRatio(int col);
     void setColumnExpandRatio(int col, float ratio);
 
-    float getRowExpandRatio(int col);
-    void setRowExpandRatio(int col, float ratio);
+    float getRowExpandRatio(int row);
+    void setRowExpandRatio(int row, float ratio);
 
     void add(Component component, int col, int row);
     void add(Component component, int col, int row, int col2, int row2);
