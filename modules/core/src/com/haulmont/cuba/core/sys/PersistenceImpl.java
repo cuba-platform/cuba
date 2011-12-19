@@ -11,10 +11,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.global.DbDialect;
-import com.haulmont.cuba.core.global.HsqlDbDialect;
-import com.haulmont.cuba.core.global.PostgresDbDialect;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.EntityLifecycleListener;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -23,6 +20,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.HSQLDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
+import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -86,6 +84,8 @@ public class PersistenceImpl implements Persistence {
                     dbDialect = new HsqlDbDialect();
                 } else if (dictionary instanceof PostgresDictionary) {
                     dbDialect = new PostgresDbDialect();
+                } else if (dictionary instanceof SQLServerDictionary) {
+                    dbDialect = new MssqlDbDialect();
                 } else {
                     throw new UnsupportedOperationException("Unsupported DBDictionary class: " + dictionary.getClass());
                 }

@@ -1,4 +1,10 @@
 /*
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+/*
  * Author: Konstantin Krivopustov
  * Created: 15.05.2009 22:10:48
  * 
@@ -7,22 +13,17 @@
 package com.haulmont.cuba.core.app;
 
 /**
- * Management interface of the {@link UniqueNumbers} MBean.<br>
- * Use {@link #getAPI()} method to obtain a direct reference to application interface.<br>
- * Other methods are intended to invoke from the JMX console.
- * <p>
- * Reference to this interface can be obtained through {@link com.haulmont.cuba.core.Locator#lookupMBean(Class, String)} method
+ * {@link UniqueNumbers} JMX interface.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 public interface UniqueNumbersMBean
 {
-    String OBJECT_NAME = "haulmont.cuba:service=UniqueNumbers";
-
-    /**
-     * Get direct reference to application interface. Direct means no proxies or container interceptors.
-     */
-    UniqueNumbersAPI getAPI();
-
     long getCurrentNumber(String domain);
 
     void setCurrentNumber(String domain, long value);
+
+    long getNextNumber(String domain);
 }

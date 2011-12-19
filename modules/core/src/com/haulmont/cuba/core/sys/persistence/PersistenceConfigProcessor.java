@@ -1,17 +1,15 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 01.03.2010 16:14:11
- *
- * $Id$
  */
-package com.haulmont.cuba.core.sys;
+
+package com.haulmont.cuba.core.sys.persistence;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
@@ -22,6 +20,11 @@ import javax.persistence.Entity;
 import java.io.*;
 import java.util.*;
 
+/**
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public class PersistenceConfigProcessor {
 
     private String baseDir;
@@ -94,6 +97,8 @@ public class PersistenceConfigProcessor {
         Map<String, String> classes = new LinkedHashMap<String, String>();
         Map<String, String> properties = new HashMap<String, String>();
 
+        properties.putAll(DbmsType.getCurrent().getJpaParameters());
+
         for (String fileName : sourceFileNames) {
             Document doc = getDocument(fileName);
             Element puElem = findPersistenceUnitElement(doc.getRootElement());
@@ -114,6 +119,8 @@ public class PersistenceConfigProcessor {
         for (Element element : new ArrayList<Element>(Dom4j.elements(puElem, "class"))) {
             puElem.remove(element);
         }
+
+        puElem.addElement("provider").setText("org.apache.openjpa.persistence.PersistenceProviderImpl");
 
         for (String className : classes.values()) {
             puElem.addElement("class").setText(className);
@@ -140,12 +147,7 @@ public class PersistenceConfigProcessor {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            if (os != null)
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    //
-                }
+            IOUtils.closeQuietly(os);
         }
     }
 
@@ -164,8 +166,10 @@ public class PersistenceConfigProcessor {
 
     private void addProperties(Element puElem, Map<String, String> properties) {
         Element propertiesEl = puElem.element("properties");
-        for (Element element : Dom4j.elements(propertiesEl, "property")) {
-            properties.put(element.attributeValue("name"), element.attributeValue("value"));
+        if (propertiesEl != null) {
+            for (Element element : Dom4j.elements(propertiesEl, "property")) {
+                properties.put(element.attributeValue("name"), element.attributeValue("value"));
+            }
         }
     }
 

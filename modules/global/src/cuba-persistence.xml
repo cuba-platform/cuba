@@ -62,17 +62,11 @@
 
             <property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true, PrettyPrintLineLength=72"/>
 
-            <property name="openjpa.jdbc.DBDictionary"
-                      value="com.haulmont.cuba.core.sys.persistence.CubaHSQLDictionary(SimulateLocking=true)"/>
-
             <property name="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)"/>
 
             <property name="openjpa.DetachState" value="loaded(DetachedStateField=true, DetachedStateManager=true)"/>
 
             <property name="openjpa.IgnoreChanges" value="true"/>
-
-            <property name="openjpa.jdbc.MappingDefaults"
-                      value="FieldStrategies='java.util.UUID=com.haulmont.cuba.core.sys.persistence.UuidStringValueHandler'"/>
 
             <property name="openjpa.jdbc.SubclassFetchMode" value="none"/>
 

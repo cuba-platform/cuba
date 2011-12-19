@@ -21,4 +21,6 @@ public interface SequenceSupport
     String getNextValueSql(String sequenceName);
 
     String getCurrentValueSql(String sequenceName);
+
+    String getScriptSeparator();
 }

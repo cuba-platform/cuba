@@ -85,6 +85,14 @@ public class RemoteException extends RuntimeException {
     }
 
     @Override
+    public String getMessage() {
+        if (!causes.isEmpty())
+            return causes.get(causes.size() - 1).getMessage();
+        else
+            return null;
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("RemoteException:");
         for (Cause cause : causes) {

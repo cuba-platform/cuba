@@ -1,17 +1,19 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 21.05.2009 10:20:46
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
-public class PostgresDbDialect extends DbDialect implements SequenceSupport
-{
+/**
+ * PostgreSQL dialect.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
+public class PostgresDbDialect extends DbDialect implements SequenceSupport {
+
     public String sequenceExistsSql(String sequenceName) {
         return "select relname from pg_class where relkind = 'S' and relname = '"
                 + sequenceName.toLowerCase() + "'";

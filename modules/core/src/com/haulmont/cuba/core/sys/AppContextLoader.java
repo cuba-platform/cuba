@@ -14,6 +14,7 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.chile.core.model.utils.MetadataUtils;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.persistence.PersistenceConfigProcessor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
@@ -33,7 +34,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Properties;
 
 public class AppContextLoader implements ServletContextListener {

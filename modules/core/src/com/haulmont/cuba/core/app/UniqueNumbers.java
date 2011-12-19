@@ -1,70 +1,89 @@
 /*
- * Author: Konstantin Krivopustov
- * Created: 15.05.2009 22:13:42
- * 
- * $Id$
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.core.global.SequenceSupport;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrTokenizer;
 
 import javax.annotation.ManagedBean;
-import java.util.Set;
+import javax.inject.Inject;
+import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Collections;
+import java.util.Set;
 
 /**
- * UniqueNumbers MBean implementation.
- * <p>
  * Provides unique numbers based on database sequences.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 @ManagedBean(UniqueNumbersAPI.NAME)
 public class UniqueNumbers
         extends ManagementBean implements UniqueNumbersMBean, UniqueNumbersAPI
 {
+    @Inject
+    private Persistence persistence;
+
     private Set<String> existingSequences = Collections.synchronizedSet(new HashSet<String>());
 
     public long getNextNumber(String domain) {
         String seqName = getSequenceName(domain);
-        Transaction tx = Locator.getTransaction();
+        SequenceSupport support = getSequenceSqlProvider();
+        String sqlScript = support.getNextValueSql(seqName);
+
+        return getResult(seqName, support, sqlScript);
+    }
+
+    public long getCurrentNumber(String domain) {
+        String seqName = getSequenceName(domain);
+        SequenceSupport support = getSequenceSqlProvider();
+        String sqlScript = support.getCurrentValueSql(seqName);
+
+        return getResult(seqName, support, sqlScript);
+    }
+
+    public void setCurrentNumber(String domain, long value) {
+        String seqName = getSequenceName(domain);
+        SequenceSupport support = getSequenceSqlProvider();
+        String sqlScript = support.modifySequenceSql(seqName, value);
+
+        Transaction tx = persistence.getTransaction();
         try {
             checkSequenceExists(seqName);
-
-            EntityManager em = PersistenceProvider.getEntityManager();
-            SequenceSupport support = getSequenceSqlProvider();
-            Query query = em.createNativeQuery(support.getNextValueSql(seqName));
-            Object value = query.getSingleResult();
-
+            executeScript(support, sqlScript);
             tx.commit();
-            return (Long) value;
         } finally {
             tx.end();
         }
     }
 
-    public UniqueNumbersAPI getAPI() {
-        return this;
-    }
-
-    public long getCurrentNumber(String domain) {
-        String seqName = getSequenceName(domain);
-        Transaction tx = Locator.getTransaction();
+    private long getResult(String seqName, SequenceSupport support, String sqlScript) {
+        Transaction tx = persistence.getTransaction();
         try {
             checkSequenceExists(seqName);
 
-            EntityManager em = PersistenceProvider.getEntityManager();
-            SequenceSupport support = getSequenceSqlProvider();
-            Query query = em.createNativeQuery(support.getCurrentValueSql(seqName));
-            Object value = query.getSingleResult();
-
+            Object value = executeScript(support, sqlScript);
             tx.commit();
             if (value instanceof Long)
                 return (Long) value;
+            else if (value instanceof BigDecimal)
+                return ((BigDecimal) value).longValue();
             else if (value instanceof String)
                 return Long.valueOf((String) value);
+            else if (value == null)
+                throw new IllegalStateException("No value returned");
             else
                 throw new IllegalStateException("Unsupported value type: " + value.getClass());
         } finally {
@@ -72,32 +91,30 @@ public class UniqueNumbers
         }
     }
 
-    public void setCurrentNumber(String domain, long value) {
-        String seqName = getSequenceName(domain);
-
-        Transaction tx = Locator.getTransaction();
-        try {
-            checkSequenceExists(seqName);
-
-            EntityManager em = PersistenceProvider.getEntityManager();
-            SequenceSupport support = getSequenceSqlProvider();
-            String sql = support.modifySequenceSql(seqName, value);
+    private Object executeScript(SequenceSupport support, String sqlScript) {
+        EntityManager em = persistence.getEntityManager();
+        StrTokenizer tokenizer = new StrTokenizer(sqlScript, support.getScriptSeparator());
+        Object value = null;
+        while (tokenizer.hasNext()) {
+            String sql = tokenizer.nextToken();
             Query query = em.createNativeQuery(sql);
-            if (sql.startsWith("select"))
-                query.getResultList();
+            if (isSelectSql(sql))
+                value = query.getSingleResult();
             else
                 query.executeUpdate();
-            tx.commit();
-        } finally {
-            tx.end();
         }
+        return value;
+    }
+
+    private boolean isSelectSql(String sql) {
+        return sql.trim().toLowerCase().startsWith("select");
     }
 
     private void checkSequenceExists(String seqName) {
         if (existingSequences.contains(seqName))
             return;
 
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
 
         SequenceSupport support = getSequenceSqlProvider();
         Query query = em.createNativeQuery(support.sequenceExistsSql(seqName));
@@ -110,11 +127,14 @@ public class UniqueNumbers
     }
 
     private String getSequenceName(String domain) {
+        if (StringUtils.isBlank(domain))
+            throw new IllegalArgumentException("Sequence name can not be blank");
+
         return "seq_un_" + domain;
     }
 
     private SequenceSupport getSequenceSqlProvider() {
-        DbDialect dialect = PersistenceProvider.getDbDialect();
+        DbDialect dialect = persistence.getDbDialect();
         if (dialect instanceof SequenceSupport)
             return (SequenceSupport) dialect;
         else

@@ -1,15 +1,17 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 21.05.2009 10:09:49
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
+/**
+ * HSQLDB dialect.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public class HsqlDbDialect extends DbDialect implements SequenceSupport
 {
     public String sequenceExistsSql(String sequenceName) {

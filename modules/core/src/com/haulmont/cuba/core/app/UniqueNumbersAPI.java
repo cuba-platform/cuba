@@ -1,21 +1,23 @@
 /*
- * Author: Konstantin Krivopustov
- * Created: 16.05.2009 0:12:45
- * 
- * $Id$
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
  */
 package com.haulmont.cuba.core.app;
 
 /**
- * API of {@link UniqueNumbers} MBean.<br>
- * Reference to this interface must be obtained through {@link UniqueNumbersMBean#getAPI()} method
+ * Provides unique numbers based on database sequences.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 public interface UniqueNumbersAPI
 {
     String NAME = "cuba_UniqueNumbers";
     
     /**
-     * Returns next sequence value
+     * Returns the next sequence value.
      * @param domain sequence identifier
      */
     long getNextNumber(String domain);
