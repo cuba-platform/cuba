@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2010 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 07.04.2010 15:12:52
- *
- * $Id$
  */
 package com.haulmont.cuba.core.sys;
 
@@ -18,6 +13,7 @@ import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import groovy.lang.Binding;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -37,6 +33,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+/**
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 @ManagedBean(DbUpdater.NAME)
 public class DbUpdaterImpl implements DbUpdater {
 
@@ -277,7 +278,7 @@ public class DbUpdaterImpl implements DbUpdater {
         try {
             runner.update("create table SYS_DB_CHANGELOG(" +
                     "SCRIPT_NAME varchar(300) not null primary key, " +
-                    "CREATE_TS timestamp default current_timestamp, " +
+                    "CREATE_TS " + (DbmsType.getCurrent().equals(DbmsType.MSSQL) ? "datetime" : "timestamp") + " default current_timestamp, " +
                     "IS_INIT integer default 0)");
         } catch (SQLException e) {
             throw new RuntimeException(e);
