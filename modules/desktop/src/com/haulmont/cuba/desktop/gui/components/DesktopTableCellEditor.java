@@ -121,10 +121,11 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
             if (jcomponent instanceof JTextField) {
                 // another JTextField dirty workaround. If use selectionBackground, then it's all blue
                 jcomponent.setBackground(Color.WHITE);
+                jcomponent.setForeground(table.getForeground());
             } else {
                 jcomponent.setBackground(table.getSelectionBackground());
+                jcomponent.setForeground(table.getSelectionForeground());
             }
-            jcomponent.setForeground(table.getSelectionForeground());
         } else {
             jcomponent.setForeground(table.getForeground());
             Color background = DefaultLookup.getColor(jcomponent, table.getUI(), "Table:\"Table.cellRenderer\".background");
@@ -132,7 +133,6 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         }
 
         jcomponent.setFont(table.getFont());
-
 
         assignBorder(table, isSelected, hasFocus, jcomponent);
     }

@@ -9,10 +9,11 @@ package com.haulmont.cuba.gui.app.core.showinfo;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.KeyValueEntity;
-import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
+import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.UUID;
@@ -26,7 +27,12 @@ public class SystemInfoWindow extends AbstractWindow {
 
     private Entity instance;
     private MetaClass metaClass;
+
+    @Inject
     private CollectionDatasource<KeyValueEntity, UUID> paramsDs;
+
+    @Inject
+    private Table infoTable;
 
     public SystemInfoWindow(IFrame frame) {
         super(frame);
@@ -36,9 +42,20 @@ public class SystemInfoWindow extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        paramsDs = getDsContext().get("paramsDs");
         instance = (Entity) params.get("item");
         metaClass = (MetaClass) params.get("metaClass");
+
+        infoTable.addGeneratedColumn("keyValue",  new Table.ColumnGenerator() {
+            @Override
+            public Component generateCell(Table table, Object itemId) {
+                String key = paramsDs.getItem((UUID) itemId).getKeyValue();
+                TextField textField = AppConfig.getFactory().createComponent(TextField.NAME);
+                textField.setValue(key);
+                textField.setEditable(false);
+                return textField;
+            }
+        });
+
         compileInfo();
     }
 
