@@ -15,6 +15,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -45,7 +47,7 @@ public class SystemInfoWindow extends AbstractWindow {
         instance = (Entity) params.get("item");
         metaClass = (MetaClass) params.get("metaClass");
 
-        infoTable.addGeneratedColumn("keyValue",  new Table.ColumnGenerator() {
+        infoTable.addGeneratedColumn("keyValue", new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Table table, Object itemId) {
                 String key = paramsDs.getItem((UUID) itemId).getKeyValue();
@@ -55,6 +57,11 @@ public class SystemInfoWindow extends AbstractWindow {
                 return textField;
             }
         });
+
+        // remove all actions
+        List<Action> tableActions = new ArrayList<Action>(infoTable.getActions());
+        for (Action action : tableActions)
+            infoTable.removeAction(action);
 
         compileInfo();
     }
