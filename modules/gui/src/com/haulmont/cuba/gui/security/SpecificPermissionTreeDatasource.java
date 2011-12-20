@@ -17,21 +17,16 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.data.impl.AbstractTreeDatasource;
 import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
 
-import java.util.Map;
-
-public class SpecificPermissionTargetsDatasource extends AbstractTreeDatasource {
-    public SpecificPermissionTargetsDatasource(
-            DsContext context, DataService dataservice,
-                String id, MetaClass metaClass, String viewName)
-    {
+public class SpecificPermissionTreeDatasource extends BasicPermissionTreeDatasource {
+    public SpecificPermissionTreeDatasource(DsContext context, DataService dataservice,
+                                            String id, MetaClass metaClass, String viewName) {
         super(context, dataservice, id, metaClass, viewName);
     }
 
     @Override
-    protected Tree<BasicPermissionTarget> loadTree(Map params) {
+    public Tree<BasicPermissionTarget> getPermissions() {
         return AppContext.getBean(PermissionConfig.class).getSpecific(UserSessionProvider.getLocale());
     }
 }

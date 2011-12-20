@@ -5,7 +5,8 @@
   -->
 
 <window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        messagesPack="com.haulmont.cuba.gui.app.security.role.edit">
+        messagesPack="com.haulmont.cuba.gui.app.security.role.edit"
+        class="com.haulmont.cuba.gui.app.security.role.edit.tabs.SpecificPermissionsFrame">
 
     <dsContext>
         <collectionDatasource id="specificPermissionsDs"
@@ -14,29 +15,38 @@
             <datasourceClass>com.haulmont.cuba.gui.security.RestorablePermissionDatasource</datasourceClass>
             <query>select p from sec$Permission p where p.role.id = :ds$roleDs and p.type = 40</query>
         </collectionDatasource>
+
+        <collectionDatasource id="specificPermissionsTreeDs"
+                              class="com.haulmont.cuba.security.entity.ui.BasicPermissionTarget"
+                              view="_local">
+            <datasourceClass>com.haulmont.cuba.gui.security.SpecificPermissionTreeDatasource</datasourceClass>
+        </collectionDatasource>
     </dsContext>
 
-    <#assign width = 200>
-    <#assign treeHeight = 400>
-    <#assign treeWidth = 500>
-    <#assign widthPPB = 120>
-    <#assign widthPPBMenu = 100>
     <layout expandLayout="true">
-        <vbox expand="specificPermissionsTable" margin="true" spacing="true">
-            <buttonsPanel>
-                <popupButton id="specificPermissionsGrant" icon="icons/add.png"
-                             caption="msg://permissions.grant"
-                             width="${widthPPB}" menuWidth="${widthPPBMenu}"/>
-                <button id="specificPermissionsRemove" action="specificPermissionsTable.remove"
-                        caption="msg://permissions.remove" icon="icons/remove.png"/>
-            </buttonsPanel>
-            <table id="specificPermissionsTable">
+        <hbox expand="specificPermissionsTree" margin="true" spacing="true">
+            <treeTable id="specificPermissionsTree">
                 <columns>
-                    <column id="target" caption="msg://target"/>
-                    <column id="value" caption="msg://value"/>
+                    <column id="caption" caption="msg://target"/>
+                    <column id="permissionVariant" caption="msg://value"/>
                 </columns>
-                <rows datasource="specificPermissionsDs"/>
-            </table>
-        </vbox>
+                <rows datasource="specificPermissionsTreeDs"/>
+            </treeTable>
+
+            <groupBox width="250" height="100%">
+                <caption label="msg://permissions"/>
+
+                <vbox id="selectedPermissionPanel" expand="spacer" width="100" visible="false">
+                    <hbox width="100%">
+                        <label property="caption" datasource="specificPermissionsTreeDs" stylename="h2"/>
+                    </hbox>
+                    <hbox height="20" width="100%">
+                        <checkBox id="allowCheckBox" caption="msg://checkbox.allow" height="100%"/>
+                        <checkBox id="disallowCheckBox" caption="msg://checkbox.deny" height="100%"/>
+                    </hbox>
+                    <hbox id="spacer"/>
+                </vbox>
+            </groupBox>
+        </hbox>
     </layout>
 </window>

@@ -13,7 +13,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.gui.security.ScreenPermissionTreeDatasource;
+import com.haulmont.cuba.gui.security.SpecificPermissionTreeDatasource;
 import com.haulmont.cuba.security.entity.Permission;
 import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.Role;
@@ -30,22 +30,22 @@ import java.util.UUID;
  *
  * @author artamonov
  */
-public class ScreenPermissionsFrame extends AbstractFrame {
+public class SpecificPermissionsFrame extends AbstractFrame {
 
     @Inject
     private Datasource<Role> roleDs;
 
     @Inject
-    private CollectionDatasource<Permission, UUID> screenPermissionsDs;
+    private CollectionDatasource<Permission, UUID> specificPermissionsDs;
 
     @Inject
-    private TreeTable screenPermissionsTree;
+    private TreeTable specificPermissionsTree;
 
     @Inject
-    private ScreenPermissionTreeDatasource screenPermissionsTreeDs;
+    private SpecificPermissionTreeDatasource specificPermissionsTreeDs;
 
     @Inject
-    private BoxLayout selectedScreenPanel;
+    private BoxLayout selectedPermissionPanel;
 
     @Inject
     private CheckBox allowCheckBox;
@@ -59,35 +59,36 @@ public class ScreenPermissionsFrame extends AbstractFrame {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        screenPermissionsTree.setStyleProvider(new BasicPermissionTreeStyleProvider());
+        specificPermissionsTree.setStyleProvider(new BasicPermissionTreeStyleProvider());
 
-        screenPermissionsTree.addAction(new AbstractAction("actions.Allow") {
+/*        specificPermissionsTree.addAction(new AbstractAction("actions.Allow") {
             @Override
             public void actionPerform(Component component) {
                 markItemPermission(PermissionVariant.ALLOWED);
             }
         });
-        screenPermissionsTree.addAction(new AbstractAction("actions.Disallow") {
+        specificPermissionsTree.addAction(new AbstractAction("actions.Disallow") {
             @Override
             public void actionPerform(Component component) {
                 markItemPermission(PermissionVariant.DISALLOWED);
             }
         });
-        screenPermissionsTree.addAction(new AbstractAction("actions.DropRule") {
+        specificPermissionsTree.addAction(new AbstractAction("actions.DropRule") {
             @Override
             public void actionPerform(Component component) {
                 markItemPermission(PermissionVariant.NOTSET);
             }
-        });
+        });*/
 
-        screenPermissionsTreeDs.addListener(new CollectionDsListenerAdapter<BasicPermissionTarget>() {
+        specificPermissionsTreeDs.addListener(new CollectionDsListenerAdapter<BasicPermissionTarget>() {
             @Override
             public void itemChanged(Datasource<BasicPermissionTarget> ds,
                                     BasicPermissionTarget prevItem, BasicPermissionTarget item) {
-                if (!selectedScreenPanel.isVisible() && (item != null))
-                    selectedScreenPanel.setVisible(true);
-                if (selectedScreenPanel.isVisible() && (item == null))
-                    selectedScreenPanel.setVisible(false);
+                if (!selectedPermissionPanel.isVisible() && (item != null)) {
+                    selectedPermissionPanel.setVisible(!item.getId().startsWith("category:"));
+                }
+                if (selectedPermissionPanel.isVisible() && (item == null))
+                    selectedPermissionPanel.setVisible(false);
 
                 updateCheckBoxes(item);
             }
@@ -138,45 +139,43 @@ public class ScreenPermissionsFrame extends AbstractFrame {
             public void valueChanged(CheckBox source, String property, Object prevValue, Object value) {
                 if (!itemChanging) {
                     itemChanging = true;
-//
+
                     markItemPermission(PermissionUiHelper.getCheckBoxVariant(value, PermissionVariant.DISALLOWED));
 
                     itemChanging = false;
                 }
             }
         });
-    }
 
-    public void loadPermissions() {
-        screenPermissionsDs.refresh();
-        screenPermissionsTreeDs.setPermissionDs(screenPermissionsDs);
-        screenPermissionsTree.refresh();
-        screenPermissionsTree.expandAll();
+        specificPermissionsDs.refresh();
+        specificPermissionsTreeDs.setPermissionDs(specificPermissionsDs);
+        specificPermissionsTreeDs.refresh();
+        specificPermissionsTree.expandAll();
     }
 
     private void markItemPermission(PermissionVariant permissionVariant) {
-        BasicPermissionTarget target = screenPermissionsTree.getSingleSelected();
+        BasicPermissionTarget target = specificPermissionsTree.getSingleSelected();
         if (target != null) {
             target.setPermissionVariant(permissionVariant);
             if (permissionVariant != PermissionVariant.NOTSET) {
                 // Create permission
                 int value = PermissionUiHelper.getPermissionValue(permissionVariant);
-                PermissionUiHelper.createPermissionItem(screenPermissionsDs, roleDs,
-                        target.getPermissionValue(), PermissionType.SCREEN, value);
+                PermissionUiHelper.createPermissionItem(specificPermissionsDs, roleDs,
+                        target.getPermissionValue(), PermissionType.SPECIFIC, value);
             } else {
                 // Remove permission
                 Permission permission = null;
-                for (UUID id : screenPermissionsDs.getItemIds()) {
-                    Permission p = screenPermissionsDs.getItem(id);
+                for (UUID id : specificPermissionsDs.getItemIds()) {
+                    Permission p = specificPermissionsDs.getItem(id);
                     if (ObjectUtils.equals(p.getTarget(), target.getPermissionValue())) {
                         permission = p;
                         break;
                     }
                 }
                 if (permission != null)
-                    screenPermissionsDs.removeItem(permission);
+                    specificPermissionsDs.removeItem(permission);
             }
-            screenPermissionsTree.repaint();
+            specificPermissionsTree.repaint();
         }
     }
 }

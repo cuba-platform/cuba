@@ -22,10 +22,8 @@
     </dsContext>
 
     <#assign width = 200>
-    <#assign widthPPB = 120>
-    <#assign widthPPBMenu = 100>
     <layout expandLayout="true" expand="main">
-        <vbox id="main" spacing="true" expand="permissions-types">
+        <vbox id="main" spacing="true" expand="permissionsTabsheet">
             <hbox spacing="true" margin="true" width="100%" expand="descrBox"
                   stylename="edit-area">
                 <grid spacing="true">
@@ -72,7 +70,7 @@
                 </hbox>
             </hbox>
 
-            <tabsheet id="permissions-types">
+            <tabsheet id="permissionsTabsheet">
                 <tab id="screenPermissionsTab" caption="msg://screen-permissions">
                     <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/screens-permission-tab.xml"
                             id="screensTabFrame"/>
