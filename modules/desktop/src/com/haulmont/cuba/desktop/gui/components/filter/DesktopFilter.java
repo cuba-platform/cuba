@@ -64,7 +64,7 @@ import java.util.regex.Pattern;
 
 /**
  * Generic filter implementation for the desktop-client.
- *
+ * <p/>
  * <p>$Id$</p>
  *
  * @author krivopustov
@@ -115,7 +115,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     public DesktopFilter() {
         persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
         LC topLc = new LC();
-        topLc.insets("0","5","0","5");
+        topLc.insets("0", "5", "0", "5");
         if (LayoutAdapter.isDebug())
             topLc.debug(1000);
 
@@ -146,7 +146,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         };
         noFilter.setName(MessageProvider.getMessage(mainMessagesPack, "filter.noFilter"));
 
-        noFilterWrapper = new ItemWrapper<FilterEntity>(noFilter,noFilter.toString());
+        noFilterWrapper = new ItemWrapper<FilterEntity>(noFilter, noFilter.toString());
 
         select = new DesktopLookupField();
         select.setRequired(true);
@@ -429,8 +429,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     private void recursivelyCreateParamsPanel(
-            boolean focusOnConditions, List<Node<AbstractCondition>> nodes, JComponent parentComponent, int level)
-    {
+            boolean focusOnConditions, List<Node<AbstractCondition>> nodes, JComponent parentComponent, int level) {
         List<Node<AbstractCondition>> visibleConditionNodes = new ArrayList<Node<AbstractCondition>>();
         for (Node<AbstractCondition> node : nodes) {
             AbstractCondition condition = node.getData();
@@ -473,9 +472,9 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                     final ParamEditor paramEditor = new ParamEditor(condition, true);
                     if (focusOnConditions && !focusSet) {
                         focusSet = true;
-                        SwingUtilities.invokeLater(new Runnable(){
+                        SwingUtilities.invokeLater(new Runnable() {
                             @Override
-                            public void run(){
+                            public void run() {
                                 paramEditor.requestFocus();
                             }
                         });
@@ -628,8 +627,16 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         if (datasource instanceof CollectionDatasource.SupportsPaging)
             ((CollectionDatasource.SupportsPaging) datasource).setFirstResult(0);
 
-        datasource.refresh();
+        refreshDatasourse();
         return true;
+    }
+
+    /**
+     * extenders should be able to modify the datasource
+     * before it will be refreshed
+     */
+    protected void refreshDatasourse() {
+        datasource.refresh();
     }
 
     private void applyDatasourceFilter() {
@@ -1092,7 +1099,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             if (changingFilter)
                 return;
 
-            filterEntity = ((ItemWrapper<FilterEntity>)select.getValue()).getItem();
+            filterEntity = ((ItemWrapper<FilterEntity>) select.getValue()).getItem();
             if (filterEntity.equals(noFilter)) {
                 filterEntity = null;
             }
@@ -1204,7 +1211,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     private class MakeDefaultAction extends AbstractAction {
-        public MakeDefaultAction(){
+        public MakeDefaultAction() {
             super("makeDefault");
         }
 
@@ -1412,7 +1419,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         }
     }
 
-    private class MaxResultsField extends JTextField{
+    private class MaxResultsField extends JTextField {
         private Integer value;
         private final int ENTER_CODE = 10;
 

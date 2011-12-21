@@ -9,8 +9,6 @@ package com.haulmont.cuba.desktop.gui.data;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -45,8 +43,7 @@ public class TreeModelAdapter implements TreeModel {
     private boolean autoRefresh;
 
     public TreeModelAdapter(HierarchicalDatasource datasource, CaptionMode captionMode, String captionProperty,
-                            boolean autoRefresh)
-    {
+                            boolean autoRefresh) {
         this.datasource = datasource;
         this.captionMode = captionMode;
         this.captionProperty = captionProperty;

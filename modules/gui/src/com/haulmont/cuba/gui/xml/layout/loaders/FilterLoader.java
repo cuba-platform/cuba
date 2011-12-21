@@ -25,10 +25,16 @@ public class FilterLoader extends ComponentLoader {
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
-            throws InstantiationException, IllegalAccessException
-    {
+            throws InstantiationException, IllegalAccessException {
         final Filter filter = factory.createComponent("filter");
+        initFilter(filter, element);
+        return filter;
+    }
 
+    /**
+     *
+     */
+    protected void initFilter(final Filter filter, final Element element) {
         assignXmlDescriptor(filter, element);
         loadId(filter, element);
         loadVisible(filter, element);
@@ -69,7 +75,5 @@ public class FilterLoader extends ComponentLoader {
                     }
                 }
         );
-
-        return filter;
     }
 }

@@ -310,7 +310,10 @@ public class DesktopLookupField
 
     @Override
     protected void setSelectedItem(Object item) {
+        boolean editable = isEditable();
+        setEditable(true);
         impl.setSelectedItem(item);
+        setEditable(editable);
     }
 
     @Override

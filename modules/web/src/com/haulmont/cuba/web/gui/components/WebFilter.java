@@ -112,6 +112,8 @@ public class WebFilter
     private ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
     private String defaultFilterCaption;
 
+    protected HorizontalLayout topLayout = null;
+
     public WebFilter() {
         persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
         component = new VerticalActionsLayout();
@@ -142,7 +144,7 @@ public class WebFilter
 
         foldersPane = App.getInstance().getAppWindow().getFoldersPane();
 
-        HorizontalLayout topLayout = new HorizontalLayout();
+        topLayout = new HorizontalLayout();
         topLayout.setSpacing(true);
 
         noFilter = new FilterEntity() {
@@ -324,8 +326,16 @@ public class WebFilter
         if (datasource instanceof CollectionDatasource.SupportsPaging)
             ((CollectionDatasource.SupportsPaging) datasource).setFirstResult(0);
 
-        datasource.refresh();
+        refreshDatasourse();
         return true;
+    }
+
+    /**
+     * extenders should be able to modify the datasource
+     * before it will be refreshed
+     */
+    protected void refreshDatasourse() {
+        datasource.refresh();
     }
 
     private void applyDatasourceFilter() {
@@ -411,9 +421,9 @@ public class WebFilter
     }
 
     private ComponentContainer recursivelyCreateParamsLayout(boolean focusOnConditions,
-                                               List<Node<AbstractCondition>> nodes,
-                                               ComponentContainer parentContainer,
-                                               int level) {
+                                                             List<Node<AbstractCondition>> nodes,
+                                                             ComponentContainer parentContainer,
+                                                             int level) {
 
         List<Node<AbstractCondition>> visibleConditionNodes = new ArrayList<Node<AbstractCondition>>();
         for (Node<AbstractCondition> node : nodes) {
