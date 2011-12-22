@@ -143,7 +143,9 @@ public class UserEditor extends AbstractEditor {
     }
 
     private void initCustomFields() {
-        FieldGroup.Field f = fieldGroup.getField("permissionsLookupField");
+        FieldGroup.Field f;
+        /* todo rewrite broken permission lookups
+        f = fieldGroup.getField("permissionsLookupField");
         fieldGroup.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
             public Component generateField(Datasource datasource, Object propertyId) {
                 popupButton = factory.createComponent(PopupButton.NAME);
@@ -155,7 +157,7 @@ public class UserEditor extends AbstractEditor {
 
                 return popupButton;
             }
-        });
+        });*/
 
         f = fieldGroup.getField("passw");
         if (f != null) {
@@ -206,7 +208,8 @@ public class UserEditor extends AbstractEditor {
     }
 
 
-    private void setPermissionsShowAction(ActionsHolder actionsHolder, String actionName, final String lookupAlias, final PermissionType permissionType) {
+    private void setPermissionsShowAction(ActionsHolder actionsHolder, String actionName,
+                                          final String lookupAlias, final PermissionType permissionType) {
         actionsHolder.addAction(new AbstractAction(actionName) {
             public void actionPerform(Component component) {
                 Map<String, Object> params = new HashMap<String, Object>();
