@@ -142,7 +142,7 @@ public class ReportEditor extends AbstractEditor {
         parametersTable.addAction(
                 new CreateAction(parametersTable, WindowManager.OpenType.DIALOG) {
                     @Override
-                    protected Map<String, Object> getInitialValues() {
+                    public Map<String, Object> getInitialValues() {
                         return new HashMap(['position': parametersDs.itemIds.size(), 'report': report])
                     }
                 }
@@ -211,7 +211,7 @@ public class ReportEditor extends AbstractEditor {
         formatsTable.addAction(
                 new CreateAction(formatsTable, WindowManager.OpenType.DIALOG) {
                     @Override
-                    protected Map<String, Object> getInitialValues() {
+                    public Map<String, Object> getInitialValues() {
                         return new HashMap(['report': report])
                     }
                 }
@@ -236,7 +236,7 @@ public class ReportEditor extends AbstractEditor {
         screenTable.addAction(
                 new CreateAction(screenTable) {
                     @Override
-                    protected Map<String, Object> getInitialValues() {
+                    public Map<String, Object> getInitialValues() {
                         return new HashMap(['report': report])
                     }
                 }
@@ -301,7 +301,7 @@ public class ReportEditor extends AbstractEditor {
             }
 
             @Override
-            protected Map<String, Object> getInitialValues() {
+            public Map<String, Object> getInitialValues() {
                 BandDefinition parentDefinition = (BandDefinition) treeDs.getItem()
                 return (Map<String, Object>) [
                         'parentBandDefinition': parentDefinition,
@@ -329,18 +329,18 @@ public class ReportEditor extends AbstractEditor {
         Table templatesTable = getComponent('generalFrame.templatesTable')
         templatesTable.addAction(new CreateAction(templatesTable, OpenType.DIALOG) {
             @Override
-            protected Map<String, Object> getInitialValues() {
+            public Map<String, Object> getInitialValues() {
                 return new HashMap(['report': report])
             }
 
             @Override
-            protected Map<String, Object> getWindowParams() {
+            public Map<String, Object> getWindowParams() {
                 return new HashMap(['deletedContainer': deletedFiles])
             }
         });
         templatesTable.addAction(new EditAction(templatesTable, OpenType.DIALOG) {
             @Override
-            protected Map<String, Object> getWindowParams() {
+            public Map<String, Object> getWindowParams() {
                 return new HashMap(['deletedContainer': deletedFiles])
             }
         });
