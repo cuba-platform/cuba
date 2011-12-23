@@ -351,6 +351,8 @@
     <xs:complexType name="frameAction">
         <xs:attributeGroup ref="requiresId"/>
         <xs:attributeGroup ref="hasCaptionProp"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasVisibility"/>
         <xs:attribute name="icon" type="xs:string" use="optional"/>
         <xs:attribute name="invoke" type="xs:string" use="optional"/>
         <xs:attribute name="shortcut" type="xs:string" use="optional"/>
@@ -359,6 +361,8 @@
     <xs:complexType name="componentAction">
         <xs:attributeGroup ref="requiresId"/>
         <xs:attributeGroup ref="hasCaptionProp"/>
+        <xs:attributeGroup ref="hasEnableProp"/>
+        <xs:attributeGroup ref="hasVisibility"/>
         <xs:attribute name="icon" type="xs:string" use="optional"/>
         <xs:attribute name="invoke" type="xs:string" use="optional"/>
     </xs:complexType>
@@ -600,6 +604,9 @@
 
     <!-- PopupButton -->
     <xs:complexType name="popupButtonComponent">
+        <xs:sequence>
+            <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
+        </xs:sequence>
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasCaption"/>
 
@@ -610,10 +617,6 @@
         <xs:attributeGroup ref="hasAlign"/>
 
         <xs:attribute name="icon" type="xs:string" use="optional"/>
-
-        <xs:sequence>
-            <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
-        </xs:sequence>
 
         <!--<xs:complexContent>-->
             <!--<xs:extension base="buttonComponent">-->
