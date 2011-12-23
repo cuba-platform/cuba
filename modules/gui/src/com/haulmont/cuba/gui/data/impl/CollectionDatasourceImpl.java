@@ -429,8 +429,11 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             final LoadContext context = new LoadContext(metaClass);
 
             LoadContext.Query q = createLoadContextQuery(context, params);
-            if (q == null)
+            if (q == null) {
+                detachListener(data.values());
+                data.clear();
                 return;
+            }
 
             if (sortInfos != null && sortOnDb) {
                 setSortDirection(q);
@@ -450,9 +453,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             try {
                 final Collection<T> entities = dataservice.loadList(context);
 
-                for (Object entity : data.values()) {
-                    detachListener((Instance) entity);
-                }
+                detachListener(data.values());
                 data.clear();
 
                 for (T entity : entities) {
@@ -467,6 +468,13 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         sw.stop();
     }
 
+    protected void detachListener(Collection instances) {
+        for (Object obj : instances) {
+            if (obj instanceof Instance)
+                detachListener((Instance) obj);
+        }
+    }
+    
     private void setSortDirection(LoadContext.Query q) {
         boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
         MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
