@@ -49,22 +49,22 @@ public class User extends StandardEntity
     @Column(name = "NAME", length = 100)
     protected String name = "" ;
 
-    @Column(name = "FIRST_NAME", length = 100)
+    @Column(name = "FIRST_NAME", length = 255)
     protected String firstName = "";
 
-    @Column(name = "LAST_NAME", length = 100)
+    @Column(name = "LAST_NAME", length = 255)
     protected String lastName = "";
 
-    @Column(name = "MIDDLE_NAME", length = 100)
+    @Column(name = "MIDDLE_NAME", length = 255)
     protected String middleName = "";
 
-    @Column(name = "POSITION_", length = 100)
+    @Column(name = "POSITION_", length = 255)
     protected String position = "";
 
     @Column(name = "EMAIL", length = 100)
     protected String email = "";
 
-    @Column(name = "LANGUAGE_", length = 10)
+    @Column(name = "LANGUAGE_", length = 20)
     protected String language;
 
     @Column(name = "ACTIVE")
