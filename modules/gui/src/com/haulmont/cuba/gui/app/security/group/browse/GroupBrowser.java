@@ -78,7 +78,14 @@ public class GroupBrowser extends AbstractWindow {
         groupCreateButton.addAction(groupCreateAction);
         groupCreateButton.addAction(groupCopyAction);
 
-        userCreateAction.setInitialValues(Collections.<String, Object>singletonMap("group", tree.getSelected()));
+        users.addAction(
+                new CreateAction(users) {
+                    @Override
+                    public Map<String, Object> getInitialValues() {
+                        return Collections.<String, Object>singletonMap("group", tree.getSelected());
+                    }
+                }
+        );
 
         users.addAction(
                 new EditAction(users) {
