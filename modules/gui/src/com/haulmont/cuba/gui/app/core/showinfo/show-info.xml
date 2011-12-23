@@ -19,7 +19,7 @@
         <table id="infoTable" editable="false">
             <columns>
                 <column id="key" caption="msg://showInfo.name" width="150"/>
-                <column id="keyValue" caption="msg://showInfo.value"/>
+                <column id="keyValue" caption="msg://showInfo.value" width="350"/>
             </columns>
             <rows datasource="paramsDs"/>
         </table>

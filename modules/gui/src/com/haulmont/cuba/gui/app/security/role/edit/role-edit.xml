@@ -87,10 +87,10 @@
                     <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/specific-permission-tab.xml"
                             id="specificTabFrame"/>
                 </tab>
-<!--                <tab id="uiPermissionsTab" caption="msg://ui-permissions" lazy="true">
+                <tab id="uiPermissionsTab" caption="msg://ui-permissions" lazy="true">
                     <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/ui-permission-tab.xml"
                             id="uiTabFrame"/>
-                </tab>-->
+                </tab>
             </tabsheet>
         </vbox>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>

@@ -39,6 +39,7 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
         super(context, dataservice, id, metaClass, viewName);
     }
 
+    @Override
     protected void loadData(Map<String, Object> params) {
         StopWatch sw = new Log4JStopWatch("TDS " + id);
 
@@ -47,14 +48,16 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
         Map<K, Node<T>> targetNodes = new HashMap<K, Node<T>>();
 
         data.clear();
-        for (Node<T> node : tree.toList()) {
-            final T entity = node.getData();
-            final K id = entity.getId();
+        if (tree != null) {
+            for (Node<T> node : tree.toList()) {
+                final T entity = node.getData();
+                final K id = entity.getId();
 
-            data.put(id, entity);
-            attachListener(entity);
+                data.put(id, entity);
+                attachListener(entity);
 
-            targetNodes.put(id, node);
+                targetNodes.put(id, node);
+            }
         }
 
         this.nodes = targetNodes;
@@ -64,14 +67,17 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
 
     protected abstract Tree<T> loadTree(Map<String, Object> params);
 
+    @Override
     public String getHierarchyPropertyName() {
         return null;
     }
 
+    @Override
     public void setHierarchyPropertyName(String parentPropertyName) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Collection<K> getRootItemIds() {
         if (State.NOT_INITIALIZED.equals(state)) {
             return Collections.emptyList();
@@ -86,11 +92,13 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
         }
     }
 
+    @Override
      public K getParent(K itemId) {
         final Node<T> node = nodes.get(itemId);
         return node == null ? null : node.getParent() == null ? null : node.getParent().getData().getId();
     }
 
+    @Override
     public Collection<K> getChildren(K itemId) {
         final Node<T> node = nodes.get(itemId);
         if (node == null)
@@ -107,6 +115,7 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
         }
     }
 
+    @Override
     public boolean isRoot(K itemId) {
         final Node<T> node = nodes.get(itemId);
 
@@ -119,11 +128,13 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
         return false;
     }
 
+    @Override
     public boolean hasChildren(K itemId) {
         final Node<T> node = nodes.get(itemId);
         return node != null && !node.getChildren().isEmpty();
     }
 
+    @Override
     public boolean canHasChildren(K itemId) {
         return true;
     }

@@ -61,25 +61,6 @@ public class SpecificPermissionsFrame extends AbstractFrame {
 
         specificPermissionsTree.setStyleProvider(new BasicPermissionTreeStyleProvider());
 
-/*        specificPermissionsTree.addAction(new AbstractAction("actions.Allow") {
-            @Override
-            public void actionPerform(Component component) {
-                markItemPermission(PermissionVariant.ALLOWED);
-            }
-        });
-        specificPermissionsTree.addAction(new AbstractAction("actions.Disallow") {
-            @Override
-            public void actionPerform(Component component) {
-                markItemPermission(PermissionVariant.DISALLOWED);
-            }
-        });
-        specificPermissionsTree.addAction(new AbstractAction("actions.DropRule") {
-            @Override
-            public void actionPerform(Component component) {
-                markItemPermission(PermissionVariant.NOTSET);
-            }
-        });*/
-
         specificPermissionsTreeDs.addListener(new CollectionDsListenerAdapter<BasicPermissionTarget>() {
             @Override
             public void itemChanged(Datasource<BasicPermissionTarget> ds,

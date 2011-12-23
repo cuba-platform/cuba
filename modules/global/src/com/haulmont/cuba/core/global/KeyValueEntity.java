@@ -8,6 +8,7 @@ package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 
 import java.io.Serializable;
@@ -18,6 +19,7 @@ import java.io.Serializable;
  *
  * @author artamonov
  */
+@NamePattern("%s|keyValue")
 @MetaClass(name = "core$KeyValueItem")
 public class KeyValueEntity extends AbstractNotPersistentEntity implements Serializable {
 

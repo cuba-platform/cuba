@@ -39,7 +39,10 @@ public class UiPermissionTarget extends AbstractInstance
     private UiPermissionVariant permissionVariant = UiPermissionVariant.NOTSET;
 
     @MetaProperty(mandatory = true)
-    private String componentType;
+    private String screen;
+
+    @MetaProperty(mandatory = true)
+    private String component;
 
     private UUID uuid = UuidProvider.createUuid();
 
@@ -98,12 +101,20 @@ public class UiPermissionTarget extends AbstractInstance
         this.permissionValue = permissionValue;
     }
 
-    public String getComponentType() {
-        return componentType;
+    public String getScreen() {
+        return screen;
     }
 
-    public void setComponentType(String componentType) {
-        this.componentType = componentType;
+    public void setScreen(String screen) {
+        this.screen = screen;
+    }
+
+    public String getComponent() {
+        return component;
+    }
+
+    public void setComponent(String component) {
+        this.component = component;
     }
 
     public UiPermissionVariant getPermissionVariant() {
