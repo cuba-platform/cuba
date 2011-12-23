@@ -2,11 +2,6 @@
  * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 25.03.11 17:25
- *
- * $Id$
  */
 package com.haulmont.cuba.client.sys;
 
@@ -17,7 +12,19 @@ import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public class ConfigPersisterClientImpl implements ConfigPersister {
+
+    private Map<String, String> cache = new ConcurrentHashMap<String, String>();
+
+    private volatile boolean cacheLoaded;
 
     private final Log log = LogFactory.getLog(ConfigPersisterClientImpl.class);
 
@@ -32,12 +39,26 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
                 value = AppContext.getProperty(name);
                 break;
             case DATABASE:
-                value = getConfigStorage().getConfigProperty(name);
+                loadCache();
+                value = cache.get(name);
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported config source type: " + sourceType);
         }
         return value;
+    }
+
+    private void loadCache() {
+        if (!cacheLoaded) {
+            synchronized (this) {
+                if (!cacheLoaded) {
+                    Map<String, String> properties = getConfigStorage().getDbProperties();
+                    cache.clear();
+                    cache.putAll(properties);
+                    cacheLoaded = true;
+                }
+            }
+        }
     }
 
     public void setProperty(SourceType sourceType, String name, String value) {
@@ -50,7 +71,8 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
                 AppContext.setProperty(name, value);
                 break;
             case DATABASE:
-                getConfigStorage().setConfigProperty(name, value);
+                cache.put(name, value);
+                getConfigStorage().setDbProperty(name, value);
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported config source type: " + sourceType);
@@ -58,6 +80,6 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
     }
 
     private ConfigStorageService getConfigStorage() {
-        return (ConfigStorageService) AppContext.getApplicationContext().getBean(ConfigStorageService.NAME);
+        return (ConfigStorageService) AppContext.getBean(ConfigStorageService.NAME);
     }
 }

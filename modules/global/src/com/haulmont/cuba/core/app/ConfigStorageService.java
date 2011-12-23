@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.core.app;
 
+import java.util.Map;
+
 /**
  * <p>$Id$</p>
  *
@@ -15,7 +17,9 @@ public interface ConfigStorageService {
 
     String NAME = "cuba_ConfigStorageService";
 
-    String getConfigProperty(String name);
+    Map<String, String> getDbProperties();
 
-    void setConfigProperty(String name, String value);
+    String getDbProperty(String name);
+
+    void setDbProperty(String name, String value);
 }

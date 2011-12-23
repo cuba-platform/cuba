@@ -7,12 +7,10 @@
 package com.haulmont.cuba.core.config;
 
 /**
- * The ancestor of all configuration interfaces. Defines common methods
- * inherited by all configuration interfaces.
+ * The ancestor of all configuration interfaces.
  *
  * @author Merlin Hughes
  * @version 0.1, 2007/04/15
  */
-public interface Config
-{
+public interface Config {
 }

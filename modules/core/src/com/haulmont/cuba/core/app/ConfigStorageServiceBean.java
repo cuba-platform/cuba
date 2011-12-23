@@ -9,6 +9,7 @@ package com.haulmont.cuba.core.app;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 /**
  * <p>$Id$</p>
@@ -22,12 +23,17 @@ public class ConfigStorageServiceBean implements ConfigStorageService {
     private ConfigStorageAPI api;
 
     @Override
-    public String getConfigProperty(String name) {
-        return api.getConfigProperty(name);
+    public Map<String, String> getDbProperties() {
+        return api.getDbProperties();
     }
 
     @Override
-    public void setConfigProperty(String name, String value) {
-        api.setConfigProperty(name, value);
+    public String getDbProperty(String name) {
+        return api.getDbProperty(name);
+    }
+
+    @Override
+    public void setDbProperty(String name, String value) {
+        api.setDbProperty(name, value);
     }
 }

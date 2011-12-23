@@ -8,6 +8,7 @@ package com.haulmont.cuba.core.app.scheduling;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.ClusterListener;
+import com.haulmont.cuba.core.app.ClusterListenerAdapter;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.SchedulingService;
 import com.haulmont.cuba.core.entity.ScheduledTask;
@@ -44,19 +45,10 @@ public class SchedulingServiceBean implements SchedulingService {
     @Inject
     public void setClusterManager(ClusterManagerAPI clusterManager) {
         this.clusterManager = clusterManager;
-        clusterManager.addListener(SetSchedulingActiveMsg.class, new ClusterListener<SetSchedulingActiveMsg>() {
+        clusterManager.addListener(SetSchedulingActiveMsg.class, new ClusterListenerAdapter<SetSchedulingActiveMsg>() {
             @Override
             public void receive(SetSchedulingActiveMsg message) {
                 scheduling.setActive(message.active);
-            }
-
-            @Override
-            public byte[] getState() {
-                return new byte[0];
-            }
-
-            @Override
-            public void setState(byte[] state) {
             }
         });
     }

@@ -9,7 +9,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.cuba.core.config.Config;
 
 /**
- * Central interface to provide specific config interfaces
+ * Central interface of the configuration parameters framework.
  *
  * <p>$Id$</p>
  *
@@ -20,9 +20,9 @@ public interface Configuration {
     String NAME = "cuba_Configuration";
 
     /**
-     * Get reference to a configuration interface implementation.
-     * @param configInterface class of configuration interface
-     * @return the interface implementation which can be used to get/set parameters
+     * Get a configuration parameters interface implementation.
+     * @param configInterface   class of configuration interface
+     * @return                  an instance to work with parameters
      */
     <T extends Config> T getConfig(Class<T> configInterface);
 }

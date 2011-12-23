@@ -1,22 +1,21 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 12.01.2009 17:15:23
- *
- * $Id$
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.app.ConfigStorageAPI;
 import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.SourceType;
-import com.haulmont.cuba.core.Locator;
-import com.haulmont.cuba.core.app.ConfigStorageAPI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public class ConfigPersisterImpl implements ConfigPersister
 {
     private final Log log = LogFactory.getLog(ConfigPersisterImpl.class);
@@ -32,7 +31,7 @@ public class ConfigPersisterImpl implements ConfigPersister
                 value = AppContext.getProperty(name);
                 break;
             case DATABASE:
-                value = getConfigStorageAPI().getConfigProperty(name);
+                value = getConfigStorageAPI().getDbProperty(name);
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported config source type: " + sourceType);
@@ -50,7 +49,7 @@ public class ConfigPersisterImpl implements ConfigPersister
                 AppContext.setProperty(name, value);
                 break;
             case DATABASE:
-                getConfigStorageAPI().setConfigProperty(name, value);
+                getConfigStorageAPI().setDbProperty(name, value);
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported config source type: " + sourceType);
@@ -58,7 +57,6 @@ public class ConfigPersisterImpl implements ConfigPersister
     }
 
     private ConfigStorageAPI getConfigStorageAPI() {
-        ConfigStorageAPI mbean = Locator.lookup(ConfigStorageAPI.NAME);
-        return mbean;
+        return AppContext.getBean(ConfigStorageAPI.NAME);
     }
 }

@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.web.jmx;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Scripting;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,15 +27,18 @@ public class Caching implements CachingMBean {
     @Inject
     private Scripting scripting;
 
+    @Inject
+    private Messages messages;
+
     @Override
     public void clearGroovyCache() {
         scripting.clearCache();
-        log.info("Cleared scripting provider cache");
+        log.info("Scripting provider cache has been cleared");
     }
 
     @Override
     public void clearMessagesCache() {
-        MessageProvider.clearCache();
-        log.info("Cleared messages cache");
+        messages.clearCache();
+        log.info("Messages cache has been cleared");
     }
 }

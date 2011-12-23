@@ -25,7 +25,7 @@ public class ConfigProviderTest extends CubaTestCase
     }
 
     public void test() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = PersistenceProvider.createTransaction();
         try {
             TestConfig config = ConfigProvider.getConfig(TestConfig.class);
 
@@ -123,7 +123,7 @@ public class ConfigProviderTest extends CubaTestCase
     }
 
     private void cleanup() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = PersistenceProvider.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             Query query = em.createQuery("select c from core$Config c where c.name like ?1");

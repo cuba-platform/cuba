@@ -1,33 +1,28 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 13.01.2009 17:59:42
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
 /**
- * Management interface of the {@link ConfigStorageService} MBean.<br>
+ * {@link ConfigStorage} JMX interface.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
-public interface ConfigStorageMBean
-{
-    String OBJECT_NAME = "haulmont.cuba:service=ConfigStorage";
+public interface ConfigStorageMBean {
 
     String printDbProperties();
 
     String printDbProperties(String prefix);
 
-    String getDbProperty(String name);
+    String getDbPropertyJmx(String name);
 
-    String setDbProperty(String name, String value);
+    String setDbPropertyJmx(String name, String value);
 
-    String removeDbProperty(String name);
-
-    void clearCache();
+    String removeDbPropertyJmx(String name);
 
     String printAppProperties();
 
@@ -36,4 +31,6 @@ public interface ConfigStorageMBean
     String getAppProperty(String name);
 
     String setAppProperty(String name, String value);
+
+    void clearCache();
 }

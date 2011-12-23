@@ -1,25 +1,28 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 18.05.2009 12:42:42
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
+import java.util.Map;
+
 /**
- * API of {@link ConfigStorageService} MBean.<br>
+ * Supports configuration parameters framework functionality.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
-public interface ConfigStorageAPI
-{
+public interface ConfigStorageAPI {
+
     String NAME = "cuba_ConfigStorage";
 
-    String getConfigProperty(String name);
+    Map<String, String> getDbProperties();
 
-    void setConfigProperty(String name, String value);
+    String getDbProperty(String name);
+
+    void setDbProperty(String name, String value);
 
     void clearCache();
 }

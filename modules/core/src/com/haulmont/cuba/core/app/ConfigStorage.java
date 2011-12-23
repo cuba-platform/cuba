@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 13.01.2009 18:02:20
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
@@ -20,65 +15,74 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.io.Serializable;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * ConfigStorage MBean implementation.
- * <p>
- * This MBean is intended to support configuration parameters functionality.
- * It works with database and caches parameters.
+ * Supports configuration parameters framework functionality.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
 @ManagedBean(ConfigStorageAPI.NAME)
-public class ConfigStorage extends ManagementBean implements ConfigStorageMBean, ConfigStorageAPI
-{
+public class ConfigStorage extends ManagementBean implements ConfigStorageMBean, ConfigStorageAPI {
+
     @Inject
     private Persistence persistence;
 
-    private Log log = LogFactory.getLog(ConfigStorageService.class);
+    private ClusterManagerAPI clusterManager;
 
     private Map<String, String> cache = new ConcurrentHashMap<String, String>();
+    
+    private volatile boolean cacheLoaded;
 
-    private String nullValue = new String();
-
+    private static class InvalidateCacheMsg implements Serializable {
+        private static final long serialVersionUID = -3116358584797500962L;
+    }
+    
+    @Inject
+    public void setClusterManager(ClusterManagerAPI clusterManager) {
+        this.clusterManager = clusterManager;
+        clusterManager.addListener(InvalidateCacheMsg.class, new ClusterListenerAdapter<InvalidateCacheMsg>() {
+            @Override
+            public void receive(InvalidateCacheMsg message) {
+                internalClearCache();
+            }
+        });
+    }
+    
+    @Override
     public String printDbProperties() {
         return printDbProperties(null);
     }
 
+    @Override
     public String printDbProperties(String prefix) {
-        Transaction tx = persistence.createTransaction();
         try {
             login();
+            loadCache();
             StringBuilder sb = new StringBuilder();
 
-            EntityManager em = persistence.getEntityManager();
-            String s = String.format("select c from core$Config c %s",
-                    (prefix == null ? "" : "where c.name like ?1"));
-            Query query = em.createQuery(s);
-            if (prefix != null) {
-                query.setParameter(1, prefix + "%");
+            for (Map.Entry<String, String> entry : cache.entrySet()) {
+                if (prefix == null || entry.getKey().startsWith(prefix)) {
+                    sb.append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
+                }
             }
-            List<Config> list = query.getResultList();
-            for (Config config : list) {
-                sb.append(config.getName()).append("=").append(config.getValue()).append("\n");
-            }
-            tx.commit();
             return sb.toString();
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
         } finally {
-            tx.end();
             logout();
         }
     }
 
-    public String getDbProperty(String name) {
+    @Override
+    public String getDbPropertyJmx(String name) {
         try {
             login();
-            String value = getConfigProperty(name);
+            String value = getDbProperty(name);
             return name + "=" + value;
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
@@ -87,10 +91,11 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
         }
     }
 
-    public String setDbProperty(String name, String value) {
+    @Override
+    public String setDbPropertyJmx(String name, String value) {
         try {
             login();
-            setConfigProperty(name, value);
+            setDbProperty(name, value);
             return "Property " + name + " set to " + value;
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
@@ -99,7 +104,8 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
         }
     }
 
-    public String removeDbProperty(String name) {
+    @Override
+    public String removeDbPropertyJmx(String name) {
         Transaction tx = persistence.createTransaction();
         try {
             login();
@@ -108,7 +114,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
             query.setParameter(1, name);
             query.executeUpdate();
             tx.commit();
-            cache.remove(name);
+            clearCache();
             return "Property " + name + " removed";
         } catch (Exception e) {
             return ExceptionUtils.getStackTrace(e);
@@ -118,14 +124,23 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
         }
     }
 
+    @Override
     public void clearCache() {
-        cache.clear();
+        internalClearCache();
+        clusterManager.send(new InvalidateCacheMsg());
     }
 
+    private void internalClearCache() {
+        cache.clear();
+        cacheLoaded = false;
+    }
+
+    @Override
     public String printAppProperties() {
         return printAppProperties(null);
     }
 
+    @Override
     public String printAppProperties(String prefix) {
         List<String> list = new ArrayList<String>();
         for (String name : AppContext.getPropertyNames()) {
@@ -137,44 +152,55 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
         return new StrBuilder().appendWithSeparators(list, "\n").toString();
     }
 
+    @Override
     public String getAppProperty(String name) {
         return name + "=" + AppContext.getProperty(name);
     }
 
+    @Override
     public String setAppProperty(String name, String value) {
         AppContext.setProperty(name, value);
         return "Property " + name + " set to " + value;
     }
 
-    public String getConfigProperty(String name) {
-        String value = cache.get(name);
-        if (value == nullValue)
-            return null;
-        else if (value != null)
-            return value;
-
-        Transaction tx = persistence.createTransaction();
-        try {
-            Config instance = getConfigInstance(name);
-            if (instance == null) {
-                value = null;
-            } else {
-                value = instance.getValue();
-                if (value == null)
-                    throw new IllegalStateException("Config property '" + name + "' value is null");
-            }
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-        if (value != null)
-            cache.put(name, value);
-        else
-            cache.put(name, nullValue);
-        return value;
+    @Override
+    public Map<String, String> getDbProperties() {
+        loadCache();
+        return new HashMap<String, String>(cache);
     }
 
-    public void setConfigProperty(String name, String value) {
+    @Override
+    public String getDbProperty(String name) {
+        loadCache();
+        return cache.get(name);
+    }
+
+    private void loadCache() {
+        if (!cacheLoaded) {
+            synchronized (this) {
+                if (!cacheLoaded) {
+                    Transaction tx = persistence.createTransaction();
+                    try {
+                        EntityManager em = persistence.getEntityManager();
+                        String s = "select c from core$Config c";
+                        Query query = em.createQuery(s);
+                        List<Config> list = query.getResultList();
+                        cache.clear();
+                        for (Config config : list) {
+                            cache.put(config.getName(), config.getValue());
+                        }
+                        tx.commit();
+                    } finally {
+                        tx.end();
+                    }
+                    cacheLoaded = true;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setDbProperty(String name, String value) {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
@@ -196,10 +222,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
         } finally {
             tx.end();
         }
-        if (value != null)
-            cache.put(name, value);
-        else
-            cache.remove(name);
+        clearCache();
     }
 
     private Config getConfigInstance(String name) {
