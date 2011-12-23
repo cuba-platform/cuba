@@ -10,7 +10,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.EntityLifecycleListener;
 import com.haulmont.cuba.security.global.UserSession;
@@ -135,7 +135,7 @@ public class PersistenceImpl implements Persistence {
     }
 
     @Override
-    public Set<String> getDirtyFields(BaseEntity entity) {
+    public Set<String> getDirtyFields(Entity entity) {
         if (!(entity instanceof PersistenceCapable))
             return Collections.emptySet();
 
@@ -145,7 +145,7 @@ public class PersistenceImpl implements Persistence {
 
         Set<String> set = new HashSet<String>();
         BitSet dirtySet = stateManager.getDirty();
-        for (int i = 0; i < dirtySet.size()-1; i++) {
+        for (int i = 0; i < dirtySet.size() - 1; i++) {
             if (dirtySet.get(i)) {
                 FieldMetaData field = stateManager.getMetaData().getField(i);
                 set.add(field.getName());
