@@ -16,6 +16,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.chile.core.model.Session;
+import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import org.apache.commons.io.IOUtils;
@@ -70,15 +71,16 @@ public class ViewRepository
     }
 
     private View deployDefaultView(MetaClass metaClass, String name) {
-        View view = new View(metaClass.getJavaClass(), name, false);
+        Class<? extends BaseEntity> javaClass = metaClass.getJavaClass();
+        View view = new View(javaClass, name, false);
         if (View.LOCAL.equals(name)) {
             for (MetaProperty property : metaClass.getProperties()) {
-                if (!property.getRange().isClass()) {
+                if (!property.getRange().isClass() && !MetadataHelper.isSystem(property)) {
                     view.addProperty(property.getName());
                 }
             }
         } else if (View.MINIMAL.equals(name)) {
-            NamePattern annotation = (NamePattern) metaClass.getJavaClass().getAnnotation(NamePattern.class);
+            NamePattern annotation = javaClass.getAnnotation(NamePattern.class);
             if (annotation != null) {
                 String pattern = annotation.value();
                 int pos = pattern.indexOf("|");
@@ -178,15 +180,20 @@ public class ViewRepository
         if (v != null && !overwrite)
             return v;
 
+        String systemProperties = viewElem.attributeValue("systemProperties");
+
         View view;
         String ancestor = viewElem.attributeValue("extends");
         if (ancestor != null) {
             View ancestorView = findView(metaClass, ancestor);
             if (ancestorView == null)
                 throw new IllegalStateException("No ancestor view found: " + ancestor);
-            view = new View(ancestorView, viewName);
+
+            boolean includeSystemProperties = systemProperties == null ?
+                    ancestorView.isIncludeSystemProperties() : Boolean.valueOf(systemProperties);
+            view = new View(ancestorView, viewName, includeSystemProperties);
         } else {
-            view = new View(metaClass.getJavaClass(), viewName);
+            view = new View(metaClass.getJavaClass(), viewName, Boolean.valueOf(systemProperties));
         }
         loadView(rootElem, viewElem, view);
         storeView(metaClass, view);

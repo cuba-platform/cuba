@@ -15,8 +15,10 @@ import java.util.Date;
 /**
  * Interface implemented by entities supporting update information saving
  */
-public interface Updatable
-{
+public interface Updatable {
+
+    String[] PROPERTIES = {"updateTs", "updatedBy"};
+
     Date getUpdateTs();
 
     void setUpdateTs(Date updateTs);

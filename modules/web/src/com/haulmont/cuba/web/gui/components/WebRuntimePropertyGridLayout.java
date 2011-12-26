@@ -214,7 +214,7 @@ public class WebRuntimePropertyGridLayout extends WebGridLayout implements Runti
 
     protected View createAttributesView() {
         String inversePropertyName = getInversePropertyName(attributeValueMetaClass, attributeMetaClass);
-        return new View(MetadataProvider.getViewRepository().getView(attributeValueMetaClass.getJavaClass(), View.LOCAL), "attributesView")
+        return new View(MetadataProvider.getViewRepository().getView(attributeValueMetaClass.getJavaClass(), View.LOCAL), "attributesView", false)
                 .addProperty(inversePropertyName, MetadataProvider.getViewRepository().getView(attributeMetaClass.getJavaClass(), View.LOCAL));
     }
 

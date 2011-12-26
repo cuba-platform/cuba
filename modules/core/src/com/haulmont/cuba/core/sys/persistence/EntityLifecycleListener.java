@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.core.sys.persistence;
 
-import com.haulmont.cuba.core.PersistenceProvider;
+import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.app.FtsSender;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.FtsChangeType;
@@ -38,6 +38,9 @@ import java.util.Date;
 public class EntityLifecycleListener extends AbstractLifecycleListener
 {
     private static Log log = LogFactory.getLog(EntityLifecycleListener.class);
+
+    @Inject
+    private Persistence persistence;
 
     @Inject
     private EntityLogAPI entityLog;
@@ -131,7 +134,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
             return false;
         }
         else {
-            return PersistenceProvider.getDirtyFields((BaseEntity) dd).contains("deleteTs");
+            return persistence.getDirtyFields((BaseEntity) dd).contains("deleteTs");
         }
     }
 

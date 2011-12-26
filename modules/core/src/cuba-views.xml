@@ -35,8 +35,8 @@
         </property>
     </view>
 
-    <view entity="sec$User" name="user.browse" extends="_local">
-        <property name="group" view="_local"/>
+    <view entity="sec$User" name="user.browse" extends="_local" systemProperties="true">
+        <property name="group" view="_minimal"/>
     </view>
 
     <view entity="sec$User" name="user.copySettings" extends="_minimal">

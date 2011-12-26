@@ -15,8 +15,10 @@ import java.util.Date;
 /**
  * Interface implemented by entities supporting soft delete
  */
-public interface SoftDelete extends Updatable
-{
+public interface SoftDelete extends Updatable {
+
+    String[] PROPERTIES = {"deleteTs", "deletedBy"};
+
     Boolean isDeleted();
 
     Date getDeleteTs();

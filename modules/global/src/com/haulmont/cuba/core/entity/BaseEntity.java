@@ -9,17 +9,18 @@
  */
 package com.haulmont.cuba.core.entity;
 
-import java.io.Serializable;
-import java.util.UUID;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Base interface for persistent entities
  * @param <T> identifier type
  */
-public interface BaseEntity<T> extends Entity<T>
-{
+public interface BaseEntity<T> extends Entity<T> {
+
     int LOGIN_FIELD_LEN = 50;
+    
+    String[] PROPERTIES = {"createTs", "createdBy"};
 
     UUID getUuid();
 

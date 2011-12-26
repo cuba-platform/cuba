@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 19.12.2008 10:40:35
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
@@ -18,13 +13,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * View is used to declare a graph of objects which must be retrieved from the database.<br>
+ * Class to declare a graph of objects that must be retrieved from the database.
+ * <p>
  * A view can be constructed in Java code or defined in XML and deployed
- * to the {@link com.haulmont.cuba.core.global.ViewRepository} for multiple usage.
+ * to the {@link com.haulmont.cuba.core.global.ViewRepository} for repeated usage.
+ * </p>
+ * There are the following predefined view types:
+ * <ul>
+ * <li>{@link #LOCAL}</li>
+ * <li>{@link #MINIMAL}</li>
+ * </ul>
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
  */
-public class View implements Serializable
-{
+public class View implements Serializable {
+
+    /**
+     * Includes all local non-system properties.
+     */
     public static final String LOCAL = "_local";
+
+    /**
+     * Includes only properties contained in {@link com.haulmont.chile.core.annotations.NamePattern}.
+     */
     public static final String MINIMAL = "_minimal";
 
     private static final long serialVersionUID = 4313784222934349594L;
@@ -49,10 +62,10 @@ public class View implements Serializable
         this(entityClass, name, true);
     }
 
-    public View(View src, String name) {
+    public View(View src, String name, boolean includeSystemProperties) {
         this.entityClass = src.entityClass;
         this.name = name;
-        this.includeSystemProperties = src.includeSystemProperties;
+        this.includeSystemProperties = includeSystemProperties;
         this.properties.putAll(src.properties);
     }
 

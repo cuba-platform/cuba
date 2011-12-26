@@ -10,19 +10,16 @@
  */
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Instance;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.EntityManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.persistence.FetchPlan;
@@ -41,6 +38,7 @@ public class ViewHelper
 
         if (view != null) {
             fetchPlan.removeFetchGroup(FetchPlan.GROUP_DEFAULT);
+            fetchPlan.setExtendedPathLookup(true);
             processView(view, fetchPlan);
         } else {
             fetchPlan.addFetchGroup(FetchPlan.GROUP_DEFAULT);
@@ -85,55 +83,32 @@ public class ViewHelper
             includeSystemProperties(view, fetchPlan);
         }
 
-        MetaClass metaClass = MetadataProvider.getSession().getClass(view.getEntityClass());
-        if (metaClass == null)
-            throw new RuntimeException("View '" + view + "' definition error: metaClass not found for '"
-                    + view.getEntityClass() + "'");
-
-
         for (ViewProperty property : view.getProperties()) {
             if (property.isLazy())
                 continue;
 
-            MetaProperty metaProperty = metaClass.getProperty(property.getName());
-            if (metaProperty == null)
-                throw new RuntimeException("View '" + view + "' definition error: property '"
-                        + property.getName() + "' not found in entity '" + metaClass + "'");
-
-            Class declaringClass = metaProperty.getDeclaringClass();
-            if (declaringClass != null) {
-                fetchPlan.addField(declaringClass, property.getName());
-                if (property.getView() != null) {
-                    processView(property.getView(), fetchPlan);
-                }
+            fetchPlan.addField(view.getEntityClass(), property.getName());
+            if (property.getView() != null) {
+                processView(property.getView(), fetchPlan);
             }
         }
     }
 
     private static void includeSystemProperties(View view, FetchPlan fetchPlan) {
         Class<? extends BaseEntity> entityClass = view.getEntityClass();
-        MetaClass metaClass = MetadataProvider.getSession().getClass(entityClass);
-
-        Class<?> declaringClass;
         if (BaseEntity.class.isAssignableFrom(entityClass)) {
-            declaringClass = metaClass.getProperty("createTs").getDeclaringClass();
-            if (declaringClass != null) {
-                fetchPlan.addField(declaringClass, "createTs");
-                fetchPlan.addField(declaringClass, "createdBy");
+            for (String property : BaseEntity.PROPERTIES) {
+                fetchPlan.addField(entityClass, property);
             }
         }
         if (Updatable.class.isAssignableFrom(entityClass)) {
-            declaringClass = metaClass.getProperty("updateTs").getDeclaringClass();
-            if (declaringClass != null) {
-                fetchPlan.addField(declaringClass, "updateTs");
-                fetchPlan.addField(declaringClass, "updatedBy");
+            for (String property : Updatable.PROPERTIES) {
+                fetchPlan.addField(entityClass, property);
             }
         }
         if (SoftDelete.class.isAssignableFrom(entityClass)) {
-            declaringClass = metaClass.getProperty("deleteTs").getDeclaringClass();
-            if (declaringClass != null) {
-                fetchPlan.addField(declaringClass, "deleteTs");
-                fetchPlan.addField(declaringClass, "deletedBy");
+            for (String property : SoftDelete.PROPERTIES) {
+                fetchPlan.addField(entityClass, property);
             }
         }
     }

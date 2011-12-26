@@ -11,9 +11,9 @@
 package com.haulmont.cuba.core.global;
 
 import com.haulmont.chile.core.model.*;
-import com.haulmont.cuba.core.entity.BaseLongIdEntity;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
-import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.SoftDelete;
+import com.haulmont.cuba.core.entity.Updatable;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -63,12 +63,20 @@ public abstract class MetadataHelper {
     }
 
     public static boolean isSystem(MetaProperty metaProperty) {
-        final MetaClass metaClass = metaProperty.getDomain();
-        final Class javaClass = metaClass.getJavaClass();
-
-        return BaseUuidEntity.class.equals(javaClass) ||
-                StandardEntity.class.equals(javaClass) ||
-                BaseLongIdEntity.class.equals(javaClass);
+        String name = metaProperty.getName();
+        for (String property : BaseEntity.PROPERTIES) {
+            if (name.equals(property))
+                return true;
+        }
+        for (String property : Updatable.PROPERTIES) {
+            if (name.equals(property))
+                return true;
+        }
+        for (String property : SoftDelete.PROPERTIES) {
+            if (name.equals(property))
+                return true;
+        }
+        return false;
     }
 
     public static boolean isPersistent(MetaPropertyPath metaPropertyPath) {

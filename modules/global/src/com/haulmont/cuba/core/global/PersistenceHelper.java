@@ -38,10 +38,8 @@ public class PersistenceHelper {
     }
 
     public static boolean isDetached(Object entity) {
-        if (entity instanceof PersistenceCapable)
-            return BooleanUtils.isTrue(((PersistenceCapable) entity).pcIsDetached());
-        else
-            return true;
+        return !(entity instanceof PersistenceCapable)
+                || BooleanUtils.isTrue(((PersistenceCapable) entity).pcIsDetached());
     }
 
     public static String getEntityName(Class entityClass) {

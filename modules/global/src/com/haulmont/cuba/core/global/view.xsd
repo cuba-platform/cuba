@@ -24,6 +24,7 @@
         <xs:attribute name="name"/>
         <xs:attribute name="extends"/>
         <xs:attribute name="overwrite" type="xs:boolean"/>
+        <xs:attribute name="systemProperties" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="propertyType">
