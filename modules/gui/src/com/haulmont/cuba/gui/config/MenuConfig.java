@@ -122,6 +122,24 @@ public class MenuConfig implements Serializable
         for (Element element : ((List<Element>) parentElement.elements())) {
             MenuItem menuItem = null;
 
+            MenuItem nextToItem = null;
+            boolean before = true;
+            String nextTo = element.attributeValue("insertBefore");
+            if (StringUtils.isBlank(nextTo)) {
+                before = false;
+                nextTo = element.attributeValue("insertAfter");
+            }
+            if (!StringUtils.isBlank(nextTo)) {
+                for (MenuItem rootItem : rootItems) {
+                    nextToItem = findItem(nextTo, rootItem);
+                    if (nextToItem != null) {
+                        if (nextToItem.getParent() != null)
+                            parentItem = nextToItem.getParent();
+                        break;
+                    }
+                }
+            }
+
             if ("menu".equals(element.getName())) {
                 String id = element.attributeValue("id");
 
@@ -151,12 +169,37 @@ public class MenuConfig implements Serializable
             }
 
             if (parentItem != null) {
-                parentItem.getChildren().add(menuItem);
+                addItem(parentItem.getChildren(), menuItem, nextToItem, before);
             }
             else {
-                rootItems.add(menuItem);
+                addItem(rootItems, menuItem, nextToItem, before);
             }
         }
+    }
+
+    private void addItem(List<MenuItem> items, MenuItem menuItem, MenuItem beforeItem, boolean before) {
+        if (beforeItem == null) {
+            items.add(menuItem);
+        } else {
+            int i = items.indexOf(beforeItem);
+            if (before)
+                items.add(i, menuItem);
+            else
+                items.add(i+1, menuItem);
+        }
+    }
+
+    private MenuItem findItem(String id, MenuItem item) {
+        if (id.equals(item.getId()))
+            return item;
+        else if (!item.getChildren().isEmpty()) {
+            for (MenuItem child : item.getChildren()) {
+                MenuItem menuItem = findItem(id, child);
+                if (menuItem != null)
+                    return menuItem;
+            }
+        }
+        return null;
     }
 
     private void loadShortcut(MenuItem menuItem, Element element) {

@@ -1,40 +1,34 @@
 <menu-config xmlns="http://www.haulmont.com/schema/cuba/gui/menu-config.xsd">
+
     <menu id="administration">
         <item id="sec$User.browse"/>
         <item id="sec$Group.browse"/>
         <item id="sec$Role.browse"/>
-        <item id="sec$UserSessionEntity.browse"/>
+        <item id="-"/>
         <item id="sys$Categories.browse"/>
-        <item id="core$FileDescriptor.browse"/>
-        <item id="core$LockInfo.browse"/>
-        <item id="jmxcontrol$DisplayMbeans"/>
-        <item id="core$Entity.restore"/>
-
-        <item id="sec$User.browse"/>
-        <item id="sec$Group.browse"/>
-        <item id="sec$Role.browse"/>
         <item id="-"/>
         <item id="sec$UserSessionEntity.browse"/>
         <item id="core$LockInfo.browse"/>
         <item id="core$FileDescriptor.browse"/>
-        <item id="core$Entity.restore"/>
-        <item id="jmxcontrol$DisplayMbeans"/>
-        <item id="serverLog"/>
-        <item id="report$Report.browse"/>
-        <item id="report$ReportGroup.browse"/>
-        <item id="sys$Categories.browse"/>
         <item id="sys$SendingMessage.browse"/>
         <item id="core$ScheduledTask.browse"/>
-
+        <item id="core$Entity.restore"/>
+        <item id="-"/>
+        <item id="jmxcontrol$DisplayMbeans"/>
+        <item id="serverLog"/>
     </menu>
+
     <menu id="reports">
         <item id="report$Report.browse"/>
         <item id="report$ReportGroup.browse"/>
         <item id="report$Report.run"/>
     </menu>
+
     <menu id="help">
         <item id="settings"/>
         <item id="feedback"/>
+        <item id="sec$ScreenHistory.browse"/>
         <item id="logWindow"/>
     </menu>
+
 </menu-config>
