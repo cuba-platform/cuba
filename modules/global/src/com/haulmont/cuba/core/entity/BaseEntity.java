@@ -14,13 +14,14 @@ import java.util.UUID;
 
 /**
  * Base interface for persistent entities
+ *
  * @param <T> identifier type
  */
 public interface BaseEntity<T> extends Entity<T> {
 
     int LOGIN_FIELD_LEN = 50;
-    
-    String[] PROPERTIES = {"createTs", "createdBy"};
+
+    String[] PROPERTIES = {"id", "createTs", "createdBy"};
 
     UUID getUuid();
 
