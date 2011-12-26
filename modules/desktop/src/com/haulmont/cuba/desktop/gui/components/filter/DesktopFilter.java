@@ -695,7 +695,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         Window window = ComponentsHelper.getWindow(this);
 
         Collection<ItemWrapper<FilterEntity>> filters = select.getOptionsList();
-        FilterEntity defaultFilter = getDefaultFilter(filters);
+        FilterEntity defaultFilter = getDefaultFilter(filters, window);
         if (defaultFilter != null) {
             defaultFilterEmpty = false;
 
@@ -709,10 +709,11 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                             select.setValue(filterWrapper);
                             updateControls();
                             if (clientConfig.getGenericFilterManualApplyRequired()) {
-                                if (filterWrapper.getItem().getApplyDefault()) {
+                                if (BooleanUtils.isTrue(filterWrapper.getItem().getApplyDefault())) {
                                     apply(true);
                                 }
-                            } else apply(true);
+                            } else
+                                apply(true);
                             if (filterEntity != null)
                                 window.setDescription(getFilterCaption(filterEntity));
                             else
@@ -784,8 +785,18 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         select.setNullOption(noFilterWrapper);
     }
 
-    private FilterEntity getDefaultFilter(Collection<ItemWrapper<FilterEntity>> filterWrappers) {
-        Window window = ComponentsHelper.getWindow(this);
+    private FilterEntity getDefaultFilter(Collection<ItemWrapper<FilterEntity>> filterWrappers, Window window) {
+        // First check if there is parameter named 'filter' containing a filter code to apply
+        Map<String, Object> params = window.getContext().getParams();
+        String code = (String) params.get("filter");
+        if (!StringUtils.isBlank(code)) {
+            for (ItemWrapper<FilterEntity> filterWrapper : filterWrappers) {
+                if (code.equals(filterWrapper.getItem().getCode()))
+                    return filterWrapper.getItem();
+            }
+        }
+
+        // No 'filter' parameter found, load default filter
         SettingsImpl settings = new SettingsImpl(window.getId());
 
         String componentPath = getComponentPath();
@@ -998,6 +1009,19 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             FilterParser parser =
                     new FilterParser(filterEntity.getXml(), getFrame().getMessagesPack(), getId(), datasource);
             conditions = parser.fromXml().getConditions();
+
+            // If there are window parameters named 'filter.<filter_param_name>', assign values to the corresponding
+            // filter params. Together with passing a filter code in 'filter' window parameter it allows to open an
+            // arbitrary filter with parameters regardless of a user defined default filter.
+            Window window = ComponentsHelper.getWindow(this);
+            for (AbstractCondition condition : conditions.toConditionsList()) {
+                if (condition.getParam() != null) {
+                    for (Map.Entry<String, Object> entry : window.getContext().getParams().entrySet()) {
+                        if (entry.getKey().equals("filter." + condition.getParam().getName()))
+                            condition.getParam().parseValue((String) entry.getValue());
+                    }
+                }
+            }
         }
     }
 
