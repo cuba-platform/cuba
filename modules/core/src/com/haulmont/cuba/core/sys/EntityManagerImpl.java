@@ -79,11 +79,12 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     public <T extends Entity> T merge(T entity) {
-        if (PersistenceHelper.isDetached(entity)) {
-            return delegate.merge(entity);
-        } else {
+        // Don't use PersistenceHelper.isDetached here, as we have to merge not-detached instances too.
+        if (entity instanceof PersistenceCapable
+                && BooleanUtils.isFalse(((PersistenceCapable) entity).pcIsDetached()))
             return entity;
-        }
+        else
+            return delegate.merge(entity);
     }
 
     public void remove(Entity entity) {
