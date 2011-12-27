@@ -243,6 +243,10 @@ public abstract class WindowManager implements Serializable {
         } catch (NoSuchMethodException e) {
             // Do nothing
         }
+
+        // apply ui permissions
+        PermissionsApplyHelper.applyUiPermissions(window);
+
         return window;
     }
 
@@ -632,6 +636,10 @@ public abstract class WindowManager implements Serializable {
             } catch (NoSuchMethodException e) {
                 // do nothing
             }
+
+            // apply ui permissions
+            PermissionsApplyHelper.applyUiPermissions(wrappingWindow);
+
             return wrappingWindow;
         } else {
             return window;

@@ -38,6 +38,15 @@ public enum UiPermissionVariant implements EnumClass<Integer> {
         return id;
     }
 
+    public String getColor() {
+        if (this == READ_ONLY)
+            return "blue";
+        else if (this == HIDE)
+            return "red";
+        else
+            return "black";
+    }
+
     UiPermissionVariant(Integer id) {
         this.id = id;
     }

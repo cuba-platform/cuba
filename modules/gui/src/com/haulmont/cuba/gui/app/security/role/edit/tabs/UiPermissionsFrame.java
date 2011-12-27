@@ -39,6 +39,10 @@ import java.util.UUID;
  */
 public class UiPermissionsFrame extends AbstractFrame {
 
+    public interface Companion {
+        void initPermissionsColoredColumns(Table uiPermissionsTable);
+    }
+
     @Inject
     private Datasource<Role> roleDs;
 
@@ -86,6 +90,9 @@ public class UiPermissionsFrame extends AbstractFrame {
         }
         screenFilter.setOptionsMap(screens);
 
+        Companion companion = getCompanion();
+        companion.initPermissionsColoredColumns(uiPermissionsTable);
+
         uiPermissionTargetsDs.addListener(new CollectionDsListenerAdapter<UiPermissionTarget>() {
             @Override
             public void itemChanged(Datasource<UiPermissionTarget> ds, UiPermissionTarget prevItem, UiPermissionTarget item) {
@@ -129,6 +136,8 @@ public class UiPermissionsFrame extends AbstractFrame {
                 UiPermissionVariant permissionVariant = PermissionUiHelper.getCheckBoxVariant(value, activeVariant);
                 UiPermissionTarget target = uiPermissionsTable.getSingleSelected();
                 markItemPermission(permissionVariant, target);
+
+                uiPermissionsTable.repaint();
 
                 itemChanging = false;
             }

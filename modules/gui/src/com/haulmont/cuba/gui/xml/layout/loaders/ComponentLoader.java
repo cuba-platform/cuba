@@ -19,7 +19,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.validators.DateValidator;
 import com.haulmont.cuba.gui.components.validators.DoubleValidator;
@@ -51,6 +50,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         this.security = AppContext.getBean(Security.NAME);
     }
 
+    @Override
     public Context getContext() {
         return context;
     }
@@ -59,18 +59,22 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
         this.context = context;
     }
 
+    @Override
     public Locale getLocale() {
         return locale;
     }
 
+    @Override
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
 
+    @Override
     public String getMessagesPack() {
         return messagesPack;
     }
 
+    @Override
     public void setMessagesPack(String name) {
         this.messagesPack = name;
     }
@@ -138,7 +142,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             MetaClass metaClass = ((DatasourceComponent) component).getDatasource().getMetaClass();
             MetaProperty metaProperty = ((DatasourceComponent) component).getMetaProperty();
 
-            UserSession userSession = UserSessionClient.getUserSession();
+            UserSession userSession = UserSessionProvider.getUserSession();
             if (!userSession.isEntityOpPermitted(metaClass, EntityOp.READ)
                     || !userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.VIEW)) {
                 component.setVisible(false);

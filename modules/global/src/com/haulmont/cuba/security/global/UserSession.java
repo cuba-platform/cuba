@@ -47,15 +47,19 @@ public class UserSession implements Serializable
     protected Map<String, Serializable> attributes;
 
     public static String getScreenPermissionTarget(ClientType clientType, String windowAlias) {
-        return clientType.getId() + ":" + windowAlias;
+        return clientType.getId() + Permission.TARGET_PATH_DELIMETER + windowAlias;
     }
 
     public static String getEntityOpPermissionTarget(MetaClass metaClass, EntityOp operation) {
-        return metaClass.getName() + ":" + operation.getId();
+        return metaClass.getName() + Permission.TARGET_PATH_DELIMETER + operation.getId();
     }
 
     public static String getEntityAttrPermissionTarget(MetaClass metaClass, String attribute) {
-        return metaClass.getName() + ":" + attribute;
+        return metaClass.getName() + Permission.TARGET_PATH_DELIMETER + attribute;
+    }
+
+    public static String getUiComponentPermissionTarget(String screen, String component) {
+        return screen + Permission.TARGET_PATH_DELIMETER + component;
     }
 
     public static String getSpecificPermissionTarget(String name) {
@@ -196,6 +200,11 @@ public class UserSession implements Serializable
      */
     public Integer getPermissionValue(PermissionType type, String target) {
         return permissions[type.ordinal()].get(target);
+    }
+
+    /** Get permissions by type */
+    public Map<String, Integer> getPermissionsByType(PermissionType type) {
+        return Collections.unmodifiableMap(permissions[type.ordinal()]);
     }
 
     /** Check user permission for the screen */

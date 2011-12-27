@@ -8,6 +8,11 @@
         messagesPack="com.haulmont.cuba.gui.app.security.role.edit"
         class="com.haulmont.cuba.gui.app.security.role.edit.tabs.ScreenPermissionsFrame">
 
+    <companions>
+        <web class="com.haulmont.cuba.web.app.ui.security.role.ScreenPermissionsFrameCompanion"/>
+        <desktop class="com.haulmont.cuba.desktop.app.security.role.ScreenPermissionsFrameCompanion"/>
+    </companions>
+
     <dsContext>
         <collectionDatasource id="screenPermissionsDs"
                               class="com.haulmont.cuba.security.entity.Permission"

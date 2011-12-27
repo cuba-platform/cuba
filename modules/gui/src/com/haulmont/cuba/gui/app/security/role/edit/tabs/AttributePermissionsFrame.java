@@ -33,6 +33,10 @@ import java.util.*;
  */
 public class AttributePermissionsFrame extends AbstractFrame {
 
+    public interface Companion {
+        void initPermissionColoredColumn(Table propertyPermissionsTable);
+    }
+
     @Inject
     private Datasource<Role> roleDs;
 
@@ -232,6 +236,10 @@ public class AttributePermissionsFrame extends AbstractFrame {
         attachAllCheckboxListener(allReadOnlyCheck, AttributePermissionVariant.READ_ONLY);
         attachAllCheckboxListener(allHideCheck, AttributePermissionVariant.HIDE);
 
+        // client specific code
+        Companion companion = getCompanion();
+        companion.initPermissionColoredColumn(propertyPermissionsTable);
+
         attributeTargetsDs.addListener(new CollectionDsListenerAdapter<MultiplePermissionTarget>() {
             @Override
             public void itemChanged(Datasource<MultiplePermissionTarget> ds,
@@ -244,10 +252,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
                 selectedTargetCaption.setVisible(item != null);
                 selectedTargetCaption.setValue(item != null ? item.getCaption() : "");
 
+                clearEditGrid();
                 if (item != null)
                     compileEditPane(item);
-                else
-                    clearEditGrid();
             }
         });
 
@@ -296,8 +303,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
     }
 
     private void compileEditPane(MultiplePermissionTarget item) {
-        clearEditGrid();
-
         GridLayout editGrid = uiFactory.createComponent(GridLayout.NAME);
         editGrid.setFrame(this);
         editGrid.setId("editGrid");

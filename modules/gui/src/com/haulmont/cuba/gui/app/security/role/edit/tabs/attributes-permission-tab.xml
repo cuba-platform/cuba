@@ -8,6 +8,11 @@
         messagesPack="com.haulmont.cuba.gui.app.security.role.edit"
         class="com.haulmont.cuba.gui.app.security.role.edit.tabs.AttributePermissionsFrame">
 
+    <companions>
+        <web class="com.haulmont.cuba.web.app.ui.security.role.AttributePermissionsFrameCompanion"/>
+        <desktop class="com.haulmont.cuba.desktop.app.security.role.AttributePermissionsFrameCompanion"/>
+    </companions>
+
     <dsContext>
         <collectionDatasource id="propertyPermissionsDs"
                               class="com.haulmont.cuba.security.entity.Permission"
@@ -55,7 +60,7 @@
                         </vbox>
                     </scrollbox>
 
-                    <hbox width="340">
+                    <hbox width="340" align="MIDDLE_RIGHT">
                         <grid margin="true" width="100%">
                             <columns>
                                 <column flex="0.4"/>

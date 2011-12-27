@@ -34,6 +34,10 @@ import java.util.UUID;
  */
 public class EntityPermissionsFrame extends AbstractFrame {
 
+    public interface Companion {
+        void initPermissionColoredColumns(Table entityPermissionsTable);
+    }
+
     @Inject
     private Datasource<Role> roleDs;
 
@@ -171,6 +175,9 @@ public class EntityPermissionsFrame extends AbstractFrame {
         });
 
         initCheckBoxesControls();
+
+        Companion companion = getCompanion();
+        companion.initPermissionColoredColumns(entityPermissionsTable);
 
         entityTargetsDs.addListener(new CollectionDsListenerAdapter<OperationPermissionTarget>() {
             @Override
@@ -403,6 +410,8 @@ public class EntityPermissionsFrame extends AbstractFrame {
                     allDenyCheck.setValue(permissionVariant == PermissionVariant.DISALLOWED);
                 }
 
+                entityPermissionsTable.repaint();
+
                 itemChanging = false;
             }
         });
@@ -445,6 +454,8 @@ public class EntityPermissionsFrame extends AbstractFrame {
                     allAllowCheck.setValue(isAllowedAll);
                     allDenyCheck.setValue(isDenyAll);
                 }
+
+                entityPermissionsTable.repaint();
 
                 itemChanging = false;
             }

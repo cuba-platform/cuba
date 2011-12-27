@@ -70,7 +70,7 @@ public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImp
             }
         }
 
-        data.clear();
+        clear();
 
         for (MultiplePermissionTarget target : targets) {
             if ((filter == null) || (filter.apply(target)))

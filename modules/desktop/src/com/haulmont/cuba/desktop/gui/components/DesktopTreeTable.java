@@ -15,6 +15,7 @@ import org.jdesktop.swingx.JXTreeTable;
 
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.TreeCellRenderer;
@@ -202,7 +203,16 @@ public class DesktopTreeTable
 
     @Override
     public void packRows() {
-        // not supported on JXTreeTable
+        impl.setRowHeight(DEFAULT_ROW_HEIGHT);
+    }
+
+    @Override
+    public void repaint() {
+        TableCellEditor cellEditor = impl.getCellEditor();
+        if (cellEditor instanceof DesktopTableCellEditor) {
+            ((DesktopTableCellEditor) cellEditor).clearCache();
+            impl.repaint();
+        }
     }
 
     @Override

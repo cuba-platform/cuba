@@ -32,6 +32,10 @@ import java.util.UUID;
  */
 public class ScreenPermissionsFrame extends AbstractFrame {
 
+    public interface Companion {
+        void initPermissionColoredColumns(TreeTable screenPermissionsTree);
+    }
+
     @Inject
     private Datasource<Role> roleDs;
 
@@ -79,6 +83,9 @@ public class ScreenPermissionsFrame extends AbstractFrame {
                 markItemPermission(PermissionVariant.NOTSET);
             }
         });
+
+        Companion companion = getCompanion();
+        companion.initPermissionColoredColumns(screenPermissionsTree);
 
         screenPermissionsTreeDs.addListener(new CollectionDsListenerAdapter<BasicPermissionTarget>() {
             @Override

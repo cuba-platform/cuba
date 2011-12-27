@@ -47,7 +47,7 @@ public class UiPermissionsDatasource extends GroupDatasourceImpl<UiPermissionTar
         if (!data.isEmpty())
             return;
 
-        data.clear();
+        clear();
 
         for (UUID id : permissionDs.getItemIds()) {
             Permission p = permissionDs.getItem(id);
@@ -66,7 +66,7 @@ public class UiPermissionsDatasource extends GroupDatasourceImpl<UiPermissionTar
                     target.setComponent(component);
                     target.setScreen(screen);
 
-                    data.put(target.getId(), target);
+                    includeItem(target);
                 }
             }
         }

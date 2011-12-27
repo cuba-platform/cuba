@@ -58,7 +58,7 @@ import java.util.List;
 public abstract class DesktopAbstractTable<C extends JTable>
         extends DesktopAbstractActionsHolderComponent<C>
         implements Table {
-    private static final int DEFAULT_ROW_HEIGHT = 24;
+    protected static final int DEFAULT_ROW_HEIGHT = 24;
 
     protected MigLayout layout;
     protected JPanel panel;

@@ -42,6 +42,15 @@ public enum PermissionVariant implements EnumClass<Integer> {
         this.id = id;
     }
 
+    public String getColor() {
+        if (this == ALLOWED)
+            return "green";
+        else if (this == DISALLOWED)
+            return "red";
+        else
+            return "black";
+    }
+
     public static PermissionVariant fromId(Integer id) {
         for (PermissionVariant variant : PermissionVariant.values()) {
             if (ObjectUtils.equals(variant.getId(), id)) {

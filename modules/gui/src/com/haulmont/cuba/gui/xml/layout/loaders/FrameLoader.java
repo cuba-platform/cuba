@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ControllerDependencyInjector;
 import com.haulmont.cuba.gui.FrameContext;
+import com.haulmont.cuba.gui.PermissionsApplyHelper;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -251,13 +252,17 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
             this.wrapped = wrapped;
         }
 
+        @Override
         public void execute(Context context, IFrame window) {
             if (wrapped) {
                 try {
                     ReflectionHelper.invokeMethod(this.frame, "init", params);
                 } catch (NoSuchMethodException e) {
                     // do nothing
-                } 
+                }
+
+                // apply ui permissions
+                PermissionsApplyHelper.applyUiPermissions(window);
 
                 FrameLoader.this.context.executePostInitTasks();
             }

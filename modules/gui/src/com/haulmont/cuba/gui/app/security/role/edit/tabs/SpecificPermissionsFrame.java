@@ -32,6 +32,10 @@ import java.util.UUID;
  */
 public class SpecificPermissionsFrame extends AbstractFrame {
 
+    public interface Companion {
+        void initPermissionColoredColumns(TreeTable specificPermissionsTree);
+    }
+
     @Inject
     private Datasource<Role> roleDs;
 
@@ -60,6 +64,9 @@ public class SpecificPermissionsFrame extends AbstractFrame {
         super.init(params);
 
         specificPermissionsTree.setStyleProvider(new BasicPermissionTreeStyleProvider());
+
+        Companion companion = getCompanion();
+        companion.initPermissionColoredColumns(specificPermissionsTree);
 
         specificPermissionsTreeDs.addListener(new CollectionDsListenerAdapter<BasicPermissionTarget>() {
             @Override

@@ -43,6 +43,17 @@ public enum AttributePermissionVariant implements EnumClass<Integer> {
         return id;
     }
 
+    public String getColor() {
+        if (this == HIDE)
+            return "red";
+        else if (this == READ_ONLY)
+            return "blue";
+        else if (this == MODIFY)
+            return "green";
+        else
+            return "";
+    }
+
     AttributePermissionVariant(Integer id) {
         this.id = id;
     }
