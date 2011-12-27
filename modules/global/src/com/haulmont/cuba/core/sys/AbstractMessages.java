@@ -136,6 +136,10 @@ public abstract class AbstractMessages implements Messages {
             }
             if (msg == null) {
                 msg = searchRemotely(pack, key, locale);
+                if (msg != null) {
+                    String cacheKey = makeCacheKey(pack, key, locale);
+                    strCache.put(cacheKey, msg);
+                }
             }
             if (msg != null)
                 return msg;
