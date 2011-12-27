@@ -13,6 +13,7 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.entity.CategoryAttribute;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopDateField;
@@ -373,6 +374,14 @@ public class Param extends AbstractParam<JComponent> {
                         new CollectionDsListenerAdapter() {
                             @Override
                             public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                                Entity currentValue = lookup.getValue();
+                                if (currentValue == null)
+                                    return;
+                                // If the selected entity not in options list, reset it
+                                for (Object itemId : ds.getItemIds()) {
+                                    if (itemId.equals(currentValue.getId()))
+                                        return;
+                                }
                                 lookup.setValue(null);
                             }
                         }
