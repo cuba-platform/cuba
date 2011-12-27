@@ -24,13 +24,21 @@ public class NameBuilderListener extends DsListenerAdapter {
 
     private Window window;
     private FieldGroup fieldGroup;
-
+    private String pattern;
 
     public NameBuilderListener(Window window) {
         if (window == null)
             throw new IllegalArgumentException("window is null");
 
         this.window = window;
+    }
+
+    public NameBuilderListener(Window window, String pattern) {
+        if (window == null)
+            throw new IllegalArgumentException("window is null");
+
+        this.window = window;
+        this.pattern = pattern;
     }
 
     public NameBuilderListener(FieldGroup fieldGroup) {
@@ -50,10 +58,12 @@ public class NameBuilderListener extends DsListenerAdapter {
         String middleName = getFieldValue("middleName");
 
         String displayedName;
-        try{
-            String pattern = AppContext.getProperty("cuba.user.fullNamePattern");
-            if (StringUtils.isBlank(pattern))
-                pattern = "{LL| }{F|. }{M|. }";
+        try {
+            if (this.pattern == null) {
+                pattern = AppContext.getProperty("cuba.user.fullNamePattern");
+                if (StringUtils.isBlank(pattern))
+                    pattern = "{LL| }{F|. }{M|. }";
+            }
 
             displayedName = UserUtils.formatName(pattern, firstName, lastName, middleName);
         } catch (ParseException pe) {
