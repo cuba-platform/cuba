@@ -795,9 +795,9 @@ public class WebFilter
     }
 
     private FilterEntity getDefaultFilter(Collection<FilterEntity> filters, Window window) {
-        // First check if there is parameter named 'filter' containing a filter code to apply
+        // First check if there is parameter with name equal to this filter component id, containing a filter code to apply
         Map<String, Object> params = window.getContext().getParams();
-        String code = (String) params.get("filter");
+        String code = (String) params.get(getId());
         if (!StringUtils.isBlank(code)) {
             for (FilterEntity filter : filters) {
                 if (code.equals(filter.getCode()))
@@ -1041,14 +1041,14 @@ public class WebFilter
                     new FilterParser(filterEntity.getXml(), getFrame().getMessagesPack(), getId(), datasource);
             conditions = parser.fromXml().getConditions();
 
-            // If there are window parameters named 'filter.<filter_param_name>', assign values to the corresponding
+            // If there are window parameters named as filter parameters, assign values to the corresponding
             // filter params. Together with passing a filter code in 'filter' window parameter it allows to open an
             // arbitrary filter with parameters regardless of a user defined default filter.
             Window window = ComponentsHelper.getWindow(this);
             for (AbstractCondition condition : conditions.toConditionsList()) {
                 if (condition.getParam() != null) {
                     for (Map.Entry<String, Object> entry : window.getContext().getParams().entrySet()) {
-                        if (entry.getKey().equals("filter." + condition.getParam().getName()))
+                        if (entry.getKey().equals(condition.getParam().getName()))
                             condition.getParam().parseValue((String) entry.getValue());
                     }
                 }
