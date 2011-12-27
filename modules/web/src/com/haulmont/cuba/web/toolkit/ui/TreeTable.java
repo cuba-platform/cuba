@@ -24,6 +24,12 @@ import java.util.*;
 @SuppressWarnings("serial")
 @ClientWidget(IScrollTreeTable.class)
 public class TreeTable extends Table implements Container.Hierarchical, TreeTableContainer {
+
+    /**
+     * List of registered {@link TreeWillExpandListener} listeners
+     */
+    private List<TreeWillExpandListener> treeWillExpandListeners;
+
     public TreeTable() {
         setRowHeaderMode(ROW_HEADER_MODE_HIDDEN);
     }
@@ -441,7 +447,7 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
         final boolean[] iscomponent = new boolean[visibleColumns.size()];
         int iscomponentIndex = 0;
         for (final Iterator it = visibleColumns.iterator(); it.hasNext()
-                && iscomponentIndex < iscomponent.length;) {
+                && iscomponentIndex < iscomponent.length; ) {
             final Object columnId = it.next();
             if (columnGenerators.containsKey(columnId)) {
                 iscomponent[iscomponentIndex++] = true;
@@ -561,7 +567,7 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
             target.addVariable(this, "sortascending", isSortAscending());
         }
 
-        if (isEnableCancelSorting()){
+        if (isEnableCancelSorting()) {
             target.addVariable(this, "enableCancelSorting", true);
         }
 
@@ -595,7 +601,7 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
             final String[] colorder = new String[visibleColumns.size()];
             int i = 0;
             for (final Iterator it = visibleColumns.iterator(); it.hasNext()
-                    && i < colorder.length;) {
+                    && i < colorder.length; ) {
                 colorder[i++] = columnIdMap.key(it.next());
             }
             target.addVariable(this, "columnorder", colorder);
@@ -613,7 +619,7 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
     protected Set<Object> getItemIdsInRange(Object startItemId, final int length) {
         Set<Object> rootIds = super.getItemIdsInRange(startItemId, length);
         Set<Object> ids = new HashSet<Object>(rootIds);
-        for (Object itemId: rootIds) {
+        for (Object itemId : rootIds) {
 
             if (!isExpanded(itemId) && hasChildren(itemId)) {
                 Collection<?> itemIds = getChildren(itemId);
@@ -704,6 +710,9 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
 
     protected void setExpanded(Object itemId, boolean rerender) {
         if (!isExpanded(itemId)) {
+            // fire the event
+            fireTreeWillExpandEvent(itemId, true);
+
             ((TreeTableContainerWrapper) items).setExpanded(itemId);
             if (rerender) {
                 resetPageBuffer();
@@ -740,6 +749,9 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
 
     protected void setCollapsed(Object itemId, boolean rerender) {
         if (isExpanded(itemId)) {
+            // fire the event
+            fireTreeWillExpandEvent(itemId, false);
+
             ((TreeTableContainerWrapper) items).setCollapsed(itemId);
             if (rerender) {
                 resetPageBuffer();
@@ -747,5 +759,49 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
                 requestRepaint();
             }
         }
+    }
+
+    /**
+     * register a TreeWillExpandListener
+     */
+    public void addTreeWillExpandListener(TreeWillExpandListener listener) {
+        if(treeWillExpandListeners == null)
+            treeWillExpandListeners = new ArrayList<TreeWillExpandListener>();
+
+        treeWillExpandListeners.add(listener);
+    }
+
+    /**
+     * unregister a TreeWillExpandListener
+     */
+    public void removeTreeWillExpandListener(TreeWillExpandListener listener) {
+        if(treeWillExpandListeners != null) {
+            treeWillExpandListeners.remove(listener);
+
+            if(treeWillExpandListeners.isEmpty())
+                treeWillExpandListeners = null;
+        }
+    }
+
+    /**
+     * fire TreeWillExpand event for the listeners
+     */
+    private void fireTreeWillExpandEvent(Object itemId, boolean expand) {
+        if(treeWillExpandListeners != null)
+            for(TreeWillExpandListener listener : treeWillExpandListeners)
+                listener.treeWillExpand(itemId, expand);
+    }
+
+    /**
+     * Listeners that are invoked when a tree item will
+     * be expanded or collapsed
+     */
+    public interface TreeWillExpandListener {
+
+        /**
+         * @param itemId tree item id
+         * @param expand if <code>true</code> expand, <code>false</code> collapse
+         */
+        public void treeWillExpand(Object itemId, boolean expand);
     }
 }
