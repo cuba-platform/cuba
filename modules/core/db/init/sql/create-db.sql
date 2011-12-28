@@ -829,6 +829,7 @@ create table SEC_SCREEN_HISTORY (
 	USER_ID varchar(36),
 	CAPTION varchar(255),
 	URL varchar(4000),
+	ENTITY_ID varchar(36),
 
 	primary key (ID),
     constraint FK_SEC_HISTORY_USER foreign key (USER_ID) references SEC_USER (ID)
