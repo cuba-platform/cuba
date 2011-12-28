@@ -9,6 +9,9 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.export.ExportDataProvider;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.export.ExportFormat;
@@ -19,6 +22,7 @@ import org.springframework.context.annotation.Scope;
 
 import javax.annotation.ManagedBean;
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -35,9 +39,17 @@ public class DesktopExportDisplay implements ExportDisplay {
 
     private final JFileChooser fileChooser = new JFileChooser();
 
+    /**
+     * Show/Download resource at client side
+     * @param dataProvider {@link ExportDataProvider}
+     * @param resourceName ResourceName for client side
+     * @param format {@link ExportFormat}
+     * @see com.haulmont.cuba.gui.export.FileDataProvider
+     * @see com.haulmont.cuba.gui.export.ByteArrayDataProvider
+     */
     @Override
-    public void show(ExportDataProvider dataProvider, String resourceName, ExportFormat format) {
-        JFrame mainFrame = App.getInstance().getMainFrame();
+    public void show(final ExportDataProvider dataProvider, String resourceName, ExportFormat format) {
+        final JFrame mainFrame = App.getInstance().getMainFrame();
 
         String fileName = resourceName;
         if (format != null) {
@@ -45,32 +57,67 @@ public class DesktopExportDisplay implements ExportDisplay {
                 fileName += "." + format.getFileExt();
         }
 
-        String dialogCaption = MessageProvider.getMessage(getClass(), "saveFile");
-        String fileCaption = MessageProvider.getMessage(getClass(), "fileCaption") + " : " + fileName;
-        int result = JOptionPane.showConfirmDialog(mainFrame, fileCaption, dialogCaption,
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        if (result == JOptionPane.YES_OPTION) {
-            fileChooser.setSelectedFile(new File(fileName));
-            if (fileChooser.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
-                saveFile(dataProvider, fileChooser.getSelectedFile());
-            }
-        }
+        String dialogMessage = MessageProvider.getMessage(getClass(), "saveFile");
+        String fileCaption = MessageProvider.getMessage(getClass(), "fileCaption");
+
+        dialogMessage = String.format(dialogMessage, fileName);
+
+        final String finalFileName = fileName;
+        App.getInstance().getWindowManager().showOptionDialog(fileCaption, dialogMessage, IFrame.MessageType.CONFIRMATION,
+                new com.haulmont.cuba.gui.components.Action[]{
+                        new AbstractAction("action.openFile") {
+                            @Override
+                            public void actionPerform(Component component) {
+                                try {
+                                    File destFile = File.createTempFile("tempCubaFile", "." + getFileExt(finalFileName));
+                                    saveFile(dataProvider, destFile);
+
+                                    if (Desktop.isDesktopSupported())
+                                        Desktop.getDesktop().open(destFile);
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        },
+                        new AbstractAction("action.saveFile") {
+                            @Override
+                            public void actionPerform(Component component) {
+                                fileChooser.setSelectedFile(new File(finalFileName));
+                                if (fileChooser.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
+                                    saveFile(dataProvider, fileChooser.getSelectedFile());
+                                }
+                            }
+                        },
+                        new AbstractAction("action.cancel") {
+                            @Override
+                            public void actionPerform(Component component) {
+                                // do nothing
+                            }
+                        }
+                });
     }
 
     /**
      * Show/Download resource at client side
      *
-     * @param dataProvider ExportDataProvider
+     * @param dataProvider {@link ExportDataProvider}
      * @param resourceName ResourceName for client side
      * @see com.haulmont.cuba.gui.export.FileDataProvider
      * @see com.haulmont.cuba.gui.export.ByteArrayDataProvider
      */
+    @Override
     public void show(ExportDataProvider dataProvider, String resourceName) {
         String extension = getFileExt(resourceName);
         ExportFormat format = ExportFormat.getByExtension(extension);
         show(dataProvider, resourceName, format);
     }
 
+    /**
+     * Show/Download file at client side
+     * @param fileDescriptor File descriptor
+     * @param format {@link ExportFormat}
+     */
+    @Override
     public void show(FileDescriptor fileDescriptor, ExportFormat format) {
         show(new FileDataProvider(fileDescriptor), fileDescriptor.getName(), format);
     }

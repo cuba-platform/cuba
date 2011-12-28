@@ -21,17 +21,32 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Resource;
+import javax.inject.Inject;
 import java.io.File;
 import java.util.Map;
 
 public class FileEditor extends AbstractEditor {
 
-    private Datasource<FileDescriptor> ds;
+    @Inject
+    private Datasource<FileDescriptor> fileDs;
+
+    @Resource(name = "windowActions.windowCommit")
     private Button okBtn;
-    private TextField nameText;
+
+    @Inject
+    private TextField nameField;
+
+    @Inject
     private Label extLabel;
-    private Label sizeLab;
-    private Label createDateLab;
+
+    @Inject
+    private Label sizeLabel;
+
+    @Inject
+    private Label createDateLabel;
+
+    @Inject
     private FileUploadField uploadField;
 
     private boolean needSave;
@@ -42,15 +57,6 @@ public class FileEditor extends AbstractEditor {
 
     @Override
     public void init(Map<String, Object> params) {
-        ds = getDsContext().get("fileDs");
-
-        okBtn = getComponent("windowActions.windowCommit");
-
-        uploadField = getComponent("uploadField");
-        nameText = getComponent("name");
-        extLabel = getComponent("extension");
-        sizeLab = getComponent("size");
-        createDateLab = getComponent("createDate");
     }
 
     private String getFileExt(String fileName) {
@@ -65,39 +71,11 @@ public class FileEditor extends AbstractEditor {
     public void setItem(Entity item) {
         super.setItem(item);
 
-        boolean isNew = PersistenceHelper.isNew(ds.getItem());
+        boolean isNew = PersistenceHelper.isNew(fileDs.getItem());
 
         if (isNew) {
             okBtn.setEnabled(false);
-
-            uploadField.addListener(new FileUploadField.Listener() {
-                public void uploadStarted(Event event) {
-                }
-
-                public void uploadFinished(Event event) {
-                }
-
-                public void uploadSucceeded(Event event) {
-                    nameText.setValue(uploadField.getFileName());
-                    extLabel.setValue(getFileExt(uploadField.getFileName()));
-
-                    FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
-                    File file = fileUploading.getFile(uploadField.getFileId());
-                    Integer size = (int)file.length();
-                    sizeLab.setValue(size);
-
-                    createDateLab.setValue(TimeProvider.currentTimestamp());
-                    okBtn.setEnabled(true);
-
-                    needSave = true;
-                }
-
-                public void uploadFailed(Event event) {
-                }
-
-                public void updateProgress(long readBytes, long contentLength) {
-                }
-            });
+            uploadField.addListener(new FileUploadListener());
         } else {
             uploadField.setEnabled(false);
         }
@@ -114,9 +92,43 @@ public class FileEditor extends AbstractEditor {
     private void saveFile() {
         FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
         try {
-            fileUploading.putFileIntoStorage(uploadField.getFileId(), ds.getItem());
+            fileUploading.putFileIntoStorage(uploadField.getFileId(), fileDs.getItem());
         } catch (FileStorageException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private class FileUploadListener implements FileUploadField.Listener {
+        @Override
+        public void uploadStarted(Event event) {
+        }
+
+        @Override
+        public void uploadFinished(Event event) {
+        }
+
+        @Override
+        public void uploadSucceeded(Event event) {
+            nameField.setValue(uploadField.getFileName());
+            extLabel.setValue(getFileExt(uploadField.getFileName()));
+
+            FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+            File file = fileUploading.getFile(uploadField.getFileId());
+            Integer size = (int) file.length();
+            sizeLabel.setValue(size);
+
+            createDateLabel.setValue(TimeProvider.currentTimestamp());
+            okBtn.setEnabled(true);
+
+            needSave = true;
+        }
+
+        @Override
+        public void uploadFailed(Event event) {
+        }
+
+        @Override
+        public void updateProgress(long readBytes, long contentLength) {
         }
     }
 }

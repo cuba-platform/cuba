@@ -24,20 +24,20 @@
                 <rows>
                     <row>
                         <label value="msg://name"/>
-                        <textField id="name" datasource="fileDs" property="name"
+                        <textField id="nameField" datasource="fileDs" property="name"
                                    width="200px"/>
                     </row>
                     <row>
                         <label value="msg://extension"/>
-                        <label id="extension" datasource="fileDs" property="extension"/>
+                        <label id="extLabel" datasource="fileDs" property="extension"/>
                     </row>
                     <row>
                         <label value="msg://size"/>
-                        <label id="size" datasource="fileDs" property="size"/>
+                        <label id="sizeLabel" datasource="fileDs" property="size"/>
                     </row>
                     <row>
                         <label value="msg://createDate"/>
-                        <label id="createDate" datasource="fileDs" property="createDate">
+                        <label id="createDateLabel" datasource="fileDs" property="createDate">
                             <formatter class="com.haulmont.cuba.gui.components.formatters.DateFormatter"
                                        format="msg://dateTimeFormat"/>
                         </label>

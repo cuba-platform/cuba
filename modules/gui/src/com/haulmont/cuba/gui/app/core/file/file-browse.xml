@@ -15,19 +15,27 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expand="files" spacing="true">
+    <layout expand="filesTable" spacing="true">
         <vbox expand="genericFilter" stylename="edit-area">
             <filter id="genericFilter" datasource="filesDs">
                 <properties include=".*"/>
             </filter>
         </vbox>
-        <table id="files" editable="false">
+        <table id="filesTable" editable="false">
+            <actions>
+                <action id="refresh"/>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="remove"/>
+                <action id="excel"/>
+            </actions>
             <buttonsPanel>
-                <button action="files.refresh" icon="icons/refresh.png"/>
-                <button action="files.create" icon="icons/create.png"/>
-                <button action="files.edit" icon="icons/edit.png"/>
-                <button action="files.remove" icon="icons/remove.png"/>
-                <button action="files.excel" icon="icons/excel.png"/>
+                <button action="filesTable.refresh" icon="icons/refresh.png"/>
+                <button action="filesTable.create" icon="icons/create.png"/>
+                <button action="filesTable.edit" icon="icons/edit.png"/>
+                <button action="filesTable.remove" icon="icons/remove.png"/>
+                <button action="filesTable.excel" icon="icons/excel.png"/>
+                <button action="filesTable.download" icon="icons/save.png"/>
                 <button id="multiupload" icon="icons/copy.png"/>
             </buttonsPanel>
             <rowsCount/>

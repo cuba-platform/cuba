@@ -14,14 +14,21 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
+import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class FileBrowser extends AbstractWindow {
+
+    @Inject
+    private Table filesTable;
+
+    @Inject
+    private CollectionDatasource<FileDescriptor, UUID> filesDs;
 
     public FileBrowser(IFrame frame) {
         super(frame);
@@ -30,17 +37,20 @@ public class FileBrowser extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-        final Table filesTable = getComponent("files");
-        final CollectionDatasource filesDs = filesTable.getDatasource();
-        filesTable.addAction(new CreateAction(filesTable, WindowManager.OpenType.DIALOG));
-        filesTable.addAction(new EditAction(filesTable, WindowManager.OpenType.DIALOG));
-        filesTable.addAction(new RemoveAction(filesTable));
-        filesTable.addAction(new RefreshAction(filesTable));
-        filesTable.addAction(new ExcelAction(filesTable, AppConfig.createExportDisplay()));
+
+        filesTable.addAction(new AbstractAction("download") {
+            @Override
+            public void actionPerform(Component component) {
+                FileDescriptor fileDescriptor = filesTable.getSingleSelected();
+                if (fileDescriptor != null) {
+                    AppConfig.createExportDisplay().show(fileDescriptor, null);
+                }
+            }
+        });
 
         Button uploadBtn = getComponent("multiupload");
-        uploadBtn.setAction(new AbstractAction("files.multiupload") {
-
+        uploadBtn.setAction(new AbstractAction("multiupload") {
+            @Override
             public void actionPerform(Component component) {
                 Map<String, Object> params = Collections.<String, Object>emptyMap();
 
@@ -49,6 +59,7 @@ public class FileBrowser extends AbstractWindow {
                         params, null);
 
                 window.addListener(new Window.CloseListener() {
+                    @Override
                     public void windowClosed(String actionId) {
                         if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
                             List<FileDescriptor> items = ((MultiUploader) window).getFiles();
