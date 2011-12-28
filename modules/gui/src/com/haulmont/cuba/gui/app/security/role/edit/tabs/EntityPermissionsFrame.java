@@ -234,6 +234,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
                             }
                         }
                     }
+                    entityPermissionsTable.repaint();
                     showNotification(getMessage("notification.applied"), NotificationType.HUMANIZED);
                 }
             }

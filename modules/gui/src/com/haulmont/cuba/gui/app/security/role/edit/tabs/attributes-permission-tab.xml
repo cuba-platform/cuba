@@ -60,7 +60,7 @@
                         </vbox>
                     </scrollbox>
 
-                    <hbox width="340" align="MIDDLE_RIGHT">
+                    <hbox width="340">
                         <grid margin="true" width="100%">
                             <columns>
                                 <column flex="0.4"/>
