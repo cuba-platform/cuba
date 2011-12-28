@@ -7,14 +7,7 @@
 package com.haulmont.cuba.security.entity.ui;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.impl.AbstractInstance;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.UuidProvider;
-
-import java.util.UUID;
 
 /**
  * <p>$Id$</p>
@@ -23,17 +16,8 @@ import java.util.UUID;
  */
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$UiTarget")
 @SystemLevel
-public class UiPermissionTarget extends AbstractInstance
-        implements Entity<String>, AssignableTarget {
-
-    @MetaProperty(mandatory = true)
-    private String id;
-
-    @MetaProperty(mandatory = true)
-    private String caption;
-
-    @MetaProperty(mandatory = true)
-    private String permissionValue;
+public class UiPermissionTarget extends AbstractPermissionTarget
+        implements AssignableTarget {
 
     @MetaProperty(mandatory = true)
     private UiPermissionVariant permissionVariant = UiPermissionVariant.NOTSET;
@@ -44,39 +28,15 @@ public class UiPermissionTarget extends AbstractInstance
     @MetaProperty(mandatory = true)
     private String component;
 
-    private UUID uuid = UuidProvider.createUuid();
-
     public UiPermissionTarget(String id, String caption, String permissionValue) {
-        this.id = id;
-        this.caption = caption;
+        super(id, caption);
         this.permissionValue = permissionValue;
     }
 
     public UiPermissionTarget(String id, String caption, String permissionValue, UiPermissionVariant permissionVariant) {
-        this.id = id;
-        this.caption = caption;
+        super(id, caption);
         this.permissionValue = permissionValue;
         this.permissionVariant = permissionVariant;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    @Override
-    public MetaClass getMetaClass() {
-        return MetadataProvider.getSession().getClass(getClass());
-    }
-
-    @Override
-    public String toString() {
-        return caption;
     }
 
     public String getCaption() {
@@ -90,15 +50,6 @@ public class UiPermissionTarget extends AbstractInstance
     @Override
     public boolean isAssigned() {
         return permissionVariant != UiPermissionVariant.NOTSET;
-    }
-
-    @Override
-    public String getPermissionValue() {
-        return permissionValue;
-    }
-
-    public void setPermissionValue(String permissionValue) {
-        this.permissionValue = permissionValue;
     }
 
     public String getScreen() {

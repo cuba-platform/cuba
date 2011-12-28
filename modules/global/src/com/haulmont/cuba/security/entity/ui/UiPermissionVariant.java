@@ -19,19 +19,26 @@ public enum UiPermissionVariant implements EnumClass<Integer> {
     /**
      * Read-only
      */
-    READ_ONLY(10),
+    READ_ONLY(10, "blue"),
 
     /**
      * Hide
      */
-    HIDE(20),
+    HIDE(20, "red"),
 
     /**
      * Permission not selected
      */
-    NOTSET(30);
+    NOTSET(30, "black");
 
     private Integer id;
+
+    private String color;
+
+    UiPermissionVariant(Integer id, String color) {
+        this.id = id;
+        this.color = color;
+    }
 
     @Override
     public Integer getId() {
@@ -39,16 +46,7 @@ public enum UiPermissionVariant implements EnumClass<Integer> {
     }
 
     public String getColor() {
-        if (this == READ_ONLY)
-            return "blue";
-        else if (this == HIDE)
-            return "red";
-        else
-            return "black";
-    }
-
-    UiPermissionVariant(Integer id) {
-        this.id = id;
+        return color;
     }
 
     public static UiPermissionVariant fromId(Integer id) {

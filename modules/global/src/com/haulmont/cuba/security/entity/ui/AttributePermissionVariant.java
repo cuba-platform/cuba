@@ -19,24 +19,31 @@ public enum AttributePermissionVariant implements EnumClass<Integer> {
     /**
      * Full access
      */
-    MODIFY(10),
+    MODIFY(10, "green"),
 
     /**
      * Read-only
      */
-    READ_ONLY(20),
+    READ_ONLY(20, "blue"),
 
     /**
      * Hide
      */
-    HIDE(30),
+    HIDE(30, "red"),
 
     /**
      * Permission not selected
      */
-    NOTSET(40);
+    NOTSET(40, "black");
 
     private Integer id;
+
+    private String color;
+
+    AttributePermissionVariant(Integer id, String color) {
+        this.id = id;
+        this.color = color;
+    }
 
     @Override
     public Integer getId() {
@@ -44,18 +51,7 @@ public enum AttributePermissionVariant implements EnumClass<Integer> {
     }
 
     public String getColor() {
-        if (this == HIDE)
-            return "red";
-        else if (this == READ_ONLY)
-            return "blue";
-        else if (this == MODIFY)
-            return "green";
-        else
-            return "";
-    }
-
-    AttributePermissionVariant(Integer id) {
-        this.id = id;
+        return color;
     }
 
     public static AttributePermissionVariant fromId(Integer id) {

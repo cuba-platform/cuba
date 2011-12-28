@@ -7,14 +7,7 @@
 package com.haulmont.cuba.security.entity.ui;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.impl.AbstractInstance;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.UuidProvider;
-
-import java.util.UUID;
 
 /**
  * <p>$Id$</p>
@@ -23,19 +16,8 @@ import java.util.UUID;
  */
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$OperationTarget")
 @SystemLevel
-public class OperationPermissionTarget extends AbstractInstance
-        implements Entity<String>, Cloneable, AssignableTarget {
-
-    private UUID uuid = UuidProvider.createUuid();
-
-    @MetaProperty(mandatory = true)
-    private String id;
-
-    @MetaProperty(mandatory = true)
-    private String caption;
-
-    @MetaProperty(mandatory = true)
-    private String permissionValue;
+public class OperationPermissionTarget extends AbstractPermissionTarget
+        implements Cloneable, AssignableTarget {
 
     @MetaProperty(mandatory = true)
     private PermissionVariant createPermissionVariant = PermissionVariant.NOTSET;
@@ -52,25 +34,9 @@ public class OperationPermissionTarget extends AbstractInstance
     private Class entityClass;
 
     public OperationPermissionTarget(Class entityClass, String id, String caption, String permissionValue) {
-        this.id = id;
-        this.caption = caption;
+        super(id, caption);
         this.permissionValue = permissionValue;
         this.entityClass = entityClass;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    @Override
-    public MetaClass getMetaClass() {
-        return MetadataProvider.getSession().getClass(getClass());
     }
 
     @Override
@@ -98,17 +64,8 @@ public class OperationPermissionTarget extends AbstractInstance
                 (deletePermissionVariant == PermissionVariant.DISALLOWED);
     }
 
-    public String getCaption() {
-        return caption;
-    }
-
     public Class getEntityClass() {
         return entityClass;
-    }
-
-    @Override
-    public String getPermissionValue() {
-        return permissionValue;
     }
 
     public PermissionVariant getCreatePermissionVariant() {
@@ -141,11 +98,6 @@ public class OperationPermissionTarget extends AbstractInstance
 
     public void setDeletePermissionVariant(PermissionVariant deletePermissionVariant) {
         this.deletePermissionVariant = deletePermissionVariant;
-    }
-
-    @Override
-    public String toString() {
-        return caption;
     }
 
     @Override

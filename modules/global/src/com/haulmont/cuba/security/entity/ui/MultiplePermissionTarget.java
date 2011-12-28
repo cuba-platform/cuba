@@ -7,18 +7,12 @@
 package com.haulmont.cuba.security.entity.ui;
 
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.impl.AbstractInstance;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.UuidProvider;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * <p>$Id$</p>
@@ -27,16 +21,8 @@ import java.util.UUID;
  */
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$MultipleTarget")
 @SystemLevel
-public class MultiplePermissionTarget extends AbstractInstance
-        implements Entity<String>, AssignableTarget, Cloneable {
-
-    private UUID uuid = UuidProvider.createUuid();
-
-    @MetaProperty(mandatory = true)
-    private String id;
-
-    @MetaProperty(mandatory = true)
-    private String caption;
+public class MultiplePermissionTarget extends AbstractPermissionTarget
+        implements AssignableTarget, Cloneable {
 
     @MetaProperty(mandatory = true)
     private String permissionValue;
@@ -45,38 +31,9 @@ public class MultiplePermissionTarget extends AbstractInstance
     private List<AttributeTarget> permissions = new LinkedList<AttributeTarget>();
 
     public MultiplePermissionTarget(String id, String caption, String permissionValue) {
-        this.id = id;
+        super(id, caption);
         this.caption = caption;
         this.permissionValue = permissionValue;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    @Override
-    public MetaClass getMetaClass() {
-        return MetadataProvider.getSession().getClass(getClass());
-    }
-
-    @Override
-    public String toString() {
-        return caption;
-    }
-
-    @Override
-    public String getPermissionValue() {
-        return permissionValue;
-    }
-
-    public String getCaption() {
-        return caption;
     }
 
     public List<AttributeTarget> getPermissions() {

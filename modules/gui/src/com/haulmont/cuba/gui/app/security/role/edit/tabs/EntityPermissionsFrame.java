@@ -61,14 +61,6 @@ public class EntityPermissionsFrame extends AbstractFrame {
     @Inject
     private CheckBox assignedOnlyCheckBox;
 
-    /* Buttons */
-
-    @Inject
-    private Button applyFilterBtn;
-
-    @Inject
-    private Button applyPermissionMaskBtn;
-
     /* Panels */
 
     @Inject
@@ -167,13 +159,6 @@ public class EntityPermissionsFrame extends AbstractFrame {
         entityTargetsDs.setPermissionDs(entityPermissionsDs);
         entityTargetsDs.setFilter(new EntityNameFilter<OperationPermissionTarget>(assignedOnlyCheckBox, entityFilter));
 
-        applyFilterBtn.setAction(new AbstractAction("action.apply") {
-            @Override
-            public void actionPerform(Component component) {
-                entityTargetsDs.refresh();
-            }
-        });
-
         initCheckBoxesControls();
 
         Companion companion = getCompanion();
@@ -211,37 +196,40 @@ public class EntityPermissionsFrame extends AbstractFrame {
             }
         });
 
-        applyPermissionMaskBtn.setAction(new AbstractAction("action.apply") {
-            @Override
-            public void actionPerform(Component component) {
-                Set selected = entityPermissionsTable.getSelected();
-                if (!selected.isEmpty() && (selected.size() > 1)) {
-                    for (Object obj : selected) {
-                        OperationPermissionTarget target = (OperationPermissionTarget) obj;
-                        for (EntityOperationControl control : operationControls) {
-                            if (control.isControlVisible()) {
-                                PermissionVariant variant;
-
-                                if (Boolean.TRUE.equals(control.getAllowChecker().getValue())) {
-                                    variant = PermissionVariant.ALLOWED;
-                                } else if (Boolean.TRUE.equals(control.getDenyChecker().getValue())) {
-                                    variant = PermissionVariant.DISALLOWED;
-                                } else {
-                                    variant = PermissionVariant.NOTSET;
-                                }
-
-                                markTargetPermission(target, control.getMetaProperty(), control.getOperation(), variant);
-                            }
-                        }
-                    }
-                    entityPermissionsTable.repaint();
-                    showNotification(getMessage("notification.applied"), NotificationType.HUMANIZED);
-                }
-            }
-        });
-
         entityPermissionsDs.refresh();
         entityTargetsDs.refresh();
+    }
+
+    @SuppressWarnings("unused")
+    private void applyFilter() {
+        entityTargetsDs.refresh();
+    }
+
+    @SuppressWarnings("unused")
+    private void applyPermissionMask() {
+        Set selected = entityPermissionsTable.getSelected();
+        if (!selected.isEmpty() && (selected.size() > 1)) {
+            for (Object obj : selected) {
+                OperationPermissionTarget target = (OperationPermissionTarget) obj;
+                for (EntityOperationControl control : operationControls) {
+                    if (control.isControlVisible()) {
+                        PermissionVariant variant;
+
+                        if (Boolean.TRUE.equals(control.getAllowChecker().getValue())) {
+                            variant = PermissionVariant.ALLOWED;
+                        } else if (Boolean.TRUE.equals(control.getDenyChecker().getValue())) {
+                            variant = PermissionVariant.DISALLOWED;
+                        } else {
+                            variant = PermissionVariant.NOTSET;
+                        }
+
+                        markTargetPermission(target, control.getMetaProperty(), control.getOperation(), variant);
+                    }
+                }
+            }
+            entityPermissionsTable.repaint();
+            showNotification(getMessage("notification.applied"), NotificationType.HUMANIZED);
+        }
     }
 
     private void initCheckBoxesControls() {

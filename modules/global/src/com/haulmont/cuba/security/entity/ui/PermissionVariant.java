@@ -19,36 +19,34 @@ public enum PermissionVariant implements EnumClass<Integer> {
     /**
      * Allowed
      */
-    ALLOWED(10),
+    ALLOWED(10, "green"),
 
     /**
      * Disallowed
      */
-    DISALLOWED(20),
+    DISALLOWED(20, "red"),
 
     /**
      * Permission not selected
      */
-    NOTSET(30);
+    NOTSET(30, "black");
 
     private Integer id;
+
+    private String color;
+
+    PermissionVariant(Integer id, String color) {
+        this.id = id;
+        this.color = color;
+    }
+
+    public String getColor() {
+        return color;
+    }
 
     @Override
     public Integer getId() {
         return id;
-    }
-
-    PermissionVariant(Integer id) {
-        this.id = id;
-    }
-
-    public String getColor() {
-        if (this == ALLOWED)
-            return "green";
-        else if (this == DISALLOWED)
-            return "red";
-        else
-            return "black";
     }
 
     public static PermissionVariant fromId(Integer id) {

@@ -70,11 +70,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
     @Inject
     private CheckBox assignedOnlyCheckBox;
 
-    /* Buttons */
-
-    @Inject
-    private Button applyFilterBtn;
-
     /* Checkboxes */
 
     @Inject
@@ -225,13 +220,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
         attributeTargetsDs.setFilter(
                 new EntityNameFilter<MultiplePermissionTarget>(assignedOnlyCheckBox, entityFilter));
 
-        applyFilterBtn.setAction(new AbstractAction("action.apply") {
-            @Override
-            public void actionPerform(Component component) {
-                attributeTargetsDs.refresh();
-            }
-        });
-
         attachAllCheckboxListener(allModifyCheck, AttributePermissionVariant.MODIFY);
         attachAllCheckboxListener(allReadOnlyCheck, AttributePermissionVariant.READ_ONLY);
         attachAllCheckboxListener(allHideCheck, AttributePermissionVariant.HIDE);
@@ -259,6 +247,11 @@ public class AttributePermissionsFrame extends AbstractFrame {
         });
 
         propertyPermissionsDs.refresh();
+        attributeTargetsDs.refresh();
+    }
+
+    @SuppressWarnings("unused")
+    private void applyFilter() {
         attributeTargetsDs.refresh();
     }
 
