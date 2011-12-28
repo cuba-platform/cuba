@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.global.LoginException;
+import com.haulmont.cuba.security.global.UserSession;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
@@ -334,6 +335,15 @@ public class App implements ConnectionListener {
         );
 
         panel.add(connectionStateLab, BorderLayout.WEST);
+
+        JLabel userInfoLabel = new JLabel();
+        UserSession session = connection.getSession();
+        String userInfo = MessageProvider.formatMessage(AppConfig.getMessagesPack(), "statusBar.user",
+                session.getUser().getName(), session.getUser().getLogin());
+        userInfoLabel.setText(userInfo);
+
+        panel.add(userInfoLabel, BorderLayout.EAST);
+
         return panel;
     }
 
