@@ -16,12 +16,10 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.security.entity.EntityOp;
@@ -41,7 +39,7 @@ import java.util.Set;
  *
  * @author krivopustov
  */
-public class EditAction extends AbstractAction implements CollectionDatasourceListener {
+public class EditAction extends ItemTrackingAction {
 
     private static final long serialVersionUID = -4849373795449480016L;
 
@@ -195,23 +193,5 @@ public class EditAction extends AbstractAction implements CollectionDatasourceLi
      * @param window    the editor window
      */
     protected void afterWindowClosed(Window window) {
-    }
-
-    @Override
-    public void collectionChanged(CollectionDatasource ds, Operation operation) {
-    }
-
-    @Override
-    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-        setEnabled(item != null);
-    }
-
-    @Override
-    public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-        setEnabled(Datasource.State.VALID.equals(state) && ds.getItem() != null);
-    }
-
-    @Override
-    public void valueChanged(Object source, String property, Object prevValue, Object value) {
     }
 }

@@ -18,8 +18,6 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
-import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
 import com.haulmont.cuba.security.entity.EntityOp;
 
@@ -36,7 +34,7 @@ import java.util.Set;
  *
  * @author krivopustov
  */
-public class RemoveAction extends AbstractAction implements CollectionDatasourceListener {
+public class RemoveAction extends ItemTrackingAction {
 
     private static final long serialVersionUID = -8700360141431140203L;
 
@@ -215,23 +213,5 @@ public class RemoveAction extends AbstractAction implements CollectionDatasource
      * @param selected  set of removed instances
      */
     protected void afterRemove(Set selected) {
-    }
-
-    @Override
-    public void collectionChanged(CollectionDatasource ds, Operation operation) {
-    }
-
-    @Override
-    public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-        setEnabled(item != null);
-    }
-
-    @Override
-    public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-        setEnabled(Datasource.State.VALID.equals(state) && ds.getItem() != null);
-    }
-
-    @Override
-    public void valueChanged(Object source, String property, Object prevValue, Object value) {
     }
 }

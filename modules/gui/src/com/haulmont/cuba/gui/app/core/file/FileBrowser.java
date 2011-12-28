@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import javax.inject.Inject;
@@ -38,7 +39,7 @@ public class FileBrowser extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        filesTable.addAction(new AbstractAction("download") {
+        filesTable.addAction(new ItemTrackingAction("download") {
             @Override
             public void actionPerform(Component component) {
                 FileDescriptor fileDescriptor = filesTable.getSingleSelected();
