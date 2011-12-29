@@ -321,6 +321,7 @@ public class DesktopLookupField
 
     @Override
     public void setRequired(boolean required) {
+        this.required = required;
         Color bgColor = required ? REQUIRED_BG_COLOR : NORMAL_BG_COLOR;
         comboBox.setBackground(bgColor);
         textField.setBackground(bgColor);
