@@ -26,6 +26,9 @@ public abstract class DesktopAbstractField<C extends JComponent>
         extends DesktopAbstractComponent<C>
         implements Field
 {
+    protected static final Color REQUIRED_BG_COLOR = Color.yellow;
+    protected static final Color NORMAL_BG_COLOR = Color.white;
+
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
     protected ValueChangingListener valueChangingListener;
 
@@ -120,9 +123,9 @@ public abstract class DesktopAbstractField<C extends JComponent>
     public void setRequired(boolean required) {
         this.required = required;
         if (required)
-            getImpl().setBackground(Color.yellow);
+            getImpl().setBackground(REQUIRED_BG_COLOR);
         else
-            getImpl().setBackground(Color.white);
+            getImpl().setBackground(NORMAL_BG_COLOR);
     }
 
     @Override

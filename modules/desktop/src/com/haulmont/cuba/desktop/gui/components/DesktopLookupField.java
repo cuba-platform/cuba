@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.desktop.sys.DesktopToolTipManager;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.components.LookupField;
@@ -24,10 +25,8 @@ import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.List;
 
 /**
@@ -36,7 +35,7 @@ import java.util.List;
  * @author krivopustov
  */
 public class DesktopLookupField
-        extends DesktopAbstractOptionsField<ExtendedComboBox>
+        extends DesktopAbstractOptionsField<JPanel>
         implements LookupField {
     private static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
 
@@ -54,14 +53,36 @@ public class DesktopLookupField
 
     private Object nullOption;
 
-    public DesktopLookupField() {
-        impl = new ExtendedComboBox();
-        impl.setEditable(true);
-        impl.setPrototypeDisplayValue("AAAAAAAAAAAA");
-        autoComplete = AutoCompleteSupport.install(impl, items);
+    private ExtendedComboBox comboBox;
+    private JTextField textField;
 
-        for (int i = 0; i < impl.getComponentCount(); i++) {
-            java.awt.Component component = impl.getComponent(i);
+    private DefaultValueFormatter valueFormatter;
+
+    public DesktopLookupField() {
+        impl = new JPanel();
+        impl.setLayout(new BoxLayout(impl, BoxLayout.Y_AXIS));
+        impl.setFocusable(true);
+        impl.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (editable)
+                    comboBox.requestFocus();
+                else
+                    textField.requestFocus();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+            }
+        });
+
+        comboBox = new ExtendedComboBox();
+        comboBox.setEditable(true);
+        comboBox.setPrototypeDisplayValue("AAAAAAAAAAAA");
+        autoComplete = AutoCompleteSupport.install(comboBox, items);
+
+        for (int i = 0; i < comboBox.getComponentCount(); i++) {
+            java.awt.Component component = comboBox.getComponent(i);
             component.addFocusListener(new FocusAdapter() {
                 @Override
                 public void focusGained(FocusEvent e) {
@@ -76,18 +97,18 @@ public class DesktopLookupField
             });
         }
         // set value only on PopupMenu closing to avoid firing listeners on keyboard navigation
-        impl.addPopupMenuListener(
+        comboBox.addPopupMenuListener(
                 new PopupMenuListener() {
                     @Override
                     public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                        impl.updatePopupWidth();
+                        comboBox.updatePopupWidth();
                     }
 
                     @Override
                     public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
                         if (!autoComplete.isEditableState()) {
                             // Only if realy item changed
-                            Object selectedItem = impl.getSelectedItem();
+                            Object selectedItem = comboBox.getSelectedItem();
                             if (selectedItem instanceof ValueWrapper) {
                                 Object selectedValue = ((ValueWrapper) selectedItem).getValue();
                                 setValue(selectedValue);
@@ -104,13 +125,13 @@ public class DesktopLookupField
                     }
                 }
         );
-        impl.addActionListener(
+        comboBox.addActionListener(
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         if (settingValue)
                             return;
-                        Object selectedItem = impl.getSelectedItem();
+                        Object selectedItem = comboBox.getSelectedItem();
                         if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
                             newOptionHandler.addNewOption((String) selectedItem);
                         }
@@ -120,13 +141,19 @@ public class DesktopLookupField
 
         setFilterMode(DEFAULT_FILTER_MODE);
 
-        DesktopComponentsHelper.adjustSize(impl);
+        textField = new JTextField();
+        textField.setEditable(false);
+        valueFormatter = new DefaultValueFormatter(UserSessionProvider.getLocale());
+
+        impl.add(comboBox);
+
+        DesktopComponentsHelper.adjustSize(comboBox);
     }
 
     private void checkSelectedValue() {
         if (!resetValueState) {
             resetValueState = true;
-            Object selectedItem = impl.getSelectedItem();
+            Object selectedItem = comboBox.getSelectedItem();
             if (selectedItem instanceof ValueWrapper) {
             } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
             } else if (!newOptionAllowed) {
@@ -283,13 +310,20 @@ public class DesktopLookupField
 
     @Override
     public String getDescription() {
-        return ((JComponent) impl.getEditor().getEditorComponent()).getToolTipText();
+        return ((JComponent) comboBox.getEditor().getEditorComponent()).getToolTipText();
     }
 
     @Override
     public void setDescription(String description) {
-        ((JComponent) impl.getEditor().getEditorComponent()).setToolTipText(description);
-        DesktopToolTipManager.getInstance().registerTooltip((JComponent) impl.getEditor().getEditorComponent());
+        ((JComponent) comboBox.getEditor().getEditorComponent()).setToolTipText(description);
+        DesktopToolTipManager.getInstance().registerTooltip((JComponent) comboBox.getEditor().getEditorComponent());
+    }
+
+    @Override
+    public void setRequired(boolean required) {
+        Color bgColor = required ? REQUIRED_BG_COLOR : NORMAL_BG_COLOR;
+        comboBox.setBackground(bgColor);
+        textField.setBackground(bgColor);
     }
 
     @Override
@@ -299,21 +333,41 @@ public class DesktopLookupField
 
     @Override
     public void setEditable(boolean editable) {
+        if (this.editable && !editable) {
+            impl.remove(comboBox);
+            impl.add(textField);
+
+            updateTextField();
+        } else if (!this.editable && editable) {
+            impl.remove(textField);
+            impl.add(comboBox);
+        }
         this.editable = editable;
-        impl.setEditable(editable);
+    }
+
+    private void updateTextField() {
+        if (metaProperty != null) {
+            valueFormatter.setMetaProperty(metaProperty);
+            textField.setText(valueFormatter.formatValue(getValue()));
+        } else {
+            if (comboBox.getSelectedItem() != null)
+                textField.setText(comboBox.getSelectedItem().toString());
+            else
+                textField.setText("");
+        }
     }
 
     @Override
     protected Object getSelectedItem() {
-        return impl.getSelectedItem();
+        return comboBox.getSelectedItem();
     }
 
     @Override
     protected void setSelectedItem(Object item) {
-        boolean editable = isEditable();
-        setEditable(true);
-        impl.setSelectedItem(item);
-        setEditable(editable);
+        comboBox.setSelectedItem(item);
+        if (!editable) {
+            updateTextField();
+        }
     }
 
     @Override
