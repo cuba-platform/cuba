@@ -28,9 +28,9 @@
         <property name="target"/>
         <property name="value"/>
     </view>
-
+<!--
      <view entity="sec$Target" name="role.edit">
          <property name="id"/>
          <property name="caption"/>
-     </view>
+     </view>-->
 </views>

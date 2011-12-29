@@ -2,6 +2,7 @@
 <metadata xmlns="http://www.haulmont.com/schema/cuba/metadata.xsd">
 
     <metadata-model>
+        <class>com.haulmont.cuba.security.entity.ui.AbstractPermissionTarget</class>
         <class>com.haulmont.cuba.security.entity.ui.BasicPermissionTarget</class>
         <class>com.haulmont.cuba.security.entity.ui.OperationPermissionTarget</class>
         <class>com.haulmont.cuba.security.entity.ui.MultiplePermissionTarget</class>

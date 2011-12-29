@@ -10,6 +10,7 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.UuidProvider;
 
@@ -20,6 +21,8 @@ import java.util.UUID;
  *
  * @author artamonov
  */
+@com.haulmont.chile.core.annotations.MetaClass(name = "sec$AbstractTarget")
+@SystemLevel
 public class AbstractPermissionTarget extends AbstractInstance
         implements Entity<String> {
 
