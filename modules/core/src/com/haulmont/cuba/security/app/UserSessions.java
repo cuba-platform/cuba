@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 02.12.2008 11:18:40
- *
- * $Id$
  */
 package com.haulmont.cuba.security.app;
 
@@ -29,9 +24,11 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * UserSessions MBean implementation.
- * <p>
- * Holds and controls the current user sessions list.
+ * User sessions distributed cache.
+ *
+ * @version $Id$
+ *
+ * @author krivopustov
  */
 @ManagedBean(UserSessionsAPI.NAME)
 public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbeat.Listener {
@@ -158,10 +155,6 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
             return info.session;
         }
         return null;
-    }
-
-    public UserSessionsAPI getAPI() {
-        return this;
     }
 
     public int getExpirationTimeoutSec() {

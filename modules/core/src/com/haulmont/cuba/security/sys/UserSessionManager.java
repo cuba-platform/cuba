@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 02.12.2008 12:09:22
- *
- * $Id$
  */
 package com.haulmont.cuba.security.sys;
 
@@ -30,6 +25,13 @@ import org.apache.commons.logging.LogFactory;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 
+/**
+ * System-level class managing {@link UserSession}s.
+ *
+ * @version $Id$
+ *
+ * @author krivopustov
+ */
 @ManagedBean(UserSessionManager.NAME)
 public class UserSessionManager
 {
@@ -59,6 +61,13 @@ public class UserSessionManager
         };
     }
 
+    /**
+     * Create a new session and fill it with security data. Must be called inside a transaction.
+     * @param user      user instance
+     * @param locale    user locale
+     * @param system    create system session
+     * @return          new session instance
+     */
     public UserSession createSession(User user, Locale locale, boolean system) {
         List<Role> roles = new ArrayList<Role>();
         for (UserRole userRole : user.getUserRoles()) {
@@ -70,11 +79,17 @@ public class UserSessionManager
         compilePermissions(session, roles);
         compileConstraints(session, user.getGroup());
         compileSessionAttributes(session, user.getGroup());
-        sessions.add(session);
         return session;
     }
 
-    public UserSession updateSession(UserSession src, User user) {
+    /**
+     * Create a new session from existing for another user and fill it with security data for that new user.
+     * Must be called inside a transaction.
+     * @param src   existing session
+     * @param user  another user instance
+     * @return      new session with the same ID as existing
+     */
+    public UserSession createSession(UserSession src, User user) {
         List<Role> roles = new ArrayList<Role>();
         for (UserRole userRole : user.getUserRoles()) {
             if (userRole.getRole() != null) {
@@ -85,8 +100,6 @@ public class UserSessionManager
         compilePermissions(session, roles);
         compileConstraints(session, user.getGroup());
         compileSessionAttributes(session, user.getGroup());
-        sessions.remove(src);
-        sessions.add(session);
         return session;
     }
 
@@ -143,10 +156,30 @@ public class UserSessionManager
         }
     }
 
+    /**
+     * Store session in the distributed sessions cache.
+     * Should be called outside of transaction to ensure all persistent objects have been detached.
+     * @param session   session instance
+     */
+    public void storeSession(UserSession session) {
+        sessions.add(session);
+    }
+
+    /**
+     * Remove the session from the distributed sessions cache.
+     * Should be called outside of transaction to ensure all persistent objects have been detached.
+     * @param session   session instance
+     */
     public void removeSession(UserSession session) {
         sessions.remove(session);
     }
 
+    /**
+     * Search for session in cache.
+     * @param sessionId session's ID
+     * @return          session instance
+     * @throws NoUserSessionException in case of session with the specified ID is not found in cache.
+     */
     public UserSession getSession(UUID sessionId) {
         UserSession session = findSession(sessionId);
         if (session == null) {
@@ -155,15 +188,16 @@ public class UserSessionManager
         return session;
     }
 
+    /**
+     * Search for session in cache.
+     * @param sessionId session's ID
+     * @return          session instance or null if not found
+     */
     public UserSession findSession(UUID sessionId) {
         if (AppContext.isStarted())
             return sessions.get(sessionId);
         else
             return NO_USER_SESSION;
-    }
-
-    public void putSession(UserSession session) {
-        sessions.add(session);
     }
 
     public Integer getPermissionValue(User user, PermissionType permissionType, String target) {

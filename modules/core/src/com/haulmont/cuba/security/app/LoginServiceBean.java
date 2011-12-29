@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 26.11.2008 13:30:56
- *
- * $Id$
  */
 package com.haulmont.cuba.security.app;
 
@@ -22,7 +17,11 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Service providing methods for user login/logout to the middleware
+ * Service to provide methods for user login/logout to the middleware.
+ *
+ * @version $Id$
+ *
+ * @author krivopustov
  */
 @ManagedBean(LoginService.NAME)
 public class LoginServiceBean implements LoginService
@@ -36,6 +35,7 @@ public class LoginServiceBean implements LoginService
         this.loginWorker = loginWorker;
     }
 
+    @Override
     public UserSession login(String login, String password, Locale locale) throws LoginException {
         try {
             return loginWorker.login(login, password, locale);
@@ -50,6 +50,7 @@ public class LoginServiceBean implements LoginService
         }
     }
 
+    @Override
     public UserSession loginTrusted(String login, String password, Locale locale) throws LoginException {
         try {
             return loginWorker.loginTrusted(login, password, locale);
@@ -64,6 +65,7 @@ public class LoginServiceBean implements LoginService
         }
     }
 
+    @Override
     public void logout() {
         try {
             loginWorker.logout();
@@ -73,14 +75,17 @@ public class LoginServiceBean implements LoginService
         }
     }
 
+    @Override
     public UserSession substituteUser(User substitutedUser) {
         return loginWorker.substituteUser(substitutedUser);
     }
 
+    @Override
     public void ping() {
         log.debug("ping");
     }
 
+    @Override
     public UserSession getSession(UUID sessionId) {
         return loginWorker.getSession(sessionId);
     }

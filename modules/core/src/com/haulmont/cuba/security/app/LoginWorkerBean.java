@@ -10,13 +10,15 @@
  */
 package com.haulmont.cuba.security.app;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionSource;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.NoUserSessionException;
@@ -34,13 +36,21 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Worker bean providing middleware login/logout functionality.
- * Used by {@link com.haulmont.cuba.security.app.LoginServiceBean} and MBeans
+ * Class that encapsulates the middleware login/logout functionality.
+ *
+ * @see com.haulmont.cuba.security.app.LoginServiceBean
+ *
+ * @version $Id$
+ *
+ * @author krivopustov
  */
 @ManagedBean(LoginWorker.NAME)
 public class LoginWorkerBean implements LoginWorker
 {
     private Log log = LogFactory.getLog(LoginWorkerBean.class);
+
+    @Inject
+    private Persistence persistence;
 
     @Inject
     private UserSessionManager userSessionManager;
@@ -54,7 +64,7 @@ public class LoginWorkerBean implements LoginWorker
         if (login == null)
             throw new IllegalArgumentException("Login is null");
 
-        EntityManager em = PersistenceProvider.getEntityManager();
+        EntityManager em = persistence.getEntityManager();
         String queryStr = "select u from sec$User u where u.loginLowerCase = ?1 and (u.active = true or u.active is null)";
         if (password != null)
             queryStr += " and u.password = ?2";
@@ -85,7 +95,7 @@ public class LoginWorkerBean implements LoginWorker
     public UserSession login(String login, String password, Locale locale)
             throws LoginException
     {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             User user = loadUser(login, password, locale);
 
@@ -96,11 +106,14 @@ public class LoginWorkerBean implements LoginWorker
 
             UserSession session = userSessionManager.createSession(user, locale, false);
             if (user.getDefaultSubstitutedUser() != null) {
-                userSessionManager.updateSession(session, user.getDefaultSubstitutedUser());
+                session = userSessionManager.createSession(session, user.getDefaultSubstitutedUser());
             }
             log.info("Logged in: " + session);
 
             tx.commit();
+
+            userSessionManager.storeSession(session);
+
             return session;
         } finally {
             tx.end();
@@ -108,16 +121,19 @@ public class LoginWorkerBean implements LoginWorker
     }
 
     public UserSession loginSystem(String login, String password) throws LoginException {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             User user = loadUser(login, password, Locale.getDefault());
             UserSession session = userSessionManager.createSession(user, Locale.getDefault(), true);
             if (user.getDefaultSubstitutedUser() != null) {
-                userSessionManager.updateSession(session, user.getDefaultSubstitutedUser());
+                session = userSessionManager.createSession(session, user.getDefaultSubstitutedUser());
             }
             log.info("Logged in: " + session);
 
             tx.commit();
+
+            userSessionManager.storeSession(session);
+
             return session;
         } finally {
             tx.end();
@@ -131,7 +147,7 @@ public class LoginWorkerBean implements LoginWorker
                     String.format(MessageProvider.getMessage(getClass(), "LoginException.InvalidLoginOrPassword", locale), login)
             );
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
             User user = loadUser(login, null, locale);
             Locale userLocale = locale;
@@ -140,11 +156,14 @@ public class LoginWorkerBean implements LoginWorker
             }
             UserSession session = userSessionManager.createSession(user, userLocale, false);
             if (user.getDefaultSubstitutedUser() != null) {
-                userSessionManager.updateSession(session, user.getDefaultSubstitutedUser());
+                session = userSessionManager.createSession(session, user.getDefaultSubstitutedUser());
             }
             log.info("Logged in: " + session);
 
             tx.commit();
+
+            userSessionManager.storeSession(session);
+
             return session;
         } finally {
             tx.end();
@@ -168,16 +187,19 @@ public class LoginWorkerBean implements LoginWorker
     public UserSession substituteUser(User substitutedUser) {
         UserSession currentSession = userSessionSource.getUserSession();
 
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             User user = em.find(User.class, substitutedUser.getId());
             if (user == null)
                 throw new javax.persistence.NoResultException("User not found");
 
-            UserSession session = userSessionManager.updateSession(currentSession, user);
+            UserSession session = userSessionManager.createSession(currentSession, user);
 
             tx.commit();
+
+            userSessionManager.removeSession(currentSession);
+            userSessionManager.storeSession(session);
 
             return session;
         } finally {

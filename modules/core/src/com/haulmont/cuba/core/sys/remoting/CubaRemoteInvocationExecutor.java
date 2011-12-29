@@ -56,7 +56,7 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
                             if (loginService != null) {
                                 UserSession userSession = loginService.getSession(sessionId);
                                 if (userSession != null) {
-                                    userSessionManager.putSession(userSession);
+                                    userSessionManager.storeSession(userSession);
                                 } else {
                                     log.debug("User session " + sessionId + " not found on " + sessionProviderUrl);
                                 }
