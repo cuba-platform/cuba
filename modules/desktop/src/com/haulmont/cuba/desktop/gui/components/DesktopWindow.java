@@ -46,9 +46,12 @@ import java.util.List;
  *
  * @author krivopustov
  */
-public class DesktopWindow implements Window, Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow, DesktopContainer
+public class DesktopWindow implements Window, Component.Disposable,
+        Component.Wrapper, Component.HasXmlDescriptor, WrappedWindow, DesktopContainer
 {
     private static final long serialVersionUID = 1026363207247384464L;
+
+    private boolean disposed = false;
 
     protected BoxLayoutAdapter layoutAdapter;
     protected JPanel panel;
@@ -179,12 +182,16 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
             doAfterClose.run();
         }
 
+        stopTimers();
+
+        return res;
+    }
+
+    private void stopTimers() {
         // hard stop timers
         for (Timer timer : timers) {
             ((DesktopTimer)timer).disposeTimer();
         }
-
-        return res;
     }
 
     @Override
@@ -685,6 +692,18 @@ public class DesktopWindow implements Window, Component.Wrapper, Component.HasXm
         if (captions.containsKey(child)) {
             captions.get(child).update();
         }
+    }
+
+    @Override
+    public void dispose() {
+        // hard stop timers
+        stopTimers();
+        disposed = true;
+    }
+
+    @Override
+    public boolean isDisposed() {
+        return disposed;
     }
 
     public static class Editor extends DesktopWindow implements Window.Editor {

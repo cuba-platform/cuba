@@ -15,7 +15,20 @@ public interface WatchDog {
 
     String NAME = "cuba_BackgroundWorker_WatchDog";
 
+    /**
+     * Add task under WatchDog control
+     *
+     * @param backroundTask Task handler
+     */
     void manageTask(BackgroundWorker.TaskHandler backroundTask);
 
+    /**
+     * Remove finished, canceled or hangup tasks
+     */
     void cleanupTasks();
+
+    /**
+     * Stop execution of all background tasks
+     */
+    void stopTasks();
 }

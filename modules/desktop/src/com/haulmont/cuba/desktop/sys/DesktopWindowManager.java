@@ -7,17 +7,19 @@
 package com.haulmont.cuba.desktop.sys;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.ScreenHistorySupport;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.executors.WatchDog;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -42,8 +44,8 @@ public class DesktopWindowManager extends WindowManager {
 
     private final Map<JComponent, WindowBreadCrumbs> tabs = new HashMap<JComponent, WindowBreadCrumbs>();
     private final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
-    private final Map<WindowBreadCrumbs,Stack<Map.Entry<Window,Integer>>> stacks = new HashMap<WindowBreadCrumbs,Stack<Map.Entry<Window,Integer>>>();
-    private final Map<Window,Integer> windows = new HashMap<Window,Integer>();
+    private final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>>();
+    private final Map<Window, Integer> windows = new HashMap<Window, Integer>();
 
     private boolean disableSavingScreenHistory;
     private ScreenHistorySupport screenHistorySupport = new ScreenHistorySupport();
@@ -87,8 +89,8 @@ public class DesktopWindowManager extends WindowManager {
         }
     }
 
-    private Integer getWindowHashCode(Window window){
-       return windows.get(window);
+    private Integer getWindowHashCode(Window window) {
+        return windows.get(window);
     }
 
     @Override
@@ -268,7 +270,7 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     private void setWindowCaption(String caption, String description, int tabIndex) {
-        ((ButtonTabComponent)tabsPane.getTabComponentAt(tabIndex)).setCaption(formatTabCaption(caption, description));
+        ((ButtonTabComponent) tabsPane.getTabComponentAt(tabIndex)).setCaption(formatTabCaption(caption, description));
     }
 
     protected JComponent showWindowNewTab(Window window, String caption, String description, Integer tabPosition) {
@@ -451,7 +453,7 @@ public class DesktopWindowManager extends WindowManager {
                 layout.remove(DesktopComponentsHelper.getComposition(window));
                 layout.add(component);
 
-                setWindowCaption(currentWindow.getCaption(),  currentWindow.getDescription(), tabsPane.getSelectedIndex());
+                setWindowCaption(currentWindow.getCaption(), currentWindow.getDescription(), tabsPane.getSelectedIndex());
 
                 fireListeners(window, tabs.size() != 0);
                 break;
@@ -482,7 +484,7 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     @Override
-    public void showOptionDialog(String title, String message, IFrame.MessageType messageType,final Action[] actions) {
+    public void showOptionDialog(String title, String message, IFrame.MessageType messageType, final Action[] actions) {
 
         final JDialog dialog = new JDialog(App.getInstance().getMainFrame(), title, false);
 
@@ -612,6 +614,20 @@ public class DesktopWindowManager extends WindowManager {
             if (openMode.getOpenType().equals(OpenType.DIALOG)) {
                 JDialog dialog = (JDialog) openMode.getData();
                 dialog.setVisible(false);
+            }
+        }
+        // Stop background tasks
+        WatchDog watchDog = AppContext.getBean(WatchDog.class);
+        watchDog.stopTasks();
+        // Dispose windows
+        for (WindowBreadCrumbs windowBreadCrumbs : tabs.values()) {
+            Window window = windowBreadCrumbs.getCurrentWindow();
+            while (window != null) {
+                IFrame frame = window.getFrame();
+                if (frame instanceof Component.Disposable)
+                    ((Component.Disposable) frame).dispose();
+                windowBreadCrumbs.removeWindow();
+                window = windowBreadCrumbs.getCurrentWindow();
             }
         }
     }

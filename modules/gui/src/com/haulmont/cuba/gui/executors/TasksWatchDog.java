@@ -29,7 +29,7 @@ public class TasksWatchDog implements WatchDog {
     }
 
     /**
-     * Remove finished, canceled or hangup tasks
+     * {@inheritDoc}
      */
     public void cleanupTasks() {
         if (!AppContext.isStarted())
@@ -53,7 +53,22 @@ public class TasksWatchDog implements WatchDog {
     }
 
     /**
-     * Add task under WatchDog control
+     * {@inheritDoc}
+     */
+    public void stopTasks() {
+        if (!AppContext.isStarted())
+            return;
+
+        synchronized (watches) {
+            for (BackgroundWorker.TaskHandler task : watches) {
+                task.close();
+            }
+            watches.clear();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
      * @param backroundTask Task handler
      */
     public void manageTask(BackgroundWorker.TaskHandler backroundTask) {
