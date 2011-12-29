@@ -143,7 +143,8 @@ public class PermissionConfig {
         }
 
         private void compileSpecific() {
-            Node<BasicPermissionTarget> root = new Node<BasicPermissionTarget>(new BasicPermissionTarget("specific", getMessage("permissionConfig.specificRoot"), null));
+            Node<BasicPermissionTarget> root = new Node<BasicPermissionTarget>(
+                    new BasicPermissionTarget("specific", getMessage("permissionConfig.specificRoot"), null));
             specific = new Tree<BasicPermissionTarget>(root);
 
             final String configName = AppContext.getProperty(PERMISSION_CONFIG_XML_PROP);
@@ -196,11 +197,13 @@ public class PermissionConfig {
                 String id = elem.attributeValue("id");
                 String caption = getMessage("permission-config." + id);
                 if ("category".equals(elem.getName())) {
-                    Node<BasicPermissionTarget> n = new Node<BasicPermissionTarget>(new BasicPermissionTarget("category:" + id, caption, null));
+                    Node<BasicPermissionTarget> n = new Node<BasicPermissionTarget>(
+                            new BasicPermissionTarget("category:" + id, caption, null));
                     node.addChild(n);
                     walkSpecific(elem, n);
                 } else if ("permission".equals(elem.getName())) {
-                    Node<BasicPermissionTarget> n = new Node<BasicPermissionTarget>(new BasicPermissionTarget("permission:" + id, caption, id));
+                    Node<BasicPermissionTarget> n = new Node<BasicPermissionTarget>(
+                            new BasicPermissionTarget("permission:" + id, caption, id));
                     node.addChild(n);
                 }
             }
@@ -235,8 +238,8 @@ public class PermissionConfig {
     /**
      * All registered screens
      *
-     * @param locale
-     * @return
+     * @param locale Locale
+     * @return Tree with screen targets
      */
     public Tree<BasicPermissionTarget> getScreens(Locale locale) {
         return getItem(locale).screens;
@@ -245,8 +248,8 @@ public class PermissionConfig {
     /**
      * All registered entities
      *
-     * @param locale
-     * @return
+     * @param locale Locale
+     * @return List of entity targets
      */
     public List<OperationPermissionTarget> getEntities(Locale locale) {
         return getItem(locale).entities;
@@ -255,8 +258,8 @@ public class PermissionConfig {
     /**
      * All registered entities with attributes
      *
-     * @param locale
-     * @return
+     * @param locale Locale
+     * @return List of attribute targets
      */
     public List<MultiplePermissionTarget> getEntityAttributes(Locale locale) {
         return getItem(locale).entityAttributes;
@@ -265,75 +268,12 @@ public class PermissionConfig {
     /**
      * All specific permissions
      *
-     * @param locale
-     * @return
+     * @param locale Locale
+     * @return Tree with specific targets
      */
     public Tree<BasicPermissionTarget> getSpecific(Locale locale) {
         return getItem(locale).specific;
     }
-
-    /**
-     * Entity operations for specified target
-     *
-     * @param entityTarget
-     * @return list of {@link com.haulmont.cuba.security.entity.ui.BasicPermissionTarget} objects
-     */
-    /*public List<BasicPermissionTarget> getEntityOperations(BasicPermissionTarget entityTarget) {
-        if (entityTarget == null) return Collections.emptyList();
-
-        final String id = entityTarget.getId();
-        if (!id.startsWith("entity:")) return Collections.emptyList();
-
-        MetaClass metaClass = MetadataProvider.getSession().getClass(id.substring("entity:".length()));
-        if (metaClass == null) return Collections.emptyList();
-
-        List<BasicPermissionTarget> result = new ArrayList<BasicPermissionTarget>();
-        final String value = entityTarget.getPermissionValue();
-
-        result.add(new BasicPermissionTarget(id + ":read", "read", value + ":read"));
-
-        Class javaClass = metaClass.getJavaClass();
-
-        if (javaClass.isAnnotationPresent(javax.persistence.Entity.class)) {
-            result.add(new BasicPermissionTarget(id + ":create", "create", value + ":create"));
-            result.add(new BasicPermissionTarget(id + ":delete", "delete", value + ":delete"));
-        }
-
-        if (Updatable.class.isAssignableFrom(javaClass)) {
-            result.add(new BasicPermissionTarget(id + ":update", "update", value + ":update"));
-        }
-
-        return result;
-    }*/
-
-    /**
-     * Entity attributes for specified target
-     *
-     * @ param entityTarget
-     * @return list of {@link com.haulmont.cuba.security.entity.ui.BasicPermissionTarget} objects
-     */
-    /* public List<BasicPermissionTarget> getEntityAttributes(BasicPermissionTarget entityTarget) {
-        if (entityTarget == null) return Collections.emptyList();
-
-        final String id = entityTarget.getId();
-        if (!id.startsWith("entity:")) return Collections.emptyList();
-
-        MetaClass metaClass = MetadataProvider.getSession().getClass(id.substring("entity:".length()));
-        if (metaClass == null) return Collections.emptyList();
-
-        final String value = entityTarget.getPermissionValue();
-
-        List<MetaProperty> propertyList = new ArrayList<MetaProperty>(metaClass.getProperties());
-        Collections.sort(propertyList, new MetadataObjectAlphabetComparator());
-
-        List<BasicPermissionTarget> result = new ArrayList<BasicPermissionTarget>();
-        for (MetaProperty metaProperty : propertyList) {
-            String caption = metaProperty.getName() + " (" + MessageUtils.getPropertyCaption(metaProperty) + ")";
-            result.add(new BasicPermissionTarget(id + ":" + metaProperty.getName(), caption, value + ":" + metaProperty.getName()));
-        }
-
-        return result;
-    }*/
 
     private class MetadataObjectAlphabetComparator implements Comparator<MetadataObject> {
         @Override

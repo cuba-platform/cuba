@@ -201,12 +201,12 @@ public class EntityPermissionsFrame extends AbstractFrame {
     }
 
     @SuppressWarnings("unused")
-    private void applyFilter() {
+    public void applyFilter() {
         entityTargetsDs.refresh();
     }
 
     @SuppressWarnings("unused")
-    private void applyPermissionMask() {
+    public void applyPermissionMask() {
         Set selected = entityPermissionsTable.getSelected();
         if (!selected.isEmpty() && (selected.size() > 1)) {
             for (Object obj : selected) {

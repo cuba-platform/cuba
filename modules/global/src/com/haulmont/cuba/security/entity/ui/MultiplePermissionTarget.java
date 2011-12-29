@@ -25,9 +25,6 @@ public class MultiplePermissionTarget extends AbstractPermissionTarget
         implements AssignableTarget, Cloneable {
 
     @MetaProperty(mandatory = true)
-    private String permissionValue;
-
-    @MetaProperty(mandatory = true)
     private List<AttributeTarget> permissions = new LinkedList<AttributeTarget>();
 
     public MultiplePermissionTarget(String id, String caption, String permissionValue) {

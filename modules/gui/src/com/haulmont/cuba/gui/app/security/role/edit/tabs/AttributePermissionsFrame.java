@@ -251,7 +251,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
     }
 
     @SuppressWarnings("unused")
-    private void applyFilter() {
+    public void applyFilter() {
         attributeTargetsDs.refresh();
     }
 

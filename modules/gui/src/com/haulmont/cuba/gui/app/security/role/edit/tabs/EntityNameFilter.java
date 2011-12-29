@@ -40,7 +40,7 @@ public class EntityNameFilter<T extends AssignableTarget> implements Predicate<T
             String filterValue = StringUtils.trimToEmpty(entityFilter.<String>getValue());
             if (StringUtils.isNotBlank(filterValue)) {
                 String permissionValue = target.getPermissionValue();
-                int delimeterIndex = target.getPermissionValue().indexOf(Permission.TARGET_PATH_DELIMETER);
+                int delimeterIndex = permissionValue.indexOf(Permission.TARGET_PATH_DELIMETER);
                 if (delimeterIndex >= 0)
                     permissionValue = permissionValue.substring(0, delimeterIndex);
                 return StringUtils.containsIgnoreCase(permissionValue, filterValue);
