@@ -68,7 +68,7 @@ public class MigGridLayoutAdapter extends GridLayoutAdapter {
         for (int i = 0; i < colCount; i++) {
             float ratio = columnRatio[i];
             colConstr.grow(ratio, i);
-            colConstr.shrink(ratio != 0 ? 1.0f / ratio : 100.0f, i);
+            colConstr.shrink(ratio != 0 ? (float) Math.sqrt(1.0f / ratio) : 100.0f, i);
         }
         layout.setColumnConstraints(colConstr);
     }
