@@ -35,11 +35,6 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
 
     @Override
     protected RemoteInvocationResult doExecuteRequest(HttpInvokerClientConfiguration config, ByteArrayOutputStream baos) throws IOException, ClassNotFoundException {
-        try {
-            Thread.sleep(100);
-        } catch (Exception e) {
-            //
-        }
         HttpURLConnection con = null;
 
         List<String> urlList = support.getUrlList(config.getServiceUrl());
