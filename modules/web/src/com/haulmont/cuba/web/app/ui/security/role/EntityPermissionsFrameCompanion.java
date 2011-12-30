@@ -25,42 +25,21 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 public class EntityPermissionsFrameCompanion implements EntityPermissionsFrame.Companion {
     @Override
     public void initPermissionColoredColumns(Table entityPermissionsTable) {
-        entityPermissionsTable.addGeneratedColumn("createPermissionVariant", new Table.ColumnGenerator() {
-            @Override
-            public Component generateCell(Table table, Object itemId) {
-                OperationPermissionTarget target = getItem(table, (String) itemId);
-                return generateLabelByPermissionVariant(target.getCreatePermissionVariant());
-            }
-        });
-
-        entityPermissionsTable.addGeneratedColumn("readPermissionVariant", new Table.ColumnGenerator() {
-            @Override
-            public Component generateCell(Table table, Object itemId) {
-                OperationPermissionTarget target = getItem(table, (String) itemId);
-                return generateLabelByPermissionVariant(target.getReadPermissionVariant());
-            }
-        });
-
-        entityPermissionsTable.addGeneratedColumn("updatePermissionVariant", new Table.ColumnGenerator() {
-            @Override
-            public Component generateCell(Table table, Object itemId) {
-                OperationPermissionTarget target = getItem(table, (String) itemId);
-                return generateLabelByPermissionVariant(target.getUpdatePermissionVariant());
-            }
-        });
-
-        entityPermissionsTable.addGeneratedColumn("deletePermissionVariant", new Table.ColumnGenerator() {
-            @Override
-            public Component generateCell(Table table, Object itemId) {
-                OperationPermissionTarget target = getItem(table, (String) itemId);
-                return generateLabelByPermissionVariant(target.getDeletePermissionVariant());
-            }
-        });
+        addGeneratedColumnByOperation(entityPermissionsTable, "createPermissionVariant");
+        addGeneratedColumnByOperation(entityPermissionsTable, "readPermissionVariant");
+        addGeneratedColumnByOperation(entityPermissionsTable, "updatePermissionVariant");
+        addGeneratedColumnByOperation(entityPermissionsTable, "deletePermissionVariant");
     }
 
-    private OperationPermissionTarget getItem(Table table, String itemId) {
-        CollectionDatasource<OperationPermissionTarget, String> ds = table.getDatasource();
-        return ds.getItem(itemId);
+    private void addGeneratedColumnByOperation(Table entityPermissionsTable, final String propertyName) {
+        entityPermissionsTable.addGeneratedColumn(propertyName, new Table.ColumnGenerator() {
+            @Override
+            public Component generateCell(Table table, Object itemId) {
+                CollectionDatasource<OperationPermissionTarget, String> ds = table.getDatasource();
+                OperationPermissionTarget target = ds.getItem((String) itemId);
+                return generateLabelByPermissionVariant(target.<PermissionVariant>getValue(propertyName));
+            }
+        });
     }
 
     private Label generateLabelByPermissionVariant(PermissionVariant permissionVariant) {
