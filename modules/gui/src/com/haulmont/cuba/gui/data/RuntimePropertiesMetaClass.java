@@ -39,7 +39,7 @@ public class RuntimePropertiesMetaClass implements MetaClass {
     }
 
     public MetaProperty getProperty(String name) {
-       return properties.get(name);
+        return properties.get(name);
     }
 
     public MetaPropertyPath getPropertyEx(String propertyPath) {
@@ -47,24 +47,12 @@ public class RuntimePropertiesMetaClass implements MetaClass {
     }
 
     public MetaPropertyPath getPropertyPath(String propertyPath) {
-        String[] properties = propertyPath.split("[.]");
-        List<MetaProperty> metaProperties = new ArrayList<MetaProperty>();
+        MetaProperty currentProperty;
 
-		MetaProperty currentProperty;
-		MetaClass currentClass = this;
+        currentProperty = this.getProperty(propertyPath);
+        if (currentProperty == null) return null;
 
-		for (String property : properties) {
-			if (currentClass == null) return null;
-			currentProperty = currentClass.getProperty(property);
-			if (currentProperty == null) return null;
-
-			final Range range = currentProperty.getRange();
-			currentClass = range.isClass() ? range.asClass() : null;
-
-            metaProperties.add(currentProperty);
-		}
-
-		return new MetaPropertyPath(this, metaProperties.toArray(new MetaProperty[metaProperties.size()]));
+        return new MetaPropertyPath(this, currentProperty);
     }
 
     public Collection<MetaProperty> getOwnProperties() {
