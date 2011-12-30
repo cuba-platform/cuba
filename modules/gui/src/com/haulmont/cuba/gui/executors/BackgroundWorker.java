@@ -30,7 +30,8 @@ public interface BackgroundWorker {
 
     /**
      * Create handler for background task
-     * @param <T> progress measure unit
+     *
+     * @param <T>  progress measure unit
      * @param task heavy background task
      * @return Task handler
      */
@@ -52,6 +53,14 @@ public interface BackgroundWorker {
         boolean isCancelled();
 
         boolean isDone();
+
+        /**
+         * Done handler for clear resources
+         * @param handler Runnable handler
+         */
+        void setDoneHandler(Runnable handler);
+
+        Runnable getRunnableHandler();
     }
 
     /**
@@ -73,18 +82,27 @@ public interface BackgroundWorker {
 
         private long startTimeStamp;
         private UserSession userSession;
+        private Window.CloseListener closeListener;
 
         public TaskHandler(TaskExecutor<T, V> taskExecutor, WatchDog watchDog) {
             this.taskExecutor = taskExecutor;
             this.watchDog = watchDog;
             this.userSession = UserSessionProvider.getUserSession();
 
-            BackgroundTask task = taskExecutor.getTask();
+            BackgroundTask<T, V> task = taskExecutor.getTask();
 
-            task.getOwnerWindow().addListener(new Window.CloseListener() {
+            closeListener = new Window.CloseListener() {
                 @Override
                 public void windowClosed(String actionId) {
                     ownerWindowClosed();
+                }
+            };
+            task.getOwnerWindow().addListener(closeListener);
+            // remove close listener on done
+            taskExecutor.setDoneHandler(new Runnable() {
+                @Override
+                public void run() {
+                    removeWindowListener();
                 }
             });
         }
@@ -130,6 +148,9 @@ public interface BackgroundWorker {
                 if (canceled) {
                     BackgroundTask<T, V> task = taskExecutor.getTask();
                     task.canceled();
+
+                    removeWindowListener();
+
                     // Notify listeners
                     for (BackgroundTask.ProgressListener listener : task.getProgressListeners()) {
                         listener.onCancel();
@@ -137,6 +158,13 @@ public interface BackgroundWorker {
                 }
             }
             return canceled;
+        }
+
+        private void removeWindowListener() {
+            // force remove close listener
+            Window ownerWindow = getTask().getOwnerWindow();
+            ownerWindow.removeListener(closeListener);
+            closeListener = null;
         }
 
         @Override
@@ -153,6 +181,9 @@ public interface BackgroundWorker {
             if (AppContext.isStarted()) {
                 UUID userId = getUserSession().getId();
                 Window ownerWindow = getTask().getOwnerWindow();
+
+                removeWindowListener();
+
                 String windowClass = ownerWindow.getClass().getCanonicalName();
                 log.debug("Task killed. User: " + userId + " Window: " + windowClass);
             }
@@ -185,6 +216,7 @@ public interface BackgroundWorker {
 
         /**
          * If task is executing too long
+         *
          * @param time Actual time
          * @return Hangup flag
          */

@@ -130,6 +130,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         private BackgroundTask<T, V> runnableTask;
         private WebTimerListener webTimerListener;
+        private Runnable doneHandler;
 
         private volatile boolean canceled = false;
         private volatile boolean done = false;
@@ -250,6 +251,16 @@ public class WebBackgroundWorker implements BackgroundWorker {
             return done;
         }
 
+        @Override
+        public void setDoneHandler(Runnable handler) {
+            this.doneHandler = handler;
+        }
+
+        @Override
+        public Runnable getRunnableHandler() {
+            return doneHandler;
+        }
+
         public long getIntentVersion() {
             return intentVersion;
         }
@@ -270,7 +281,10 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         public void handleDone() {
             try {
-                runnableTask.done(result);                     
+                runnableTask.done(result);
+                if (doneHandler != null)
+                    doneHandler.run();
+
                 // notify listeners
                 for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
                     listener.onDone(result);
