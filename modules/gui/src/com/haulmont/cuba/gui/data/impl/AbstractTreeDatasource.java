@@ -47,7 +47,7 @@ public abstract class AbstractTreeDatasource<T extends Entity<K>, K>
 
         Map<K, Node<T>> targetNodes = new HashMap<K, Node<T>>();
 
-        data.clear();
+        clear();
         if (tree != null) {
             for (Node<T> node : tree.toList()) {
                 final T entity = node.getData();
