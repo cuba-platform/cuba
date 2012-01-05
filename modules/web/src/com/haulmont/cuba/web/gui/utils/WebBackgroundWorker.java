@@ -130,7 +130,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         private BackgroundTask<T, V> runnableTask;
         private WebTimerListener webTimerListener;
-        private Runnable doneHandler;
+        private Runnable finalizer;
 
         private volatile boolean canceled = false;
         private volatile boolean done = false;
@@ -252,13 +252,13 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
-        public void setDoneHandler(Runnable handler) {
-            this.doneHandler = handler;
+        public void setFinalizer(Runnable finalizer) {
+            this.finalizer = finalizer;
         }
 
         @Override
-        public Runnable getRunnableHandler() {
-            return doneHandler;
+        public Runnable getFinalizer() {
+            return finalizer;
         }
 
         public long getIntentVersion() {
@@ -282,15 +282,17 @@ public class WebBackgroundWorker implements BackgroundWorker {
         public void handleDone() {
             try {
                 runnableTask.done(result);
-                if (doneHandler != null)
-                    doneHandler.run();
-
                 // notify listeners
                 for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
                     listener.onDone(result);
                 }
             } catch (Exception ex) {
                 log.error("Internal background task error", ex);
+            } finally {
+                if (finalizer != null) {
+                    finalizer.run();
+                    finalizer = null;
+                }
             }
         }
     }

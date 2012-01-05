@@ -56,11 +56,12 @@ public interface BackgroundWorker {
 
         /**
          * Done handler for clear resources
-         * @param handler Runnable handler
+         *
+         * @param finalizer Runnable handler
          */
-        void setDoneHandler(Runnable handler);
+        void setFinalizer(Runnable finalizer);
 
-        Runnable getRunnableHandler();
+        Runnable getFinalizer();
     }
 
     /**
@@ -99,10 +100,10 @@ public interface BackgroundWorker {
             };
             task.getOwnerWindow().addListener(closeListener);
             // remove close listener on done
-            taskExecutor.setDoneHandler(new Runnable() {
+            taskExecutor.setFinalizer(new Runnable() {
                 @Override
                 public void run() {
-                    removeWindowListener();
+                    disposeResources();
                 }
             });
         }
@@ -149,18 +150,20 @@ public interface BackgroundWorker {
                     BackgroundTask<T, V> task = taskExecutor.getTask();
                     task.canceled();
 
-                    removeWindowListener();
-
-                    // Notify listeners
-                    for (BackgroundTask.ProgressListener listener : task.getProgressListeners()) {
-                        listener.onCancel();
+                    try {
+                        // Notify listeners
+                        for (BackgroundTask.ProgressListener listener : task.getProgressListeners()) {
+                            listener.onCancel();
+                        }
+                    } finally {
+                        disposeResources();
                     }
                 }
             }
             return canceled;
         }
 
-        private void removeWindowListener() {
+        private void disposeResources() {
             // force remove close listener
             Window ownerWindow = getTask().getOwnerWindow();
             ownerWindow.removeListener(closeListener);
@@ -182,7 +185,7 @@ public interface BackgroundWorker {
                 UUID userId = getUserSession().getId();
                 Window ownerWindow = getTask().getOwnerWindow();
 
-                removeWindowListener();
+                disposeResources();
 
                 String windowClass = ownerWindow.getClass().getCanonicalName();
                 log.debug("Task killed. User: " + userId + " Window: " + windowClass);

@@ -54,7 +54,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
     private class DesktopTaskExecutor<T, V> extends SwingWorker<V, T> implements TaskExecutor<T, V> {
 
         private BackgroundTask<T, V> runnableTask;
-        private Runnable doneHandler;
+        private Runnable finalizer;
         private V result;
 
         private UUID userId;
@@ -94,14 +94,17 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
             if (!runnableTask.isInterrupted()) {
                 try {
                     runnableTask.done(result);
-                    if (doneHandler != null)
-                        doneHandler.run();
                     // Notify listeners
                     for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
                         listener.onDone(result);
                     }
                 } catch (Exception ex) {
                     log.error("Internal background task error", ex);
+                } finally {
+                    if (finalizer != null) {
+                        finalizer.run();
+                        finalizer = null;
+                    }
                 }
             }
         }
@@ -141,13 +144,13 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
-        public void setDoneHandler(Runnable handler) {
-            this.doneHandler = handler;
+        public void setFinalizer(Runnable finalizer) {
+            this.finalizer = finalizer;
         }
 
         @Override
-        public Runnable getRunnableHandler() {
-            return doneHandler;
+        public Runnable getFinalizer() {
+            return finalizer;
         }
 
         @Override
