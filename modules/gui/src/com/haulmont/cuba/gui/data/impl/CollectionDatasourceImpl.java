@@ -318,16 +318,16 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     }
 
     public synchronized void clear() throws UnsupportedOperationException {
-        checkState();
         // Get items
-        List<Object> collectionItems = new LinkedList<Object>(data.values());
+        List<Object> collectionItems = new ArrayList<Object>(data.values());
         // Clear container
         data.clear();
         // Notify listeners
         for (Object obj : collectionItems) {
             T item = (T) obj;
             detachListener(item);
-            forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
+            if (state == State.VALID)
+                forceCollectionChanged(CollectionDatasourceListener.Operation.REMOVE);
         }
     }
 
