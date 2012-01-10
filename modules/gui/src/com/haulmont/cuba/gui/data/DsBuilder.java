@@ -271,6 +271,7 @@ public class DsBuilder {
                     datasource = new CollectionDatasourceImpl(dsContext, dataService, id, metaClass, view, softDeletion);
                     ((CollectionDatasourceImpl) datasource).setRefreshMode(refreshMode);
                 }
+                datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
             } else {
                 try {
                     Constructor constructor = dsClass.getConstructor(
@@ -282,7 +283,6 @@ public class DsBuilder {
                     throw new RuntimeException(e);
                 }
             }
-            datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
         } else {
             if (dsClass == null) {
                 datasource = new CollectionPropertyDatasourceImpl(id, master, property);
@@ -323,6 +323,7 @@ public class DsBuilder {
             if (dsClass == null) {
                 datasource = new HierarchicalDatasourceImpl(dsContext, dataService, id, metaClass, view, softDeletion);
                 ((HierarchicalDatasourceImpl) datasource).setRefreshMode(refreshMode);
+                datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
             } else {
                 try {
                     Constructor constructor = dsClass.getConstructor(
@@ -334,7 +335,6 @@ public class DsBuilder {
                     throw new RuntimeException(e);
                 }
             }
-            datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
         } else {
             if (dsClass == null) {
                 datasource = new HierarchicalPropertyDatasourceImpl(id, master, property);
@@ -359,6 +359,7 @@ public class DsBuilder {
             if (dsClass == null) {
                 datasource = new GroupDatasourceImpl(dsContext, dataService, id, metaClass, view, softDeletion);
                 ((GroupDatasourceImpl) datasource).setRefreshMode(refreshMode);
+                datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
             } else {
                 try {
                     Constructor constructor = dsClass.getConstructor(
@@ -370,7 +371,6 @@ public class DsBuilder {
                     throw new RuntimeException(e);
                 }
             }
-            datasource.setMaxResults(persistenceManager.getMaxFetchUI(metaClass.getName()));
         } else {
             if (dsClass == null) {
                 datasource = new GroupPropertyDatasourceImpl(id, master, property);
@@ -388,7 +388,7 @@ public class DsBuilder {
         return datasource;
     }
 
-    public RuntimePropsDatasource buildRuntimePropsDataSource(String mainDsId){
+    public RuntimePropsDatasource buildRuntimePropsDataSource(String mainDsId) {
         init();
         RuntimePropsDatasourceImpl datasource;
         datasource = new RuntimePropsDatasourceImpl(dsContext, dataService, id, viewName, mainDsId);
