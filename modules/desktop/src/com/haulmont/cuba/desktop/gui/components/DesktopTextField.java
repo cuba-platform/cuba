@@ -68,6 +68,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     private boolean updatingInstance;
 
     private JComponent composition;
+    private TextFieldListener listener;
 
     public DesktopTextField() {
         doc = new TextComponentDocument();
@@ -99,23 +100,36 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
             composition.setMinimumSize(new Dimension(0, height));
 
             doc.putProperty("filterNewlines", false);
-
         } else {
-            if (secret)
-                impl = new JPasswordField();
-            else
-                impl = new JTextField();
-            int height = (int) impl.getPreferredSize().getHeight();
-            impl.setPreferredSize(new Dimension(150, height));
-            composition = impl;
+            impl = createSingleLineField(secret);
+
+            composition = new JPanel(new BorderLayout());
+            composition.add(impl, BorderLayout.CENTER);
         }
 
+        assignImplProperties();
+    }
+
+    private void assignImplProperties() {
+        impl.setEnabled(enabled);
         impl.setEditable(editable);
         impl.setDocument(doc);
-        TextFieldListener listener = new TextFieldListener();
+        impl.setVisible(isVisible());
+        listener = new TextFieldListener();
         impl.addKeyListener(listener);
         impl.addFocusListener(listener);
         impl.putClientProperty(getSwingPropertyId(), getId());
+    }
+
+    private JTextComponent createSingleLineField(boolean secret) {
+        JTextComponent field;
+        if (secret)
+            field = new JPasswordField();
+        else
+            field = new JTextField();
+        int height = (int) field.getPreferredSize().getHeight();
+        field.setPreferredSize(new Dimension(150, height));
+        return field;
     }
 
     @Override
@@ -160,9 +174,34 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
 
     @Override
     public void setSecret(boolean secret) {
-        if (this.secret != secret)
-            impl = null;
-        this.secret = secret;
+        if (this.secret != secret) {
+            JTextComponent oldImpl = impl;
+
+            if (oldImpl instanceof JTextArea)
+                throw new IllegalStateException("Secret property for JTextArea not supported");
+
+            if (listener != null) {
+                oldImpl.removeFocusListener(listener);
+                oldImpl.removeKeyListener(listener);
+            }
+
+            composition.remove(oldImpl);
+
+            String description = getDescription();
+
+            impl = createSingleLineField(secret);
+
+            assignImplProperties();
+
+            composition.add(impl, BorderLayout.CENTER);
+            composition.updateUI();
+
+            setDescription(description);
+
+            updateComponent(prevValue);
+
+            this.secret = secret;
+        }
     }
 
     @Override
@@ -195,18 +234,18 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
 
     @Override
     public void setValue(Object value) {
-       if (!ObjectUtils.equals(prevValue, value)) {
-           if (valueChangingListener != null)
-               value = fireValueChanging(prevValue, value);
+        if (!ObjectUtils.equals(prevValue, value)) {
+            if (valueChangingListener != null)
+                value = fireValueChanging(prevValue, value);
 
-           if (!ObjectUtils.equals(prevValue, value)) {
-               updateInstance(value);
-               updateComponent(value);
-               fireChangeListeners(value);
-           } else {
-               updateComponent(value);
-           }
-       }
+            if (!ObjectUtils.equals(prevValue, value)) {
+                updateInstance(value);
+                updateComponent(value);
+                fireChangeListeners(value);
+            } else {
+                updateComponent(value);
+            }
+        }
     }
 
     private void updateComponent(Object value) {
@@ -317,7 +356,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     }
 
     private void fireChangeListeners() {
-         fireChangeListeners(getValue());
+        fireChangeListeners(getValue());
     }
 
     private void fireChangeListeners(Object newValue) {
