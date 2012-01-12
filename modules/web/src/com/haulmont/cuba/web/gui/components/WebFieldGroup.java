@@ -212,7 +212,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 if (propertyPath != null) {
                     c = fieldGenerator.generateField(ds, propertyId);
                     assignTypicalAttributes(c);
-                    f = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(c);
+                    f = (com.vaadin.ui.Field) WebComponentsHelper.getComposition(c);
 
                     if (f.getPropertyDataSource() == null) {
                         if (field.getDatasource() != null) {
@@ -226,7 +226,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 } else {
                     c = fieldGenerator.generateField(null, null);
                     assignTypicalAttributes(c);
-                    f = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(c);
+                    f = (com.vaadin.ui.Field) WebComponentsHelper.getComposition(c);
                 }
 
                 if (f.getCaption() == null) {
