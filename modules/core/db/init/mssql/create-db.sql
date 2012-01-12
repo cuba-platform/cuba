@@ -607,7 +607,7 @@ create table REPORT_GROUP (
   --
   TITLE varchar(255) not null,
   CODE varchar(255),
-  LOCALE_NAMES text,
+  LOCALE_NAMES varchar(1000),
   --
   primary key (ID)
 )^
@@ -625,7 +625,7 @@ create table REPORT_REPORT
   --
   NAME varchar(255),
   CODE varchar(255),
-  LOCALE_NAMES text,
+  LOCALE_NAMES varchar(1000),
   GROUP_ID uniqueidentifier not null,
   ROOT_DEFINITION_ID uniqueidentifier,
   REPORT_TYPE integer,
@@ -678,7 +678,7 @@ create table REPORT_INPUT_PARAMETER
   REPORT_ID uniqueidentifier,
   TYPE integer,
   NAME varchar(255),
-  LOCALE_NAMES text,
+  LOCALE_NAMES varchar(1000),
   ALIAS varchar(100),
   SCREEN varchar(255),
   FROM_BROWSER tinyint,

@@ -10,15 +10,24 @@
  */
 package com.haulmont.cuba.report.loaders;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.bali.db.QueryRunner;
+import com.haulmont.bali.db.ResultSetHandler;
+import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.sys.persistence.DbTypeConverter;
+import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.DataSet;
-import com.haulmont.cuba.report.DataSetType;
+import com.haulmont.cuba.report.exception.ReportDataLoaderException;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-public class SqlDataDataLoader extends AbstractDbDataLoader {
+public class SqlDataDataLoader extends QueryDataLoader {
 
     public SqlDataDataLoader(Map<String, Object> params) {
         super(params);
@@ -26,21 +35,38 @@ public class SqlDataDataLoader extends AbstractDbDataLoader {
 
     @Override
     public List<Map<String, Object>> loadData(DataSet dataSet, Band parentBand) {
-        List resList = null;
-        List<String> outputParameters = null;
+        List resList;
+        List<String> outputParameters;
 
-        Transaction tx = PersistenceProvider.createTransaction();
+        String query = dataSet.getText();
+        if (StringUtils.isBlank(query)) return Collections.emptyList();
+
+        QueryPack pack = prepareQuery(query, parentBand);
+
+        QueryRunner runner = new QueryRunner(Locator.getDataSource());
         try {
-            String query = dataSet.getText();
-            if (StringUtils.isBlank(query)) return Collections.emptyList();
+            resList = runner.query(pack.getQuery(), pack.getParams(), new ResultSetHandler<List>() {
+                @Override
+                public List handle(ResultSet rs) throws SQLException {
+                    List<Object[]> resList = new ArrayList<Object[]>();
+                    DbTypeConverter typeConverter = DbmsType.getCurrent().getTypeConverter();
 
-            Query select = insertParameters(query, parentBand, DataSetType.SQL);
-            outputParameters = parseQueryOutputParametersNames(query);
-            resList = select.getResultList();
-            tx.commit();
-        } finally {
-            tx.end();
+                    while (rs.next()) {
+                        Object[] values = new Object[rs.getMetaData().getColumnCount()];
+                        for (int columnIndex = 0; columnIndex < rs.getMetaData().getColumnCount(); columnIndex++) {
+                            values[columnIndex] = typeConverter.getJavaObject(rs, columnIndex + 1);
+                        }
+                        resList.add(values);
+                    }
+
+                    return resList;
+                }
+            });
+        } catch (SQLException e) {
+            throw new ReportDataLoaderException(e);
         }
+
+        outputParameters = parseQueryOutputParametersNames(query);
         return fillOutputData(resList, outputParameters);
     }
 }

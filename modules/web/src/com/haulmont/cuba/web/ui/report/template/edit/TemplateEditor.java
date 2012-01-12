@@ -21,6 +21,7 @@ import com.haulmont.cuba.web.app.FileDownloadHelper;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import org.apache.commons.lang.StringUtils;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +38,17 @@ public class TemplateEditor extends BasicEditor {
 
     private ReportTemplate template;
 
+    @Inject
     private Button templatePath;
+
+    @Inject
     private TextField customClass;
+
+    @Inject
     private FileUploadField uploadTemplate;
 
-    private FileDescriptor templateDescriptor;
-
-    private Map deletedContainer;
-    private List deletedList = new ArrayList();
+    private Map<ReportTemplate, ArrayList<FileDescriptor>> deletedContainer;
+    private List<FileDescriptor> deletedList = new ArrayList<FileDescriptor>();
 
     @Override
     public void setItem(Entity item) {
@@ -60,9 +64,11 @@ public class TemplateEditor extends BasicEditor {
             }
         }
         super.setItem(template);
+
+        template = (ReportTemplate) getItem();
         enableCustomProps(template.getCustomFlag());
 
-        templateDescriptor = template.getTemplateFileDescriptor();
+        FileDescriptor templateDescriptor = template.getTemplateFileDescriptor();
         if (templateDescriptor != null)
             templatePath.setCaption(templateDescriptor.getName());
     }
@@ -86,12 +92,9 @@ public class TemplateEditor extends BasicEditor {
 
         deletedContainer = (java.util.Map) params.get("param$deletedContainer");
 
-        uploadTemplate = getComponent("uploadTemplate");
-        templatePath = getComponent("templatePath");
-        customClass = getComponent("customClass");
-
         CheckBox custom = getComponent("customFlag");
         custom.addListener(new ValueListener() {
+            @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 Boolean isCustom = Boolean.TRUE.equals(value);
                 enableCustomProps(isCustom);
@@ -100,18 +103,21 @@ public class TemplateEditor extends BasicEditor {
 
         FileUploadField.Listener uploadListener = new FileUploadField.Listener() {
 
+            @Override
             public void uploadStarted(Event event) {
                 uploadTemplate.setEnabled(false);
             }
 
+            @Override
             public void uploadFinished(Event event) {
                 uploadTemplate.setEnabled(true);
             }
 
+            @Override
             public void uploadSucceeded(Event event) {
                 FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
 
-                templateDescriptor = new com.haulmont.cuba.core.entity.FileDescriptor();
+                FileDescriptor templateDescriptor = new com.haulmont.cuba.core.entity.FileDescriptor();
                 templateDescriptor.setName(uploadTemplate.getFileName());
                 templateDescriptor.setExtension(FileDownloadHelper.getFileExt(uploadTemplate.getFileName()));
 
@@ -119,7 +125,7 @@ public class TemplateEditor extends BasicEditor {
                 templateDescriptor.setSize((int) file.length());
 
                 templateDescriptor.setCreateDate(TimeProvider.currentTimestamp());
-                saveFile(fileUploading, uploadTemplate);
+                saveFile(fileUploading, templateDescriptor, uploadTemplate);
                 templatePath.setCaption(templateDescriptor.getName());
 
                 if (template.getTemplateFileDescriptor() != null)
@@ -130,27 +136,31 @@ public class TemplateEditor extends BasicEditor {
                         "templateEditor.uploadSuccess"), IFrame.NotificationType.HUMANIZED);
             }
 
+            @Override
             public void uploadFailed(Event event) {
                 showNotification(MessageProvider.getMessage(TemplateEditor.class,
                         "templateEditor.uploadUnsuccess"), IFrame.NotificationType.WARNING);
             }
 
+            @Override
             public void updateProgress(long readBytes, long contentLength) {
             }
         };
         uploadTemplate.addListener(uploadListener);
 
         templatePath.setAction(new AbstractAction("report.template") {
+            @Override
             public void actionPerform(Component component) {
-                if (templateDescriptor != null) {
+                if (template.getTemplateFileDescriptor() != null) {
                     WebExportDisplay display = new WebExportDisplay();
-                    display.show(templateDescriptor);
+                    display.show(template.getTemplateFileDescriptor());
                 }
             }
         });
     }
 
-    private void saveFile(FileUploadingAPI fileUploading, FileUploadField uploadTemplate) {
+    private void saveFile(FileUploadingAPI fileUploading, FileDescriptor templateDescriptor,
+                          FileUploadField uploadTemplate) {
         try {
             fileUploading.putFileIntoStorage(uploadTemplate.getFileId(), templateDescriptor);
         } catch (FileStorageException e) {
@@ -163,8 +173,8 @@ public class TemplateEditor extends BasicEditor {
         boolean result = super.commit();
         if (result) {
             if (deletedContainer.get(template) == null)
-                deletedContainer.put(template, new ArrayList());
-            List deletedFilesList = (List) deletedContainer.get(template);
+                deletedContainer.put(template, new ArrayList<FileDescriptor>());
+            List<FileDescriptor> deletedFilesList = deletedContainer.get(template);
             deletedFilesList.addAll(deletedList);
         }
         return result;
@@ -175,8 +185,8 @@ public class TemplateEditor extends BasicEditor {
         boolean result = super.commit(validate);
         if (result && (deletedList.size() > 0)) {
             if (deletedContainer.get(template) == null)
-                deletedContainer.put(template, new ArrayList());
-            List deletedFilesList = (List) deletedContainer.get(template);
+                deletedContainer.put(template, new ArrayList<FileDescriptor>());
+            List<FileDescriptor> deletedFilesList = deletedContainer.get(template);
             deletedFilesList.addAll(deletedList);
         }
         return result;

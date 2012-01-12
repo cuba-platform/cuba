@@ -228,7 +228,11 @@ public class ReportingBean implements ReportingApi {
 
     private ReportEngine getReportEngine(ReportTemplate template) {
         ReportEngine reportEngine = null;
-        String extension = template.getTemplateFileDescriptor().getExtension();
+        FileDescriptor templateFileDescriptor = template.getTemplateFileDescriptor();
+        if (templateFileDescriptor == null)
+            throw new ReportingException("No file descriptor for template: " + template.getCode());
+
+        String extension = templateFileDescriptor.getExtension();
         if (StringUtils.isNotEmpty(extension)) {
             ReportFileExtension reportExt = ReportFileExtension.fromId(extension.toLowerCase());
             if (reportExt != null) {
@@ -266,8 +270,9 @@ public class ReportingBean implements ReportingApi {
 
     private List<Map<String, Object>> getBandData(BandDefinition definition, @Nullable Band parentBand) {
         List<DataSet> dataSets = definition.getDataSets();
+        //add input params to band
         if (dataSets == null || dataSets.size() == 0)
-            return Collections.singletonList(params.get());//add input params to band
+            return Collections.singletonList(params.get());
 
         DataSet firstDataSet = dataSets.get(0);
 
@@ -275,17 +280,22 @@ public class ReportingBean implements ReportingApi {
 
         List<Map<String, Object>> result;
 
-        result = getDataSetData(parentBand, firstDataSet, paramsMap);//gets data from first dataset
+        //gets data from first dataset
+        result = getDataSetData(parentBand, firstDataSet, paramsMap);
 
-        for (int i = 1; i < dataSets.size(); i++) {//adds data from second and following datasets to result
+        //adds data from second and following datasets to result
+        for (int i = 1; i < dataSets.size(); i++) {
             List<Map<String, Object>> dataSetData = getDataSetData(parentBand, dataSets.get(i), paramsMap);
             for (int j = 0; (j < result.size()) && (j < dataSetData.size()); j++) {
                 result.get(j).putAll(dataSetData.get(j));
             }
         }
-        for (Map<String, Object> map : result) {
-            map.putAll(params.get());//add input params to band
-        }
+
+        if (result != null)
+            //add output params to band
+            for (Map<String, Object> map : result) {
+                map.putAll(params.get());
+            }
 
         return result;
     }
@@ -293,6 +303,9 @@ public class ReportingBean implements ReportingApi {
     private List<Map<String, Object>> getDataSetData(Band parentBand, DataSet dataSet, Map<String, Object> paramsMap) {
         List<Map<String, Object>> result = null;
         DataSetType dataSetType = dataSet.getType();
+
+        if (StringUtils.isBlank(dataSet.getText()))
+            throw new ReportingException("Please specify code for dataset: " + dataSet.getName());
 
         DataLoader loader = null;
         if (DataSetType.SQL.equals(dataSetType)) {

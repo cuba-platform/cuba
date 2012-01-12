@@ -16,13 +16,14 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.report.Band;
 import com.haulmont.cuba.report.DataSet;
 import com.haulmont.cuba.report.DataSetType;
+import com.haulmont.cuba.report.exception.ReportDataLoaderException;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class JpqlDataDataLoader extends AbstractDbDataLoader {
+public class JpqlDataDataLoader extends QueryDataLoader {
     public JpqlDataDataLoader(Map<String, Object> params) {
         super(params);
     }
@@ -44,6 +45,8 @@ public class JpqlDataDataLoader extends AbstractDbDataLoader {
             Query select = insertParameters(query, parentBand, DataSetType.JPQL);
             queryResult = select.getResultList();
             tx.commit();
+        } catch (Exception e) {
+            throw new ReportDataLoaderException(e);
         } finally {
             tx.end();
         }

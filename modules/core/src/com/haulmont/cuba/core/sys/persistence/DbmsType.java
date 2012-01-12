@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public enum DbmsType {
 
-    HSQL {
+    HSQL(new HSQLTypeConverter()) {
         @Override
         public Map<String, String> getJpaParameters() {
             Map<String, String> params = new HashMap<String, String>();
@@ -34,7 +34,7 @@ public enum DbmsType {
         }
     },
 
-    POSTGRES {
+    POSTGRES(new PostgresTypeConverter()) {
         @Override
         public Map<String, String> getJpaParameters() {
             Map<String, String> params = new HashMap<String, String>();
@@ -46,7 +46,7 @@ public enum DbmsType {
         }
     },
 
-    MSSQL {
+    MSSQL(new MssqlTypeConverter()) {
         @Override
         public Map<String, String> getJpaParameters() {
             Map<String, String> params = new HashMap<String, String>();
@@ -59,6 +59,16 @@ public enum DbmsType {
     };
 
     public abstract Map<String, String> getJpaParameters();
+
+    private DbTypeConverter typeConverter;
+
+    DbmsType(DbTypeConverter typeConverter) {
+        this.typeConverter = typeConverter;
+    }
+
+    public DbTypeConverter getTypeConverter() {
+        return typeConverter;
+    }
 
     public static DbmsType getCurrent() {
         String id = AppContext.getProperty("cuba.dbmsType");
