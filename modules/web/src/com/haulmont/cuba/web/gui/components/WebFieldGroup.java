@@ -242,7 +242,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     f.setDescription(field.getDescription());
                 }
 
-                if (f.getWidth() == -1f && field.getWidth() != null) {
+                // some components (e.g. LookupPickerField) have width from the creation, so I commented out this check
+                if (/*f.getWidth() == -1f &&*/ field.getWidth() != null) {
                     f.setWidth(field.getWidth());
                 }
 
