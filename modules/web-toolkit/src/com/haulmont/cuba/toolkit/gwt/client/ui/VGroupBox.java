@@ -34,16 +34,14 @@ public class VGroupBox extends VPanel {
     protected Element fieldset;
     protected Element legend;
 
+    protected boolean captionVisible = false;
+
     @Override
     protected void constructDOM() {
         fieldset = DOM.createFieldSet();
         legend = DOM.createLegend();
-//        captionNode = DOM.createDiv();
         expander = DOM.createDiv();
-//        captionText = DOM.createSpan();
         descriptionNode = DOM.createDiv();
-//        bottomDecoration = DOM.createDiv();
-//        contentNode = DOM.createDiv();
 
         captionNode.setClassName(CLASSNAME + "-caption");
         descriptionNode.setClassName(CLASSNAME + "-description");
@@ -103,8 +101,10 @@ public class VGroupBox extends VPanel {
 
         if (!uidl.hasAttribute("caption") || uidl.getStringAttribute("caption").equals("")) {
             addStyleDependentName("nocaption");
+            captionVisible = false;
         } else {
             removeStyleDependentName("nocaption");
+            captionVisible = true;
         }
 
         if (!uidl.hasAttribute("description") || uidl.getStringAttribute("description").equals("")) {
@@ -158,7 +158,10 @@ public class VGroupBox extends VPanel {
 
     @Override
     protected int getCaptionContainerOffsetHeight() {
-        return 0; // because we do not need to count legend offsetHeight
+        if (captionVisible)
+            return captionNode.getOffsetHeight();
+        else
+            return 0;
     }
 
     @Override
@@ -234,7 +237,6 @@ public class VGroupBox extends VPanel {
         client.runDescendentsLayout(this);
 
         Util.runWebkitOverflowAutoFix(contentNode);
-
     }
 
     @Override
