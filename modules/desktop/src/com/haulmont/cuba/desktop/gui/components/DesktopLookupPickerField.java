@@ -30,8 +30,6 @@ public class DesktopLookupPickerField
     public DesktopLookupPickerField() {
         super();
         pickerField = new DesktopPickerField(new Picker());
-        pickerField.addLookupAction();
-        pickerField.addOpenAction();
     }
 
     @Override

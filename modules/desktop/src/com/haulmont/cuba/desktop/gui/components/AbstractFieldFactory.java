@@ -137,6 +137,8 @@ public abstract class AbstractFieldFactory {
             pickerField.removeAction(pickerField.getAction(PickerField.LookupAction.NAME));
         }
         pickerField.setDatasource(datasource, property);
+        pickerField.addLookupAction();
+        pickerField.addClearAction();
         return pickerField;
     }
 

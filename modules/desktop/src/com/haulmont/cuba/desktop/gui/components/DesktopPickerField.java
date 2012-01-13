@@ -62,8 +62,6 @@ public class DesktopPickerField
 
     public DesktopPickerField() {
         impl = new Picker();
-        addLookupAction();
-        addClearAction();
     }
 
     public DesktopPickerField(Picker picker) {

@@ -519,6 +519,10 @@
     <xs:complexType name="pickerFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
+                <xs:sequence>
+                    <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
+                </xs:sequence>
+
                 <xs:attributeGroup ref="hasCaptionSource"/>
 
                 <xs:attribute name="metaClass" type="xs:string" use="optional"/>
@@ -531,6 +535,10 @@
     <xs:complexType name="lookupPickerFieldComponent">
         <xs:complexContent>
             <xs:extension base="baseFieldComponent">
+                <xs:sequence>
+                    <xs:element name="actions" minOccurs="0" maxOccurs="1" type="componentActions"/>
+                </xs:sequence>
+
                 <xs:attributeGroup ref="hasOptions"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
                 <xs:attributeGroup ref="hasExpandapleProp"/>

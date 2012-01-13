@@ -35,8 +35,6 @@ public class WebLookupPickerField
         super();
         Picker picker = new Picker(this, component);
         pickerField = new WebPickerField(picker);
-        pickerField.addLookupAction();
-        pickerField.addOpenAction();
     }
 
     @Override
@@ -129,6 +127,16 @@ public class WebLookupPickerField
     public void setEditable(boolean editable) {
         super.setEditable(editable);
         pickerField.setEditable(editable);
+    }
+
+    @Override
+    public void setWidth(String width) {
+        pickerField.setWidth(width);
+    }
+
+    @Override
+    public void setHeight(String height) {
+        pickerField.setHeight(height);
     }
 
     public static class Picker extends WebPickerField.Picker {

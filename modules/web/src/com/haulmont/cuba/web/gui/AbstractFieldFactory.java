@@ -86,6 +86,8 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                         field = new com.haulmont.cuba.web.toolkit.ui.TextField();
                     } else {
                         final WebPickerField pickerField = new WebPickerField();
+                        pickerField.addLookupAction();
+                        pickerField.addClearAction();
                         pickerField.setMetaClass(range.asClass());
                         cubaField = pickerField;
                         field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(pickerField);

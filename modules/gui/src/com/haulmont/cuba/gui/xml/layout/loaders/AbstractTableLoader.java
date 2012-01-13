@@ -425,9 +425,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             // Try to create a standard list action
             for (ListActionType type : ListActionType.values()) {
                 if (type.getId().equals(id)) {
-                    Action action = type.createAction((ListComponent) actionsHolder);
-                    actionsHolder.addAction(action);
-                    return action;
+                    return type.createAction((ListComponent) actionsHolder);
                 }
             }
         }

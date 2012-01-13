@@ -27,7 +27,7 @@ import java.util.Map;
  *
  * @see LookupPickerField
  *
- * <p>$Id$</p>
+ * @version $Id$
  */
 public interface PickerField extends Field, Component.ActionsHolder {
 
@@ -53,7 +53,48 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public void actionPerformed(String text, Object prevValue);
     }
 
+    /**
+     * Enumerates standard picker action types. Can create a corresponding action instance.
+     */
+    public enum ActionType {
+
+        LOOKUP("lookup") {
+            @Override
+            public Action createAction(PickerField pickerField) {
+                return new LookupAction(pickerField);
+            }
+        },
+
+        CLEAR("clear") {
+            @Override
+            public Action createAction(PickerField pickerField) {
+                return new ClearAction(pickerField);
+            }
+        },
+
+        OPEN("open") {
+            @Override
+            public Action createAction(PickerField pickerField) {
+                return new OpenAction(pickerField);
+            }
+        };
+
+        private String id;
+
+        ActionType(String id) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public abstract Action createAction(PickerField pickerField);
+    }
+
     public static abstract class StandardAction extends AbstractAction {
+
+        private static final long serialVersionUID = 8103707056784950383L;
 
         protected PickerField pickerField;
 
@@ -72,7 +113,9 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
     public static class LookupAction extends StandardAction {
 
-        public static final String NAME = "lookup";
+        private static final long serialVersionUID = 8632079803045944261L;
+
+        public static final String NAME = ActionType.LOOKUP.getId();
 
         protected String lookupScreen;
         protected WindowManager.OpenType lookupScreenOpenType = WindowManager.OpenType.THIS_TAB;
@@ -135,7 +178,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
     public static class ClearAction extends StandardAction {
 
-        public static final String NAME = "clear";
+        public static final String NAME = ActionType.CLEAR.getId();
 
         public ClearAction(PickerField pickerField) {
             super(NAME, pickerField);
@@ -153,7 +196,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
 
     public static class OpenAction extends StandardAction {
 
-        public static final String NAME = "open";
+        public static final String NAME = ActionType.OPEN.getId();
 
         protected String editScreen;
         protected WindowManager.OpenType editScreenOpenType = WindowManager.OpenType.THIS_TAB;

@@ -82,8 +82,6 @@ public class WebPickerField
         });
 
         attachListener(component);
-        addLookupAction();
-        addClearAction();
     }
 
     public WebPickerField(com.haulmont.cuba.web.toolkit.ui.PickerField component) {

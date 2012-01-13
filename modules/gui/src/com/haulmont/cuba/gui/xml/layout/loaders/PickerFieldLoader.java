@@ -37,6 +37,12 @@ public class PickerFieldLoader extends AbstractFieldLoader{
             component.setMetaClass(MetadataProvider.getSession().getClass(metaClass));
         }
 
+        loadActions(component, element);
+        if (component.getActions().isEmpty()) {
+            component.addLookupAction();
+            component.addClearAction();
+        }
+
         // The code below remains for backward compatibility only!
 
         final String lookupScreen = element.attributeValue("lookupScreen");
@@ -75,5 +81,23 @@ public class PickerFieldLoader extends AbstractFieldLoader{
         }
 
         return component;
+    }
+
+    @Override
+    protected Action loadDeclarativeAction(Component.ActionsHolder actionsHolder, Element element) {
+        String id = element.attributeValue("id");
+        if (id == null)
+            throw new IllegalStateException("No action id provided");
+
+        if (StringUtils.isBlank(element.attributeValue("invoke"))) {
+            // Try to create a standard picker action
+            for (PickerField.ActionType type : PickerField.ActionType.values()) {
+                if (type.getId().equals(id)) {
+                    return type.createAction((PickerField) actionsHolder);
+                }
+            }
+        }
+
+        return super.loadDeclarativeAction(actionsHolder, element);
     }
 }
