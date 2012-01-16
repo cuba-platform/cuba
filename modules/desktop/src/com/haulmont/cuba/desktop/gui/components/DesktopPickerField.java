@@ -37,9 +37,8 @@ import java.util.LinkedList;
  * @author krivopustov
  */
 public class DesktopPickerField
-    extends DesktopAbstractField<Picker>
-    implements PickerField
-{
+        extends DesktopAbstractField<Picker>
+        implements PickerField {
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
 
@@ -152,7 +151,7 @@ public class DesktopPickerField
     }
 
     private void fireFieldListener(FieldListener listener, String fieldText) {
-        if (!(ObjectUtils.equals(prevTextValue,fieldText))) {
+        if (!(ObjectUtils.equals(prevTextValue, fieldText))) {
             prevValue = nullValue;
             prevTextValue = fieldText;
             listener.actionPerformed(fieldText, getValue());
@@ -282,7 +281,7 @@ public class DesktopPickerField
         }
 
         impl.setValue(text);
-        prevTextValue=text;
+        prevTextValue = text;
     }
 
     @Override
@@ -336,10 +335,12 @@ public class DesktopPickerField
 
     @Override
     public void removeAction(Action action) {
-        actionsOrder.remove(action);
-        if (action.getOwner() != null && action.getOwner() instanceof DesktopButton) {
-            JButton button = ((DesktopButton) action.getOwner()).getImpl();
-            impl.removeButton(button);
+        if (action != null) {
+            actionsOrder.remove(action);
+            if (action.getOwner() != null && action.getOwner() instanceof DesktopButton) {
+                JButton button = ((DesktopButton) action.getOwner()).getImpl();
+                impl.removeButton(button);
+            }
         }
     }
 

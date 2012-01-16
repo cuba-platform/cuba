@@ -134,7 +134,8 @@ public abstract class AbstractFieldFactory {
         } else {
             pickerField = new DesktopLookupPickerField();
             ((DesktopLookupPickerField) pickerField).setOptionsDatasource(optionsDatasource);
-            pickerField.removeAction(pickerField.getAction(PickerField.LookupAction.NAME));
+            if (pickerField.getAction(PickerField.LookupAction.NAME) != null)
+                pickerField.removeAction(pickerField.getAction(PickerField.LookupAction.NAME));
         }
         pickerField.setDatasource(datasource, property);
         pickerField.addLookupAction();
