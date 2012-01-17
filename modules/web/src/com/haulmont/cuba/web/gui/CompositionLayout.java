@@ -23,21 +23,21 @@ public class CompositionLayout extends VerticalLayout {
         addComponent(component);
     }
 
-    @Override
-    public void setWidth(float width, int unit) {
-        super.setWidth(100, UNITS_PERCENTAGE);
-        if (component != null) {
-            component.setWidth(width, unit);
-        }
-    }
+//    @Override
+//    public void setWidth(float width, int unit) {
+//        super.setWidth(100, UNITS_PERCENTAGE);
+//        if (component != null) {
+//            component.setWidth(width, unit);
+//        }
+//    }
 
-    @Override
-    public void setHeight(float height, int unit) {
-        super.setHeight(100, UNITS_PERCENTAGE);
-        if (component != null) {
-            component.setHeight(height, unit);
-        }
-    }
+//    @Override
+//    public void setHeight(float height, int unit) {
+//        super.setHeight(100, UNITS_PERCENTAGE);
+//        if (component != null) {
+//            component.setHeight(height, unit);
+//        }
+//    }
 
     @Override
     public void setSizeFull() {

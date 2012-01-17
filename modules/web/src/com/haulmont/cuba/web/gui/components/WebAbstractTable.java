@@ -246,6 +246,36 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         return componentComposition;
     }
 
+    @Override
+    public float getHeight() {
+        return componentComposition.getHeight();
+    }
+
+    @Override
+    public int getHeightUnits() {
+        return componentComposition.getHeightUnits();
+    }
+
+    @Override
+    public void setHeight(String height) {
+        componentComposition.setHeight(height);
+    }
+
+    @Override
+    public float getWidth() {
+        return componentComposition.getWidth();
+    }
+
+    @Override
+    public void setWidth(String width) {
+        componentComposition.setWidth(width);
+    }
+
+    @Override
+    public int getWidthUnits() {
+        return componentComposition.getWidthUnits();
+    }
+
     @SuppressWarnings({"UnusedDeclaration"})
     protected CollectionDatasource getOptionsDatasource(MetaClass metaClass, Table.Column column) {
         if (datasource == null)
@@ -350,6 +380,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         componentComposition.setSpacing(true);
         componentComposition.setMargin(false);
         componentComposition.setExpandRatio(component, 1);
+        componentComposition.setSizeFull();
 
         component.setEnableCancelSorting(ConfigProvider.getConfig(WebConfig.class).getEnableCancelTableSorting());
     }
