@@ -130,6 +130,12 @@ public class WebLookupPickerField
     }
 
     @Override
+    public void setRequired(boolean required) {
+        component.setNullSelectionAllowed(!required);
+        pickerField.setRequired(required);
+    }
+
+    @Override
     public void setWidth(String width) {
         pickerField.setWidth(width);
     }
