@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -61,11 +62,13 @@ public class DbUpdaterImpl implements DbUpdater {
 
     {
         extensionHandlers.put(SQL_EXTENSION, new FileHandler() {
+            @Override
             public void run(File file) {
                 executeSqlScript(file);
             }
         });
         extensionHandlers.put(GROOVY_EXTENSION, new FileHandler() {
+            @Override
             public void run(File file) {
                 executeGroovyScript(file);
             }
@@ -88,6 +91,7 @@ public class DbUpdaterImpl implements DbUpdater {
         this.clusterManager = clusterManager;
     }
 
+    @Override
     public void updateDatabase() {
         if (!clusterManager.isMaster()) {
             log.info("Not a master node, exiting");
@@ -101,6 +105,7 @@ public class DbUpdaterImpl implements DbUpdater {
         }
     }
 
+    @Override
     public List<String> findUpdateDatabaseScripts() {
         List<String> list = new ArrayList<String>();
         if (dbInitialized()) {
@@ -179,10 +184,15 @@ public class DbUpdaterImpl implements DbUpdater {
                 File initDir = new File(moduleDir, "update");
                 File scriptDir = new File(initDir, PersistenceProvider.getDbDialect().getName());
                 if (scriptDir.exists()) {
-                    List<File> list = new ArrayList(FileUtils.listFiles(scriptDir, null, true));
+                    List<File> list = new ArrayList<File>(FileUtils.listFiles(scriptDir, null, true));
+                    final URI scriptDirUri = scriptDir.toURI();
                     Collections.sort(list, new Comparator<File>() {
+                        @Override
                         public int compare(File f1, File f2) {
-                            return f1.getName().compareTo(f2.getName());
+                            URI f1Uri = scriptDirUri.relativize(f1.toURI());
+                            URI f2Uri = scriptDirUri.relativize(f2.toURI());
+
+                            return f1Uri.getPath().compareTo(f2Uri.getPath());
                         }
                     });
                     files.addAll(list);
@@ -259,6 +269,7 @@ public class DbUpdaterImpl implements DbUpdater {
         try {
             Set<String> scripts = runner.query("select SCRIPT_NAME from SYS_DB_CHANGELOG",
                     new ResultSetHandler<Set<String>>() {
+                        @Override
                         public Set<String> handle(ResultSet rs) throws SQLException {
                             Set<String> rows = new HashSet<String>();
                             while (rs.next()) {
@@ -302,6 +313,7 @@ public class DbUpdaterImpl implements DbUpdater {
             try {
                 if (sql.trim().toLowerCase().startsWith("select")) {
                     runner.query(sql, new ResultSetHandler<Object>() {
+                        @Override
                         public Object handle(ResultSet rs) throws SQLException {
                             return null;
                         }
@@ -362,6 +374,7 @@ public class DbUpdaterImpl implements DbUpdater {
                 File scriptDir = new File(initDir, PersistenceProvider.getDbDialect().getName());
                 if (scriptDir.exists()) {
                     File[] scriptFiles = scriptDir.listFiles(new FilenameFilter() {
+                        @Override
                         public boolean accept(File dir, String name) {
                             return name.endsWith("create-db.sql");
                         }
@@ -372,5 +385,4 @@ public class DbUpdaterImpl implements DbUpdater {
         }
         return files;
     }
-
 }
