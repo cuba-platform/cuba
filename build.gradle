@@ -151,8 +151,8 @@ configure(coreModule) {
         compile(poi)
         compile(group: 'org.aspectj', name: 'aspectjrt', version: '1.6.6')
         compile(group: 'org.aspectj', name: 'aspectjweaver', version: '1.6.6')
-        compile(group: 'org.mybatis', name: 'mybatis', version: '3.0.4')
-        compile(group: 'org.mybatis', name: 'mybatis-spring', version: '1.0.0')
+        compile(group: 'org.mybatis', name: 'mybatis', version: '3.0.5')
+        compile(group: 'org.mybatis', name: 'mybatis-spring', version: '1.0.1')
         compile(group: 'org.json', name: 'json', version: '20090211')
         compile(group: 'org.openoffice', name: 'juh', version: '3.0.0')
         compile(group: 'org.openoffice', name: 'ridl', version: '3.0.0')
@@ -311,7 +311,7 @@ configure(webModule) {
         widgetSetModules = [webToolkitModule]
         widgetSetClass = 'com.haulmont.cuba.toolkit.gwt.WidgetSet'
 //        jvmArgs('-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000')
-//        compilerArgs = ['-style' : 'PRETTY', '-localWorkers' : '2']
+        //        compilerArgs = ['-style' : 'PRETTY', '-localWorkers' : '2']
     }
     assemble.dependsOn buildGwt
 
@@ -353,7 +353,7 @@ configure(desktopModule) {
         compile(group: 'com.haulmont.thirdparty', name: 'glazedlists', version: '1.9.20110801')
         compile(group: 'org.swinglabs', name: 'swingx-core', version: '1.6.2-2')
 
-        assemble.dependsOn = [ classes ]
+        assemble.dependsOn = [classes]
     }
 
     installApp {
@@ -389,7 +389,7 @@ task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy'], descr
     start.execute()
 }
 
-/***************************** Database related stuff *****************************/
+/** *************************** Database related stuff  *****************************/
 
 configurations {
     jdbc
@@ -402,7 +402,7 @@ dependencies {
 def dbName = 'cubadb'
 def File dbDataDir = file('data')
 def File dbSqlDir = file('modules/core/db/init/sql')
-def dbClasspath = configurations.jdbc.fileCollection{ true }.asPath
+def dbClasspath = configurations.jdbc.fileCollection { true }.asPath
 
 task startDb(description: 'Starts local HSQLDB server') << {
     dbDataDir.mkdirs()
