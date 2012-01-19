@@ -35,8 +35,7 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
             JXTreeTable treeTable,
             HierarchicalDatasource datasource,
             List<Table.Column> columns,
-            boolean autoRefresh)
-    {
+            boolean autoRefresh) {
         this.treeTable = treeTable;
         treeDelegate = new TreeModelAdapter(datasource, CaptionMode.ITEM, null, autoRefresh);
         tableDelegate = new TableModelAdapter(datasource, columns, autoRefresh);
@@ -121,6 +120,11 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
     @Override
     public void removeGeneratedColumn(Table.Column column) {
         tableDelegate.removeGeneratedColumn(column);
+    }
+
+    @Override
+    public boolean isGeneratedColumn(Table.Column column) {
+        return tableDelegate.isGeneratedColumn(column);
     }
 
     @Override

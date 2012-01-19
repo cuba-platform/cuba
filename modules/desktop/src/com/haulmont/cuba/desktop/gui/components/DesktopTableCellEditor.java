@@ -73,6 +73,9 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         Component component = getCellComponent(row);
         applyStyle(component, table, true, false, row);
+
+        String stylename = desktopAbstractTable.getStylename(table, row, column);
+        desktopAbstractTable.applyStylename(isSelected, true, activeComponent, stylename);
         return component;
     }
 
@@ -94,6 +97,9 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         }
 
         applyStyle(activeComponent, table, isSelected, hasFocus, row);
+
+        String stylename = desktopAbstractTable.getStylename(table, row, column);
+        desktopAbstractTable.applyStylename(isSelected, hasFocus, activeComponent, stylename);
 
         return activeComponent;
     }

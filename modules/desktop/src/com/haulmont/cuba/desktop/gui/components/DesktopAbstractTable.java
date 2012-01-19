@@ -623,41 +623,15 @@ public abstract class DesktopAbstractTable<C extends JTable>
     @Override
     public void setStyleProvider(StyleProvider styleProvider) {
         this.styleProvider = styleProvider;
-        final Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
-        TableCellRenderer newRenderer = styleProvider != null ? new CustomCellRenderer() : null;
-        while (columnEnumeration.hasMoreElements()) {
-            TableColumn column = columnEnumeration.nextElement();
-            column.setCellRenderer(newRenderer);
-        }
-    }
 
-    private class CustomCellRenderer implements TableCellRenderer {
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            TableCellRenderer renderer = table.getDefaultRenderer(value != null ? value.getClass() : Object.class);
-            java.awt.Component component = renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-            Entity item = tableModel.getItem(row);
-            int modelColumn = table.convertColumnIndexToModel(column);
-            Object property = columnsOrder.get(modelColumn).getId();
-
-            String style = styleProvider.getStyleName(item, property);
-            if (style != null) {
-                DesktopTheme theme = App.getInstance().getTheme();
-                if (theme != null) {
-                    HashSet<String> properties = new HashSet<String>();
-
-                    if (hasFocus) {
-                        properties.add("focused");
-                    } else if (isSelected) {
-                        properties.add("selected");
-                    } else {
-                        properties.add("unselected");
-                    }
-                    theme.applyStyle(component, style, properties);
-                }
+        for (Table.Column col : columnsOrder) {
+            if (tableModel.isGeneratedColumn(col)) {
+                // it handles styles himself
+            } else {
+                TableColumnModel columnModel = impl.getColumnModel();
+                TableColumn tableColumn = columnModel.getColumn(columnModel.getColumnIndex(col));
+                tableColumn.setCellRenderer(styleProvider != null ? new StylingCellRenderer() : null);
             }
-            return component;
         }
     }
 
@@ -958,5 +932,54 @@ public abstract class DesktopAbstractTable<C extends JTable>
         DesktopTableCellEditor res = (DesktopTableCellEditor) tableColumn.getCellEditor();
 
         return res;
+    }
+
+    protected void applyStylename(boolean isSelected, boolean hasFocus, Component component, String style) {
+        if (style == null) {
+            return;
+        }
+
+        DesktopTheme theme = App.getInstance().getTheme();
+        if (theme != null) {
+            HashSet<String> properties = new HashSet<String>();
+
+            if (hasFocus) {
+                properties.add("focused");
+            } else if (isSelected) {
+                properties.add("selected");
+            } else {
+                properties.add("unselected");
+            }
+            theme.applyStyle(component, style, properties);
+        }
+    }
+
+    protected String getStylename(JTable table, int row, int column) {
+        if (styleProvider == null) {
+            return null;
+        }
+        Entity item = tableModel.getItem(row);
+        int modelColumn = table.convertColumnIndexToModel(column);
+        Object property = columnsOrder.get(modelColumn).getId();
+
+        return styleProvider.getStyleName(item, property);
+    }
+
+    /**
+     * Uses delegate renderer to create cell component.
+     * Then applies desktop styles to cell component.
+     */
+    private class StylingCellRenderer implements TableCellRenderer {
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+                                                       int row, int column) {
+            TableCellRenderer renderer = table.getDefaultRenderer(value != null ? value.getClass() : Object.class);
+            java.awt.Component component = renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+            String style = getStylename(table, row, column);
+            applyStylename(isSelected, hasFocus, component, style);
+            return component;
+        }
     }
 }

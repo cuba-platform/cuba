@@ -41,8 +41,7 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
     public TableModelAdapter(
             CollectionDatasource datasource,
             List<Table.Column> columns,
-            boolean autoRefresh)
-    {
+            boolean autoRefresh) {
         this.datasource = datasource;
         this.columns = columns;
         this.autoRefresh = autoRefresh;
@@ -222,6 +221,11 @@ public class TableModelAdapter extends AbstractTableModel implements AnyTableMod
     @Override
     public void removeGeneratedColumn(Table.Column column) {
         generatedColumns.remove(column);
+    }
+
+    @Override
+    public boolean isGeneratedColumn(Table.Column column) {
+        return generatedColumns.contains(column);
     }
 
     @Override

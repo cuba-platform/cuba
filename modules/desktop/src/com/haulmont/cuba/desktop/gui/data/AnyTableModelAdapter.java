@@ -27,16 +27,22 @@ public interface AnyTableModelAdapter extends TableModel {
     int getRowIndex(Entity entity);
 
     void addGeneratedColumn(Table.Column column);
+
     void removeGeneratedColumn(Table.Column column);
 
+    boolean isGeneratedColumn(Table.Column column);
+
     void addColumn(Table.Column column);
+
     void removeColumn(Table.Column column);
 
     void addChangeListener(DataChangeListener changeListener);
+
     void removeChangeListener(DataChangeListener changeListener);
 
     interface DataChangeListener {
         void beforeChange();
+
         void afterChange();
     }
 }
