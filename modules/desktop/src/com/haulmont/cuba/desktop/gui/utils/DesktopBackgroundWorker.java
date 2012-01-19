@@ -59,6 +59,8 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         private UUID userId;
 
+        private volatile boolean isClosed = false;
+
         private DesktopTaskExecutor(BackgroundTask<T, V> runnableTask) {
             this.runnableTask = runnableTask;
             runnableTask.setProgressHandler(this);
@@ -91,6 +93,9 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         @Override
         protected void done() {
+            if (isClosed)
+                return;
+
             if (!runnableTask.isInterrupted()) {
                 try {
                     runnableTask.done(result);
@@ -105,6 +110,8 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                         finalizer.run();
                         finalizer = null;
                     }
+
+                    isClosed = true;
                 }
             }
         }
@@ -116,11 +123,15 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         @Override
         public boolean cancelExecution(boolean mayInterruptIfRunning) {
+            if (isClosed)
+                return false;
+
             runnableTask.setInterrupted(true);
 
             if (!isDone() && !isCancelled()) {
                 log.debug("Cancel task. User: " + userId);
-                return cancel(mayInterruptIfRunning);
+                isClosed = cancel(mayInterruptIfRunning);
+                return isClosed;
             } else
                 return false;
         }
@@ -130,6 +141,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
             V result;
             try {
                 result = get();
+                this.done();
             } catch (InterruptedException e) {
                 return null;
             } catch (ExecutionException e) {
