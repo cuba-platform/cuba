@@ -34,13 +34,16 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
         this.propertyPath = propertyPath;
         if (item instanceof Datasource) {
             dsManager.addListener(new DatasourceListener<Entity>() {
+                @Override
                 public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
                     fireValueChangeEvent();
                 }
 
+                @Override
                 public void stateChanged(Datasource<Entity> ds, Datasource.State prevState, Datasource.State state) {
                 }
 
+                @Override
                 public void valueChanged(Entity source, String property, Object prevValue, Object value) {
                     if (property.equals(PropertyWrapper.this.propertyPath.toString()))
                         fireValueChangeEvent();
@@ -49,11 +52,12 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
         }
     }
 
+    @Override
     public Object getValue() {
         final Instance instance = getInstance();
         Object value = instance == null ? null : InstanceUtils.getValueEx(instance, propertyPath.getPath());
         if (value == null && propertyPath.getRange().isDatatype()
-                && propertyPath.getRange().asDatatype().equals(Datatypes.getInstance().get(Boolean.class))) {
+                && propertyPath.getRange().asDatatype().equals(Datatypes.get(Boolean.class))) {
             value = Boolean.FALSE;
         }
         return value;
@@ -72,11 +76,12 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
         }
     }
 
+    @Override
     public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
         final Instance instance = getInstance();
-        if (instance == null) throw new IllegalStateException("Instance is null");
 
-        InstanceUtils.setValueEx(instance, propertyPath.getPath(), valueOf(newValue));
+        if (instance != null)
+            InstanceUtils.setValueEx(instance, propertyPath.getPath(), valueOf(newValue));
     }
 
     protected Object valueOf(Object newValue) throws Property.ConversionException {
@@ -115,6 +120,7 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
         }
     }
 
+    @Override
     public Class getType() {
         return propertyPath.getRangeJavaClass();
     }
