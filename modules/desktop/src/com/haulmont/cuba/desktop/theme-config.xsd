@@ -16,6 +16,7 @@
             <xs:element type="uiDefaultsType" name="ui-defaults" maxOccurs="1" minOccurs="0"/>
             <xs:element type="layoutSettingsType" name="layout" maxOccurs="1" minOccurs="0"/>
             <xs:element type="styleType" name="style" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="include" type="includeType" maxOccurs="unbounded" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -63,6 +64,7 @@
             <xs:element type="borderType" name="border" maxOccurs="unbounded" minOccurs="0"/>
             <xs:element type="customDecoratorType" name="custom" maxOccurs="1" minOccurs="0"/>
             <xs:element name="components" maxOccurs="1" minOccurs="0"/>
+            <xs:element name="icon" type="iconDecoratorType" maxOccurs="unbounded" minOccurs="0"/>
         </xs:sequence>
         <xs:attribute type="xs:string" name="component" use="optional"/>
         <xs:attribute type="xs:string" name="name" use="required"/>
@@ -94,6 +96,14 @@
         <xs:attribute type="xs:string" name="margins" use="optional"/>
         <xs:attribute type="xs:string" name="color" use="optional"/>
         <xs:attribute type="xs:int" name="width" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="includeType">
+        <xs:attribute type="xs:string" name="file" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="iconDecoratorType">
+        <xs:attribute type="xs:string" name="name" use="required"/>
     </xs:complexType>
 
     <xs:simpleType name="borderTypeType">

@@ -63,14 +63,10 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
             String xmlLocation = getConfigFileName(themeName, location);
             Resource resource = resourceLoader.getResource(xmlLocation);
             if (resource.exists()) {
-                InputStream stream = null;
                 try {
-                    stream = resource.getInputStream();
-                    loadThemeFromXml(theme, stream);
+                    loadThemeFromXml(theme, resource);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    IOUtils.closeQuietly(stream);
+                    log.error("Error", e);
                 }
             } else {
                 log.warn("Resource " + location + " not found, ignore it");
@@ -91,14 +87,10 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
         return location + "/" + themeName + "/" + themeName + ".xml";
     }
 
-    private void loadThemeFromXml(DesktopThemeImpl theme, InputStream stream) {
-        Document doc;
-        try {
-            SAXReader reader = new SAXReader();
-            doc = reader.read(stream);
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        }
+    private void loadThemeFromXml(DesktopThemeImpl theme, Resource resource) throws IOException {
+        log.info("Loading theme file " + resource.getURL());
+
+        Document doc = readXmlDocument(resource);
         final Element rootElement = doc.getRootElement();
 
         List<DesktopStyle> styles = new ArrayList<DesktopStyle>();
@@ -117,6 +109,8 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
             } else if ("style".equals(elementName)) {
                 DesktopStyle style = loadStyle(element);
                 styles.add(style);
+            } else if ("include".equals(elementName)) {
+                includeThemeFile(theme, element, resource);
             } else {
                 log.error("Unknown tag: " + elementName);
             }
@@ -124,6 +118,39 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
 
         styles.addAll(theme.getStyles());
         theme.setStyles(styles);
+    }
+
+    private Document readXmlDocument(Resource resource) throws IOException {
+        Document doc;
+        InputStream stream = null;
+        try {
+            stream = resource.getInputStream();
+            try {
+                SAXReader reader = new SAXReader();
+                doc = reader.read(stream);
+            } catch (DocumentException e) {
+                throw new RuntimeException(e);
+            }
+        } finally {
+            IOUtils.closeQuietly(stream);
+        }
+        return doc;
+    }
+
+    private void includeThemeFile(DesktopThemeImpl theme, Element element, Resource resource) throws IOException {
+        String fileName = element.attributeValue("file");
+        if (StringUtils.isEmpty(fileName)) {
+            log.error("Missing 'file' attribute to include");
+            return;
+        }
+
+        Resource relativeResource = resource.createRelative(fileName);
+        if (relativeResource.exists()) {
+            log.info("Including theme file " + relativeResource.getURL());
+            loadThemeFromXml(theme, relativeResource);
+        } else {
+            log.error("Resource " + fileName + " not found, ignore it");
+        }
     }
 
     private void loadLayoutSettings(DesktopThemeImpl theme, Element element) {
@@ -207,9 +234,21 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
         } else if (BORDER_TAG.equals(elementName)) {
             Border border = loadBorder(element);
             return new PropertyPathDecorator(property, border, state);
+        } else if ("icon".equals(elementName)) {
+            return loadIconDecorator(element);
         }
+
         log.error("Unknown style tag: " + elementName);
         return null;
+    }
+
+    private ComponentDecorator loadIconDecorator(Element element) {
+        String iconName = element.attributeValue("name");
+        if (StringUtils.isEmpty(iconName)) {
+            log.error("icon requires 'name' attribute");
+            return null;
+        }
+        return new IconDecorator(iconName);
     }
 
     private ComponentDecorator loadFontDecorator(Element element, String property, String state) {
