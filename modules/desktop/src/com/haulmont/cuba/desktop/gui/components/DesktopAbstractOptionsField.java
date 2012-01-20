@@ -232,10 +232,11 @@ public abstract class DesktopAbstractOptionsField<C extends JComponent>
     @Override
     public void setValue(Object value) {
         if (!ObjectUtils.equals(prevValue, value)) {
-            updateComponent(value);
             updateInstance(value);
+            updateComponent(value);
             fireChangeListeners(value);
-        }
+        } else
+            updateComponent(value);
     }
 
     protected abstract Object getSelectedItem();
