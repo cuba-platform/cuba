@@ -122,6 +122,10 @@
     color: #fff;
 }
 
+.v-button-icon-autosize .v-icon {
+    height: auto !important;
+}
+
 .v-horizontallayout-work-area,
 .v-verticallayout-work-area,
 .v-customlayout-work-area {

@@ -51,9 +51,11 @@ public class AddConditionDlg extends Window {
 
         setModal(true);
         setWidth("400px");
+        setHeight("300px");
 
         VerticalLayout layout = new VerticalLayout();
         layout.setSpacing(true);
+        layout.setSizeFull();
 
         setContent(layout);
 
@@ -62,7 +64,7 @@ public class AddConditionDlg extends Window {
 
         tree = new com.haulmont.cuba.web.toolkit.ui.Tree();
         tree.setWidth("100%");
-        tree.setHeight("250px");
+        tree.setHeight("100%");
         tree.setImmediate(true);
         tree.setMultiSelect(false);
         Model model = new Model(metaClass, propertyDescriptors, descriptorBuilder);
@@ -71,7 +73,10 @@ public class AddConditionDlg extends Window {
         tree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
 
         topLayout.addComponent(tree);
+        topLayout.setSizeFull();
+
         layout.addComponent(topLayout);
+        layout.setExpandRatio(topLayout, 1);
 
         VerticalLayout bottomLayout = new VerticalLayout();
         bottomLayout.setMargin(true);
@@ -167,18 +172,22 @@ public class AddConditionDlg extends Window {
             super(messagesPack, filterComponentName, datasource);
         }
 
+        @Override
         public PropertyConditionDescriptor buildPropertyConditionDescriptor(String name, String caption) {
             return new PropertyConditionDescriptor(name, caption, messagesPack, filterComponentName, datasource);
         }
 
+        @Override
         public GroupCreator buildGroupConditionDescriptor(GroupType groupType) {
             return new GroupCreator(groupType, filterComponentName, datasource);
         }
 
+        @Override
         public ConditionCreator buildCustomConditionDescriptor() {
             return new ConditionCreator(filterComponentName, datasource);
         }
 
+        @Override
         public RuntimePropConditionCreator buildRuntimePropConditionDescriptor() {
             return new RuntimePropConditionCreator(filterComponentName, datasource);
         }

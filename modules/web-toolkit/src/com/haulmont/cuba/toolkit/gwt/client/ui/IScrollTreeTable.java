@@ -210,7 +210,7 @@ public class IScrollTreeTable
 
         public class IScrollTreeTableRow extends IScrollTableRow {
             private boolean expanded;
-            private int level;
+            private int level = 0;
 
             protected Element groupCell = null;
             protected Element wrapCell = null;
@@ -248,7 +248,10 @@ public class IScrollTreeTable
                     }
                 }
 
-                level = uidl.getIntAttribute("level");
+                if (uidl.hasAttribute("level"))
+                    level = uidl.getIntAttribute("level");
+                else
+                    level = 0;
 
                 addCells(uidl, col);
 
