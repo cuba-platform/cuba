@@ -11,6 +11,7 @@ import com.haulmont.cuba.desktop.theme.ComponentDecorator;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import net.miginfocom.layout.PlatformDefaults;
 import net.miginfocom.layout.UnitValue;
+import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,7 +31,7 @@ public class DesktopThemeImpl implements DesktopTheme {
 
     private Map<String, Object> uiDefaults;
 
-    private List<DesktopStyle> styles;
+    private Map<String, List<DesktopStyle>> styles;
 
     private Resources resources;
 
@@ -46,7 +47,7 @@ public class DesktopThemeImpl implements DesktopTheme {
     public DesktopThemeImpl(String name) {
         this.name = name;
         this.uiDefaults = new HashMap<String, Object>();
-        this.styles = new ArrayList<DesktopStyle>();
+        this.styles = new HashMap<String, List<DesktopStyle>>();
     }
 
     public Resources getResources() {
@@ -61,7 +62,7 @@ public class DesktopThemeImpl implements DesktopTheme {
         return uiDefaults;
     }
 
-    public List<DesktopStyle> getStyles() {
+    public Map<String, List<DesktopStyle>> getStyles() {
         return styles;
     }
 
@@ -119,7 +120,16 @@ public class DesktopThemeImpl implements DesktopTheme {
     }
 
     @Override
-    public void applyStyle(Object component, String styleName, Set<String> state) {
+    public void applyStyle(Object component, String styleNameString, Set<String> state) {
+        // split string into individual style names
+        StrTokenizer tokenizer = new StrTokenizer(styleNameString);
+        String[] styleNames = tokenizer.getTokenArray();
+        for (String styleName : styleNames) {
+            applyStyleName(component, state, styleName);
+        }
+    }
+
+    private void applyStyleName(Object component, Set<String> state, String styleName) {
         DesktopStyle style = findStyle(component.getClass(), styleName);
         if (style == null) {
             log.warn("Can not find style " + styleName + " for component " + component);
@@ -136,16 +146,36 @@ public class DesktopThemeImpl implements DesktopTheme {
     }
 
     private DesktopStyle findStyle(Class componentClass, String styleName) {
-        for (DesktopStyle desktopStyle : styles) {
-            if (desktopStyle.getName().equals(styleName) && desktopStyle.isSupported(componentClass)) {
+        List<DesktopStyle> stylesByName = styles.get(styleName);
+        if (stylesByName == null) {
+            return null;
+        }
+        for (DesktopStyle desktopStyle : stylesByName) {
+            if (desktopStyle.isSupported(componentClass)) {
                 return desktopStyle;
             }
         }
         return null;
     }
 
-    public void setStyles(List<DesktopStyle> styles) {
+    public void setStyles(Map<String, List<DesktopStyle>> styles) {
         this.styles = styles;
+    }
+
+    /**
+     * Add style to theme. Adding any subsequent style with the same name will override existing styles.
+     *
+     * @param style style to add
+     */
+    public void addStyle(DesktopStyle style) {
+        List<DesktopStyle> list = styles.get(style.getName());
+        if (list != null) {
+            list.add(0, style);
+        } else {
+            list = new ArrayList<DesktopStyle>();
+            list.add(style);
+            styles.put(style.getName(), list);
+        }
     }
 
     public void setMarginSize(Integer marginSize) {

@@ -17,23 +17,39 @@ import java.util.Set;
  */
 public interface DesktopTheme {
 
+    /**
+     * @return name of theme
+     */
     String getName();
 
-    // set look and feel, init ui defaults
+    /**
+     * Invoke this method before any UI components initialization.
+     * Theme sets up look and feel, assigns UI defaults overrides.
+     */
     void init();
 
-    /*
-     * Can be a cuba component or swing or awt component
+    /**
+     * Apply style to CUBA, swing or AWT component.
+     *
+     * @param component component
+     * @param styleName space-separated list of styles to apply
      */
     void applyStyle(Object component, String styleName);
 
-    /*
-     * Used for table style providers
+    /**
+     * Apply style to CUBA, swing or AWT component.
+     * This method is used by table style providers to reflect focus and selection states.
+     *
+     * @param component component
+     * @param styleName space-separated list of styles to apply
+     * @param state     set of strings describing internal swing component state
      */
     void applyStyle(Object component, String styleName, Set<String> state);
 
-    /*
-     * Returns resources associated with the theme
+    /**
+     * Return resources associated with theme.
+     *
+     * @return resources
      */
     Resources getResources();
 }

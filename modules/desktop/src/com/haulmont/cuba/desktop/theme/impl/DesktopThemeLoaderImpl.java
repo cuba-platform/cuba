@@ -93,8 +93,6 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
         Document doc = readXmlDocument(resource);
         final Element rootElement = doc.getRootElement();
 
-        List<DesktopStyle> styles = new ArrayList<DesktopStyle>();
-
         for (Element element : (List<Element>) rootElement.elements()) {
             String elementName = element.getName();
             if ("lookAndFeel".equals(elementName)) {
@@ -108,16 +106,13 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
                 loadLayoutSettings(theme, element);
             } else if ("style".equals(elementName)) {
                 DesktopStyle style = loadStyle(element);
-                styles.add(style);
+                theme.addStyle(style);
             } else if ("include".equals(elementName)) {
                 includeThemeFile(theme, element, resource);
             } else {
                 log.error("Unknown tag: " + elementName);
             }
         }
-
-        styles.addAll(theme.getStyles());
-        theme.setStyles(styles);
     }
 
     private Document readXmlDocument(Resource resource) throws IOException {
