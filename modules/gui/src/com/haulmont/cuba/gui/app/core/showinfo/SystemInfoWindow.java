@@ -9,8 +9,10 @@ package com.haulmont.cuba.gui.app.core.showinfo;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.KeyValueEntity;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import javax.inject.Inject;
@@ -27,14 +29,18 @@ import java.util.UUID;
  */
 public class SystemInfoWindow extends AbstractWindow {
 
-    private Entity instance;
-    private MetaClass metaClass;
+    protected Entity instance;
+    protected MetaClass metaClass;
+
+    public interface Companion {
+        void initInfoTable(Table infoTable);
+    }
 
     @Inject
-    private CollectionDatasource<KeyValueEntity, UUID> paramsDs;
+    protected CollectionDatasource<KeyValueEntity, UUID> paramsDs;
 
     @Inject
-    private Table infoTable;
+    protected Table infoTable;
 
     public SystemInfoWindow(IFrame frame) {
         super(frame);
@@ -47,16 +53,8 @@ public class SystemInfoWindow extends AbstractWindow {
         instance = (Entity) params.get("item");
         metaClass = (MetaClass) params.get("metaClass");
 
-        infoTable.addGeneratedColumn("keyValue", new Table.ColumnGenerator() {
-            @Override
-            public Component generateCell(Table table, Object itemId) {
-                String key = paramsDs.getItem((UUID) itemId).getKeyValue();
-                TextField textField = AppConfig.getFactory().createComponent(TextField.NAME);
-                textField.setValue(key);
-                textField.setEditable(false);
-                return textField;
-            }
-        });
+        Companion companion = getCompanion();
+        companion.initInfoTable(infoTable);
 
         // remove all actions
         List<Action> tableActions = new ArrayList<Action>(infoTable.getActions());
@@ -67,10 +65,11 @@ public class SystemInfoWindow extends AbstractWindow {
     }
 
     private void compileInfo() {
+        Class<?> javaClass = metaClass.getJavaClass();
         includeParam("table.showInfoAction.entityName", metaClass.getName());
-        includeParam("table.showInfoAction.entityClass", metaClass.getJavaClass().getName());
+        includeParam("table.showInfoAction.entityClass", javaClass.getName());
 
-        javax.persistence.Table annotation = (javax.persistence.Table) metaClass.getJavaClass().getAnnotation(javax.persistence.Table.class);
+        javax.persistence.Table annotation = javaClass.getAnnotation(javax.persistence.Table.class);
         if (annotation != null)
             includeParam("table.showInfoAction.entityTable", annotation.name());
 
