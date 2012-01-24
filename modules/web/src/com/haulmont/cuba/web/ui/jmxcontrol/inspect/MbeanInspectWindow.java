@@ -11,26 +11,40 @@
 package com.haulmont.cuba.web.ui.jmxcontrol.inspect;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.jmxcontrol.app.JmxControlService;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanInfo;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperation;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperationParameter;
+import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.ui.jmxcontrol.util.AttributeEditor;
-import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.*;
 
 public class MbeanInspectWindow extends AbstractEditor {
     private static final long serialVersionUID = -7513743050483174295L;
+
+    @Named("attributes")
+    protected Table attrTable;
+
+    @Named("attributes.edit")
+    protected Action editAttributeAction;
+
+    @Inject
+    protected JmxControlService jmxService;
+
+    @Inject
+    protected BoxLayout operations;
+
+    @Inject
+    protected CollectionDatasource<ManagedBeanAttribute, UUID> attrDs;
 
     public MbeanInspectWindow(IFrame frame) {
         super(frame);
@@ -40,90 +54,69 @@ public class MbeanInspectWindow extends AbstractEditor {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        final Table attrTable = (Table) getComponent("attributes");
         com.haulmont.cuba.web.toolkit.ui.Table vaadinAttrTable = (com.haulmont.cuba.web.toolkit.ui.Table) WebComponentsHelper.unwrap(attrTable);
         vaadinAttrTable.setTextSelectionEnabled(true);
 
-        Action refreshAction = new AbstractAction("refresh")  {
-            private static final long serialVersionUID = -603235110641508028L;
-
-            public void actionPerform(Component component) {
-                reloadAttributes();
-            }
-        };
-        attrTable.addAction(refreshAction);
-
-        Action editAction = new AbstractAction("edit") {
-            private static final long serialVersionUID = -603235110641508028L;
-
-            public void actionPerform(Component component) {
-                Set selected = attrTable.getSelected();
-                if (!selected.isEmpty()) {
-                    ManagedBeanAttribute mba = (ManagedBeanAttribute) selected.iterator().next();
-                    if (mba.getWriteable() && !AttributeHelper.isArray(mba.getType())) {
-                        final Window w = openEditor("jmxcontrol$EditAttribute", mba, WindowManager.OpenType.THIS_TAB);
-                        w.addListener(new Window.CloseListener() {
-                            private static final long serialVersionUID = -5430526383879890076L;
-
-                            public void windowClosed(String actionId) {
-                            if (Window.COMMIT_ACTION_ID.equals(actionId) && w instanceof Window.Editor) {
-                                Object item = ((Window.Editor) w).getItem();
-                                reloadAttribute((ManagedBeanAttribute) item);
-                                showNotification(getMessage("editAttribute.success"), IFrame.NotificationType.HUMANIZED);
-                            }
-                        }
-                    });
-
-                    }
+        attrTable.setItemClickAction(editAttributeAction);
+        attrDs.addListener(new CollectionDsListenerAdapter<ManagedBeanAttribute>() {
+            @Override
+            public void collectionChanged(CollectionDatasource ds, Operation operation) {
+                if (ds.getItemIds().isEmpty()) {
+                    attrTable.setHeight("80px"); // reduce its height if no attributes
                 }
             }
+        });
+    }
 
-            @Override
-            public String getCaption() {
-                return getMessage("inspectmbean.attribute.edit");
+    public void editAttribute() {
+        Set selected = attrTable.getSelected();
+        if (selected.isEmpty()) {
+            return;
+        }
+
+        ManagedBeanAttribute mba = (ManagedBeanAttribute) selected.iterator().next();
+        if (!mba.getWriteable() || AttributeHelper.isArray(mba.getType())) {
+            return;
+        }
+
+        final Window.Editor w = openEditor("jmxcontrol$EditAttribute", mba, WindowManager.OpenType.THIS_TAB);
+        w.addListener(new CloseListener() {
+            private static final long serialVersionUID = -5430526383879890076L;
+
+            public void windowClosed(String actionId) {
+                if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                    Object item = w.getItem();
+                    reloadAttribute((ManagedBeanAttribute) item);
+                    showNotification(getMessage("editAttribute.success"), NotificationType.HUMANIZED);
+                }
             }
-        };
-
-        attrTable.setItemClickAction(editAction);
-
-        Action closeAction = new AbstractAction("close") {
-            private static final long serialVersionUID = 3530488601672890970L;
-
-            public void actionPerform(Component component) {
-                commitAndClose();
-            }
-
-            @Override
-            public String getCaption() {
-                return getMessage("close");
-            }
-        };
-        ((Button) getComponent("close")).setAction(closeAction);
+        });
     }
 
     private void reloadAttribute(ManagedBeanAttribute attribute) {
-        Table attrTable = (Table) getComponent("attributes");
-
-        JmxControlService service = ServiceLocator.lookup(JmxControlService.NAME);
-        attribute = service.loadAttributeValue(attribute);
+        attribute = jmxService.loadAttributeValue(attribute);
         attrTable.getDatasource().updateItem(attribute);
     }
 
-    private void reloadAttributes() {
-        Table attrTable = (Table) getComponent("attributes");
+    public void reloadAttributes() {
         attrTable.getDatasource().refresh();
     }
 
     @Override
-     public void setItem(Entity item) {
+    public void setItem(Entity item) {
         super.setItem(item);
 
         initOperationsLayout((ManagedBeanInfo) getItem());
+
+        ManagedBeanInfo mbean = (ManagedBeanInfo) getItem();
+        if (mbean.getObjectName() != null) {
+            setCaption(formatMessage("inspectMbean.title.format", mbean.getObjectName()));
+        }
     }
 
     private void initOperationsLayout(ManagedBeanInfo mbean) {
-        BoxLayout container = getComponent("operations");
-        for (final ManagedBeanOperation op: mbean.getOperations()) {
+        BoxLayout container = operations;
+        for (final ManagedBeanOperation op : mbean.getOperations()) {
             BoxLayout vl = new WebVBoxLayout();
             vl.setMargin(false, false, true, false);
             vl.setSpacing(true);
@@ -147,7 +140,7 @@ public class MbeanInspectWindow extends AbstractEditor {
                 grid.setColumns(4);
                 grid.setRows(op.getParameters().size());
                 int row = 0;
-                for (ManagedBeanOperationParameter param: op.getParameters()) {
+                for (ManagedBeanOperationParameter param : op.getParameters()) {
                     Label pnameLbl = new WebLabel();
                     pnameLbl.setValue(param.getName());
 
@@ -192,29 +185,26 @@ public class MbeanInspectWindow extends AbstractEditor {
             lbl.setValue(getMessage("mbean.operations.none"));
             container.add(lbl);
         }
-    }                                                                                                   
+    }
 
     private void invokeOperation(ManagedBeanOperation op, List<AttributeEditor> attrProviders) {
-        JmxControlService jcs = ServiceLocator.lookup(JmxControlService.NAME);
         Map<String, Object> params = new HashMap<String, Object>();
         Object[] paramValues = new Object[attrProviders.size()];
         try {
             for (int i = 0; i < attrProviders.size(); i++) {
                 paramValues[i] = attrProviders.get(i).getAttributeValue();
             }
-        }
-        catch (Exception e) {
-            showNotification(getMessage("invokeOperation.conversionError"), IFrame.NotificationType.HUMANIZED);
+        } catch (Exception e) {
+            showNotification(getMessage("invokeOperation.conversionError"), NotificationType.HUMANIZED);
             return;
         }
 
         try {
-            Object res = jcs.invokeOperation(op, paramValues);
+            Object res = jmxService.invokeOperation(op, paramValues);
             if (res != null) {
                 params.put("result", res);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             params.put("exception", e);
         }
         Window w = openWindow("jmxcontrol$OperationResult", WindowManager.OpenType.DIALOG, params);

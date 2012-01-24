@@ -12,7 +12,9 @@ package com.haulmont.cuba.web.ui.jmxcontrol.inspect.attribute;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.GridLayout;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.jmxcontrol.app.JmxControlService;
 import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute;
 import com.haulmont.cuba.web.ui.jmxcontrol.util.AttributeEditor;
@@ -38,12 +40,16 @@ public class AttributeEditWindow extends AbstractEditor {
         valueHolder = new AttributeEditor(this, type, mba.getValue());
 
         layout.add(valueHolder.getComponent(), 1, 0);
+
+        if (mba.getName() != null) {
+            setCaption(formatMessage("editAttribute.title.format", mba.getName()));
+        }
     }
 
     @Override
     public void commitAndClose() {
         if (assignValue()) {
-            super.commitAndClose();
+            close(COMMIT_ACTION_ID, true);
         }
     }
 
@@ -60,8 +66,7 @@ public class AttributeEditWindow extends AbstractEditor {
                 }
                 return true;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             showNotification(String.format(getMessage("editAttribute.exception"), e.getMessage()),
                     IFrame.NotificationType.HUMANIZED);
             return false;
