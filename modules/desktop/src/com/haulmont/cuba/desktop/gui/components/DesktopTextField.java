@@ -175,30 +175,33 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     @Override
     public void setSecret(boolean secret) {
         if (this.secret != secret) {
-            JTextComponent oldImpl = impl;
+            if (impl != null) {
 
-            if (oldImpl instanceof JTextArea)
-                throw new IllegalStateException("Secret property for JTextArea not supported");
+                JTextComponent oldImpl = impl;
 
-            if (listener != null) {
-                oldImpl.removeFocusListener(listener);
-                oldImpl.removeKeyListener(listener);
+                if (oldImpl instanceof JTextArea)
+                    throw new IllegalStateException("Secret property for JTextArea not supported");
+
+                if (listener != null) {
+                    oldImpl.removeFocusListener(listener);
+                    oldImpl.removeKeyListener(listener);
+                }
+
+                composition.remove(oldImpl);
+
+                String description = getDescription();
+
+                impl = createSingleLineField(secret);
+
+                assignImplProperties();
+
+                composition.add(impl, BorderLayout.CENTER);
+                composition.updateUI();
+
+                setDescription(description);
+
+                updateComponent(prevValue);
             }
-
-            composition.remove(oldImpl);
-
-            String description = getDescription();
-
-            impl = createSingleLineField(secret);
-
-            assignImplProperties();
-
-            composition.add(impl, BorderLayout.CENTER);
-            composition.updateUI();
-
-            setDescription(description);
-
-            updateComponent(prevValue);
 
             this.secret = secret;
         }
