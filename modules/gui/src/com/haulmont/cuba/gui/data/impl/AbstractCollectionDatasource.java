@@ -390,9 +390,20 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     }
 
     protected Comparator<T> createEntityComparator() {
-        final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
-        final boolean asc = Sortable.Order.ASC.equals(sortInfos[0].getOrder());
-        return new EntityComparator<T>(propertyPath, asc);
+        // In case of generated column the sortInfos can actually contain string as a column identifier.
+        if (sortInfos[0].getPropertyPath() instanceof MetaPropertyPath) {
+            final MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+            final boolean asc = Sortable.Order.ASC.equals(sortInfos[0].getOrder());
+            return new EntityComparator<T>(propertyPath, asc);
+        } else {
+            // If we can not sort the datasource, just return the empty comparator.
+            return new Comparator<T>() {
+                @Override
+                public int compare(T o1, T o2) {
+                    return 0;
+                }
+            };
+        }
     }
 
     protected LoadContext.Query createLoadContextQuery(LoadContext context, Map<String, Object> params) {
