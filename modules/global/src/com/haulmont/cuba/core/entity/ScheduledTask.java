@@ -25,9 +25,25 @@ import java.util.Date;
 @Entity(name = "core$ScheduledTask")
 @Table(name = "SYS_SCHEDULED_TASK")
 @NamePattern("%s.%s|beanName,methodName")
-public class ScheduledTask extends StandardEntity {
+public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDelete {
 
     private static final long serialVersionUID = -2330884126746644884L;
+
+    // ScheduledTask has no @Version field because it is locked pessimistically when processed.
+    // Moreover unfortunately OpenJPA issues a lot of unnecessary "select version from ..." when loads versioned
+    // objects with PESSIMISTIC lock type.
+
+    @Column(name = "UPDATE_TS")
+    protected Date updateTs;
+
+    @Column(name = "UPDATED_BY", length = LOGIN_FIELD_LEN)
+    protected String updatedBy;
+
+    @Column(name = "DELETE_TS")
+    protected Date deleteTs;
+
+    @Column(name = "DELETED_BY", length = LOGIN_FIELD_LEN)
+    protected String deletedBy;
 
     @Column(name = "BEAN_NAME")
     protected String beanName;
@@ -76,6 +92,42 @@ public class ScheduledTask extends StandardEntity {
 
     @Column(name = "LAST_START_SERVER")
     protected String lastStartServer;
+
+    public Date getUpdateTs() {
+        return updateTs;
+    }
+
+    public void setUpdateTs(Date updateTs) {
+        this.updateTs = updateTs;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public Boolean isDeleted() {
+        return deleteTs != null;
+    }
+
+    public Date getDeleteTs() {
+        return deleteTs;
+    }
+
+    public void setDeleteTs(Date deleteTs) {
+        this.deleteTs = deleteTs;
+    }
+
+    public String getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(String deletedBy) {
+        this.deletedBy = deletedBy;
+    }
 
     public String getBeanName() {
         return beanName;

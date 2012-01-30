@@ -94,7 +94,6 @@ create table SYS_SCHEDULED_TASK (
     ID uniqueidentifier not null,
     CREATE_TS datetime,
     CREATED_BY varchar(50),
-    VERSION integer,
     UPDATE_TS datetime,
     UPDATED_BY varchar(50),
     DELETE_TS datetime,

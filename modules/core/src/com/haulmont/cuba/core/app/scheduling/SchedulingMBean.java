@@ -31,4 +31,10 @@ public interface SchedulingMBean {
      * @return  a string representation of active scheduled tasks list
      */
     String printActiveScheduledTasks();
+
+    /**
+     * This method is for testing purposes, it starts the processing once, regardless of "active" attribute.
+     * @return  a message about succesful execution or a stacktrace in case of error
+     */
+    String processScheduledTasksOnce();
 }

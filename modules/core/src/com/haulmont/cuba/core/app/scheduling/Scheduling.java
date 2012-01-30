@@ -19,6 +19,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.security.sys.UserSessionManager;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.perf4j.StopWatch;
@@ -77,6 +78,23 @@ public class Scheduling extends ManagementBean implements SchedulingAPI, Schedul
         if (!AppContext.isStarted() || !isActive())
             return;
 
+        internalProcessTasks();
+    }
+
+    @Override
+    public String processScheduledTasksOnce() {
+        if (!AppContext.isStarted())
+            return "Not started yet";
+
+        try {
+            internalProcessTasks();
+            return "Done";
+        } catch (Throwable e) {
+            return ExceptionUtils.getStackTrace(e);
+        }
+    }
+
+    private void internalProcessTasks() {
         log.debug("Processing scheduled tasks");
         if (schedulingStartTime == 0)
             schedulingStartTime = timeSource.currentTimeMillis();
