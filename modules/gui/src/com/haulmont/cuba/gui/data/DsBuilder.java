@@ -11,6 +11,7 @@ package com.haulmont.cuba.gui.data;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.MetadataProvider;
@@ -32,7 +33,7 @@ import java.lang.reflect.Constructor;
  * CollectionDatasource usersDs = new DsBuilder(getDsContext())
  *               .setMetaClass(metaClass)
  *               .setId("usersDs")
- *               .setViewName("_minimal")
+ *               .setViewName(View.MINIMAL)
  *               .buildCollectionDatasource();</pre>
  *
  * If you set <code>master</code> and <code>property</code> properties you will get a <code>PropertyDatasource</code>
@@ -85,7 +86,7 @@ public class DsBuilder {
             this.dataService = new GenericDataService();
 
         this.viewRepository = MetadataProvider.getViewRepository();
-        this.persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
+        this.persistenceManager = ServiceLocator.lookup(PersistenceManagerClient.NAME);
     }
 
     public DsContext getDsContext() {

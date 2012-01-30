@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.web.jmx;
 
+import com.haulmont.cuba.client.sys.PersistenceManagerClient;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Scripting;
 import org.apache.commons.logging.Log;
@@ -30,6 +31,9 @@ public class Caching implements CachingMBean {
     @Inject
     private Messages messages;
 
+    @Inject
+    private PersistenceManagerClient persistenceManagerClient;
+
     @Override
     public void clearGroovyCache() {
         scripting.clearCache();
@@ -40,5 +44,11 @@ public class Caching implements CachingMBean {
     public void clearMessagesCache() {
         messages.clearCache();
         log.info("Messages cache has been cleared");
+    }
+
+    @Override
+    public void clearPersistenceManagerClientCache() {
+        persistenceManagerClient.clearCache();
+        log.info("PersistenceManagerClient cache has been cleared");
     }
 }

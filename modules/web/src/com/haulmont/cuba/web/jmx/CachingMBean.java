@@ -16,4 +16,6 @@ public interface CachingMBean {
     void clearGroovyCache();
 
     void clearMessagesCache();
+
+    void clearPersistenceManagerClientCache();
 }
