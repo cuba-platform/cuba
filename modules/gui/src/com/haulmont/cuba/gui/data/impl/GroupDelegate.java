@@ -212,7 +212,7 @@ public abstract class GroupDelegate<T extends Entity<K>, K> {
         return null;
     }
 
-    public Collection<K> getGroupItemIds(GroupInfo groupId) {
+    public List<K> getGroupItemIds(GroupInfo groupId) {
         if (containsGroup(groupId)) {
             List<K> itemIds;
             if ((itemIds = groupItems.get(groupId)) == null) {

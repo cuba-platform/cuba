@@ -112,4 +112,66 @@ public class GroupDatasourceImpl<T extends Entity<K>, K>
     public boolean containsGroup(GroupInfo groupId) {
         return groupDelegate.containsGroup(groupId);
     }
+
+    @Override
+    public K nextItemId(K itemId) {
+        if (!groupDelegate.rootGroups().isEmpty()) {
+            // Works in bounds of the current top-level group
+            for (GroupInfo rootGroup : groupDelegate.rootGroups()) {
+                List<K> groupItemIds = groupDelegate.getGroupItemIds(rootGroup);
+                for (int i = 0; i < groupItemIds.size(); i++) {
+                    if (groupItemIds.get(i).equals(itemId) && i < groupItemIds.size() - 1) {
+                        return groupItemIds.get(i + 1);
+                    }
+                }
+            }
+            return null;
+        } else
+            return super.nextItemId(itemId);
+    }
+
+    @Override
+    public K prevItemId(K itemId) {
+        if (!groupDelegate.rootGroups().isEmpty()) {
+            for (GroupInfo rootGroup : groupDelegate.rootGroups()) {
+                // Works in bounds of the current top-level group
+                List<K> groupItemIds = groupDelegate.getGroupItemIds(rootGroup);
+                for (int i = 0; i < groupItemIds.size(); i++) {
+                    if (groupItemIds.get(i).equals(itemId) && i > 0) {
+                        return groupItemIds.get(i - 1);
+                    }
+                }
+            }
+            return null;
+        } else
+            return super.prevItemId(itemId);
+    }
+
+    @Override
+    public K firstItemId() {
+        List<GroupInfo> rootGroups = groupDelegate.rootGroups();
+        if (!rootGroups.isEmpty()) {
+            List<K> groupItemIds = groupDelegate.getGroupItemIds(rootGroups.get(0));
+            if (!groupItemIds.isEmpty())
+                return groupItemIds.get(0);
+            else
+                return null;
+        } else {
+            return super.firstItemId();
+        }
+    }
+
+    @Override
+    public K lastItemId() {
+        List<GroupInfo> rootGroups = groupDelegate.rootGroups();
+        if (!rootGroups.isEmpty()) {
+            List<K> groupItemIds = groupDelegate.getGroupItemIds(rootGroups.get(rootGroups.size() - 1));
+            if (!groupItemIds.isEmpty())
+                return groupItemIds.get(groupItemIds.size() - 1);
+            else
+                return null;
+        } else {
+            return super.lastItemId();
+        }
+    }
 }
