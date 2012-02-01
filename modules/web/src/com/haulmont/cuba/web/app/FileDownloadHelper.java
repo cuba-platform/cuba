@@ -13,8 +13,9 @@ package com.haulmont.cuba.web.app;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
@@ -25,6 +26,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import org.apache.commons.lang.StringUtils;
+
+import java.text.NumberFormat;
 
 public class FileDownloadHelper {
 
@@ -52,7 +55,7 @@ public class FileDownloadHelper {
     public static String makeUrl(FileDescriptor fd, boolean attachment) {
         StringBuilder sb = new StringBuilder();
         sb.append("dispatch/download?")
-                .append("s=").append(UserSessionClient.getUserSession().getId()).append("&")
+                .append("s=").append(UserSessionProvider.getUserSession().getId()).append("&")
                 .append("f=").append(fd.getId());
         if (attachment)
             sb.append("&a=true");
@@ -87,7 +90,7 @@ public class FileDownloadHelper {
                             }
                         });
                     }
-                    ((AbstractComponent)component).setImmediate(true);
+                    ((AbstractComponent) component).setImmediate(true);
                     component.setStyleName("link");
                     return component;
                 }
@@ -103,6 +106,7 @@ public class FileDownloadHelper {
         final com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
 
         vTable.addGeneratedColumn(nameProperty, new com.vaadin.ui.Table.ColumnGenerator() {
+            @Override
             public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                 Instance enclosingEntity = ds.getItem(itemId);
                 if (enclosingEntity != null) {
@@ -114,6 +118,7 @@ public class FileDownloadHelper {
                         } else {
                             component = new Button(fd.getName(),
                                     new Button.ClickListener() {
+                                        @Override
                                         public void buttonClick(Button.ClickEvent event) {
                                             new WebExportDisplay().show(fd);
                                         }
@@ -126,5 +131,26 @@ public class FileDownloadHelper {
                 return new Label();
             }
         });
+    }
+
+    public static String formatFileSize(long longSize, int decimalPos) {
+        NumberFormat fmt = NumberFormat.getNumberInstance();
+        if (decimalPos >= 0) {
+            fmt.setMaximumFractionDigits(decimalPos);
+        }
+        final double size = longSize;
+        double val = size / (1024 * 1024);
+        if (val > 1) {
+            return fmt.format(val).concat(" " + MessageProvider.getMessage(FileDownloadHelper.class, "fmtMb"));
+        }
+        val = size / 1024;
+        if (val > 10) {
+            return fmt.format(val).concat(" " + MessageProvider.getMessage(FileDownloadHelper.class, "fmtKb"));
+        }
+        return fmt.format(size).concat(" " + MessageProvider.getMessage(FileDownloadHelper.class, "fmtB"));
+    }
+
+    public static String formatFileSize(long fileSize) {
+        return formatFileSize(fileSize, 0);
     }
 }
