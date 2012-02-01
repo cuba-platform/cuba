@@ -56,7 +56,13 @@ public class CubaApplicationContext extends WebApplicationContext {
         super.endTransaction(application, request);
     }
 
-//    public CommunicationManager getCommunicationManager(Application application) {
-//        return (CommunicationManager) applicationToAjaxAppMgrMap.get(application);
-//    }
+    /**
+     * Uses in HTTP controllers for access to Vaadin components
+     * @param application Application
+     * @return CommunicationManager for Application
+     */
+    @SuppressWarnings("unused")
+    public CommunicationManager getCommunicationManager(Application application) {
+        return (CommunicationManager) applicationToAjaxAppMgrMap.get(application);
+    }
 }

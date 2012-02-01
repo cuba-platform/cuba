@@ -148,37 +148,4 @@ public class FileDownloadController {
     private void error(HttpServletResponse response) throws IOException {
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
-
-    private App getExistingApplication(HttpServletRequest request,
-                                       HttpServletResponse response) {
-        // Ensures that the session is still valid
-        final HttpSession session = request.getSession(true);
-
-        // Gets application list for the session.
-        final Collection applications = WebApplicationContext
-                .getApplicationContext(session).getApplications();
-
-        // Search for the application (using the application URI) from the list
-        for (final Iterator i = applications.iterator(); i.hasNext();) {
-            final Application a = (Application) i.next();
-            final String aPath = a.getURL().getPath();
-
-            String servletPath = request.getContextPath();
-            if (!servletPath.endsWith("/")) {
-                servletPath += "/";
-            }
-
-            if (servletPath.equals(aPath)) {
-                // Found a running application
-                if (a.isRunning() && a instanceof App) {
-                    return (App) a;
-                }
-                break;
-            }
-        }
-
-        // Existing application not found
-        return null;
-    }
-
 }
