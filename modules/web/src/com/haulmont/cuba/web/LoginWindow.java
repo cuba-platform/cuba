@@ -265,7 +265,7 @@ public class LoginWindow extends Window implements Action.Handler {
         localesSelect.setValue(selected);
 
         if (ActiveDirectoryHelper.useActiveDirectory()) {
-            loginField.setValue(app.getUser() == null ? null : ((Principal) app.getUser()).getName());
+            loginField.setValue(app.getUser() == null ? "" : ((Principal) app.getUser()).getName());
             passwordField.setValue("");
         } else {
 

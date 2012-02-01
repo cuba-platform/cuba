@@ -11,39 +11,39 @@
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
-import jespa.http.HttpSecurityService;
-import jespa.security.SecurityProviderException;
+import com.vaadin.Application;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import com.vaadin.terminal.gwt.server.WebApplicationContext;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-public class CubaHttpFilter extends HttpSecurityService implements Filter
-{
+public class CubaHttpFilter implements Filter {
     private static Log log = LogFactory.getLog(CubaHttpFilter.class);
 
     private List<String> bypassUrls = new ArrayList<String>();
+    private Filter activeDirectoryFilter;
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        Map<String, String> properties = new HashMap<String, String>();
-
         if (ActiveDirectoryHelper.useActiveDirectory()) {
-            properties.put("jespa.bindstr", ActiveDirectoryHelper.getBindStr());
-            properties.put("jespa.service.acctname", ActiveDirectoryHelper.getAcctName());
-            properties.put("jespa.service.password", ActiveDirectoryHelper.getAcctPassword());
-            properties.put("jespa.account.canonicalForm", "3");
-            properties.put("jespa.log.path", ConfigProvider.getConfig(GlobalConfig.class).getLogDir() + "/jespa.log");
-            ActiveDirectoryHelper.fillFromSystemProperties(properties);
-
+            try {
+                String filterClass = ConfigProvider.getConfig(WebConfig.class).getActiveDirectoryFilterClass();
+                activeDirectoryFilter = (Filter) Class.forName(filterClass).newInstance();
+                activeDirectoryFilter.init(filterConfig);
+            } catch (Exception e) {
+                throw new ServletException(e);
+            }
+            // Fill bypassUrls
             String urls = ConfigProvider.getConfig(WebConfig.class).getCubaHttpFilterBypassUrls();
             String[] strings = urls.split("[, ]");
             for (String string : strings) {
@@ -51,15 +51,10 @@ public class CubaHttpFilter extends HttpSecurityService implements Filter
                     bypassUrls.add(string);
             }
         }
-        try {
-            super.init(properties);
-        } catch (SecurityProviderException e) {
-            throw new ServletException(e);
-        }
     }
 
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
-    {
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         request.setCharacterEncoding("UTF-8");
 
         if (ActiveDirectoryHelper.useActiveDirectory()) {
@@ -74,15 +69,51 @@ public class CubaHttpFilter extends HttpSecurityService implements Filter
                     break;
                 }
             }
-            if (!bypass)
-                super.doFilter(request, response, chain);
-            else
+            if (!bypass) {
+                if (!checkApplicationSession((HttpServletRequest) request))
+                    activeDirectoryFilter.doFilter(request, response, chain);
+                else
+                    chain.doFilter(request, response);
+            } else
                 chain.doFilter(request, response);
         } else {
             chain.doFilter(request, response);
         }
     }
 
+    private boolean checkApplicationSession(HttpServletRequest request) {
+        if (request.getSession() == null)
+            return false;
+
+        final HttpSession session = request.getSession(true);
+        if (session == null)
+            return false;
+
+        WebApplicationContext applicationContext = CubaApplicationContext.getExistingApplicationContext(session);
+        if (applicationContext == null)
+            return false;
+
+        final Collection<Application> applications = applicationContext.getApplications();
+
+        for (Application app : applications) {
+            String appPath = app.getURL().getPath();
+
+            String servletPath = request.getContextPath();
+            if (!servletPath.equals("/"))
+                servletPath += "/";
+
+            if (servletPath.equals(appPath)) {
+                if (app.isRunning() && (app instanceof App)) {
+                    if (((App) app).getConnection().isConnected())
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    @Override
     public void destroy() {
     }
 }

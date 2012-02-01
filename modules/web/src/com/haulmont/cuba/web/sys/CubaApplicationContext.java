@@ -10,17 +10,21 @@
  */
 package com.haulmont.cuba.web.sys;
 
-import com.vaadin.terminal.gwt.server.AbstractCommunicationManager;
-import com.vaadin.terminal.gwt.server.WebApplicationContext;
-import com.vaadin.terminal.gwt.server.CommunicationManager;
-import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
 import com.vaadin.Application;
+import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
+import com.vaadin.terminal.gwt.server.CommunicationManager;
+import com.vaadin.terminal.gwt.server.WebApplicationContext;
 
 import javax.servlet.http.HttpSession;
 
 @SuppressWarnings("serial")
 public class CubaApplicationContext extends WebApplicationContext {
     protected CubaApplicationContext() {
+    }
+
+    static public CubaApplicationContext getExistingApplicationContext(HttpSession session) {
+        return (CubaApplicationContext) session
+                .getAttribute(WebApplicationContext.class.getName());
     }
 
     static public CubaApplicationContext getApplicationContext(HttpSession session) {
@@ -52,7 +56,7 @@ public class CubaApplicationContext extends WebApplicationContext {
         super.endTransaction(application, request);
     }
 
-    public CommunicationManager getCommunicationManager(Application application) {
-        return (CommunicationManager) applicationToAjaxAppMgrMap.get(application);
-    }
+//    public CommunicationManager getCommunicationManager(Application application) {
+//        return (CommunicationManager) applicationToAjaxAppMgrMap.get(application);
+//    }
 }
