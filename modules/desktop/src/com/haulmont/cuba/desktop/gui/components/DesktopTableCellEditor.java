@@ -7,8 +7,11 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
 import org.jdesktop.swingx.JXHyperlink;
+import org.perf4j.StopWatch;
+import org.perf4j.log4j.Log4JStopWatch;
 import sun.swing.DefaultLookup;
 
 import javax.swing.*;
@@ -18,9 +21,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.FocusEvent;
-import java.util.EventObject;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>$Id$</p>
@@ -39,13 +40,57 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
      * true, if cells of this column hold editable content.
      * Swing treats keyboard, mouse, focus events for editable and not-editable cells differently.
      */
-    private boolean editable = true;
+    private boolean editable;
     private DesktopAbstractTable desktopAbstractTable;
     private Border border;
+    private Class<? extends com.haulmont.cuba.gui.components.Component> componentClass;
 
-    public DesktopTableCellEditor(DesktopAbstractTable desktopAbstractTable, Table.ColumnGenerator columnGenerator) {
+    private static final Set<Class> readOnlyComponentClasses = new HashSet<Class>(Arrays.asList(
+            Label.class, Checkbox.class
+    ));
+
+    private static final Set<Class> inlineComponentClasses = new HashSet<Class>(Arrays.asList(
+            Label.class, Checkbox.class
+    ));
+
+    public DesktopTableCellEditor(DesktopAbstractTable desktopAbstractTable, Table.ColumnGenerator columnGenerator,
+                                  Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
         this.desktopAbstractTable = desktopAbstractTable;
         this.columnGenerator = columnGenerator;
+        this.componentClass = componentClass;
+        this.editable = isEditableComponent(componentClass);
+    }
+
+    /*
+     * If component is editable, it should gain focus from table.
+     * Mouse events like mouse dragging are treated differently for editable columns.
+     */
+    protected boolean isEditableComponent(Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
+        if (componentClass == null) {
+            return true;
+        }
+        for (Class readOnlyClass: readOnlyComponentClasses) {
+            if (componentClass.isAssignableFrom(readOnlyClass)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /*
+     * Inline components always fit in standard row height,
+     * so there is no need to pack rows for desktop table.
+     */
+    public boolean isInline() {
+        if (componentClass == null) {
+            return false;
+        }
+        for (Class inlineClass: inlineComponentClasses) {
+            if (componentClass.isAssignableFrom(inlineClass)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -59,7 +104,11 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
 
     protected Component getCellComponent(int row) {
         Entity item = desktopAbstractTable.getTableModel().getItem(row);
+
+        StopWatch sw = new Log4JStopWatch("TableColumnGenerator." + desktopAbstractTable.getId());
         com.haulmont.cuba.gui.components.Component component = columnGenerator.generateCell(desktopAbstractTable, item.getId());
+        sw.stop();
+
         Component comp;
         if (component == null)
             comp = new JLabel("");
@@ -124,9 +173,9 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         jcomponent.setOpaque(true);
 
         if (isSelected) {
-            if (jcomponent instanceof JTextField) {
+            if (isTextField(jcomponent)) {
                 // another JTextField dirty workaround. If use selectionBackground, then it's all blue
-                jcomponent.setBackground(Color.WHITE);
+                jcomponent.setBackground(table.getBackground());
                 jcomponent.setForeground(table.getForeground());
             } else {
                 jcomponent.setBackground(table.getSelectionBackground());
@@ -143,12 +192,38 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         assignBorder(table, isSelected, hasFocus, jcomponent);
     }
 
-    private void assignBorder(JTable table, boolean isSelected, boolean hasFocus, JComponent jcomponent) {
+    private boolean isTextField(JComponent jcomponent) {
         if (jcomponent instanceof JTextField) {
-            // looks bad with empty border
+            return true;
+        }
+        if (jcomponent instanceof JPanel) {
+            Component[] panelChildren = jcomponent.getComponents();
+            if ((panelChildren.length == 1 && panelChildren[0] instanceof JTextField)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isLookupField(JComponent jcomponent) {
+        if (jcomponent instanceof JComboBox) {
+            return true;
+        }
+        if (jcomponent instanceof JPanel) {
+            Component[] panelChildren = jcomponent.getComponents();
+            if ((panelChildren.length == 1 && panelChildren[0] instanceof JComboBox)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void assignBorder(JTable table, boolean isSelected, boolean hasFocus, JComponent jcomponent) {
+        if (isTextField(jcomponent)) {
+            // looks like simple label when with empty border
         } else if (border != null) {
             jcomponent.setBorder(border);
-        } else if (jcomponent instanceof JComboBox || jcomponent instanceof JXHyperlink) {
+        } else if (isLookupField(jcomponent) || jcomponent instanceof JXHyperlink) {
             // empty borders for fields except text fields in tables
             jcomponent.setBorder(new EmptyBorder(0, 0, 0, 0));
         } else {

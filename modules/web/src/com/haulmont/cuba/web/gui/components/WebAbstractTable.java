@@ -22,7 +22,6 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
@@ -50,7 +49,8 @@ import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 import com.haulmont.cuba.web.toolkit.ui.TableSupport;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.event.*;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.ThemeResource;
@@ -66,6 +66,8 @@ import org.dom4j.Element;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+
+import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 
 public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.Table>
         extends WebAbstractList<T> implements Table {
@@ -914,6 +916,13 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                     }
                 }
         );
+    }
+
+    @Override
+    public void addGeneratedColumn(String columnId, ColumnGenerator generator,
+                                   Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
+        // web ui doesn't make any improvements with componentClass known
+        addGeneratedColumn(columnId, generator);
     }
 
     @Override

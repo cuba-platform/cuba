@@ -256,6 +256,17 @@ public interface Table
 
     void addGeneratedColumn(String columnId, ColumnGenerator generator);
 
+    /**
+     * Method useful for desktop UI.
+     * Table can make addititional look, feel and performance tweaks
+     * if it knows class of components that will be generated.
+     *
+     * @param columnId column identifier
+     * @param generator column generator
+     * @param componentClass class of components that generator will provide
+     */
+    void addGeneratedColumn(String columnId, ColumnGenerator generator, Class<? extends Component> componentClass);
+
     void removeGeneratedColumn(String columnId);
 
     /**

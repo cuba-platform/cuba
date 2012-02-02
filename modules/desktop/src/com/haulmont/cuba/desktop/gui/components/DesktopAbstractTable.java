@@ -427,7 +427,6 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     protected void onDataChange() {
-        StopWatch sw = new Log4JStopWatch("DAT onDataChange " + id);
         Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
         while (columnEnumeration.hasMoreElements()) {
             TableColumn tableColumn = columnEnumeration.nextElement();
@@ -437,7 +436,6 @@ public abstract class DesktopAbstractTable<C extends JTable>
             }
         }
         impl.repaint();
-        sw.stop();
     }
 
     protected void initChangeListener() {
@@ -645,6 +643,12 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
     @Override
     public void addGeneratedColumn(String columnId, ColumnGenerator generator) {
+        addGeneratedColumn(columnId, generator, null);
+    }
+
+    @Override
+    public void addGeneratedColumn(String columnId, ColumnGenerator generator,
+                                   Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
         if (columnId == null)
             throw new IllegalArgumentException("columnId is null");
         if (generator == null)
@@ -655,7 +659,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
         col.setEditable(false); // generated column must be non-editable, see TableModelAdapter.setValueAt()
         TableColumnModel columnModel = impl.getColumnModel();
         TableColumn tableColumn = columnModel.getColumn(columnModel.getColumnIndex(col));
-        DesktopTableCellEditor cellEditor = new DesktopTableCellEditor(this, generator);
+        DesktopTableCellEditor cellEditor = new DesktopTableCellEditor(this, generator, componentClass);
         tableColumn.setCellEditor(cellEditor);
         tableColumn.setCellRenderer(cellEditor);
 
@@ -890,17 +894,40 @@ public abstract class DesktopAbstractTable<C extends JTable>
     public void packRows() {
         impl.setRowHeight(DEFAULT_ROW_HEIGHT);
 
-        StopWatch sw = new Log4JStopWatch("DAT packRows " + id);
-        if (generatedColumnsCount > 0) {
-            for (int r = 0; r < impl.getRowCount(); r++) {
-                int h = getPreferredRowHeight(r);
+        if (allColumnsAreInline()) {
+            return;
+        }
 
-                if (impl.getRowHeight(r) != h) {
-                    impl.setRowHeight(r, h);
-                }
+        StopWatch sw = new Log4JStopWatch("DAT packRows " + id);
+        for (int r = 0; r < impl.getRowCount(); r++) {
+            int h = getPreferredRowHeight(r);
+
+            if (impl.getRowHeight(r) != h) {
+                impl.setRowHeight(r, h);
             }
         }
         sw.stop();
+    }
+
+    private boolean allColumnsAreInline() {
+        if (generatedColumnsCount <= 0) {
+            return true;
+        }
+        TableColumnModel columnModel = impl.getColumnModel();
+        for (Column column: columnsOrder) {
+            if (!tableModel.isGeneratedColumn(column)) {
+                continue;
+            }
+
+            int columnIndex = columnModel.getColumnIndex(column);
+            TableColumn tableColumn = columnModel.getColumn(columnIndex);
+            DesktopTableCellEditor cellEditor = (DesktopTableCellEditor) tableColumn.getCellEditor();
+            boolean inline = cellEditor.isInline();
+            if (!inline) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

@@ -222,7 +222,8 @@ public class DesktopTreeTable
     }
 
     @Override
-    public void addGeneratedColumn(String columnId, ColumnGenerator generator) {
+    public void addGeneratedColumn(String columnId, ColumnGenerator generator,
+                                   Class<? extends com.haulmont.cuba.gui.components.Component> componentClass) {
         if (columnId == null)
             throw new IllegalArgumentException("columnId is null");
         if (generator == null)
@@ -234,6 +235,6 @@ public class DesktopTreeTable
         int columnIndex = columnModel.getColumnIndex(col);
         if (columnIndex == 0)
             throw new UnsupportedOperationException("Unable to add cell renderer for hierarchical column in TreeTable");
-        cellRenderers.put(columnIndex, new DesktopTableCellEditor(this, generator));
+        cellRenderers.put(columnIndex, new DesktopTableCellEditor(this, generator, componentClass));
     }
 }
