@@ -65,6 +65,16 @@ public class ViewRepository
             throw new IllegalArgumentException("MetaClass is null");
 
         View view = findView(metaClass, name);
+        if (view == null) {
+            Map<Class, Class> map = MetadataProvider.getReplacedEntities();
+            for (Map.Entry<Class, Class> entry : map.entrySet()) {
+                if (entry.getValue().equals(metaClass.getJavaClass())) {
+                    view = findView(MetadataProvider.getSession().getClass(entry.getKey()), name);
+                    break;
+                }
+            }
+        }
+
         if (view == null)
             throw new ViewNotFoundException(String.format("View %s/%s not found", metaClass.getName(), name));
         return view;
