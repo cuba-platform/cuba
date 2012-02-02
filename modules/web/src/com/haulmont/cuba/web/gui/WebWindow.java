@@ -16,7 +16,10 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.gui.*;
+import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.DialogParams;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Timer;
@@ -27,20 +30,18 @@ import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
-import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.gui.components.WebFrameActionsHolder;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Layout;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import java.util.*;
-import java.util.List;
 
 public class WebWindow
         implements
@@ -290,8 +291,11 @@ public class WebWindow
 
     public void setFocusComponent(String componentId) {
         Component component = getComponent(componentId);
-        if (component != null)
+        if (component != null) {
             component.requestFocus();
+        } else {
+            log.error("Can't find focus component: " + componentId);
+        }
     }
 
     public void addListener(CloseListener listener) {

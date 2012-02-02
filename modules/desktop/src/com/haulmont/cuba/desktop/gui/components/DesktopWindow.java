@@ -136,7 +136,12 @@ public class DesktopWindow implements Window, Component.Disposable,
 
     @Override
     public void setFocusComponent(String componentId) {
-        getComponent(componentId).requestFocus();
+        Component component = getComponent(componentId);
+        if (component != null) {
+            component.requestFocus();
+        } else {
+            log.error("Can't find focus component: " + componentId);
+        }
     }
 
     @Override

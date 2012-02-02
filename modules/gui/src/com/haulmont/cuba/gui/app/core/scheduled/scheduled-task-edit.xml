@@ -8,8 +8,7 @@
         class="com.haulmont.cuba.gui.app.core.scheduled.ScheduledTaskEditor"
         messagesPack="com.haulmont.cuba.gui.app.core.scheduled"
         datasource="taskDs"
-        caption="msg://taskEditCaption"
-        focusComponent="activeField">
+        caption="msg://taskEditCaption">
 
     <dsContext>
         <datasource

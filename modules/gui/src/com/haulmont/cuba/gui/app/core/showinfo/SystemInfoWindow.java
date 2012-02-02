@@ -49,7 +49,7 @@ public class SystemInfoWindow extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
-
+        getDialogParams().setHeight(250);
         instance = (Entity) params.get("item");
         metaClass = (MetaClass) params.get("metaClass");
 
