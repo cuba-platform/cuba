@@ -95,6 +95,12 @@ public class LoginWorkerBean implements LoginWorker
     public UserSession login(String login, String password, Locale locale)
             throws LoginException
     {
+        if (password == null) {
+            throw new LoginException(
+                    String.format(MessageProvider.getMessage(getClass(), "LoginException.InvalidLoginOrPassword", locale), login)
+            );
+        }
+        
         Transaction tx = persistence.createTransaction();
         try {
             User user = loadUser(login, password, locale);
