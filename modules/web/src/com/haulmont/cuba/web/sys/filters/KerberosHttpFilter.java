@@ -66,42 +66,53 @@ public class KerberosHttpFilter implements Filter {
             response.flushBuffer();
         } else {
             try {
-                String authString = auth.substring("Negotiate ".length());
-                final byte[] kerberosToken = Base64.decodeBase64(authString.getBytes());
-                
+                final String authString = auth.substring("Negotiate ".length());
+
                 Subject serviceSubject = createSeviceSubject();
                 if (serviceSubject != null) {
-                    final GSSName clientName = Subject.doAs(serviceSubject, new PrivilegedAction<GSSName>() {
-                        @Override
-                        public GSSName run() {
-                            try {
-                                GSSManager manager = GSSManager.getInstance();
-                                GSSContext context = manager.createContext((GSSCredential) null);
-                                context.acceptSecContext(kerberosToken, 0, kerberosToken.length);
-                                return context.getSrcName();
-                            } catch (GSSException e) {
-                                log.info("Unable to login user", e);
-                                return null;
-                            }
-                        }
-                    });
+                    final GSSName clientName = authentication(serviceSubject, authString);
                     if (clientName != null) {
-                        filterChain.doFilter(new HttpServletRequestWrapper(request) {
+                        // New User Principal for request
+                        HttpServletRequestWrapper securedRequest = new HttpServletRequestWrapper(request) {
                             @Override
                             public Principal getUserPrincipal() {
                                 return new KerberosPrincipal(clientName);
                             }
-                        }, response);
+                        };
+                        log.debug("Success auth: " + securedRequest.getUserPrincipal().getName());
+
+                        // Proceed filter with new User Principal with auth name
+                        filterChain.doFilter(securedRequest, response);
                     }
                 } else
-                    throw new Exception("Unable to obtain kerberos service context");
-                
+                    throw new LoginException("Null serviceSubject returned from LoginContext");
+
+            } catch (LoginException le) {
+                log.error("Unabled to login service subject: ", le);
             } catch (Exception e) {
-                log.info("Exception while authetification", e);
+                log.debug("Exception while authetification", e);
             }
         }
     }
-    
+
+    private GSSName authentication(Subject serviceSubject, final String authString) {
+        final byte[] kerberosToken = Base64.decodeBase64(authString.getBytes());
+        return Subject.doAs(serviceSubject, new PrivilegedAction<GSSName>() {
+            @Override
+            public GSSName run() {
+                try {
+                    GSSManager manager = GSSManager.getInstance();
+                    GSSContext context = manager.createContext((GSSCredential) null);
+                    context.acceptSecContext(kerberosToken, 0, kerberosToken.length);
+                    return context.getSrcName();
+                } catch (GSSException e) {
+                    log.info("Unable to login user with token: " + authString, e);
+                    return null;
+                }
+            }
+        });
+    }
+
     private Subject createSeviceSubject() throws LoginException {
         WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
         LoginContext loginContext = new LoginContext(webConfig.getKerberosLoginModule(),

@@ -22,13 +22,13 @@ import com.vaadin.terminal.gwt.server.*;
 import com.vaadin.ui.Window;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -59,10 +59,6 @@ public class CubaApplicationServlet extends ApplicationServlet {
             request.getSession().invalidate();
             response.sendRedirect(requestURI);
             return;
-        }
-
-        if (request.getParameter("testSS") != null) {
-            testSessionSerialization(request.getSession());
         }
 
         // Code for multiple windows support
@@ -137,7 +133,7 @@ public class CubaApplicationServlet extends ApplicationServlet {
                         .getApplicationManager(application, this);
 
                 if (applicationManager instanceof CubaCommunicationManager) {
-                    ((CubaCommunicationManager) applicationManager).handleMultiUpload(request, response,(App)application);
+                    ((CubaCommunicationManager) applicationManager).handleMultiUpload(request, response, (App) application);
                     return;
                 }
             } catch (SessionExpiredException e) {
@@ -157,34 +153,6 @@ public class CubaApplicationServlet extends ApplicationServlet {
 
     private boolean isMultiUpload(HttpServletRequest request) {
         return ServletFileUpload.isMultipartContent(request);
-    }
-
-    private void testSessionSerialization(HttpSession session) {
-        String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
-        String fileName = tempDir + "/" + DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMddHHmmssSSS") + ".ser";
-        FileOutputStream fos = null;
-        ObjectOutputStream oos = null;
-        try {
-            fos = new FileOutputStream(fileName);
-            oos = new ObjectOutputStream(fos);
-
-            Enumeration names = session.getAttributeNames();
-            while (names.hasMoreElements()) {
-                Object value = session.getAttribute((String) names.nextElement());
-                oos.writeObject(value);
-            }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                if (oos != null) oos.close();
-                if (fos != null) fos.close();
-            } catch (IOException e) {
-                //
-            }
-        }
     }
 
     @Override
@@ -379,12 +347,6 @@ public class CubaApplicationServlet extends ApplicationServlet {
         }
         page.write("vaadin.themesLoaded['" + themeName + "'] = true;\n}\n");
         page.write("//]]>\n</script>\n");
-    }
-
-    void sendCriticalNotification(HttpServletRequest request,
-                                  HttpServletResponse response, String caption, String message,
-                                  String details, String url) throws IOException {
-        criticalNotification(request, response, caption, message, details, url);
     }
 
     @Override

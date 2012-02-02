@@ -14,18 +14,17 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.vaadin.Application;
+import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.vaadin.terminal.gwt.server.WebApplicationContext;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class CubaHttpFilter implements Filter {
     private static Log log = LogFactory.getLog(CubaHttpFilter.class);
@@ -54,11 +53,20 @@ public class CubaHttpFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
+            throws IOException, ServletException {
+
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+
         request.setCharacterEncoding("UTF-8");
 
+        String requestURI = request.getRequestURI();
+
+        boolean filtered = false;
+
         if (ActiveDirectoryHelper.useActiveDirectory()) {
-            String requestURI = ((HttpServletRequest) request).getRequestURI();
+            // Active Directory integration
             if (!requestURI.endsWith("/"))
                 requestURI = requestURI + "/";
 
@@ -70,13 +78,15 @@ public class CubaHttpFilter implements Filter {
                 }
             }
             if (!bypass) {
-                if (!checkApplicationSession((HttpServletRequest) request))
+                if (!checkApplicationSession(request)) {
+                    log.debug("AD authentification");
                     activeDirectoryFilter.doFilter(request, response, chain);
-                else
-                    chain.doFilter(request, response);
-            } else
-                chain.doFilter(request, response);
-        } else {
+                    filtered = true;
+                }
+            }
+        }
+
+        if (!filtered) {
             chain.doFilter(request, response);
         }
     }
@@ -88,6 +98,9 @@ public class CubaHttpFilter implements Filter {
         final HttpSession session = request.getSession(true);
         if (session == null)
             return false;
+
+        if (isWebResourcesRequest(request))
+            return true;
 
         WebApplicationContext applicationContext = CubaApplicationContext.getExistingApplicationContext(session);
         if (applicationContext == null)
@@ -111,6 +124,10 @@ public class CubaHttpFilter implements Filter {
         }
 
         return false;
+    }
+
+    private boolean isWebResourcesRequest(HttpServletRequest request) {
+        return (request.getRequestURI() != null) && (request.getRequestURI().contains("/VAADIN/"));
     }
 
     @Override
