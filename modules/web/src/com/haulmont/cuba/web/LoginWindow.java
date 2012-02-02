@@ -236,7 +236,7 @@ public class LoginWindow extends Window implements Action.Handler {
             }
 
             loginField.setValue(login);
-            passwordField.setValue(app.getCookieValue(COOKIE_PASSWORD));
+            passwordField.setValue(app.getCookieValue(COOKIE_PASSWORD) != null ? app.getCookieValue(COOKIE_PASSWORD) : "");
             loginByRememberMe = true;
 
             loginChangeListener = new Property.ValueChangeListener() {
@@ -313,9 +313,8 @@ public class LoginWindow extends Window implements Action.Handler {
                 ActiveDirectoryHelper.authenticate(login, (String) passwordField.getValue(), loc);
                 ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
             } else {
-                String passwd = loginByRememberMe
-                        ? (String) passwordField.getValue()
-                        : DigestUtils.md5Hex((String) passwordField.getValue());
+                String value = passwordField.getValue() != null ? (String) passwordField.getValue() : "";
+                String passwd = loginByRememberMe ? value : DigestUtils.md5Hex(value);
                 Locale locale = getUserLocale();
                 App.getInstance().setLocale(locale);
                 login(login, passwd, locale);
@@ -356,7 +355,7 @@ public class LoginWindow extends Window implements Action.Handler {
                     app.addCookie(COOKIE_REMEMBER_ME, String.valueOf(rememberMe));
 
                     String login = (String) loginField.getValue();
-                    String password = (String) passwordField.getValue();
+                    String password = passwordField.getValue() != null ? (String) passwordField.getValue() : "";
 
                     String encodedLogin;
                     try {
