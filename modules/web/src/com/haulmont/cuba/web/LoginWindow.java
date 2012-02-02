@@ -228,7 +228,7 @@ public class LoginWindow extends Window implements Action.Handler {
             rememberMe.setValue(true);
 
             String login;
-            String encodedLogin = app.getCookieValue(COOKIE_LOGIN);
+            String encodedLogin = app.getCookieValue(COOKIE_LOGIN) != null ? app.getCookieValue(COOKIE_LOGIN) : "";
             try {
                 login = URLDecoder.decode(encodedLogin, "UTF-8");
             } catch (UnsupportedEncodingException e) {
