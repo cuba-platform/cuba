@@ -33,6 +33,7 @@
         <hbox expand="spacer" width="100%" spacing="true" margin="true">
             <label value="msg://screen"/>
             <lookupField id="screenFilter" width="250"/>
+            <label width="20"/>
             <label value="msg://component"/>
             <textField id="componentTextField" width="250"/>
             <button id="addPermissionBtn" caption="msg://action.add" invoke="addUiPermission"/>

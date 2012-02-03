@@ -31,8 +31,8 @@
     <layout expandLayout="true" expand="contentPane">
         <!-- Filter -->
         <hbox expand="spacer" width="100%" spacing="true" margin="true">
-            <checkBox id="assignedOnlyCheckBox" caption="msg://assignedOnly"/>
-            <label width="100"/>
+            <checkBox id="assignedOnlyCheckBox" caption="msg://assignedOnly" align="MIDDLE_LEFT"/>
+            <label width="20"/>
             <label value="msg://entityFilter"/>
             <textField id="entityFilter" width="120"/>
             <button id="applyFilterBtn" caption="msg://action.apply" invoke="applyFilter"/>

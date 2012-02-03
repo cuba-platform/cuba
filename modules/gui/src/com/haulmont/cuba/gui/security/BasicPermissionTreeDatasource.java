@@ -34,7 +34,8 @@ public abstract class BasicPermissionTreeDatasource extends AbstractTreeDatasour
     private Tree<BasicPermissionTarget> permissionsTree;
     private CollectionDatasource<Permission, UUID> permissionDs;
 
-    public BasicPermissionTreeDatasource(DsContext context, DataService dataservice, String id, MetaClass metaClass, String viewName) {
+    public BasicPermissionTreeDatasource(DsContext context, DataService dataservice,
+                                         String id, MetaClass metaClass, String viewName) {
         super(context, dataservice, id, metaClass, viewName);
     }
 

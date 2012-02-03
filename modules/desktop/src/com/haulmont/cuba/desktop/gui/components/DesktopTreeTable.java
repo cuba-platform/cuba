@@ -211,8 +211,13 @@ public class DesktopTreeTable
         TableCellEditor cellEditor = impl.getCellEditor();
         if (cellEditor instanceof DesktopTableCellEditor) {
             ((DesktopTableCellEditor) cellEditor).clearCache();
-            impl.repaint();
         }
+        for (TableCellRenderer renderer : cellRenderers.values()) {
+            if (renderer instanceof DesktopTableCellEditor) {
+                ((DesktopTableCellEditor) renderer).clearCache();
+            }
+        }
+        impl.repaint();
     }
 
     @Override

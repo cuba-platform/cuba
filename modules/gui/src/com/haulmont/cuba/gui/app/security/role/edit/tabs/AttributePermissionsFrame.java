@@ -224,6 +224,8 @@ public class AttributePermissionsFrame extends AbstractFrame {
         attachAllCheckboxListener(allReadOnlyCheck, AttributePermissionVariant.READ_ONLY);
         attachAllCheckboxListener(allHideCheck, AttributePermissionVariant.HIDE);
 
+        propertyPermissionsDs.refresh();
+
         // client specific code
         Companion companion = getCompanion();
         companion.initPermissionColoredColumn(propertyPermissionsTable);
@@ -246,7 +248,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
             }
         });
 
-        propertyPermissionsDs.refresh();
         attributeTargetsDs.refresh();
     }
 

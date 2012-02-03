@@ -688,15 +688,14 @@ public abstract class DesktopAbstractTable<C extends JTable>
         TableCellEditor cellEditor = impl.getCellEditor();
         if (cellEditor instanceof DesktopTableCellEditor) {
             ((DesktopTableCellEditor) cellEditor).clearCache();
-            impl.repaint();
         }
         for (Column column : getColumns()) {
             TableCellEditor columnCellEditor = impl.getColumn(column).getCellEditor();
             if (columnCellEditor instanceof DesktopTableCellEditor) {
                 ((DesktopTableCellEditor) columnCellEditor).clearCache();
-                impl.repaint();
             }
         }
+        impl.repaint();
     }
 
     @Override

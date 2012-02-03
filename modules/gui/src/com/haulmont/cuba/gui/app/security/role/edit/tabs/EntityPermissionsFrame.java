@@ -161,6 +161,8 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
         initCheckBoxesControls();
 
+        entityPermissionsDs.refresh();
+
         Companion companion = getCompanion();
         companion.initPermissionColoredColumns(entityPermissionsTable);
 
@@ -196,7 +198,6 @@ public class EntityPermissionsFrame extends AbstractFrame {
             }
         });
 
-        entityPermissionsDs.refresh();
         entityTargetsDs.refresh();
     }
 
