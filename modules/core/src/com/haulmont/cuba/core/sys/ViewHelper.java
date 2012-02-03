@@ -46,23 +46,7 @@ public class ViewHelper
             fetchPlan.removeFetchGroup(FetchPlan.GROUP_DEFAULT);
             fetchPlan.setExtendedPathLookup(true);
 
-            Set<FetchPlanField> fetchPlanFields;
-            if (!StringUtils.isEmpty(view.getName())) {
-                fetchPlanFields = fetchPlans.get(view);
-                if (fetchPlanFields == null) {
-                    fetchPlanFields = new HashSet<FetchPlanField>();
-                    processView(view, fetchPlanFields);
-                    fetchPlans.put(view, fetchPlanFields);
-                }
-            } else {
-                // Don't cache unnamed views, because they are usually created programmatically and may be different
-                // each time
-                fetchPlanFields = new HashSet<FetchPlanField>();
-                processView(view, fetchPlanFields);
-            }
-            for (FetchPlanField field : fetchPlanFields) {
-                fetchPlan.addField(field.entityClass, field.property);
-            }
+            addViewToFetchPlan(fetchPlan, view);
         } else {
             fetchPlan.addFetchGroup(FetchPlan.GROUP_DEFAULT);
         }
@@ -74,11 +58,23 @@ public class ViewHelper
         if (view == null)
             throw new IllegalArgumentException("View is null");
 
-        Set<FetchPlanField> fetchPlanFields = fetchPlans.get(view);
-        if (fetchPlanFields == null) {
+        addViewToFetchPlan(fetchPlan, view);
+    }
+
+    private static void addViewToFetchPlan(FetchPlan fetchPlan, View view) {
+        Set<FetchPlanField> fetchPlanFields;
+        if (!StringUtils.isEmpty(view.getName())) {
+            fetchPlanFields = fetchPlans.get(view);
+            if (fetchPlanFields == null) {
+                fetchPlanFields = new HashSet<FetchPlanField>();
+                processView(view, fetchPlanFields);
+                fetchPlans.put(view, fetchPlanFields);
+            }
+        } else {
+            // Don't cache unnamed views, because they are usually created programmatically and may be different
+            // each time
             fetchPlanFields = new HashSet<FetchPlanField>();
             processView(view, fetchPlanFields);
-            fetchPlans.put(view, fetchPlanFields);
         }
         for (FetchPlanField field : fetchPlanFields) {
             fetchPlan.addField(field.entityClass, field.property);
