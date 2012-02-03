@@ -104,6 +104,33 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         }
     }
 
+    private String processViewXml(String viewXml, Map<Class, Class> classMapping) {
+        for (Map.Entry<Class, Class> classEntry : classMapping.entrySet()) {
+            Class beforeClass = classEntry.getKey();
+            Class afterClass = classEntry.getValue();
+
+            checkNotNull(beforeClass);
+            checkNotNull(afterClass);
+
+            String beforeClassName = beforeClass.getCanonicalName();
+            String afterClassName = afterClass.getCanonicalName();
+
+            viewXml = viewXml.replaceAll(beforeClassName, afterClassName);
+        }
+        return viewXml;
+    }
+
+    private String processSnapshotXml(String snapshotXml, Map<Class, Class> classMapping) {
+        Document document;
+        try {
+            document = DocumentHelper.parseText(snapshotXml);
+        } catch (DocumentException e) {
+            throw new RuntimeException("Couldn't parse snapshot xml content", e);
+        }
+        replaceInXmlTree(document.getRootElement(), classMapping);
+        return document.asXML();
+    }
+
     @Override
     public void migrateSnapshots(MetaClass metaClass, UUID id, Map<Class, Class> classMapping) {
         // load snapshots
@@ -113,8 +140,8 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
             String snapshotXml = snapshot.getSnapshotXml();
             String viewXml = snapshot.getViewXml();
 
-            snapshot.setSnapshotXml(processXml(snapshotXml, classMapping));
-            snapshot.setViewXml(processXml(viewXml, classMapping));
+            snapshot.setSnapshotXml(processSnapshotXml(snapshotXml, classMapping));
+            snapshot.setViewXml(processViewXml(viewXml, classMapping));
         }
 
         // Save snapshots to db
@@ -129,17 +156,6 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         } finally {
             tx.end();
         }
-    }
-
-    private String processXml(String snapshotXml, Map<Class, Class> classMapping) {
-        Document document;
-        try {
-            document = DocumentHelper.parseText(snapshotXml);
-        } catch (DocumentException e) {
-            throw new RuntimeException("Couldn't parse snapshot xml content", e);
-        }
-        replaceInXmlTree(document.getRootElement(), classMapping);
-        return document.asXML();
     }
 
     @Override
