@@ -19,6 +19,7 @@ import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
+import org.dom4j.*;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -34,7 +35,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author artamonov
  */
 @ManagedBean(EntitySnapshotAPI.NAME)
-@SuppressWarnings({"unchecked"})
+@SuppressWarnings({"unchecked", "unused"})
 public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     @Inject
@@ -67,10 +68,18 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         return resultList;
     }
 
-    @Override
-    public void migrateSnapshots(MetaClass metaClass, UUID id, Map<Class, Class> classMapping) {
-        // load snapshots
-        List<EntitySnapshot> snapshotList = getSnapshots(metaClass, id);
+    private void replaceInXmlTree(Element element, Map<Class, Class> classMapping) {
+        for (int i = 0; i < element.nodeCount(); i++) {
+            Node node = element.node(i);
+            if (node instanceof Element) {
+                Element childElement = (Element) node;
+                replaceClasses(childElement, classMapping);
+                replaceInXmlTree(childElement, classMapping);
+            }
+        }
+    }
+
+    private void replaceClasses(Element element, Map<Class, Class> classMapping) {
         // translate XML
         for (Map.Entry<Class, Class> classEntry : classMapping.entrySet()) {
             Class beforeClass = classEntry.getKey();
@@ -84,43 +93,53 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
                 String beforeClassName = beforeClass.getCanonicalName();
                 String afterClassName = afterClass.getCanonicalName();
 
-                String beforeClassStartTag = "<" + beforeClassName + ">";
-                String beforeClassEndTag = "</" + beforeClassName + ">";
+                if (beforeClassName.equals(element.getName()))
+                    element.setName(afterClassName);
 
-                String afterClassStartTag = "<" + afterClassName + ">";
-                String afterClassEndTag = "</" + afterClassName + ">";
-
-                String beforeClassAttr = "class=\"" + beforeClassName + "\"";
-                String afterClassAttr = "class=\"" + afterClassName + "\"";
-
-                for (EntitySnapshot snapshot : snapshotList) {
-                    String snapshotXml = snapshot.getSnapshotXml();
-
-                    snapshotXml = snapshotXml.replaceAll(beforeClassStartTag, afterClassStartTag);
-                    snapshotXml = snapshotXml.replaceAll(beforeClassEndTag, afterClassEndTag);
-                    snapshotXml = snapshotXml.replaceAll(beforeClassAttr, afterClassAttr);
-                    snapshot.setSnapshotXml(snapshotXml);
+                Attribute classAttribute = element.attribute("class");
+                if ((classAttribute != null) && beforeClassName.equals(classAttribute.getValue())) {
+                    classAttribute.setValue(afterClassName);
                 }
             }
+        }
+    }
+
+    @Override
+    public void migrateSnapshots(MetaClass metaClass, UUID id, Map<Class, Class> classMapping) {
+        // load snapshots
+        List<EntitySnapshot> snapshotList = getSnapshots(metaClass, id);
+
+        for (EntitySnapshot snapshot : snapshotList) {
+            String snapshotXml = snapshot.getSnapshotXml();
+            String viewXml = snapshot.getViewXml();
+
+            snapshot.setSnapshotXml(processXml(snapshotXml, classMapping));
+            snapshot.setViewXml(processXml(viewXml, classMapping));
         }
 
         // Save snapshots to db
         Transaction tx = persistence.createTransaction();
-        try
-
-        {
+        try {
             EntityManager em = persistence.getEntityManager();
 
             for (EntitySnapshot snapshot : snapshotList)
                 em.merge(snapshot);
 
             tx.commit();
-        } finally
-
-        {
+        } finally {
             tx.end();
         }
+    }
 
+    private String processXml(String snapshotXml, Map<Class, Class> classMapping) {
+        Document document;
+        try {
+            document = DocumentHelper.parseText(snapshotXml);
+        } catch (DocumentException e) {
+            throw new RuntimeException("Couldn't parse snapshot xml content", e);
+        }
+        replaceInXmlTree(document.getRootElement(), classMapping);
+        return document.asXML();
     }
 
     @Override
