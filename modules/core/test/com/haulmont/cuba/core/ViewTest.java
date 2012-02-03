@@ -63,11 +63,11 @@ public class ViewTest extends CubaTestCase
             Query q = em.createQuery("select u from sec$User u where u.id = ?1");
             q.setParameter(1, userId);
 
-            View view = new View(User.class, "testUserView")
+            View view = new View(User.class)
                     .addProperty("name")
                     .addProperty("login")
                     .addProperty("group",
-                            new View(Group.class, "testGroupView")
+                            new View(Group.class)
                                 .addProperty("name")
                     );
             q.setView(view);
@@ -88,11 +88,11 @@ public class ViewTest extends CubaTestCase
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
 
-            View view = new View(User.class, "testUserView")
+            View view = new View(User.class)
                     .addProperty("name")
                     .addProperty("login")
                     .addProperty("group",
-                            new View(Group.class, "testGroupView")
+                            new View(Group.class)
                                 .addProperty("name")
                     );
             em.setView(view);
@@ -103,18 +103,47 @@ public class ViewTest extends CubaTestCase
 
             assertNull(user.getPassword());
             assertNotNull(user.getGroup().getName());
+            assertNotNull(user.getCreateTs());
+            assertNotNull(user.getGroup().getCreateTs());
         } finally {
             tx.end();
         }
     }
 
-    public void testViewWithoutSystemProperties() throws Exception {
+    public void testViewWithoutSystemProperties() {
+        Transaction tx = PersistenceProvider.createTransaction();
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
 
-        View view = new View(User.class, "testUserReadOnlyView", false)
+            View view = new View(User.class, false)
+                    .addProperty("name")
+                    .addProperty("login")
+                    .addProperty("group",
+                            new View(Group.class, false)
+                                .addProperty("name")
+                    );
+            em.setView(view);
+
+            User user = em.find(User.class, userId);
+
+            tx.commit();
+
+            assertNull(user.getPassword());
+            assertNotNull(user.getGroup().getName());
+            assertNull(user.getCreateTs());
+            assertNull(user.getGroup().getCreateTs());
+        } finally {
+            tx.end();
+        }
+    }
+
+    public void testViewWithoutSystemProperties_update() throws Exception {
+
+        View view = new View(User.class, false)
                 .addProperty("name")
                 .addProperty("login")
                 .addProperty("group",
-                        new View(Group.class, "testGroupView", false)
+                        new View(Group.class, false)
                                 .addProperty("name")
                 );
 

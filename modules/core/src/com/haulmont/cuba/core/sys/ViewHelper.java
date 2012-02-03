@@ -20,15 +20,21 @@ import com.haulmont.cuba.core.entity.Updatable;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.persistence.FetchPlan;
 
+import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ViewHelper
 {
     private static Log log = LogFactory.getLog(ViewHelper.class);
+
+    private static Map<View, Set<FetchPlanField>> fetchPlans = new ConcurrentHashMap<View, Set<FetchPlanField>>();
 
     public static void setView(FetchPlan fetchPlan, View view) {
         if (fetchPlan == null)
@@ -39,7 +45,24 @@ public class ViewHelper
         if (view != null) {
             fetchPlan.removeFetchGroup(FetchPlan.GROUP_DEFAULT);
             fetchPlan.setExtendedPathLookup(true);
-            processView(view, fetchPlan);
+
+            Set<FetchPlanField> fetchPlanFields;
+            if (!StringUtils.isEmpty(view.getName())) {
+                fetchPlanFields = fetchPlans.get(view);
+                if (fetchPlanFields == null) {
+                    fetchPlanFields = new HashSet<FetchPlanField>();
+                    processView(view, fetchPlanFields);
+                    fetchPlans.put(view, fetchPlanFields);
+                }
+            } else {
+                // Don't cache unnamed views, because they are usually created programmatically and may be different
+                // each time
+                fetchPlanFields = new HashSet<FetchPlanField>();
+                processView(view, fetchPlanFields);
+            }
+            for (FetchPlanField field : fetchPlanFields) {
+                fetchPlan.addField(field.entityClass, field.property);
+            }
         } else {
             fetchPlan.addFetchGroup(FetchPlan.GROUP_DEFAULT);
         }
@@ -51,7 +74,15 @@ public class ViewHelper
         if (view == null)
             throw new IllegalArgumentException("View is null");
 
-        processView(view, fetchPlan);
+        Set<FetchPlanField> fetchPlanFields = fetchPlans.get(view);
+        if (fetchPlanFields == null) {
+            fetchPlanFields = new HashSet<FetchPlanField>();
+            processView(view, fetchPlanFields);
+            fetchPlans.put(view, fetchPlanFields);
+        }
+        for (FetchPlanField field : fetchPlanFields) {
+            fetchPlan.addField(field.entityClass, field.property);
+        }
     }
 
     public static View intersectViews(View first, View second) {
@@ -78,39 +109,84 @@ public class ViewHelper
         return resultView;
     }
 
-    private static void processView(View view, FetchPlan fetchPlan) {
+    private static void processView(View view, Set<FetchPlanField> fetchPlanFields) {
         if (view.isIncludeSystemProperties()) {
-            includeSystemProperties(view, fetchPlan);
+            includeSystemProperties(view, fetchPlanFields);
         }
 
         for (ViewProperty property : view.getProperties()) {
             if (property.isLazy())
                 continue;
 
-            fetchPlan.addField(view.getEntityClass(), property.getName());
+            FetchPlanField field = new FetchPlanField(
+                    getRealClass(view.getEntityClass(), property.getName()), property.getName());
+            fetchPlanFields.add(field);
             if (property.getView() != null) {
-                processView(property.getView(), fetchPlan);
+                processView(property.getView(), fetchPlanFields);
             }
         }
     }
 
-    private static void includeSystemProperties(View view, FetchPlan fetchPlan) {
+    private static void includeSystemProperties(View view, Set<FetchPlanField> fetchPlanFields) {
         Class<? extends BaseEntity> entityClass = view.getEntityClass();
         if (BaseEntity.class.isAssignableFrom(entityClass)) {
             for (String property : BaseEntity.PROPERTIES) {
-                fetchPlan.addField(entityClass, property);
+                fetchPlanFields.add(new FetchPlanField(getRealClass(entityClass, property), property));
             }
         }
         if (Updatable.class.isAssignableFrom(entityClass)) {
             for (String property : Updatable.PROPERTIES) {
-                fetchPlan.addField(entityClass, property);
+                fetchPlanFields.add(new FetchPlanField(getRealClass(entityClass, property), property));
             }
         }
         if (SoftDelete.class.isAssignableFrom(entityClass)) {
             for (String property : SoftDelete.PROPERTIES) {
-                fetchPlan.addField(entityClass, property);
+                fetchPlanFields.add(new FetchPlanField(getRealClass(entityClass, property), property));
             }
         }
+    }
+
+    /**
+     * This is the workaround for OpenJPA's inability to create correct fetch plan for entities
+     * inherited form other entities (not directly from a MappedSuperclass). Here we do the following:
+     * <ul>
+     * <li>If the property is declared in an entity, return this entity class</li>
+     * <li>If the property is declared in a MappedSuperclass, return a recent entity class down to the hierarchy</li>
+     * </ul>
+     * @param entityClass   entity class for which a fetch plan is being created
+     * @param property      entity property name to include in the fetch plan
+     * @return              a class in the hierarchy (see conditions above)
+     */
+    @SuppressWarnings("unchecked")
+    private static Class getRealClass(Class<? extends BaseEntity> entityClass, String property) {
+        if (hasDeclaredField(entityClass, property))
+            return entityClass;
+
+        List<Class> superclasses = ClassUtils.getAllSuperclasses(entityClass);
+        for (int i = 0; i < superclasses.size(); i++) {
+            Class superclass = superclasses.get(i);
+            if (hasDeclaredField(superclass, property)) {
+                // If the class declaring the field is an entity, return it
+                if (superclass.isAnnotationPresent(javax.persistence.Entity.class))
+                    return superclass;
+                // Else search for a recent entity down to the hierarchy
+                for (int j = i - 1; j >= 0; j--) {
+                    superclass = superclasses.get(j);
+                    if (superclass.isAnnotationPresent(javax.persistence.Entity.class))
+                        return superclass;
+                }
+            }
+        }
+        return entityClass;
+    }
+
+    private static boolean hasDeclaredField(Class<? extends BaseEntity> entityClass, String name) {
+        Field[] fields = entityClass.getDeclaredFields();
+        for (Field field : fields) {
+            if (field.getName().equals(name))
+                return true;
+        }
+        return false;
     }
 
     public static void fetchInstance(Instance instance, View view) {
@@ -170,5 +246,40 @@ public class ViewHelper
             }
         }
         return false;
+    }
+
+    private static class FetchPlanField {
+        private final Class entityClass;
+        private final String property;
+
+        private FetchPlanField(Class entityClass, String property) {
+            this.entityClass = entityClass;
+            this.property = property;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            FetchPlanField that = (FetchPlanField) o;
+
+            if (!entityClass.equals(that.entityClass)) return false;
+            if (!property.equals(that.property)) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = entityClass.hashCode();
+            result = 31 * result + property.hashCode();
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return entityClass.getName() + "." + property;
+        }
     }
 }
