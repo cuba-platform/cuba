@@ -30,7 +30,8 @@ public class XlsToPdfConverter {
     private void connectToOffice() {
         String openOfficePath = ConfigProvider.getConfig(ServerConfig.class).getOpenOfficePath();
         try {
-            connection = ((OOOConnector) Locator.lookup(OOOConnector.NAME)).createConnection(openOfficePath);
+            OOOConnectorAPI connectorAPI = Locator.lookup(OOOConnectorAPI.NAME);
+            connection = connectorAPI.createConnection(openOfficePath);
         } catch (Exception ex) {
             throw new FailedToConnectToOpenOfficeException("Please check OpenOffice path: " + openOfficePath);
         }

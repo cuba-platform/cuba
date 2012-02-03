@@ -254,15 +254,25 @@ public class ImportExportHelper {
             tx = PersistenceProvider.createTransaction();
             try {
                 EntityManager em = PersistenceProvider.getEntityManager();
-                ReportGroup reportGroup = null;
+                ReportGroup reportGroup;
+
                 if (report.getGroup() != null) {
                     reportGroup = em.find(ReportGroup.class, report.getGroup().getId());
-                }
-                if (reportGroup == null) {
+                } else {
                     Query query = em.createQuery("select gr from report$ReportGroup gr where gr.code = 'ReportGroup.default'");
                     reportGroup = (ReportGroup) query.getSingleResult();
                 }
+
+                if (reportGroup == null) {
+                    reportGroup = new ReportGroup();
+                    reportGroup.setId(report.getGroup().getId());
+                    reportGroup.setCode(report.getGroup().getCode());
+                    reportGroup.setTitle(report.getGroup().getTitle());
+
+                    em.persist(reportGroup);
+                }
                 report.setGroup(reportGroup);
+
                 if (PersistenceHelper.isNew(report)) {
                     em.persist(report);
                 } else {

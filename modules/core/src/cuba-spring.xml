@@ -84,6 +84,7 @@
                 <entry key="${cuba.webContextName}.cuba:service=Scheduling" value-ref="cuba_Scheduling"/>
                 <entry key="${cuba.webContextName}.cuba:service=ObjectsCacheManager"
                        value-ref="cuba_ObjectsCacheManager"/>
+                <entry key="${cuba.webContextName}.cuba:service=OpenOfficeSupport" value-ref="report_OOOConnector"/>
             </map>
         </property>
         <property name="assembler">
@@ -109,6 +110,7 @@
                         <entry key="cuba_Scheduling" value="com.haulmont.cuba.core.app.scheduling.SchedulingMBean"/>
                         <entry key="${cuba.webContextName}.cuba:service=ObjectsCacheManager"
                                value="com.haulmont.cuba.core.app.cache.ObjectsCacheManagerMBean"/>
+                        <entry key="report_OOOConnector" value="com.haulmont.cuba.report.formatters.oo.OOOConnectorMBean"/>
                     </map>
                 </property>
             </bean>

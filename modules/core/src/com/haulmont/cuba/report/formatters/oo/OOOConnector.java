@@ -11,6 +11,7 @@
 package com.haulmont.cuba.report.formatters.oo;
 
 import com.haulmont.cuba.core.app.ServerConfig;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.Configuration;
 import com.sun.star.comp.helper.BootstrapException;
 import com.sun.star.uno.XComponentContext;
@@ -22,9 +23,8 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.concurrent.*;
 
-@ManagedBean(OOOConnector.NAME)
-public class OOOConnector {
-    public static final String NAME = "report_OOOConnector";
+@ManagedBean(OOOConnectorAPI.NAME)
+public class OOOConnector implements OOOConnectorAPI, OOOConnectorMBean {
 
     @Inject
     public void setConfig(Configuration configuration) {
@@ -34,29 +34,45 @@ public class OOOConnector {
         }
     }
 
-    private BlockingQueue<Integer> freePorts = new LinkedBlockingDeque<Integer>();
+    private final BlockingQueue<Integer> freePorts = new LinkedBlockingDeque<Integer>();
     private ExecutorService executor = Executors.newFixedThreadPool(1);
 
     //  todo: Think about connection pool - current implementation is too slow
+    @Override
     public OOOConnection createConnection(String openOfficePath) throws BootstrapException {
         List oooOptions = OOoServer.getDefaultOOoOptions();
         oooOptions.add("-nofirststartwizard");
         OOoServer oooServer = new OOoServer(openOfficePath, oooOptions);
         BootstrapSocketConnector bsc = new BootstrapSocketConnector(oooServer);
-        Integer port = freePorts.poll();
+
+        Integer port;
+        synchronized (freePorts) {
+            port = freePorts.poll();
+        }
+
         if (port != null) {
-            XComponentContext xComponentContext = bsc.connect("localhost", port);
-            OOOConnection oooConnection = new OOOConnection(xComponentContext, bsc, port);
-            return oooConnection;
+
+            XComponentContext xComponentContext;
+            try {
+                xComponentContext = bsc.connect("localhost", port);
+            } catch (BootstrapException ex) {
+                // put port back to queue
+                freePorts.add(port);
+                throw ex;
+            }
+
+            return new OOOConnection(xComponentContext, bsc, port);
         } else {
             throw new IllegalStateException("Couldn't get free port from pool");
         }
     }
 
+    @Override
     public void closeConnection(final OOOConnection connection) {
         if (connection != null) {
             try {
                 Future future = executor.submit(new Runnable() {
+                    @Override
                     public void run() {
                         BootstrapSocketConnector bsc = connection.getBsc();
                         if (bsc != null) {
@@ -74,7 +90,39 @@ public class OOOConnector {
         }
     }
 
+    @Override
     public ExecutorService getExecutor() {
         return executor;
+    }
+
+    @Override
+    public String getAvailablePorts() {
+        StringBuilder builder = new StringBuilder();
+
+        Integer[] ports;
+        synchronized (freePorts) {
+            ports = freePorts.toArray(new Integer[freePorts.size()]);
+        }
+
+        if ((ports != null) && (ports.length > 0)) {
+            for (Integer port : ports) {
+                if (port != null)
+                    builder.append(Integer.toString(port)).append(" ");
+            }
+        } else
+            builder.append("No available ports");
+
+        return builder.toString();
+    }
+
+    @Override
+    public void hardReloadAccessPorts() {
+        String ports = ConfigProvider.getConfig(ServerConfig.class).getOpenOfficePorts();
+        synchronized (freePorts) {
+            freePorts.clear();
+            for (String port : ports.split("\\|")) {
+                this.freePorts.add(Integer.valueOf(port));
+            }
+        }
     }
 }

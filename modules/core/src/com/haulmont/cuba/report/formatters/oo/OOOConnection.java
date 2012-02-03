@@ -57,7 +57,8 @@ public class OOOConnection {
     }
 
     public void close() {
-        ((OOOConnector) Locator.lookup(OOOConnector.NAME)).closeConnection(this);
+        OOOConnectorAPI connectorAPI = Locator.lookup(OOOConnectorAPI.NAME);
+        connectorAPI.closeConnection(this);
     }
 
     public Integer getPort() {

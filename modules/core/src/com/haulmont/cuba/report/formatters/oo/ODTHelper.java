@@ -99,7 +99,8 @@ public final class ODTHelper {
 
     public static void runWithTimeoutAndCloseConnection(OOOConnection connection, Runnable runnable) {
         try {
-            Future future = ((OOOConnector) Locator.lookup(OOOConnector.NAME)).getExecutor().submit(runnable);
+            OOOConnectorAPI connectorAPI = Locator.lookup(OOOConnectorAPI.NAME);
+            Future future = connectorAPI.getExecutor().submit(runnable);
             future.get(ConfigProvider.getConfig(ServerConfig.class).getDocFormatterTimeout(), TimeUnit.SECONDS);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
