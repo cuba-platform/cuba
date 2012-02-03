@@ -63,6 +63,9 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected final FocusableScrollPanel bodyContainer = new FocusableScrollPanel(); // [6.6]
 
+    // For fix bug overflow:auto in webkit
+    protected Widget parentOverflowContainer;
+
     //[6.6]
     private KeyPressHandler navKeyPressHandler = new KeyPressHandler() {
         public void onKeyPress(KeyPressEvent keyPressEvent) {
@@ -403,6 +406,21 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         paintableId = uidl.getStringAttribute("id");
 
         updateFromUIDL(uidl);
+
+
+        if (BrowserInfo.get().getWebkitVersion() > 0) {
+            if (parentOverflowContainer == null) {
+                Widget w = this;
+                Container container;
+                while ((container = Util.getLayout(w)) != null) {
+                    w = (Widget) container;
+                    if ((w instanceof VTabsheet) || (w instanceof VWindow)) {
+                        parentOverflowContainer = w;
+                        break;
+                    }
+                }
+            }
+        }
 
         runWebkitOverflowAutoFix();
     }
@@ -3574,15 +3592,12 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
     protected void runWebkitOverflowAutoFix() {
         if (BrowserInfo.get().getWebkitVersion() > 0) {
-            Widget w = this;
-            Container container;
-            while ((container = Util.getLayout(w)) != null) {
-                w = (Widget) container;
-                if (w instanceof VTabsheet) {
-//                    VConsole.log("Run overflow auto fix");
-//                    ((VTabsheet) w).runWebkitOverflowAutoFix();
-                    break;
-                }
+            // run overflow fix in window
+            if (parentOverflowContainer != null) {
+                if (parentOverflowContainer instanceof VWindow)
+                    ((VWindow) parentOverflowContainer).runWebkitOverflowFix();
+                else if (parentOverflowContainer instanceof VTabsheet)
+                    ((VTabsheet) parentOverflowContainer).runWebkitOverflowAutoFix();
             }
         }
     }

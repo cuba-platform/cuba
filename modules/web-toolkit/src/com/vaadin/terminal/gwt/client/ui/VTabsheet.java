@@ -16,11 +16,6 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Style;
@@ -31,15 +26,12 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.RenderInformation;
-import com.vaadin.terminal.gwt.client.RenderSpace;
-import com.vaadin.terminal.gwt.client.TooltipInfo;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.Util;
-import com.vaadin.terminal.gwt.client.VCaption;
+import com.vaadin.terminal.gwt.client.*;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * VTabsheet
@@ -869,6 +861,8 @@ public class VTabsheet extends VTabsheetBase {
                     "visibility", "");
             previousVisibleWidget = null;
         }
+
+        runWebkitOverflowAutoFix();
     }
 
     @Override
@@ -944,7 +938,7 @@ public class VTabsheet extends VTabsheetBase {
 
     public void iLayout() {
         updateTabScroller();
-        tp.runWebkitOverflowAutoFix();
+        runWebkitOverflowAutoFix();
     }
 
     /**
