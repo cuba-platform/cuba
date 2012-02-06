@@ -34,6 +34,8 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
 
     private UserSessionManager userSessionManager;
 
+    private ClusterInvocationSupport clusterInvocationSupport;
+
     public CubaRemoteInvocationExecutor() {
         userSessionManager = Locator.lookup("cuba_UserSessionManager");
     }
@@ -48,8 +50,9 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
                     if (StringUtils.isNotBlank(sessionProviderUrl)) {
                         log.debug("User session " + sessionId + " not found, trying to get it from " + sessionProviderUrl);
                         try {
-                            HttpInvokerProxyFactoryBean proxyFactory = new HttpInvokerProxyFactoryBean();
-                            proxyFactory.setServiceUrl(sessionProviderUrl + "/remoting/cuba_LoginService");
+                            HttpServiceProxy proxyFactory = new HttpServiceProxy(
+                                    getClusterInvocationSupport(sessionProviderUrl));
+                            proxyFactory.setServiceUrl("cuba_LoginService");
                             proxyFactory.setServiceInterface(LoginService.class);
                             proxyFactory.afterPropertiesSet();
                             LoginService loginService = (LoginService) proxyFactory.getObject();
@@ -70,5 +73,13 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
             }
         }
         return invocation.invoke(targetObject);
+    }
+
+    private ClusterInvocationSupport getClusterInvocationSupport(String sessionProviderUrl) {
+        if (clusterInvocationSupport == null) {
+            clusterInvocationSupport = new ClusterInvocationSupport();
+            clusterInvocationSupport.setBaseUrl(sessionProviderUrl);
+        }
+        return clusterInvocationSupport;
     }
 }
