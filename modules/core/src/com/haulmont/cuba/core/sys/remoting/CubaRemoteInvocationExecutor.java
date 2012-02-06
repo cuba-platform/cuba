@@ -79,6 +79,7 @@ public class CubaRemoteInvocationExecutor implements RemoteInvocationExecutor {
         if (clusterInvocationSupport == null) {
             clusterInvocationSupport = new ClusterInvocationSupport();
             clusterInvocationSupport.setBaseUrl(sessionProviderUrl);
+            clusterInvocationSupport.init();
         }
         return clusterInvocationSupport;
     }
