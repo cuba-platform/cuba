@@ -19,6 +19,7 @@ import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.layout.MigBoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.DatePicker.DatePicker;
 import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.RequiredValueMissingException;
 import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -26,7 +27,6 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jdesktop.swingx.JXDatePicker;
-
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,9 +42,8 @@ import java.util.Date;
  * @author krivopustov
  */
 public class DesktopDateField
-    extends DesktopAbstractField<JPanel>
-    implements DateField
-{
+        extends DesktopAbstractField<JPanel>
+        implements DateField {
 
     private Resolution resolution;
     private Datasource datasource;
@@ -57,7 +56,6 @@ public class DesktopDateField
 
     private boolean updatingInstance;
     private boolean required;
-    private String requiredMessage;
 
     private JXDatePicker datePicker;
     private DesktopTimeField timeField;
@@ -130,7 +128,7 @@ public class DesktopDateField
     }
 
     private void _setResolution(Resolution resolution) {
-       this.resolution = resolution;
+        this.resolution = resolution;
     }
 
     @Override
@@ -173,11 +171,6 @@ public class DesktopDateField
     }
 
     @Override
-    public void setRequiredMessage(String msg) {
-        requiredMessage = msg;
-    }
-
-    @Override
     public void requestFocus() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -190,8 +183,7 @@ public class DesktopDateField
     public <T> T getValue() {
         try {
             return (T) constructDate();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
@@ -203,14 +195,15 @@ public class DesktopDateField
             fireChangeListeners(value);
         }
     }
-    
+
     @Override
     public void validate() throws ValidationException {
         try {
             constructDate();
             super.validate();
-        }
-        catch (Exception e) {
+        } catch (RequiredValueMissingException e) {
+            throw e;
+        } catch (Exception e) {
             throw new ValidationException(e);
         }
     }
@@ -358,11 +351,9 @@ public class DesktopDateField
                 }
             }
             valid = true;
-        }
-        catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             valid = false;
-        }
-        finally {
+        } finally {
             updatingInstance = false;
         }
         if (valid) {
