@@ -135,8 +135,18 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     public void migrateSnapshots(MetaClass metaClass, UUID id, Map<Class, Class> classMapping) {
         // load snapshots
         List<EntitySnapshot> snapshotList = getSnapshots(metaClass, id);
+        Class javaClass = metaClass.getJavaClass();
+
+        MetaClass mappedMetaClass = null;
+        if (classMapping.containsKey(javaClass)) {
+            Class mappedClass = classMapping.get(javaClass);
+            mappedMetaClass = MetadataProvider.getSession().getClass(mappedClass);
+        }
 
         for (EntitySnapshot snapshot : snapshotList) {
+            if (mappedMetaClass != null)
+                snapshot.setEntityMetaClass(mappedMetaClass.getName());
+
             String snapshotXml = snapshot.getSnapshotXml();
             String viewXml = snapshot.getViewXml();
 
