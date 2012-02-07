@@ -127,6 +127,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         } catch (DocumentException e) {
             throw new RuntimeException("Couldn't parse snapshot xml content", e);
         }
+        replaceClasses(document.getRootElement(), classMapping);
         replaceInXmlTree(document.getRootElement(), classMapping);
         return document.asXML();
     }
