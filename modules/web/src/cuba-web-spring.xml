@@ -18,6 +18,8 @@
 
     <bean id="cuba_UserSession" factory-bean="cuba_UserSessionSource" factory-method="getUserSession" scope="prototype"/>
 
+    <bean id="cuba_AuthProvider" class="${cuba.web.activeDirectoryAuthClass}"/>
+
     <!-- MBeans registration -->
 
     <bean id="cuba_web_MBeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">

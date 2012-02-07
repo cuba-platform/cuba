@@ -71,10 +71,10 @@ public interface WebConfig extends Config
     String getActiveDirectoryDomains();
 
     /**
-     * @return ActiveDirectory authentification filter
+     * @return ActiveDirectory authentification provider
      */
-    @DefaultString("com.haulmont.cuba.web.sys.filters.KerberosHttpFilter")
-    String getActiveDirectoryFilterClass();
+    @DefaultString("com.haulmont.cuba.web.sys.auth.KerberosAuthProvider")
+    String getActiveDirectoryAuthClass();
 
     /**
      * @return Kerberos domain and realms config (krb5.ini)
@@ -87,24 +87,14 @@ public interface WebConfig extends Config
     String getKerberosJaasConf();
 
     /**
-     * @return Domain controller name
-     */
-    String getKerberosKeyCenter();
-
-    /**
-     * @return Domain for kerberos key center
-     */
-    String getKerberosRealm();
-
-    /**
-     * @return Kerberos login module in JaasConf
+     * @return Kerberos single-sign-on module in JaasConf
      */
     String getKerberosLoginModule();
-    
+
     /**
-     * @return Service principal password
+     * @return Kerberos auth module in JaasConf
      */
-    String getServicePrincipalPass();
+    String getKerberosAuthModule();
 
     /**
      *  @return Comma-separated list of URLs for CubaHttpFilter to bypass.

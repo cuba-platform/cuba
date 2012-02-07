@@ -11,8 +11,10 @@
 package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
+import com.haulmont.cuba.web.sys.auth.CubaAuthProvider;
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import org.apache.commons.lang.StringUtils;
@@ -36,8 +38,7 @@ public class CubaHttpFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         if (ActiveDirectoryHelper.useActiveDirectory()) {
             try {
-                String filterClass = ConfigProvider.getConfig(WebConfig.class).getActiveDirectoryFilterClass();
-                activeDirectoryFilter = (Filter) Class.forName(filterClass).newInstance();
+                activeDirectoryFilter = AppContext.getBean(CubaAuthProvider.NAME);
                 activeDirectoryFilter.init(filterConfig);
             } catch (Exception e) {
                 throw new ServletException(e);

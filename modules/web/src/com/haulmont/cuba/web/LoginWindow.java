@@ -56,7 +56,7 @@ public class LoginWindow extends Window implements Action.Handler {
     protected Connection connection;
 
     protected TextField loginField;
-    protected TextField passwordField;
+    protected PasswordField passwordField;
     protected AbstractSelect localesSelect;
     protected Locale loc;
     protected Map<String, Locale> locales;
@@ -80,7 +80,7 @@ public class LoginWindow extends Window implements Action.Handler {
         this.connection = connection;
 
         loginField = new TextField();
-        passwordField = new TextField();
+        passwordField = new PasswordField();
         localesSelect = new NativeSelect();
         okButton = new Button();
 
@@ -129,7 +129,7 @@ public class LoginWindow extends Window implements Action.Handler {
         centerLayout.setSpacing(false);
         centerLayout.setWidth(formWidth + "px");
         centerLayout.setHeight(formHeight + "px");
-        if (!StringUtils.isBlank((String) label.getValue()))  {
+        if (!StringUtils.isBlank((String) label.getValue())) {
             centerLayout.addComponent(label);
             centerLayout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
         }
@@ -147,7 +147,6 @@ public class LoginWindow extends Window implements Action.Handler {
         formLayout.setComponentAlignment(loginField, Alignment.MIDDLE_CENTER);
 
         passwordField.setCaption(MessageProvider.getMessage(getMessagesPack(), "loginWindow.passwordField", loc));
-        passwordField.setSecret(true);
         passwordField.setWidth(fieldWidth + "px");
         passwordField.setStyleName("password-field");
         form.addField("passwordField", passwordField);
@@ -240,6 +239,7 @@ public class LoginWindow extends Window implements Action.Handler {
             loginByRememberMe = true;
 
             loginChangeListener = new Property.ValueChangeListener() {
+                @Override
                 public void valueChange(Property.ValueChangeEvent event) {
                     loginByRememberMe = false;
                 }
@@ -286,11 +286,13 @@ public class LoginWindow extends Window implements Action.Handler {
     }
 
     public class SubmitListener implements Button.ClickListener {
+        @Override
         public void buttonClick(Button.ClickEvent event) {
             doLogin();
         }
     }
 
+    @Override
     public Action[] getActions(Object target, Object sender) {
         final Action[] actions = new Action[1];
         actions[0] = new ShortcutAction("Default key",
@@ -298,6 +300,7 @@ public class LoginWindow extends Window implements Action.Handler {
         return actions;
     }
 
+    @Override
     public void handleAction(Action action, Object sender, Object target) {
         if (sender == this) {
             doLogin();
@@ -305,12 +308,13 @@ public class LoginWindow extends Window implements Action.Handler {
     }
 
     protected void login() {
+
         String login = (String) loginField.getValue();
         try {
             if (ActiveDirectoryHelper.useActiveDirectory()) {
                 Locale locale = getUserLocale();
                 App.getInstance().setLocale(locale);
-                ActiveDirectoryHelper.authenticate(login, (String) passwordField.getValue(), loc);
+                ActiveDirectoryHelper.getAuthProvider().authenticate(login, (String) passwordField.getValue(), loc);
                 ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
             } else {
                 String value = passwordField.getValue() != null ? (String) passwordField.getValue() : "";
@@ -320,6 +324,7 @@ public class LoginWindow extends Window implements Action.Handler {
                 login(login, passwd, locale);
             }
         } catch (LoginException e) {
+            // todo Fix notification about exception while AD Auth
             showNotification(
                     MessageProvider.getMessage(getMessagesPack(), "loginWindow.loginFailed", loc),
                     e.getMessage(), Notification.TYPE_ERROR_MESSAGE);
