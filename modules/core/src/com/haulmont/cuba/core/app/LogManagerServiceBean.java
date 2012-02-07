@@ -68,7 +68,8 @@ public class LogManagerServiceBean implements LogManagerService {
             String str;
             while (randomAccessFile.read() != -1) {
                 randomAccessFile.seek(randomAccessFile.getFilePointer() - 1);
-                str = randomAccessFile.readLine().replaceFirst(Level.DEBUG.toString(), setStyleText(Level.DEBUG.toString(), "black"));
+                str = shieldingTags(randomAccessFile.readLine());
+                str = str.replaceFirst(Level.DEBUG.toString(), setStyleText(Level.DEBUG.toString(), "black"));
                 str = str.replaceFirst(Level.INFO.toString(), setStyleText(Level.INFO.toString(), "blue"));
                 str = str.replaceFirst(Level.ERROR.toString(), setStyleText(Level.ERROR.toString(), "red"));
                 str = str.replaceFirst(Level.WARN.toString(), setStyleText(Level.WARN.toString(), "orange"));
@@ -172,4 +173,11 @@ public class LogManagerServiceBean implements LogManagerService {
         sb.append(text).append("</font></b>");
         return sb.toString();
     }
+
+    private String shieldingTags(String text) {
+        text = text.replaceAll("<", "&lt");
+        text = text.replaceAll(">", "&gt");
+        return text;
+    }
+
 }

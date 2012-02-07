@@ -16,6 +16,7 @@ import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -80,15 +81,35 @@ public class ServerLogWindow extends AbstractWindow {
     }
 
     public void getLevel() {
-        Level level = logManagerService.getLogLevel(logNameField.<String>getValue());
-        levelField.setValue(level);
+        if (logNameField.getValue() != null && logNameField.getValue().toString().trim().length() != 0) {
+            Level level = logManagerService.getLogLevel(logNameField.<String>getValue());
+            if (level != null)
+                levelField.setValue(level);
+            else
+                showNotification(getMessage("registrarNotExist"), NotificationType.HUMANIZED);
+        } else {
+            logNameField.setValue(null);
+            showNotification(getMessage("noRegName"), NotificationType.HUMANIZED);
+        }
     }
 
     public void setLevel() {
-        String logName = logNameField.getValue();
-        Level level = levelField.getValue();
-        logManagerService.setLogLevel(logName, level);
-        showNotification(String.format(getMessage("logSetMessage"), logName, level.toString()), NotificationType.HUMANIZED);
+        if (logNameField.getValue() != null && logNameField.getValue().toString().trim().length() != 0) {
+            Level vLevel = logManagerService.getLogLevel(logNameField.<String>getValue());
+            if (vLevel != null)
+                if (levelField.getValue() != null) {
+                    String logName = logNameField.getValue();
+                    Level level = levelField.getValue();
+                    logManagerService.setLogLevel(logName, level);
+                    showNotification(String.format(getMessage("logSetMessage"), logName, level.toString()), NotificationType.HUMANIZED);
+                } else
+                    showNotification(getMessage("noSelectedLevel"), NotificationType.HUMANIZED);
+            else
+                showNotification(getMessage("registrarNotExist"), NotificationType.HUMANIZED);
+        } else {
+            logNameField.setValue(null);
+            showNotification(getMessage("noRegName"), NotificationType.HUMANIZED);
+        }
     }
 
     public void download() {
@@ -97,9 +118,8 @@ public class ServerLogWindow extends AbstractWindow {
         if (zipName != null) {
             AppConfig.createExportDisplay().show(new SimpleFileDataProvider(zipName), fileName + ".zip");
             logManagerService.deleteTempFile(zipName);
-        } else {
+        } else
             showNotification(getMessage("fileDownload"), NotificationType.HUMANIZED);
-        }
     }
 
     private void initTimers() {
@@ -128,9 +148,9 @@ public class ServerLogWindow extends AbstractWindow {
             String selectValue = logFileNamesField.getValue();
             String value = logManagerService.getTail(selectValue);
             vLabel.setValue(value);
-        } else {
-            showNotification(getMessage("logSelect"), NotificationType.HUMANIZED);
-        }
+        } else
+            showNotification(getMessage("noSelectedLog"), NotificationType.HUMANIZED);
+
         int scrollPos = panel.getScrollTop() + 30000;
         panel.setScrollTop(scrollPos);
 

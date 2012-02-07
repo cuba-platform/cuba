@@ -55,7 +55,7 @@ public interface LogManagerService {
     String packLog(String fileName);
 
     /**
-     * deletes a file
+     * Deletes a file
      * @param filePath way to a file
      */
     void deleteTempFile(String filePath);
