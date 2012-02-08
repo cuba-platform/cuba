@@ -311,7 +311,8 @@ public class LoginWindow extends Window implements Action.Handler {
 
         String login = (String) loginField.getValue();
         try {
-            if (ActiveDirectoryHelper.useActiveDirectory()) {
+            // Login with AD if domain specified
+            if (StringUtils.contains(login, "\\") && ActiveDirectoryHelper.useActiveDirectory()) {
                 Locale locale = getUserLocale();
                 App.getInstance().setLocale(locale);
                 ActiveDirectoryHelper.getAuthProvider().authenticate(login, (String) passwordField.getValue(), loc);

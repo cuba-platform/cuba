@@ -34,6 +34,7 @@ import java.util.Locale;
  */
 public class KerberosAuthProvider implements CubaAuthProvider {
 
+    private static final String AD_INTEGRATION_SUPPORT = "ADIntegrationSupport";
     private Log log = LogFactory.getLog(KerberosAuthProvider.class);
 
     @Override
@@ -52,6 +53,12 @@ public class KerberosAuthProvider implements CubaAuthProvider {
 
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+
+        // Filter unsupported sessions
+        if (Boolean.FALSE.equals(request.getSession().getAttribute(AD_INTEGRATION_SUPPORT))) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         String auth = request.getHeader("Authorization");
         if (auth == null) {
@@ -95,6 +102,11 @@ public class KerberosAuthProvider implements CubaAuthProvider {
 
                             // Proceed filter with new User Principal with auth name
                             filterChain.doFilter(securedRequest, response);
+                        } else {
+                            // Allow user to login normally
+                            // Mark session, unsupported AD flag
+                            request.getSession().setAttribute(AD_INTEGRATION_SUPPORT, Boolean.FALSE);
+                            filterChain.doFilter(request, response);
                         }
                     } else
                         throw new LoginException("Null serviceSubject returned from LoginContext");
@@ -112,8 +124,9 @@ public class KerberosAuthProvider implements CubaAuthProvider {
 
     /**
      * Acquire client context in priveleged action with Seprvice Principal permissions
+     *
      * @param serviceSubject Service Principal subject
-     * @param authString Client auth string
+     * @param authString     Client auth string
      * @return Client name
      */
     private GSSName authentication(Subject serviceSubject, final String authString) {
@@ -127,7 +140,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
                     context.acceptSecContext(kerberosToken, 0, kerberosToken.length);
                     return context.getSrcName();
                 } catch (GSSException e) {
-                    log.info("Unable to login user with token: " + authString, e);
+                    log.debug("Unable to login user with token: " + authString, e);
                     return null;
                 }
             }
