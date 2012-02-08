@@ -25,7 +25,7 @@ public abstract class AbstractSearchFolder extends Folder {
     protected String filterXml;
 
     @Column(name="APPLY_DEFAULT")
-    protected Boolean applyDefault;
+    protected Boolean applyDefault = true;
 
     public String getFilterComponentId() {
         return filterComponentId;
