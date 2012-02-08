@@ -80,6 +80,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
     private boolean columnsInitialized = false;
     private int generatedColumnsCount = 0;
 
+    private boolean isRowsAjusting = false;
+
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
         panel = new JPanel(layout);
@@ -445,6 +447,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
             @Override
             public void beforeChange() {
                 selection = getSelected();
+                // ignore selection change while data changing
+                isRowsAjusting = true;
             }
 
             @Override
@@ -460,6 +464,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 // apply selection
                 setSelected(newSelection);
                 selection = null;
+                // enable selection change listener
+                isRowsAjusting = false;
             }
         });
     }
@@ -470,7 +476,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
                     @Override
                     public void valueChanged(ListSelectionEvent e) {
-                        if (e.getValueIsAdjusting())
+                        if (e.getValueIsAdjusting() || isRowsAjusting)
                             return;
 
                         Entity entity = getSingleSelected();
