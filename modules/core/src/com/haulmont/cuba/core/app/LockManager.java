@@ -155,12 +155,17 @@ public class LockManager implements LockManagerAPI, LockManagerMBean, ClusterLis
             LockInfo lockInfo = locks.get(key);
             if (lockInfo != null) {
                 LockDescriptor ld = getConfig().get(key.name);
-                Integer timeoutSec = ld.getTimeoutSec();
-                if (timeoutSec != null && timeoutSec > 0) {
-                    Date since = lockInfo.getSince();
-                    if (since.getTime() + timeoutSec * 1000 < TimeProvider.currentTimestamp().getTime()) {
-                        log.debug("Lock " + key.name + "/" + key.id + " expired");
-                        locks.remove(key);
+                if (ld == null) {
+                    log.debug("Lock " + key.name + "/" + key.id + " configuration not found, remove it");
+                    locks.remove(key);
+                } else {
+                    Integer timeoutSec = ld.getTimeoutSec();
+                    if (timeoutSec != null && timeoutSec > 0) {
+                        Date since = lockInfo.getSince();
+                        if (since.getTime() + timeoutSec * 1000 < TimeProvider.currentTimestamp().getTime()) {
+                            log.debug("Lock " + key.name + "/" + key.id + " expired");
+                            locks.remove(key);
+                        }
                     }
                 }
             }
