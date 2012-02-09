@@ -26,7 +26,13 @@ public interface UserSessionsAPI
 
     void remove(UserSession session);
 
-    UserSession get(UUID id);
+    /**
+     * Get user session from cache, updating its "last used" timestamp.
+     * @param id        session id
+     * @param propagate whether to propagate the new "last used" timestamp to the cluster
+     * @return          user session instance or null if not found
+     */
+    UserSession get(UUID id, boolean propagate);
 
     Collection<UserSessionEntity> getUserSessionInfo();
 

@@ -11,7 +11,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.RemoteException;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,10 +19,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
 
 public class ServiceInterceptor
 {
-    private UserSessionSource userSessionSource;
+    private UserSessionsAPI userSessions;
 
-    public void setUserSessionSource(UserSessionSource userSessionSource) {
-        this.userSessionSource = userSessionSource;
+    public void setUserSessions(UserSessionsAPI userSessions) {
+        this.userSessions = userSessions;
     }
 
     private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
@@ -38,9 +38,7 @@ public class ServiceInterceptor
         }
 
         try {
-            UserSession userSession = userSessionSource.getUserSession();
-            if (log.isTraceEnabled())
-                log.trace("Invoking: " + ctx.getSignature() + ", session=" + userSession);
+            checkUserSession(ctx, log);
 
             Object res = ctx.proceed();
             return res;
@@ -49,5 +47,16 @@ public class ServiceInterceptor
             // Propagate the special exception to avoid serialization errors on remote clients
             throw new RemoteException(e);
         }
+    }
+
+    private void checkUserSession(ProceedingJoinPoint ctx, Log log) {
+        // Using UserSessionsAPI directly to make sure the session's "last used" timestamp is propagated to the cluster
+        SecurityContext securityContext = AppContext.getSecurityContext();
+        if (securityContext == null)
+            throw new SecurityException("No security context bound to the current thread");
+
+        UserSession userSession = userSessions.get(securityContext.getSessionId(), true);
+        if (log.isTraceEnabled())
+            log.trace("Invoking: " + ctx.getSignature() + ", session=" + userSession);
     }
 }

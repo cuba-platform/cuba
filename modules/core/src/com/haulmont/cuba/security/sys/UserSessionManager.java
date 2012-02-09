@@ -195,7 +195,7 @@ public class UserSessionManager
      */
     public UserSession findSession(UUID sessionId) {
         if (AppContext.isStarted())
-            return sessions.get(sessionId);
+            return sessions.get(sessionId, false);
         else
             return NO_USER_SESSION;
     }

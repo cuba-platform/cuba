@@ -148,11 +148,17 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
         }
     }
 
-    public UserSession get(UUID id) {
-        UserSessionInfo info = cache.get(id);
-        if (info != null) {
-            info.lastUsedTs = TimeProvider.currentTimestamp().getTime();
-            return info.session;
+    @Override
+    public UserSession get(UUID id, boolean propagate) {
+        UserSessionInfo usi = cache.get(id);
+        if (usi != null) {
+            usi.lastUsedTs = TimeProvider.currentTimestamp().getTime();
+
+            if (propagate && !usi.session.isSystem()) {
+                clusterManager.send(usi);
+            }
+
+            return usi.session;
         }
         return null;
     }
@@ -197,7 +203,12 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
     }
 
     public void killSession(UUID id){
-        cache.remove(id);
+        UserSessionInfo usi = cache.remove(id);
+
+        if (usi != null) {
+            usi.lastUsedTs = 0;
+            clusterManager.send(usi);
+        }
     }
 
     public void processEviction() {

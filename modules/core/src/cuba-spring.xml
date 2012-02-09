@@ -45,7 +45,7 @@
     <!-- AOP setup -->
 
     <bean id="serviceInterceptor" class="com.haulmont.cuba.core.sys.ServiceInterceptor">
-        <property name="userSessionSource" ref="cuba_UserSessionSource"/>
+        <property name="userSessions" ref="cuba_UserSessions"/>
     </bean>
 
     <bean id="mbeanInterceptor" class="com.haulmont.cuba.core.sys.MBeanInterceptor"/>
