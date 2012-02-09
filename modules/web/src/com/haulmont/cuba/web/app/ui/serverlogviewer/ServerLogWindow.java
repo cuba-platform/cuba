@@ -7,21 +7,22 @@
 package com.haulmont.cuba.web.app.ui.serverlogviewer;
 
 import com.haulmont.cuba.core.app.LogManagerService;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.export.SimpleFileDataProvider;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggerFactory;
+import org.apache.log4j.spi.LoggerRepository;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>$Id$</p>
@@ -43,7 +44,7 @@ public class ServerLogWindow extends AbstractWindow {
     private OptionsField levelField;
 
     @Inject
-    private Field logNameField;
+    private TextField logNameField;
 
     @Inject
     private CheckBox autoRefreshCheck;
@@ -85,8 +86,6 @@ public class ServerLogWindow extends AbstractWindow {
             Level level = logManagerService.getLogLevel(logNameField.<String>getValue());
             if (level != null)
                 levelField.setValue(level);
-            else
-                showNotification(getMessage("registrarNotExist"), NotificationType.HUMANIZED);
         } else {
             logNameField.setValue(null);
             showNotification(getMessage("noRegName"), NotificationType.HUMANIZED);
@@ -95,17 +94,13 @@ public class ServerLogWindow extends AbstractWindow {
 
     public void setLevel() {
         if (logNameField.getValue() != null && logNameField.getValue().toString().trim().length() != 0) {
-            Level vLevel = logManagerService.getLogLevel(logNameField.<String>getValue());
-            if (vLevel != null)
-                if (levelField.getValue() != null) {
-                    String logName = logNameField.getValue();
-                    Level level = levelField.getValue();
-                    logManagerService.setLogLevel(logName, level);
-                    showNotification(String.format(getMessage("logSetMessage"), logName, level.toString()), NotificationType.HUMANIZED);
-                } else
-                    showNotification(getMessage("noSelectedLevel"), NotificationType.HUMANIZED);
-            else
-                showNotification(getMessage("registrarNotExist"), NotificationType.HUMANIZED);
+            if (levelField.getValue() != null) {
+                String logName = logNameField.getValue();
+                Level level = levelField.getValue();
+                logManagerService.setLogLevel(logName, level);
+                showNotification(String.format(getMessage("logSetMessage"), logName, level.toString()), NotificationType.HUMANIZED);
+            } else
+                showNotification(getMessage("noSelectedLevel"), NotificationType.HUMANIZED);
         } else {
             logNameField.setValue(null);
             showNotification(getMessage("noRegName"), NotificationType.HUMANIZED);
