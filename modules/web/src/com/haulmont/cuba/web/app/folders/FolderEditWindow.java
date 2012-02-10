@@ -15,7 +15,6 @@ import com.haulmont.cuba.core.app.FoldersService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -23,11 +22,10 @@ import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.SearchFolder;
+import com.haulmont.cuba.web.gui.components.WebButton;
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -134,10 +132,15 @@ public class FolderEditWindow extends Window {
         layout.addComponent(buttonsLayout);
 
         okBtn = new Button(getMessage("actions.Ok"));
+        okBtn.setIcon(new ThemeResource("icons/ok.png"));
+        okBtn.addStyleName(WebButton.ICON_STYLE);
+
         initButtonOkListener();
         buttonsLayout.addComponent(okBtn);
 
         Button cancelBtn = new Button(getMessage("actions.Cancel"));
+        cancelBtn.setIcon(new ThemeResource("icons/cancel.png"));
+        cancelBtn.addStyleName(WebButton.ICON_STYLE);
         cancelBtn.addListener(new Button.ClickListener() {
             public void buttonClick(Button.ClickEvent event) {
                 close();

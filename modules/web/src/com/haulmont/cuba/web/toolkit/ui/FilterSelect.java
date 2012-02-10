@@ -156,6 +156,8 @@ public class FilterSelect extends Select {
                 }
             } else {
                 filteredOptions = new LinkedList();
+                if (this.getNullSelectionItemId() != null)
+                    filteredOptions.add(this.getNullSelectionItemId());
                 valueFound = false;
             }
 

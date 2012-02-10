@@ -63,6 +63,7 @@ public class EntityRestore extends AbstractWindow {
                             tablePanel.remove(filter);
                         entitiesTable = new WebTable();
                         entitiesTable.setFrame(frame);
+                        entitiesTable.setRowsCount(new WebRowsCount());
                         for (MetaProperty mp : metaClass.getProperties()) {
                             if (MetaProperty.Type.DATATYPE == mp.getType() /*&& !Arrays.asList(removeFields).contains(mp.getName())*/) {
                                 Table.Column column = new Table.Column(metaClass.getPropertyEx(mp.getName()));

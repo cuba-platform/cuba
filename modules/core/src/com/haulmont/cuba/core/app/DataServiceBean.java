@@ -169,7 +169,7 @@ public class DataServiceBean implements DataService {
             return null;
         }
 
-        Object result;
+        Object result = null;
 
         Transaction tx = persistence.getTransaction();
         try {
@@ -185,7 +185,9 @@ public class DataServiceBean implements DataService {
 
             com.haulmont.cuba.core.Query query = createQuery(em, context);
             try {
-                result = query.getSingleResult();
+                final List resultList = query.getResultList();
+                if (!resultList.isEmpty())
+                    result = resultList.get(0);
             } catch (javax.persistence.NoResultException e) {
                 result = null;
             }
@@ -269,7 +271,7 @@ public class DataServiceBean implements DataService {
             queryString = context.getQuery().getQueryString();
             queryParams = context.getQuery().getParameters();
         } else {
-            queryString = "select distinct e from " + metaClass.getName() + " e where e.id = :entityId";
+            queryString = "select e from " + metaClass.getName() + " e where e.id = :entityId";
             queryParams = new HashMap<String, Object>();
             queryParams.put("entityId", context.getId());
         }

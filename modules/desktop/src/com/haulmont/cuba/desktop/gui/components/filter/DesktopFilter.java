@@ -99,6 +99,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     private JCheckBox maxResultsCb;
     //private DesktopTextField maxResultsField;
     private MaxResultsField maxResultsField;
+    private Boolean manualApplyRequired;
 
     private DesktopPopupButton actions;
 
@@ -190,7 +191,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
         this.dsQueryFilter = datasource.getQueryFilter();
-        if (clientConfig.getGenericFilterManualApplyRequired()) {
+        if (getResultingManualApplyRequired()) {
             // set initial denying condition to get empty datasource before explicit filter applying
             QueryFilter queryFilter = new QueryFilter(new DenyingClause(), datasource.getMetaClass().getName());
             if (dsQueryFilter != null) {
@@ -394,7 +395,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         }
         if (BooleanUtils.isTrue(filterEntity.getApplyDefault()) ||
                 BooleanUtils.isTrue(filterEntity.getIsSet()) ||
-                !clientConfig.getGenericFilterManualApplyRequired())
+                !getResultingManualApplyRequired())
             apply(true);
     }
 
@@ -1114,6 +1115,20 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
                 filterWrapper.setCaption(getFilterCaption(filterWrapper.getItem()) + " " + defaultFilterCaption);
             }
         }
+    }
+
+    @Override
+    public void setManualApplyRequired(Boolean manualApplyRequired) {
+        this.manualApplyRequired = manualApplyRequired;
+    }
+
+    @Override
+    public Boolean getManualApplyRequired() {
+        return manualApplyRequired;
+    }
+
+    private boolean getResultingManualApplyRequired() {
+        return manualApplyRequired != null ? manualApplyRequired : clientConfig.getGenericFilterManualApplyRequired();
     }
 
     private class SelectListener implements ValueListener {

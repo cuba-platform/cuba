@@ -23,7 +23,7 @@ public abstract class CategorizedEntity extends BaseUuidEntity {
 
     private static final long serialVersionUID = -4359158051274491070L;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CATEGORY_ID")
     @OnDeleteInverse(DeletePolicy.DENY)
     protected Category category;

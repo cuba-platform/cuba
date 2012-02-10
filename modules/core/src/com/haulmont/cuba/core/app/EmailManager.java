@@ -118,8 +118,11 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
     private boolean needToSetStatusNotSent(SendingMessage sendingMessage) {
         if (sendingMessage.getDeadline() != null && sendingMessage.getDeadline().getTime() < timeSource.currentTimestamp().getTime())
             return true;
-        else if (sendingMessage.getAttemptsCount() != null && sendingMessage.getAttemptsMade() != null && sendingMessage.getAttemptsMade() >= sendingMessage.getAttemptsCount())
-            return true;
+        else {
+            int attemptsCount = sendingMessage.getAttemptsCount() != null ? sendingMessage.getAttemptsCount() : config.getDefaultSendingAttemptsCount();
+            if (sendingMessage.getAttemptsMade() != null && sendingMessage.getAttemptsMade() >= attemptsCount)
+                return true;
+        }
         return false;
     }
 
@@ -160,7 +163,7 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
                     "\t or (sm.status = :statusSending and sm.updateTs<:time)" +
                     "\t order by sm.createTs")
                     .setParameter("statusQueue", SendingStatus.QUEUE.getId())
-                    .setParameter("time", DateUtils.addSeconds(timeSource.currentTimestamp(), -MAX_SENDING_TIME_SEC))
+                    .setParameter("time", DateUtils.addSeconds(timeSource.currentTimestamp(), -config.getMaxSendingTimeSec()))
                     .setParameter("statusSending", SendingStatus.SENDING.getId());
             List<SendingMessage> res = query.setMaxResults(getMessageQueueCapacity()).getResultList();
             tx.commit();

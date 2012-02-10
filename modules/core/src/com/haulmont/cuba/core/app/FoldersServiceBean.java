@@ -12,9 +12,8 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.AppFolder;
-import com.haulmont.cuba.core.global.Scripting;
-import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.entity.Folder;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import groovy.lang.Binding;
 import org.apache.commons.lang.BooleanUtils;
@@ -24,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +43,9 @@ public class FoldersServiceBean implements FoldersService {
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
-            Query q = em.createQuery("select f from core$AppFolder f order by f.sortOrder, f.name");
+            Class<AppFolder> replacedClass = MetadataProvider.getReplacedClass(AppFolder.class);
+            Query q = em.createQuery("select f from " + MetadataProvider.getSession().getClass(replacedClass).getName()
+                    +" f order by f.sortOrder, f.name");
             List<AppFolder> list = q.getResultList();
 
             if (!list.isEmpty()) {
@@ -144,5 +146,15 @@ public class FoldersServiceBean implements FoldersService {
         } finally {
             tx.end();
         }
+    }
+
+    @Override
+    public byte[] exportFolder(Folder folder) throws IOException {
+        return FolderHelper.exportFolder(folder);
+    }
+
+    @Override
+    public Folder importFolder(Folder parentFolder, byte[] bytes) throws IOException {
+        return FolderHelper.importFolder(parentFolder, bytes);
     }
 }

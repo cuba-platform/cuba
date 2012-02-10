@@ -10,7 +10,6 @@
  */
 package com.haulmont.cuba.web.app.folders;
 
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.app.FoldersService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
@@ -26,6 +25,8 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
+import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
 import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.FilterEntity;
@@ -34,8 +35,10 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingHelper;
+import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.toolkit.Timer;
+import com.haulmont.cuba.web.ui.report.fileuploaddialog.ReportImportDialog;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.Resource;
@@ -50,9 +53,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
 import java.util.*;
-
-import com.haulmont.cuba.web.toolkit.Timer;
 
 @SuppressWarnings("serial")
 public class FoldersPane extends VerticalLayout {
@@ -604,8 +606,9 @@ public class FoldersPane extends VerticalLayout {
 
         public Action[] getActions(Object target, Object sender) {
             if (target instanceof Folder) {
-                if (UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.appFolder.global")) {
-                    return new Action[]{new OpenAction(), new CreateAction(true), new CopyAction(), new EditAction(), new RemoveAction()};
+                if (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.appFolder.global")) {
+                    return new Action[]{new OpenAction(), new CreateAction(true), new CopyAction(),
+                            new EditAction(), new RemoveAction(), new ExportAction(), new ImportAction()};
                 } else {
                     return new Action[]{new OpenAction()};
                 }
@@ -679,7 +682,8 @@ public class FoldersPane extends VerticalLayout {
         }
 
         private Action[] createAllActions() {
-            return new Action[]{new OpenAction(), new CopyAction(), new CreateAction(false), new EditAction(), new RemoveAction()};
+            return new Action[]{new OpenAction(), new CopyAction(), new CreateAction(false),
+                    new EditAction(), new RemoveAction(), new ExportAction(), new ImportAction()};
         }
 
         private Action[] createWithoutOpenActions() {
@@ -727,8 +731,7 @@ public class FoldersPane extends VerticalLayout {
         }
 
         public void perform(final Folder folder) {
-
-            final Folder newFolder = isAppFolder ? (new AppFolder()) : (new SearchFolder());
+            final Folder newFolder = isAppFolder ? MetadataProvider.create(AppFolder.class) : (new SearchFolder());
             newFolder.setName("");
             newFolder.setTabName("");
             newFolder.setParent(folder);
@@ -755,11 +758,9 @@ public class FoldersPane extends VerticalLayout {
         }
 
         public void perform(final Folder folder) {
-            Folder newFolder = (Folder) InstanceUtils.copy(folder);
-            newFolder.setId(UuidProvider.createUuid());
-            if (newFolder instanceof SearchFolder) {
-                ((SearchFolder) newFolder).setUser(UserSessionProvider.getUserSession().getUser());
-            }
+            final AbstractSearchFolder newFolder;
+            newFolder = MetadataProvider.create(folder.getMetaClass());
+            newFolder.copyFrom((AbstractSearchFolder) folder);
             new EditAction().perform(newFolder);
         }
     }
@@ -781,7 +782,7 @@ public class FoldersPane extends VerticalLayout {
                 });
             } else {
                 if (folder instanceof AppFolder) {
-                    window = new AppFolderEditWindow(false, folder, null, new Runnable() {
+                    window = AppFolderEditWindow.create(true, false, folder, null, new Runnable() {
                         public void run() {
                             saveFolder(folder);
                             refreshFolders();
@@ -821,6 +822,55 @@ public class FoldersPane extends VerticalLayout {
                             new DialogAction(DialogAction.Type.NO)
                     }
             );
+        }
+    }
+
+    protected class ExportAction extends FolderAction {
+
+        public ExportAction() {
+            super(MessageProvider.getMessage(messagesPack, "folders.exportFolderAction"));
+        }
+
+        @Override
+        public void perform(Folder folder) {
+            FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
+            try {
+                new WebExportDisplay().show(new ByteArrayDataProvider(
+                        service.exportFolder(folder)), "Folders", ExportFormat.ZIP);
+            } catch (IOException e) {
+
+            }
+        }
+    }
+
+    private class ImportAction extends FolderAction {
+        protected ImportAction() {
+            super(MessageProvider.getMessage(messagesPack, "folders.importFolderAction"));
+        }
+
+        public void perform(final Folder folder) {
+            WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
+            final ReportImportDialog importDialog = App.getInstance().getWindowManager().
+                    openWindow(windowConfig.getWindowInfo("report$Report.fileUploadDialog"),
+                            WindowManager.OpenType.DIALOG);
+
+            importDialog.addListener(new Window.CloseListener() {
+                public void windowClosed(String actionId) {
+                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+                        try {
+                            FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
+                            service.importFolder(folder, importDialog.getBytes());
+                        } catch (Exception ex) {
+                            importDialog.showNotification(
+                                    importDialog.getMessage("notification.importFailed"),
+                                    ex.getMessage(),
+                                    IFrame.NotificationType.ERROR
+                            );
+                        }
+                        refreshFolders();
+                    }
+                }
+            });
         }
     }
 

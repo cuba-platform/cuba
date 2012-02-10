@@ -98,6 +98,7 @@ public class WebFilter
     private CheckBox maxResultsCb;
     private TextField maxResultsField;
     private AbstractOrderedLayout maxResultsLayout;
+    private Boolean manualApplyRequired;
 
     private Component applyTo;
 
@@ -598,7 +599,7 @@ public class WebFilter
         }
         if (BooleanUtils.isTrue(filterEntity.getApplyDefault()) ||
                 BooleanUtils.isTrue(filterEntity.getIsSet()) ||
-                !clientConfig.getGenericFilterManualApplyRequired())
+                !getResultingManualApplyRequired())
             apply(true);
     }
 
@@ -621,7 +622,7 @@ public class WebFilter
                             + " "
                             + defaultFilterCaption);
                     updateControls();
-                    if (clientConfig.getGenericFilterManualApplyRequired()) {
+                    if (getResultingManualApplyRequired()) {
                         if (BooleanUtils.isTrue(defaultFilter.getApplyDefault())) {
                             apply(true);
                         }
@@ -920,7 +921,7 @@ public class WebFilter
         this.datasource = datasource;
         this.dsQueryFilter = datasource.getQueryFilter();
 
-        if (clientConfig.getGenericFilterManualApplyRequired()) {
+        if (getResultingManualApplyRequired()) {
             // set initial denying condition to get empty datasource before explicit filter applying
             QueryFilter queryFilter = new QueryFilter(new DenyingClause(), datasource.getMetaClass().getName());
             if (dsQueryFilter != null) {
@@ -1123,7 +1124,12 @@ public class WebFilter
     }
 
     private void saveAsFolder(boolean isAppFolder) {
-        final AbstractSearchFolder folder = isAppFolder ? (new AppFolder()) : (new SearchFolder());
+        final AbstractSearchFolder folder;
+        if (isAppFolder)
+            folder = (MetadataProvider.create(AppFolder.class));
+        else
+            folder = (new SearchFolder());
+
         if (filterEntity.getCode() == null) {
             folder.setName(filterEntity.getName());
             folder.setTabName(filterEntity.getName());
@@ -1291,6 +1297,21 @@ public class WebFilter
         }
         if (filterEntity != null)
             select.setItemCaption(filterEntity, getFilterCaption(filterEntity) + " " + defaultFilterCaption);
+    }
+
+
+    @Override
+    public void setManualApplyRequired(Boolean manualApplyRequired) {
+        this.manualApplyRequired = manualApplyRequired;
+    }
+
+    @Override
+    public Boolean getManualApplyRequired() {
+        return manualApplyRequired;
+    }
+
+    private boolean getResultingManualApplyRequired() {
+        return manualApplyRequired != null ? manualApplyRequired : clientConfig.getGenericFilterManualApplyRequired();
     }
 
     private class SelectListener implements Property.ValueChangeListener {

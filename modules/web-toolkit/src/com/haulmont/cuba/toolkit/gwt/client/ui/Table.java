@@ -2956,7 +2956,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                         selectedKey = key;
                     }
                     if (!childWidgets.isEmpty()) {
-                        Widget w = (Widget) childWidgets.get(focusWidgetIndex > -1 ? focusWidgetIndex : 0);
+                        int i = focusWidgetIndex > -1 && (focusWidgetIndex < childWidgets.size()) ? focusWidgetIndex : 0;
+                        Widget w = (Widget) childWidgets.get(i);
                         if (w instanceof com.vaadin.terminal.gwt.client.Focusable) {
                             ((com.vaadin.terminal.gwt.client.Focusable) w).focus();
                         }

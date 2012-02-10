@@ -60,8 +60,6 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
         final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath), dsManager);
         final Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
 
-        component.setPropertyDataSource(itemProperty);
-
         setRequired(metaProperty.isMandatory());
 
         if (metaProperty.getRange().isEnum()) {
@@ -72,6 +70,8 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             setComponentContainerDs(new EnumerationContainer(optionsList));
             setCaptionMode(CaptionMode.ITEM);
         }
+        
+        component.setPropertyDataSource(itemProperty);
     }
 
     public void setOptionsMap(Map<String, Object> options) {

@@ -867,6 +867,7 @@ public class WebWindow
             container.setSizeFull();
             form.setExpandRatio(container, 1);
             form.setComponentAlignment(okbar, com.vaadin.ui.Alignment.MIDDLE_LEFT);
+            form.setSizeFull();
 
             return form;
         }

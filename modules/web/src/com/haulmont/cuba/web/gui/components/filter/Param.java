@@ -20,7 +20,7 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.AbstractParam;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -28,19 +28,12 @@ import com.haulmont.cuba.gui.data.DsBuilder;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
-import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.haulmont.cuba.web.gui.components.WebLookupField;
 import com.haulmont.cuba.web.gui.components.WebPickerField;
-import com.haulmont.cuba.web.toolkit.ui.DateFieldWrapper;
 import com.vaadin.data.Property;
-import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.Window;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -363,14 +356,6 @@ public class Param extends AbstractParam<Component> {
             ds.setRefreshOnComponentValueChange(true);
             ((DatasourceImplementation) ds).initialized();
 
-            Map<String, Object> params = datasource.getDsContext().getWindowContext().getParams();
-            if (BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
-                if (ds instanceof CollectionDatasource.Suspendable)
-                    ((CollectionDatasource.Suspendable) ds).refreshIfNotSuspended();
-                else
-                    ds.refresh();
-            }
-
             if (!StringUtils.isBlank(entityWhere)) {
                 QueryTransformer transformer = QueryTransformerFactory.createTransformer(
                         "select e from " + metaClass.getName() + " e",
@@ -378,6 +363,14 @@ public class Param extends AbstractParam<Component> {
                 transformer.addWhere(entityWhere);
                 String q = transformer.getResult();
                 ds.setQuery(q);
+            }
+            
+            Map<String, Object> params = datasource.getDsContext().getWindowContext().getParams();
+            if (BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
+                if (ds instanceof CollectionDatasource.Suspendable)
+                    ((CollectionDatasource.Suspendable) ds).refreshIfNotSuspended();
+                else
+                    ds.refresh();
             }
 
             if (inExpr) {

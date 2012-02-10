@@ -11,8 +11,10 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.entity.AppFolder;
+import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.security.entity.SearchFolder;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface FoldersService {
@@ -27,4 +29,21 @@ public interface FoldersService {
     List<AppFolder> reloadAppFolders(List<AppFolder> folders);
 
     List<SearchFolder> loadSearchFolders();
+
+    /**
+     * Export folder as zip archive
+     * @param folder
+     * @return
+     * @throws IOException
+     */
+    byte[] exportFolder(Folder folder) throws IOException;
+
+    /**
+     * Import folder
+     * @param parentFolder
+     * @param bytes
+     * @return
+     * @throws IOException
+     */
+    Folder importFolder(Folder parentFolder, byte[] bytes) throws IOException;
 }

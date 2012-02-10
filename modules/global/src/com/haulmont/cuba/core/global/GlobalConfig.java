@@ -119,5 +119,11 @@ public interface GlobalConfig extends Config {
     @Property("cuba.useAstBasedJpqlTransformer")
     @DefaultBoolean(false)
     boolean getUseAstBasedJpqlTransformer();
+
+    /**
+     * @return Overriden AppFolderEditWindow class name
+     */
+    @Property("cuba.web.appFolderEditWindow")
+    String getAppFolderEditWindowClassName();
 }
 

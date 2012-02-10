@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.gui;
 
-import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
@@ -85,7 +84,7 @@ public class ScreenHistorySupport {
         Entity entity = null;
         if (window.getFrame() instanceof Window.Editor)
             entity = ((Window.Editor) window.getFrame()).getItem();
-        String url = "http://" + c.getWebHostName() + ":" + c.getWebPort() + "/" + c.getWebContextName() + "/open?" +
+        String url = c.getWebAppUrl() + "/open?" +
                 "screen=" + window.getFrame().getId();
         if (entity != null) {
             String item = MetadataProvider.getSession().getClass(entity.getClass()).getName() + "-" + entity.getId();

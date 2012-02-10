@@ -36,4 +36,7 @@ public interface Filter
 
     void setApplyTo(Component component);
     Component getApplyTo();
+    
+    void setManualApplyRequired(Boolean manualApplyRequired);
+    Boolean getManualApplyRequired();
 }

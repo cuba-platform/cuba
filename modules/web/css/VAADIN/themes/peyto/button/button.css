@@ -256,3 +256,13 @@ background: #ffe0e0;
 .v-button-grey {
     border: none;
 }
+
+.v-disabled.v-button-link:hover,
+.v-disabled.v-nativebutton-link:hover {
+    background: none;
+}
+
+.v-disabled.v-button-link .v-button-wrap:hover,
+.v-disabled.v-button-link:hover .v-button-wrap {
+    background: none;
+}

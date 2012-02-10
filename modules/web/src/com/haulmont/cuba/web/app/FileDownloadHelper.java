@@ -70,6 +70,7 @@ public class FileDownloadHelper {
         vTable.addGeneratedColumn(nameProperty, new com.vaadin.ui.Table.ColumnGenerator() {
             private static final long serialVersionUID = -8909453319289476141L;
 
+            @Override
             public Component generateCell(com.vaadin.ui.Table source, final Object itemId, Object columnId) {
 
                 Property prop = source.getItem(itemId).getItemProperty(columnId);
@@ -85,6 +86,7 @@ public class FileDownloadHelper {
                     } else {
                         component = new Button(fd.getName(), new Button.ClickListener() {
 
+                            @Override
                             public void buttonClick(Button.ClickEvent event) {
                                 new WebExportDisplay().show(fd);
                             }

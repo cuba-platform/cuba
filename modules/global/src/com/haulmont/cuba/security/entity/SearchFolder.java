@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 
 import javax.persistence.*;
 
@@ -26,17 +27,24 @@ public class SearchFolder extends AbstractSearchFolder {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
-    private User user;
+    protected User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PRESENTATION_ID")
-    private Presentation presentation;
+    protected Presentation presentation;
 
     @Column(name="IS_SET")
-    private Boolean isSet;
+    protected Boolean isSet;
 
     @Column(name="ENTITY_TYPE")
-    private String entityType;
+    protected String entityType;
+
+    @Override
+    public void copyFrom(AbstractSearchFolder srcFolder) {
+        super.copyFrom(srcFolder);
+
+        setUser(UserSessionProvider.getUserSession().getUser());
+    }
 
     public User getUser() {
         return user;

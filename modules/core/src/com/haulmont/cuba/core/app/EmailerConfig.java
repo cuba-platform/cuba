@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.config.Prefix;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
+import com.haulmont.cuba.core.config.defaults.DefaultInt;
 
 /**
  * Configuration parameters interface used for sending emails.
@@ -47,4 +48,18 @@ public interface EmailerConfig extends Config
      */
     @Default("100")
     int getMessageQueueCapacity();
+
+    /**
+     * 
+     * @return Quantity of sending attempts after which message's status is set to NOT_SENT
+     */
+    @DefaultInt(10)
+    int getDefaultSendingAttemptsCount();
+
+    /**
+     *
+     * @return Max time of sending message while it is still considered to be valid
+     */
+    @DefaultInt(120)
+    int getMaxSendingTimeSec();
 }

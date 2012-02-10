@@ -25,13 +25,21 @@ import javax.persistence.*;
 public class AppFolder extends AbstractSearchFolder {
 
     @Column(name = "VISIBILITY_SCRIPT", length = 200)
-    private String visibilityScript;
+    protected String visibilityScript;
 
     @Column(name = "QUANTITY_SCRIPT", length = 200)
-    private String quantityScript;
+    protected String quantityScript;
 
     @Transient
-    private Integer quantity;
+    protected Integer quantity;
+
+    @Override
+    public void copyFrom(AbstractSearchFolder srcFolder) {
+        super.copyFrom(srcFolder);
+
+        setVisibilityScript(((AppFolder) srcFolder).getVisibilityScript());
+        setQuantityScript(((AppFolder) srcFolder).getQuantityScript());
+    }
 
     public String getVisibilityScript() {
         return visibilityScript;

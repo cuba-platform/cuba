@@ -9,7 +9,6 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
-import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -24,7 +23,6 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.groovy.util.StringUtil;
 import org.dom4j.Element;
 
 import java.lang.reflect.Constructor;
@@ -75,9 +73,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             component.setRowHeaderMode(Table.RowHeaderMode.valueOf(rowHeaderMode));
         }
 
-        Window window = ComponentsHelper.getWindow(component);
-        if (!(window instanceof Window.Lookup))
-            loadButtonsPanel(component, element);
+        loadButtonsPanel(component, element);
 
         loadRowsCount(component, element); // must be before datasource setting
 
@@ -169,10 +165,15 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             throws InstantiationException, IllegalAccessException {
         Element panelElement = element.element("buttonsPanel");
         if (panelElement != null) {
-            ButtonsPanelLoader loader = (ButtonsPanelLoader) getLoader("buttonsPanel");
-            ButtonsPanel panel = (ButtonsPanel) loader.loadComponent(factory, panelElement, null);
+            Window window = ComponentsHelper.getWindow((Component.BelongToFrame) component);
+            String alwaysVisible = panelElement.attributeValue("alwaysVisible");
 
-            component.setButtonsPanel(panel);
+            if (!(window instanceof Window.Lookup) || "true".equals(alwaysVisible)) {
+                ButtonsPanelLoader loader = (ButtonsPanelLoader) getLoader("buttonsPanel");
+                ButtonsPanel panel = (ButtonsPanel) loader.loadComponent(factory, panelElement, null);
+
+                component.setButtonsPanel(panel);
+            }
         }
     }
 

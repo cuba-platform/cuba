@@ -773,6 +773,7 @@
 
         <xs:attribute name="applyTo" type="xs:string" use="optional"/>
         <xs:attribute name="useMaxResults" type="xs:boolean" use="optional"/>
+        <xs:attribute name="manualApplyRequired" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- FieldGroup.Field -->
@@ -979,6 +980,8 @@
                     <xs:attribute name="enable" type="xs:boolean" use="optional"/>
                     <xs:attribute name="lazy" type="xs:boolean" use="optional"/>
                     <xs:attribute name="margin" type="xs:boolean" use="optional"/>
+                    <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
+                    <xs:attribute name="expand" type="xs:string" use="optional"/>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>

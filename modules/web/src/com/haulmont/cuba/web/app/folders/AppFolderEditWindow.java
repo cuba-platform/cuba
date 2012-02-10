@@ -10,9 +10,12 @@
 */
 package com.haulmont.cuba.web.app.folders;
 
+import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.app.FoldersService;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Folder;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -21,16 +24,31 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.TextField;
 import org.apache.commons.lang.StringUtils;
 
+import java.lang.reflect.Constructor;
 import java.util.List;
 
 
 public class AppFolderEditWindow extends FolderEditWindow {
-    private TextField visibilityScriptField = null;
-    private TextField quantityScriptField = null;
+    protected TextField visibilityScriptField = null;
+    protected TextField quantityScriptField = null;
 
     public static FolderEditWindow create(boolean isAppFolder, boolean adding, Folder folder, Presentations presentations, Runnable commitHandler) {
         if (isAppFolder) {
-            return new AppFolderEditWindow(adding, folder, presentations, commitHandler);
+            String className = ConfigProvider.getConfig(GlobalConfig.class).getAppFolderEditWindowClassName();
+            if (className != null) {
+                Class<FolderEditWindow> aClass = ReflectionHelper.getClass(className);
+                try {
+                    Constructor constructor = aClass.
+                            getConstructor(boolean.class, Folder.class, Presentations.class, Runnable.class);
+                    FolderEditWindow folderEditWindow = (FolderEditWindow) constructor.
+                            newInstance(adding, folder, presentations, commitHandler);
+                    return folderEditWindow;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                return new AppFolderEditWindow(adding, folder, presentations, commitHandler);
+            }
         } else
             return new FolderEditWindow(adding, folder, presentations, commitHandler);
     }

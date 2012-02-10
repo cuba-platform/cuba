@@ -35,9 +35,11 @@ public class UserSubstitution extends StandardEntity {
     protected User substitutedUser;
 
     @Column(name = "START_DATE")
+    @Temporal(TemporalType.DATE)
     protected Date startDate;
 
     @Column(name = "END_DATE")
+    @Temporal(TemporalType.DATE)
     protected Date endDate;
 
     public User getUser() {

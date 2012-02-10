@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.components.Filter;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
@@ -42,6 +43,9 @@ public class FilterLoader extends ComponentLoader {
 
         String useMaxResults = element.attributeValue("useMaxResults");
         filter.setUseMaxResults(useMaxResults == null || Boolean.valueOf(useMaxResults));
+
+        final String manualApplyRequired = element.attributeValue("manualApplyRequired");
+        filter.setManualApplyRequired(BooleanUtils.toBooleanObject(manualApplyRequired));
 
         String datasource = element.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {

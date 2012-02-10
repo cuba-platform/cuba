@@ -24,8 +24,22 @@ public abstract class AbstractSearchFolder extends Folder {
     @Column(name = "FILTER_XML")
     protected String filterXml;
 
-    @Column(name="APPLY_DEFAULT")
+    @Column(name = "APPLY_DEFAULT")
     protected Boolean applyDefault = true;
+
+    public void copyFrom(AbstractSearchFolder srcFolder) {
+        setCreatedBy(srcFolder.getCreatedBy());
+        setCreateTs(srcFolder.getCreateTs());
+        setDeletedBy(srcFolder.getDeletedBy());
+        setDeleteTs(srcFolder.getDeleteTs());
+        setFilterComponentId(srcFolder.getFilterComponentId());
+        setFilterXml(srcFolder.getFilterXml());
+        setName(srcFolder.getCaption());
+        setTabName(srcFolder.getTabName());
+        setParent(srcFolder.getParent());
+        setItemStyle(srcFolder.getItemStyle());
+        setSortOrder(srcFolder.getSortOrder());
+    }
 
     public String getFilterComponentId() {
         return filterComponentId;
@@ -43,11 +57,11 @@ public abstract class AbstractSearchFolder extends Folder {
         this.filterXml = filterXml;
     }
 
-    public Boolean getApplyDefault(){
+    public Boolean getApplyDefault() {
         return applyDefault;
     }
 
-    public void setApplyDefault(Boolean applyDefault){
-        this.applyDefault=applyDefault;
+    public void setApplyDefault(Boolean applyDefault) {
+        this.applyDefault = applyDefault;
     }
 }
