@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public class BasicServiceTest extends CubaTestCase
+public class DataServiceTest extends CubaTestCase
 {
     public void test() {
         DataService bs = Locator.lookup(DataService.NAME);

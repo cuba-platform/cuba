@@ -19,9 +19,18 @@ public class TransactionTest extends CubaTestCase
 {
     private static final String TEST_EXCEPTION_MSG = "test exception";
 
+    public void testNoTransaction() {
+        try {
+            EntityManager em = PersistenceProvider.getEntityManager();
+            fail();
+        } catch (Exception e) {
+            assertTrue(e instanceof IllegalStateException);
+        }
+    }
+
     public void testCommit() {
         UUID id;
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = PersistenceProvider.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
@@ -37,7 +46,7 @@ public class TransactionTest extends CubaTestCase
             tx.end();
         }
 
-        tx = Locator.createTransaction();
+        tx = PersistenceProvider.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             Server server = em.find(Server.class, id);
@@ -52,7 +61,7 @@ public class TransactionTest extends CubaTestCase
 
     public void testCommitRetaining() {
         UUID id;
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = PersistenceProvider.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
@@ -86,7 +95,7 @@ public class TransactionTest extends CubaTestCase
     }
 
     private void __testRollback() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = PersistenceProvider.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
@@ -112,7 +121,7 @@ public class TransactionTest extends CubaTestCase
     }
 
     private void __testRollbackAndCatch() {
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = PersistenceProvider.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
@@ -142,7 +151,7 @@ public class TransactionTest extends CubaTestCase
 
     private void __testCommitRetainingAndRollback() {
         UUID id;
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = PersistenceProvider.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             assertNotNull(em);
@@ -170,10 +179,10 @@ public class TransactionTest extends CubaTestCase
 
     public void testNestedRollback() {
         try {
-            Transaction tx = Locator.createTransaction();
+            Transaction tx = PersistenceProvider.createTransaction();
             try {
 
-                Transaction tx1 = Locator.getTransaction();
+                Transaction tx1 = PersistenceProvider.getTransaction();
                 try {
                     throwException();
                     fail();
@@ -195,7 +204,7 @@ public class TransactionTest extends CubaTestCase
     }
 
     public void testSuspend() {
-        Transaction tx = Locator.getTransaction();
+        Transaction tx = PersistenceProvider.getTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             Server server = new Server();
@@ -204,7 +213,7 @@ public class TransactionTest extends CubaTestCase
             server.setRunning(true);
             em.persist(server);
 
-            Transaction tx1 = Locator.createTransaction();
+            Transaction tx1 = PersistenceProvider.createTransaction();
             try {
                 EntityManager em1 = PersistenceProvider.getEntityManager();
                 assertTrue(em != em1);
@@ -225,7 +234,7 @@ public class TransactionTest extends CubaTestCase
     }
 
     public void testSuspendRollback() {
-        Transaction tx = Locator.getTransaction();
+        Transaction tx = PersistenceProvider.getTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
             Server server = new Server();
@@ -234,10 +243,12 @@ public class TransactionTest extends CubaTestCase
             server.setRunning(true);
             em.persist(server);
 
-            Transaction tx1 = Locator.createTransaction();
+            Transaction tx1 = PersistenceProvider.createTransaction();
             try {
                 EntityManager em1 = PersistenceProvider.getEntityManager();
                 assertTrue(em != em1);
+                Server server1 = em1.find(Server.class, server.getId());
+                assertNull(server1);
                 throwException();
                 tx1.commit();
             } catch (Exception e) {
