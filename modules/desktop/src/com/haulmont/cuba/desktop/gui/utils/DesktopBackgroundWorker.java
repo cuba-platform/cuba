@@ -156,6 +156,11 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
+        public boolean inProgress() {
+            return !isClosed;
+        }
+
+        @Override
         public void setFinalizer(Runnable finalizer) {
             this.finalizer = finalizer;
         }

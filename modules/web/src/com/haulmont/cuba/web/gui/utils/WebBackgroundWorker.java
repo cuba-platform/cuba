@@ -132,8 +132,14 @@ public class WebBackgroundWorker implements BackgroundWorker {
         private WebTimerListener webTimerListener;
         private Runnable finalizer;
 
+        // canceled
         private volatile boolean canceled = false;
+
+        // task body completed
         private volatile boolean done = false;
+
+        // handleDone completed or canceled
+        private volatile boolean closed = false;
 
         private volatile long intentVersion = 0;
         private final List<T> intents = Collections.synchronizedList(new LinkedList<T>());
@@ -191,11 +197,12 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
             runnableTask.setInterrupted(true);
 
-            if (super.isAlive() && mayInterruptIfRunning) {
+            if (!closed && mayInterruptIfRunning) {
                 log.debug("Cancel task. User: " + userId);
 
                 // Interrupt
-                interrupt();
+                if (super.isAlive())
+                    interrupt();
 
                 // Check
                 canceled = isInterrupted() || isDone();
@@ -205,6 +212,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     app.removeBackgroundTask(this);
 
                 this.canceled = canceled;
+                this.closed = canceled;
 
                 stopTimer(mayInterruptIfRunning);
             }
@@ -224,6 +232,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     this.join();
                     stopTimer(true);
                     runnableTask.done(result);
+
+                    closed = true;
                 }
             } catch (InterruptedException e) {
                 return null;
@@ -252,6 +262,11 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
+        public boolean inProgress() {
+            return !closed;
+        }
+
+        @Override
         public void setFinalizer(Runnable finalizer) {
             this.finalizer = finalizer;
         }
@@ -268,7 +283,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         public void handleIntents() {
             try {
                 synchronized (intents) {
-                    runnableTask.progress(intents);                     
+                    runnableTask.progress(intents);
                     // notify listeners
                     for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
                         listener.onProgress(intents);
@@ -280,6 +295,12 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         public void handleDone() {
+            if (this.closed)
+                return;
+
+            // task cancel here not available
+            this.closed = true;
+
             try {
                 runnableTask.done(result);
                 // notify listeners

@@ -54,6 +54,8 @@ public interface BackgroundWorker {
 
         boolean isDone();
 
+        boolean inProgress();
+
         /**
          * Done handler for clear resources
          *
@@ -109,7 +111,7 @@ public interface BackgroundWorker {
         }
 
         private void ownerWindowClosed() {
-            if (!taskExecutor.isCancelled() && !taskExecutor.isDone() && started) {
+            if (isAlive()) {
                 UUID userId = getUserSession().getId();
                 Window ownerWindow = getTask().getOwnerWindow();
                 String windowClass = ownerWindow.getClass().getCanonicalName();
@@ -170,6 +172,11 @@ public interface BackgroundWorker {
             closeListener = null;
         }
 
+        /**
+         * Join task thread to current <br/>
+         * <b>Attention!</b> Call this method only from synchronous gui action
+         * @return Task result
+         */
         @Override
         public V getResult() {
             checkState(started, "Task is not running");
@@ -206,7 +213,7 @@ public interface BackgroundWorker {
 
         @Override
         public boolean isAlive() {
-            return !isCancelled() && !isDone() && started;
+            return !taskExecutor.inProgress() && started;
         }
 
         public BackgroundTask<T, V> getTask() {
