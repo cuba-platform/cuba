@@ -453,7 +453,16 @@ public class DesktopWindowManager extends WindowManager {
                 layout.remove(DesktopComponentsHelper.getComposition(window));
                 layout.add(component);
 
-                setWindowCaption(currentWindow.getCaption(), currentWindow.getDescription(), tabsPane.getSelectedIndex());
+                // If user clicked on close button maybe selectedIndex != tabsPane.getSelectedIndex()
+                // Refs #1117
+                int selectedIndex = 0;
+                while ((selectedIndex < tabs.size()) &&
+                        (tabsPane.getComponentAt(selectedIndex) != layout))
+                    selectedIndex++;
+                if (selectedIndex == tabs.size())
+                    selectedIndex = tabsPane.getSelectedIndex();
+
+                setWindowCaption(currentWindow.getCaption(), currentWindow.getDescription(), selectedIndex);
 
                 fireListeners(window, tabs.size() != 0);
                 break;
