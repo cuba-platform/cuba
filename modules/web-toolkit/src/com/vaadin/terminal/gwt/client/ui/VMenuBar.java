@@ -745,7 +745,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
      * @param item
      */
     public void showChildMenu(CustomMenuItem item) {
-        popup = new VOverlay(true, false, true);
+        popup = new VOverlay(false, false, true);
 
         //sets Id for popup if Ids in DOM are available
         client.setElementId(popup.getElement(), getDebugId());
