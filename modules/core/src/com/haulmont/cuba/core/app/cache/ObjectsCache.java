@@ -198,7 +198,11 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
             // Modify cache copy
             CacheSet temporaryCacheSet;
             try {
+                cacheLock.readLock().lock();
+
                 temporaryCacheSet = (CacheSet) cacheSet.clone();
+
+                cacheLock.readLock().unlock();
             } catch (CloneNotSupportedException e) {
                 log.error(String.format("Update data for cache %s failed", name), e);
                 this.cacheSet = new CacheSet(Collections.emptyList());
