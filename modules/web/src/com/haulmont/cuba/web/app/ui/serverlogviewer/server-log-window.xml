@@ -43,7 +43,6 @@
             </groupBox>
         </hbox>
 
-
         <groupBox id="logsBox">
             <caption label="msg://logs"/>
             <hbox id="logFieldBox" margin="true" spacing="true">

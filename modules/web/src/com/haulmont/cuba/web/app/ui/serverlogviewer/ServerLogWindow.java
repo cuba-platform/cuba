@@ -100,7 +100,6 @@ public class ServerLogWindow extends AbstractWindow {
 
     }
 
-
     public void showTail() {
         fillingTextArea();
     }

@@ -59,7 +59,6 @@ public class AdditionLoggerWindow extends AbstractWindow {
             loggerNameField.setValue(null);
             showNotification(getMessage("noRegName"), NotificationType.HUMANIZED);
         }
-
     }
 
     public void cancelButton() {
