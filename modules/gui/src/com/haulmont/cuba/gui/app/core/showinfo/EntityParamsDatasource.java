@@ -33,14 +33,14 @@ public class EntityParamsDatasource extends CollectionDatasourceImpl<KeyValueEnt
 
     @Override
     protected void loadData(Map<String, Object> params) {
-        if ((instance != null) && (metaClass != null)) {
+        if ((instance != null) && (instanceMetaClass != null)) {
             compileInfo();
         }
     }
 
     private void compileInfo() {
-        Class<?> javaClass = metaClass.getJavaClass();
-        includeParam("table.showInfoAction.entityName", metaClass.getName());
+        Class<?> javaClass = instanceMetaClass.getJavaClass();
+        includeParam("table.showInfoAction.entityName", instanceMetaClass.getName());
         includeParam("table.showInfoAction.entityClass", javaClass.getName());
 
         javax.persistence.Table annotation = javaClass.getAnnotation(javax.persistence.Table.class);
