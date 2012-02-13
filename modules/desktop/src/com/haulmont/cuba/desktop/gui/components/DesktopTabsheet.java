@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.sys.ButtonTabComponent;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentVisitor;
@@ -396,8 +397,11 @@ public class DesktopTabsheet
 
         private void setTabComponentCaption(String caption) {
             java.awt.Component component = impl.getTabComponentAt(getTabIndex());
-            if (component instanceof ButtonTabComponent)
+            if (component instanceof ButtonTabComponent) {
                 ((ButtonTabComponent) component).setCaption(caption);
+            } else if (component instanceof JLabel) {
+                ((JLabel) component).setText(caption);
+            }
         }
 
         public TabCloseHandler getCloseHandler() {
@@ -421,6 +425,16 @@ public class DesktopTabsheet
         @Override
         public String toString() {
             return name;
+        }
+
+        @Override
+        public void setCaptionStyleName(String styleName) {
+            int tabIndex = getTabIndex();
+            if (impl.getTabComponentAt(tabIndex) == null) {
+                impl.setTabComponentAt(tabIndex, new JLabel(caption));
+            }
+            java.awt.Component tabComponent = impl.getTabComponentAt(tabIndex);
+            App.getInstance().getTheme().applyStyle(tabComponent, styleName);
         }
     }
 

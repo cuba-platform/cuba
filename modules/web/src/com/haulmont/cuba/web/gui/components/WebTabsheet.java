@@ -149,6 +149,12 @@ public class WebTabsheet
         public Component getComponent() {
             return component;
         }
+
+        @Override
+        public void setCaptionStyleName(String styleName) {
+            TabSheet.Tab vaadinTab = WebTabsheet.this.component.getTab(WebComponentsHelper.unwrap(component));
+            vaadinTab.setCaptionStyle(styleName);
+        }
     }
 
     public com.haulmont.cuba.gui.components.Tabsheet.Tab addTab(String name, Component component) {

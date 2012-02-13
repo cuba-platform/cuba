@@ -55,6 +55,12 @@ public interface Tabsheet
         // use this to override close behavior, default action is to just remove tab
         TabCloseHandler getCloseHandler();
         void setCloseHandler(TabCloseHandler tabCloseHandler);
+
+        /**
+         * Set style for UI element that represents tab header caption.
+         * @param styleName style styleName
+         */
+        void setCaptionStyleName(String styleName);
     }
 
     interface TabChangeListener extends Serializable {
