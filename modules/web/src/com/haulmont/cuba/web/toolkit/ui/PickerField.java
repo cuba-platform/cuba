@@ -8,7 +8,9 @@ package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.data.Property;
 import com.vaadin.event.FieldEvents;
-import com.vaadin.ui.*;
+import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import java.util.ArrayList;
@@ -140,5 +142,9 @@ public class PickerField extends CustomField {
         field.setPropertyDataSource(newDataSource);
     }
 
+    @Override
+    public void focus() {
+        field.focus();
+    }
 }
 

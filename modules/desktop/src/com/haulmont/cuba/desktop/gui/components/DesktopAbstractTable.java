@@ -72,7 +72,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected boolean sortable = true;
     protected TableSettings tableSettings;
     private boolean editable;
-    private StyleProvider styleProvider;
+    protected StyleProvider styleProvider;
 
     private Action itemClickAction;
     private Action enterPressAction;
@@ -1001,12 +1001,24 @@ public abstract class DesktopAbstractTable<C extends JTable>
      * Uses delegate renderer to create cell component.
      * Then applies desktop styles to cell component.
      */
-    private class StylingCellRenderer implements TableCellRenderer {
+    protected class StylingCellRenderer implements TableCellRenderer {
+
+        private TableCellRenderer delegate;
+
+        public StylingCellRenderer(TableCellRenderer delegate) {
+            this.delegate = delegate;
+        }
+
+        public StylingCellRenderer() {
+        }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                                                        int row, int column) {
-            TableCellRenderer renderer = table.getDefaultRenderer(value != null ? value.getClass() : Object.class);
+            TableCellRenderer renderer = delegate;
+            if (renderer == null) {
+                renderer = table.getDefaultRenderer(value != null ? value.getClass() : Object.class);
+            }
             java.awt.Component component = renderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
             String style = getStylename(table, row, column);

@@ -39,10 +39,14 @@ public class DesktopTreeTable
             @Override
             public TableCellRenderer getCellRenderer(int row, int column) {
                 TableCellRenderer cellRenderer = cellRenderers.get(column);
-                if (cellRenderer != null)
+                if (cellRenderer != null) {
                     return cellRenderer;
-                else
+                } else if (styleProvider != null) {
+                    TableCellRenderer defaultRenderer = super.getCellRenderer(row, column);
+                    return new StylingCellRenderer(defaultRenderer);
+                } else {
                     return super.getCellRenderer(row, column);
+                }
             }
 
             @Override
