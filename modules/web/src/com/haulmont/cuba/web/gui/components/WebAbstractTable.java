@@ -902,6 +902,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         MetaPropertyPath targetCol = getDatasource().getMetaClass().getPropertyPath(columnId);
         Object generatedColumnId = targetCol != null ? targetCol : columnId;
+
+        // replace generator for column if exist
+        if (component.getColumnGenerator(generatedColumnId) != null)
+            component.removeGeneratedColumn(generatedColumnId);
+
         component.addGeneratedColumn(
                 generatedColumnId,
                 new com.vaadin.ui.Table.ColumnGenerator() {
