@@ -91,4 +91,7 @@
     <screen id="serverLog"
             template="/com/haulmont/cuba/web/app/ui/serverlogviewer/server-log-window.xml" multipleOpen="true"/>
 
+    <screen id="additionLogger"
+            template="/com/haulmont/cuba/web/app/ui/serverlogviewer/addition-logger-window.xml" multipleOpen="true"/>
+
 </screen-config>

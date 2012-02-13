@@ -33,11 +33,12 @@
                 <caption label="msg://logLevel"/>
                 <hbox spacing="true" margin="true" expandable="false">
                     <label id="labelLogName" value="msg://loggerName"/>
-                    <textField id="logNameField" width="300px"/>
+                    <lookupField id="logNameField" width="300px"/>
                     <label id="labelLevel" value="msg://level"/>
                     <lookupField id="levelField" width="80px"/>
                     <button id="getButton" invoke="getLevel" caption="msg://getButton"/>
                     <button id="setButton" invoke="setLevel" caption="msg://setButton"/>
+                    <!--<button id="editorButton" invoke="callEditor" caption="msg://editor"/>-->
                 </hbox>
             </groupBox>
         </hbox>

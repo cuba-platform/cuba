@@ -1,0 +1,32 @@
+<!--
+  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.web.app.ui.serverlogviewer.AdditionLoggerWindow"
+        messagesPack="com.haulmont.cuba.web.app.ui.serverlogviewer"
+        caption="msg://additionLog"
+        focusComponent="loggerNameField">
+
+    <layout>
+        <vbox id="addBox" spacing="true">
+            <hbox spacing="true" margin="true" stylename="edit-area">
+                <label id="logFileLabel" value="msg://loggerName"/>
+                <textField id="loggerNameField" width="300px"/>
+                <label id="logLevelLabel" value="msg://level"/>
+                <lookupField id="logLevelField" width="80px"/>
+            </hbox>
+
+            <hbox spacing="true">
+                <button id="setButton" caption="msg://setButton" icon="icons/ok.png" invoke="setButton"/>
+                <button id="cancelButton" caption="msg://cancelButton" icon="icons/cancel.png" invoke="cancelButton"/>
+            </hbox>
+        </vbox>
+
+
+    </layout>
+</window>
+
