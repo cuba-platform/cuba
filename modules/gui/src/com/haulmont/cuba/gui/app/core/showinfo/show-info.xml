@@ -17,8 +17,9 @@
     </companions>
 
     <dsContext>
-        <collectionDatasource id="paramsDs" view="_local" refreshMode="NEVER"
-                              class="com.haulmont.cuba.core.global.KeyValueEntity"/>
+        <collectionDatasource id="paramsDs" view="_local" class="com.haulmont.cuba.core.global.KeyValueEntity">
+            <datasourceClass>com.haulmont.cuba.gui.app.core.showinfo.EntityParamsDatasource</datasourceClass>
+        </collectionDatasource>
     </dsContext>
 
     <layout expand="infoTable">
