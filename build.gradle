@@ -41,7 +41,7 @@ def desktopModule = project(':cuba-desktop')
 def uiTestModule = project(':cuba-test-ui')
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
-def vaadin = [group: 'com.haulmont.thirdparty', name: 'vaadin', version: '6.6.1.91']
+def vaadin = [group: 'com.haulmont.thirdparty', name: 'vaadin', version: '6.6.1.92']
 def popupbutton = [group: 'com.haulmont.thirdparty', name: 'popupbutton', version: '1.0.0']
 def gwtUser = [group: 'com.google.gwt', name: 'gwt-user', version: '2.3.0']
 def gwtDev = [group: 'com.google.gwt', name: 'gwt-dev', version: '2.3.0']
