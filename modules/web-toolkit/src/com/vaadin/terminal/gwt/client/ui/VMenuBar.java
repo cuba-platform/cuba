@@ -742,16 +742,18 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
      * Shows the child menu of an item. The caller must ensure that the item has
      * a submenu.
      * 
-     * @param item
+     * @param item Menu item
      */
     public void showChildMenu(CustomMenuItem item) {
-        popup = new VOverlay(false, false, true);
+        popup = new VOverlay(true, false, true);
 
         //sets Id for popup if Ids in DOM are available
         client.setElementId(popup.getElement(), getDebugId());
 
         popup.setWidget(item.getSubMenu());
         popup.addCloseHandler(this);
+        popup.addAutoHidePartner(this.getElement());
+        popup.addAutoHidePartner(item.getElement());
 
         if (subMenu) {
             popup.setPopupPosition(item.getParentMenu().getAbsoluteLeft()
@@ -781,7 +783,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         return debugId;
     }
 
-    protected void showChildMenuAt(CustomMenuItem item, int top, int left) {
+    /*protected void showChildMenuAt(CustomMenuItem item, int top, int left) {
         final int shadowSpace = 10;
 
         popup = new VOverlay(true, false, true);
@@ -837,11 +839,11 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             });
         }
     }
-
+*/
     /**
      * Hides the submenu of an item
      * 
-     * @param item
+     * @param item Menu item
      */
     public void hideChildMenu(CustomMenuItem item) {
         if (visibleChildMenu != null
