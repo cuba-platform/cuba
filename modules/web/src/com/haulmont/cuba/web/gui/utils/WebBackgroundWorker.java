@@ -39,6 +39,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
         this.watchDog = watchDog;
     }
 
+    /**
+     * Simple wrapper for {@link Timer.TimerListener}
+     */
     private static class WebTimerListener {
 
         private WebTimer timer;
@@ -49,9 +52,17 @@ public class WebBackgroundWorker implements BackgroundWorker {
             this.timer = timer;
         }
 
-        public void startListen(Timer.TimerListener timerListener) {
+        public Timer.TimerListener getTimerListener() {
+            return timerListener;
+        }
+
+        public void setTimerListener(Timer.TimerListener timerListener) {
             this.timerListener = timerListener;
-            timer.addTimerListener(timerListener);
+        }
+
+        public void startListen() {
+            if (timerListener != null)
+                timer.addTimerListener(timerListener);
         }
 
         public void stopListen() {
@@ -116,7 +127,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 // Do nothing
             }
         };
-        webTimerListener.startListen(timerListener);
+
+        // Start listen only if task started
+        webTimerListener.setTimerListener(timerListener);
 
         return taskHandler;
     }
@@ -248,6 +261,10 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         @Override
         public void startExecution() {
+            // Run timer listener
+            webTimerListener.startListen();
+
+            // Start thread
             start();
         }
 
