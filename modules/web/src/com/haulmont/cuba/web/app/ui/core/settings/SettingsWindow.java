@@ -33,7 +33,7 @@ public class SettingsWindow extends AbstractWindow {
 
     protected java.util.List<String> getThemesList()
     {
-        return Arrays.asList("blacklabel", "peyto", "havana");
+        return Arrays.asList("peyto", "havana");
     }
 
     @Override
@@ -54,15 +54,12 @@ public class SettingsWindow extends AbstractWindow {
             modeOptions.setValue(msgSingle);
 
         final LookupField theme = getComponent("mainWindowTheme");
-        final String themeBlacklabel = "blacklabel";
         final String themePeyto = "peyto";
         final String themeHavana = "havana";
 
         theme.setOptionsList(getThemesList());
         String userAppTheme = UserSettingHelper.loadAppWindowTheme();
-        if (themeBlacklabel.equals(userAppTheme)) {
-            theme.setValue(themeBlacklabel);
-        } else if (themeHavana.equals(userAppTheme)) {
+        if (themePeyto.equals(userAppTheme)) {
             theme.setValue(themePeyto);
         } else {
             theme.setValue(themeHavana);

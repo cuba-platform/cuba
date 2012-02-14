@@ -298,7 +298,6 @@ configure(webModule) {
 
     task buildThemes(dependsOn: compileJava, type: CubaWebThemeCreation) {
         themes = [
-//                 [themeName: 'blacklabel', destFile: 'styles-include.css'],
                 [themeName: 'peyto', destFile: 'styles-include.css'],
                 [themeName: 'havana', destFile: 'styles-include.css']
         ]
