@@ -1,0 +1,32 @@
+.v-app .pickerfield .v-textfield {
+    height: 20px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.pickerfield .v-button {
+    height: 16px;
+    line-height: 16px;
+}
+
+.pickerfield .v-button-caption {
+    margin: 0;
+}
+
+.pickerfield .v-icon {
+    margin: 0;
+}
+
+.pickerfield .v-readonly.v-textfield,
+.pickerfield .v-textfield-readonly {
+    border: 1px solid #A5C4E0;
+    overflow: hidden;
+}
+
+.pickerfield {
+    background-color: #fff;
+}
+
+.pickerfield.v-readonly {
+    background-color: transparent;
+}

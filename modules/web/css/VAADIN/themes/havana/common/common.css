@@ -1,0 +1,389 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.v-app-loading {
+    background: url(img/ajax-loader.gif) no-repeat 50%;
+}
+
+.v-view {
+	height: 100%;
+	width: 100%;
+	overflow: auto;
+	/* avoid scrollbars with margins in root layout */
+	outline: none;
+	margin-top: -1px;
+	border-top: 1px solid transparent;
+	position: relative;
+}
+
+/**
+ * Try to cope printing somehow. Reasonable printing support
+ * needs application specific planning and CSS tuning.
+ */
+@media print {
+	.v-generated-body {
+		height: auto;
+		min-height: 20cm;
+		overflow: visible;
+        background: #FFF;
+}
+	.v-app {
+		height: auto;
+		min-height: 20cm;
+	}
+	.v-view {
+		overflow: visible;
+	}
+	.v-gridlayout {
+		overflow: visible !important;
+	}
+}
+
+.v-view:active,
+.v-view:focus {
+	outline: none;
+}
+
+/* Global font styles */
+.v-app input,
+.v-app select,
+.v-app button,
+.v-app textarea,
+.v-window input,
+.v-window select,
+.v-window button,
+.v-window textarea,
+.v-popupview-popup input,
+.v-popupview-popup select,
+.v-popupview-popup button,
+.v-popupview-popup textarea {
+	font-family: Verdana, "Trebuchet MS", geneva, helvetica, arial, tahoma, sans-serif;
+	color: #464f52;
+	font-size: 12px;
+}
+
+.v-app select,
+.v-window select {
+	padding: 0;
+	margin: 0;
+}
+
+.v-disabled,
+.v-app .v-disabled,
+.v-window .v-disabled {
+	opacity: 0.3;
+	filter: Alpha(opacity = 30);
+	cursor: default;
+}
+
+.v-disabled *,
+.v-app .v-disabled *,
+.v-window .v-disabled * {
+	cursor: default;
+}
+
+* html .v-disabled {
+	zoom: 1;
+}
+
+*+html .v-disabled {
+	zoom: 1;
+}
+
+.v-disabled .v-disabled {
+	opacity: 1.0;
+}
+
+.v-required-field-indicator {
+	padding-left: 2px;
+    float:left;
+	color: red;
+}
+
+/* Field modified */ /* Disabled by default
+input.v-modified,
+.v-richtextarea.v-modified iframe.gwt-RichTextArea,
+.v-checkbox.v-modified,
+.v-modified .v-select-option,
+.v-modified .v-textfield,
+.v-modified .v-datefield-calendarpanel,
+.v-modified .v-select-select,
+.v-modified .v-select-twincol-selections,
+.v-modified .v-select-twincol-options,
+.v-modified .v-slider-base {
+	background:transparent;
+	background-color: #FFFFE0;
+}
+*/
+
+/**
+ * Custom tooltip
+ */
+.v-tooltip {
+	background-color: #fffcdd;
+	border: 1px solid #b8b295;
+	border-top-color: #d5d2c1;
+	border-left-color: #d5d2c1;
+	font-size: 11px;
+	line-height: 13px;
+	font-family: verdana, arial, helvetica, tahoma, sans-serif;
+	color: #5d5444;
+	cursor: default;
+}
+
+.v-tooltip-text {
+	padding: 2px 4px;
+	border: none;
+	border-top: 1px solid #fffef5;
+	border-bottom: 1px solid #fbf8d9;
+	overflow: /*auto*/hidden;
+}
+
+.v-tooltip .v-errormessage {
+	padding: 3px 4px 3px 4px;
+	background: #ffecc6;
+	color: #b74100;
+	border: none;
+	border-top: 1px solid #fff3dc;
+	border-bottom: 1px solid #ead7b1;
+	overflow: auto;
+}
+
+.v-tooltip .v-errormessage h2 {
+	font-size: 16px;
+	font-weight: normal;
+	color: #ab3101;
+	margin: 2px 0 8px 0;
+}
+
+.v-tooltip .v-errormessage h3 {
+	font-size: 13px;
+	font-weight: bold;
+	margin: 1px 0 4px 0;
+}
+
+/**
+ * Context menu styles
+ */
+.v-contextmenu {
+	font-family: Verdana, "Trebuchet MS", geneva, helvetica, arial, tahoma, sans-serif;
+    border: solid 1px #5280b7;
+    background: #fff;
+	font-size: 12px;
+	line-height: 14px;
+}
+
+.v-contextmenu .gwt-MenuBar {
+    padding: 3px;
+}
+
+.v-contextmenu .gwt-MenuItem {
+	padding: 2px 0;
+	cursor: pointer;
+	vertical-align: middle;
+    color: #5280b7;	
+}
+
+.v-contextmenu .gwt-MenuItem div { /*border: 1px solid #f6f7f7;*/
+	padding: 1px 8px 1px 8px;
+	cursor: pointer;
+	vertical-align: middle;
+	white-space: nowrap;
+	color: #5280b7;
+}
+
+.v-contextmenu .gwt-MenuItem-selected div {
+    background-color: #5280b7;
+    color: #fff;
+}
+
+.v-contextmenu table {
+	border-collapse: collapse;
+	margin: 0;
+	padding: 0;
+}
+
+.v-contextmenu .gwt-MenuItem img {
+	margin-right: 10px;
+	vertical-align: middle;
+}
+
+/**
+ * Label has tiny paddings to include contents margins.
+ */
+.v-label {
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+.v-label-undef-w {
+	white-space: nowrap;
+}
+
+/* Loading indicator states
+ * Note: client side expects that loading indicator has a height. It depends on
+ * this css property to ensure browsers have applied all required styles.
+ */
+.v-loading-indicator,
+.v-loading-indicator-delay,
+.v-loading-indicator-wait {
+	width: 45px;
+	height: 45px;
+	background: transparent url(img/ajax-loader.gif);
+}
+
+.v-loading-indicator-delay {
+	background: transparent url(img/ajax-loader.gif);
+}
+
+.v-loading-indicator-wait {
+	background: transparent url(img/ajax-loader.gif);
+}
+.v-loading-indicator,
+.v-loading-indicator-delay,
+.v-loading-indicator-wait {
+	position: absolute;
+	top:6px;
+	right: 5px;
+	z-index:30000;
+}
+
+/* block UI */
+.blockUI.blockMsg{
+    font-size: 20px;
+    font-family: Verdana, tahoma, arial;
+    color: #fff;
+    padding: 10px;
+}
+
+/* debug dialog */
+.v-debug-console {
+	background: white;
+	opacity: 0.85;
+	border: 1px solid black;
+	font-family: sans-serif;
+}
+
+.v-debug-console-caption {
+	background: black;
+	border-bottom: 1px solid gray;
+	color: white;
+	font-weight: bold;
+}
+
+.v-debug-console-content {
+	font-size: x-small;
+	overflow: auto;
+}
+
+.v-debug-console-content input {
+	font-size: xx-small;
+}
+
+/* Debug style */
+.v-app .invalidlayout,
+.v-app .invalidlayout * {
+	background: #f99 !important;
+}
+
+.v-app input[type="text"],
+.v-app input[type="password"] {
+    padding: 2px 2px 2px 4px;
+}
+
+/* Fix for liferay. #2384 */
+.v-app input[type="reset"],
+.v-app select,
+.v-app textarea {
+	padding: 2px;
+}
+
+
+.v-generated-body {
+	background: #FFF;
+	width: 100%;
+	height: 100%;
+	border: 0;
+
+	overflow: hidden;
+}
+
+.v-app {
+/*	background: #ccd8ee; */
+    background: #F6F6F6;
+    font-family: Verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
+	color: #000;
+	font-size: 8pt;
+	line-height: 18px;
+	height: 100%;
+    width: 100%;
+}
+
+
+
+/* Global font styles */
+.v-app input,
+.v-app select,
+.v-app button,
+.v-app textarea,
+.v-app div,
+.v-app table,
+.v-window input,
+.v-window select,
+.v-window button,
+.v-window textarea,
+.v-popupview-popup input,
+.v-popupview-popup select,
+.v-popupview-popup button,
+.v-popupview-popup textarea,
+.v-popupview-popup div{
+	font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
+	/*color: #507699;*/
+    color: #1E3146;
+	font-size: 11px;
+}
+
+.v-app div,
+.v-popupview-popup div{
+    color: #1E3146;
+	font-size: 12px;
+}
+
+
+/* Fix for liferay. #2384 */
+.v-app input[type="reset"],
+.v-app select,
+.v-app textarea {
+	padding: 2px;
+}
+
+/*.v-app input[type="text"],*/
+/*.v-app input[type="password"],*/
+.v-app input[type="reset"]/*,
+.v-app .v-textfield*/
+{
+    height: 16px;
+}
+
+.v-disabled,
+.v-app .v-disabled,
+.v-window .v-disabled {
+	opacity: 0.5;
+	filter: Alpha(opacity = 50);
+	cursor: default;
+}
+
+.v-label .v-label-undef-w
+{
+    float: left;
+}
+
+.v-label-logo {
+    background: #cccccc url(img/label-logo.gif) repeat-x;
+    font-weight:bold;
+}
+.v-app .v-label-logo {
+    color: #FFFFFF; !important
+}

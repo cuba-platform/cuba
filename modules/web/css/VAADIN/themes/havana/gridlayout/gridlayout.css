@@ -1,0 +1,38 @@
+/* Margin values if defined from server side */
+.v-gridlayout-margin-top {
+	padding-top: 10px;
+}
+.v-gridlayout-margin-bottom {
+	padding-bottom: 15px;
+}
+.v-gridlayout-margin-left {
+	padding-left: 5px;
+}
+.v-gridlayout-margin-right {
+	padding-right: 5px;
+}
+
+/*
+ * Spacing values used by IGridLayout. (element does not exist in DOM)
+ * Use padding-left for horizontal spacing and padding-top for vertical.
+ */
+.v-gridlayout-spacing-on {
+	padding-left:8px;
+	padding-top:8px;
+	overflow:hidden;
+}
+.v-gridlayout-spacing-off {
+	padding-left:0px;
+	padding-top:0px;
+	overflow:hidden;
+}
+
+.v-gridlayout-spacing,
+.v-gridlayout-spacing-off {
+	padding-left:0px;
+	padding-top:0px;
+}
+
+.v-gridlayout {
+	overflow:hidden;
+}

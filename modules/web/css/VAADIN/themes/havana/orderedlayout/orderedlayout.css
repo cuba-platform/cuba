@@ -1,0 +1,31 @@
+.v-orderedlayout, .v-horizontallayout, .v-verticallayout {
+	overflow: hidden;
+    outline: 0;
+}
+
+.v-orderedlayout-margin-top, .v-horizontallayout-margin-top, .v-verticallayout-margin-top {
+	padding-top: 5px;
+}
+
+.v-orderedlayout-margin-right, .v-horizontallayout-margin-right, .v-verticallayout-margin-right {
+	padding-right: 5px;
+}
+
+.v-orderedlayout-margin-bottom, .v-horizontallayout-margin-bottom, .v-verticallayout-margin-bottom {
+	padding-bottom: 5px;
+}
+
+.v-orderedlayout-margin-left, .v-horizontallayout-margin-left, .v-verticallayout-margin-left {
+	padding-left: 5px;
+}
+
+.v-orderedlayout-spacing-on, .v-horizontallayout-spacing-on, .v-verticallayout-spacing-on {
+	padding-top: 5px;
+	padding-left: 5px;
+
+}
+/** This can be used to define spacing if spacing is off server side */
+.v-orderedlayout-spacing-off, .v-horizontallayout-spacing-off, .v-verticallayout-spacing-off {
+	padding-top: 0;
+	padding-left: 0;
+}

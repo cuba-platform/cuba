@@ -1,0 +1,68 @@
+.v-splitpanel-horizontal, .v-splitpanel-vertical {
+	overflow: hidden;
+}
+
+.v-splitpanel-horizontal .v-splitpanel-hsplitter {
+	width: 6px;
+	font-size: 1px; /* for IE6 */
+}
+
+.v-splitpanel-horizontal .v-splitpanel-hsplitter div {
+	width: 6px;
+	font-size: 1px; /* for IE6 */
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	background: #EEF3F9 url(img/bg-ruler-vert.png) center no-repeat;
+	/*border: 0 solid #d7dddb;*/
+	cursor: e-resize;
+	margin: 0 1px;
+}
+
+.v-splitpanel-vertical .v-splitpanel-vsplitter {
+	height: 10px;
+	font-size: 1px; /* for IE6 */
+}
+
+.v-splitpanel-vertical .v-splitpanel-vsplitter div {
+	height: 6px;
+	font-size: 1px; /* for IE6 */
+	background: #EEF3F9 url(img/bg-ruler-horiz.png) center no-repeat;
+	border: 0;
+	cursor: n-resize;
+	margin: 0;
+}
+
+
+
+
+
+/* IE specific styles */
+
+* html .v-splitpanel-horizontal .v-splitpanel-hsplitter div {
+	height: 99%;
+}
+
+* html .v-splitpanel-vertical .v-splitpanel-vsplitter {
+	height: 10px;
+}
+
+* html .v-splitpanel-vertical .v-splitpanel-vsplitter div {
+	margin: 0;
+}
+
+/* Webkit fix */
+
+.v-webkit .v-splitpanel-horizontal .v-splitpanel-first-container,
+.v-webkit .v-splitpanel-horizontal .v-splitpanel-second-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.v-webkit .v-splitpanel-vertical .v-splitpanel-first-container,
+.v-webkit .v-splitpanel-vertical .v-splitpanel-second-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+

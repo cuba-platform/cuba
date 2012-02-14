@@ -1,0 +1,6 @@
+@import "styles-include.css";
+@import "havana.css";
+
+#v-dashlayout-details {
+    letter-spacing: 5px;
+}

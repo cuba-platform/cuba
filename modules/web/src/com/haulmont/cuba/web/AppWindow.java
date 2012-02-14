@@ -172,7 +172,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     /**
-     * Current mode
+     * @return Current mode
      */
     public Mode getMode() {
         return mode;
@@ -181,6 +181,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     /**
      * Creates root and enclosed layouts.
      * <br>Can be overridden in descendant to create an app-specific root layout
+     *
+     * @return App layout
      */
     protected VerticalLayout createLayout() {
         final VerticalLayout layout = new VerticalLayout();
@@ -189,8 +191,10 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         layout.setSpacing(false);
         layout.setSizeFull();
 
-        titleLayout = createTitleLayout();
-        layout.addComponent(titleLayout);
+        if (!webConfig.getUseLightHeader()) {
+            titleLayout = createTitleLayout();
+            layout.addComponent(titleLayout);
+        }
 
         menuBarLayout = createMenuBarLayout();
 
@@ -348,7 +352,11 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     protected void unInitStartupLayout() {
         genericStartupLayout();
-        mainLayout.setMargin(true);
+        if (webConfig.getUseLightHeader()){
+            mainLayout.setMargin(new Layout.MarginInfo(true,false,false,false));
+        } else {
+            mainLayout.setMargin(true);
+        }
         mainLayout.setSpacing(true);
     }
 
@@ -364,16 +372,27 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     /**
      * Can be overridden in descendant to create an app-specific menu bar layout
+     *
+     * @return MenuBar layout
      */
     protected HorizontalLayout createMenuBarLayout() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.setStyleName("menubar");
         layout.setWidth(100, Sizeable.UNITS_PERCENTAGE);
-        layout.setHeight(28, Sizeable.UNITS_PIXELS);
+        if (webConfig.getUseLightHeader()){
+            layout.setHeight(40, Sizeable.UNITS_PIXELS);
+        } else {
+            layout.setHeight(28, Sizeable.UNITS_PIXELS);
+        }
         layout.setMargin(false, false, false, false);
         layout.setSpacing(true);
         menuBar = createMenuBar();
         layout.addComponent(menuBar);
+
+        if (webConfig.getUseLightHeader())
+            layout.setComponentAlignment(menuBar, Alignment.MIDDLE_LEFT);
+
+        layout.setExpandRatio(menuBar, 1);
 
         if (ConfigProvider.getConfig(FtsConfig.class).getEnabled()) {
             HorizontalLayout searchLayout = new HorizontalLayout();
@@ -388,7 +407,6 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                     openSearchWindow(searchField);
                 }
             });
-
 
             Button searchBtn = new Button();
             searchBtn.setStyleName(BaseTheme.BUTTON_LINK);
@@ -406,6 +424,14 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
             layout.addComponent(searchLayout);
             layout.setComponentAlignment(searchLayout, Alignment.MIDDLE_RIGHT);
+        }
+
+        if (webConfig.getUseLightHeader()){
+            addUserSelect(layout);
+
+            addNewWindowButton(layout);
+
+            addLogoutButton(layout);
         }
 
         return layout;
@@ -429,6 +455,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     /**
      * Can be overridden in descendant to create an app-specific menu bar
+     *
+     * @return MenuBar
      */
     protected com.haulmont.cuba.web.toolkit.ui.MenuBar createMenuBar() {
         menuBar = new com.haulmont.cuba.web.toolkit.ui.MenuBar();
@@ -487,6 +515,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     /**
      * Can be overridden in descendant to create an app-specific title layout
+     *
+     * @return Title layout
      */
     protected Layout createTitleLayout() {
         HorizontalLayout titleLayout = new HorizontalLayout();
@@ -510,64 +540,38 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         titleLayout.setExpandRatio(logoLabel, 1);
         titleLayout.setComponentAlignment(logoLabel, Alignment.MIDDLE_LEFT);
 
+        addUserLabel(titleLayout);
+
+        addUserSelect(titleLayout);
+
+        addLogoutButton(titleLayout);
+
+        addNewWindowButton(titleLayout);
+
+        return titleLayout;
+    }
+
+    protected void addUserLabel(HorizontalLayout layout) {
         Label userLabel = new Label(MessageProvider.getMessage(getMessagesPack(), "loggedInLabel"));
         userLabel.setStyleName("select-label");
         userLabel.setSizeUndefined();
 
-        titleLayout.addComponent(userLabel);
-        titleLayout.setComponentAlignment(userLabel, Alignment.MIDDLE_RIGHT);
+        layout.addComponent(userLabel);
+        layout.setComponentAlignment(userLabel, Alignment.MIDDLE_RIGHT);
+    }
 
-        substUserSelect = new NativeSelect();
-        substUserSelect.setNullSelectionAllowed(false);
-        substUserSelect.setImmediate(true);
-        substUserSelect.setStyleName("select-label");
+    protected void addNewWindowButton(HorizontalLayout layout) {
+        Button newWindowBtn = createNewWindowButton();
 
-        fillSubstitutedUsers(substUserSelect);
-        if (substUserSelect.getItemIds().size() > 1) {
-            UserSession us = App.getInstance().getConnection().getSession();
-            substUserSelect.select(us.getSubstitutedUser() == null ? us.getUser() : us.getSubstitutedUser());
-            substUserSelect.addListener(new SubstitutedUserChangeListener(substUserSelect));
+        layout.addComponent(newWindowBtn);
+        layout.setComponentAlignment(newWindowBtn, Alignment.MIDDLE_RIGHT);
+    }
 
-            titleLayout.addComponent(substUserSelect);
-            titleLayout.setComponentAlignment(substUserSelect, Alignment.MIDDLE_RIGHT);
-        } else {
-            Label userNameLabel = new Label(getSubstitutedUserCaption((User) substUserSelect.getItemIds().iterator().next()));
-            userNameLabel.setStyleName("select-label");
-            userNameLabel.setSizeUndefined();
-            titleLayout.addComponent(userNameLabel);
-            titleLayout.setComponentAlignment(userNameLabel, Alignment.MIDDLE_RIGHT);
-        }
+    protected void addLogoutButton(HorizontalLayout layout) {
+        Button logoutBtn = createLogoutButton();
 
-        Button logoutBtn = new Button(
-                MessageProvider.getMessage(getMessagesPack(), "logoutBtn"),
-                new LogoutBtnClickListener()
-        );
-        logoutBtn.setStyleName("white-border");
-        logoutBtn.setIcon(new ThemeResource("images/exit.gif"));
-        //logoutBtn.setIcon(new ThemeResource("images/logout.png"));
-        App.getInstance().getWindowManager()
-                .setDebugId(logoutBtn, "logoutBtn");
-
-        titleLayout.addComponent(logoutBtn);
-        titleLayout.setComponentAlignment(logoutBtn, Alignment.MIDDLE_RIGHT);
-
-        Button newWindowBtn = new Button(MessageProvider.getMessage(getMessagesPack(), "newWindowBtn"),
-                new Button.ClickListener() {
-                    private static final long serialVersionUID = -2017737447316558248L;
-
-                    public void buttonClick(Button.ClickEvent event) {
-                        String name = App.generateWebWindowName();
-                        open(new ExternalResource(App.getInstance().getURL() + name), "_new");
-                    }
-                }
-        );
-        newWindowBtn.setStyleName("white-border");
-        newWindowBtn.setIcon(new ThemeResource("images/clean.gif"));
-
-        titleLayout.addComponent(newWindowBtn);
-        titleLayout.setComponentAlignment(newWindowBtn, Alignment.MIDDLE_RIGHT);
-
-        return titleLayout;
+        layout.addComponent(logoutBtn);
+        layout.setComponentAlignment(logoutBtn, Alignment.MIDDLE_RIGHT);
     }
 
     @Nullable
@@ -616,6 +620,59 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                 menuBar.removeItem(menuItem);
             }
         }
+    }
+
+    private void addUserSelect(HorizontalLayout parentLayout) {
+        substUserSelect = new NativeSelect();
+        substUserSelect.setNullSelectionAllowed(false);
+        substUserSelect.setImmediate(true);
+        substUserSelect.setStyleName("select-label");
+
+        fillSubstitutedUsers(substUserSelect);
+        if (substUserSelect.getItemIds().size() > 1) {
+            UserSession us = App.getInstance().getConnection().getSession();
+            substUserSelect.select(us.getSubstitutedUser() == null ? us.getUser() : us.getSubstitutedUser());
+            substUserSelect.addListener(new SubstitutedUserChangeListener(substUserSelect));
+
+            parentLayout.addComponent(substUserSelect);
+            parentLayout.setComponentAlignment(substUserSelect, Alignment.MIDDLE_RIGHT);
+        } else {
+            Label userNameLabel = new Label(getSubstitutedUserCaption((User) substUserSelect.getItemIds().iterator().next()));
+            userNameLabel.setStyleName("select-label");
+            userNameLabel.setSizeUndefined();
+            parentLayout.addComponent(userNameLabel);
+            parentLayout.setComponentAlignment(userNameLabel, Alignment.MIDDLE_RIGHT);
+        }
+    }
+
+    private Button createLogoutButton() {
+        Button logoutBtn = new Button(
+                MessageProvider.getMessage(getMessagesPack(), "logoutBtn"),
+                new LogoutBtnClickListener()
+        );
+        logoutBtn.setDescription(MessageProvider.getMessage(getMessagesPack(), "logoutBtnDescription"));
+        logoutBtn.setStyleName("white-border");
+        logoutBtn.setIcon(new ThemeResource("images/exit.gif"));
+        //logoutBtn.setIcon(new ThemeResource("images/logout.png"));
+        App.getInstance().getWindowManager().setDebugId(logoutBtn, "logoutBtn");
+        return logoutBtn;
+    }
+
+    private Button createNewWindowButton() {
+        Button newWindowBtn = new Button(MessageProvider.getMessage(getMessagesPack(), "newWindowBtn"),
+                new Button.ClickListener() {
+                    private static final long serialVersionUID = -2017737447316558248L;
+
+                    public void buttonClick(Button.ClickEvent event) {
+                        String name = App.generateWebWindowName();
+                        open(new ExternalResource(App.getInstance().getURL() + name), "_new");
+                    }
+                }
+        );
+        newWindowBtn.setDescription(MessageProvider.getMessage(getMessagesPack(), "newWindowBtnDescription"));
+        newWindowBtn.setStyleName("white-border");
+        newWindowBtn.setIcon(new ThemeResource("images/clean.gif"));
+        return newWindowBtn;
     }
 
     private void createSubMenu(MenuBar.MenuItem vItem, MenuItem item, UserSession session) {

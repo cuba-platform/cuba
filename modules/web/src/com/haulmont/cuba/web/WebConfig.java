@@ -174,6 +174,13 @@ public interface WebConfig extends Config
     String getAppWindowTheme();
 
     /**
+     * @return Whether to use lightweight header (app icon, menu, app settings in the same row)
+     */
+    @DefaultBoolean(false)
+    @Property("cuba.web.useLightHeader")
+    boolean getUseLightHeader();
+
+    /**
      * @return Path to an image for use as wallpaper. Not used in the platform.
      */
     @Default("default")

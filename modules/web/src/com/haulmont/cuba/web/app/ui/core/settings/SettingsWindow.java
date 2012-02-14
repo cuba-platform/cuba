@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.web.app.ui.core.settings;
 
-import com.haulmont.cuba.gui.UserSessionClient;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.entity.User;
@@ -33,11 +33,10 @@ public class SettingsWindow extends AbstractWindow {
 
     protected java.util.List<String> getThemesList()
     {
-        String themeBlacklabel = "blacklabel";
-        String themePeyto = "peyto";
-        return Arrays.asList(themeBlacklabel, themePeyto);
+        return Arrays.asList("blacklabel", "peyto", "havana");
     }
 
+    @Override
     public void init(Map<String, Object> params) {
         Boolean changeThemeEnabledParam = (Boolean) params.get("changeThemeEnabled");
         if (changeThemeEnabledParam != null) {
@@ -57,31 +56,37 @@ public class SettingsWindow extends AbstractWindow {
         final LookupField theme = getComponent("mainWindowTheme");
         final String themeBlacklabel = "blacklabel";
         final String themePeyto = "peyto";
+        final String themeHavana = "havana";
+
         theme.setOptionsList(getThemesList());
-        if (themeBlacklabel.equals(UserSettingHelper.loadAppWindowTheme())) {
+        String userAppTheme = UserSettingHelper.loadAppWindowTheme();
+        if (themeBlacklabel.equals(userAppTheme)) {
             theme.setValue(themeBlacklabel);
-        } else {
+        } else if (themeHavana.equals(userAppTheme)) {
             theme.setValue(themePeyto);
+        } else {
+            theme.setValue(themeHavana);
         }
         theme.setEditable(changeThemeEnabled);
 
         Button changePasswBtn = getComponent("changePassw");
-        final User user = UserSessionClient.getUserSession().getUser();
+        final User user = UserSessionProvider.getUserSession().getUser();
         changePasswBtn.setAction(
                 new AbstractAction("changePassw") {
+                    @Override
                     public void actionPerform(Component component) {
                         openEditor("sec$User.changePassw", user, WindowManager.OpenType.DIALOG);
                     }
                 }
         );
-        if (!user.equals(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser())) {
+        if (!user.equals(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser())) {
             changePasswBtn.setEnabled(false);
         }
-
 
         Button okBtn = getComponent("ok");
         okBtn.setAction(
                 new AbstractAction("ok") {
+                    @Override
                     public void actionPerform(Component component) {
                         if (changeThemeEnabled) {
                             UserSettingHelper.saveAppWindowTheme(theme.<String>getValue());
@@ -97,6 +102,7 @@ public class SettingsWindow extends AbstractWindow {
         Button cancelBtn = getComponent("cancel");
         cancelBtn.setAction(
                 new AbstractAction("cancel") {
+                    @Override
                     public void actionPerform(Component component) {
                         close("cancel");
                     }
