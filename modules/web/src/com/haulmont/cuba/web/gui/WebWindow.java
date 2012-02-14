@@ -45,11 +45,10 @@ import java.util.*;
 
 public class WebWindow
         implements
-            Window,
-            Component.Wrapper,
-            Component.HasXmlDescriptor,
-            WrappedWindow
-{
+        Window,
+        Component.Wrapper,
+        Component.HasXmlDescriptor,
+        WrappedWindow {
     private static final long serialVersionUID = -686695761338837334L;
 
     private boolean closing = false;
@@ -248,7 +247,7 @@ public class WebWindow
     public void showNotification(String caption, NotificationType type) {
         com.vaadin.ui.Window.Notification notification =
                 new com.vaadin.ui.Window.Notification(caption, WebComponentsHelper.convertNotificationType(type));
-        if(type.equals(IFrame.NotificationType.HUMANIZED))
+        if (type.equals(IFrame.NotificationType.HUMANIZED))
             notification.setDelayMsec(3000);
 
         com.vaadin.ui.Window window = component.getWindow();
@@ -261,7 +260,7 @@ public class WebWindow
     public void showNotification(String caption, String description, NotificationType type) {
         com.vaadin.ui.Window.Notification notification =
                 new com.vaadin.ui.Window.Notification(caption, description, WebComponentsHelper.convertNotificationType(type));
-        if(type.equals(IFrame.NotificationType.HUMANIZED))
+        if (type.equals(IFrame.NotificationType.HUMANIZED))
             notification.setDelayMsec(3000);
 
         com.vaadin.ui.Window window = component.getWindow();
@@ -719,28 +718,32 @@ public class WebWindow
             showNotification(MessageProvider.getMessage(WebWindow.class, "validationFail.caption"),
                     buffer.toString(), NotificationType.TRAY);
             if (component != null) {
-                try {
-                    com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
-                    com.vaadin.ui.Component c = vComponent;
-                    com.vaadin.ui.Component prevC = null;
-                    while (c != null) {
-                        if (c instanceof com.vaadin.ui.Component.Focusable) {
-                            ((com.vaadin.ui.Component.Focusable) c).focus();
-                        } else if (c instanceof TabSheet && !((TabSheet) c).getSelectedTab().equals(prevC)) {
-                            ((TabSheet) c).setSelectedTab(prevC);
-                            break;
-                        }
-                        prevC = c;
-                        c = c.getParent();
-                    }
-                    if (vComponent instanceof com.vaadin.ui.Component.Focusable)
-                        ((com.vaadin.ui.Component.Focusable) vComponent).focus();
-                } catch (Exception e) {
-                    //
-                }
+                focusProblemComponent(component);
             }
 
             return false;
+        }
+
+        protected void focusProblemComponent(Component component) {
+            try {
+                com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
+                com.vaadin.ui.Component c = vComponent;
+                com.vaadin.ui.Component prevC = null;
+                while (c != null) {
+                    if (c instanceof com.vaadin.ui.Component.Focusable) {
+                        ((com.vaadin.ui.Component.Focusable) c).focus();
+                    } else if (c instanceof TabSheet && !((TabSheet) c).getSelectedTab().equals(prevC)) {
+                        ((TabSheet) c).setSelectedTab(prevC);
+                        break;
+                    }
+                    prevC = c;
+                    c = c.getParent();
+                }
+                if (vComponent instanceof com.vaadin.ui.Component.Focusable)
+                    ((com.vaadin.ui.Component.Focusable) vComponent).focus();
+            } catch (Exception e) {
+                //
+            }
         }
     }
 
@@ -762,7 +765,7 @@ public class WebWindow
                     new ShortcutAction.KeyCombination(ShortcutAction.Key.ENTER, ShortcutAction.Modifier.CTRL)) {
                 @Override
                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                   fireSelectAction();
+                    fireSelectAction();
                 }
             });
         }
