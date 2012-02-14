@@ -213,7 +213,7 @@ public interface BackgroundWorker {
 
         @Override
         public boolean isAlive() {
-            return !taskExecutor.inProgress() && started;
+            return taskExecutor.inProgress() && started;
         }
 
         public BackgroundTask<T, V> getTask() {

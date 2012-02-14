@@ -31,6 +31,7 @@ public class TasksWatchDog implements WatchDog {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void cleanupTasks() {
         if (!AppContext.isStarted())
             return;
@@ -55,6 +56,7 @@ public class TasksWatchDog implements WatchDog {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void stopTasks() {
         if (!AppContext.isStarted())
             return;
@@ -71,6 +73,7 @@ public class TasksWatchDog implements WatchDog {
      * {@inheritDoc}
      * @param backroundTask Task handler
      */
+    @Override
     public void manageTask(BackgroundWorker.TaskHandler backroundTask) {
         synchronized (watches) {
             watches.add(backroundTask);
