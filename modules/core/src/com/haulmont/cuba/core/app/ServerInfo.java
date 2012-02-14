@@ -34,13 +34,16 @@ public class ServerInfo implements ServerInfoAPI, ServerInfoMBean
     private String releaseNumber = "?";
     private String releaseTimestamp = "?";
 
-    @Inject
     private Configuration configuration;
 
     private volatile String serverId;
 
-    public ServerInfo() {
-        InputStream stream = getClass().getResourceAsStream("/com/haulmont/cuba/core/global/release.number");
+    @Inject
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
+        ServerConfig config = configuration.getConfig(ServerConfig.class);
+
+        InputStream stream = getClass().getResourceAsStream(config.getReleaseNumberPath());
         if (stream != null)
             try {
                 releaseNumber = IOUtils.toString(stream);
@@ -48,7 +51,7 @@ public class ServerInfo implements ServerInfoAPI, ServerInfoMBean
                 log.warn("Unable to read release number", e);
             }
 
-        stream = getClass().getResourceAsStream("/com/haulmont/cuba/core/global/release.timestamp");
+        stream = getClass().getResourceAsStream(config.getReleaseTimestampPath());
         if (stream != null)
             try {
                 releaseTimestamp = IOUtils.toString(stream);

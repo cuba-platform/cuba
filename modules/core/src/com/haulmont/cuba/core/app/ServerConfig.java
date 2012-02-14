@@ -105,8 +105,25 @@ public interface ServerConfig extends Config {
     @DefaultBoolean(false)
     boolean getCutLoadListQueries();
 
+    /**
+     * @return Scheduled tasks execution control.
+     */
     @Property("cuba.schedulingActive")
     @DefaultBoolean(false)
     boolean getSchedulingActive();
     void setSchedulingActive(boolean value);
+
+    /**
+     * @return Path to resource containing the release number
+     */
+    @Property("cuba.releaseNumberPath")
+    @DefaultString("/com/haulmont/cuba/core/global/release.number")
+    String getReleaseNumberPath();
+
+    /**
+     * @return Path to resource containing the release timestamp
+     */
+    @Property("cuba.releaseTimestampPath")
+    @DefaultString("/com/haulmont/cuba/core/global/release.timestamp")
+    String getReleaseTimestampPath();
 }
