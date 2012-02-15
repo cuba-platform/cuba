@@ -379,6 +379,7 @@ public class DbUpdaterImpl implements DbUpdater {
                             return name.endsWith("create-db.sql");
                         }
                     });
+                    Arrays.sort(scriptFiles);
                     files.addAll(Arrays.asList(scriptFiles));
                 }
             }
