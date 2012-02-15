@@ -386,16 +386,6 @@ public class DesktopWindowManager extends WindowManager {
             window = ((Window.Wrapper) window).getWrappedWindow();
         }
 
-        // Check if there are windows opened after the current and close them.
-        // This is necessary for our pseudo-modal dialogs.
-        for (Iterator<Window> it = windowOpenMode.keySet().iterator(); it.hasNext(); ) {
-            Window w = it.next();
-            if (w == window && it.hasNext()) {
-                close(it.next());
-                break;
-            }
-        }
-
         final WindowOpenMode openMode = windowOpenMode.get(window);
         if (openMode == null) {
             log.warn("Problem closing window " + window + " : WindowOpenMode not found");
@@ -416,7 +406,23 @@ public class DesktopWindowManager extends WindowManager {
             case DIALOG: {
                 JDialog dialog = (JDialog) openMode.getData();
                 dialog.setVisible(false);
-                App.getInstance().enable();
+
+                boolean previousModalWindowExists = false;
+                for (Iterator<Window> it = windowOpenMode.keySet().iterator(); it.hasNext(); ) {
+                    Window w = it.next();
+                    // Check if there is a modal window opened before the current
+                    if (w != window && windowOpenMode.get(w).getOpenType().equals(OpenType.DIALOG)) {
+                        previousModalWindowExists = true;
+                    }
+                    // If there are windows opened after the current, close them
+                    if (w == window && it.hasNext()) {
+                        close(it.next());
+                        break;
+                    }
+                }
+                if (!previousModalWindowExists)
+                    App.getInstance().enable();
+
                 fireListeners(window, tabs.size() != 0);
                 break;
             }
