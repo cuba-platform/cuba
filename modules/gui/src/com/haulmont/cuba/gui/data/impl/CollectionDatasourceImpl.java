@@ -475,7 +475,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
     }
     
-    private void setSortDirection(LoadContext.Query q) {
+    protected void setSortDirection(LoadContext.Query q) {
         boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
         MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
         if (MetadataHelper.isPersistent(propertyPath)) {

@@ -20,7 +20,10 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Locale;
 import java.util.Map;
 
@@ -94,8 +97,9 @@ public class LoginDialog extends JDialog {
                             App.getInstance().enable();
                         } catch (LoginException ex) {
                             String caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "loginWindow.loginFailed", locale);
-                            App.getInstance().showNotificationPopup(
-                                    "<b>" + caption + "</b><br/>" + ex.getMessage(),
+                            App.getInstance().showNotification(
+                                    caption,
+                                    ex.getMessage(),
                                     IFrame.NotificationType.ERROR
                             );
                         }

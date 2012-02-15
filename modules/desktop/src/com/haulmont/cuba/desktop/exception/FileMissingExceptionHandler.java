@@ -30,6 +30,6 @@ public class FileMissingExceptionHandler extends AbstractExceptionHandler {
     protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
         String fileName = throwable != null ? ((FileMissingException) throwable).getFileName() : "?";
         String msg = MessageProvider.formatMessage(getClass(), "fileNotFoundWarning.message", fileName);
-        App.getInstance().showNotificationPopup(msg, IFrame.NotificationType.ERROR);
+        App.getInstance().showNotification(msg, IFrame.NotificationType.ERROR);
     }
 }

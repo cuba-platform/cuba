@@ -29,6 +29,6 @@ public class AccessDeniedHandler extends AbstractExceptionHandler {
     @Override
     protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
         String msg = MessageProvider.getMessage(getClass(), "accessDenied.message");
-        App.getInstance().showNotificationPopup(msg, IFrame.NotificationType.ERROR);
+        App.getInstance().showNotification(msg, IFrame.NotificationType.ERROR);
     }
 }

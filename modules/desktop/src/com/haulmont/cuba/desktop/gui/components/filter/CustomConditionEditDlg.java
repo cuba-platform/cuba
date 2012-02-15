@@ -6,11 +6,13 @@
 
 package com.haulmont.cuba.desktop.gui.components.filter;
 
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.filter.*;
+import com.haulmont.cuba.gui.components.filter.AbstractCustomConditionEditDlg;
+import com.haulmont.cuba.gui.components.filter.ParamFactory;
+import com.haulmont.cuba.gui.components.filter.ParamType;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
@@ -70,7 +72,7 @@ public class CustomConditionEditDlg extends AbstractCustomConditionEditDlg<JDial
 
     @Override
     protected void showNotification(String msg, IFrame.NotificationType type) {
-        App.getInstance().showNotificationPopup(msg, type);
+        App.getInstance().showNotification(msg, type);
     }
 
     @Override

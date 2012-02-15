@@ -41,6 +41,6 @@ public class ReportExceptionHandler extends AbstractExceptionHandler {
             messageCode = "reportException.unsupportedFileFormat";
         }
         String msg = MessageProvider.getMessage(getClass(), messageCode);
-        App.getInstance().showNotificationPopup(msg, IFrame.NotificationType.ERROR);
+        App.getInstance().showNotification(msg, IFrame.NotificationType.ERROR);
     }
 }

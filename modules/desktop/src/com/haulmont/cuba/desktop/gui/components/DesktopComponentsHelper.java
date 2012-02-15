@@ -6,20 +6,17 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
-import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.components.ShortcutAction;
+import com.haulmont.cuba.gui.components.ValuePathHelper;
 import org.apache.commons.lang.ArrayUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
-import javax.swing.Action;
 import java.awt.*;
 import java.awt.event.InputEvent;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * <p>$Id$</p>
@@ -97,6 +94,20 @@ public class DesktopComponentsHelper {
             return JOptionPane.WARNING_MESSAGE;
         else
             return JOptionPane.INFORMATION_MESSAGE;
+    }
+
+    public static int convertNotificationType(IFrame.NotificationType type) {
+        switch (type) {
+            case WARNING:
+                return JOptionPane.WARNING_MESSAGE;
+            case ERROR:
+                return JOptionPane.ERROR_MESSAGE;
+            case HUMANIZED:
+                return JOptionPane.INFORMATION_MESSAGE;
+            case TRAY:
+                return JOptionPane.WARNING_MESSAGE;
+        }
+        return JOptionPane.PLAIN_MESSAGE;
     }
 
     public static void adjustSize(JButton button) {

@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
+import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.*;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
@@ -96,7 +97,6 @@ public class App implements ConnectionListener {
 
             DesktopAppContextLoader contextLoader = new DesktopAppContextLoader(getDefaultAppPropertiesConfig(), args);
             contextLoader.load();
-
             initTheme();
             initLookAndFeelDefaults();
             initUI();
@@ -439,7 +439,7 @@ public class App implements ConnectionListener {
         return theme.getResources();
     }
 
-    public void showNotificationPopup(String caption, IFrame.NotificationType type) {
+    protected void showNotificationPopup(String title, String caption, IFrame.NotificationType type) {
         JPanel panel = new JPanel(new MigLayout("flowy"));
         panel.setBorder(BorderFactory.createLineBorder(Color.gray));
         JFrame frame = getMainFrame();
@@ -457,6 +457,9 @@ public class App implements ConnectionListener {
 
         FontMetrics fontMetrics = frame.getGraphics().getFontMetrics();
 
+        if (StringUtils.isNotBlank(title)) {
+            caption = String.format("<b>%s</b><br>%s", title, caption);
+        }
         int height = (int) fontMetrics.getStringBounds(caption, frame.getGraphics()).getHeight();
         int width = 0;
         StringBuilder sb = new StringBuilder("<html>");
@@ -490,6 +493,50 @@ public class App implements ConnectionListener {
                 }
         );
         timer.start();
+    }
+
+    public void showNotification(String caption, String description, IFrame.NotificationType type) {
+        DesktopConfig config = ConfigProvider.getConfig(DesktopConfig.class);
+        if (config.isDialogNotificationsEnabled() && type != IFrame.NotificationType.TRAY) {
+            showNotificationDialog(caption, description, type);
+        } else {
+            showNotificationPopup(caption, description, type);
+        }
+    }
+
+    public void showNotification(String caption, IFrame.NotificationType type) {
+        showNotification(null, caption,  type);
+    }
+
+    protected void showNotificationDialog(String caption, String description, IFrame.NotificationType type) {
+        String title = MessageProvider.getMessage(AppConfig.getMessagesPack(), "notification.title." + type);
+        String text;
+        if (StringUtils.isNotBlank(caption)) {
+            text = String.format("<html><b>%s</b><br>%s", caption, description);
+        } else {
+            text = "<html>" + description;
+        }
+
+        Component parentComponent = getMainFrame();
+        int messageType = DesktopComponentsHelper.convertNotificationType(type);
+
+        String closeText = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Close");
+        JButton option = new JButton(closeText);
+        option.setPreferredSize(new Dimension(80, DesktopComponentsHelper.BUTTON_HEIGHT));
+
+        JOptionPane pane = new JOptionPane(text, messageType,
+                                                       JOptionPane.DEFAULT_OPTION, null,
+                                                       new Object[] {option}, option);
+
+        final JDialog dialog = pane.createDialog(parentComponent, title);
+        option.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.setVisible(false);
+            }
+        });
+        dialog.setVisible(true);
+        dialog.dispose();
     }
 
     public Locale getLocale() {

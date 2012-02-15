@@ -23,8 +23,10 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
-import java.text.*;
+import java.text.DateFormat;
+import java.text.MessageFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
@@ -156,7 +158,7 @@ public class DatePicker extends JXDatePicker {
             try {
                 return super.stringToValue(text);
             } catch (ParseException e) {
-                App.getInstance().showNotificationPopup(
+                App.getInstance().showNotification(
                         MessageProvider.getMessage(AppConfig.getMessagesPack(), "validationFail"),
                         IFrame.NotificationType.TRAY
                 );

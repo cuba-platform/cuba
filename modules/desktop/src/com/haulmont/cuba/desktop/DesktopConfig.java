@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.config.Prefix;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
+import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 
 /**
@@ -45,4 +46,7 @@ public interface DesktopConfig extends Config {
      */
     @Default("nimbus")
     String getTheme();
+
+    @DefaultBoolean(false)
+    boolean isDialogNotificationsEnabled();
 }

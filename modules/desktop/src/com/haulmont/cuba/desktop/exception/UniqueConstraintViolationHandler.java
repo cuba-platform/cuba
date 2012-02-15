@@ -83,6 +83,6 @@ public class UniqueConstraintViolationHandler implements ExceptionHandler {
                 msg = msg + " (" + constraintName + ")";
         }
 
-        App.getInstance().showNotificationPopup(msg, IFrame.NotificationType.ERROR);
+        App.getInstance().showNotification(msg, IFrame.NotificationType.ERROR);
     }
 }

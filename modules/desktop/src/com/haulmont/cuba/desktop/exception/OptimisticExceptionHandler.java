@@ -42,6 +42,6 @@ public class OptimisticExceptionHandler extends AbstractExceptionHandler {
         }
 
         String msg = MessageProvider.formatMessage(getClass(), "optimisticException.message", "\"" + localizedEntityName + "\"");
-        App.getInstance().showNotificationPopup(msg, IFrame.NotificationType.ERROR);
+        App.getInstance().showNotification(msg, IFrame.NotificationType.ERROR);
     }
 }

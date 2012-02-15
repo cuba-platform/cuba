@@ -74,7 +74,7 @@ public class RuntimePropConditionEditDlg extends AbstractRuntimePropConditionEdi
 
     @Override
     protected void showNotification(String msg, IFrame.NotificationType type) {
-        App.getInstance().showNotificationPopup(msg, type);
+        App.getInstance().showNotification(msg, type);
     }
 
     protected class Editor extends JDialog {

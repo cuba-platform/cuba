@@ -27,6 +27,6 @@ public class ConnectExceptionHandler extends AbstractExceptionHandler{
     @Override
     protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
         String msg = MessageProvider.getMessage(getClass(), "connectException.message");
-        App.getInstance().showNotificationPopup(msg, IFrame.NotificationType.ERROR);
+        App.getInstance().showNotification(msg, IFrame.NotificationType.ERROR);
     }
 }

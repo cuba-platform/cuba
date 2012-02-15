@@ -490,12 +490,12 @@ public class DesktopWindowManager extends WindowManager {
 
     @Override
     public void showNotification(String caption, IFrame.NotificationType type) {
-        App.getInstance().showNotificationPopup(caption, type);
+        App.getInstance().showNotification(caption, type);
     }
 
     @Override
     public void showNotification(String caption, String description, IFrame.NotificationType type) {
-        showNotification("<b>" + caption + "</b><br/>" + description, type);
+        App.getInstance().showNotification(caption, description, type);
     }
 
     @Override

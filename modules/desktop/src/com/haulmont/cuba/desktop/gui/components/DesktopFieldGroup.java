@@ -8,7 +8,6 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.Security;
@@ -703,8 +702,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         }
 
         if (!problems.isEmpty()) {
-            StringBuilder msgBuilder = new StringBuilder(
-                    MessageProvider.getMessage(DesktopWindow.class, "validationFail") + "<br>");
+            StringBuilder msgBuilder = new StringBuilder();
             for (Iterator<Field> iterator = problems.keySet().iterator(); iterator.hasNext(); ) {
                 Field field = iterator.next();
                 Exception ex = problems.get(field);

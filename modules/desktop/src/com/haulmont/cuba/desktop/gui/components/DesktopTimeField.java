@@ -90,7 +90,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     }
 
     private void showValidationMessage() {
-        App.getInstance().showNotificationPopup(
+        App.getInstance().showNotification(
                 MessageProvider.getMessage(AppConfig.getMessagesPack(), "validationFail"),
                 IFrame.NotificationType.TRAY
         );
