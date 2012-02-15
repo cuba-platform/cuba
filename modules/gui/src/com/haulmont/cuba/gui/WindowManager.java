@@ -144,6 +144,9 @@ public abstract class WindowManager implements Serializable {
             initDebugIds(window);
         }
 
+        // apply ui permissions
+        PermissionsApplyHelper.applyUiPermissions(window);
+
         return windowWrapper;
     }
 
