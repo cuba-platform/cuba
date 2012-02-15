@@ -184,13 +184,9 @@ public class DataServiceBean implements DataService {
                 em.setSoftDeletion(false);
 
             com.haulmont.cuba.core.Query query = createQuery(em, context);
-            try {
-                final List resultList = query.getResultList();
-                if (!resultList.isEmpty())
-                    result = resultList.get(0);
-            } catch (javax.persistence.NoResultException e) {
-                result = null;
-            }
+            final List resultList = query.getResultList();
+            if (!resultList.isEmpty())
+                result = resultList.get(0);
 
             if (result != null && context.getView() != null) {
                 em.setView(null);
