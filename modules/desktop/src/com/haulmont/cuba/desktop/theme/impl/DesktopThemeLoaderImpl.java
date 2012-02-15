@@ -446,6 +446,10 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
             return null;
         }
 
+        if ("transparent".equalsIgnoreCase(value)) {
+            return new Color(255, 255, 255, 0); // completely transparent color
+        }
+
         if (value.length() == 7 && value.charAt(0) == '#') { // html
             final int radix = 16;
             int r = Integer.parseInt(value.substring(1, 3), radix);
