@@ -377,6 +377,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      */
     protected HorizontalLayout createMenuBarLayout() {
         HorizontalLayout layout = new HorizontalLayout();
+        layout.setSpacing(true);
         layout.setStyleName("menubar");
         layout.setWidth(100, Sizeable.UNITS_PERCENTAGE);
         if (webConfig.getUseLightHeader()){
@@ -389,8 +390,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         menuBar = createMenuBar();
         layout.addComponent(menuBar);
 
-        if (webConfig.getUseLightHeader())
-            layout.setComponentAlignment(menuBar, Alignment.MIDDLE_LEFT);
+//        if (webConfig.getUseLightHeader())
+        layout.setComponentAlignment(menuBar, Alignment.MIDDLE_LEFT);
 
         layout.setExpandRatio(menuBar, 1);
 
@@ -646,8 +647,12 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     private Button createLogoutButton() {
+        String buttonTitle = "";
+        if (!webConfig.getUseLightHeader())
+            buttonTitle = MessageProvider.getMessage(getMessagesPack(), "logoutBtn");
+
         Button logoutBtn = new Button(
-                MessageProvider.getMessage(getMessagesPack(), "logoutBtn"),
+                buttonTitle,
                 new LogoutBtnClickListener()
         );
         logoutBtn.setDescription(MessageProvider.getMessage(getMessagesPack(), "logoutBtnDescription"));
@@ -659,7 +664,11 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     private Button createNewWindowButton() {
-        Button newWindowBtn = new Button(MessageProvider.getMessage(getMessagesPack(), "newWindowBtn"),
+        String buttonTitle = "";
+        if (!webConfig.getUseLightHeader())
+            buttonTitle = MessageProvider.getMessage(getMessagesPack(), "newWindowBtn");
+
+        Button newWindowBtn = new Button(buttonTitle,
                 new Button.ClickListener() {
                     private static final long serialVersionUID = -2017737447316558248L;
 

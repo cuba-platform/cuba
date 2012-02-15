@@ -1,5 +1,4 @@
 .v-menubar {
-    padding-top: 3px;
 }
 
 .v-menubar table {
@@ -20,7 +19,6 @@
 }
 
 .v-menubar table td {
-    
 }
 
 .v-menubar .menuitem {
@@ -43,6 +41,7 @@
     color: #000000;
     text-shadow: #fff 1px 1px 0;
     height: 19px;
+    background-color: #506D8D;
 }
 
 .v-menubar .menuitem-selected div {
@@ -75,6 +74,10 @@
 
 .v-menubar-submenu .menuitem div {
     color: #fff;
+}
+
+.v-menubar-submenu {
+    border: solid 2px #506D8D;
 }
 
 .v-menubar-submenu .menuitem-shortcut-selected,

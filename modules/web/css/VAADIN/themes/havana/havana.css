@@ -32,38 +32,6 @@
 }
 
 /*
- * App buttons
- */
-
-.v-button-app-logout {
-    width: 22px;
-    height: 26px;
-    padding-left: 0;
-    border: 0;
-    background: transparent none;
-}
-
-.v-button-app-logout
-
-.v-button-app-logout:hover {
-    background: none;
-    border: solid thin white;
-}
-
-.v-button-app-new-window {
-    width: 22px;
-    height: 26px;
-    padding-left: 0;
-    border: 0;
-    background: transparent none;
-}
-
-.v-button-app-new-window:hover {
-    background: none;
-    border: solid thin white;
-}
-
-/*
  * Title bar
  */
 
@@ -146,22 +114,18 @@
 /* Logout & View-log buttons */
 .v-button-white-border {
     background: none;
-    border: none;
-    height: 26px;
-    width: 28px;
-    padding: 0 0 0 4px;
+    border: 1px solid transparent;
 }
 
-.v-button-white-border:hover {
+.v-button-white-border:hover{
     background: none;
-    border: thin solid white;
+    /*padding: 0;*/
+    border: solid 1px white;
 }
 
-.v-button-white-border .v-button-wrap,
-.v-button-white-border:hover .v-button-wrap {
-    height: 23px;
+.v-button-white-border .v-button-wrap {
     padding-top: 2px;
-    background: none;
+    height: 23px;
 }
 
 .v-button-white-border .v-button-caption {
