@@ -66,8 +66,7 @@ public class PermissionsApplyHelper {
                                 if (component instanceof Component.Editable) {
                                     ((Component.Editable) component).setEditable(false);
                                 } else {
-                                    log.info(String.format("Couldn't apply READ_ONLY permission for %s in window %s",
-                                            component, screenId));
+                                    component.setEnabled(false);
                                 }
                             }
 
