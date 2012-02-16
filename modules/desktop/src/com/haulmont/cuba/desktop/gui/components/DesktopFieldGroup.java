@@ -74,8 +74,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
 
         layout = new MigLayout(lc);
         impl = new JPanel(layout);
-
+        assignClassDebugProperty(impl);
         collapsiblePanel = new CollapsiblePanel(super.getComposition());
+        assignClassDebugProperty(collapsiblePanel);
         collapsiblePanel.setBorderVisible(false);
         collapsiblePanel.addCollapseListener(new CollapsiblePanel.CollapseListener() {
             @Override

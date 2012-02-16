@@ -35,6 +35,7 @@ public class DesktopGridLayout
 
     public DesktopGridLayout() {
         impl = new JPanel();
+        assignClassDebugProperty(impl);
         layoutAdapter = GridLayoutAdapter.create(impl);
     }
 
@@ -151,6 +152,14 @@ public class DesktopGridLayout
         ownComponents.remove(component);
 
         DesktopContainerHelper.assignContainer(component, null);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                impl.revalidate();
+                impl.repaint();
+            }
+        });
     }
 
     public <T extends Component> T getOwnComponent(String id) {

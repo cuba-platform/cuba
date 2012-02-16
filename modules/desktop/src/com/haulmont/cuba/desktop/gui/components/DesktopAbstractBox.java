@@ -35,6 +35,7 @@ public abstract class DesktopAbstractBox
 
     public DesktopAbstractBox() {
         impl = new JPanel();
+        assignClassDebugProperty(impl);
         layoutAdapter = BoxLayoutAdapter.create(impl);
     }
 
@@ -93,9 +94,6 @@ public abstract class DesktopAbstractBox
             captions.remove(component);
         }
 
-        impl.revalidate();
-        impl.repaint();
-
         if (component.getId() != null) {
             componentByIds.remove(component.getId());
         }
@@ -105,6 +103,14 @@ public abstract class DesktopAbstractBox
         if (expandedComponent == component) {
             expandedComponent = null;
         }
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                impl.revalidate();
+                impl.repaint();
+            }
+        });
     }
 
     @Override

@@ -103,8 +103,9 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         } else {
             impl = createSingleLineField(secret);
 
-            composition = new JPanel(new BorderLayout());
-            composition.add(impl, BorderLayout.CENTER);
+            composition = new JPanel();
+            composition.setLayout(new BoxLayout(composition, BoxLayout.Y_AXIS));
+            composition.add(impl);
         }
 
         assignImplProperties();

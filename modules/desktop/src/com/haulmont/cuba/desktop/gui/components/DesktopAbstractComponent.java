@@ -49,6 +49,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     protected Log log = LogFactory.getLog(getClass());
 
     protected final String swingPropertyId = "cubaId";
+    public static final String swingPropertyClass = "cubaClass";
 
     protected C getImpl() {
         return impl;
@@ -90,6 +91,10 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
         if (this.getImpl() != null) {
             impl.putClientProperty(getSwingPropertyId(), id);
         }
+    }
+
+    protected void assignClassDebugProperty(JComponent c) {
+        c.putClientProperty(swingPropertyClass, getClass().getSimpleName());
     }
 
     @Override
