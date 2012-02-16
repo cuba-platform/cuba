@@ -39,8 +39,8 @@
 
 .group-box .group-box-caption div {
     float: left;
-    width: 17px;
-    height: 15px;
+    width: 12px;
+    height: 18px;
     background: transparent url(img/expand.png) no-repeat center left;
     cursor: pointer;
 }

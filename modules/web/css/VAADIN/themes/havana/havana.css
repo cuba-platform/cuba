@@ -114,24 +114,30 @@
 /* Logout & View-log buttons */
 .v-button-white-border {
     background: none;
-    border: 1px solid transparent;
+    border: 2px solid transparent;
 }
 
 .v-button-white-border:hover{
     background: none;
     /*padding: 0;*/
-    border: solid 1px white;
+    border: solid 2px #506D8D;
 }
 
 .v-button-white-border .v-button-wrap {
-    padding-top: 2px;
+    padding-top: 0;
+    padding-right: 0;
     height: 23px;
+}
+
+.v-button-white-border .v-button .v-icon, .v-nativebutton .v-icon {
+    margin-right: 0;
 }
 
 .v-button-white-border .v-button-caption {
     /* looks not very pretty
     text-decoration: underline;
     */
+    margin-left: 2px;
     color: #fff;
 }
 
@@ -217,13 +223,13 @@
 .v-verticallayout.edit-area,
 .v-horizontallayout.edit-area,
 .v-gridlayout.edit-area {
-    background-color: #FBFDFD;
-    border: 1px solid #A5C4E0;
+    /*background-color: #FBFDFD;*/
+    /*border: 1px solid #A5C4E0;*/
 }
 
 .group-box-edit-area > fieldset {
-    background-color: #FBFDFD;
-    border: 1px solid #A5C4E0;
+    /*background-color: #FBFDFD;*/
+    /*border: 1px solid #A5C4E0;*/
 }
 
 .edit-area .v-label, .edit-area .v-label.h2 {
@@ -237,14 +243,14 @@
 }
 
 .v-fieldgroup-edit-area fieldset {
-    border: 1px solid #A5C4E0;
-    background-color: #FBFDFD;
-    margin: 0;
-    padding:10px;
+    /*border: 1px solid #A5C4E0;*/
+    /*background-color: #FBFDFD;*/
+    /*margin: 0;*/
+    /*padding:10px;*/
 }
 
 .v-fieldgroup-edit-area.v-fieldgroup-nocollapsable.v-fieldgroup-nocaption fieldset {
-    border: 1px solid #A5C4E0;
+    /*border: 1px solid #A5C4E0;*/
 }
 
 .v-label-attachment-type-present {
@@ -266,9 +272,9 @@
 .v-window-contents .v-horizontallayout-edit-area,
 .v-window-contents .v-gridlayout-edit-area,
 .v-window-contents .v-table {
-    font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS";
+    /*font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif, "Trebuchet MS", serif;*/
 	/*color: #000;*/
-	font-size: 12px;
+	/*font-size: 12px;*/
 }
 
 /* Utils */
@@ -355,15 +361,14 @@
 }
 
 .v-panel.dummy-split .v-panel-content {
-    background: transparent;
-    background-image: url(splitpanel/img/split-hor-bg.png);
-    background-repeat: repeat-y;
-    background-position: top left;
+    background: transparent url(splitpanel/img/split-hor-bg.png) repeat-y top left;
 }
 
 .v-menubar-folders-pane tr > td.menuitem:first-child,
 .v-menubar-folders-pane tr > td.menuitem-selected:first-child {
     background-color: transparent;
+    padding-left: 4px;
+    padding-right: 5px;
 }
 
 .widgets-tree-empty .v-tree-node-widget {
@@ -615,8 +620,8 @@
 }
 
 .v-label-form-error, .edit-area .v-label-form-error {
-    color: red;
-    font-size: 10px;
+    /*color: red;*/
+    /*font-size: 10px;*/
 }
 
 /*
@@ -695,9 +700,7 @@
 }
 
 .v-splitpanel-first-container-background-notebook {
-    background-image: url(wallpapers/notebook.png);
-    background-position: top left;
-    background-repeat: no-repeat;
+    background: url(wallpapers/notebook.png) no-repeat top left;
 }
 
 .v-app .v-label-black {
