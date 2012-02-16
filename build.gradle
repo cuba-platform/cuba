@@ -349,7 +349,7 @@ configure(desktopModule) {
         compile(globalModule)
         compile(clientModule)
         compile(guiModule)
-        compile(group: 'com.haulmont.thirdparty', name: 'miglayout', version: '3.7.4')
+        compile(group: 'com.miglayout', name: 'miglayout-swing', version: '4.2')
         compile(group: 'com.haulmont.thirdparty', name: 'glazedlists', version: '1.9.20110801')
         compile(group: 'org.swinglabs', name: 'swingx-core', version: '1.6.2-2')
 
