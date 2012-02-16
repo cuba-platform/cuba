@@ -499,13 +499,19 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     @Override
-    public void showMessageDialog(String title, String message, IFrame.MessageType messageType) {
-        JOptionPane.showMessageDialog(
-                App.getInstance().getMainFrame(),
-                message,
-                title,
-                DesktopComponentsHelper.convertMessageType(messageType)
-        );
+    public void showMessageDialog(final String title, final String message, IFrame.MessageType messageType) {
+        final int swingMessageType = DesktopComponentsHelper.convertMessageType(messageType);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                JOptionPane.showMessageDialog(
+                        App.getInstance().getMainFrame(),
+                        message,
+                        title,
+                        swingMessageType
+                );
+            }
+        });
     }
 
     @Override

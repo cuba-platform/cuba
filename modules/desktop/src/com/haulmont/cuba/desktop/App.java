@@ -505,7 +505,7 @@ public class App implements ConnectionListener {
     }
 
     public void showNotification(String caption, IFrame.NotificationType type) {
-        showNotification(null, caption,  type);
+        showNotification(null, caption, type);
     }
 
     protected void showNotificationDialog(String caption, String description, IFrame.NotificationType type) {
@@ -525,18 +525,24 @@ public class App implements ConnectionListener {
         option.setPreferredSize(new Dimension(80, DesktopComponentsHelper.BUTTON_HEIGHT));
 
         JOptionPane pane = new JOptionPane(text, messageType,
-                                                       JOptionPane.DEFAULT_OPTION, null,
-                                                       new Object[] {option}, option);
+                JOptionPane.DEFAULT_OPTION, null,
+                new Object[]{option}, option);
 
         final JDialog dialog = pane.createDialog(parentComponent, title);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         option.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dialog.setVisible(false);
             }
         });
-        dialog.setVisible(true);
-        dialog.dispose();
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                dialog.setVisible(true);
+            }
+        });
     }
 
     public Locale getLocale() {
