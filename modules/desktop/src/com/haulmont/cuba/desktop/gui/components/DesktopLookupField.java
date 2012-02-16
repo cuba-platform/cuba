@@ -35,7 +35,7 @@ import java.util.List;
  * @author krivopustov
  */
 public class DesktopLookupField
-        extends DesktopAbstractOptionsField<JPanel>
+        extends DesktopAbstractOptionsField<JComponent>
         implements LookupField {
     private static final FilterMode DEFAULT_FILTER_MODE = FilterMode.CONTAINS;
 
@@ -56,13 +56,15 @@ public class DesktopLookupField
     private ExtendedComboBox comboBox;
     private JTextField textField;
 
+    private JPanel composition;
+
     private DefaultValueFormatter valueFormatter;
 
     public DesktopLookupField() {
-        impl = new JPanel();
-        impl.setLayout(new BoxLayout(impl, BoxLayout.Y_AXIS));
-        impl.setFocusable(true);
-        impl.addFocusListener(new FocusListener() {
+        composition = new JPanel();
+        composition.setLayout(new BoxLayout(composition, BoxLayout.Y_AXIS));
+        composition.setFocusable(true);
+        composition.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
                 if (editable)
@@ -145,7 +147,8 @@ public class DesktopLookupField
         textField.setEditable(false);
         valueFormatter = new DefaultValueFormatter(UserSessionProvider.getLocale());
 
-        impl.add(comboBox);
+        composition.add(comboBox);
+        impl = comboBox;
 
         DesktopComponentsHelper.adjustSize(comboBox);
     }
@@ -234,6 +237,11 @@ public class DesktopLookupField
             return new ObjectWrapper(value);
         }
         return new ObjectWrapper(value);
+    }
+
+    @Override
+    public JComponent getComposition() {
+        return composition;
     }
 
     @Override
@@ -335,13 +343,16 @@ public class DesktopLookupField
     @Override
     public void setEditable(boolean editable) {
         if (this.editable && !editable) {
-            impl.remove(comboBox);
-            impl.add(textField);
+            composition.remove(comboBox);
+            composition.add(textField);
+            impl = textField;
 
             updateTextField();
         } else if (!this.editable && editable) {
-            impl.remove(textField);
-            impl.add(comboBox);
+            composition.remove(textField);
+            composition.add(comboBox);
+
+            impl = comboBox;
         }
         this.editable = editable;
     }
