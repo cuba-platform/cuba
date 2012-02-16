@@ -137,6 +137,7 @@
  */
 .v-verticallayout-loginBottom {
     background: url('images/login-form-bg-key.png') no-repeat top center;
+    height: 200px;
 }
 
 .v-verticallayout-loginBottom .v-textfield-password-field {
@@ -636,11 +637,11 @@
     height: 20px;
 }
 
-.v-table-cell-content .v-button-stop .v-button-wrap {
+.v-table-cell-content .v-button-wrap {
     background: none;
 }
 
-.v-table-cell-content .v-button-stop .v-button-wrap:hover {
+.v-table-cell-content .v-button-wrap:hover {
     background: none;
 }
 

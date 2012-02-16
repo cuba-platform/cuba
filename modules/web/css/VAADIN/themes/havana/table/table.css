@@ -237,12 +237,40 @@
 }
 
 .v-table-column-selector {
-	background: transparent url(img/table-header-bg.png) repeat-x;
+	/*background: transparent url(img/table-header-bg.png) repeat-x;*/
 	height: 23px;
 	width: 16px;
 	position: absolute;
     top: 0;
     right: 0;
+}
+
+/*
+ * Buttons in table
+ */
+
+.v-table-cell-content .v-button {
+    height: 24px;
+    width: 24px;
+    background: #FFF none;
+}
+
+.v-table-cell-content .v-button:hover {
+    height: 24px;
+    width: 24px;
+    background: #FFF none;
+}
+
+.v-table-cell-content .v-button .v-icon {
+    height: 20px;
+}
+
+.v-table-cell-content .v-button-wrap {
+    background: none;
+}
+
+.v-table-cell-content .v-button-wrap:hover {
+    background: none;
 }
 
 .v-table-column-selector div {
@@ -253,12 +281,16 @@
 }
 
 .v-table-pres-selector {
-    background: transparent url(img/table-header-bg.png) repeat-x;
+    /*background: transparent url(img/table-header-bg.png) repeat-x;*/
 	height: 23px;
 	width: 18px;
     position: absolute;
     top: 0;
     right: 16px;
+}
+
+.v-tableColumnSelector .gwt-MenuItem div {
+    padding-left: 20px !important;
 }
 
 .v-table-pres-selector div {

@@ -146,6 +146,7 @@
  */
 .v-verticallayout-loginBottom {
     background: url('images/login-form-bg-key.png') no-repeat top center;
+    height: 200px;
 }
 
 .v-verticallayout-loginBottom .v-textfield-password-field {
@@ -270,6 +271,11 @@
 	font-size: 12px;
 }
 
+/* Utils */
+
+.border-bottom {
+    border-bottom: solid 1px gray;
+}
 
 /* Folders pane styles */
 
