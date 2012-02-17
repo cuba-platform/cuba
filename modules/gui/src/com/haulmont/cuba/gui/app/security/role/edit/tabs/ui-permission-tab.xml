@@ -63,6 +63,7 @@
 
                     <checkBox id="readOnlyCheckBox" caption="msg://checkbox.readOnly"/>
                     <checkBox id="hideCheckBox" caption="msg://checkbox.hide"/>
+                    <checkBox id="showCheckBox" caption="msg://checkbox.show"/>
 
                     <label id="panelSpacer"/>
                 </vbox>

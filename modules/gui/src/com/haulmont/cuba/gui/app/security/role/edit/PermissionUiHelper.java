@@ -159,6 +159,10 @@ public class PermissionUiHelper {
                 case READ_ONLY:
                     value = UiPermissionValue.READ_ONLY.getValue();
                     break;
+
+                case SHOW:
+                    value = UiPermissionValue.SHOW.getValue();
+                    break;
             }
         }
         return value;

@@ -68,6 +68,9 @@ public class UiPermissionsFrame extends AbstractFrame {
     private CheckBox hideCheckBox;
 
     @Inject
+    private CheckBox showCheckBox;
+
+    @Inject
     private GroupTable uiPermissionsTable;
 
     private boolean itemChanging = false;
@@ -114,6 +117,7 @@ public class UiPermissionsFrame extends AbstractFrame {
 
         attachCheckBoxListener(readOnlyCheckBox, UiPermissionVariant.READ_ONLY);
         attachCheckBoxListener(hideCheckBox, UiPermissionVariant.HIDE);
+        attachCheckBoxListener(showCheckBox, UiPermissionVariant.SHOW);
 
         uiPermissionTargetsDs.setPermissionDs(uiPermissionsDs);
 

@@ -39,6 +39,7 @@ public class UiPermissionTarget extends AbstractPermissionTarget
         this.permissionVariant = permissionVariant;
     }
 
+    @Override
     public String getCaption() {
         return caption;
     }

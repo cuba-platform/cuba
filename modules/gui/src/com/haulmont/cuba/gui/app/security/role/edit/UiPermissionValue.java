@@ -7,6 +7,8 @@
 package com.haulmont.cuba.gui.app.security.role.edit;
 
 public enum UiPermissionValue {
+
+    SHOW(2),
     READ_ONLY(1),
     HIDE(0);
 

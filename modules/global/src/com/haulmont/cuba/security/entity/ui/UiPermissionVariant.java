@@ -29,7 +29,12 @@ public enum UiPermissionVariant implements EnumClass<Integer> {
     /**
      * Permission not selected
      */
-    NOTSET(30, "black");
+    NOTSET(30, "black"),
+
+    /**
+     * Show
+     */
+    SHOW(40, "green");
 
     private Integer id;
 
