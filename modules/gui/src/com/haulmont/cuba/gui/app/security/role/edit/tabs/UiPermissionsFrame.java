@@ -141,7 +141,7 @@ public class UiPermissionsFrame extends AbstractFrame {
                 UiPermissionTarget target = uiPermissionsTable.getSingleSelected();
                 markItemPermission(permissionVariant, target);
 
-                uiPermissionsTable.repaint();
+                uiPermissionTargetsDs.updateItem(target);
 
                 itemChanging = false;
             }
@@ -180,6 +180,7 @@ public class UiPermissionsFrame extends AbstractFrame {
         if (item != null) {
             readOnlyCheckBox.setValue(item.getPermissionVariant() == UiPermissionVariant.READ_ONLY);
             hideCheckBox.setValue(item.getPermissionVariant() == UiPermissionVariant.HIDE);
+            showCheckBox.setValue(item.getPermissionVariant() == UiPermissionVariant.SHOW);
         }
 
         itemChanging = false;

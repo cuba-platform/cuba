@@ -9,6 +9,7 @@ import com.haulmont.cuba.gui.components.IFrame;
 
 import java.util.Map;
 
+@Deprecated
 public class PropertyPermissionsLookup extends PermissionsLookup {
 
     public PropertyPermissionsLookup(IFrame frame) {

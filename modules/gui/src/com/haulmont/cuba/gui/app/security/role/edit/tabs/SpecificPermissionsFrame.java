@@ -163,7 +163,7 @@ public class SpecificPermissionsFrame extends AbstractFrame {
                 if (permission != null)
                     specificPermissionsDs.removeItem(permission);
             }
-            specificPermissionsTree.repaint();
+            specificPermissionsTreeDs.updateItem(target);
         }
     }
 }

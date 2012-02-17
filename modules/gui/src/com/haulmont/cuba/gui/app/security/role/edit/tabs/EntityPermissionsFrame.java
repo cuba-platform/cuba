@@ -227,8 +227,9 @@ public class EntityPermissionsFrame extends AbstractFrame {
                         markTargetPermission(target, control.getMetaProperty(), control.getOperation(), variant);
                     }
                 }
+                entityTargetsDs.updateItem(target);
             }
-            entityPermissionsTable.repaint();
+//            entityPermissionsTable.repaint();
             showNotification(getMessage("notification.applied"), NotificationType.HUMANIZED);
         }
     }

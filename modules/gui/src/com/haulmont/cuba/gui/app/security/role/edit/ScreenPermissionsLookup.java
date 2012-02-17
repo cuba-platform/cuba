@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.components.IFrame;
 
 import java.util.Map;
 
+@Deprecated
 public class ScreenPermissionsLookup extends PermissionsLookup {
 
     public ScreenPermissionsLookup(IFrame frame) {

@@ -15,9 +15,11 @@ import java.util.*;
 
 /**
  * <p>$Id$</p>
+ * @deprecated Rewrite in next release
  *
  * @author artamonov
  */
+@Deprecated
 public class EntityPermissionsLookup extends PermissionsLookup {
 
     public EntityPermissionsLookup(IFrame frame) {

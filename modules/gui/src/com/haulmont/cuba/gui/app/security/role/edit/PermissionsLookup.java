@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
+@Deprecated
 public class PermissionsLookup extends AbstractLookup {
 
     protected Tree permissionsTree;

@@ -174,8 +174,8 @@ public class AttributePermissionsFrame extends AbstractFrame {
                     allReadOnlyCheck.setValue(item.isAllReadOnly());
                     allHideCheck.setValue(item.isAllHide());
 
-                    // todo enforce value change
-                    propertyPermissionsTable.repaint();
+                    // todo enforce property change instead of item
+                    attributeTargetsDs.updateItem(item);
 
                     itemChanging = false;
                 }
