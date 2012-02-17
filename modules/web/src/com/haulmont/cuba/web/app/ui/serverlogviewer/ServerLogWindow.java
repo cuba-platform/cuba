@@ -7,13 +7,13 @@
 package com.haulmont.cuba.web.app.ui.serverlogviewer;
 
 import com.haulmont.cuba.core.app.LogManagerService;
-import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.export.SimpleFileDataProvider;
+import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Label;
@@ -87,7 +87,6 @@ public class ServerLogWindow extends AbstractWindow {
         logNameField.addListener(new ValueListener<Object>() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-
                 if (value != null) {
                     if (value.equals(getMessage("newLogger")) && value.equals(getLogs().get(0))) {
                         openWindow("additionLogger", WindowManager.OpenType.DIALOG, map);
@@ -202,7 +201,11 @@ public class ServerLogWindow extends AbstractWindow {
         logNameField.setOptionsList(getLogs());
     }
 
-    /*public void callEditor() {
+    public void callControlLogger() {
+        App.getInstance().getWindowManager().getDialogParams().setWidth(420);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("controlWin", this);
+        openWindow("controlLogger", WindowManager.OpenType.DIALOG, map);
+    }
 
-    }*/
 }
