@@ -87,18 +87,18 @@
 
 .v-window-closebox {
 	position: absolute;
-	top: 5px;
-	right: 8px;
+	top: 10px;
+	right: -5px;
 	width: 21px;
 	height: 21px;
-	background: transparent url(img/close.png);
+	background: transparent url(img/close.png) no-repeat;
 	cursor: pointer;
 	overflow: hidden;
     /*border: 1px solid #fff;*/
 }
 
 .v-window-closebox:hover {
-	background: transparent url(img/close-active.png);
+	background: transparent url(img/close-active.png) no-repeat;
 }
 
 .v-window-modalitycurtain {

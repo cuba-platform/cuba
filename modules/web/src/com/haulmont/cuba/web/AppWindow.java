@@ -58,6 +58,7 @@ import java.util.*;
  * Specific application should inherit from this class and create appropriate
  * instance in {@link com.haulmont.cuba.web.App#createAppWindow()} method
  */
+@SuppressWarnings("unused")
 public class AppWindow extends Window implements UserSubstitutionListener {
 
     private static final long serialVersionUID = 7269808125566032433L;
@@ -237,6 +238,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      * Creates folders pane.
      * <br>Can be overridden in descendant to create an app-specific folders pane.
      * <br>If this method returns null, no folders functionality is available for application.
+     * @return FoldersPane container
      */
     @Nullable
     protected FoldersPane createFoldersPane() {
@@ -245,6 +247,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     /**
      * Can be overridden in descendant to create an app-specific caption
+     * @return Application caption
      */
     protected String getAppCaption() {
         return MessageProvider.getMessage(getMessagesPack(), "application.caption");
@@ -269,6 +272,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     /**
      * See {@link #rootLayout}
+     * @return Very root layout of the window
      */
     public VerticalLayout getRootLayout() {
         return rootLayout;
@@ -276,13 +280,16 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     /**
      * See {@link #titleLayout}
+     * @return Optional title layout
      */
+    @Nullable
     public Layout getTitleLayout() {
         return titleLayout;
     }
 
     /**
      * See {@link #menuBarLayout}
+     * @return Application MenuBar
      */
     public HorizontalLayout getMenuBarLayout() {
         return menuBarLayout;
@@ -290,6 +297,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     /**
      * See {@link #emptyLayout}
+     * @return Layout bellow menu bar
      */
     public HorizontalLayout getEmptyLayout() {
         return emptyLayout;
@@ -297,6 +305,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     /**
      * See {@link #mainLayout}
+     * @return Main Application layout
      */
     public VerticalLayout getMainLayout() {
         return mainLayout;
@@ -309,7 +318,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     /**
      * Native client script invoker
-     * @return JavaScriptHost
+     * @return JavaScriptHost - specific client side bridge
      */
     public JavaScriptHost getScriptHost() {
         return scriptHost;
@@ -414,6 +423,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             searchBtn.setIcon(new ThemeResource("select/img/fts-btn.png"));
             searchBtn.addListener(
                     new Button.ClickListener() {
+                        @Override
                         public void buttonClick(Button.ClickEvent event) {
                             openSearchWindow(searchField);
                         }
@@ -632,6 +642,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         fillSubstitutedUsers(substUserSelect);
         if (substUserSelect.getItemIds().size() > 1) {
             UserSession us = App.getInstance().getConnection().getSession();
+            if (us == null)
+                throw new RuntimeException("No user session found");
+
             substUserSelect.select(us.getSubstitutedUser() == null ? us.getUser() : us.getSubstitutedUser());
             substUserSelect.addListener(new SubstitutedUserChangeListener(substUserSelect));
 
@@ -657,8 +670,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         );
         logoutBtn.setDescription(MessageProvider.getMessage(getMessagesPack(), "logoutBtnDescription"));
         logoutBtn.setStyleName("white-border");
-        logoutBtn.setIcon(new ThemeResource("images/exit.gif"));
-        //logoutBtn.setIcon(new ThemeResource("images/logout.png"));
+        logoutBtn.setIcon(new ThemeResource("images/exit.png"));
         App.getInstance().getWindowManager().setDebugId(logoutBtn, "logoutBtn");
         return logoutBtn;
     }
@@ -672,6 +684,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                 new Button.ClickListener() {
                     private static final long serialVersionUID = -2017737447316558248L;
 
+                    @Override
                     public void buttonClick(Button.ClickEvent event) {
                         String name = App.generateWebWindowName();
                         open(new ExternalResource(App.getInstance().getURL() + name), "_new");
@@ -680,7 +693,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         );
         newWindowBtn.setDescription(MessageProvider.getMessage(getMessagesPack(), "newWindowBtnDescription"));
         newWindowBtn.setStyleName("white-border");
-        newWindowBtn.setIcon(new ThemeResource("images/clean.gif"));
+        newWindowBtn.setIcon(new ThemeResource("images/new-window.png"));
         return newWindowBtn;
     }
 
@@ -724,6 +737,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         }
         final MenuCommand command = new MenuCommand(App.getInstance().getWindowManager(), item, windowInfo);
         return new com.vaadin.ui.MenuBar.Command() {
+
+            @Override
             public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
                 command.execute();
             }
@@ -732,6 +747,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     protected void fillSubstitutedUsers(AbstractSelect select) {
         UserSession userSession = App.getInstance().getConnection().getSession();
+
+        if (userSession == null)
+            throw new RuntimeException("No user session found");
 
         select.addItem(userSession.getUser());
         select.setItemCaption(userSession.getUser(), getSubstitutedUserCaption(userSession.getUser()));
@@ -756,6 +774,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         return InstanceUtils.getInstanceName(user);
     }
 
+    @Override
     public void userSubstituted(Connection connection) {
         menuBarLayout.replaceComponent(menuBar, createMenuBar());
         if (foldersPane != null) {
@@ -791,10 +810,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         // Paint richNotifications
         if (richNotifications != null) {
             target.startTag("richNotifications");
-            for (final Iterator<RichNotification> it = richNotifications.iterator(); it
-                    .hasNext();) {
-                final RichNotification n = it.next();
-
+            for (final RichNotification n : richNotifications) {
                 target.startTag("richNotification");
                 if (n.getCaption() != null) {
                     target.addAttribute("caption", n.getCaption());
@@ -825,7 +841,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     @Override
-    public void changeVariables(Object source, Map variables) {
+    public void changeVariables(Object source, Map<String, Object> variables) {
         super.changeVariables(source, variables);
         final Object target = variables.get("notificationHidden");
         if (target != null) {
@@ -836,6 +852,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     private void revertToCurrentUser() {
         UserSession us = App.getInstance().getConnection().getSession();
+        if (us == null)
+            throw new RuntimeException("No user session found");
+
         substUserSelect.select(us.getCurrentOrSubstitutedUser());
     }
 
@@ -852,10 +871,12 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             return "icons/ok.png";
         }
 
+        @Override
         public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
             final App app = App.getInstance();
             app.getWindowManager().checkModificationsAndCloseAll(
                     new Runnable() {
+                        @Override
                         public void run() {
                             app.getWindowManager().closeAll();
                             User user = (User) substUserSelect.getValue();
@@ -890,6 +911,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             return "icons/cancel.png";
         }
 
+        @Override
         public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
             revertToCurrentUser();
         }
@@ -903,9 +925,13 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             this.substUserSelect = substUserSelect;
         }
 
+        @Override
         public void valueChange(Property.ValueChangeEvent event) {
             User newUser = (User) event.getProperty().getValue();
             UserSession userSession = App.getInstance().getConnection().getSession();
+            if (userSession == null)
+                throw new RuntimeException("No user session found");
+
             User oldUser = userSession.getSubstitutedUser() == null ? userSession.getUser() : userSession.getSubstitutedUser();
 
             if (!oldUser.equals(newUser)) {
@@ -944,6 +970,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         public AppTabSheet() {
             setCloseHandler(new CloseHandler() {
+                @Override
                 public void onTabClose(TabSheet tabsheet, Component tabContent) {
                     if (closeHandlers != null) {
                         TabCloseHandler closeHandler = closeHandlers.get(tabContent);
@@ -987,6 +1014,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             return null;
         }
 
+        @Override
         public com.vaadin.event.Action[] getActions(Object target, Object sender) {
             if (target != null) {
                 if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION) &&
@@ -1005,6 +1033,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             };
         }
 
+        @Override
         public void handleAction(com.vaadin.event.Action action, Object sender, Object target) {
             if (action.equals(closeCurrentTab)) {
                 closeTab((com.vaadin.ui.Component) target);
@@ -1052,12 +1081,14 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         private static final long serialVersionUID = 4885156177472913997L;
 
+        @Override
         public void buttonClick(Button.ClickEvent event) {
             if (foldersPane != null) {
                 foldersPane.savePosition();
             }
             App.getInstance().getWindowManager().checkModificationsAndCloseAll(
                     new Runnable() {
+                        @Override
                         public void run() {
                             App.getInstance().getWindowManager().reset();
                             String redirectionUrl = connection.logout();

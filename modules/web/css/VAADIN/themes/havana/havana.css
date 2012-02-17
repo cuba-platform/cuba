@@ -129,7 +129,7 @@
     height: 23px;
 }
 
-.v-button-white-border .v-button .v-icon, .v-nativebutton .v-icon {
+.v-button-white-border .v-button-wrap .v-icon {
     margin-right: 0;
 }
 
@@ -138,6 +138,7 @@
     text-decoration: underline;
     */
     margin-left: 2px;
+    margin-right: 2px;
     color: #fff;
 }
 

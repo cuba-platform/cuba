@@ -15,15 +15,13 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.SilentException;
 import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
-import com.vaadin.event.*;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
@@ -37,6 +35,7 @@ import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.*;
 
@@ -650,7 +649,7 @@ public class WebWindowManager extends WindowManager {
         removeFromWindowMap(openMode.getWindow());
     }
 
-    public void checkModificationsAndCloseAll(final Runnable runIfOk, final Runnable runIfCancel) {
+    public void checkModificationsAndCloseAll(final Runnable runIfOk, final @Nullable Runnable runIfCancel) {
         boolean modified = false;
         for (Window window : getOpenWindows()) {
             if (!disableSavingScreenHistory) {
