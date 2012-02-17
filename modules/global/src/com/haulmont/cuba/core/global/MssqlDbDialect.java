@@ -68,7 +68,7 @@ public class MssqlDbDialect extends DbDialect implements SequenceSupport {
     @Override
     public String getNextValueSql(String sequenceName) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        return String.format("insert into %s (CREATE_TS) values ('%s') ^ select ident_current('%s') as NEXT_VALUE",
+        return String.format("insert into %s (CREATE_TS) values ({ts '%s'}) ^ select ident_current('%s') as NEXT_VALUE",
                 sequenceName.toUpperCase(), dateFormat.format(TimeProvider.currentTimestamp()), sequenceName.toUpperCase());
     }
 
