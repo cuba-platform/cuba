@@ -31,7 +31,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 public class WebDateField
         extends
@@ -393,8 +395,16 @@ public class WebDateField
             c.set(Calendar.SECOND, c2.get(Calendar.SECOND));
         }
 
-        Date time = c.getTime();
-        return time;
+        if (metaProperty != null) {
+            Class javaClass = metaProperty.getRange().asDatatype().getJavaClass();
+            if (javaClass.equals(java.sql.Date.class))
+                return new java.sql.Date(c.getTimeInMillis());
+            else if (javaClass.equals(Time.class))
+                return new Time(c.getTimeInMillis());
+            else
+                return c.getTime();
+        } else
+            return c.getTime();
     }
 
     @Override
