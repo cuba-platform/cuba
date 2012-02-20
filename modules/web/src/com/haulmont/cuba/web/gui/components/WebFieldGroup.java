@@ -675,32 +675,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     }
 
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {
-        return new ItemWrapper(datasource, propertyPaths, dsManager) {
-            @Override
-            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
-                return new PropertyWrapper(item, propertyPath, dsManager) {
-                    @Override
-                    public boolean isReadOnly() {
-                        Field field = fields.get(propertyPath.toString());
-                        return !isEditable(field);
-                    }
-
-                    @Override
-                    public String toString() {
-                        Object value = getValue();
-                        if (value == null) return null;
-                        Field field = fields.get(propertyPath.toString());
-                        if (field.getFormatter() != null) {
-                            if (value instanceof Instance) {
-                                value = ((Instance) value).getInstanceName();
-                            }
-                            return field.getFormatter().format(value);
-                        }
-                        return super.toString();
-                    }
-                };
-            }
-        };
+        return new FieldGroupItemWrapper(datasource, propertyPaths, dsManager);
     }
 
     public void addListener(ExpandListener listener) {
@@ -1074,6 +1049,44 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             super.valueChange(event);
             component.setCaption(event.getProperty().getValue() == null
                     ? "" : event.getProperty().toString());
+        }
+    }
+
+    public class FieldGroupItemWrapper extends ItemWrapper {
+
+        private static final long serialVersionUID = -7877886198903628220L;
+
+        public FieldGroupItemWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {
+            super(datasource, propertyPaths, dsManager);
+        }
+
+        public Datasource getDatasource() {
+            return (Datasource) item;
+        }
+
+        @Override
+        protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
+            return new PropertyWrapper(item, propertyPath, dsManager) {
+                @Override
+                public boolean isReadOnly() {
+                    Field field = fields.get(propertyPath.toString());
+                    return !isEditable(field);
+                }
+
+                @Override
+                public String toString() {
+                    Object value = getValue();
+                    if (value == null) return null;
+                    Field field = fields.get(propertyPath.toString());
+                    if (field.getFormatter() != null) {
+                        if (value instanceof Instance) {
+                            value = ((Instance) value).getInstanceName();
+                        }
+                        return field.getFormatter().format(value);
+                    }
+                    return super.toString();
+                }
+            };
         }
     }
 }

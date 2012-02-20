@@ -24,7 +24,6 @@ import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
@@ -96,7 +95,7 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                     final WebLookupField lookupField = new WebLookupField();
 //                    if (propertyPath.get().length > 1) throw new UnsupportedOperationException();
 
-                    lookupField.setDatasource(getDatasource(), propertyPath.toString());
+                    lookupField.setDatasource(getDatasource(item), propertyPath.toString());
                     lookupField.setOptionsList(range.asEnumeration().getValues());
 
                     cubaField = lookupField;
@@ -111,14 +110,12 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
                         String dataTypeName = datatype.getName();
                         if (TimeDatatype.NAME.equals(dataTypeName) || "timeField".equals(fieldType(propertyPath))) {
                             final WebTimeField timeField = new WebTimeField();
-                            //todo gorodnov: support field own datasource
-                            timeField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
-
+                            timeField.setDatasource(getDatasource(item), propertyPath.getMetaProperty().getName());
                             cubaField = timeField;
                             field = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(timeField);
                         } else {
                             WebDateField dateField = new WebDateField();
-                            dateField.setDatasource(getDatasource(), propertyPath.getMetaProperty().getName());
+                            dateField.setDatasource(getDatasource(item), propertyPath.getMetaProperty().getName());
                             cubaField = dateField;
                             field = dateField.getComponent();
                         }
@@ -161,6 +158,13 @@ public abstract class AbstractFieldFactory extends DefaultFieldFactory {
         } else {
             return null;
         }
+    }
+
+    private Datasource getDatasource(Item item) {
+        if (item instanceof WebFieldGroup.FieldGroupItemWrapper)
+            return ((WebFieldGroup.FieldGroupItemWrapper) item).getDatasource();
+        else
+            return getDatasource();
     }
 
     /**
