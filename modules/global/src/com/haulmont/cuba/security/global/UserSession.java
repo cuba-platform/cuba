@@ -96,7 +96,7 @@ public class UserSession implements Serializable
     }
 
     public UserSession(UserSession src) {
-        id = src.id;
+       id = src.id;
         user = src.user;
         substitutedUser = src.substitutedUser;
         system = src.system;
@@ -105,6 +105,7 @@ public class UserSession implements Serializable
         permissions = src.permissions;
         constraints = src.constraints;
         attributes = src.attributes;
+        roleTypes = src.roleTypes;
     }
 
     /**

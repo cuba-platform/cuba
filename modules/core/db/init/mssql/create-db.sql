@@ -132,7 +132,7 @@ create table SYS_SCHEDULED_EXECUTION (
     SERVER varchar(50),
     START_TIME datetime,
     FINISH_TIME datetime,
-    RESULT text,
+    RESULT varchar(max),
     --
     primary key nonclustered (ID),
     constraint SYS_SCHEDULED_EXECUTION_TASK foreign key (TASK_ID) references SYS_SCHEDULED_TASK(ID)
@@ -343,7 +343,7 @@ create table SEC_USER_SETTING (
     USER_ID uniqueidentifier,
     CLIENT_TYPE char(1),
     NAME varchar(255),
-    VALUE text,
+    VALUE varchar(max),
     --
     primary key nonclustered (ID),
     constraint SEC_USER_SETTING_USER foreign key (USER_ID) references SEC_USER(ID),
@@ -505,8 +505,8 @@ create table SYS_APP_FOLDER (
     FOLDER_ID uniqueidentifier,
     FILTER_COMPONENT varchar(200),
     FILTER_XML varchar(7000),
-    VISIBILITY_SCRIPT text,
-    QUANTITY_SCRIPT text,
+    VISIBILITY_SCRIPT varchar(max),
+    QUANTITY_SCRIPT varchar(max),
     APPLY_DEFAULT tinyint,
     --
     primary key (FOLDER_ID),
@@ -703,7 +703,7 @@ create table REPORT_DATA_SET
   UPDATED_BY varchar(50),
   --
   NAME varchar(255),
-  TEXT text,
+  TEXT varchar(max),
   TYPE integer,
   BAND_DEFINITION uniqueidentifier,
   ENTITY_PARAM_NAME varchar(255),
@@ -771,7 +771,7 @@ create table SEC_SCREEN_HISTORY (
 	CREATED_BY varchar(50),
 	USER_ID uniqueidentifier,
 	CAPTION varchar(255),
-	URL TEXT,
+	URL varchar(max),
 	ENTITY_ID uniqueidentifier,
     --
 	primary key nonclustered (ID),
@@ -796,7 +796,7 @@ create table SYS_SENDING_MESSAGE (
     ADDRESS_TO varchar(500),
     ADDRESS_FROM varchar(100),
     CAPTION varchar(500),
-	CONTENT_TEXT text,
+	CONTENT_TEXT varchar,
 	DEADLINE datetime,
 	STATUS int,
 	DATE_SENT datetime,
@@ -840,8 +840,8 @@ create table SYS_ENTITY_SNAPSHOT (
     CREATED_BY varchar(50),
     ENTITY_META_CLASS varchar(50),
     ENTITY_ID uniqueidentifier,
-    VIEW_XML text,
-    SNAPSHOT_XML text,
+    VIEW_XML varchar(max),
+    SNAPSHOT_XML varchar(max),
 	primary key nonclustered (ID)
 )^
 

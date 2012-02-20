@@ -6,10 +6,15 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
+import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.Join;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.jdbc.sql.Select;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.UUID;
 
 /**
  * <p>$Id$</p>
@@ -24,5 +29,14 @@ public class CubaMssqlDictionary extends SQLServerDictionary {
 
     protected SQLBuffer getWhere(Select sel, boolean forUpdate) {
         return DBDictionaryUtils.getWhere(this, sel, forUpdate, false);
+    }
+
+    @Override
+    public void setUnknown(PreparedStatement stmnt, int idx, Object val, Column col) throws SQLException {
+        if (val instanceof UUID) {
+            stmnt.setObject(idx, val.toString());
+        } else {
+            super.setUnknown(stmnt, idx, val, col);
+        }
     }
 }
