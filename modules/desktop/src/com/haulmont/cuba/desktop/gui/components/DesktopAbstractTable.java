@@ -701,6 +701,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 ((DesktopTableCellEditor) columnCellEditor).clearCache();
             }
         }
+        packRows();
         impl.repaint();
     }
 

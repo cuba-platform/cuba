@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.desktop.sys.vcl.DatePicker.DatePicker;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.components.Table;
 import org.jdesktop.swingx.JXHyperlink;
@@ -121,7 +122,7 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         Component component = getCellComponent(row);
-        applyStyle(component, table, true, false, row);
+        applyStyle(component, table, true, true, row);
 
         String stylename = desktopAbstractTable.getStylename(table, row, column);
         desktopAbstractTable.applyStylename(isSelected, true, activeComponent, stylename);
@@ -218,12 +219,25 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         return false;
     }
 
+    private boolean isDateField(JComponent jcomponent) {
+        if (jcomponent instanceof JComboBox) {
+            return true;
+        }
+        if (jcomponent instanceof JPanel) {
+            Component[] panelChildren = jcomponent.getComponents();
+            if ((panelChildren.length == 2 && panelChildren[0] instanceof DatePicker)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void assignBorder(JTable table, boolean isSelected, boolean hasFocus, JComponent jcomponent) {
         if (isTextField(jcomponent)) {
             // looks like simple label when with empty border
         } else if (border != null) {
             jcomponent.setBorder(border);
-        } else if (isLookupField(jcomponent) || jcomponent instanceof JXHyperlink) {
+        } else if (isLookupField(jcomponent) || isDateField(jcomponent) || jcomponent instanceof JXHyperlink) {
             // empty borders for fields except text fields in tables
             jcomponent.setBorder(new EmptyBorder(0, 0, 0, 0));
         } else {

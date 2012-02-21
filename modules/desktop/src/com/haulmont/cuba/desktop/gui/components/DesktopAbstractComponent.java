@@ -272,7 +272,7 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
         }
 
         /**
-         * Format value for text field or lable
+         * Format value for text field or label
          *
          * @param value Object value
          * @return Formatted string
