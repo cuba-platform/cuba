@@ -17,28 +17,28 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 
-public class ServiceInterceptor
-{
+public class ServiceInterceptor {
+
     private UserSessionsAPI userSessions;
+
+    private Log log = LogFactory.getLog(getClass());
 
     public void setUserSessions(UserSessionsAPI userSessions) {
         this.userSessions = userSessions;
     }
 
     private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
-        Log log = LogFactory.getLog(ctx.getTarget().getClass());
-
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         for (int i = 2; i < stackTrace.length; i++) {
             StackTraceElement element = stackTrace[i];
             if (element.getClassName().equals(ServiceInterceptor.class.getName())) {
-                log.error("Service invoked from another service");
+                log.error("Invoking " + ctx.getSignature() + " from another service");
                 break;
             }
         }
 
         try {
-            checkUserSession(ctx, log);
+            checkUserSession(ctx);
 
             Object res = ctx.proceed();
             return res;
@@ -49,7 +49,7 @@ public class ServiceInterceptor
         }
     }
 
-    private void checkUserSession(ProceedingJoinPoint ctx, Log log) {
+    private void checkUserSession(ProceedingJoinPoint ctx) {
         // Using UserSessionsAPI directly to make sure the session's "last used" timestamp is propagated to the cluster
         SecurityContext securityContext = AppContext.getSecurityContext();
         if (securityContext == null)

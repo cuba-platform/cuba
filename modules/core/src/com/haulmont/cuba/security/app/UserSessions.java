@@ -7,10 +7,10 @@ package com.haulmont.cuba.security.app;
 
 import com.haulmont.cuba.core.app.ClusterListener;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
-import com.haulmont.cuba.core.app.Heartbeat;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.TimeProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.text.StrBuilder;
@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author krivopustov
  */
 @ManagedBean(UserSessionsAPI.NAME)
-public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbeat.Listener {
+public class UserSessions implements UserSessionsMBean, UserSessionsAPI {
 
     private static class UserSessionInfo implements Serializable {
         private static final long serialVersionUID = -4834267718111570841L;
@@ -67,11 +67,6 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
     public void setConfigProvider(Configuration configuration) {
         ServerConfig config = configuration.getConfig(ServerConfig.class);
         setExpirationTimeoutSec(config.getUserSessionExpirationTimeoutSec());
-    }
-
-    @Inject
-    public void setHeartbeat(Heartbeat heartbeat) {
-        heartbeat.addListener(this, 10);
     }
 
     @Inject
@@ -212,6 +207,9 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
     }
 
     public void processEviction() {
+        if (!AppContext.isStarted())
+            return;
+
         log.trace("Processing eviction");
         long now = TimeProvider.currentTimestamp().getTime();
         for (Iterator<UserSessionInfo> it = cache.values().iterator(); it.hasNext();) {
@@ -223,9 +221,5 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI, Heartbe
                 clusterManager.send(usi);
             }
         }
-    }
-
-    public void beat() {
-        processEviction();
     }
 }

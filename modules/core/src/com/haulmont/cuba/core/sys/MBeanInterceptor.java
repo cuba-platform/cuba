@@ -16,10 +16,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
 
 public class MBeanInterceptor {
 
+    private Log log = LogFactory.getLog(getClass());
+
     private Object aroundInvoke(ProceedingJoinPoint ctx) throws Throwable {
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-
-        Log log = LogFactory.getLog(ctx.getTarget().getClass());
 
         if (log.isTraceEnabled())
             log.trace("Invoking: " + ctx.getSignature());
