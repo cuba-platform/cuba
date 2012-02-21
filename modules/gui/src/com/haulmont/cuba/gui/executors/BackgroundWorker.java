@@ -93,14 +93,15 @@ public interface BackgroundWorker {
             this.userSession = UserSessionProvider.getUserSession();
 
             BackgroundTask<T, V> task = taskExecutor.getTask();
-
-            closeListener = new Window.CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    ownerWindowClosed();
-                }
-            };
-            task.getOwnerWindow().addListener(closeListener);
+            if (task.getOwnerWindow() != null) {
+                closeListener = new Window.CloseListener() {
+                    @Override
+                    public void windowClosed(String actionId) {
+                        ownerWindowClosed();
+                    }
+                };
+                task.getOwnerWindow().addListener(closeListener);
+            }
             // remove close listener on done
             taskExecutor.setFinalizer(new Runnable() {
                 @Override
@@ -168,7 +169,8 @@ public interface BackgroundWorker {
         private void disposeResources() {
             // force remove close listener
             Window ownerWindow = getTask().getOwnerWindow();
-            ownerWindow.removeListener(closeListener);
+            if (ownerWindow != null)
+                ownerWindow.removeListener(closeListener);
             closeListener = null;
         }
 
@@ -194,8 +196,11 @@ public interface BackgroundWorker {
 
                 disposeResources();
 
-                String windowClass = ownerWindow.getClass().getCanonicalName();
-                log.debug("Task killed. User: " + userId + " Window: " + windowClass);
+                if (ownerWindow != null) {
+                    String windowClass = ownerWindow.getClass().getCanonicalName();
+                    log.debug("Task killed. User: " + userId + " Window: " + windowClass);
+                } else
+                    log.debug("Task killed. User: " + userId);
             }
 
             taskExecutor.cancelExecution(true);

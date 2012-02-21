@@ -40,7 +40,6 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
     @Override
     public <T, V> BackgroundTaskHandler<V> handle(BackgroundTask<T, V> task) {
         checkNotNull(task);
-        checkNotNull(task.getOwnerWindow());
 
         // create task handler
         TaskExecutor<T, V> taskExecutor = new DesktopTaskExecutor<T, V>(task);

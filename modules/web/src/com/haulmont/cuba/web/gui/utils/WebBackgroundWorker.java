@@ -73,7 +73,6 @@ public class WebBackgroundWorker implements BackgroundWorker {
     @Override
     public <T, V> BackgroundTaskHandler<V> handle(final BackgroundTask<T, V> task) {
         checkNotNull(task);
-        checkNotNull(task.getOwnerWindow());
 
         App appInstance;
         try {

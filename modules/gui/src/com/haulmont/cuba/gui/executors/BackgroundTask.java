@@ -37,6 +37,9 @@ public abstract class BackgroundTask<T, V> {
         this.ownerWindow = ownerWindow;
     }
 
+    protected BackgroundTask() {
+    }
+
     /**
      * Main tasks method
      * @return Result
