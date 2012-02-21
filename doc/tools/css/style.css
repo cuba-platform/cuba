@@ -1,0 +1,565 @@
+
+/*
+ * Basic layout
+ */
+
+html {
+    margin: 0;
+    /*height: 100%;*/
+    /*min-height: 100%*/
+}
+
+body {
+    margin-top: 2cm;
+    margin-bottom: 2cm;
+    margin-left: 2cm;
+    margin-right: 2cm;
+    padding: 0;
+    background-color: white;
+    line-height: 150%;
+}
+
+body, td, div {
+    font-family: 'DejaVu Sans', 'Lucida Grande', 'Verdana', sans-serif;
+    font-size: 11pt;
+    color: #444444;
+}
+
+div {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    color: blue;
+}
+
+
+p {
+   /* ensure paragraphs remain close to their parent heading */
+   margin-top: 0;
+   margin-bottom: 1em;
+   text-align: justify; /* Выравнивание по ширине */
+}
+
+h1, h2, h3, h4, h5 {
+    color: #336699;
+    line-height: 150%;
+    font-weight: bold;
+    font-family: 'DejaVu Sans', 'Lucida Grande', 'Arial', helvetica, sans-serif;
+    /* ensure paragraphs remain close to their parent heading */
+    margin-bottom: 0.2em;
+}
+
+h1 {
+    font-size: 180%;
+}
+
+h2 {
+    font-size: 170%;
+}
+
+h3 {
+    font-size: 150%;
+}
+
+h4 {
+    font-size: 140%;
+}
+
+h5 {
+    font-size: 130%;
+}
+
+.heading {
+    font-family: 'DejaVu Sans', 'Lucida Grande', 'Arial', helvetica, sans-serif;
+}
+
+code, pre {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+h1 a, h2 a, h3 a, h4 a, h5 a {
+    color: inherit;
+}
+
+h1 a:visited, h2 a:visited, h3 a:visited, h4 a:visited, h5 a:visited {
+    color: inherit;
+}
+
+/*
+ * Docbook content
+ */
+
+.chapter h1 {
+    margin-bottom: 1.0em;
+}
+
+.appendix h1 {
+    margin-bottom: 1.0em;
+}
+
+.section h2 {
+    font-size: 170%;
+    margin-top: 1.4em;
+}
+
+.section h1 {
+    font-size: 180%;
+    margin-top: 1.4em;
+}
+
+.section h3 {
+    font-size: 150%;
+    margin-top: 1.4em;
+}
+
+.section h4 {
+    font-size: 140%;
+    margin-top: 1.4em;
+}
+
+.section h5 {
+    font-size: 130%;
+    margin-top: 1.4em;
+}
+
+/*
+ * Lists
+ */
+
+.variablelist dt {
+    font-weight: bold;
+}
+
+.variablelist dt a {
+    font-weight: normal;
+}
+
+/*
+ * Examples, Figures
+ */
+
+pre {
+    background-color: #f5f5f5;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    padding-left: 1.2em;
+    padding-right: 1.2em;
+    margin-top: 0.6em;
+    margin-bottom: 0.6em;
+    line-height: 120%;
+}
+
+
+
+.screen {
+    border-left: solid #d4e3fa 0.5em;
+    /*overflow-x: auto;*/
+}
+
+.example, .figure, .table {
+    margin-top: 0;
+    margin-bottom: 1.8em;
+}
+
+.example .title, .figure .title, .table .title {
+    white-space: nowrap;
+    /*overflow-x: hidden;*/
+    margin-top: 0;
+    margin-bottom: 0.6em;
+}
+
+.example pre, .figure pre {
+    margin: 0;
+    margin-bottom: 0.6em;
+}
+
+.example-contents > p {
+    display: block;
+    margin: 0;
+    margin-bottom: 0.2em;
+}
+
+.example-break, .figure-break {
+    display: none
+}
+
+.exampleLocation {
+    margin-top: 0.5em;
+    padding-left: 1.7em;
+    background: #FEFEDD;
+    color: #777744;
+}
+
+.exampleLocation p {
+    padding-top: 0.4em;
+    padding-bottom: 0.4em;
+}
+
+.exampleLocation .emphasis em {
+    font-style: normal;
+    font-weight: bold;
+}
+
+.cmdsynopsis {
+    font-family: 'Courier New', Courier, monospace;
+    margin-left: 2em;
+}
+
+.prompt {
+    font-family: 'Courier New', Courier, monospace;
+    margin-left: 2em;
+}
+
+/*
+ * Tables
+ */
+
+.table table {
+    border-collapse: collapse;
+    font-size: 100%;
+    min-width: 50%;
+    border: solid #d0d0d0 1px;
+}
+
+.table table td {
+    text-align: left;
+    vertical-align: text-top;
+    padding-left: 0.8em;
+    padding-right: 0.8em;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+}
+
+.table table thead td {
+    font-weight: bold;
+    border-bottom: solid #d0d0d0 1px;
+    background-color: #f2f2f2;
+}
+
+/*
+ * Footnotes, notes, tips
+ */
+
+.footnote sup {
+    vertical-align: baseline;
+    font-size: 100%;
+}
+
+.note, .tip, .warning, .caution {
+    padding-top: 1em;
+    padding-bottom: 0;
+    padding-left: 1.2em;
+    padding-right: 1.2em;
+    margin-bottom: 1em;
+}
+
+.programlisting {
+    border-left: solid #d4e3fa 0.5em;
+	width: 85%;
+	margin-left: 2em;
+	padding-left: 1.2em;
+    /*overflow-x: auto;*/
+}
+
+.note {
+    background: #ebf4f7;
+    border: solid #c3d9e6 1px;
+}
+
+.note .title {
+    color: #5283a1;
+	font-size: 100%;
+}
+
+.tip {
+    background: #FAF7F5;
+    border: solid #e2d2c9 1px;
+    margin-left: 2em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    width: 85%;
+}
+.tip .title {
+    color: #80614D;
+	font-size: 100%;
+}
+
+.warning {
+    background: #f8e8e8;
+    border: solid #e59595 1px;
+    margin-left: 2em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    width: 85%;
+}
+.warning .title {
+    color: #cc6666;
+	font-size: 100%;
+}
+
+.caution {
+    background: #ecf2ff;
+    border: solid #4c72bf 1px;
+    margin-left: 2em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    width: 85%;
+}
+.caution .title {
+    color: #6699ff;
+	font-size: 100%;
+}
+
+
+/* Remove top margins on headings inside notes and tips */
+.tip h1, .note h1
+.tip h2, .note h2,
+.tip h3, .note h3,
+.tip h4, .note h4,
+.tip h5, .note h5,
+.tip h6, .note h6
+{
+   margin-top: 0;
+}
+
+/* Remove top margins on headings inside notes and tips */
+.caution h1, .warning h1, .IMPORTANT h1
+.caution h2, .warning h2, .IMPORTANT h2,
+.caution h3, .warning h3, .IMPORTANT h3,
+.caution h4, .warning h4, .IMPORTANT h4,
+.caution h5, .warning h5, .IMPORTANT h5,
+.caution h6, .warning h6, .IMPORTANT h6
+{
+   margin-top: 0;
+}
+
+
+/**
+ * Inline content
+ */
+.userinput{
+    white-space: nowrap;
+}
+
+.literal{
+    color: #808000;
+	font-family: 'Courier New', Courier, monospace;
+}
+
+.filename {
+	color: #4a9935;
+}
+
+.structname {
+	color: #9f32ba;
+}
+
+.package {
+	color: #3654d1;
+}
+
+.guimenu, .guimenuitem, .guisubmenu,
+.guilabel {
+	font-weight: bold;
+}
+
+.guibutton {
+	background-color: #e7e7e7;
+	padding: 2px;
+	border-bottom: 1px solid;
+	border-left: 1px solid;
+	border-right: 1px solid;
+	border-top: 1px solid;
+	border-radius: 4px;
+	border-color: #adadad;
+}
+
+/*
+ * Code highlighting
+ */
+.hl-string, .hl-number, .hl-value { color: #336699; }
+
+.hl-keyword { font-weight: bold; }
+
+.hl-comment, .hl-doccomment { color: #929292; }
+
+.hl-annotation { color: #777744; }
+
+/***********************************************************/
+
+/*
+ * Table of Contents
+ */
+
+.toc dl, .list-of-examples dl {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.book .toc > dl > dt {
+    margin-top: 0.6em;
+}
+
+.book .toc, .book .list-of-examples {
+    margin-top: 2em;
+}
+
+/*
+ * HEADER/FOOTER
+ */
+
+.navheader {
+    margin-bottom: 3em;
+    padding-bottom: 1em;
+    width: 100%;
+    border-bottom: solid #d0d0d0 0.4em;
+}
+
+.navfooter {
+    margin-top: 3em;
+    padding-top: 1em;
+    width: 100%;
+    border-top: solid #d0d0d0 0.4em;
+}
+
+.navbar {
+    color: #a2a2a2;
+    font-size: 90%;
+    width: 100%;
+    text-align: right;
+}
+
+.navbar a {
+    color: #444444;
+}
+
+.navbar span {
+    padding-left: .8em;
+    padding-right: .8em;
+}
+
+/**
+ * TITLEPAGE
+ */
+
+.book > .titlepage {
+    margin-top: 2.2em;
+    margin-bottom: 2em;
+}
+
+.book .titlepage div.title {
+    border: solid #d0d0d0 1px;
+    background-color: #f5f5f5;
+    margin-left: -1.8em;
+    margin-right: -1.8em;
+    padding-left: 1.8em;
+    padding-right: 1.8em;
+    margin-bottom: 2.2em;
+}
+
+.titlepage h1.title {
+    font-size: 280%;
+    margin-bottom: 0;
+    color: #336699;
+	text-align: center; 
+}
+
+.titlepage h2.subtitle {
+    font-size: 160%;
+    font-style: italic;
+    margin-top: 0;
+    margin-bottom: 0;
+    color: #336699;
+	text-align: center; 
+}
+
+.titlepage .releaseinfo {
+    color: #666666;
+    font-size: 120%;
+    margin-top: 2em;
+    margin-bottom: 2.6em;
+}
+
+.titlepage .author {
+    color: #666666;
+}
+
+.titlepage .copyright {
+    color: #a2a2a2;
+    font-size: 90%;
+}
+
+.titlepage .legalnotice {
+    color: #a2a2a2;
+    font-size: 90%;
+}
+
+/*
+ * Single page html
+ */
+.book .chapter {
+    margin-top: 4em;
+}
+
+.application {
+	font-weight: bold;
+}
+
+.authorinitials {
+	font-style: italic;
+	border-bottom: 1px dotted
+}
+
+.classname,.methodname,.interfacename {
+	font-family:  'Courier New', Courier, monospace;
+}
+
+.varname {
+	font-family:  'Courier New', Courier, monospace;
+	color: #640e78;
+}
+
+.database {
+	font-weight: bold;
+}
+
+.envar {
+	font-family: 'Courier New', Courier, monospace;
+}
+
+.errorname {
+	font-family: 'Courier New', Courier, monospace;
+	font-style: italic;
+}
+
+.firstterm {
+	font-weight: bold;
+	font-style: italic;
+}
+
+.orgname {
+	font-weight: bold;
+}
+
+.mediaobject {
+    align: center; /* Выравнивание по ширине */
+	padding-bottom: 1em;
+	padding-top: 1em;
+}
+
+div.informaltable {
+  text-align: center
+}
+
+.property {
+	font-style: italic;
+}
+
+div.table  {
+   text-align: center;
+}
+div.informaltable {
+   text-align: center;
+}

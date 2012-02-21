@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><book lang="ru" id="shop_development">
+  <bookinfo>
+    <copyright>
+      <year>2011</year>
+      <holder>Haulmont (<ulink url="www.haulmont.ru">www.haulmont.ru</ulink>)</holder>
+    </copyright>
+    <title>Система управления документами и задачами &quot;Тезис&quot; </title>
+    <subtitle>Руководство по разработке</subtitle>
+  </bookinfo>
+  <preface lang="ru">
+    <title>Предисловие</title>
+    <section id="appointment_id">
+      <title>Назначение</title>
+      <para>Документ является руководством по разработке расширений для системы <application>&quot;Тезис&quot;</application>.   Расширение − это подключаемое дополнение, добавляющее новые или изменяющее существующие функциональные возможности системы.  Расширение позволяет адаптировать систему к требованиям заказчика, при этом сохраняя возможность последующего обновления версий системы. Информация, представленная в руководстве, актуальна для системы <application>&quot;Тезис&quot;</application>  версии 3.2.</para>
+    </section>
+    <section>
+      <title>Целевая аудитория</title>
+      <para>Руководство предназначено для разработчиков, которые заинтересованы в разработке собственных расширений для системы управления документами и задачами <application>&quot;Тезис&quot;</application>.</para>
+      <para>Для успешной работы требуется хорошее знание следующих технологий:</para>
+      <itemizedlist>
+        <listitem>
+          <para>Java Standard Edition;</para>
+        </listitem>
+        <listitem>
+          <para>XML;</para>
+        </listitem>
+        <listitem>
+          <para>SQL.</para>
+        </listitem>
+      </itemizedlist>
+      <para>Перед началом  работы рекомендуется  ознакомиться с <firstterm>Руководством пользователя</firstterm>  и с <firstterm>Руководством администратора</firstterm>  системы <application>&quot;Тезис&quot;</application>.</para>
+    </section>
+    <section>
+      <title>Структура руководства</title>
+      <para>Данное руководство состоит из следующих разделов:</para>
+      <para><link linkend="chapter1_necessary_soft">
+          <emphasis role="bold">Глава 1. Установка и настройка инструментария</emphasis>
+        </link></para>
+      <para>В данной главе приводится список программного обеспечения, необходимого для создания расширений. Приведены инструкции по установке и настройке  инструментов.</para>
+      <para><link linkend="chapter2_extension_creation">
+          <emphasis role="bold">Глава 2. Создание и запуск проекта расширения для системы &quot;ТЕЗИС&quot;</emphasis>
+        </link></para>
+      <para>Данная глава содержит сведения по созданию шаблонного проекта, в котором в дальнейшем можно будет вести разработку новой функциональности.</para>
+      <para><link linkend="chapter3_quickly_start">
+          <emphasis role="bold">Глава 3. Быстрый старт</emphasis>
+        </link></para>
+      <para>В данной главе представлены основные сведения по созданию простой сущности системы <application>&quot;Тезис&quot;</application>. Информация изложена в краткой форме для того, чтобы Вы могли в кратчайшие сроки овладеть основами создания расширений к системе <application>&quot;Тезис&quot;</application>.</para>
+      <para><link linkend="chapter4_new_extension_creation">
+          <emphasis role="bold">Глава 4. Разработка собственного проекта расширения</emphasis>
+        </link></para>
+      <para>В данной главе приводятся инструкции по разработке собственного проекта расширения на основе практического примера. </para>
+    </section>
+    <section>
+      <title>Соглашения</title>
+      <para>Для того чтобы текст руководства был более понятен, в дальнейшем будут использоваться следующие соглашения.</para>
+      <formalpara>
+        <title>Клавиши</title>
+        <para>Клавиши представляются в виде <emphasis role="bold">полужирного текста</emphasis> для того, чтобы выделяться среди остального текста. Комбинации клавиш, которые должны вводиться одновременно, разделяются символом &quot;+&quot;, например, <keycombo>
+            <keycap>Alt</keycap>
+            <keycap>Ins</keycap>
+          </keycombo>.
+
+ Комбинации клавиш, которые должны вводиться последовательно, разделяются запятыми, например:
+
+<keycombo>
+            <keycap>Ctrl</keycap>
+            <keycap>X</keycap>
+          </keycombo>, <keycombo>
+            <keycap>Ctrl</keycap>
+            <keycap>S</keycap>
+          </keycombo>.</para>
+      </formalpara>
+      <formalpara>
+        <title>Код программ</title>
+        <para>Приведенные в тексте руководства листинги и отдельные части программного кода будут выделяться следующим образом:<programlisting>&lt;views xmlns=&quot;http://www.haulmont.com/schema/cuba/view.xsd&quot;&gt;</programlisting></para>
+      </formalpara>
+      <formalpara>
+        <title>Замечания и предупреждения</title>
+        <para>В тексте руководства будут встречаться сообщения,  используемые для привлечения внимания к информации. <tip>
+            <title>Совет</title>
+            <para>Это сообщение, содержащее информацию о способах упрощения работы.</para>
+          </tip><caution>
+            <title>Подсказка</title>
+            <para>Это дополнительная информация к задаче или проблеме, позволяющая найти правильное решение.</para>
+          </caution><warning>
+            <title>Внимание</title>
+            <para>Данные сообщения  акцентируют внимание на вещах, которые легко упустить из виду.</para>
+          </warning></para>
+      </formalpara>
+      <formalpara>
+        <title>Переменные среды, команды, имена классов, интерфейсов, объектов, методов, переменных, тексты ошибок</title>
+        <para>Обозначены в руководстве <classname>специальным моноширинным шрифтом</classname>.</para>
+      </formalpara>
+      <formalpara>
+        <title>Элементы интерфейса</title>
+        <para>Пункты меню, названия окон, папок, закладок выделяются в тексте <guimenu>полужирным текстом</guimenu>. Кнопки выглядят следующим образом: <guibutton>Кнопка</guibutton></para>
+      </formalpara>
+      <formalpara>
+        <title>Имена приложений, объекты базы данных, названия внешних документов</title>
+        <para>Обозначаются в тексте руководства <emphasis role="bold">полужирным текстом</emphasis>.</para>
+      </formalpara>
+      <formalpara>
+        <title>Роль пользователя</title>
+        <para>Роль пользователя выделяется в тексте следующим образом: <authorinitials>Администратор</authorinitials>.</para>
+      </formalpara>
+      <formalpara>
+        <title>Имена файлов, каталогов, папок и расширений</title>
+        <para>Обозначены в руководстве следующим образом: <filename>C:\Program Files (x86)</filename>.</para>
+      </formalpara>
+      <formalpara>
+        <title>Имя пакета</title>
+        <para>Для имени пакета используется следующее обозначение: <package>com.haulmont.fts.core.app</package>.</para>
+      </formalpara>
+      <formalpara>
+        <title>Имя модуля</title>
+        <para>Имя модуля обозначается в тексте следующим образом: <structname>модуль</structname>.</para>
+      </formalpara>
+      <formalpara>
+        <title>Параметры и свойства</title>
+        <para><parameter>Параметры</parameter> и <property>свойства</property> также выделяются в тексте руководства.</para>
+      </formalpara>
+      <formalpara>
+        <title>Аннотации</title>
+        <para>Аннотации обозначаются следующим образом: <literal>@Annotation</literal>.</para>
+      </formalpara>
+    </section>
+    <section>
+      <title>Исходные тексты программ</title>
+      <para>Все исходные тексты проекта, рассмотренные в руководстве, доступны для ознакомления и находятся в папке <filename>ext-dev\sample\</filename></para>
+    </section>
+  </preface>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter1.xml" encoding="UTF-8"/>
+</book>

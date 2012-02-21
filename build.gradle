@@ -24,11 +24,14 @@ buildscript {
     }
     dependencies {
         classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.2-SNAPSHOT'
+        classpath group: 'com.haulmont.gradle', name: 'doc-plugin', version: '1.0-SNAPSHOT'
     }
 }
 
+apply(plugin: 'base')
 apply(plugin: 'idea')
 apply(plugin: 'cuba')
+apply(plugin: 'doc')
 
 def sharedLibModule = project(':cuba-shared-lib')
 def globalModule = project(':cuba-global')
@@ -389,7 +392,7 @@ task restart(dependsOn: ['stop', ':cuba-core:deploy', ':cuba-web:deploy'], descr
     start.execute()
 }
 
-/** *************************** Database related stuff  *****************************/
+/***************************** Database related stuff  *****************************/
 
 configurations {
     jdbc
@@ -446,4 +449,48 @@ task createDb(description: 'Creates local HSQL database') << {
             userid: 'sa', password: '',
             autocommit: true
     )
+}
+
+/***************************** Documentation  *****************************/
+
+// These variables must be the project properties
+docSrcDir = file('doc/content')
+docToolsDir = file('doc/tools')
+docCssDir = new File(docToolsDir, 'css')
+docDstDir = new File("$buildDir/doc")
+docTmpDir = new File("$buildDir/tmp/doc")
+
+task transformManual(type: TransformDocbook) {
+    sourceDir = new File(docSrcDir, 'manual/ru')
+    sourceFile = new File(sourceDir, 'manual.xml')
+    destFile = new File(docTmpDir, 'manual/ru/manual.xml')
+    classpath = configurations.buildDoc
+}
+
+task buildManualHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
+    source transformManual.destFile
+    destDir = new File("$docDstDir", 'manual/ru/html')
+    stylesheetName = 'html.xsl'
+    resources = fileTree {
+        from new File(docSrcDir, 'manual/ru')
+        include 'img/*.png'
+        include 'img/*.jpg'
+    }
+    resources += fileTree {
+        from docCssDir
+        include '*.css'
+    }
+}
+
+task buildDoc(type: Zip, description: 'Build documentation',
+        dependsOn: [buildManualHtml]) {
+    from 'build/doc'
+    destinationDir = file('build/distributions')
+    baseName = 'cuba-doc'
+    version = artifactVersion + (isSnapshot ? '-SNAPSHOT' : '')
+}
+
+
+artifacts {
+    archives buildDoc
 }
