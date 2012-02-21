@@ -156,12 +156,19 @@ public class DesktopOptionsGroup
                             updateInstance(newValue);
                             fireChangeListeners(newValue);
                         }
+                        updateMissingValueState();
                     }
                 }
         );
 
         impl.add(button);
         items.put(item, button);
+    }
+
+    @Override
+    public void updateMissingValueState() {
+        boolean state = required && getSelectedItem() == null;
+        decorateMissingValue(impl, state);
     }
 
     private void removeAllItems() {
@@ -181,6 +188,7 @@ public class DesktopOptionsGroup
                         entry.getValue().setSelected(false);
                 }
             }
+            updateMissingValueState();
         } else {
             super.updateComponent(value);
         }
@@ -248,6 +256,7 @@ public class DesktopOptionsGroup
             else
                 entry.getValue().setSelected(false);
         }
+        updateMissingValueState();
     }
 
     @Override

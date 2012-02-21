@@ -44,10 +44,13 @@ public class DesktopThemeImpl implements DesktopTheme {
 
     private Integer spacingSize;
 
-    public DesktopThemeImpl(String name) {
-        this.name = name;
+    public DesktopThemeImpl() {
         this.uiDefaults = new HashMap<String, Object>();
         this.styles = new HashMap<String, List<DesktopStyle>>();
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Resources getResources() {
@@ -108,7 +111,7 @@ public class DesktopThemeImpl implements DesktopTheme {
         }
     }
 
-    private void initUIDefaults() {
+    protected void initUIDefaults() {
         for (String propertyName : uiDefaults.keySet()) {
             UIManager.getLookAndFeelDefaults().put(propertyName, uiDefaults.get(propertyName));
         }

@@ -165,8 +165,11 @@ public class UserEditor extends AbstractEditor {
                     passwField = factory.createComponent(TextField.NAME);
                     passwField.setRequiredMessage(getMessage("passwMsg"));
                     passwField.setSecret(true);
-                    if (companion != null)
+                    if (companion != null) {
                         companion.initPasswordField(passwField);
+                    } else {
+                        passwField.setRequired(true);
+                    }
                     return passwField;
                 }
             });
@@ -179,8 +182,11 @@ public class UserEditor extends AbstractEditor {
                     confirmPasswField = factory.createComponent(TextField.NAME);
                     confirmPasswField.setSecret(true);
                     confirmPasswField.setRequiredMessage(getMessage("confirmPasswMsg"));
-                    if (companion != null)
+                    if (companion != null) {
                         companion.initPasswordField(confirmPasswField);
+                    } else {
+                        confirmPasswField.setRequired(true);
+                    }
                     return confirmPasswField;
                 }
             });

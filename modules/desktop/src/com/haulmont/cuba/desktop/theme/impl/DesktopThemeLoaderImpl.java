@@ -53,11 +53,13 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
     public DesktopTheme loadTheme(String themeName) {
         final String themeLocations = ConfigProvider.getConfig(DesktopConfig.class).getResourceLocations();
         StrTokenizer tokenizer = new StrTokenizer(themeLocations);
+        String[] locationList = tokenizer.getTokenArray();
         ConfigurationResourceLoader resourceLoader = new ConfigurationResourceLoader();
 
         List<String> resourceLocationList = new ArrayList<String>();
-        DesktopThemeImpl theme = new DesktopThemeImpl(themeName);
-        for (String location : tokenizer.getTokenArray()) {
+        DesktopThemeImpl theme = createTheme(themeName, locationList, resourceLoader);
+        theme.setName(themeName);
+        for (String location : locationList) {
             resourceLocationList.add(getResourcesDir(themeName, location));
 
             String xmlLocation = getConfigFileName(themeName, location);
@@ -77,6 +79,43 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
         theme.setResources(resources);
 
         return theme;
+    }
+
+    // read config files and search for <class> element which should contain custom theme class
+    private DesktopThemeImpl createTheme(String themeName, String[] locationList, ConfigurationResourceLoader resourceLoader) {
+        String themeClassName = null;
+        for (String location : locationList) {
+            String xmlLocation = getConfigFileName(themeName, location);
+            Resource resource = resourceLoader.getResource(xmlLocation);
+            if (resource.exists()) {
+                try {
+                    Document doc = readXmlDocument(resource);
+                    final Element rootElement = doc.getRootElement();
+
+                    List<Element> classElements = rootElement.elements("class");
+                    if (!classElements.isEmpty()) {
+                        themeClassName = classElements.get(0).getTextTrim();
+                    }
+                } catch (IOException e) {
+                    log.error("Error", e);
+                }
+            } else {
+                log.warn("Resource " + location + " not found, ignore it");
+            }
+        }
+        if (themeClassName != null) {
+            try {
+                Class themeClass = Class.forName(themeClassName);
+                return (DesktopThemeImpl) themeClass.newInstance();
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return new DesktopThemeImpl();
     }
 
     private String getResourcesDir(String themeName, String location) {
@@ -109,6 +148,8 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
                 theme.addStyle(style);
             } else if ("include".equals(elementName)) {
                 includeThemeFile(theme, element, resource);
+            } else if ("class".equals(elementName)) {
+                // ignore it
             } else {
                 log.error("Unknown tag: " + elementName);
             }

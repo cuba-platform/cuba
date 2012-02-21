@@ -21,10 +21,12 @@ import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
@@ -119,6 +121,7 @@ public class DesktopLookupField
                             } else if ((selectedItem != null) && !newOptionAllowed) {
                                 updateComponent(prevValue);
                             }
+                            updateMissingValueState();
                         }
                     }
 
@@ -328,11 +331,11 @@ public class DesktopLookupField
     }
 
     @Override
-    public void setRequired(boolean required) {
-        this.required = required;
-        Color bgColor = required ? REQUIRED_BG_COLOR : NORMAL_BG_COLOR;
-        comboBox.setBackground(bgColor);
-        textField.setBackground(bgColor);
+    public void updateMissingValueState() {
+        Component editorComponent = comboBox.getEditor().getEditorComponent();
+        boolean value = required && editable && editorComponent instanceof JTextComponent
+                && StringUtils.isEmpty(((JTextComponent) editorComponent).getText());
+        decorateMissingValue(comboBox, value);
     }
 
     @Override
@@ -355,6 +358,7 @@ public class DesktopLookupField
             impl = comboBox;
         }
         this.editable = editable;
+        updateMissingValueState();
     }
 
     private void updateTextField() {
@@ -380,6 +384,7 @@ public class DesktopLookupField
         if (!editable) {
             updateTextField();
         }
+        updateMissingValueState();
     }
 
     @Override

@@ -111,4 +111,12 @@ public class ExtendedComboBox extends JComboBox {
             layingOut = false;
         }
     }
+
+    @Override
+    public void setBackground(Color bg) {
+        super.setBackground(bg);
+        if (getEditor() != null && getEditor().getEditorComponent() != null) {
+            getEditor().getEditorComponent().setBackground(bg);
+        }
+    }
 }

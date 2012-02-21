@@ -149,7 +149,12 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
         noFilterWrapper = new ItemWrapper<FilterEntity>(noFilter, noFilter.toString());
 
-        select = new DesktopLookupField();
+        select = new DesktopLookupField() {
+            @Override
+            public void updateMissingValueState() {
+                // nothing
+            }
+        };
         select.setRequired(true);
 
         select.<JComponent>getComponent().setMinimumSize(new Dimension(300, DesktopComponentsHelper.FIELD_HEIGHT));

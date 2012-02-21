@@ -14,8 +14,10 @@ import com.haulmont.cuba.gui.data.ValueListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>$Id$</p>
@@ -26,8 +28,7 @@ public abstract class DesktopAbstractField<C extends JComponent>
         extends DesktopAbstractComponent<C>
         implements Field
 {
-    protected static final Color REQUIRED_BG_COLOR = Color.yellow;
-    protected static final Color NORMAL_BG_COLOR = Color.white;
+    //public static final String MISSING_VALUE_STATE = "mandatoryState";
 
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
     protected ValueChangingListener valueChangingListener;
@@ -36,6 +37,8 @@ public abstract class DesktopAbstractField<C extends JComponent>
     protected String requiredMessage;
 
     protected Set<Validator> validators = new HashSet<Validator>();
+    protected Color requiredBgColor = (Color) UIManager.get("cubaRequiredBackground");
+    protected Color defaultBgColor = (Color) UIManager.get("nimbusLightBackground");
 
     @Override
     public void addListener(ValueListener listener) {
@@ -122,14 +125,44 @@ public abstract class DesktopAbstractField<C extends JComponent>
     @Override
     public void setRequired(boolean required) {
         this.required = required;
-        if (required)
-            getImpl().setBackground(REQUIRED_BG_COLOR);
-        else
-            getImpl().setBackground(NORMAL_BG_COLOR);
+        updateMissingValueState();
     }
+
+    public void updateMissingValueState() {
+        if (impl != null) {
+            decorateMissingValue(impl, required);
+        }
+    }
+
+    protected void decorateMissingValue(JComponent jComponent, boolean missingValueState) {
+        //jComponent.putClientProperty(MISSING_VALUE_STATE, missingValueState);
+        jComponent.setBackground(missingValueState ? requiredBgColor : defaultBgColor);
+    }
+
+    /*protected void attachMissingValueStateListener(JTextComponent textComponent) {
+        textComponent.getDocument().addDocumentListener(new MissingValueStateRefreshListener());
+    }*/
 
     @Override
     public void setRequiredMessage(String msg) {
         requiredMessage = msg;
     }
+
+    /*protected class MissingValueStateRefreshListener implements DocumentListener {
+
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            updateMissingValueState();
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            updateMissingValueState();
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+            updateMissingValueState();
+        }
+    }*/
 }

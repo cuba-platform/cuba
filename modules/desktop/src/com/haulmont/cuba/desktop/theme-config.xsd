@@ -13,6 +13,7 @@
     <xs:complexType name="themeType">
         <xs:sequence>
             <xs:element name="lookAndFeel" maxOccurs="1" minOccurs="0"/>
+            <xs:element name="class" maxOccurs="1" minOccurs="0"/>
             <xs:element type="uiDefaultsType" name="ui-defaults" maxOccurs="1" minOccurs="0"/>
             <xs:element type="layoutSettingsType" name="layout" maxOccurs="1" minOccurs="0"/>
             <xs:element type="styleType" name="style" maxOccurs="unbounded" minOccurs="0"/>

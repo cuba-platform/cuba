@@ -81,6 +81,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     protected JTextComponent getImpl() {
         if (impl == null) {
             instantiateImpl();
+            updateMissingValueState();
         }
         return impl;
     }
@@ -120,6 +121,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
         impl.addKeyListener(listener);
         impl.addFocusListener(listener);
         impl.putClientProperty(getSwingPropertyId(), getId());
+        updateMissingValueState();
     }
 
     private JTextComponent createSingleLineField(boolean secret) {
@@ -255,6 +257,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     private void updateComponent(Object value) {
         getImpl().setText(valueFormatter.formatValue(value));
         getImpl().setCaretPosition(0);
+        updateMissingValueState();
     }
 
     private Object validateRawValue(String rawValue) {
@@ -394,8 +397,10 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
-        if (impl != null)
+        if (impl != null) {
             impl.setEditable(editable);
+            updateMissingValueState();
+        }
     }
 
     @Override
@@ -432,6 +437,17 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     @Override
     public <T> T getComponent() {
         return (T) getImpl();
+    }
+
+    @Override
+    public void updateMissingValueState() {
+        if (impl != null) {
+            boolean state = required && editable && StringUtils.isBlank(impl.getText());
+            decorateMissingValue(impl, state);
+            if (composition instanceof JScrollPane) {
+                decorateMissingValue(composition, state);
+            }
+        }
     }
 
     @Override

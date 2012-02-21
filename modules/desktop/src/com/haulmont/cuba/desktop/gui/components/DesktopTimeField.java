@@ -56,6 +56,7 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
     private String caption;
     private String description;
     private DateField.Resolution resolution;
+    private boolean editable = true;
 
     public DesktopTimeField() {
         timeFormat = Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getTimeFormat();
@@ -257,18 +258,18 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
             impl.setValue("");
             valid = true;
             updatingInstance = false;
-            return;
-        }
-        try {
-            if (value instanceof Date) {
-
-                SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
-                impl.setValue(sdf.format(value));
-                valid = true;
+        } else {
+            try {
+                if (value instanceof Date) {
+                    SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
+                    impl.setValue(sdf.format(value));
+                    valid = true;
+                }
+            } finally {
+                updatingInstance = false;
             }
-        } finally {
-            updatingInstance = false;
         }
+        updateMissingValueState();
     }
 
     private void updateInstance(Object value) {
@@ -316,7 +317,17 @@ public class DesktopTimeField extends DesktopAbstractField<JFormattedTextField> 
 
     @Override
     public void setEditable(boolean editable) {
+        this.editable = editable;
         impl.setEditable(editable);
+        updateMissingValueState();
+    }
+
+    @Override
+    public void updateMissingValueState() {
+        Object implValue = impl.getValue();
+        boolean value = required && editable
+                && (implValue == null || implValue instanceof String && StringUtils.isBlank((String) implValue));
+        decorateMissingValue(impl, value);
     }
 
     public boolean isAmPmUsed() {

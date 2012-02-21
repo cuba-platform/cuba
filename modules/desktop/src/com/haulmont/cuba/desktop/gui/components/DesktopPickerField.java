@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -282,6 +283,7 @@ public class DesktopPickerField
 
         impl.setValue(text);
         prevTextValue = text;
+        updateMissingValueState();
     }
 
     @Override
@@ -320,6 +322,7 @@ public class DesktopPickerField
         if (!editable && impl.getEditor() instanceof JTextComponent) {
             ((JTextComponent) impl.getEditor()).setEditable(editable);
         }
+        updateMissingValueState();
     }
 
     @Override
@@ -355,5 +358,16 @@ public class DesktopPickerField
             }
         }
         return null;
+    }
+
+    @Override
+    public void updateMissingValueState() {
+        if (!(impl.getEditor() instanceof JTextComponent)) {
+            return;
+        }
+        JTextComponent editor = (JTextComponent) impl.getEditor();
+        boolean value = required && editable && StringUtils.isBlank(editor.getText());
+
+        decorateMissingValue(impl.getEditor(), value);
     }
 }

@@ -55,7 +55,6 @@ public class DesktopDateField
     private String timeFormat;
 
     private boolean updatingInstance;
-    private boolean required;
 
     private JXDatePicker datePicker;
     private DesktopTimeField timeField;
@@ -64,6 +63,7 @@ public class DesktopDateField
     private String description;
 
     private Object prevValue = null;
+    private boolean editable = true;
 
     public DesktopDateField() {
         impl = new JPanel();
@@ -81,7 +81,6 @@ public class DesktopDateField
         impl.setLayout(adapter.getLayout());
 
         datePicker = new DatePicker();
-
 
         Dimension size = new Dimension(100, DesktopComponentsHelper.FIELD_HEIGHT);
         datePicker.setPreferredSize(size);
@@ -102,6 +101,7 @@ public class DesktopDateField
                     public void propertyChange(PropertyChangeEvent evt) {
                         if ("date".equals(evt.getPropertyName())) {
                             updateInstance();
+                            updateMissingValueState();
                         }
                     }
                 }
@@ -163,11 +163,6 @@ public class DesktopDateField
     @Override
     public boolean isRequired() {
         return required;
-    }
-
-    @Override
-    public void setRequired(boolean required) {
-        this.required = required;
     }
 
     @Override
@@ -273,6 +268,7 @@ public class DesktopDateField
         } finally {
             updatingInstance = false;
         }
+        updateMissingValueState();
     }
 
     private void fireChangeListeners(Object newValue) {
@@ -302,8 +298,10 @@ public class DesktopDateField
 
     @Override
     public void setEditable(boolean editable) {
+        this.editable = editable;
         datePicker.setEditable(editable);
         timeField.setEditable(editable);
+        updateMissingValueState();
     }
 
     @Override
@@ -401,5 +399,15 @@ public class DesktopDateField
 
     public DesktopTimeField getTimeField() {
         return timeField;
+    }
+
+    @Override
+    public void updateMissingValueState() {
+        boolean value = required && editable && datePicker.getEditor().getValue() == null;
+        decorateMissingValue(datePicker.getEditor(), value);
+        if (isHourUsed()) {
+            decorateMissingValue(timeField.getImpl(), value);
+            timeField.getImpl().repaint();
+        }
     }
 }
