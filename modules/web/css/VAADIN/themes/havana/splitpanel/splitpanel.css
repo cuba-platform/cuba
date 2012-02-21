@@ -33,9 +33,9 @@
 	margin: 0;
 }
 
-
-
-
+.v-splitpanel-horizontal .v-splitpanel-second-container {
+    margin-left: 1px;
+}
 
 /* IE specific styles */
 

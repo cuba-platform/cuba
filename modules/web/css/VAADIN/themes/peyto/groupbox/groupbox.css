@@ -9,7 +9,7 @@
 
 .group-box {
     background: #fff;
-    padding-top: .5em; /*������������ ����� legend, ��� ����� ��� ��� �� ������� ������������� overflow: hidden*/
+    /*padding-top: .5em;*/
 }
 
 .group-box.group-box-nocollapsable.group-box-nocaption {

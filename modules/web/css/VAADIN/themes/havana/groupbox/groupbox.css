@@ -8,8 +8,6 @@
 }
 
 .group-box {
-    background: #fff;
-    padding-top: .5em; /*������������ ����� legend, ��� ����� ��� ��� �� ������� ������������� overflow: hidden*/
 }
 
 .group-box.group-box-nocollapsable.group-box-nocaption {
@@ -24,6 +22,10 @@
     border: 1px solid #babfc0;
     margin: 0;
     padding: 5px 10px 10px;
+}
+
+.group-box.group-box-nocaption > fieldset {
+    border: none;
 }
 
 .group-box legend {

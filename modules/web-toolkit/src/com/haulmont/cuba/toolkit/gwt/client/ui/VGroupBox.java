@@ -176,13 +176,13 @@ public class VGroupBox extends VPanel {
             DOM.setStyleAttribute(contentNode, "height", "0px");
 
             borderPaddingHorizontal = contentNodeBorderPaddingsHor = contentNode.getOffsetWidth();
-            borderPaddingVertical = contentNodeBorderPaddingsVer = contentNode.getOffsetHeight();
+            borderPaddingVertical = contentNodeBorderPaddingsVer = contentNode.getOffsetHeight() / 2;
 
             DOM.setStyleAttribute(contentNode, "width", "");
             DOM.setStyleAttribute(contentNode, "height", "");
 
             borderPaddingHorizontal += (fieldset.getOffsetWidth() - contentNode.getOffsetWidth());
-            borderPaddingVertical += (fieldset.getOffsetHeight() - contentNode.getOffsetHeight());
+            borderPaddingVertical += (fieldset.getOffsetHeight() - contentNode.getOffsetHeight()) / 2;
 
             DOM.setStyleAttribute(contentNode, "width", oldWidth);
             DOM.setStyleAttribute(contentNode, "height", oldHeight);

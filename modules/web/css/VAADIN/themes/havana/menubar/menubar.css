@@ -1,6 +1,14 @@
 .v-menubar {
 }
 
+.v-menubar:focus {
+    outline: none;
+}
+
+.v-menubar menuitem:focus {
+    outline: none;
+}
+
 .v-menubar table {
     font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif;
     font-size: 11px;

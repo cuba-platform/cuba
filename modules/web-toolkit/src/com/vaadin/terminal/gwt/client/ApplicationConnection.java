@@ -117,6 +117,8 @@ public class ApplicationConnection {
 
     private int activeRequests = 0;
 
+    private VNotification errorNotification = null;
+
     /** Parameters for this application connection loaded from the web-page */
     private ApplicationConfiguration configuration;
 
@@ -691,16 +693,19 @@ public class ApplicationConnection {
         }
 
         if (html.length() > 0) {
-
             // Add error description
             html.append("<br/><p><I style=\"font-size:0.7em\">");
             html.append(details);
             html.append("</I></p>");
 
+            if (errorNotification != null)
+                errorNotification.hide();
+
             VNotification n = new VNotification(1000 * 60 * 45);
             n.addEventListener(new NotificationRedirect(url));
-            n.show(html.toString(), VNotification.CENTERED_TOP,
-                    VNotification.STYLE_SYSTEM);
+            n.show(html.toString(), VNotification.CENTERED_TOP, VNotification.STYLE_SYSTEM);
+
+            errorNotification = n;
         } else {
             redirect(url);
         }
