@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
 import javax.swing.AbstractAction;
 import javax.swing.*;
 import java.awt.*;
@@ -407,21 +408,7 @@ public class DesktopWindowManager extends WindowManager {
                 JDialog dialog = (JDialog) openMode.getData();
                 dialog.setVisible(false);
 
-                boolean previousModalWindowExists = false;
-                for (Iterator<Window> it = windowOpenMode.keySet().iterator(); it.hasNext(); ) {
-                    Window w = it.next();
-                    // Check if there is a modal window opened before the current
-                    if (w != window && windowOpenMode.get(w).getOpenType().equals(OpenType.DIALOG)) {
-                        previousModalWindowExists = true;
-                    }
-                    // If there are windows opened after the current, close them
-                    if (w == window && it.hasNext()) {
-                        close(it.next());
-                        break;
-                    }
-                }
-                if (!previousModalWindowExists)
-                    App.getInstance().enable();
+                cleanupAfterModalDialogClosed(window);
 
                 fireListeners(window, tabs.size() != 0);
                 break;
@@ -488,6 +475,27 @@ public class DesktopWindowManager extends WindowManager {
         }
     }
 
+    protected void cleanupAfterModalDialogClosed(@Nullable Window closingWindow) {
+        WindowOpenMode previous = null;
+        for (Iterator<Window> it = windowOpenMode.keySet().iterator(); it.hasNext(); ) {
+            Window w = it.next();
+            // Check if there is a modal window opened before the current
+            WindowOpenMode mode = windowOpenMode.get(w);
+            if (w != closingWindow && mode.getOpenType().equals(OpenType.DIALOG)) {
+                previous = mode;
+            }
+            // If there are windows opened after the current, close them
+            if (w == closingWindow && it.hasNext()) {
+                close(it.next());
+                break;
+            }
+        }
+        if (previous == null)
+            App.getInstance().enable();
+        else if (previous.getData() instanceof JDialog)
+            ((JDialog) previous.getData()).requestFocus();
+    }
+
     @Override
     public void showNotification(String caption, IFrame.NotificationType type) {
         App.getInstance().showNotification(caption, type);
@@ -533,8 +541,8 @@ public class DesktopWindowManager extends WindowManager {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     action.actionPerform(null);
-                    App.getInstance().enable();
                     dialog.setVisible(false);
+                    cleanupAfterModalDialogClosed(null);
                 }
             });
 
@@ -574,8 +582,8 @@ public class DesktopWindowManager extends WindowManager {
                                 && (prop.equals(JOptionPane.VALUE_PROPERTY))
                                 && new Integer(-1).equals(e.getNewValue())) {
 
-                            App.getInstance().enable();
                             dialog.setVisible(false);
+                            cleanupAfterModalDialogClosed(null);
                         }
                     }
                 });
@@ -595,8 +603,8 @@ public class DesktopWindowManager extends WindowManager {
                             case OK:
                             case YES:
                                 action.actionPerform(null);
-                                App.getInstance().enable();
                                 dialog.setVisible(false);
+                                cleanupAfterModalDialogClosed(null);
                                 return;
                         }
                     }
