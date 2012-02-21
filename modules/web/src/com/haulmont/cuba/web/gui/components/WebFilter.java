@@ -27,6 +27,7 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.filter.DenyingClause;
@@ -930,7 +931,7 @@ public class WebFilter
             datasource.setQueryFilter(queryFilter);
         }
 
-        if (datasource instanceof CollectionDatasource.Lazy) {
+        if (datasource instanceof CollectionDatasource.Lazy || datasource instanceof HierarchicalDatasource) {
             setUseMaxResults(false);
 
         } else {

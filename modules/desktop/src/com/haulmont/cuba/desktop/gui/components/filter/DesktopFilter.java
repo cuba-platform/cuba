@@ -34,6 +34,7 @@ import com.haulmont.cuba.gui.components.filter.AbstractParam;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.Op;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.filter.DenyingClause;
@@ -205,7 +206,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             datasource.setQueryFilter(queryFilter);
         }
 
-        if (datasource instanceof CollectionDatasource.Lazy) {
+        if (datasource instanceof CollectionDatasource.Lazy || datasource instanceof HierarchicalDatasource) {
             setUseMaxResults(false);
 
         } else {
