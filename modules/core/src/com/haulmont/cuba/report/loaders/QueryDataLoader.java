@@ -102,7 +102,7 @@ public abstract class QueryDataLoader extends AbstractDbDataLoader {
 
         boolean inserted = pack.params.length > 0;
         EntityManager em = PersistenceProvider.getEntityManager();
-        Query select = DataSetType.SQL.equals(dataSetType) ? em.createNativeQuery(query) : em.createQuery(query);
+        Query select = DataSetType.SQL.equals(dataSetType) ? em.createNativeQuery(pack.getQuery()) : em.createQuery(pack.getQuery());
         if (inserted) {
             //insert parameters to their position
             int i = 1;
