@@ -874,6 +874,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         @Override
         public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
             final App app = App.getInstance();
+            app.cleanupBackgroundTasks();
             app.getWindowManager().checkModificationsAndCloseAll(
                     new Runnable() {
                         @Override
@@ -1086,7 +1087,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             if (foldersPane != null) {
                 foldersPane.savePosition();
             }
-            App.getInstance().getWindowManager().checkModificationsAndCloseAll(
+            final App app = App.getInstance();
+            app.cleanupBackgroundTasks();
+            app.getWindowManager().checkModificationsAndCloseAll(
                     new Runnable() {
                         @Override
                         public void run() {
