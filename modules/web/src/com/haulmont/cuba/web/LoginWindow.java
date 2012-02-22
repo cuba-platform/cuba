@@ -113,7 +113,7 @@ public class LoginWindow extends Window implements Action.Handler {
         Form form = new Form(new FormLayout());
         form.setStyleName("loginForm");
         form.setWidth("-1px");
-        form.setHeight("200px");
+        form.setHeight("175px");
         FormLayout formLayout = (FormLayout) form.getLayout();
         formLayout.setSpacing(true);
         formLayout.setWidth("-1px");

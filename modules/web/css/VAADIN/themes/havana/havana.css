@@ -152,16 +152,28 @@
  * Login page styles
  */
 .v-verticallayout-loginBottom {
-    background: url('images/login-form-bg-key.png') no-repeat top center;
+    /*border: 1px solid #d2e3ee;*/
+    background: url(images/login-bg.png) no-repeat;
+    background-size: 100%;
     height: 200px;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='.myBackground.jpg', sizingMethod='scale');
+    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='myBackground.jpg', sizingMethod='scale')";
+}
+
+.v-verticallayout-loginBottom * {
+    outline: none;
+}
+
+.v-verticallayout-loginBottom > div:first-child {
+    padding-top: 5px;
 }
 
 .v-verticallayout-loginBottom .v-textfield-password-field {
-    border: #a0a1a3 ridge 1px;
+    border: #a5c4e0 ridge 1px;
 }
 
 .v-verticallayout-loginBottom .v-textfield-login-field {
-    border: #a0a1a3 ridge 1px;
+    border: #a5c4e0 ridge 1px;
 }
 
 .v-verticallayout-loginBottom .v-captiontext {
