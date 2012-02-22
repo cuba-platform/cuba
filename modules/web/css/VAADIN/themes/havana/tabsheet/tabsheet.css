@@ -150,7 +150,7 @@
     border-top: 1px solid #647E9B;
     border-left: 1px solid #647E9B;
     border-right: 1px solid #647E9B;
-    background: #fff;
+    background: url(img/main-tabitem-bg.png) repeat-x;
     border-bottom: 0;
     height: 28px;
 	cursor: default;
@@ -201,6 +201,10 @@
 .v-tabsheet-tabs .v-tabsheet-tabitemcell-selected {
     border: 0;
     padding-left: 6px;
+}
+
+.v-tabsheet-content {
+    background: url(img/main-tabpanel-bg.png) repeat-x;
 }
 
 .v-tabsheet-tabitem .v-disabled {
