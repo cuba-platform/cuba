@@ -875,6 +875,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
             final App app = App.getInstance();
             app.cleanupBackgroundTasks();
+            app.getTimers().stopAll();
             app.getWindowManager().checkModificationsAndCloseAll(
                     new Runnable() {
                         @Override
@@ -1089,6 +1090,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             }
             final App app = App.getInstance();
             app.cleanupBackgroundTasks();
+            app.getTimers().stopAll();
             app.getWindowManager().checkModificationsAndCloseAll(
                     new Runnable() {
                         @Override

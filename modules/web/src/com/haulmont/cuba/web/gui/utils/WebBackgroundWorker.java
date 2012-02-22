@@ -102,6 +102,11 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
             @Override
             public void onTimer(Timer timer) {
+                if (UserSessionProvider.getUserSession() == null) {
+                    log.debug("Null UserSession in background task");
+                    return;
+                }
+
                 // handle intents
                 if (!taskHandler.isCancelled()) {
                     long newIntent = taskExecutor.getIntentVersion();
