@@ -113,16 +113,31 @@ public class LoginWindow extends Window implements Action.Handler {
         Form form = new Form(new FormLayout());
         form.setStyleName("loginForm");
         form.setWidth("-1px");
-        form.setHeight("175px");
+        form.setHeight("-1px");
         FormLayout formLayout = (FormLayout) form.getLayout();
         formLayout.setSpacing(true);
         formLayout.setWidth("-1px");
+
+        HorizontalLayout welcomeLayout = new HorizontalLayout();
+        welcomeLayout.setStyleName("login-form-caption");
+        welcomeLayout.setWidth("-1px");
+        welcomeLayout.setHeight("-1px");
+        welcomeLayout.setSpacing(true);
 
         Label label = new Label(MessageProvider.getMessage(getMessagesPack(), "loginWindow.welcomeLabel", loc));
         label.setWidth("-1px");
         label.setStyleName("login-caption");
 
         Embedded logoImage = getLogoImage(app);
+        if (logoImage != null) {
+            logoImage.setWidth("-1px");
+            logoImage.setHeight("-1px");
+            welcomeLayout.addComponent(logoImage);
+        }
+        if (!StringUtils.isBlank((String) label.getValue())) {
+            welcomeLayout.addComponent(label);
+            welcomeLayout.setComponentAlignment(label, Alignment.MIDDLE_RIGHT);
+        }
 
         VerticalLayout centerLayout = new VerticalLayout();
         centerLayout.setStyleName("loginBottom");
@@ -131,12 +146,8 @@ public class LoginWindow extends Window implements Action.Handler {
         centerLayout.setWidth(formWidth + "px");
         centerLayout.setHeight(formHeight + "px");
         if (!StringUtils.isBlank((String) label.getValue())) {
-            centerLayout.addComponent(label);
-            centerLayout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
-        }
-        if (logoImage != null) {
-            centerLayout.addComponent(logoImage);
-            centerLayout.setComponentAlignment(logoImage, Alignment.MIDDLE_CENTER);
+            centerLayout.addComponent(welcomeLayout);
+            centerLayout.setComponentAlignment(welcomeLayout, Alignment.MIDDLE_CENTER);
         }
         centerLayout.addComponent(form);
         centerLayout.setComponentAlignment(form, Alignment.MIDDLE_CENTER);

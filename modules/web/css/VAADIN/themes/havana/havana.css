@@ -152,12 +152,19 @@
  * Login page styles
  */
 .v-verticallayout-loginBottom {
-    /*border: 1px solid #d2e3ee;*/
+    padding-bottom: 5px;
     background: url(images/login-bg.png) no-repeat;
-    background-size: 100%;
-    height: 200px;
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='.myBackground.jpg', sizingMethod='scale');
-    -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='myBackground.jpg', sizingMethod='scale')";
+    background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
+    -webkit-background-size: 100% 100%;
+    -o-background-size: 100% 100%;
+    -ms-background-size: 100% 100%;
+}
+
+.v-ie .v-verticallayout-loginBottom  {
+    background: transparent;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='VAADIN/themes/havana/images/login-bg.png', sizingMethod='scale');
+    -ms-filter:"progid:DXImageTransform.Microsoft.AlphaImageLoader(src='VAADIN/themes/havana/images/login-bg.png', sizingMethod='scale')";
 }
 
 .v-verticallayout-loginBottom * {
@@ -183,7 +190,8 @@
 
 .v-verticallayout-loginBottom .v-label-login-caption {
     font-weight: bold;
-    font-size: 9pt;
+    font-size: 10pt;
+    color: #2B4666;
 }
 
 .v-verticallayout-loginBottom .v-embedded {
@@ -204,6 +212,22 @@
 
 .v-form-loginForm .v-formlayout {
     float: left;
+}
+
+.login-caption {
+    padding-left: 35px;
+    padding-top: 5px;
+    height: 32px;
+    background: url(images/haulmont-logo-small.png) left top no-repeat;
+}
+
+.login-form-caption {
+    padding-top: 5px;
+}
+
+.v-form-loginForm .v-formlayout-spacing .v-formlayout-row .v-formlayout-captioncell,
+.v-form-loginForm .v-formlayout-spacing .v-formlayout-row .v-formlayout-contentcell {
+    padding-top: 10px;
 }
 
 .v-button-submit-login-btn {
