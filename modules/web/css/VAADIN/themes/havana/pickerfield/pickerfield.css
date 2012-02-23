@@ -1,12 +1,12 @@
 .v-app .pickerfield .v-textfield {
-    height: 20px;
+    height: 22px;
     padding-top: 0;
     padding-bottom: 0;
 }
 
 .pickerfield .v-button {
-    height: 16px;
-    line-height: 16px;
+    height: 18px;
+    line-height: 18px;
 }
 
 .pickerfield .v-button-caption {
