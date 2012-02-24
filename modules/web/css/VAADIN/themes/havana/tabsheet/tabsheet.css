@@ -28,6 +28,12 @@
     padding: 3px 6px 0 6px;
 }
 
+.v-tabsheet-tabs .v-tabsheet-tabitemcell-selected-first,
+.v-tabsheet-tabs .v-tabsheet-tabitemcell-selected {
+    border: 0;
+    padding-left: 6px;
+}
+
 /* Second level tabsheet */
 
 .v-tabsheet-content .v-tabsheet-tabs {
@@ -53,7 +59,37 @@
     color:#1E3146;
 }
 
+.v-tabsheet-content .v-tabsheet-content {
+    border-color: #D2E3EE;
+    background: #F5F7F9;
+}
+
+.v-tabsheet-content .v-tabsheet-tabs .v-tabsheet-tabitemcell-selected-first,
+.v-tabsheet-content .v-tabsheet-tabs .v-tabsheet-tabitemcell-selected {
+    border: 0;
+    padding-left: 0;
+}
+
 /* Third level tabsheet */
+
+.v-tabsheet-content .v-tabsheet-content .v-tabsheet-tabs {
+    background: transparent url(img/bg-inner-tabseet.png) repeat-x bottom;
+}
+
+.v-tabsheet-content .v-tabsheet-content .v-tabsheet-tabitem-selected-first,
+.v-tabsheet-content .v-tabsheet-content .v-tabsheet-tabitem-selected {
+    background: #EBF0F4;
+    border-color: #A4C5DF;
+}
+
+.v-tabsheet-content .v-tabsheet-content .v-tabsheet-tabitem .v-caption .v-captiontext {
+    color:#2B4666;
+}
+
+.v-tabsheet-content .v-tabsheet-content .v-tabsheet-content {
+    background: #EBF0F4;
+    border-color: #A4C5DF;
+}
 
 /* Tabsheet in dialog windows */
 
@@ -78,6 +114,38 @@
 
 .v-window-contents .v-tabsheet-tabitem .v-caption .v-captiontext {
     color:#1E3146;
+}
+
+.v-window-contents .v-tabsheet-content {
+    border-color: #D2E3EE;
+    background: #F5F7F9;
+}
+
+.v-window-contents .v-tabsheet-tabs .v-tabsheet-tabitemcell-selected-first,
+.v-window-contents .v-tabsheet-tabs .v-tabsheet-tabitemcell-selected {
+    border: 0;
+    padding-left: 0;
+}
+
+/* Second level tabsheet in dialog window */
+
+.v-window-contents .v-tabsheet-content .v-tabsheet-tabs {
+    background: transparent url(img/bg-inner-tabseet.png) repeat-x bottom;
+}
+
+.v-window-contents .v-tabsheet-content .v-tabsheet-tabitem-selected-first,
+.v-window-contents .v-tabsheet-content .v-tabsheet-tabitem-selected {
+    background: #EBF0F4;
+    border-color: #A4C5DF;
+}
+
+.v-window-contents .v-tabsheet-content .v-tabsheet-tabitem .v-caption .v-captiontext {
+    color:#2B4666;
+}
+
+.v-window-contents .v-tabsheet-content .v-tabsheet-content {
+    background: #EBF0F4;
+    border-color: #A4C5DF;
 }
 
 /* General */
@@ -222,14 +290,6 @@
     color: #1E3146;
 }
 
-
-
-.v-tabsheet-tabs .v-tabsheet-tabitemcell-selected-first,
-.v-tabsheet-tabs .v-tabsheet-tabitemcell-selected {
-    border: 0;
-    padding-left: 6px;
-}
-
 .v-tabsheet-content {
     background: url(img/main-tabpanel-bg.png) repeat-x;
 }
@@ -255,12 +315,6 @@
 	background-color: #fff;
 	border-top: none;
 	position: relative;
-}
-
-.v-tabsheet-content .v-tabsheet-content,
-.v-window-contents .v-tabsheet-content {
-    border-color: #D2E3EE;
-    background: #F5F7F9;
 }
 
 .v-tabsheet-hidetabs .v-tabsheet-content {

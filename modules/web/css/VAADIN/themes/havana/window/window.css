@@ -42,7 +42,7 @@
 }
 
 .v-window-contents {
-	background: url(img/win-body-bg.png) repeat-x left top #fff;
+	background: #fff;
 	color: #1E3146;
     padding: 8px;
     font-size: 12px;
