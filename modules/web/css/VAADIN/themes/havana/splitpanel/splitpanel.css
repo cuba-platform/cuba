@@ -8,7 +8,7 @@
 }
 
 .v-splitpanel-horizontal .v-splitpanel-hsplitter div {
-	width: 6px;
+	width: 4px;
 	font-size: 1px; /* for IE6 */
 	position: absolute;
 	top: 0;
@@ -16,7 +16,7 @@
 	background: #EEF3F9 url(img/bg-ruler-vert.png) center no-repeat;
 	/*border: 0 solid #d7dddb;*/
 	cursor: e-resize;
-	margin: 0 1px;
+	margin: 0 0;
 }
 
 .v-splitpanel-vertical .v-splitpanel-vsplitter {

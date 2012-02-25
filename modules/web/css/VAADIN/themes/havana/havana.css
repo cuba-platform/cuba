@@ -216,9 +216,9 @@
 
 .login-caption {
     padding-left: 35px;
-    padding-top: 5px;
+    padding-top: 10px;
     height: 32px;
-    background: url(images/haulmont-logo-small.png) left top no-repeat;
+    background: url(images/haulmont-logo-small.png) left center no-repeat;
 }
 
 .login-form-caption {
