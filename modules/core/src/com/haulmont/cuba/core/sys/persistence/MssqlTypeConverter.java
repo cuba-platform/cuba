@@ -6,10 +6,8 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -45,6 +43,15 @@ public class MssqlTypeConverter implements DbTypeConverter {
                 break;
         }
 
+        return value;
+    }
+
+    @Override
+    public Object getSqlObject(Object value) {
+        if (value instanceof Date)
+            return new Timestamp(((Date) value).getTime());
+        else if (value instanceof UUID)
+            return value.toString();
         return value;
     }
 }

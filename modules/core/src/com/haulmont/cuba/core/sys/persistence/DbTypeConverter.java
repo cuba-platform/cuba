@@ -16,4 +16,6 @@ import java.sql.SQLException;
 public interface DbTypeConverter {
 
     Object getJavaObject(ResultSet resultSet, int column) throws SQLException;
+
+    Object getSqlObject(Object value) throws SQLException;
 }

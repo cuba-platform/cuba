@@ -6,10 +6,8 @@
 
 package com.haulmont.cuba.core.sys.persistence;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -17,6 +15,7 @@ import java.util.UUID;
  * @version $Id$
  */
 public class PostgresTypeConverter implements DbTypeConverter {
+
     @Override
     public Object getJavaObject(ResultSet resultSet, int columnIndex) throws SQLException {
         Object value;
@@ -42,6 +41,15 @@ public class PostgresTypeConverter implements DbTypeConverter {
                 break;
         }
 
+        return value;
+    }
+
+    @Override
+    public Object getSqlObject(Object value) throws SQLException {
+        if (value instanceof Date)
+            return new Timestamp(((Date) value).getTime());
+        else if (value instanceof UUID)
+            return new PostgresUUID((UUID) value);
         return value;
     }
 }
