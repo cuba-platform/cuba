@@ -656,7 +656,7 @@ create table REPORT_TEMPLATE
   OUTPUT_TYPE integer default 0,
   IS_DEFAULT tinyint default 0,
   IS_CUSTOM tinyint default 0,
-  CUSTOM_CLASS varchar,
+  CUSTOM_CLASS varchar(max),
   --
   primary key (ID),
   constraint FK_REPORT_TEMPLATE_TO_REPORT foreign key (REPORT_ID)
@@ -796,7 +796,7 @@ create table SYS_SENDING_MESSAGE (
     ADDRESS_TO varchar(500),
     ADDRESS_FROM varchar(100),
     CAPTION varchar(500),
-	CONTENT_TEXT varchar,
+	CONTENT_TEXT varchar(max),
 	DEADLINE datetime,
 	STATUS int,
 	DATE_SENT datetime,
@@ -886,7 +886,7 @@ create table SYS_CATEGORY_ATTR (
 	CATEGORY_ID uniqueidentifier,
 	IS_ENTITY tinyint,
 	DATA_TYPE varchar(200),
-	DEFAULT_STRING varchar,
+	DEFAULT_STRING varchar(max),
 	DEFAULT_INT integer,
 	DEFAULT_DOUBLE numeric,
 	DEFAULT_DATE datetime,
@@ -917,7 +917,7 @@ create table SYS_ATTR_VALUE (
     --
     CATEGORY_ATTR_ID uniqueidentifier,
 	ENTITY_ID uniqueidentifier,
-	STRING_VALUE varchar,
+	STRING_VALUE varchar(max),
 	INTEGER_VALUE integer,
 	DOUBLE_VALUE numeric,
 	DATE_VALUE datetime,
