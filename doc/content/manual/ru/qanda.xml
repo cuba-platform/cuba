@@ -1,0 +1,217 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><qandaset lang="ru" id="qanda_id">
+  <qandaentry>
+    <question>
+      <para>Как добавить фильтр в браузер справочника?</para>
+    </question>
+    <answer>
+      <para>Для этого нужно добавить компонент <glossterm linkend="glossary_filter_id">Generic Filter</glossterm> в дескриптор экрана просмотра списка сущностей <filename>budgetitem-browse.xml</filename>:</para>
+      <para><programlisting>&lt;window
+        xmlns=&quot;http://www.haulmont.com/schema/cuba/gui/window.xsd&quot;
+        class=&quot;com.haulmont.ext.web.ui.budgetitem.BudgetItemBrowser&quot;
+        messagesPack=&quot;com.haulmont.ext.web.ui.budgetitem&quot;
+        caption=&quot;msg://browserCaption&quot;
+        lookupComponent=&quot;budgetItemsTable&quot;
+        &gt;
+    ...
+    &lt;layout expandLayout=&quot;true&quot;&gt;
+        &lt;vbox id=&quot;table-panel&quot; expand=&quot;budgetItemsTable&quot; spacing=&quot;true&quot; height=&quot;100%&quot;&gt;
+            &lt;filter id=&quot;genericFilter&quot; datasource=&quot;budgetItemsDs&quot; stylename=&quot;edit-area&quot;&gt;
+                &lt;properties include=&quot;.*&quot; exclude=&quot;&quot;/&gt;
+            &lt;/filter&gt;
+        ...
+        &lt;/vbox&gt;
+    &lt;/layout&gt;
+&lt;/window&gt;</programlisting></para>
+    </answer>
+  </qandaentry>
+  <qandaentry>
+    <question>
+      <para>Как подключить полнотекстовый поиск созданной карточки?</para>
+    </question>
+    <answer>
+      <para>Для этого нужно создать <glossterm linkend="glossary_fts_id">дескриптор полнотекстового поиска</glossterm> <filename>ext-fts.xml</filename> и написать в нем следующий код (пример приведен для сущности <classname>InvoiceForPayment (Счет на оплату)</classname>):</para>
+      <para><programlisting>&lt;fts-config&gt;
+    &lt;entities&gt;
+        &lt;entity class=&quot;com.haulmont.ext.core.entity.InvoiceForPayment&quot;&gt;
+            &lt;include re=&quot;.*&quot;/&gt;
+            &lt;include name=&quot;attachments.file&quot;/&gt;
+            &lt;include name=&quot;assignments.attachments.file&quot;/&gt;
+
+            &lt;exclude name=&quot;jbpmProcessId&quot;/&gt;
+            &lt;exclude name=&quot;parentCard&quot;/&gt;
+            &lt;exclude name=&quot;subCards&quot;/&gt;
+        &lt;/entity&gt;
+    &lt;/entities&gt;
+&lt;/fts-config&gt;</programlisting></para>
+      <para>Далее убедитесь, чтобы в файле <filename>ext-app.properties</filename> был указан дескриптор:</para>
+      <para><programlisting>cuba.ftsConfig=cuba-fts.xml thesis-fts.xml ext-fts.xml</programlisting></para>
+    </answer>
+  </qandaentry>
+  <qandaentry>
+    <question>
+      <para>Как  подключить историю открытых экранов карточки (меню  Помощь −&gt; История?</para>
+    </question>
+    <answer>
+      <para>Откройте файл свойств <filename>ext-web-app.properties</filename> и напишите там следующее (пример приведен для сущности <classname>InvoiceForPayment (Счет на оплату)</classname>):</para>
+      <para><programlisting>cuba.screenIdsToSaveHistory=tm$Task.edit,df$SimpleDoc.edit,\
+                            df$Contract.edit,tm$TaskPattern.edit,\
+                            tm$TaskGroupPattern.edit,\tm$TaskGroup.edit,\
+                            tm$TaskType.edit,df$DocType.edit,\
+                            df$DocKind.edit,df$OfficeFileNomenclature.edit,\
+                            df$OfficeFile.edit,df$DocReceivingMethod.edit,\
+                            tm$Priority.edit,tm$ProjectGroup.edit,\
+                            df$Category.edit,wf$UserGroup.edit,\
+                            wf$AttachTypes.edit,df$Organization.edit,\
+                            df$Department.edit,df$Employee.edit,\
+                            df$Company.edit,df$Individual.edit,\
+                            df$Currency.edit,df$Bank.edit,\
+                            df$BankRegion.edit,sec$User.edit,sec$Group.edit,\
+                            sec$Role.edit,tm$ScheduleTask.edit,\
+                            ext$InvoiceForPayment.edit</programlisting></para>
+    </answer>
+  </qandaentry>
+  <qandaentry>
+    <question>
+      <para>Как корректно выводить многострочный текст в таблице?</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/afterCreateEntityEdit3.png" width="100%"/>
+        </imageobject>
+      </mediaobject>
+    </question>
+    <answer>
+      <para>Такая ситуация возникает в справочнике должностей. </para>
+      <para>Зададим собственное представление данных в колонке <guilabel>Должностные обязанности</guilabel>, то есть создадим <glossterm>генерируемую</glossterm> колонку. Для этого в метод <methodname>init()</methodname> добавьте вызов метода <methodname>addCommentColumn()</methodname>,  программный код которого приведен ниже:</para>
+      <para><programlisting>protected void addCommentColumn() {
+   MetaPropertyPath pp = postsDs.getMetaClass().getPropertyPath(&quot;jobDuties&quot;);
+   com.vaadin.ui.Table vTable = (com.vaadin.ui.Table) WebComponentsHelper
+                                 .unwrap(postsTable);
+   vTable.removeGeneratedColumn(pp);
+   vTable.addGeneratedColumn(
+       pp,
+       new com.vaadin.ui.Table.ColumnGenerator() {
+       public com.vaadin.ui.Component generateCell(com.vaadin.ui.Table source, 
+                                               Object itemId, Object columnId) {
+           UUID uuid = (UUID) itemId;
+           com.vaadin.ui.Component component;
+           Post post = postsDs.getItem(uuid);
+           String descr = post.getJobDuties();
+           int enterIdx = descr != null ? 
+               (descr.length() &gt; 40 ? 40 : descr.indexOf(&apos;\n&apos;)) : -1;
+           //установка свойств отображаемого компонента
+           if (enterIdx != -1) {
+               com.vaadin.ui.TextField content = 
+                   new com.vaadin.ui.TextField(null, descr);
+               content.setReadOnly(true);
+               content.setWidth(&quot;300px&quot;);
+               content.setHeight(&quot;300px&quot;);
+               component = new com.vaadin.ui.PopupView(&quot;&lt;span&gt;&quot;
+                    + descr.substring(0, enterIdx) + &quot;...&lt;/span&gt;&quot;, content);
+               component.addStyleName(&quot;longtext&quot;);
+           } else {
+               component = new com.vaadin.ui.Label(descr == null ? &quot;&quot; : descr);
+           }
+
+           component.setWidth(&quot;-1px&quot;);
+           return component;
+       }
+   });
+}</programlisting></para>
+      <para><link linkend="faq_restart_id">Пересоберите проект</link> и откройте справочник должностей. Убедитесь, что многострочный текст отображается корректно.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/afterCreateEntityBrowse1.png" width="100%"/>
+        </imageobject>
+      </mediaobject>
+    </answer>
+  </qandaentry>
+  <qandaentry id="faq_restart_id">
+    <question>
+      <para>Как пересобрать проект?</para>
+    </question>
+    <answer>
+      <para>Выполните следующие действия:</para>
+      <orderedlist>
+        <listitem>
+          <para>Запустите командную строку в <glossterm linkend="glossary_work_folder_id">рабочем каталоге</glossterm>.</para>
+        </listitem>
+        <listitem>
+          <para>В командной строке введите команду</para>
+          <para><prompt>gradle restart</prompt></para>
+        </listitem>
+      </orderedlist>
+    </answer>
+  </qandaentry>
+  <qandaentry id="faq_see_logs_id">
+    <question>
+      <para>Как посмотреть логи сервера приложений Tomcat?</para>
+    </question>
+    <answer>
+      <para>В первую очередь проверьте, что сервер приложений Tomcat установлен в <glossterm linkend="glossary_work_folder_id">рабочем каталоге</glossterm>. Информация о том, как это сделать, находится в главе <link linkend="chapter2_extension_creation">Создание и запуск проекта расширения для системы <application>&quot;Тезис&quot;</application></link>.</para>
+      <para>Если сервер установлен и если проект был хотя бы раз <link linkend="faq_restart_id">собран</link>, то в рабочем каталоге должна быть папка <filename>build/tomcat/logs</filename>. Для просмотра логов откройте в этой папке файл <filename>app.log</filename>.</para>
+    </answer>
+  </qandaentry>
+  <qandaentry id="faq_add_thesis_notification_id">
+    <question>
+      <para>Как подключить программу &quot;Тезис: Оповещения&quot; к своему проекту?</para>
+    </question>
+    <answer>
+      <para>Откройте файл <filename>web.xml</filename> модуля <structname>web</structname> и добавьте в него следующий код:</para>
+      <para><programlisting>&lt;servlet&gt;
+  &lt;servlet-name&gt;spring-ws&lt;/servlet-name&gt;
+  &lt;servlet-class&gt;
+     org.springframework.ws.transport.http.MessageDispatcherServlet
+  &lt;/servlet-class&gt;
+     &lt;init-param&gt;
+        &lt;param-name&gt;transformWsdlLocations&lt;/param-name&gt;
+        &lt;param-value&gt;true&lt;/param-value&gt;
+     &lt;/init-param&gt;
+     &lt;init-param&gt;
+        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+        &lt;param-value&gt;/WEB-INF/ws/ws-spring.xml&lt;/param-value&gt;
+     &lt;/init-param&gt;
+     &lt;load-on-startup&gt;0&lt;/load-on-startup&gt;
+&lt;/servlet&gt;
+
+&lt;servlet-mapping&gt;
+  &lt;servlet-name&gt;spring-ws&lt;/servlet-name&gt;
+  &lt;url-pattern&gt;/ws/*&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;</programlisting></para>
+    </answer>
+  </qandaentry>
+  <qandaentry id="faq_process_notification_id">
+    <question>
+      <para>Почему не отправляются уведомления процесса на почту\в систему?</para>
+    </question>
+    <answer>
+      <para>Скорее всего, проблема с матрицей оповещений. Перейдите к пункту меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Дизайн процессов</guimenu>. В открывшемся окне в таблице найдите процесс, для которого не появляются оповещения и откройте матрицу оповещений данного процесса, нажав ссылку <guilabel>Показать</guilabel> в колонке <guilabel>Матрица оповещений</guilabel>.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/faq_1.png" width="100%"/>
+        </imageobject>
+      </mediaobject>
+      <para>Откройте выгруженную матрицу оповещений и перейдите на вкладку <guilabel>Mail</guilabel>, если оповещения не приходят на почту, или на вкладку <guilabel>Tray</guilabel>, если оповещения не приходят в систему или в <application>&quot;Тезис: Оповещения&quot;</application>.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/faq_2.png" width="100%"/>
+        </imageobject>
+      </mediaobject>
+      <para>Таблицы на вкладках <guilabel>Mail</guilabel> и <guilabel>Tray</guilabel> должны быть обязательно заполнены.</para>
+      <para>Если таблицы не заполнены, заполните их, сохраните файл матрицы оповещений и закройте его.</para>
+      <para>Далее в системе выделите строку с дизайном процесса, для которого была выгружена матрица оповещений, и в панели справа нажмите на кнопку <guibutton>Матрица оповещений</guibutton>. В выпадающем списке выберите пункт <guilabel>Загрузить</guilabel>.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/faq_3.png" width="100%"/>
+        </imageobject>
+      </mediaobject>
+      <para>Далее в открывшемся окне нажмите на кнопку <guibutton>Загрузить</guibutton> и укажите пусть к сохраненной ранее матрице оповещений.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/faq_4.png"/>
+        </imageobject>
+      </mediaobject>
+      <para>После загрузки матрицы оповещений скомпилируйте и разверните процесс, не создавая его заново. Подробные инструкции по обработке дизайна процесса содержатся в главе 2.11.5 <firstterm>Руководства администратора</firstterm> системы <application>&quot;Тезис&quot;</application></para>
+    </answer>
+  </qandaentry>
+</qandaset>

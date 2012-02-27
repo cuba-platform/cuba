@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. -->
-<chapter lang="ru">
+<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter1_create_app_project">
   <title>Создание и настройка проекта приложения</title>
   <orderedlist>
     <listitem>
@@ -51,4 +50,84 @@
       <para>Логин и пароль пользователя − admin/admin.</para>
     </listitem>
   </orderedlist>
+  <simplesect>
+    <title>Структура и назначение каталогов и файлов проекта</title>
+    <para>Рассмотрим структуру классов и других файлов в проекте.</para>
+    <para>В корне проекта расположены скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>Intellij IDEA</application>.</para>
+    <para>В каталоге <filename>modules</filename> расположены подкаталоги модулей проекта − <structname>global</structname>, <structname>core</structname>, <structname>gui</structname>, <structname>web</structname>. </para>
+    <para>Модуль <structname>global</structname> определяет компоненты, доступные как среднему слою, так и клиентскому коду.</para>
+    <itemizedlist>
+      <listitem>
+        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются интерфейсы <glossterm linkend="glossary_middleware_services_id">сервисов middleware</glossterm>. </para>
+      </listitem>
+      <listitem>
+        <para>В пакете <package>com.haulmont.shop.core.entity</package> создаются классы сущностей и <glossterm linkend="glossary_localized_folders_id">файлы локализованных сообщений</glossterm> <filename>messages.properties</filename> для задания названий сущностей и их атрибутов.</para>
+      </listitem>
+      <listitem>
+        <para><filename>shop-persistence.xml</filename> − в этом файле регистрируются новые классы сущностей.</para>
+      </listitem>
+      <listitem>
+        <para><filename>shop-metadata.xml</filename> − в этом файле может быть задано замещение стандартных сущностей новыми.</para>
+      </listitem>
+    </itemizedlist>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/ch2_structure.png" scale="60%"/>
+      </imageobject>
+    </mediaobject>
+    <para>Модуль <structname>core</structname> определяет компоненты среднего слоя системы.</para>
+    <itemizedlist>
+      <listitem>
+        <para>Каталог <filename>db</filename> содержит sql-скрипты создания и изменения базы данных в подкаталогах <filename>init</filename> и <filename>update</filename> соответственно.</para>
+      </listitem>
+      <listitem>
+        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются классы реализации сервисов <glossterm linkend="glossary_middleware_id">middleware</glossterm>, а также другие компоненты бизнес-логики приложения.</para>
+      </listitem>
+      <listitem>
+        <para>Файл <filename>shop-app.properties</filename> содержит конфигурационные параметры среднего слоя:</para>
+        <para><parameter>cuba.springContextConfig</parameter> − определяет набор конфигурационных файлов <ulink url="http://www.springsource.org/">Spring</ulink>-фреймворка;</para>
+        <para><parameter>cuba.persistenceConfig</parameter> − определяет набор конфигурационных файлов ORM;</para>
+        <para><parameter>cuba.viewsConfig</parameter> − задает набор конфигурационных файлов <glossterm linkend="glossary_view_ru_id">представлений</glossterm>;</para>
+      </listitem>
+      <listitem>
+        <para>В файле <filename>shop-spring.xml</filename> при необходимости можно подменить реализацию стандартных сервисов или других управляемых фреймворком Spring компонентов, а также зарегистрировать создаваемые JMX-компоненты.</para>
+      </listitem>
+      <listitem>
+        <para>Файл <filename>shop-views.xml</filename> содержит описание <glossterm linkend="glossary_view_ru_id">представлений</glossterm>, используемых в расширении. Механизм представлений  обеспечивает извлечение из БД и передачу клиенту графов сущностей, ограниченных в глубину и/или по атрибутам.</para>
+      </listitem>
+      <listitem>
+        <para>Файл <filename>web\META-INF\context.xml</filename> содержит настройки подключения к базе данных.</para>
+      </listitem>
+      <listitem>
+        <para>Файл <filename>web\WEB-INF\web.xml</filename> − это дескриптор веб-приложения среднего слоя. Среди прочего содержит список конфигурационных файлов <filename>*-app.properties</filename>, используемых данным приложением.</para>
+      </listitem>
+    </itemizedlist>
+    <para>Модуль <structname>gui</structname> определяет компоненты графического пользовательского интрефейса. Этот модуль доступен всем типам клиентов. Модуль <structname>gui</structname> содержит универсальные экраны: классы <glossterm linkend="glossary_controller_id">контроллеров</glossterm>, <glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторы</glossterm> экранов, файлы <glossterm linkend="glossary_localized_folders_id">локализованных сообщений</glossterm>.</para>
+    <itemizedlist>
+      <listitem>
+        <para>В пакете <package>com.haulmont.shop.gui.ui</package> создаются экраны приложения.</para>
+      </listitem>
+      <listitem>
+        <para>В файле <filename>shop-screens.xml</filename> регистрируются экраны приложения.</para>
+      </listitem>
+    </itemizedlist>
+    <para>Модуль <structname>web</structname> определяет компоненты веб-клиента. Зависит от модулей <structname>gui</structname> и <structname>global</structname>. Содержит специфические экраны и/или компаньоны и файлы конфигурации.</para>
+    <itemizedlist>
+      <listitem>
+        <para>Класс  <classname>com.haulmont.shop.App.java</classname> определяет главное окно приложения.</para>
+      </listitem>
+      <listitem>
+        <para>Файл <filename>shop-web-app.properties</filename> содержит конфигурационные параметры веб-клиента:</para>
+        <para><parameter>cuba.windowConfig</parameter> − в этом свойстве указывается набор файлов конфигурации экранов приложения;</para>
+        <para><parameter>cuba.menuConfig</parameter> содержит список файлов, описывающих меню приложения;</para>
+        <para><parameter>cuba.appConfig.messagesPack</parameter>  задает список имен <glossterm linkend="glossary_localized_folders_id">пакетов сообщений</glossterm>, формирующих <glossterm linkend="glossary_main_localized_folder_id">главный пакет</glossterm>, используемый главным меню и другими общими компонентами системы;</para>
+      </listitem>
+      <listitem>
+        <para>Файл <filename>shop-web-menu.xml</filename> содержит описание пунктов главного меню приложения.</para>
+      </listitem>
+      <listitem>
+        <para>В файле <filename>shop-web-screens.xml</filename> регистрируются экраны приложения.</para>
+      </listitem>
+    </itemizedlist>
+  </simplesect>
 </chapter>

@@ -120,7 +120,14 @@
       </formalpara>
     </section>
   </preface>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch1_necessary_soft.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter0.xml" encoding="UTF-8"/>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter1.xml" encoding="UTF-8"/>
+   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter2.xml" encoding="UTF-8"/>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter3.xml" encoding="UTF-8"/>
+   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter4.xml" encoding="UTF-8"/>
+  <appendix>
+    <title>Часто задаваемые вопросы</title>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="qanda.xml" encoding="UTF-8"/>
+  </appendix>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="glossary.xml" encoding="UTF-8"/>
 </book>
