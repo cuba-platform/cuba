@@ -29,6 +29,7 @@ import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -154,6 +155,9 @@ public class JSONConvertor implements Convertor {
             String key = (String) iter.next();
             MetaProperty property = metaClass.getProperty(key);
 
+            if (!attrModifyPermitted(metaClass, property.getName()))
+                continue;
+
             if (json.get(key) == null) {
                 setField(bean, key, new Object[]{null});
                 continue;
@@ -173,6 +177,11 @@ public class JSONConvertor implements Convertor {
                     break;
                 case AGGREGATION:
                 case ASSOCIATION:
+                    MetaClass propertyMetaClass = propertyMetaClass(property);
+                    //checks if the user permitted to read and update a property
+                    if (!updatePermitted(propertyMetaClass) && !readPermitted(propertyMetaClass))
+                        break;
+
                     if (!property.getRange().getCardinality().isMany()) {
                         JSONObject jsonChild = json.getJSONObject(key);
                         Object child;
@@ -226,16 +235,12 @@ public class JSONConvertor implements Convertor {
      * @param visited the persistent instances that had been encoded already. Must not be null or immutable.
      * @return the new element. The element has been appended as a child to the given parent in this method.
      */
-    private MyJSONObject encodeInstance(final Entity entity, final Set<Entity> visited,
-                                        MetaClass metaClass) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    private MyJSONObject encodeInstance(final Entity entity, final Set<Entity> visited, MetaClass metaClass)
+            throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         if (visited == null) {
             throw new IllegalArgumentException("null closure for encoder");
         }
         if (entity == null) {
-            return null;
-        }
-
-        if (!UserSessionProvider.getUserSession().isEntityOpPermitted(metaClass, EntityOp.READ)) {
             return null;
         }
 
@@ -252,10 +257,8 @@ public class JSONConvertor implements Convertor {
             if (MetadataHelper.isTransient(entity, property.getName()))
                 continue;
 
-            if (!(UserSessionProvider.getUserSession().isEntityAttrPermitted(metaClass, property.getName(), EntityAttrAccess.VIEW) ||
-                    UserSessionProvider.getUserSession().isEntityAttrPermitted(metaClass, property.getName(), EntityAttrAccess.MODIFY))) {
+            if (!attrViewPermitted(metaClass, property.getName()))
                 continue;
-            }
 
             Object value = entity.getValue(property.getName());
             if (property.getAnnotatedElement().isAnnotationPresent(Id.class)) {
@@ -270,7 +273,12 @@ public class JSONConvertor implements Convertor {
                     root.set(property.getName(), property.getRange().asEnumeration().format(value));
                     break;
                 case AGGREGATION:
-                case ASSOCIATION:
+                case ASSOCIATION: {
+                    MetaClass meta = propertyMetaClass(property);
+                    //checks if the user permitted to read a property's entity
+                    if (!readPermitted(meta))
+                        break;
+
                     if (!property.getRange().getCardinality().isMany()) {
                         if (value == null) {
                             root.set(property.getName(), null);
@@ -297,7 +305,9 @@ public class JSONConvertor implements Convertor {
                             }
                         }
                     }
+
                     break;
+                }
                 default:
                     throw new IllegalStateException("Unknown property type");
             }
@@ -310,9 +320,37 @@ public class JSONConvertor implements Convertor {
         return EntityLoadInfo.create(entity).toString();
     }
 
+    private boolean attrViewPermitted(MetaClass metaClass, String property) {
+        return attrPermitted(metaClass, property, EntityAttrAccess.VIEW);
+    }
+
+    private boolean attrModifyPermitted(MetaClass metaClass, String property) {
+        return attrPermitted(metaClass, property, EntityAttrAccess.MODIFY);
+    }
+
+    private boolean attrPermitted(MetaClass metaClass, String property, EntityAttrAccess entityAttrAccess) {
+        UserSession session = UserSessionProvider.getUserSession();
+        return session.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
+    }
+
+    private boolean readPermitted(MetaClass metaClass) {
+        return entityOpPermitted(metaClass, EntityOp.READ);
+    }
+
+    private boolean updatePermitted(MetaClass metaClass) {
+        return entityOpPermitted(metaClass, EntityOp.UPDATE);
+    }
+
+    private boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
+        UserSession session = UserSessionProvider.getUserSession();
+        return session.isEntityOpPermitted(metaClass, entityOp);
+    }
+
+    private MetaClass propertyMetaClass(MetaProperty property) {
+        return property.getRange().asClass();
+    }
 
     String typeOf(Entity entity) {
         return entity.getClass().getSimpleName();
     }
-
 }

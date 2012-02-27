@@ -59,7 +59,9 @@
 <#list knownEntities as entity>
     <a name="${entity.name}"></a>
     <h2>${entity.name}</h2>
-    ${entity.parent}
+    <#if entity.parent ??>
+        ${entity.parent}
+    </#if>
     <p>${entity.description}</p>
     <h3>Fields</h3>
     <table border="0" cellspacing="1" cellpadding="0" width="90%">

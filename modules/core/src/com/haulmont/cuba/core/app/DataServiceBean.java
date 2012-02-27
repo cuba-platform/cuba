@@ -118,7 +118,7 @@ public class DataServiceBean implements DataService {
         Transaction tx = persistence.getTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            checkPermissions(context);
+            checkPermissionsNotDetached(context);
 
             if (!context.isSoftDeletion())
                 em.setSoftDeletion(false);
@@ -352,6 +352,30 @@ public class DataServiceBean implements DataService {
             if (metaClass == null) continue;
             checkPermission(checkedDeleteRights, metaClass, EntityOp.DELETE);
 
+        }
+    }
+
+    protected void checkPermissionsNotDetached(NotDetachedCommitContext<Entity> context) {
+        Set<MetaClass> checkedCreateRights = new HashSet<MetaClass>();
+        Set<MetaClass> checkedUpdateRights = new HashSet<MetaClass>();
+        Set<MetaClass> checkedDeleteRights = new HashSet<MetaClass>();
+
+        Set newInstanceIdSet = new HashSet(context.getNewInstanceIds());
+        for (Entity entity : context.getCommitInstances()) {
+            MetaClass metaClass = entity != null ? entity.getMetaClass() : null;
+            if (metaClass == null) continue;
+
+            if (newInstanceIdSet.contains(metaClass.getName() + "-" + entity.getId())) {
+                checkPermission(checkedCreateRights, metaClass, EntityOp.CREATE);
+            } else {
+                checkPermission(checkedUpdateRights, metaClass, EntityOp.UPDATE);
+            }
+        }
+
+        for (Entity entity : context.getRemoveInstances()) {
+            MetaClass metaClass = entity != null ? entity.getMetaClass() : null;
+            if (metaClass == null) continue;
+            checkPermission(checkedDeleteRights, metaClass, EntityOp.DELETE);
         }
     }
 

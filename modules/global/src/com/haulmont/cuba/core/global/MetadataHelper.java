@@ -257,6 +257,16 @@ public abstract class MetadataHelper {
         return result;
     }
 
+    public static Collection<MetaClass> getAllEmbeddableMetaClasses() {
+        List<MetaClass> result = new ArrayList<MetaClass>();
+        for (MetaClass metaClass : getAllMetaClasses()) {
+            if (metaClass.getJavaClass().isAnnotationPresent(javax.persistence.Embeddable.class)) {
+                result.add(metaClass);
+            }
+        }
+        return result;
+    }
+    
     public static Collection<Class> getAllEnums() {
         if (enums == null) {
             synchronized (MetadataHelper.class) {

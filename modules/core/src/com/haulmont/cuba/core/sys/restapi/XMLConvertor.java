@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
 import org.w3c.dom.*;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -192,10 +193,14 @@ public class XMLConvertor implements Convertor {
                 String childNodeName = child.getNodeName();
                 if ("commitInstances".equals(childNodeName)) {
                     NodeList entitiesNodeList = child.getChildNodes();
-                    result.setCommitInstances(parseNodeList(result, entitiesNodeList));
+
+                    List commitEntities = parseNodeList(result, entitiesNodeList);
+                    result.setCommitInstances(commitEntities);
                 } else if ("removeInstances".equals(childNodeName)) {
                     NodeList entitiesNodeList = child.getChildNodes();
-                    result.setRemoveInstances(parseNodeList(result, entitiesNodeList));
+
+                    List removeInstances = parseNodeList(result, entitiesNodeList);
+                    result.setRemoveInstances(removeInstances);
                 } else if ("softDeletion".equals(childNodeName)) {
                     result.setSoftDeletion(Boolean.parseBoolean(child.getTextContent()));
                 }
@@ -214,15 +219,15 @@ public class XMLConvertor implements Convertor {
         }
     }
 
-    private List parseNodeList(CommitRequest result, NodeList entitiesNodeList) throws InstantiationException, IllegalAccessException, InvocationTargetException, IntrospectionException, ParseException {
+    private List parseNodeList(CommitRequest commitRequest, NodeList entitiesNodeList) throws InstantiationException, IllegalAccessException, InvocationTargetException, IntrospectionException, ParseException {
         List entities = new ArrayList(entitiesNodeList.getLength());
         for (int j = 0; j < entitiesNodeList.getLength(); j++) {
             Node entityNode = entitiesNodeList.item(j);
             if (ELEMENT_INSTANCE.equals(entityNode.getNodeName())) {
-                InstanceRef ref = result.parseInstanceRefAndRegister(getIdAttribute(entityNode));
+                InstanceRef ref = commitRequest.parseInstanceRefAndRegister(getIdAttribute(entityNode));
                 MetaClass metaClass = ref.getMetaClass();
                 Object instance = ref.getInstance();
-                parseEntity(result, instance, metaClass, entityNode);
+                parseEntity(commitRequest, instance, metaClass, entityNode);
                 entities.add(instance);
             }
         }
@@ -231,12 +236,14 @@ public class XMLConvertor implements Convertor {
 
     private void parseEntity(CommitRequest commitRequest, Object bean, MetaClass metaClass, Node node)
             throws InstantiationException, IllegalAccessException, InvocationTargetException, IntrospectionException, ParseException {
-
         NodeList fields = node.getChildNodes();
         for (int i = 0; i < fields.getLength(); i++) {
             Node fieldNode = fields.item(i);
             String fieldName = getFieldName(fieldNode);
             MetaProperty property = metaClass.getProperty(fieldName);
+
+            if (!attrModifyPermitted(metaClass, property.getName()))
+                continue;
 
             if (MetadataHelper.isTransient(bean, fieldName))
                 continue;
@@ -247,6 +254,7 @@ public class XMLConvertor implements Convertor {
             }
 
             Object value;
+
             switch (property.getType()) {
                 case DATATYPE:
                 case ENUM:
@@ -261,7 +269,12 @@ public class XMLConvertor implements Convertor {
                     setField(bean, fieldName, value);
                     break;
                 case AGGREGATION:
-                case ASSOCIATION:
+                case ASSOCIATION: {
+                    MetaClass propertyMetaClass = propertyMetaClass(property);
+                    //checks if the user permitted to read and update a property
+                    if (!updatePermitted(propertyMetaClass) && !readPermitted(propertyMetaClass))
+                        break;
+
                     if (!property.getRange().getCardinality().isMany()) {
                         if (property.getAnnotatedElement().isAnnotationPresent(Embedded.class)) {
                             MetaClass embeddedMetaClass = property.getRange().asClass();
@@ -281,6 +294,7 @@ public class XMLConvertor implements Convertor {
                         setField(bean, fieldName, members);
                     }
                     break;
+                }
                 default:
                     throw new IllegalStateException("Unknown property type");
             }
@@ -364,10 +378,8 @@ public class XMLConvertor implements Convertor {
     private Element encodeEntityInstance(HashSet<Entity> visited, final Entity entity, final Element parent,
                                          boolean isRef, MetaClass metaClass)
             throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-
-        if (!UserSessionProvider.getUserSession().isEntityOpPermitted(metaClass, EntityOp.READ)) {
+        if (!readPermitted(metaClass))
             return null;
-        }
 
         if (parent == null)
             throw new NullPointerException("No parent specified");
@@ -394,10 +406,8 @@ public class XMLConvertor implements Convertor {
             if (MetadataHelper.isTransient(entity, property.getName()))
                 continue;
 
-            if (!(UserSessionProvider.getUserSession().isEntityAttrPermitted(metaClass, property.getName(), EntityAttrAccess.VIEW) ||
-                    UserSessionProvider.getUserSession().isEntityAttrPermitted(metaClass, property.getName(), EntityAttrAccess.MODIFY))) {
+            if (!attrViewPermitted(metaClass, property.getName()))
                 continue;
-            }
 
             Object value = entity.getValue(property.getName());
             switch (property.getType()) {
@@ -430,7 +440,14 @@ public class XMLConvertor implements Convertor {
                     }
                     break;
                 case AGGREGATION:
-                case ASSOCIATION:
+                case ASSOCIATION: {
+                    MetaClass meta = propertyMetaClass(property);
+                    //checks if the user permitted to read a property
+                    if (!readPermitted(meta)) {
+                        child = null;
+                        break;
+                    }
+
                     if (!property.getRange().getCardinality().isMany()) {
                         boolean isEmbedded = property.getAnnotatedElement().isAnnotationPresent(Embedded.class);
                         child = doc.createElement(isEmbedded ?
@@ -465,6 +482,7 @@ public class XMLConvertor implements Convertor {
                         }
                     }
                     break;
+                }
                 default:
                     throw new IllegalStateException("Unknown property type");
             }
@@ -478,6 +496,10 @@ public class XMLConvertor implements Convertor {
 
     private String typeOfEntityProperty(MetaProperty property) {
         return property.getRange().asClass().getName();
+    }
+
+    private MetaClass propertyMetaClass(MetaProperty property) {
+        return property.getRange().asClass();
     }
 
     /**
@@ -536,4 +558,31 @@ public class XMLConvertor implements Convertor {
     private MetaClass getMetaClass(Entity entity) {
         return MetadataProvider.getSession().getClass(entity.getClass());
     }
+
+    private boolean attrViewPermitted(MetaClass metaClass, String property) {
+        return attrPermitted(metaClass, property, EntityAttrAccess.VIEW);
+    }
+
+    private boolean attrModifyPermitted(MetaClass metaClass, String property) {
+        return attrPermitted(metaClass, property, EntityAttrAccess.MODIFY);
+    }
+
+    private boolean attrPermitted(MetaClass metaClass, String property, EntityAttrAccess entityAttrAccess) {
+        UserSession session = UserSessionProvider.getUserSession();
+        return session.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
+    }
+
+    private boolean readPermitted(MetaClass metaClass) {
+        return entityOpPermitted(metaClass, EntityOp.READ);
+    }
+
+    private boolean updatePermitted(MetaClass metaClass) {
+        return entityOpPermitted(metaClass, EntityOp.UPDATE);
+    }
+    
+    private boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
+        UserSession session = UserSessionProvider.getUserSession();
+        return session.isEntityOpPermitted(metaClass, entityOp);
+    }
+
 }

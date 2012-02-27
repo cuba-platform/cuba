@@ -11,6 +11,8 @@ import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.restapi.template.MetaClassRepresentation;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
@@ -58,14 +60,16 @@ public class DataServiceController {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
-
         EntityLoadInfo loadInfo = EntityLoadInfo.parse(entityRef);
         if (loadInfo == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-
         MetaClass metaClass = loadInfo.getMetaClass();
+        if (!readPermitted(metaClass)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
 
         UUID idObject = loadInfo.getId();
 
@@ -111,6 +115,12 @@ public class DataServiceController {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Unknown entity name " + entityName);
         }
 
+        EntityOp queryEntityOp = getQueryEntityOp(queryStr);
+        if (!entityOpPermitted(metaClass, queryEntityOp)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         Map<String, String[]> queryParams = new HashMap<String, String[]>(request.getParameterMap());
         queryParams.remove("query");
         queryParams.remove("view");
@@ -121,7 +131,8 @@ public class DataServiceController {
         try {
             LoadContext loadCtx = new LoadContext(metaClass);
             loadCtx.setUseSecurityConstraints(true);
-            LoadContext.Query query = loadCtx.setQueryString(queryStr);
+            LoadContext.Query query = new LoadContext.Query(queryStr);
+            loadCtx.setQuery(query);
             if (firstResult != null)
                 query.setFirstResult(firstResult);
             if (maxResults != null)
@@ -154,15 +165,30 @@ public class DataServiceController {
             return;
         }
 
+
         Convertor convertor = conversionFactory.getConvertor(contentType);
         try {
             CommitRequest commitRequest = convertor.parseCommitRequest(requestContent);
+            Collection commitInstances = commitRequest.getCommitInstances();
+            Collection newInstanceIds = commitRequest.getNewInstanceIds();
+            //send error if the user don't have permissions to commit at least one of the entities
+            if (!commitPermitted(commitInstances, newInstanceIds)) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
+            Collection removeInstances = commitRequest.getRemoveInstances();
+            //send error if the user don't have permissions to remove at least one of the entities
+            if (!removePermitted(removeInstances)) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
 
             NotDetachedCommitContext<Entity> commitContext = new NotDetachedCommitContext<Entity>();
-            commitContext.setCommitInstances(commitRequest.getCommitInstances());
-            commitContext.setRemoveInstances(commitRequest.getRemoveInstances());
+            commitContext.setCommitInstances(commitInstances);
+            commitContext.setRemoveInstances(removeInstances);
             commitContext.setSoftDeletion(commitRequest.isSoftDeletion());
-            commitContext.setNewInstanceIds(commitRequest.getNewInstanceIds());
+            commitContext.setNewInstanceIds(newInstanceIds);
             Map<Entity, Entity> result = svc.commitNotDetached(commitContext);
 
             Object converted = convertor.process(result, request.getRequestURI());
@@ -215,6 +241,9 @@ public class DataServiceController {
             Map<MetaClass, List<View>> meta2views = new HashMap<MetaClass, List<View>>();
             for (View view : views) {
                 MetaClass metaClass = MetadataProvider.getSession().getClass(view.getEntityClass());
+                if (!readPermitted(metaClass))
+                    continue;                                
+                
                 List<View> viewList = meta2views.get(metaClass);
                 if (viewList == null) {
                     viewList = new ArrayList<View>();
@@ -226,7 +255,11 @@ public class DataServiceController {
             List<MetaClassRepresentation> classes = new ArrayList<MetaClassRepresentation>();
 
             Collection<MetaClass> metas = MetadataHelper.getAllPersistentMetaClasses();
+            Collection<MetaClass> embeddable = MetadataHelper.getAllEmbeddableMetaClasses();
+            metas.addAll(embeddable);
             for (MetaClass meta : metas) {
+                if (!readPermitted(meta))
+                    continue;
                 MetaClassRepresentation rep = new MetaClassRepresentation(meta, meta2views.get(meta));
                 classes.add(rep);
             }
@@ -236,7 +269,7 @@ public class DataServiceController {
                 }
             });
 
-            Map values = new HashMap();
+            Map<String, List<MetaClassRepresentation>> values = new HashMap<String, List<MetaClassRepresentation>>();
             values.put("knownEntities", classes);
 
             Configuration cfg = new Configuration();
@@ -260,4 +293,88 @@ public class DataServiceController {
         return null;
     }
 
+    /**
+     * Checks if the user have permissions to commit (create or update)
+     * all of the entities.
+     *
+     * @param commitInstances entities to commit
+     * @param newInstanceIds ids of the new entities
+     * @return true - if the user can commit all of the requested entities, false -
+     * if he don't have permissions to commit at least one of the entities.
+     */
+    private boolean commitPermitted(Collection commitInstances, Collection newInstanceIds) {
+        for (Object commitInstance : commitInstances) {
+            Entity entity = (Entity) commitInstance;
+            String fullId = entity.getMetaClass().getName() + "-" + entity.getId();
+            if (newInstanceIds.contains(fullId)) {
+                if (!createPermitted(entity.getMetaClass()))
+                    return false;
+            } else if (!updatePermitted(entity.getMetaClass())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Checks if the user have permissions to remove all of the requested entities.
+     * @param removeInstances entities to remove
+     * @return true - if the user can remove all of the requested entities, false -
+     * if he don't have permissions to remove at least one of the entities.
+     */
+    private boolean removePermitted(Collection removeInstances) {
+        for (Object removeInstance : removeInstances) {
+            Entity next = (Entity) removeInstance;
+            if (!removePermitted(next.getMetaClass()))
+                return false;
+        }
+        return true;
+    }
+
+    private boolean readPermitted(MetaClass metaClass) {
+        return entityOpPermitted(metaClass, EntityOp.READ);
+    }
+
+    private boolean createPermitted(MetaClass metaClass) {
+        return entityOpPermitted(metaClass, EntityOp.CREATE);
+    }
+
+    private boolean updatePermitted(MetaClass metaClass) {
+        return entityOpPermitted(metaClass, EntityOp.UPDATE);
+    }
+
+    private boolean removePermitted(MetaClass metaClass) {
+        return entityOpPermitted(metaClass, EntityOp.DELETE);
+    }
+
+    private boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
+        UserSession session = UserSessionProvider.getUserSession();
+        return session.isEntityOpPermitted(metaClass, entityOp);
+    }
+
+    /**
+     * Returns EntityOp query requests to
+     *
+     * @param query JPQL query
+     * @return EntityOp.READ or EntityOp.UPDATE or EntityOp.DELETE or null
+     */
+    private static EntityOp getQueryEntityOp(String query) {
+        if (query == null)
+            return null;
+
+        query = query.trim().toLowerCase();
+        if (query.isEmpty())
+            return null;
+
+        int firstSpaceIndex = query.indexOf(' ');
+        int endIndex = firstSpaceIndex != -1 ? firstSpaceIndex : query.length();
+        String op = query.substring(0, endIndex);
+        if ("select".equals(op))
+            return EntityOp.READ;
+        else if ("update".equals(op))
+            return EntityOp.UPDATE;
+        else if ("delete".equals(op))
+            return EntityOp.DELETE;
+        return null;
+    }
 }

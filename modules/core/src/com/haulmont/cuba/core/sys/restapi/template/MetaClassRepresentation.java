@@ -9,8 +9,12 @@ package com.haulmont.cuba.core.sys.restapi.template;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.MessageUtils;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
 
 import javax.persistence.MappedSuperclass;
 import java.util.ArrayList;
@@ -38,6 +42,9 @@ public class MetaClassRepresentation {
 
     public String getParent() {
         MetaClass ancestor = meta.getAncestor();
+        if (!readPermitted(ancestor))
+            return null;
+
         if (ancestor == null || !ancestor.getName().contains("$") ||
                 ancestor.getJavaClass().isAnnotationPresent(MappedSuperclass.class))
             return "";
@@ -53,6 +60,20 @@ public class MetaClassRepresentation {
     public Collection<MetaClassRepProperty> getProperties() {
         List<MetaClassRepProperty> result = new ArrayList<MetaClassRepProperty>();
         for (MetaProperty property : meta.getProperties()) {
+            MetaProperty.Type propertyType = property.getType();
+            //don't show property if user don't have permissions to view it
+            if (!attrViewPermitted(meta, property.getName())) {
+                continue;
+            }
+
+            //don't show property if it's reference and user
+            //don't have permissions to view it's entity class
+            if (propertyType == MetaProperty.Type.AGGREGATION
+                    || propertyType == MetaProperty.Type.ASSOCIATION) {
+                MetaClass propertyMetaClass = propertyMetaClass(property);
+                if (!readPermitted(propertyMetaClass))
+                    continue;
+            }
             MetaClassRepProperty prop = new MetaClassRepProperty(property);
             result.add(prop);
         }
@@ -180,6 +201,28 @@ public class MetaClassRepresentation {
         public MetaClassRepView getView() {
             return property.getView() == null ? null : new MetaClassRepView(property.getView());
         }
+    }
+
+    private MetaClass propertyMetaClass(MetaProperty property) {
+        return property.getRange().asClass();
+    }
+
+    private static boolean attrViewPermitted(MetaClass metaClass, String property) {
+        return attrPermitted(metaClass, property, EntityAttrAccess.VIEW);
+    }
+
+    private static boolean attrPermitted(MetaClass metaClass, String property, EntityAttrAccess entityAttrAccess) {
+        UserSession session = UserSessionProvider.getUserSession();
+        return session.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
+    }
+
+    private boolean readPermitted(MetaClass metaClass) {
+        return entityOpPermitted(metaClass, EntityOp.READ);
+    }
+
+    private boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
+        UserSession session = UserSessionProvider.getUserSession();
+        return session.isEntityOpPermitted(metaClass, entityOp);
     }
 
     private static String asHref(MetaClass metaClass) {
