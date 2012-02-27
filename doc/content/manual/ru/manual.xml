@@ -2,21 +2,20 @@
 <!-- This document was created with Syntext Serna Free. --><book lang="ru" id="shop_development">
   <bookinfo>
     <copyright>
-      <year>2011</year>
+      <year>2012</year>
       <holder>Haulmont (<ulink url="www.haulmont.ru">www.haulmont.ru</ulink>)</holder>
     </copyright>
-    <title>Система управления документами и задачами &quot;Тезис&quot; </title>
-    <subtitle>Руководство по разработке</subtitle>
+    <title>Руководство по разработке учебного приложения на платформе CUBA</title>
   </bookinfo>
   <preface lang="ru">
     <title>Предисловие</title>
     <section id="appointment_id">
       <title>Назначение</title>
-      <para>Документ является руководством по разработке расширений для системы <application>&quot;Тезис&quot;</application>.   Расширение − это подключаемое дополнение, добавляющее новые или изменяющее существующие функциональные возможности системы.  Расширение позволяет адаптировать систему к требованиям заказчика, при этом сохраняя возможность последующего обновления версий системы. Информация, представленная в руководстве, актуальна для системы <application>&quot;Тезис&quot;</application>  версии 3.2.</para>
+      <para>Документ является руководством по разработке учебного приложения на платформе CUBA.    Информация, представленная в руководстве, актуальна для платформы  версии 3.1.1.</para>
     </section>
     <section>
       <title>Целевая аудитория</title>
-      <para>Руководство предназначено для разработчиков, которые заинтересованы в разработке собственных расширений для системы управления документами и задачами <application>&quot;Тезис&quot;</application>.</para>
+      <para>Руководство предназначено для студентов, обучающихся по программе курса Haulmont <firstterm>Создание Корпоративного ПО</firstterm>.</para>
       <para>Для успешной работы требуется хорошее знание следующих технологий:</para>
       <itemizedlist>
         <listitem>
@@ -29,27 +28,22 @@
           <para>SQL.</para>
         </listitem>
       </itemizedlist>
-      <para>Перед началом  работы рекомендуется  ознакомиться с <firstterm>Руководством пользователя</firstterm>  и с <firstterm>Руководством администратора</firstterm>  системы <application>&quot;Тезис&quot;</application>.</para>
     </section>
     <section>
       <title>Структура руководства</title>
       <para>Данное руководство состоит из следующих разделов:</para>
       <para><link linkend="chapter1_necessary_soft">
-          <emphasis role="bold">Глава 1. Установка и настройка инструментария</emphasis>
+          <emphasis role="bold">Глава 1. Настройка инструментария</emphasis>
         </link></para>
-      <para>В данной главе приводится список программного обеспечения, необходимого для создания расширений. Приведены инструкции по установке и настройке  инструментов.</para>
+      <para>В данной главе приводится список программного обеспечения, необходимого для создания расширений. Приведены инструкции по  настройке  инструментов.</para>
       <para><link linkend="chapter2_extension_creation">
-          <emphasis role="bold">Глава 2. Создание и запуск проекта расширения для системы &quot;ТЕЗИС&quot;</emphasis>
+          <emphasis role="bold">Глава 2. Создание и настройка проекта приложения</emphasis>
         </link></para>
-      <para>Данная глава содержит сведения по созданию шаблонного проекта, в котором в дальнейшем можно будет вести разработку новой функциональности.</para>
-      <para><link linkend="chapter3_quickly_start">
-          <emphasis role="bold">Глава 3. Быстрый старт</emphasis>
-        </link></para>
-      <para>В данной главе представлены основные сведения по созданию простой сущности системы <application>&quot;Тезис&quot;</application>. Информация изложена в краткой форме для того, чтобы Вы могли в кратчайшие сроки овладеть основами создания расширений к системе <application>&quot;Тезис&quot;</application>.</para>
+      <para>Данная глава содержит сведения по созданию  проекта, в котором в дальнейшем можно будет вести разработку новой функциональности.</para>
       <para><link linkend="chapter4_new_extension_creation">
-          <emphasis role="bold">Глава 4. Разработка собственного проекта расширения</emphasis>
+          <emphasis role="bold">Глава 3. Создание исходного кода приложения</emphasis>
         </link></para>
-      <para>В данной главе приводятся инструкции по разработке собственного проекта расширения на основе практического примера. </para>
+      <para>В данной главе приводятся инструкции по разработке собственного проекта  на основе практического примера. </para>
     </section>
     <section>
       <title>Соглашения</title>
@@ -125,10 +119,8 @@
         <para>Аннотации обозначаются следующим образом: <literal>@Annotation</literal>.</para>
       </formalpara>
     </section>
-    <section>
-      <title>Исходные тексты программ</title>
-      <para>Все исходные тексты проекта, рассмотренные в руководстве, доступны для ознакомления и находятся в папке <filename>ext-dev\sample\</filename></para>
-    </section>
   </preface>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter1.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ch1_necessary_soft.xml" encoding="UTF-8"/>
+   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter1.xml" encoding="UTF-8"/>
+   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter3.xml" encoding="UTF-8"/>
 </book>

@@ -1,12 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. -->
 <chapter lang="ru">
-  <title>Создание проекта из шаблона</title>
+  <title>Создание и настройка проекта приложения</title>
   <orderedlist>
     <listitem>
       <para>Создайте рабочую папку для проекта, например, <filename>c:/work/shop_project</filename>.</para>
     </listitem>
     <listitem>
-      <para>Разархивируйте в эту папку поставляемый шаблон.</para>
+      <para>Разархивируйте в эту папку поставляемую заготовку для проекта приложения.</para>
     </listitem>
     <listitem>
       <para>Далее создайте пустую базу данных с названием <database>shop</database>. Для этого откройте <application>pgAdmin</application>: зайдите в меню <guimenu>Пуск</guimenu>, далее − <application>PostgreSQL 8.3</application>, далее выберите <application>pgAdmin III</application>. В отобразившемся окне нажмите правой клавишей мыши на <guilabel>PostgreSQL Database Server 8.3 (localhost:5432)</guilabel> и в открывшемся контекстном меню выберите <guilabel>Подсоединение</guilabel>. Далее нажмите правой клавишей мыши на <guilabel>Базы</guilabel> и в открывшемся контекстном меню выберите <guilabel>Новая база данных</guilabel>. На экране отобразится окно, представленное на рисунке:</para>
@@ -33,7 +34,7 @@
       <para><prompt>gradle deploy</prompt></para>
     </listitem>
     <listitem>
-      <para>Откройте файл <filename>shop-app.properties</filename> модуля <structname>core</structname> и добавьте туда следующую строчку:</para>
+      <para>Откройте файл <filename>shop-app.properties</filename> модуля <structname>core</structname> и добавьте туда следующую строку:</para>
       <para><prompt>cuba.automaticDatabaseUpdate=true</prompt></para>
       <para>После этого автоматическое обновление будет произведено при старте сервера.</para>
     </listitem>

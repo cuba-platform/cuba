@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><chapter lang="ru">
+  <title>Описание основного экрана приложения</title>
+  <para>Для начала работы с системой  необходимо выполнить вход в систему: ввести имя пользователя и пароль на стартовом экране. Для автоматического входа в систему выберите опцию «Запомнить меня». </para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/app_1.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>После того как вход в систему выполнен, пользователь попадает на основной экран.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/app_2.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Функциональность основного экрана  доступна всем пользователям вне зависимости от роли. 
+При входе в систему отображается имя пользователя и доступные ему функции (пункты меню). Все экраны системы доступны посредством выбора соответствующего пункта  или подпункта меню.  
+
+Пользователь может открыть основной экран в новом окне.
+
+Пункт меню «Скрыть/показать папки» <inlinemediaobject>
+      <imageobject>
+        <imagedata fileref="img/hide.png"/>
+      </imageobject>
+    </inlinemediaobject>позволяет пользователю включать и выключать отображения списка папок. Настройки отображения папок сохраняются для каждого пользователя. 
+Стоит также упомянуть кнопки, часто встречающиеся при заполнении полей системы: 
+</para>
+  <para>Кнопка «…» <inlinemediaobject>
+      <imageobject>
+        <imagedata fileref="img/dots.png"/>
+      </imageobject>
+    </inlinemediaobject>. Открывает экран, на котором можно выбрать необходимый для заполнения поля элемент.</para>
+  <para>Кнопка «Просмотр» <inlinemediaobject>
+      <imageobject>
+        <imagedata fileref="img/view.png"/>
+      </imageobject>
+    </inlinemediaobject>. Эта кнопка позволяет перейти к просмотру карточки элемента, выбранного в поле.</para>
+  <para>Кнопка «Стрелка» <inlinemediaobject>
+      <imageobject>
+        <imagedata fileref="img/arrow.png"/>
+      </imageobject>
+    </inlinemediaobject>. Открывает выпадающий список, в котором выбирается нужное значение 
+
+</para>
+  <para>Кнопка «Группа» <inlinemediaobject>
+      <imageobject>
+        <imagedata fileref="img/group.png"/>
+      </imageobject>
+    </inlinemediaobject>. Позволяет выбрать группу пользователей. </para>
+</chapter>
