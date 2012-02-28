@@ -14,25 +14,20 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.export.ResourceDataProvider;
 import com.haulmont.cuba.security.global.LoginException;
-import com.haulmont.cuba.web.gui.components.WebEmbeddedApplicationResource;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.service.FileTypeResolver;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.*;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -128,22 +123,30 @@ public class LoginWindow extends Window implements Action.Handler {
         label.setWidth("-1px");
         label.setStyleName("login-caption");
 
-        Embedded logoImage = getLogoImage(app);
-
         VerticalLayout centerLayout = new VerticalLayout();
         centerLayout.setStyleName("loginBottom");
         centerLayout.setMargin(true, false, false, false);
         centerLayout.setSpacing(false);
         centerLayout.setWidth(formWidth + "px");
         centerLayout.setHeight(formHeight + "px");
-        if (!StringUtils.isBlank((String) label.getValue())) {
-            centerLayout.addComponent(label);
-            centerLayout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
-        }
+
+        HorizontalLayout titleLayout = new HorizontalLayout();
+        titleLayout.setStyleName("login-title");
+        titleLayout.setSpacing(true);
+
+        Embedded logoImage = getLogoImage();
         if (logoImage != null) {
-            centerLayout.addComponent(logoImage);
-            centerLayout.setComponentAlignment(logoImage, Alignment.MIDDLE_CENTER);
+            titleLayout.addComponent(logoImage);
+            titleLayout.setComponentAlignment(logoImage, Alignment.MIDDLE_LEFT);
         }
+        if (!StringUtils.isBlank((String) label.getValue())) {
+            titleLayout.addComponent(label);
+            titleLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
+        }
+
+        centerLayout.addComponent(titleLayout);
+        centerLayout.setComponentAlignment(titleLayout, Alignment.MIDDLE_CENTER);
+
         centerLayout.addComponent(form);
         centerLayout.setComponentAlignment(form, Alignment.MIDDLE_CENTER);
 
@@ -201,24 +204,12 @@ public class LoginWindow extends Window implements Action.Handler {
     }
 
     @Nullable
-    protected Embedded getLogoImage(App app) {
+    protected Embedded getLogoImage() {
         final String loginLogoImagePath = webConfig.getLoginLogoImagePath();
         if (loginLogoImagePath == null)
             return null;
 
-        ResourceDataProvider dataProvider = new ResourceDataProvider(loginLogoImagePath);
-        InputStream stream = dataProvider.provide();
-        if (stream != null) {
-            IOUtils.closeQuietly(stream);
-            WebEmbeddedApplicationResource resource = new WebEmbeddedApplicationResource(
-                    dataProvider,
-                    "loginLogoImage",
-                    FileTypeResolver.getMIMEType(loginLogoImagePath),
-                    app
-            );
-            return new Embedded(null, resource);
-        }
-        return null;
+        return new Embedded(null, new ThemeResource(loginLogoImagePath));
     }
 
     protected void initUI(App app) {

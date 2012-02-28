@@ -117,12 +117,16 @@ public class FoldersPane extends VerticalLayout {
 
         MenuBar.MenuItem firstItem = getFirstMenuItem(menuBar);
 
-        menuItem = menuBar.addItemBefore(getMenuItemCaption(),
-                getMenuItemIcon(),
-                createMenuBarCommand(),
-                firstItem);
+        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
 
-        menuBar.setStyleName("folders-pane");
+        if (!webConfig.getUseLightHeader()) {
+            menuItem = menuBar.addItemBefore(getMenuItemCaption(),
+                    getMenuItemIcon(),
+                    createMenuBarCommand(),
+                    firstItem);
+
+            menuBar.setStyleName("folders-pane");
+        }
     }
 
     protected MenuBar.Command createMenuBarCommand() {

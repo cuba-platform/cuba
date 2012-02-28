@@ -3,8 +3,23 @@
 }
 
 .v-splitpanel-horizontal .v-splitpanel-hsplitter {
-	width: 6px;
+	width: 4px;
 	font-size: 1px; /* for IE6 */
+}
+
+.v-splitpanel-hookButton {
+    cursor: pointer;
+    width: 12px;
+    height: 40px;
+    background: #EBF0F5;
+}
+
+.v-splitpanel-hookButton-left {
+    background: url(img/hook-btn-left.png);
+}
+
+.v-splitpanel-hookButton-right {
+    background: url(img/hook-btn-right.png);
 }
 
 .v-splitpanel-horizontal .v-splitpanel-hsplitter div {

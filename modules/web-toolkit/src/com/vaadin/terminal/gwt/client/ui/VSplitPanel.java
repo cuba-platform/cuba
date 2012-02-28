@@ -16,20 +16,11 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
-import java.util.Set;
-
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.dom.client.DomEvent.Type;
-import com.google.gwt.event.dom.client.TouchCancelEvent;
-import com.google.gwt.event.dom.client.TouchCancelHandler;
-import com.google.gwt.event.dom.client.TouchEndEvent;
-import com.google.gwt.event.dom.client.TouchEndHandler;
-import com.google.gwt.event.dom.client.TouchMoveEvent;
-import com.google.gwt.event.dom.client.TouchMoveHandler;
-import com.google.gwt.event.dom.client.TouchStartEvent;
-import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
@@ -38,16 +29,9 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
-import com.vaadin.terminal.gwt.client.Container;
-import com.vaadin.terminal.gwt.client.ContainerResizedListener;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.RenderInformation;
-import com.vaadin.terminal.gwt.client.RenderSpace;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.Util;
-import com.vaadin.terminal.gwt.client.VConsole;
+import com.vaadin.terminal.gwt.client.*;
+
+import java.util.Set;
 
 public class VSplitPanel extends ComplexPanel implements Container,
         ContainerResizedListener {
@@ -81,7 +65,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
             if (splitter.isOrHasChild(target)) {
                 super.onContextMenu(event);
             }
-        };
+        }
 
         @Override
         protected void fireClick(NativeEvent event) {
@@ -164,6 +148,17 @@ public class VSplitPanel extends ComplexPanel implements Container,
 
     private TouchScrollDelegate touchScrollDelegate;
 
+    private enum HookButtonState {
+        LEFT,
+        RIGHT
+    }
+
+    private boolean useHookButton = false;
+    private VOverlay hookButtonContainer;
+    private VLabel hookButton;
+    private HookButtonState hookButtonState = HookButtonState.LEFT;
+    private String defaultPosition = null;
+
     public VSplitPanel() {
         this(ORIENTATION_HORIZONTAL);
     }
@@ -219,6 +214,25 @@ public class VSplitPanel extends ComplexPanel implements Container,
             }
         }, TouchEndEvent.getType());
 
+        hookButtonContainer = new VOverlay(false, false, false);
+        hookButton = new VLabel();
+        hookButton.setStyleName(CLASSNAME + "-hookButton");
+        hookButton.addStyleName(CLASSNAME + "-hookButton-left");
+        hookButton.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                if (hookButtonState == HookButtonState.LEFT) {
+                    position = "0px";
+                } else if (defaultPosition != null) {
+                    position = defaultPosition;
+                }
+                setSplitPosition(position);
+                updateSplitPositionToServer();
+            }
+        });
+
+        hookButtonContainer.setWidget(hookButton);
+        hookButtonContainer.setZIndex(9999);
     }
 
     private TouchScrollDelegate getTouchScrollDelegate() {
@@ -227,6 +241,13 @@ public class VSplitPanel extends ComplexPanel implements Container,
                     secondContainer);
         }
         return touchScrollDelegate;
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+
+        hookButtonContainer.hide();
     }
 
     protected void constructDom() {
@@ -306,6 +327,8 @@ public class VSplitPanel extends ComplexPanel implements Container,
         setStylenames();
 
         position = uidl.getStringAttribute("position");
+        if (defaultPosition == null)
+            defaultPosition = position;
         setSplitPosition(position);
 
         final Paintable newFirstChild = client.getPaintable(uidl
@@ -338,12 +361,17 @@ public class VSplitPanel extends ComplexPanel implements Container,
             });
         }
 
+        useHookButton = uidl.getBooleanAttribute("useHookButton");
+        if (useHookButton) {
+            hookButtonContainer.show();
+            updateHookButtonPosition();
+        }
+
         // This is needed at least for cases like #3458 to take
         // appearing/disappearing scrollbars into account.
         client.runDescendentsLayout(this);
 
         rendering = false;
-
     }
 
     @Override
@@ -399,6 +427,8 @@ public class VSplitPanel extends ComplexPanel implements Container,
                 DOM.setStyleAttribute(splitter, "right", pos);
             } else {
                 DOM.setStyleAttribute(splitter, "left", pos);
+
+                VConsole.log(position + ":" + splitter.getOffsetLeft() + ":" + DOM.getElementPropertyInt(splitter, "offsetLeft"));
             }
         } else {
             if (positionReversed) {
@@ -495,10 +525,11 @@ public class VSplitPanel extends ComplexPanel implements Container,
             break;
         }
 
+        updateHookButtonPosition();
+
         // fixes scrollbars issues on webkit based browsers
         Util.runWebkitOverflowAutoFix(secondContainer);
         Util.runWebkitOverflowAutoFix(firstContainer);
-
     }
 
     private void setFirstWidget(Widget w) {
@@ -558,7 +589,37 @@ public class VSplitPanel extends ComplexPanel implements Container,
         }
     }
 
+    private void updateHookButtonPosition() {
+        if (useHookButton && (orientation == ORIENTATION_HORIZONTAL)) {
+            int left = splitter.getAbsoluteLeft();
+
+            if (left > 20) {
+                hookButtonContainer.setPopupPosition(
+                        left - (hookButton.getOffsetWidth() - splitterSize),
+                        splitter.getAbsoluteTop() + splitter.getOffsetHeight() / 2 - hookButton.getOffsetHeight() / 2);
+
+                if (hookButtonState == VSplitPanel.HookButtonState.RIGHT) {
+                    hookButton.removeStyleName(CLASSNAME + "-hookButton-right");
+                    hookButton.addStyleName(CLASSNAME + "-hookButton-left");
+                    hookButtonState = VSplitPanel.HookButtonState.LEFT;
+                }
+            } else {
+                hookButtonContainer.setPopupPosition(
+                        left,
+                        splitter.getAbsoluteTop() + splitter.getOffsetHeight() / 2 - hookButton.getOffsetHeight() / 2);
+
+                if (hookButtonState == VSplitPanel.HookButtonState.LEFT) {
+                    hookButton.removeStyleName(CLASSNAME + "-hookButton-left");
+                    hookButton.addStyleName(CLASSNAME + "-hookButton-right");
+                    hookButtonState = VSplitPanel.HookButtonState.RIGHT;
+                }
+            }
+        }
+    }
+
     public void onMouseDown(Event event) {
+        VConsole.log("MOUSE");
+
         if (locked || !isEnabled()) {
             return;
         }
@@ -675,6 +736,8 @@ public class VSplitPanel extends ComplexPanel implements Container,
     }
 
     public void onMouseUp(Event event) {
+        VConsole.log("MOUSE");
+
         DOM.releaseCapture(getElement());
         hideDraggingCurtain();
         resizing = false;
@@ -708,7 +771,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
 
     /**
      * A dragging curtain is required in Gecko and Webkit.
-     * 
+     *
      * @return true if the browser requires a dragging curtain
      */
     private boolean isDraggingCurtainRequired() {

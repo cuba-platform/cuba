@@ -13,6 +13,8 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.SplitPanel;
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.Layout;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -32,8 +34,18 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
 
     private boolean expandable = true;
 
+    private boolean showHookButton = false;
+
     private IFrame frame;
 
+    @Override
+    public void paintContent(PaintTarget target) throws PaintException {
+        super.paintContent(target);
+
+        target.addAttribute("useHookButton", showHookButton);
+    }
+
+    @Override
     public void add(Component component) {
         final com.vaadin.ui.Component itmillComponent = WebComponentsHelper.getComposition(component);
 
@@ -48,6 +60,7 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
         ownComponents.add(component);
     }
 
+    @Override
     public void remove(Component component) {
         removeComponent(WebComponentsHelper.getComposition(component));
         if (component.getId() != null) {
@@ -56,38 +69,46 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
         ownComponents.remove(component);
     }
 
+    @Override
     public <T extends Component> T getOwnComponent(String id) {
         return (T) componentByIds.get(id);
     }
 
+    @Override
     public <T extends Component> T getComponent(String id) {
         return WebComponentsHelper.<T>getComponent(this, id);
     }
 
+    @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(ownComponents);
     }
 
+    @Override
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
-//        setDebugId(id);
     }
 
+    @Override
     public void requestFocus() {
     }
 
+    @Override
     public Alignment getAlignment() {
         return alignment;
     }
 
+    @Override
     public void setAlignment(Alignment alignment) {
         this.alignment = alignment;
         final com.vaadin.ui.Component component = getParent();
@@ -96,14 +117,17 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
         }
     }
 
+    @Override
     public boolean isExpandable() {
         return expandable;
     }
 
+    @Override
     public void setExpandable(boolean expandable) {
         this.expandable = expandable;
     }
 
+    @Override
     public void applySettings(Element element) {
         Element e = element.element("position");
         if (e != null) {
@@ -114,6 +138,7 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
         }
     }
 
+    @Override
     public boolean saveSettings(Element element) {
         Element e = element.element("position");
         if (e == null)
@@ -123,12 +148,22 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
         return true;
     }
 
+    @Override
     public <A extends IFrame> A getFrame() {
         return (A) frame;
     }
 
+    @Override
     public void setFrame(IFrame frame) {
         this.frame = frame;
         frame.registerComponent(this);
+    }
+
+    public boolean isShowHookButton() {
+        return showHookButton;
+    }
+
+    public void setShowHookButton(boolean showHookButton) {
+        this.showHookButton = showHookButton;
     }
 }

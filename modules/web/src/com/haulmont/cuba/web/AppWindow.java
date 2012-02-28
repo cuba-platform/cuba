@@ -24,31 +24,25 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
 import com.haulmont.cuba.gui.config.*;
-import com.haulmont.cuba.gui.export.ResourceDataProvider;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
-import com.haulmont.cuba.web.gui.components.WebEmbeddedApplicationResource;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
-import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
-import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
-import com.haulmont.cuba.web.toolkit.ui.MenuBar;
-import com.haulmont.cuba.web.toolkit.ui.RichNotification;
+import com.haulmont.cuba.web.toolkit.ui.*;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
-import com.vaadin.service.FileTypeResolver;
 import com.vaadin.terminal.*;
 import com.vaadin.ui.*;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.BaseTheme;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
 
@@ -87,7 +81,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     protected com.haulmont.cuba.web.toolkit.ui.MenuBar menuBar;
     protected TabSheet tabSheet;
-    protected SplitPanel foldersSplit;
+    protected WebSplitPanel foldersSplit;
 
     protected Mode mode;
 
@@ -124,7 +118,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     protected String messagePack;
 
-    private NativeSelect substUserSelect;
+    private AbstractSelect substUserSelect;
 
     private JavaScriptHost scriptHost;
 
@@ -216,6 +210,10 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         if (foldersPane != null) {
             foldersSplit = new WebSplitPanel();
+
+            if (webConfig.getUseLightHeader())
+                foldersSplit.setShowHookButton(true);
+
             foldersSplit.setOrientation(SplitPanel.ORIENTATION_HORIZONTAL);
             foldersSplit.setSplitPosition(0, UNITS_PIXELS);
             foldersSplit.setLocked(true);
@@ -386,7 +384,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      */
     protected HorizontalLayout createMenuBarLayout() {
         HorizontalLayout layout = new HorizontalLayout();
-        layout.setSpacing(true);
+        layout.setSpacing(false);
+        layout.setMargin(false);
         layout.setStyleName("menubar");
         layout.setWidth(100, Sizeable.UNITS_PERCENTAGE);
         if (webConfig.getUseLightHeader()){
@@ -394,15 +393,16 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         } else {
             layout.setHeight(28, Sizeable.UNITS_PIXELS);
         }
-        layout.setMargin(false, false, false, false);
-        layout.setSpacing(true);
+
+        if (webConfig.getUseLightHeader()) {
+            Embedded appIcon = getLogoImage();
+            layout.addComponent(appIcon);
+            layout.setComponentAlignment(appIcon, Alignment.MIDDLE_LEFT);
+        }
+
         menuBar = createMenuBar();
         layout.addComponent(menuBar);
-
-//        if (webConfig.getUseLightHeader())
-        layout.setComponentAlignment(menuBar, Alignment.MIDDLE_LEFT);
-
-        layout.setExpandRatio(menuBar, 1);
+        placeMenuBar(layout);
 
         if (ConfigProvider.getConfig(FtsConfig.class).getEnabled()) {
             HorizontalLayout searchLayout = new HorizontalLayout();
@@ -464,6 +464,11 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         );
     }
 
+    protected void placeMenuBar(HorizontalLayout layout) {
+        layout.setComponentAlignment(menuBar, Alignment.MIDDLE_LEFT);
+        layout.setExpandRatio(menuBar, 1);
+    }
+
     /**
      * Can be overridden in descendant to create an app-specific menu bar
      *
@@ -484,6 +489,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             }
         }
         removeExtraSeparators(menuBar);
+
         return menuBar;
     }
 
@@ -542,6 +548,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         Embedded logoImage = getLogoImage();
         if (logoImage != null) {
             titleLayout.addComponent(logoImage);
+            titleLayout.setComponentAlignment(logoImage, Alignment.MIDDLE_LEFT);
         }
 
         Label logoLabel = new Label(getLogoLabelCaption());
@@ -591,19 +598,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         if (logoImagePath == null)
             return null;
 
-        ResourceDataProvider dataProvider = new ResourceDataProvider(logoImagePath);
-        InputStream stream = dataProvider.provide();
-        if (stream != null) {
-            IOUtils.closeQuietly(stream);
-            WebEmbeddedApplicationResource resource = new WebEmbeddedApplicationResource(
-                    dataProvider,
-                    "logoImage",
-                    FileTypeResolver.getMIMEType(logoImagePath),
-                    App.getInstance()
-            );
-            return new Embedded(null, resource);
-        }
-        return null;
+        return new Embedded(null, new ThemeResource(logoImagePath));
     }
 
     private void assignShortcut(MenuBar.MenuItem menuItem, MenuItem item) {
@@ -634,7 +629,12 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     }
 
     private void addUserSelect(HorizontalLayout parentLayout) {
-        substUserSelect = new NativeSelect();
+
+        if (webConfig.getUseLightHeader())
+            substUserSelect = new FilterSelect();
+        else
+            substUserSelect = new NativeSelect();
+
         substUserSelect.setNullSelectionAllowed(false);
         substUserSelect.setImmediate(true);
         substUserSelect.setStyleName("select-label");
@@ -777,6 +777,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     @Override
     public void userSubstituted(Connection connection) {
         menuBarLayout.replaceComponent(menuBar, createMenuBar());
+        placeMenuBar(menuBarLayout);
+
         if (foldersPane != null) {
             foldersPane.savePosition();
             FoldersPane oldFoldersPane = foldersPane;

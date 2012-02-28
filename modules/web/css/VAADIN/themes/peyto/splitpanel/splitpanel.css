@@ -7,6 +7,11 @@
 	font-size: 1px; /* for IE6 */
 }
 
+.v-splitpanel-hookButton {
+    display: none;
+    visibility: hidden;
+}
+
 .v-splitpanel-horizontal .v-splitpanel-hsplitter div {
 	width: 6px;
 	font-size: 1px; /* for IE6 */
