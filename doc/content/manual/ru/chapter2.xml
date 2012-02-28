@@ -348,7 +348,7 @@ private List&lt;Discount&gt; discounts;</programlisting></para>
             return null;
     }
 }</programlisting></para>
-      <para>Далее создайте файлы локализованных сообщений для класса <classname>Unit</classname>.</para>
+      <para>Далее создайте <glossterm linkend="glossary_localized_folders_id">файлы локализованных сообщений</glossterm> для класса <classname>Unit</classname>.</para>
       <para><programlisting>Unit.PCS=шт
 Unit.KG=кг
 Unit.M=м</programlisting></para>
@@ -435,7 +435,7 @@ public void setUnit(Unit unit) {
 &lt;/window&gt;</programlisting></para>
           <para>В элементе <property>dsContext</property> добавлен один компонент <glossterm linkend="glossary_datasource_id">источника данных</glossterm>  <parameter>collectionDatasource</parameter>, который  выбирает сущности <classname>Product</classname> с помощью JPQL запроса  <classname>select p from shop$Product p order by p.name</classname> (Подробнее о JPQL можно прочитать на сайте <ulink url="http://openjpa.apache.org/">http://openjpa.apache.org/</ulink>) с <glossterm linkend="glossary_view_ru_id">представлением</glossterm> view=<emphasis role="italic">&quot;_local&quot;</emphasis>. </para>
           <para>Рассмотрим элементы дескриптора более подробно.</para>
-          <para>Компонент Table (XML-имя компонента − <parameter>table</parameter>) служит для отображения данных в виде таблицы.</para>
+          <para>Компонент <glossterm linkend="glossary_table_id">Table</glossterm> (XML-имя компонента − <parameter>table</parameter>) служит для отображения данных в виде таблицы.</para>
           <mediaobject>
             <imageobject>
               <imagedata align="center" fileref="img/create_browser_1.png"/>
@@ -443,7 +443,7 @@ public void setUnit(Unit unit) {
           </mediaobject>
           <para>Элемент <parameter>column</parameter> задает опции для колонки таблицы. Обязательно содержит атрибут <parameter>id</parameter>, в котором задается название атрибута сущности, выводимого в колонке. Название берется из <glossterm linkend="glossary_localized_folders_id">пакета локализованных сообщений</glossterm>.</para>
           <para>Для отображения количества строк таблицы используется элемент <parameter>rowsCount</parameter>.</para>
-          <para>Над таблицей находится панель, содержащая кнопки для управления данными в этой таблице. XML-имя такой панели − <parameter>buttonsPanel</parameter>.</para>
+          <para>Над таблицей находится панель, содержащая кнопки для управления данными в этой таблице. XML-имя такой панели − <glossterm>buttonsPanel</glossterm>.</para>
           <mediaobject>
             <imageobject>
               <imagedata align="center" fileref="img/create_browser_2.png"/>
@@ -596,7 +596,7 @@ menu-config.shop$Product.browse=Товары</programlisting>
 }</programlisting>
         </listitem>
       </orderedlist>
-      <para>XML-дескрипторы остальных сущностей, описывающие экраны-браузеры, создаются аналогично. Исключение составляет сущность <classname>Discount</classname>. Для этой сущности не нужно создавать XML-дескриптор экрана просмотра сущностей. Таблица, содержащая экземпляры сущности <classname>Discount</classname>, будет располагаться в экране редактирования сущности <classname>Buyer</classname>.</para>
+      <para><glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторы</glossterm> остальных сущностей, описывающие экраны-браузеры, создаются аналогично. Исключение составляет сущность <classname>Discount</classname>. Для этой сущности не нужно создавать XML-дескриптор экрана просмотра сущностей. Таблица, содержащая экземпляры сущности <classname>Discount</classname>, будет располагаться в экране редактирования сущности <classname>Buyer</classname>.</para>
       <para>Рассмотрим более подробно создание экрана редактирования профиля покупателя.</para>
       <para><programlisting>&lt;window
         xmlns=&quot;http://www.haulmont.com/schema/cuba/gui/window.xsd&quot;
@@ -663,9 +663,9 @@ menu-config.shop$Product.browse=Товары</programlisting>
                 src=&quot;/com/haulmont/cuba/gui/edit-window.actions.xml&quot;/&gt;
     &lt;/layout&gt;
 &lt;/window&gt;</programlisting></para>
-      <para>Особого внимания заслуживает элемент для инициализации источников данных. Внутри источника данных существуют вложенные источники данных. Вложенные источники нужны для работы с экземплярами связанных сущностей, загруженных вместе с основной. Описание вложенного источника всегда содержит атрибут <property>property</property>, указывающий на атрибут основной сущности.</para>
+      <para>Особого внимания заслуживает элемент для инициализации <glossterm linkend="glossary_datasource_id">источников данных</glossterm>. Внутри источника данных существуют вложенные источники данных. Вложенные источники нужны для работы с экземплярами связанных сущностей, загруженных вместе с основной. Описание вложенного источника всегда содержит атрибут <property>property</property>, указывающий на атрибут основной сущности.</para>
       <para>Кроме элемента <parameter>fieldGroup</parameter> в экране редактирования есть контейнер  <code>&lt;vbox id=&quot;discountBox&quot;&gt;</code>, содержащий таблицу со скидками, относящимися к редактируемому покупателю.</para>
-      <para>Необходимо отметить  метод <methodname>setItem()</methodname> контроллера. В этом методе создается экземпляр &quot;встраиваемой&quot; сущности <classname>PersonalData</classname> и устанавливается в экземпляр сущности <classname>Buyer</classname>.</para>
+      <para>Необходимо отметить  метод <methodname>setItem()</methodname>  <glossterm linkend="glossary_controller_id">контроллера</glossterm>. В этом методе создается экземпляр &quot;встраиваемой&quot; сущности <classname>PersonalData</classname> и устанавливается в экземпляр сущности <classname>Buyer</classname>.</para>
       <para><programlisting>@Override
 public void setItem(Entity item) {
    if (PersistenceHelper.isNew(item)){

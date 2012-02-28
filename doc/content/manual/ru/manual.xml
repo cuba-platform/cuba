@@ -44,6 +44,14 @@
           <emphasis role="bold">Глава 3. Создание исходного кода приложения</emphasis>
         </link></para>
       <para>В данной главе приводятся инструкции по разработке собственного проекта  на основе практического примера. </para>
+      <para><link linkend="chapter3_build_deploy_app">
+          <emphasis role="bold">Глава 4. Построение и развертывание приложения</emphasis>
+        </link></para>
+      <para>В данной главе  показано, как собрать проект приложения, развернуть его на сервере Tomcat и запустить приложение  в веб-браузере. </para>
+      <para><link linkend="chapter4_descr_app">
+          <emphasis role="bold">Глава 5. Описание приложения</emphasis>
+        </link></para>
+      <para>В главе 5 приводится описание экранных форм приложения.</para>
     </section>
     <section>
       <title>Соглашения</title>

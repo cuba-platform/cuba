@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter4_descr_app">
   <title>Описание приложения</title>
-  <para>Перед началом работы  проект приложения должен быть собран и развернут на сервере приложений Tomcat, а сам сервер должен быть запущен. Информация о том, как это сделать, находится в главе <link linkend="chapter3_build_deploy_app">Построение и развертывание приложения</link>.</para>
-  <para>Для начала работы с системой  необходимо выполнить вход в систему: ввести имя пользователя и пароль на стартовом экране. Для автоматического входа в систему выберите опцию «Запомнить меня». </para>
+  <para>Перед началом работы  проект приложения должен быть собран и развернут на сервере приложений <application>Tomcat</application>, а сам сервер должен быть запущен. Информация о том, как это сделать, находится в главе <link linkend="chapter3_build_deploy_app">Построение и развертывание приложения</link>.</para>
+  <para>Для начала работы с системой  необходимо выполнить вход в систему: ввести имя пользователя и пароль на стартовом экране. Для автоматического входа в систему выберите опцию <guilabel>«Запомнить меня»</guilabel>. </para>
   <mediaobject>
     <imageobject>
       <imagedata align="center" fileref="img/app_1.png"/>
@@ -26,27 +26,204 @@
     </inlinemediaobject>позволяет пользователю включать и выключать отображения списка папок. Настройки отображения папок сохраняются для каждого пользователя. 
 Стоит также упомянуть кнопки, часто встречающиеся при заполнении полей системы: 
 </para>
-  <para>Кнопка «…» <inlinemediaobject>
+  <itemizedlist>
+    <listitem>
+      <para>Кнопка «…» <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="img/dots.png"/>
+          </imageobject>
+        </inlinemediaobject>. Открывает экран, на котором можно выбрать необходимый для заполнения поля элемент.</para>
+    </listitem>
+    <listitem>
+      <para>Кнопка «Просмотр» <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="img/view.png"/>
+          </imageobject>
+        </inlinemediaobject>. Эта кнопка позволяет перейти к просмотру карточки элемента, выбранного в поле.</para>
+    </listitem>
+    <listitem>
+      <para>Кнопка «Стрелка» <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="img/arrow.png"/>
+          </imageobject>
+        </inlinemediaobject>. Открывает выпадающий список, в котором выбирается нужное значение 
+
+</para>
+    </listitem>
+    <listitem>
+      <para>Кнопка «Группа» <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="img/group.png"/>
+          </imageobject>
+        </inlinemediaobject>. Позволяет выбрать группу пользователей. </para>
+    </listitem>
+  </itemizedlist>
+  <para>Рассмотрим более подробно приложение <application>Магазин</application>. На рисунке представлено основное меню приложения с созданным пунктом меню <guimenu>Магазин</guimenu>.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/interface_1.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Рассмотрим подробнее подпункты, представленные в пункте меню <guimenu>Магазин</guimenu>.</para>
+  <orderedlist>
+    <listitem>
+      <para><guisubmenu>Товары</guisubmenu> − позволяет просмотреть сведения о товарах. </para>
+    </listitem>
+    <listitem>
+      <para><guisubmenu>Покупатели</guisubmenu> − предоставляет сведения о покупателях.</para>
+    </listitem>
+    <listitem>
+      <para><guisubmenu>Продавцы</guisubmenu> − позволяет просмотреть сведения о продавцах.</para>
+    </listitem>
+    <listitem>
+      <para><guisubmenu>Продажи</guisubmenu> − предоставляет сведения о продажах.</para>
+    </listitem>
+  </orderedlist>
+  <para>Каждый экран системы открывается в отдельной закладке. Максимальное количество одновременно открытых закладок − 7.</para>
+  <para>Для просмотра экрана <guilabel>Товары</guilabel> перейдите по пункту меню <guimenu>Магазин</guimenu> −&gt; <guisubmenu>Товары</guisubmenu>. На экране появится окно, представленное на рисунке.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/interface_3.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>На закладке <guilabel>Товары</guilabel> содержатся следующие области:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Панель с кнопками <guibutton>Создать</guibutton>, <guibutton>Изменить</guibutton>, <guibutton>Удалить</guibutton>, <guibutton>Excel</guibutton>, <guibutton>Обновить</guibutton>.</para>
+    </listitem>
+    <listitem>
+      <para>Таблица, содержащая сведения о товарах.</para>
+    </listitem>
+  </itemizedlist>
+  <para>Для того чтобы перейти к экрану редактирования товара, необходимо нажать на кнопку <guibutton>Создать</guibutton>. После этого откроется окно, вид которого представлен на рисунке.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/interface_2.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Поле <guilabel>Наименование</guilabel> обозначено красной звездочкой. Это говорит о том, что данное поле является обязательным для заполнения. Поле <guilabel>Название единицы</guilabel> представляет собой выпадающий список, в котором есть возможность выбрать одно значение. После ввода информации о товаре необходимо нажать на кнопку <guibutton>ОК</guibutton>. Сведения о товаре сохранятся в базу данных системы.</para>
+  <para>Для просмотра экрана <guilabel>Покупатели</guilabel> перейдите по пункту меню <guimenu>Магазин</guimenu> −&gt; <guisubmenu>Покупатели</guisubmenu>. На экране появится окно, представленное на рисунке.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/interface_8.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>На закладке <guilabel>Покупатели</guilabel> содержатся следующие области:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Панель с кнопками <guibutton>Создать</guibutton>, <guibutton>Изменить</guibutton>, <guibutton>Удалить</guibutton>, <guibutton>Excel</guibutton>, <guibutton>Обновить</guibutton>.</para>
+    </listitem>
+    <listitem>
+      <para>Таблица, содержащая сведения о покупателях.</para>
+    </listitem>
+  </itemizedlist>
+  <para>Для того чтобы перейти к экрану редактирования профиля покупателя, необходимо нажать на кнопку <guibutton>Создать</guibutton>. После этого откроется окно, вид которого представлен на рисунке.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/interface_7.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Данный экран разбит на две области:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Область, содержащая сведения о покупателе. Эта область содержит поля <guilabel>Полное имя</guilabel>, <guilabel>Дата рождения</guilabel>, <guilabel>Электронная почта</guilabel>, <guilabel>Мобильный телефон</guilabel>, <guilabel>Адрес доставки</guilabel>. Поле <guilabel>Дата рождения</guilabel> представляет собой поле, позволяющее выбрать дату из календаря. Для этого нужно нажать на иконку календаря, расположенную в правой части поля.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/ch4_date_field_1.png"/>
+        </imageobject>
+      </mediaobject>
+    </listitem>
+    <listitem>
+      <para>Область, содержащая информацию о скидках, доступных для данного покупателя. Данная информация оформлена в виде таблицы.</para>
+    </listitem>
+  </itemizedlist>
+  <para>Для того чтобы ввести информацию о скидках, доступных для покупателя, необходимо нажать на кнопку <guibutton>Создать</guibutton> над таблицей, содержащей информацию о скидках. </para>
+  <para>После этого появится окно, представленное на рисунке.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/interface_4.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Остановимся более подробно на ссылочном поле Товар. При нажатии на кнопку <inlinemediaobject>
       <imageobject>
         <imagedata fileref="img/dots.png"/>
       </imageobject>
-    </inlinemediaobject>. Открывает экран, на котором можно выбрать необходимый для заполнения поля элемент.</para>
-  <para>Кнопка «Просмотр» <inlinemediaobject>
+    </inlinemediaobject>  откроется экран выбора товаров, представленный на рисунке.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/interface_5.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>В этом окне находится таблица, содержащая сведения о товарах, существующих в системе. Необходимо выбрать товар, выделив строку в таблице, и затем нажать на кнопку <guibutton>Выбрать</guibutton>. После этого вновь откроется экран со сведениями о скидке. При этом в поле <guilabel>Товар</guilabel> будет отражено наименование выбранного товара. Далее необходимо заполнить оставшиеся поля и нажать на кнопку <guibutton>ОК</guibutton>.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/interface_6.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>После ввода информации о скидке откроется экран с профилем покупателя. Для сохранения профиля покупателя необходимо нажать на кнопку <guibutton>ОК</guibutton>, расположенную внизу экрана.</para>
+  <warning>
+    <para>Только при нажатии на кнопку <guibutton>ОК</guibutton> будет сохранена и информация о покупателе, и информация о скидках, доступных для данного покупателя. Если Вы нажмете на кнопку <guibutton>Отмена</guibutton>, информация о введенных скидках не сохранится!</para>
+  </warning>
+  <para>Для просмотра экрана <guilabel>Продавцы</guilabel> перейдите по пункту меню <guimenu>Магазин</guimenu> −&gt; <guisubmenu>Продавцы</guisubmenu>. На экране появится окно, представленное на рисунке.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/interface_10.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>На закладке <guilabel>Продавцы</guilabel> содержатся следующие области:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Панель с кнопками <guibutton>Создать</guibutton>, <guibutton>Изменить</guibutton>, <guibutton>Удалить</guibutton>, <guibutton>Excel</guibutton>, <guibutton>Обновить</guibutton>.</para>
+    </listitem>
+    <listitem>
+      <para>Таблица, содержащая сведения о продавцах.</para>
+    </listitem>
+  </itemizedlist>
+  <para>Для того чтобы перейти к экрану редактирования профиля продавца, необходимо нажать на кнопку <guibutton>Создать</guibutton>. После этого откроется окно, вид которого представлен на рисунке.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/interface_9.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>После ввода информации о продавце необходимо нажать на кнопку <guibutton>ОК</guibutton>. Сведения о продавце сохранятся в базу данных системы.</para>
+  <para>Для просмотра экрана <guilabel>Продажи</guilabel> перейдите по пункту меню <guimenu>Магазин</guimenu> −&gt; <guisubmenu>Продажи</guisubmenu>. На экране появится окно, представленное на рисунке.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/interface_16.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>На закладке <guilabel>Продажи</guilabel> содержатся следующие области:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Панель с кнопками <guibutton>Создать</guibutton>, <guibutton>Изменить</guibutton>, <guibutton>Удалить</guibutton>, <guibutton>Excel</guibutton>, <guibutton>Обновить</guibutton>.</para>
+    </listitem>
+    <listitem>
+      <para>Таблица, содержащая сведения о продавцах.</para>
+    </listitem>
+  </itemizedlist>
+  <para>Для того чтобы перейти к экрану ввода сведений о продаже, необходимо нажать на кнопку <guibutton>Создать</guibutton>. После этого откроется окно, вид которого представлен на рисунке.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/interface_11.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Особого внимания заслуживают поля <guilabel>Покупатель</guilabel>, <guilabel>Товар</guilabel> и <guilabel>Продавец</guilabel>. Эти поля являются ссылочными. При нажатии на кнопку <inlinemediaobject>
       <imageobject>
-        <imagedata fileref="img/view.png"/>
+        <imagedata fileref="img/dots.png"/>
       </imageobject>
-    </inlinemediaobject>. Эта кнопка позволяет перейти к просмотру карточки элемента, выбранного в поле.</para>
-  <para>Кнопка «Стрелка» <inlinemediaobject>
-      <imageobject>
-        <imagedata fileref="img/arrow.png"/>
-      </imageobject>
-    </inlinemediaobject>. Открывает выпадающий список, в котором выбирается нужное значение 
-
-</para>
-  <para>Кнопка «Группа» <inlinemediaobject>
-      <imageobject>
-        <imagedata fileref="img/group.png"/>
-      </imageobject>
-    </inlinemediaobject>. Позволяет выбрать группу пользователей. </para>
-  <para>Рассмотрим более подробно приложение <application>Магазин</application>. На рисунке представлено основное меню приложения с созданным пунктом меню <guimenu>Магазин</guimenu>.</para>
+    </inlinemediaobject>  в правой части поля <guilabel>Покупатель</guilabel> откроется экран выбора покупателя, представленный на рисунке.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/interface_12.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>В этом окне находится таблица, содержащая сведения о продавцах, существующих в системе. Необходимо выбрать продавца, выделив строку в таблице, и затем нажать на кнопку <guibutton>Выбрать</guibutton>. После этого вновь откроется экран со сведениями о продаже. При этом в поле <guilabel>Покупатель</guilabel> будет отражено  полное имя выбранного покупателя.</para>
+  <para>Аналогично можно выбрать товар и продавца в окне редактирования сведений о продаже. После этого можно заполнить оставшиеся поля.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/interface_15.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Обратите внимание на поле <guilabel>Описание ценообразования</guilabel>. Это поле возволяет вводить многострочный текст.</para>
+  <para>После нажатия на кнопку <guibutton>ОК</guibutton> информация о продаже сохранится в базе данных.</para>
 </chapter>
