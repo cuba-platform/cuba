@@ -34,6 +34,12 @@
     padding-left: 6px;
 }
 
+.v-tabsheet-content {
+    background: #fff url(img/main-tabpanel-bg.png) repeat-x;
+    border: none;
+	position: relative;
+}
+
 /* Second level tabsheet */
 
 .v-tabsheet-content .v-tabsheet-tabs {
@@ -60,7 +66,8 @@
 }
 
 .v-tabsheet-content .v-tabsheet-content {
-    border-color: #D2E3EE;
+    border: 1px solid #D2E3EE;
+    border-top-style: none;
     background: #F5F7F9;
 }
 
@@ -88,7 +95,8 @@
 
 .v-tabsheet-content .v-tabsheet-content .v-tabsheet-content {
     background: #EBF0F4;
-    border-color: #A4C5DF;
+    border: 1px solid #A4C5DF;
+    border-top-style: none;
 }
 
 /* Tabsheet in dialog windows */
@@ -117,7 +125,8 @@
 }
 
 .v-window-contents .v-tabsheet-content {
-    border-color: #D2E3EE;
+    border: 1px solid #D2E3EE;
+    border-top-style: none;
     background: #F5F7F9;
 }
 
@@ -145,7 +154,8 @@
 
 .v-window-contents .v-tabsheet-content .v-tabsheet-content {
     background: #EBF0F4;
-    border-color: #A4C5DF;
+    border: 1px solid #A4C5DF;
+    border-top-style: none;
 }
 
 /* General */
@@ -311,10 +321,7 @@
 */
 
 .v-tabsheet-content {
-	border: 1px solid #5280b7;
 	background-color: #fff;
-	border-top: none;
-	position: relative;
 }
 
 .v-tabsheet-hidetabs .v-tabsheet-content {

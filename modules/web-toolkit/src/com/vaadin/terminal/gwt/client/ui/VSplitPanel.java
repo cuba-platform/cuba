@@ -222,6 +222,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
             @Override
             public void onClick(ClickEvent event) {
                 if (hookButtonState == HookButtonState.LEFT) {
+                    defaultPosition = position;
                     position = "0px";
                 } else if (defaultPosition != null) {
                     position = defaultPosition;
@@ -327,8 +328,11 @@ public class VSplitPanel extends ComplexPanel implements Container,
         setStylenames();
 
         position = uidl.getStringAttribute("position");
-        if (defaultPosition == null)
-            defaultPosition = position;
+        if (defaultPosition == null) {
+            defaultPosition = uidl.getStringAttribute("defaultPosition");
+            if (defaultPosition == null)
+                defaultPosition = position;
+        }
         setSplitPosition(position);
 
         final Paintable newFirstChild = client.getPaintable(uidl

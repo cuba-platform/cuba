@@ -35,6 +35,7 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
     private boolean expandable = true;
 
     private boolean showHookButton = false;
+    private String defaultPosition = null;
 
     private IFrame frame;
 
@@ -43,6 +44,8 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
         super.paintContent(target);
 
         target.addAttribute("useHookButton", showHookButton);
+        if (defaultPosition != null)
+            target.addAttribute("defaultPosition", defaultPosition);
     }
 
     @Override
@@ -165,5 +168,13 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
 
     public void setShowHookButton(boolean showHookButton) {
         this.showHookButton = showHookButton;
+    }
+
+    public String getDefaultPosition() {
+        return defaultPosition;
+    }
+
+    public void setDefaultPosition(String defaultPosition) {
+        this.defaultPosition = defaultPosition;
     }
 }

@@ -211,12 +211,16 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         if (foldersPane != null) {
             foldersSplit = new WebSplitPanel();
 
-            if (webConfig.getUseLightHeader())
+            if (webConfig.getUseLightHeader()) {
                 foldersSplit.setShowHookButton(true);
+                foldersSplit.setDefaultPosition("300px");
+            }
 
             foldersSplit.setOrientation(SplitPanel.ORIENTATION_HORIZONTAL);
             foldersSplit.setSplitPosition(0, UNITS_PIXELS);
-            foldersSplit.setLocked(true);
+
+            if (!webConfig.getUseLightHeader())
+                foldersSplit.setLocked(true);
 
             foldersSplit.addComponent(foldersPane);
             
@@ -396,8 +400,10 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
         if (webConfig.getUseLightHeader()) {
             Embedded appIcon = getLogoImage();
-            layout.addComponent(appIcon);
-            layout.setComponentAlignment(appIcon, Alignment.MIDDLE_LEFT);
+            if (appIcon != null) {
+                layout.addComponent(appIcon);
+                layout.setComponentAlignment(appIcon, Alignment.MIDDLE_LEFT);
+            }
         }
 
         menuBar = createMenuBar();
