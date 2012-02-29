@@ -6,6 +6,9 @@
 
 package com.haulmont.cuba.core.sys.restapi;
 
+import com.haulmont.chile.core.datatypes.Datatype;
+import com.haulmont.chile.core.datatypes.Datatypes;
+import com.haulmont.chile.core.datatypes.impl.*;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
@@ -30,12 +33,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
 import java.util.*;
 
 /**
  * Author: Alexander Chevelev
  * Date: 19.04.2011
  * Time: 22:03:25
+ *
+ * @version $Id$
  */
 @Controller
 public class DataServiceController {
@@ -122,12 +128,12 @@ public class DataServiceController {
         }
 
         Map<String, String[]> queryParams = new HashMap<String, String[]>(request.getParameterMap());
-        queryParams.remove("query");
+        queryParams.remove("e");
+        queryParams.remove("q");
         queryParams.remove("view");
-        queryParams.remove("s");
         queryParams.remove("first");
+        queryParams.remove("s");
         queryParams.remove("max");
-
         try {
             LoadContext loadCtx = new LoadContext(metaClass);
             loadCtx.setUseSecurityConstraints(true);
@@ -139,8 +145,19 @@ public class DataServiceController {
                 query.setMaxResults(maxResults);
 
             for (Map.Entry<String, String[]> entry : queryParams.entrySet()) {
-                query.addParameter(entry.getKey(), entry.getValue()[0]);
+                String paramKey = entry.getKey();
+                if (paramKey.endsWith("_type"))
+                    continue;
+
+                if (entry.getValue().length != 1) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                    return;
+                }
+                String paramValue = entry.getValue()[0];
+                Object parsedParam = parseQueryParameter(paramKey, paramValue, queryParams);
+                query.addParameter(paramKey, parsedParam);
             }
+
             loadCtx.setView(view == null ? View.LOCAL : view);
             List<Entity> entities = svc.loadList(loadCtx);
             Convertor convertor = conversionFactory.getConvertor(type);
@@ -242,8 +259,8 @@ public class DataServiceController {
             for (View view : views) {
                 MetaClass metaClass = MetadataProvider.getSession().getClass(view.getEntityClass());
                 if (!readPermitted(metaClass))
-                    continue;                                
-                
+                    continue;
+
                 List<View> viewList = meta2views.get(metaClass);
                 if (viewList == null) {
                     viewList = new ArrayList<View>();
@@ -254,9 +271,8 @@ public class DataServiceController {
 
             List<MetaClassRepresentation> classes = new ArrayList<MetaClassRepresentation>();
 
-            Collection<MetaClass> metas = MetadataHelper.getAllPersistentMetaClasses();
-            Collection<MetaClass> embeddable = MetadataHelper.getAllEmbeddableMetaClasses();
-            metas.addAll(embeddable);
+            Set<MetaClass> metas = new HashSet<MetaClass>(MetadataHelper.getAllPersistentMetaClasses());
+            metas.addAll(MetadataHelper.getAllEmbeddableMetaClasses());
             for (MetaClass meta : metas) {
                 if (!readPermitted(meta))
                     continue;
@@ -269,9 +285,14 @@ public class DataServiceController {
                 }
             });
 
-            Map<String, List<MetaClassRepresentation>> values = new HashMap<String, List<MetaClassRepresentation>>();
+            Map<String, Object> values = new HashMap<String, Object>();
             values.put("knownEntities", classes);
 
+            int typesNumber = Datatypes.getNames().size();
+            String[] availableTypes = Datatypes.getNames().toArray(new String[typesNumber]);
+            Arrays.sort(availableTypes);
+
+            values.put("availableTypes", availableTypes);
             Configuration cfg = new Configuration();
             cfg.setDefaultEncoding("UTF-8");
             cfg.setOutputEncoding("UTF-8");
@@ -281,6 +302,84 @@ public class DataServiceController {
             template.process(values, writer);
         } finally {
             authentication.forget();
+        }
+    }
+
+    private Object parseQueryParameter(String paramKey, String paramValue, Map<String, String[]> queryParams) {
+        String[] typeName = queryParams.get(paramKey + "_type");
+        //if the type is specified
+        if (typeName != null && typeName.length == 1) {
+            return parseByTypename(paramValue, typeName[0]);
+        }
+        //if the type is not specified
+        else if (typeName == null) {
+            return tryParse(paramValue);
+        }
+        //if several types have been declared
+        else {
+            throw new IllegalStateException("Too many parameters in request");
+        }
+    }
+
+    /**
+     * Tries to parse a string value into some of the available Datatypes
+     * when no Datatype was specified.
+     *
+     * @param value value to parse
+     * @return parsed value
+     */
+    private Object tryParse(String value) {
+        try {
+            return parseByDatatypeName(value, UUIDDatatype.NAME);
+        } catch (Exception ignored) {
+        }
+        try {
+            return parseByDatatypeName(value, DateTimeDatatype.NAME);
+        } catch (ParseException ignored) {
+        }
+        try {
+            return parseByDatatypeName(value,  TimeDatatype.NAME);
+        } catch (ParseException ignored) {
+        }
+        try {
+            return parseByDatatypeName(value, DateDatatype.NAME);
+        } catch (ParseException ignored) {
+        }
+        try {
+            return parseByDatatypeName(value, BigDecimalDatatype.NAME);
+        } catch (ParseException ignored) {
+        }
+        try {
+            return parseByDatatypeName(value, DoubleDatatype.NAME);
+        } catch (ParseException ignored) {
+        }
+        try {
+            if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+                return parseByDatatypeName(value, BooleanDatatype.NAME);
+            }
+        } catch (ParseException ignored) {
+        }
+        //return string value if couldn't parse into specific type
+        return value;
+    }
+
+    private Object parseByDatatypeName(String value, String name) throws ParseException {
+        Datatype datatype = Datatypes.get(name);
+        return datatype.parse(value);
+    }
+
+    /**
+     * Parses string value into specific type
+     * @param value value to parse
+     * @param typeName Datatype name
+     * @return parsed object
+     */
+    private Object parseByTypename(String value, String typeName) {
+        Datatype datatype = Datatypes.get(typeName);
+        try {
+            return datatype.parse(value);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Cannot parse specified parameter");
         }
     }
 
@@ -298,9 +397,9 @@ public class DataServiceController {
      * all of the entities.
      *
      * @param commitInstances entities to commit
-     * @param newInstanceIds ids of the new entities
+     * @param newInstanceIds  ids of the new entities
      * @return true - if the user can commit all of the requested entities, false -
-     * if he don't have permissions to commit at least one of the entities.
+     *         if he don't have permissions to commit at least one of the entities.
      */
     private boolean commitPermitted(Collection commitInstances, Collection newInstanceIds) {
         for (Object commitInstance : commitInstances) {
@@ -318,9 +417,10 @@ public class DataServiceController {
 
     /**
      * Checks if the user have permissions to remove all of the requested entities.
+     *
      * @param removeInstances entities to remove
      * @return true - if the user can remove all of the requested entities, false -
-     * if he don't have permissions to remove at least one of the entities.
+     *         if he don't have permissions to remove at least one of the entities.
      */
     private boolean removePermitted(Collection removeInstances) {
         for (Object removeInstance : removeInstances) {

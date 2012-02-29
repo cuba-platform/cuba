@@ -34,24 +34,31 @@
 </style>
 
 <#macro printView view>
-            <ul>
-            <#list view.properties as property>
+    <ul>
+        <#list view.properties as property>
                 <li>${property.name} ${property.lazy}</li>
                 <#if property.view ??>
                     <@printView view = property.view/>
                 </#if>
             </#list>
-          </ul>
+    </ul>
 </#macro>
 
 <body style="margin: 40px;">
 
 <h1>Domain model description</h1>
 
+<h2>Available basic types:</h2>
+<ul>
+    <#list availableTypes as type>
+        <li>${type}</li>
+    </#list>
+</ul>
+
 <h2>Known entities:</h2>
 <ul>
     <#list knownEntities as entity>
-        <li><a href="#${entity.name}">${entity.name}</a>
+        <li><a href="#${entity.name}">${entity.name}</a></li>
     </#list>
 </ul>
 

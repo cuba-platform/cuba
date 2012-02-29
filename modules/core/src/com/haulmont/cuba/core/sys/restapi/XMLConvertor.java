@@ -44,6 +44,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.*;
 
+/**
+ * @version $Id$
+ */
 public class XMLConvertor implements Convertor {
     public static final MimeType MIME_TYPE_XML;
     public static final String MIME_STR = "text/xml;charset=UTF-8";
@@ -54,7 +57,6 @@ public class XMLConvertor implements Convertor {
     public static final String ELEMENT_NULL_REF = "null";
     public static final String ELEMENT_MEMBER = "member";
     public static final String ATTR_ID = "id";
-    public static final String ATTR_TYPE = "type";
     public static final String ATTR_NAME = "name";
     public static final String ATTR_VERSION = "version";
     public static final String ATTR_NULL = "null";
@@ -314,7 +316,7 @@ public class XMLConvertor implements Convertor {
 
     private void setField(Object result, String fieldName, Object value) throws IllegalAccessException, InvocationTargetException, IntrospectionException {
         new PropertyDescriptor(fieldName, result.getClass()).
-                getWriteMethod().invoke(result, new Object[]{value});
+                getWriteMethod().invoke(result, value);
     }
 
     private void setNullField(Object bean, String fieldName) throws IllegalAccessException, InvocationTargetException, IntrospectionException {
@@ -455,7 +457,6 @@ public class XMLConvertor implements Convertor {
                                 property.getRange().getCardinality().name().replace(UNDERSCORE, DASH).toLowerCase()
                         );
                         child.setAttribute(ATTR_NAME, property.getName());
-                        child.setAttribute(ATTR_TYPE, typeOfEntityProperty(property));
                         if (isEmbedded) {
                             encodeEntityInstance(visited, (Entity) value, child, false, property.getRange().asClass());
                         } else {
@@ -464,7 +465,6 @@ public class XMLConvertor implements Convertor {
                     } else {
                         child = doc.createElement(getCollectionReferenceTag(property));
                         child.setAttribute(ATTR_NAME, property.getName());
-                        child.setAttribute(ATTR_TYPE, typeOf(property.getJavaType()));
                         child.setAttribute(ATTR_MEMBER_TYPE, typeOfEntityProperty(property));
                         if (value == null) {
                             encodeNull(child);
@@ -539,7 +539,6 @@ public class XMLConvertor implements Convertor {
      * @param runtimeType attribute type
      */
     private void encodeBasic(Element element, Object obj, Class<?> runtimeType) {
-        element.setAttribute(ATTR_TYPE, typeOf(runtimeType));
         element.setTextContent(obj == null ? NULL_VALUE : obj.toString());
     }
 

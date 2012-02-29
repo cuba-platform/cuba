@@ -8,10 +8,7 @@ package com.haulmont.cuba.core.sys.restapi.template;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewProperty;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
@@ -26,6 +23,8 @@ import java.util.Map;
  * Author: Alexander Chevelev
  * Date: 26.05.2011
  * Time: 0:11:34
+ *
+ * @version $Id$
  */
 public class MetaClassRepresentation {
     private MetaClass meta;
@@ -149,7 +148,6 @@ public class MetaClassRepresentation {
             }
             return result;
         }
-
     }
 
     public Collection<MetaClassRepView> getViews() {
@@ -158,9 +156,34 @@ public class MetaClassRepresentation {
 
         Collection<MetaClassRepView> result = new ArrayList<MetaClassRepView>();
         for (View view : views) {
+            if (!viewAccessPermitted(view))
+                continue;
             result.add(new MetaClassRepView(view));
         }
         return result;
+    }
+
+    private static boolean viewAccessPermitted(View view) {
+        Class clazz = view.getEntityClass();
+        MetaClass meta = getMetaClass(clazz);
+        return MetaClassRepresentation.readPermitted(meta);
+    }
+
+    private static MetaClass getMetaClass(Class clazz) {
+        return MetadataProvider.getSession().getClass(clazz);
+    }
+
+    private static boolean viewPropertyReadPermitted(MetaClass meta, ViewProperty viewProperty) {
+        if (!attrViewPermitted(meta, viewProperty.getName()))
+            return false;
+
+        MetaProperty metaProperty = meta.getProperty(viewProperty.getName());
+        if (metaProperty.getType() == MetaProperty.Type.DATATYPE
+                || metaProperty.getType() == MetaProperty.Type.ENUM)
+            return true;
+
+        MetaClass propertyMeta = metaProperty.getRange().asClass();
+        return readPermitted(propertyMeta);
     }
 
     public static class MetaClassRepView {
@@ -176,7 +199,10 @@ public class MetaClassRepresentation {
 
         public Collection<MetaClassRepViewProperty> getProperties() {
             Collection<MetaClassRepViewProperty> result = new ArrayList<MetaClassRepViewProperty>();
+            MetaClass meta = getMetaClass(view.getEntityClass());
             for (ViewProperty property : view.getProperties()) {
+                if (!MetaClassRepresentation.viewPropertyReadPermitted(meta, property))
+                    continue;
                 result.add(new MetaClassRepViewProperty(property));
             }
             return result;
@@ -216,11 +242,11 @@ public class MetaClassRepresentation {
         return session.isEntityAttrPermitted(metaClass, property, entityAttrAccess);
     }
 
-    private boolean readPermitted(MetaClass metaClass) {
+    private static boolean readPermitted(MetaClass metaClass) {
         return entityOpPermitted(metaClass, EntityOp.READ);
     }
 
-    private boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
+    private static boolean entityOpPermitted(MetaClass metaClass, EntityOp entityOp) {
         UserSession session = UserSessionProvider.getUserSession();
         return session.isEntityOpPermitted(metaClass, entityOp);
     }

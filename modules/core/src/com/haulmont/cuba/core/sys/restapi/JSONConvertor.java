@@ -46,6 +46,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.*;
 
+/**
+ *
+ * @version $Id$
+ */
 public class JSONConvertor implements Convertor {
     public static final String MIME_STR = "application/json;charset=UTF-8";
     public static final MimeType MIME_TYPE_JSON;
@@ -199,7 +203,9 @@ public class JSONConvertor implements Convertor {
                         setField(bean, key, child);
                     } else {
                         JSONArray jsonArray = json.getJSONArray(key);
-                        Collection coll = property.getRange().isOrdered() ? new ArrayList() : new HashSet();
+                        Collection<Object> coll = property.getRange().isOrdered()
+                                ? new ArrayList<Object>()
+                                : new HashSet<Object>();
                         setField(bean, key, coll);
 
                         for (int i = 0; i < jsonArray.length(); i++) {
@@ -267,7 +273,7 @@ public class JSONConvertor implements Convertor {
             }
             switch (property.getType()) {
                 case DATATYPE:
-                    root.set(property.getName(), property.getRange().<Object>asDatatype().format(value));
+                    root.set(property.getName(), property.getRange().asDatatype().format(value));
                     break;
                 case ENUM:
                     root.set(property.getName(), property.getRange().asEnumeration().format(value));
@@ -348,9 +354,5 @@ public class JSONConvertor implements Convertor {
 
     private MetaClass propertyMetaClass(MetaProperty property) {
         return property.getRange().asClass();
-    }
-
-    String typeOf(Entity entity) {
-        return entity.getClass().getSimpleName();
     }
 }

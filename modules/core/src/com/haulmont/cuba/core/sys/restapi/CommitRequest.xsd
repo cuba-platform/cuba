@@ -94,7 +94,6 @@
         <xsd:simpleContent>
             <xsd:extension base="xsd:string">
                 <xsd:attribute name="name" type="xsd:string" use="required"/>
-                <xsd:attribute name="type" type="xsd:string" use="required"/>
                 <xsd:attribute name="null" type="xsd:boolean"/>
             </xsd:extension>
         </xsd:simpleContent>
@@ -105,7 +104,6 @@
         <xsd:simpleContent>
             <xsd:extension base="xsd:hexBinary">
                 <xsd:attribute name="name" type="xsd:string" use="required"/>
-                <xsd:attribute name="type" type="xsd:string" use="required"/>
                 <xsd:attribute name="null" type="xsd:boolean"/>
             </xsd:extension>
         </xsd:simpleContent>
@@ -118,7 +116,6 @@
             <xsd:element name="ref" type="ref-type"/>
         </xsd:choice>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
-        <xsd:attribute name="type" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <!-- Collection attributes list their members with their runtime type -->
@@ -129,7 +126,6 @@
                          maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
-        <xsd:attribute name="type" type="xsd:string" use="required"/>
         <xsd:attribute name="member-type" type="xsd:string" use="required"/>
     </xsd:complexType>
 
@@ -140,7 +136,6 @@
             <xsd:element name="entry" type="entry-type"/>
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
-        <xsd:attribute name="type" type="xsd:string" use="required"/>
         <xsd:attribute name="key-type" type="xsd:string" use="required"/>
         <xsd:attribute name="value-type" type="xsd:string" use="required"/>
     </xsd:complexType>
