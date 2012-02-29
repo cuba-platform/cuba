@@ -176,6 +176,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         return createSnapshot(entity, view, TimeProvider.currentTimestamp());
     }
 
+    @Override
     public EntitySnapshot createSnapshot(BaseEntity entity, View view, Date snapshotDate) {
         if (entity == null)
             throw new NullPointerException("Could not be create snapshot for null entity");

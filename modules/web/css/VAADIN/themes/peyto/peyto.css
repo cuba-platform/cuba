@@ -627,6 +627,12 @@
     background: #FFF none;
 }
 
+.v-table-cell-content .v-button .v-button-link {
+    width: auto;
+    height: auto;
+    background: none transparent;
+}
+
 .v-table-cell-content .v-button:hover {
     height: 24px;
     width: 24px;

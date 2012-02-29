@@ -213,7 +213,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
             if (webConfig.getUseLightHeader()) {
                 foldersSplit.setShowHookButton(true);
-                foldersSplit.setDefaultPosition("300px");
+                foldersSplit.setDefaultPosition(webConfig.getFoldersPaneDefaultWidth() + "px");
             }
 
             foldersSplit.setOrientation(SplitPanel.ORIENTATION_HORIZONTAL);
