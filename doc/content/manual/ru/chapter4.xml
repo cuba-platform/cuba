@@ -224,6 +224,6 @@
       <imagedata align="center" fileref="img/interface_15.png"/>
     </imageobject>
   </mediaobject>
-  <para>Обратите внимание на поле <guilabel>Описание ценообразования</guilabel>. Это поле возволяет вводить многострочный текст.</para>
+  <para>Обратите внимание на поле <guilabel>Описание ценообразования</guilabel>. Это поле позволяет вводить многострочный текст.</para>
   <para>После нажатия на кнопку <guibutton>ОК</guibutton> информация о продаже сохранится в базе данных.</para>
 </chapter>

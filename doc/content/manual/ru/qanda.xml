@@ -27,7 +27,7 @@
   </qandaentry>
   <qandaentry>
     <question>
-      <para>Как  подключить историю открытых экранов карточки (меню  Помощь −&gt; История?</para>
+      <para>Как  подключить историю открытых экранов карточки (меню  Помощь −&gt; История)?</para>
     </question>
     <answer>
       <para>Откройте файл свойств <filename>ext-web-app.properties</filename> и напишите там следующее (пример приведен для сущности <classname>InvoiceForPayment (Счет на оплату)</classname>):</para>

@@ -465,9 +465,6 @@ public void setUnit(Unit unit) {
     &lt;/menu&gt;
 &lt;/menu-config&gt;</programlisting></para>
           <para>Для того чтобы ссылки отображались в меню корректно, создайте файлы <glossterm linkend="glossary_main_localized_folder_id">главного пакета сообщений</glossterm> расширения <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> в пакете <package>com.haulmont.shop</package> модуля <structname>web</structname>, прописав в них названия пункта меню на английском и русском языках соответственно.</para>
-          <para><programlisting>menu-config.ext$BudgetItem.browse=Статьи бюджета</programlisting></para>
-          <para>Для <glossterm linkend="glossary_localized_folders_id">локализации</glossterm> сообщений экрана создайте файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> в пакете экрана <package>com.haulmont.ext.web.ui.budgetitem</package>.
-Например, для русской локализации файл будет иметь следующий вид:</para>
           <programlisting>menu-config.shop=Магазин
 menu-config.shop$Product.browse=Товары</programlisting>
         </listitem>
@@ -542,7 +539,7 @@ menu-config.shop$Product.browse=Товары</programlisting>
                 src = &quot;/com/haulmont/cuba/gui/edit-window.actions.xml&quot;/&gt;
     &lt;/layout&gt;
 &lt;/window&gt;</programlisting>
-          <para>В экран редактирования будет передаваться одна сущность либо на создание, либо на изменение и проставляться в <property>datasource</property>. Поэтому вместо <property>collectionDatasource</property> объявлен <property>datasource</property>.</para>
+          <para>В экран редактирования будет передаваться одна сущность либо на создание, либо на изменение, и проставляться в <property>datasource</property>. Поэтому вместо <property>collectionDatasource</property> объявлен <property>datasource</property>.</para>
           <para>Для отображения набора атрибутов редактируемой или создаваемой сущности используется компонент FieldGroup (XML-имя компонента − <parameter>fieldGroup</parameter>).</para>
           <mediaobject>
             <imageobject>
