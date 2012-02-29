@@ -842,6 +842,7 @@ create table SYS_ENTITY_SNAPSHOT (
     ENTITY_ID uniqueidentifier,
     VIEW_XML varchar(max),
     SNAPSHOT_XML varchar(max),
+    SNAPSHOT_DATE datetime,
 	primary key nonclustered (ID)
 )^
 

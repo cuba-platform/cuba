@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.global.EntityDiff;
 import com.haulmont.cuba.core.global.View;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -36,6 +37,12 @@ public class EntitySnapshotServiceBean implements EntitySnapshotService {
     public EntitySnapshot createSnapshot(BaseEntity entity, View view) {
         EntitySnapshotAPI snapshotAPI = Locator.lookup(EntitySnapshotAPI.NAME);
         return snapshotAPI.createSnapshot(entity, view);
+    }
+
+    @Override
+    public EntitySnapshot createSnapshot(BaseEntity entity, View view, Date snapshotDate) {
+        EntitySnapshotAPI snapshotAPI = Locator.lookup(EntitySnapshotAPI.NAME);
+        return snapshotAPI.createSnapshot(entity, view, snapshotDate);
     }
 
     @Override

@@ -12,7 +12,9 @@
 
     <dsContext>
         <collectionDatasource id="snapshotsDs" class="com.haulmont.cuba.core.entity.EntitySnapshot"
-                              view="_local" refreshMode="NEVER"/>
+                              view="_local">
+            <datasourceClass>com.haulmont.cuba.gui.app.core.entitydiff.EntitySnapshotsDatasource</datasourceClass>
+        </collectionDatasource>
 
         <datasource id="entityDiffDs" view="_local" class="com.haulmont.cuba.core.global.EntityDiff">
             <datasourceClass>com.haulmont.cuba.gui.app.core.entitydiff.EntityDiffDatasource</datasourceClass>
@@ -25,12 +27,12 @@
     <layout expand="vBox">
         <vbox id="vBox" expand="diffSplit">
             <split id="diffSplit" orientation="horizontal" pos="20">
-                <vbox expand="versionsList" spacing="true" margin="true">
+                <vbox expand="snapshotsTable" spacing="true" margin="true">
                     <label value="msg://versions" stylename="h2"/>
                     <buttonsPanel>
-                        <button id="compareBtn" icon="icons/copy.png"/>
+                        <button id="compareBtn" icon="icons/copy.png" caption="actions.Compare" invoke="compareSnapshoots"/>
                     </buttonsPanel>
-                    <table id="versionsList" height="250px" multiselect="true">
+                    <table id="snapshotsTable" height="250px" multiselect="true">
                         <columns>
                             <column id="author"/>
                             <column id="changeDate"/>

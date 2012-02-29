@@ -43,6 +43,9 @@ public class EntitySnapshot extends BaseUuidEntity {
     @Column(name = "ENTITY_META_CLASS")
     private String entityMetaClass;
 
+    @Column(name = "SNAPSHOT_DATE")
+    private Date snapshotDate;
+
     @Column(name = "ENTITY_ID")
     @Persistent
     private UUID entityId;
@@ -98,6 +101,14 @@ public class EntitySnapshot extends BaseUuidEntity {
 
     @MetaProperty
     public Date getChangeDate() {
-        return this.createTs;
+        return this.snapshotDate;
+    }
+
+    public Date getSnapshotDate() {
+        return snapshotDate;
+    }
+
+    public void setSnapshotDate(Date snapshotDate) {
+        this.snapshotDate = snapshotDate;
     }
 }

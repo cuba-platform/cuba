@@ -1,0 +1,3 @@
+-- $Id$ Add SNAPSHOT_DATE to SYS_ENTITY_SNAPSHOT
+
+alter table SYS_ENTITY_SNAPSHOT add column SNAPSHOT_DATE timestamp^

@@ -10,11 +10,11 @@
 package com.haulmont.cuba.gui.data;
 
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.View;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
-import java.util.Collection;
 
 /**
  * Root of datasources abstraction layer. Contains one entity instance.
@@ -62,7 +62,7 @@ public interface Datasource<T extends Entity> extends Serializable {
     T getItem();
 
     /** Set current item */
-    void setItem(T item);
+    void setItem(@Nullable T item);
 
     /**
      * Clears internal data and sets the datasource in {@link State#INVALID} state.

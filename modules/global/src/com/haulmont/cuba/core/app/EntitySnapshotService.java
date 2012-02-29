@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.global.EntityDiff;
 import com.haulmont.cuba.core.global.View;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -40,6 +41,16 @@ public interface EntitySnapshotService {
      * @return Snapshot
      */
     EntitySnapshot createSnapshot(BaseEntity entity, View view);
+
+    /**
+     * Create snapshot for Entity with specific date and store it to database
+     *
+     * @param entity       Entity
+     * @param view         View
+     * @param snapshotDate Date
+     * @return Snapshot
+     */
+    EntitySnapshot createSnapshot(BaseEntity entity, View view, Date snapshotDate);
 
     /**
      * Get entity from snapshot

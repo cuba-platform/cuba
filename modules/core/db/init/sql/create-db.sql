@@ -887,9 +887,9 @@ create table SYS_ENTITY_SNAPSHOT (
     ENTITY_ID varchar(36),
     VIEW_XML longvarchar,
     SNAPSHOT_XML longvarchar,
+    SNAPSHOT_DATE timestamp,
 	primary key (ID)
 );
-
 
 -------------------------------------------------------------------------------------------------------------
 

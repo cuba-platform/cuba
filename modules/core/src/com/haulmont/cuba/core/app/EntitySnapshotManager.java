@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.EntitySnapshot;
 import com.haulmont.cuba.core.global.EntityDiff;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.View;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.ExternalizableConverter;
@@ -23,6 +24,7 @@ import org.dom4j.*;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -171,7 +173,10 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
     @Override
     public EntitySnapshot createSnapshot(BaseEntity entity, View view) {
+        return createSnapshot(entity, view, TimeProvider.currentTimestamp());
+    }
 
+    public EntitySnapshot createSnapshot(BaseEntity entity, View view, Date snapshotDate) {
         if (entity == null)
             throw new NullPointerException("Could not be create snapshot for null entity");
 
@@ -192,6 +197,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
 
         snapshot.setViewXml(toXML(view));
         snapshot.setSnapshotXml(toXML(entity));
+        snapshot.setSnapshotDate(snapshotDate);
 
         Transaction tx = persistence.createTransaction();
         try {

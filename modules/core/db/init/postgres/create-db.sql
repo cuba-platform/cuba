@@ -819,6 +819,7 @@ create table SYS_ENTITY_SNAPSHOT (
     ENTITY_ID uuid,
     VIEW_XML text,
     SNAPSHOT_XML text,
+    SNAPSHOT_DATE timestamp,
 	primary key (ID)
 )^
 
