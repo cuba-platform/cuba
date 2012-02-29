@@ -25,29 +25,6 @@
 &lt;/window&gt;</programlisting></para>
     </answer>
   </qandaentry>
-  <qandaentry>
-    <question>
-      <para>Как  подключить историю открытых экранов карточки (меню  Помощь −&gt; История)?</para>
-    </question>
-    <answer>
-      <para>Откройте файл свойств <filename>ext-web-app.properties</filename> и напишите там следующее (пример приведен для сущности <classname>InvoiceForPayment (Счет на оплату)</classname>):</para>
-      <para><programlisting>cuba.screenIdsToSaveHistory=tm$Task.edit,df$SimpleDoc.edit,\
-                            df$Contract.edit,tm$TaskPattern.edit,\
-                            tm$TaskGroupPattern.edit,\tm$TaskGroup.edit,\
-                            tm$TaskType.edit,df$DocType.edit,\
-                            df$DocKind.edit,df$OfficeFileNomenclature.edit,\
-                            df$OfficeFile.edit,df$DocReceivingMethod.edit,\
-                            tm$Priority.edit,tm$ProjectGroup.edit,\
-                            df$Category.edit,wf$UserGroup.edit,\
-                            wf$AttachTypes.edit,df$Organization.edit,\
-                            df$Department.edit,df$Employee.edit,\
-                            df$Company.edit,df$Individual.edit,\
-                            df$Currency.edit,df$Bank.edit,\
-                            df$BankRegion.edit,sec$User.edit,sec$Group.edit,\
-                            sec$Role.edit,tm$ScheduleTask.edit,\
-                            ext$InvoiceForPayment.edit</programlisting></para>
-    </answer>
-  </qandaentry>
   <qandaentry id="faq_restart_id">
     <question>
       <para>Как пересобрать проект?</para>
