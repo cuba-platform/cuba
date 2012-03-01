@@ -42,7 +42,8 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(LinkButton.NAME, DesktopLinkButton.class);
         classes.put(Label.NAME, DesktopLabel.class);
         classes.put(CheckBox.NAME, DesktopCheckBox.class);
-        classes.put(TextField.NAME, DesktopTextField.class);
+        //Use resizable text area instead of text field
+        classes.put(TextField.NAME, DesktopResizableTextField.class);
         classes.put(AutoCompleteTextField.NAME, DesktopAutoCompleteTextField.class);
         classes.put(DateField.NAME, DesktopDateField.class);
         classes.put(Table.NAME, DesktopTable.class);

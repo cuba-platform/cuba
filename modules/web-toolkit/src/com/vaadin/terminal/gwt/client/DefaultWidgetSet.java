@@ -15,8 +15,6 @@
  */
 package com.vaadin.terminal.gwt.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Widget;
 import com.haulmont.cuba.toolkit.gwt.client.swfupload.VSwfUpload;
 import com.haulmont.cuba.toolkit.gwt.client.ui.*;
 import com.vaadin.terminal.gwt.client.ui.*;
@@ -53,6 +51,9 @@ public class DefaultWidgetSet extends WidgetSet {
             } else if (uidl.hasAttribute("secret")) {
                 return VPasswordField.class;
             }
+        } else if (widgetClass == VResizableTextField.class) {
+            if (!uidl.hasAttribute("multiline"))
+                return VTextField.class;
         } else if (widgetClass == VSplitPanelHorizontal.class
                 && uidl.hasAttribute("vertical")) {
             return VSplitPanelVertical.class;

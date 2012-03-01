@@ -104,5 +104,4 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
             }
         }
     }
-
 }

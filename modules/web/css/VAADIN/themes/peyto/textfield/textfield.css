@@ -35,6 +35,7 @@ input.v-maskedfield-onlymask:focus {
 	/*border-right-color: #d6d6d6;*/
 	margin: 0;
 	font-size: 12px;
+	resize: none;
 }
 
 .v-textfield:focus,
@@ -98,4 +99,14 @@ input.v-maskedfield-onlymask:focus {
 .v-sa input:focus,
 .v-sa textarea:focus{
     outline: 0;
+}
+
+.v-resizable-textarea-div {
+	z-index: 1001;
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 16px;
+    height: 16px;
+    background: transparent url(img/resizable.png);
 }

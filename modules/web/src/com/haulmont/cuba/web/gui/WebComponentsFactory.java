@@ -41,8 +41,9 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put(Label.NAME, WebLabel.class);
         classes.put(CheckBox.NAME, WebCheckBox.class);
         classes.put(GroupBox.NAME, WebGroupBox.class);
-        classes.put(TextField.NAME, WebTextField.class);
         classes.put(AutoCompleteTextField.NAME, WebAutoCompleteTextField.class);
+        //Use resizable text area instead of text field
+        classes.put(ResizableTextField.NAME, WebResizableTextField.class);
         classes.put(TextArea.NAME, WebTextArea.class);
         classes.put(IFrame.NAME, WebFrame.class);
         classes.put(Table.NAME, WebTable.class);
