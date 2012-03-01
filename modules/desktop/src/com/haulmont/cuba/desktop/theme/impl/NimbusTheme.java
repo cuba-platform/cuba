@@ -23,7 +23,7 @@ public class NimbusTheme extends DesktopThemeImpl {
         super.init();
 
         UIDefaults lafDefaults = UIManager.getLookAndFeelDefaults();
-
+        lafDefaults.put("Nimbus.keepAlternateRowColor", true); // deny SwingX to remove alternate row color
         lafDefaults.put("ComboBox:\"ComboBox.textField\"[Enabled].backgroundPainter", new MandatoryComboBoxComboBoxTextFieldPainter());
 
         /*// TextField

@@ -70,7 +70,7 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         if (componentClass == null) {
             return true;
         }
-        for (Class readOnlyClass: readOnlyComponentClasses) {
+        for (Class readOnlyClass : readOnlyComponentClasses) {
             if (componentClass.isAssignableFrom(readOnlyClass)) {
                 return false;
             }
@@ -86,7 +86,7 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         if (componentClass == null) {
             return false;
         }
-        for (Class inlineClass: inlineComponentClasses) {
+        for (Class inlineClass : inlineComponentClasses) {
             if (componentClass.isAssignableFrom(inlineClass)) {
                 return true;
             }
@@ -185,6 +185,12 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         } else {
             jcomponent.setForeground(table.getForeground());
             Color background = DefaultLookup.getColor(jcomponent, table.getUI(), "Table:\"Table.cellRenderer\".background");
+            if (row % 2 == 0) {
+                Color alternateColor = UIManager.getColor("Table.alternateRowColor");
+                if (alternateColor != null) {
+                    background = alternateColor;
+                }
+            }
             jcomponent.setBackground(background);
         }
 
