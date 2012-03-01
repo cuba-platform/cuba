@@ -113,7 +113,7 @@ create table SYS_SCHEDULED_TASK (
     PERMITTED_SERVERS varchar(500),
     LOG_START boolean,
     LOG_FINISH boolean,
-    LAST_START_TIME timestamp,
+    LAST_START_TIME timestamp with time zone,
     LAST_START_SERVER varchar(50),
     --
     primary key (ID)
@@ -130,8 +130,8 @@ create table SYS_SCHEDULED_EXECUTION (
     --
     TASK_ID uuid,
     SERVER varchar(50),
-    START_TIME timestamp,
-    FINISH_TIME timestamp,
+    START_TIME timestamp with time zone,
+    FINISH_TIME timestamp with time zone,
     RESULT text,
     --
     primary key (ID),
