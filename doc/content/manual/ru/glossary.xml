@@ -516,6 +516,46 @@ actions.Edit=Edit
     </glossentry>
   </glossdiv>
   <glossdiv>
+    <title>I</title>
+    <glossentry id="glossary_instanceName_id">
+      <glossterm>
+        <emphasis role="bold">Instance Name</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Для формирования текстового имени объекта и отображении его в графическом интерфейсе пользователя используется <emphasis role="bold">Instance Name</emphasis>, задающееся в аннотации <literal>@NamePattern</literal> на классе сущности.</para>
+        <para>Формат паттерна: {0}|{1}, где</para>
+        <itemizedlist>
+          <listitem>
+            <para>{0} − либо format string, как для String.format(), либо имя метода (предваренное символом #) данного объекта, возвращающее строку.</para>
+          </listitem>
+          <listitem>
+            <para>{1} − разделенный запятыми список полей, соответствующий формату {0}. Данный список полей используется также при формировании <glossterm linkend="glossary_view_ru_id">view</glossterm> _minimal.</para>
+          </listitem>
+        </itemizedlist>
+        <para>Пробелы между частями паттерна и между полями не допускаются.</para>
+        <para>Пример с format string:</para>
+        <para><programlisting>@NamePattern(&quot;%s : %s|name,address&quot;)</programlisting></para>
+        <para>Пример с методом:</para>
+        <para><programlisting>@NamePattern(&quot;#getCaption|login,name&quot;)
+public class User extends StandardEntity
+{
+...
+    public String getCaption() {
+        String pattern = AppContext.getProperty(&quot;cuba.user.namePattern&quot;);
+        if (StringUtils.isBlank(pattern)) {
+            pattern = &quot;{1} [{0}]&quot;;
+        }
+        MessageFormat fmt = new MessageFormat(pattern);
+        return fmt.format(new Object[] {login, name});
+    }
+}</programlisting></para>
+        <para>Для получения имени конкретного экземпляра необходимо привести объект к типу <classname>Instance</classname> и вызвать метод <methodname>getInstanceName()</methodname>. Например:</para>
+        <para><programlisting>String instanceName = ((Instance) server).getInstanceName();</programlisting></para>
+        <para>Если для данного класса сущности аннотация <literal>@NamePattern</literal> не задана, <methodname>getInstanceName()</methodname> эквивалентен методу <methodname>toString()</methodname>.</para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
     <title>L</title>
     <glossentry id="glossary_lookupfield_id">
       <glossterm>
@@ -635,6 +675,15 @@ MBean является расширенным вариантом <glossterm link
 
 Сервисы могут содержать бизнес-логику внутри себя, либо делегировать выполнение <glossterm linkend="glossary_managedBean_id">Managed Beans</glossterm>.</para>
       </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv lang="ru">
+    <title>N</title>
+    <glossentry id="glossary_namePattern_id">
+      <glossterm>
+        <emphasis role="bold">NamePattern</emphasis>
+      </glossterm>
+      <glosssee otherterm="glossary_instanceName_id"/>
     </glossentry>
   </glossdiv>
   <glossdiv lang="ru">

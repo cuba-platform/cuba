@@ -92,6 +92,9 @@
       <para>Панель с кнопками <guibutton>Создать</guibutton>, <guibutton>Изменить</guibutton>, <guibutton>Удалить</guibutton>, <guibutton>Excel</guibutton>, <guibutton>Обновить</guibutton>.</para>
     </listitem>
     <listitem>
+      <para>Панель с фильтром.</para>
+    </listitem>
+    <listitem>
       <para>Таблица, содержащая сведения о товарах.</para>
     </listitem>
   </itemizedlist>
@@ -112,6 +115,9 @@
   <itemizedlist>
     <listitem>
       <para>Панель с кнопками <guibutton>Создать</guibutton>, <guibutton>Изменить</guibutton>, <guibutton>Удалить</guibutton>, <guibutton>Excel</guibutton>, <guibutton>Обновить</guibutton>.</para>
+    </listitem>
+    <listitem>
+      <para>Панель с фильтром.</para>
     </listitem>
     <listitem>
       <para>Таблица, содержащая сведения о покупателях.</para>
@@ -176,6 +182,9 @@
       <para>Панель с кнопками <guibutton>Создать</guibutton>, <guibutton>Изменить</guibutton>, <guibutton>Удалить</guibutton>, <guibutton>Excel</guibutton>, <guibutton>Обновить</guibutton>.</para>
     </listitem>
     <listitem>
+      <para>Панель с фильтром.</para>
+    </listitem>
+    <listitem>
       <para>Таблица, содержащая сведения о продавцах.</para>
     </listitem>
   </itemizedlist>
@@ -196,6 +205,9 @@
   <itemizedlist>
     <listitem>
       <para>Панель с кнопками <guibutton>Создать</guibutton>, <guibutton>Изменить</guibutton>, <guibutton>Удалить</guibutton>, <guibutton>Excel</guibutton>, <guibutton>Обновить</guibutton>.</para>
+    </listitem>
+    <listitem>
+      <para>Панель с фильтром.</para>
     </listitem>
     <listitem>
       <para>Таблица, содержащая сведения о продавцах.</para>

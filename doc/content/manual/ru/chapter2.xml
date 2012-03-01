@@ -217,7 +217,7 @@ public class Product extends StandardEntity {
     </warning>
     <para>Классы сущностей должны быть соответствующим образом проаннотированы. </para>
     <para>Аннотация <literal>@Entity</literal> определяет сущность. </para>
-    <para>Для формирования текстового имени объекта и отображении его в графическом интерфейсе пользователя используется аннотация <literal>@NamePattern</literal> на классе сущности.</para>
+    <para>Для формирования текстового имени объекта и отображении его в графическом интерфейсе пользователя используется аннотация <glossterm linkend="glossary_namePattern_id">@NamePattern</glossterm> на классе сущности.</para>
     <para>Аннотация <literal>@Table</literal> указывает на таблицу базы данных, соответствующую классу сущности.</para>
     <para>Более подробно об аннотациях можно прочитать в документации по OpenJPA <ulink url="http://openjpa.apache.org">http://openjpa.apache.org</ulink></para>
     <para>После создания класса зарегистрируйте его в файле <filename>shop-persistence.xml</filename>:</para>
@@ -405,7 +405,14 @@ public void setUnit(Unit unit) {
               expand=&quot;productsTable&quot;
               spacing=&quot;true&quot;
               height=&quot;100%&quot;&gt;
-
+            &lt;groupBox id=&quot;filterBox&quot; collapsable=&quot;false&quot; stylename=&quot;edit-area&quot;&gt;
+                &lt;filter id=&quot;genericProductFilter&quot;
+                        datasource=&quot;productsDs&quot;
+                        width=&quot;100%&quot;&gt;
+                    &lt;properties include=&quot;.*&quot;
+                                exclude=&quot;&quot;/&gt;
+                &lt;/filter&gt;
+            &lt;/groupBox&gt;
             &lt;table id=&quot;productsTable&quot;
                    editable=&quot;false&quot;&gt;
                 &lt;actions&gt;
@@ -435,6 +442,12 @@ public void setUnit(Unit unit) {
 &lt;/window&gt;</programlisting></para>
           <para>В элементе <property>dsContext</property> добавлен один компонент <glossterm linkend="glossary_datasource_id">источника данных</glossterm>  <parameter>collectionDatasource</parameter>, который  выбирает сущности <classname>Product</classname> с помощью JPQL запроса  <classname>select p from shop$Product p order by p.name</classname> (Подробнее о JPQL можно прочитать на сайте <ulink url="http://openjpa.apache.org/">http://openjpa.apache.org/</ulink>) с <glossterm linkend="glossary_view_ru_id">представлением</glossterm> view=<emphasis role="italic">&quot;_local&quot;</emphasis>. </para>
           <para>Рассмотрим элементы дескриптора более подробно.</para>
+          <para>Компонент <glossterm linkend="glossary_filter_id">Generic Filter</glossterm> (XML-имя компонента − <parameter>filter</parameter>) служит для отображения произвольного фильтра.</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/generic_filter.png"/>
+            </imageobject>
+          </mediaobject>
           <para>Компонент <glossterm linkend="glossary_table_id">Table</glossterm> (XML-имя компонента − <parameter>table</parameter>) служит для отображения данных в виде таблицы.</para>
           <mediaobject>
             <imageobject>
@@ -487,11 +500,14 @@ menu-config.shop$Product.browse=Товары</programlisting>
       <para>Посмотрим, как созданный нами экран выглядит в системе. Для этого  <link linkend="faq_restart_id">пересоберите проект</link> и зайдите в систему. Откройте пункт меню <guimenu>Магазин</guimenu> −&gt; <guimenu>Товары</guimenu>.</para>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="img/create_browser_3.png" width="100%"/>
+          <imagedata align="center" fileref="img/interface_17.png" width="100%"/>
         </imageobject>
       </mediaobject>
       <para>Можно убедиться, что данный экран содержит следующие элементы:</para>
       <itemizedlist>
+        <listitem>
+          <para>Панель с фильтром.</para>
+        </listitem>
         <listitem>
           <para>Панель с кнопками <guibutton>Создать</guibutton>, <guibutton>Изменить</guibutton>, <guibutton>Удалить</guibutton>, <guibutton>Обновить</guibutton>, <guibutton>Excel</guibutton> и с меткой, отображающей число записей в таблице.</para>
         </listitem>
@@ -509,34 +525,32 @@ menu-config.shop$Product.browse=Товары</programlisting>
         <listitem>
           <para><glossterm linkend="glossary_xml_descriptor_id">XML-дескриптора</glossterm> <filename>product-edit.xml</filename>. Для того чтобы  экран редактирования сущности <classname>Товар</classname> имел поля для ввода наименования, стоимости единицы и названия единицы, XML-дескриптор должен иметь следующий вид:</para>
           <programlisting>&lt;window
-        xmlns = &quot;http://www.haulmont.com/schema/cuba/gui/window.xsd&quot;
-        class = &quot;com.haulmont.shop.gui.ui.product.ProductEditor&quot;
-        caption = &quot;msg://editorCaption&quot;
-        datasource = &quot;productDs&quot;
-        messagesPack = &quot;com.haulmont.shop.gui.ui.product&quot;
-        focusComponent = &quot;fieldGroup&quot;&gt;
+        xmlns=&quot;http://www.haulmont.com/schema/cuba/gui/window.xsd&quot;
+        class=&quot;com.haulmont.shop.gui.ui.product.ProductEditor&quot;
+        caption=&quot;msg://editorCaption&quot;
+        datasource=&quot;productDs&quot;
+        messagesPack=&quot;com.haulmont.shop.gui.ui.product&quot;
+        focusComponent=&quot;fieldGroup&quot;&gt;
 
     &lt;dsContext&gt;
-        &lt;datasource id = &quot;productDs&quot;
-                    class = &quot;com.haulmont.shop.core.entity.Product&quot;
-                    view = &quot;editProduct&quot;/&gt;
+        &lt;datasource id=&quot;productDs&quot;
+                    class=&quot;com.haulmont.shop.core.entity.Product&quot;
+                    view=&quot;editProduct&quot;/&gt;
     &lt;/dsContext&gt;
 
-    &lt;layout expand = &quot;windowActions&quot;&gt;
-        &lt;vbox spacing = &quot;true&quot;&gt;
-            &lt;fieldGroup id = &quot;fieldGroup&quot;
-                        datasource = &quot;productDs&quot;
-                        stylename = &quot;edit-area&quot;&gt;
-                &lt;column width = &quot;250px&quot;&gt;
-                    &lt;field id = &quot;name&quot;
-                           required = &quot;true&quot;/&gt;
-                    &lt;field id = &quot;price&quot;/&gt;
-                    &lt;field id=&quot;unit&quot;/&gt;
-                &lt;/column&gt;
-            &lt;/fieldGroup&gt;
-        &lt;/vbox&gt;
-        &lt;iframe id = &quot;windowActions&quot;
-                src = &quot;/com/haulmont/cuba/gui/edit-window.actions.xml&quot;/&gt;
+    &lt;layout expand=&quot;windowActions&quot;&gt;
+        &lt;fieldGroup id=&quot;fieldGroup&quot;
+                    datasource=&quot;productDs&quot;
+                    stylename=&quot;edit-area&quot;&gt;
+            &lt;column width=&quot;250px&quot;&gt;
+                &lt;field id=&quot;name&quot;
+                       required=&quot;true&quot;/&gt;
+                &lt;field id=&quot;price&quot;/&gt;
+                &lt;field id=&quot;unit&quot;/&gt;
+            &lt;/column&gt;
+        &lt;/fieldGroup&gt;
+        &lt;iframe id=&quot;windowActions&quot;
+                src=&quot;/com/haulmont/cuba/gui/edit-window.actions.xml&quot;/&gt;
     &lt;/layout&gt;
 &lt;/window&gt;</programlisting>
           <para>В экран редактирования будет передаваться одна сущность либо на создание, либо на изменение, и проставляться в <property>datasource</property>. Поэтому вместо <property>collectionDatasource</property> объявлен <property>datasource</property>.</para>
