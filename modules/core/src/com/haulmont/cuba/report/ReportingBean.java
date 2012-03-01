@@ -304,7 +304,8 @@ public class ReportingBean implements ReportingApi {
         List<Map<String, Object>> result = null;
         DataSetType dataSetType = dataSet.getType();
 
-        if (StringUtils.isBlank(dataSet.getText()))
+        if (StringUtils.isBlank(dataSet.getText())
+                && ((dataSet.getType() != DataSetType.SINGLE) || (dataSet.getType() == DataSetType.MULTI)))
             throw new ReportingException("Please specify code for dataset: " + dataSet.getName());
 
         DataLoader loader = null;
