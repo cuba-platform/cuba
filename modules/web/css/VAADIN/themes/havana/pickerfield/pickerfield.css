@@ -5,8 +5,13 @@
 }
 
 .pickerfield .v-button {
-    height: 18px;
+    height: 24px;
     line-height: 18px;
+    background: url(img/lookup-picker-btn.png);
+}
+
+.pickerfield.v-readonly .v-button {
+    background: url(img/lookup-picker-btn-readonly.png);
 }
 
 .pickerfield .v-button-caption {
@@ -25,8 +30,4 @@
 
 .pickerfield {
     background-color: #fff;
-}
-
-.pickerfield.v-readonly {
-    background-color: transparent;
 }

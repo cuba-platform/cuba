@@ -186,16 +186,16 @@
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasEditState">
-        <xs:attribute name="editable" type="xs:string" use="optional"/>
-        <xs:attribute name="enable" type="xs:string" use="optional"/>
+        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
+        <xs:attribute name="enable" type="xs:boolean" use="optional"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasEditable">
-        <xs:attribute name="editable" type="xs:string" use="optional"/>
+        <xs:attribute name="editable" type="xs:boolean" use="optional"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasEnableProp">
-        <xs:attribute name="enable" type="xs:string" use="optional"/>
+        <xs:attribute name="enable" type="xs:boolean" use="optional"/>
     </xs:attributeGroup>
 
     <xs:attributeGroup name="hasDatasource">
