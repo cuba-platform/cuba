@@ -13,7 +13,6 @@ import com.haulmont.cuba.gui.components.Table;
 import org.jdesktop.swingx.JXHyperlink;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
-import sun.swing.DefaultLookup;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -184,9 +183,9 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
             }
         } else {
             jcomponent.setForeground(table.getForeground());
-            Color background = DefaultLookup.getColor(jcomponent, table.getUI(), "Table:\"Table.cellRenderer\".background");
+            Color background = UIManager.getDefaults().getColor("Table:\"Table.cellRenderer\".background");
             if (row % 2 == 0) {
-                Color alternateColor = UIManager.getColor("Table.alternateRowColor");
+                Color alternateColor = UIManager.getDefaults().getColor("Table.alternateRowColor");
                 if (alternateColor != null) {
                     background = alternateColor;
                 }
@@ -250,10 +249,10 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
             if (hasFocus) {
                 Border border = null;
                 if (isSelected) {
-                    border = DefaultLookup.getBorder(jcomponent, table.getUI(), "Table.focusSelectedCellHighlightBorder");
+                    border = UIManager.getDefaults().getBorder("Table.focusSelectedCellHighlightBorder");
                 }
                 if (border == null) {
-                    border = DefaultLookup.getBorder(jcomponent, table.getUI(), "Table.focusCellHighlightBorder");
+                    border = UIManager.getDefaults().getBorder("Table.focusCellHighlightBorder");
                 }
                 jcomponent.setBorder(border);
             } else {
@@ -263,7 +262,7 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
     }
 
     private Border getNoFocusBorder(JComponent jcomponent, JTable table) {
-        Border border = DefaultLookup.getBorder(jcomponent, table.getUI(), "Table.cellNoFocusBorder");
+        Border border = UIManager.getDefaults().getBorder("Table.cellNoFocusBorder");
         return border;
     }
 

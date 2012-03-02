@@ -61,6 +61,7 @@ public class DesktopLookupField
     private JPanel composition;
 
     private DefaultValueFormatter valueFormatter;
+    private boolean enabled;
 
     public DesktopLookupField() {
         composition = new JPanel();
@@ -333,7 +334,7 @@ public class DesktopLookupField
     @Override
     public void updateMissingValueState() {
         Component editorComponent = comboBox.getEditor().getEditorComponent();
-        boolean value = required && editable && editorComponent instanceof JTextComponent
+        boolean value = required && editable && enabled && editorComponent instanceof JTextComponent
                 && StringUtils.isEmpty(((JTextComponent) editorComponent).getText());
         decorateMissingValue(comboBox, value);
     }
@@ -395,5 +396,18 @@ public class DesktopLookupField
         } finally {
             settingValue = false;
         }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        comboBox.setEnabled(enabled);
+        textField.setEnabled(enabled);
+        updateMissingValueState();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
     }
 }
