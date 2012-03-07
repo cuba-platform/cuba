@@ -3,7 +3,7 @@
   <title>Создание исходного кода приложения</title>
   <section>
     <title>Описание предметной области</title>
-    <para>Учебное приложение предназначено для хранения сведений о товарах, продавцах, покупателях, продажах и скидках. </para>
+    <para>Учебное приложение предназначено для хранения сведений о товарах, продавцах, покупателях, продажах и скидках. Пользователем системы является продавец.</para>
     <para>Товар имеет следующие характеристики: </para>
     <itemizedlist>
       <listitem>
@@ -91,7 +91,30 @@
         <para>Датой окончания скидки</para>
       </listitem>
     </itemizedlist>
-    <para>Система должна предоставлять доступ к просмотру списка товаров, продаж и продавцов, а также к экрану редактирования товара, продажи и продавца. Должна быть возможность просматривать список покупателей и редактировать профиль покупателя, включающий редактирование скидок покупателя.</para>
+    <para>Требования к системе:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Система должна предоставлять доступ к просмотру списка товаров, продаж и продавцов, а также к экрану редактирования товара, продажи и продавца.</para>
+      </listitem>
+      <listitem>
+        <para>Должен быть инструмент, позволяющий задавать соответствие пользователя системы  продавцу.</para>
+      </listitem>
+      <listitem>
+        <para>Должна быть возможность просматривать список покупателей и редактировать профиль покупателя, включающий редактирование скидок покупателя.</para>
+      </listitem>
+      <listitem>
+        <para>Настроить права доступа в системе так, чтобы продавец видел только свой профиль и только свои продажи.</para>
+      </listitem>
+      <listitem>
+        <para>Настроить делегирование полномочий одних пользователей другим пользователям.</para>
+      </listitem>
+      <listitem>
+        <para>Настроить аудит изменений.</para>
+      </listitem>
+      <listitem>
+        <para>В экране редактирования информации о продаже должна быть кнопка, по нажатии на которую считается цена продажи исходя из выбранного покупателя, товара, даты заказа и количества товара.</para>
+      </listitem>
+    </itemizedlist>
   </section>
   <section>
     <title>Создание таблиц базы данных</title>
@@ -685,5 +708,365 @@ public void setItem(Entity item) {
    super.setItem(item);
 }</programlisting></para>
     </section>
+  </section>
+  <section>
+    <title>Создание прав доступа в систему</title>
+    <para>Система должна предоставлять доступ к просмотру списка товаров, продаж и продавцов, а также к экрану редактирования товара, продажи и продавца.</para>
+    <para>Воспользуемся механизмом <application>Security</application> платформы <application>CUBA</application>. </para>
+    <para>В системе существует возможность создавать роли и группы доступа.</para>
+    <para>При создании роли задаются права на объекты системы. Существуют следующие особенности:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Пользователь получает логическую сумму прав на некоторый объект от всех ролей, которые у него есть. При этом если ни одна роль не определяет явно право на объект, то пользователь получает право на этот объект. Таким образом, пользователь имеет права на все объекты, на которые либо ни одна роль явно не определяет право, либо хотя бы одна роль определяет, что право есть. Отсюда следующие нюанс: если пользователю дать единственную роль без явно установленных прав, то у него будут все права на все объекты.</para>
+      </listitem>
+      <listitem>
+        <para>Если пользователю дать супер-роль, то он получит все права, независимо от остальных его ролей. Это удобно для назначения администраторов системы.</para>
+      </listitem>
+    </itemizedlist>
+    <para>Очевидно, в системе должно быть две роли:</para>
+    <itemizedlist>
+      <listitem>
+        <para><authorinitials>Администратор</authorinitials> (эта роль уже существует в системе).</para>
+      </listitem>
+      <listitem>
+        <para><authorinitials>Продавец</authorinitials>.</para>
+      </listitem>
+    </itemizedlist>
+    <para>Создадим роль <authorinitials>Продавец</authorinitials>. В главном меню приложения выберите пункт меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Роли</guimenu>. На экране откроется окно, представленное на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/create_roles_1.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В открывшейся закладке нажмите на кнопку <guibutton>Создать</guibutton>. После этого откроется окно, представленное на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/create_roles_2.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В поле <guilabel>Имя</guilabel> введите имя роли − <userinput>salesPerson</userinput>, а в поле <guilabel>Локализованное имя</guilabel> − название роли на нужном языке. Далее перейдите на закладку <guilabel>Сущности</guilabel>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/create_roles_3.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В отобразившейся закладке снимите опцию <guilabel>Только назначенные</guilabel> и затем нажмите на кнопку <guibutton>Применить</guibutton>. После этого в таблице ниже будут отражены все сущности, существующие в системе.</para>
+    <para>Пользователь с ролью <authorinitials>Продавец</authorinitials> может просматривать и изменять все сущности системы, но не имеет права  создавать и удалять экземпляры сущности <classname>Продавец</classname>. Покажем, как создать такое ограничение, на примере сущности <classname>Покупатель</classname>. </para>
+    <para>Для этого в таблице найдите и выделите сущность <classname>shop$Buyer</classname>. После этого на панели <guilabel>Изменение разрешений</guilabel> появятся опции по заданию разрешений на создание, чтение, изменение и удаление данной сущности. Так как требуются разрешающие действия, поставьте опцию <guilabel>все</guilabel> в колонке <guilabel>разрешено</guilabel>.  После этого колонки <guilabel>Создание</guilabel>, <guilabel>Чтение</guilabel>, <guilabel>Изменение</guilabel>, <guilabel>Удаление</guilabel> в таблице слева заполнятся, а сами значения будут выделены цветом.</para>
+    <para>По аналогии задайте  разрешения на создание, чтение, изменение и удаление остальных сущностей, созданных в рамках учебного проекта. </para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/create_roles_5.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>После этого нажмите на кнопку <guibutton>ОК</guibutton>.</para>
+    <para>Далее создадим группы доступа. Группы доступа предоставляют удобный инструмент для быстрого задания ограничений
+большому числу пользователей. Для этого достаточно создать группу с необходимыми
+ограничениями и определять туда новых пользователей при создании или добавлять
+существующих пользователей в список группы при ее редактировании.</para>
+    <para>Очевидно, нам понадобится создать  группу доступа  <authorinitials>Продавцы</authorinitials>. Для этого перейдите к пункту меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Группы доступа</guimenu>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/create_group_1.png"/>
+      </imageobject>
+    </mediaobject>
+    <para> В открывшемся окне на панели слева выделите мышкой группу доступа <authorinitials>Company</authorinitials> и нажмите на кнопку <guibutton>Создать</guibutton>. В выпадающем списке выберите пункт <guilabel>Создать</guilabel>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/create_group_3.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В открывшемся окне в поле <guilabel>Наименование</guilabel> введите название группы − <userinput>Продавцы</userinput>. Далее нажмите на кнопку <guibutton>ОК</guibutton>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/create_group_4.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>На панели слева выделите созданную группу мышкой, на панели справа перейдите на закладку <guilabel>Ограничения</guilabel> и нажмите на кнопку <guibutton>Создать</guibutton>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/create_group_6.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Далее заполните поля <guilabel>Имя сущности</guilabel>, <guilabel>Оператор Join</guilabel>, <guilabel>Оператор Where</guilabel> и нажмите на кнопку <guibutton>ОК</guibutton>. Значения Вы можете взять из таблицы, расположенной ниже.</para>
+    <informaltable frame="all" align="center" pgwide="0">
+      <tgroup colsep="1" cols="2" rowsep="1" align="center">
+        <colspec colname="c1"/>
+        <colspec colname="c2"/>
+        <thead>
+          <row>
+            <entry colname="Имя атрибута">Название поля</entry>
+            <entry colname="Тип атрибута">Значение</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry align="center" namest="c1" nameend="c2">Ограничения для группы <authorinitials>Продавцы</authorinitials></entry>
+          </row>
+          <row>
+            <entry align="left">Имя сущности</entry>
+            <entry align="left">
+              <classname>shop$Sale</classname>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Оператор Join</entry>
+            <entry align="left">
+              <code>left join {E}.salesPerson a</code>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Оператор Where</entry>
+            <entry align="left">
+              <code>(a.id in (select p.id from shop$SalesPerson p where p.user.id= :session$userId))</code>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Имя сущности</entry>
+            <entry align="left">
+              <classname>shop$SalesPerson</classname>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Оператор Where</entry>
+            <entry align="left">
+              <code>({E}.user.id = :session$userId)</code>
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+  </section>
+  <section>
+    <title>Создание новых пользователей системы и настройка делегирования полномочий</title>
+    <para>Создадим пользователя с ролью <authorinitials>Продавец</authorinitials>. Для этого перейдите к пункту меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Пользователи</guimenu>. Перед Вами откроется экран, представленный на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/create_user_1.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В таблице, расположенной на открывшейся закладке, отображаются системные пользователи, уже созданные в системе. </para>
+    <warning>
+      <para>Удалять системных пользователей не рекомендуется!</para>
+    </warning>
+    <para>Для создания нового пользователя нажмите на кнопку <guibutton>Создать</guibutton>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/create_user_2.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Заполните поля <guilabel>Логин</guilabel>, <guilabel>Новый пароль</guilabel>, <guilabel>Подтверждение пароля</guilabel>, <guilabel>Фамилия</guilabel>, <guilabel>Имя</guilabel>. В поле <guilabel>Группа</guilabel> нажмите на кнопку <inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="img/dots.png"/>
+        </imageobject>
+      </inlinemediaobject>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/create_user_3.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В открывшемся окне выделите группу <authorinitials>Продавцы</authorinitials> и нажмите на кнопку <guibutton>Выбрать</guibutton>. Далее назначим создаваемому пользователю роль <authorinitials>Продавец</authorinitials>. Для этого  в панели <guilabel>Роли</guilabel> нажмите на кнопку <guibutton>Добавить</guibutton>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/create_user_4.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В открывшемся окне выделите роль <authorinitials>Продавец</authorinitials> и нажмите на кнопку <guibutton>Выбрать</guibutton>. После этого в окне редактирования пользователя нажмите на кнопку <guibutton>ОК</guibutton>. Роль создана.</para>
+    <para>Настроим делегирование пользователей. Делегирование − это передача полномочий одного пользователя другому пользователю. Настроим делегирование полномочий пользователя <authorinitials>Иван Иванов</authorinitials> пользователю <authorinitials>Администратор</authorinitials>.</para>
+    <para>Для этого в списке пользователей выберите пользователя <authorinitials>Администратор</authorinitials> и нажмите на кнопку <guibutton>Изменить</guibutton>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/create_user_5.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Перед Вами откроется окно, представленное на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/create_user_6.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>На панели <guilabel>Замещаемые пользователи</guilabel> нажмите на кнопку <guibutton>Добавить</guibutton>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/create_user_7.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В открывшемся окне необходимо выбрать замещаемого пользователя из списка существующих. В
+поле <guilabel>Действует до</guilabel> можно установить дату, по прошествии которой делегированные
+полномочия автоматически снимаются. В случае если дата не проставлена, полномочия остаются
+до тех пор, пока их снимет администратор.</para>
+  </section>
+  <section>
+    <title>Настройка аудита изменений</title>
+    <para>В пункте меню <guimenu>Помощь</guimenu> −&gt; <guimenu>История</guimenu>  пользователь может просмотреть информацию об открытых объектах системы. Для того чтобы подключить историю открытых экранов созданных ранее сущностей, необходимо открыть файл свойств <filename>shop-web-app.properties</filename> и добавить в него следующее свойство:</para>
+    <para><programlisting>cuba.screenIdsToSaveHistory=shop$Buyer.edit,shop$Discount.edit,\
+                            shop$Product.edit,shop$Sale.edit,\
+                            shop$SalesPerson.edit</programlisting></para>
+  </section>
+  <section>
+    <title>Создание сервисов</title>
+    <para>Создадим <glossterm linkend="glossary_middleware_services_id">сервис</glossterm><classname> SaleService</classname> с методом <methodname>getPrice(Sale sale)</methodname>. Метод должен возвращать посчитанную цену продажи исходя из покупателя, товара, скидки на этот товар, количества товара и даты покупки. </para>
+    <para>При создании сервиса необходимо выполнить следующее:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Создать интерфейс в модуле <structname>global</structname> в пакете <package>app</package> и задать в нем имя сервиса. Имя должно начинаться с имени проекта, затем через подчеркивание должно идти имя сервиса.</para>
+        <para><programlisting>String NAME = &quot;shop_SaleService&quot;;</programlisting></para>
+      </listitem>
+      <listitem>
+        <para>Создать класс сервиса и добавить ему аннотацию <literal>@Service</literal> с именем, заданным в интерфейсе.</para>
+        <para><programlisting>@Service(SaleService.NAME)
+public class SaleServiceBean implements SaleService {
+
+    @Inject
+    private Persistence persistence;
+
+
+    @Override
+    public BigDecimal getPrice(Sale sale) {
+        BigDecimal price = null;
+        Transaction tx = persistence.createTransaction();
+
+        try {
+            EntityManager em = persistence.getEntityManager();
+            Query query = em.createQuery(&quot;select d from shop$Discount d where d.product.id = ?1 and d.buyer.id = ?2&quot; +
+                    &quot; and d.fromDate&lt;= ?3 and d.tillDate&gt;= ?4 and d.minQuantity&lt;=?5&quot;);
+            query.setParameter(1, sale.getProduct());
+            query.setParameter(2, sale.getBuyer());
+            query.setParameter(3, sale.getOrderDate());
+            query.setParameter(4, sale.getOrderDate());
+            query.setParameter(5, sale.getQuantity());
+            List&lt;Discount&gt; discounts = query.getResultList();
+            if (discounts != null &amp;&amp; !discounts.isEmpty()) {
+                Discount discount = (Discount) query.getSingleResult();
+                price = discount.getPrice().multiply(new BigDecimal(new Integer(sale.getQuantity())));
+            } else {
+                price = sale.getProduct().getPrice().multiply(new BigDecimal(new Integer(sale.getQuantity())));
+            }
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        return price;
+    }
+}</programlisting></para>
+      </listitem>
+    </itemizedlist>
+    <caution>
+      <title>Подсказка</title>
+      <para>Имена интерфейсов сервисов должны заканчиваться на <classname>...Service</classname>, имена имплементаций на <classname>...ServiceBean</classname>.</para>
+    </caution>
+    <warning>
+      <para>Сервисы не должны вызывать методы других сервисов, ни напрямую, ни через другие объекты, так как это может нарушить логику работы с транзакциями и другие механизмы. </para>
+    </warning>
+    <para>Чтобы вызывать сервис с клиента, для него должен быть создан соответствующий прокси-объект. Делается это путем объявления имени и интерфейса сервиса в параметрах объекта <classname>WebRemoteProxyBeanCreator</classname> для веб-клиента или <classname>RemoteProxyBeanCreator</classname> для десктопного клиента.</para>
+    <para>Например, чтобы в приложении <application>shop</application> вызвать с веб-клиента сервис <classname>shop_SaleService</classname>, необходимо добавить в файл <filename>shop-web-spring.xml</filename> следующий код:</para>
+    <para><programlisting>&lt;bean id=&quot;shop_proxyCreator&quot; class=&quot;com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator&quot;&gt;
+    &lt;property name=&quot;clusterInvocationSupport&quot; ref=&quot;cuba_clusterInvocationSupport&quot;/&gt;
+    &lt;property name=&quot;remoteServices&quot;&gt;
+        &lt;map&gt;
+            &lt;entry key=&quot;shop_SaleService&quot; value=&quot;com.haulmont.shop.core.app.SaleService&quot;/&gt;
+        &lt;/map&gt;
+    &lt;/property&gt;
+    &lt;/bean&gt;</programlisting></para>
+    <para>Все импортируемые сервисы должны быть объявлены в одном словаре (map) бина <classname>shop_proxyCreator</classname>.</para>
+    <para>Метод <methodname>getPrice(Sale sale)</methodname> сервиса <classname>SaleService</classname> должен вызываться по нажатию на кнопку <guibutton>Посчитать</guibutton>, расположенную на экране редактирования информации о продаже. Возвращаемое методом значение должно проставляться в поле <guilabel>Цена</guilabel>.</para>
+    <para>Изменим <glossterm linkend="glossary_xml_descriptor_id">XML-дескриптор</glossterm> экрана редактирования информации о продаже <filename>sale-edit.xml</filename>, добавив в него описание кнопки <guibutton>Посчитать</guibutton>.</para>
+    <para><programlisting>&lt;window
+        xmlns=&quot;http://www.haulmont.com/schema/cuba/gui/window.xsd&quot;
+        class=&quot;com.haulmont.shop.gui.ui.sale.SaleEditor&quot;
+        caption=&quot;msg://editorCaption&quot;
+        datasource=&quot;saleDs&quot;
+        messagesPack=&quot;com.haulmont.shop.gui.ui.sale&quot;&gt;
+
+    &lt;dsContext&gt;
+        &lt;datasource id=&quot;saleDs&quot;
+                    class=&quot;com.haulmont.shop.core.entity.Sale&quot;
+                    view=&quot;saleEdit&quot;&gt;
+        &lt;/datasource&gt;
+        &lt;collectionDatasource id=&quot;buyersDs&quot; class=&quot;com.haulmont.shop.core.entity.Buyer&quot; view=&quot;_local&quot;/&gt;
+        &lt;collectionDatasource id=&quot;productsDs&quot; class=&quot;com.haulmont.shop.core.entity.Product&quot; view=&quot;_local&quot;/&gt;
+        &lt;collectionDatasource id=&quot;salesPersonsDs&quot; class=&quot;com.haulmont.shop.core.entity.SalesPerson&quot; view=&quot;_local&quot;/&gt;
+    &lt;/dsContext&gt;
+    &lt;#assign width = 200&gt;
+    &lt;layout expand=&quot;windowActions&quot;&gt;
+        &lt;vbox spacing=&quot;true&quot; width=&quot;-1px&quot;
+              height=&quot;-1px&quot;&gt;
+            &lt;grid margin=&quot;true&quot; spacing=&quot;true&quot; stylename=&quot;edit-area&quot; expandable=&quot;false&quot;&gt;
+                &lt;columns count=&quot;2&quot;/&gt;
+                &lt;rows&gt;
+                    &lt;row&gt;
+                        &lt;label value=&quot;msg://buyer&quot;/&gt;
+                        &lt;pickerField id=&quot;buyer&quot; datasource=&quot;saleDs&quot; property=&quot;buyer&quot; lookupScreen=&quot;shop$Buyer.lookup&quot;
+                                     width=&quot;${width}&quot;/&gt;
+                    &lt;/row&gt;
+                    &lt;row&gt;
+                        &lt;label value=&quot;msg://product&quot;/&gt;
+                        &lt;pickerField id=&quot;product&quot; datasource=&quot;saleDs&quot; property=&quot;product&quot;
+                                     lookupScreen=&quot;shop$Product.lookup&quot; width=&quot;${width}&quot;/&gt;
+                    &lt;/row&gt;
+                    &lt;row&gt;
+                        &lt;label value=&quot;msg://salesPerson&quot;/&gt;
+                        &lt;pickerField id=&quot;salesPerson&quot; datasource=&quot;saleDs&quot; property=&quot;salesPerson&quot;
+                                     lookupScreen=&quot;shop$SalesPerson.lookup&quot; width=&quot;${width}&quot;/&gt;
+                    &lt;/row&gt;
+                    &lt;row&gt;
+                        &lt;label value=&quot;msg://orderDate&quot;/&gt;
+                        &lt;dateField id=&quot;orderDate&quot; datasource=&quot;saleDs&quot; property=&quot;orderDate&quot; width=&quot;${width}&quot;/&gt;
+                    &lt;/row&gt;
+                    &lt;row&gt;
+                        &lt;label value=&quot;msg://quantity&quot;/&gt;
+                        &lt;textField id=&quot;quantity&quot; datasource=&quot;saleDs&quot; property=&quot;quantity&quot; required=&quot;true&quot;
+                                   width=&quot;${width}&quot;/&gt;
+                    &lt;/row&gt;
+                    &lt;row&gt;
+                        &lt;label value=&quot;msg://price&quot;/&gt;
+                        &lt;hbox spacing=&quot;true&quot;&gt;
+                            &lt;textField id=&quot;price&quot; datasource=&quot;saleDs&quot; property=&quot;price&quot; width=&quot;${width}&quot;/&gt;
+                            &lt;button id=&quot;calcPrice&quot; caption=&quot;msg://calcPrice&quot; invoke=&quot;calcPrice&quot; icon=&quot;icons/run.png&quot;/&gt;
+                        &lt;/hbox&gt;
+                    &lt;/row&gt;
+                    &lt;row&gt;
+                        &lt;label value=&quot;msg://deliveryDate&quot;/&gt;
+                        &lt;dateField id=&quot;deliveryDate&quot; datasource=&quot;saleDs&quot; property=&quot;deliveryDate&quot; width=&quot;${width}&quot;/&gt;
+                    &lt;/row&gt;
+                    &lt;row&gt;
+                        &lt;label value=&quot;msg://deliveryAddress&quot;/&gt;
+                        &lt;textField id=&quot;deliveryAddress&quot; datasource=&quot;saleDs&quot; property=&quot;deliveryAddress&quot;
+                                   width=&quot;${width}&quot;/&gt;
+                    &lt;/row&gt;
+                    &lt;row&gt;
+                        &lt;label value=&quot;msg://priceDescription&quot;/&gt;
+                        &lt;textField id=&quot;priceDescription&quot; datasource=&quot;saleDs&quot; property=&quot;priceDescription&quot; width=&quot;340px&quot;
+                                   rows=&quot;5&quot;/&gt;
+                    &lt;/row&gt;
+                &lt;/rows&gt;
+            &lt;/grid&gt;
+        &lt;/vbox&gt;
+        &lt;iframe id=&quot;windowActions&quot;
+                src=&quot;/com/haulmont/cuba/gui/edit-window.actions.xml&quot;&gt;
+        &lt;/iframe&gt;
+    &lt;/layout&gt;
+&lt;/window&gt;</programlisting></para>
+    <para>Обратите внимание, в элементе <parameter>button</parameter> дескриптора используется атрибут <property>invoke=&quot;calcPrice&quot;</property>. В этом атрибуте указывается  имя вызываемого метода контроллера. Метод должен быть <classname>public</classname>, не возвращать результата и либо не иметь аргументов, либо иметь один аргумент типа <classname>Component</classname>. Если метод имеет аргумент <classname>Component</classname>, то при вызове в него будет передан экземпляр вызвавшей кнопки. Данный атрибут игнорируется, если для кнопки задан атрибут <property>action</property>.</para>
+    <para>Далее изменим класс контроллера <classname>SaleEditor</classname>. Необходимо написать метод, который будет вызываться при нажатии на кнопку <guibutton>Посчитать</guibutton>.</para>
+    <para><programlisting>    public void calcPrice() {
+        Sale sale = saleDs.getItem();
+        if ((sale.getBuyer() == null) || (sale.getProduct() == null) || (sale.getOrderDate() == null) || (sale.getQuantity() == null)) {
+            showNotification(getMessage(&quot;notificationMessage&quot;),
+                    NotificationType.HUMANIZED);
+        } else {
+            BigDecimal price = null;
+            try {
+                price = service.getPrice(sale);
+                sale.setPrice(price);
+            } catch (Exception e) {
+
+            }
+        }
+    }</programlisting></para>
+    <para>Получение ссылки на сервис с клиента происходит с помощью механизма <glossterm linkend="glossary_injection_id">внедрения зависимости</glossterm>:</para>
+    <para><programlisting>@Inject
+private SaleService shop_SaleService;</programlisting></para>
   </section>
 </chapter>

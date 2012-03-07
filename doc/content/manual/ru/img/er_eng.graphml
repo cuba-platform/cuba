@@ -72,17 +72,18 @@ DELIVERY_ADDRESS  varchar(255)
     <node id="n2">
       <data key="d6">
         <y:GenericNode configuration="com.yworks.entityRelationship.big_entity">
-          <y:Geometry height="140.0" width="173.0" x="496.0" y="410.0"/>
+          <y:Geometry height="155.0" width="173.0" x="496.0" y="410.0"/>
           <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" backgroundColor="#B7C9E3" configuration="com.yworks.entityRelationship.label.name" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasLineColor="false" height="18.701171875" modelName="internal" modelPosition="t" textColor="#000000" visible="true" width="140.72265625" x="16.138671875" y="4.0">SHOP_SALES_PERSON</y:NodeLabel>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" configuration="com.yworks.entityRelationship.label.attributes" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="106.908203125" modelName="custom" textColor="#000000" visible="true" width="171.384765625" x="2.0" y="30.701171875">ID(PK)                  uuid
+          <y:NodeLabel alignment="left" autoSizePolicy="content" configuration="com.yworks.entityRelationship.label.attributes" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="121.609375" modelName="custom" textColor="#000000" visible="true" width="171.384765625" x="2.0" y="30.701171875">ID(PK)                  uuid
 FULL_NAME       varchar(255)
 BIRTHDAY           timestamp
 EMAIL                   varchar(100)
 PHONE                varchar(100)
 WORKS_FROM  timestamp
-ADDRESS           varchar(255)<y:LabelModel>
+ADDRESS           varchar(255)
+USER_ID(FK)     uuid<y:LabelModel>
               <y:ErdAttributesNodeLabelModel/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -160,10 +161,10 @@ PRODUCT_ID(FK) uuid<y:LabelModel>
     <edge id="e1" source="n0" target="n2">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="74.0" tx="0.0" ty="-53.064516129032256"/>
+          <y:Path sx="0.0" sy="74.0" tx="0.0" ty="-58.75000000000002"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
-          <y:EdgeLabel alignment="center" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="free" modelPosition="anywhere" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="137.72265625" x="-140.361328125" y="7.659149169921875">SALES_PERSON_ID=ID</y:EdgeLabel>
+          <y:EdgeLabel alignment="center" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="free" modelPosition="anywhere" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="137.72265625" x="-140.361328125" y="7.6263427734375">SALES_PERSON_ID=ID</y:EdgeLabel>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
