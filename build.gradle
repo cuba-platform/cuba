@@ -29,6 +29,7 @@ buildscript {
 }
 
 apply(plugin: 'base')
+apply(plugin: 'maven')
 apply(plugin: 'idea')
 apply(plugin: 'cuba')
 apply(plugin: 'doc')
