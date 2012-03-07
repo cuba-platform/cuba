@@ -22,7 +22,7 @@
                     <row></row>
                 </rows>
             </grid>
-            <button id="printReport"/>
+            <button id="printReport" icon="icons/print.png"/>
         </vbox>
 
     </layout>
