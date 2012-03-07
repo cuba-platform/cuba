@@ -1,19 +1,18 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="com.haulmont.cuba.web.ui.report.browse.CommonLookupController"
+        class="com.haulmont.cuba.gui.report.browse.CommonLookupController"
         messagesPack="com.haulmont.cuba.web.ui.report"
         caption="msg://lookup"
         >
 
-
     <metadataContext>
     </metadataContext>
 
-    <dsContext></dsContext>
+    <dsContext>
+    </dsContext>
 
     <layout expandLayout="true" expand="vbox">
-        <vbox id="vbox" expand="table">
-
+        <vbox id="mainPane">
         </vbox>
     </layout>
 </window>

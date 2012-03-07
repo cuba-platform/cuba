@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -131,7 +132,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
             return lookupScreen;
         }
 
-        public void setLookupScreen(String lookupScreen) {
+        public void setLookupScreen(@Nullable String lookupScreen) {
             this.lookupScreen = lookupScreen;
         }
 
@@ -162,6 +163,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 pickerField.getFrame().openLookup(
                         windowAlias,
                         new Window.Lookup.Handler() {
+                            @Override
                             public void handleLookup(Collection items) {
                                 if (!items.isEmpty()) {
                                     final Object item = items.iterator().next();
@@ -261,6 +263,8 @@ public interface PickerField extends Field, Component.ActionsHolder {
                         editScreenParams != null ? editScreenParams : Collections.<String, Object>emptyMap()
                 );
                 editor.addListener(new Window.CloseListener() {
+
+                    @Override
                     public void windowClosed(String actionId) {
                         if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                             Entity item = editor.getItem();

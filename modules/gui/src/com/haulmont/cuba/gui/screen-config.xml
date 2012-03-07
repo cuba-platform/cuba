@@ -96,4 +96,10 @@
     <screen id="license"
             template="/com/haulmont/cuba/gui/app/core/credits/license-window.xml"/>
 
+    <screen id="report$Report.run"
+            template="/com/haulmont/cuba/gui/report/run/report-run.xml"/>
+
+    <screen id="report$inputParameters"
+            template="/com/haulmont/cuba/gui/report/browse/input-parameters.xml"/>
+
 </screen-config>

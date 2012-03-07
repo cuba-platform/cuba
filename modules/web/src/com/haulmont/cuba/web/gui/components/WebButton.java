@@ -22,11 +22,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 public class WebButton
-    extends
+        extends
         WebAbstractComponent<com.vaadin.ui.Button>
-    implements
-        Button, Component.Wrapper
-{
+        implements
+        Button, Component.Wrapper {
+
     protected Action action;
     protected String icon;
 
@@ -39,6 +39,7 @@ public class WebButton
             component = new com.vaadin.ui.Button();
         }
         component.addListener(new com.vaadin.ui.Button.ClickListener() {
+            @Override
             public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
                 if (action != null) {
                     action.actionPerform(WebButton.this);
@@ -47,26 +48,32 @@ public class WebButton
         });
     }
 
+    @Override
     public String getCaption() {
         return component.getCaption();
     }
 
+    @Override
     public void setCaption(String caption) {
         component.setCaption(caption);
     }
 
+    @Override
     public String getDescription() {
         return component.getDescription();
     }
 
+    @Override
     public void setDescription(String description) {
         component.setDescription(description);
     }
 
+    @Override
     public Action getAction() {
         return action;
     }
 
+    @Override
     public void setAction(Action action) {
         this.action = action;
 
@@ -102,10 +109,19 @@ public class WebButton
         );
     }
 
+    @Override
     public String getIcon() {
         return icon;
     }
 
+    @Override
+    public void setStyleName(String name) {
+        super.setStyleName(name);
+        if (getIcon() != null)
+            component.addStyleName(ICON_STYLE);
+    }
+
+    @Override
     public void setIcon(String icon) {
         this.icon = icon;
         if (!StringUtils.isEmpty(icon)) {

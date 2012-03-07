@@ -843,13 +843,13 @@
 
     <!-- TokenList -->
     <xs:complexType name="tokenListComponent">
-        <xs:choice>
+        <xs:sequence>
             <xs:element name="lookup" maxOccurs="1">
                 <xs:complexType>
                     <xs:attribute name="optionsDatasource" type="xs:string" use="optional"/>
                     <xs:attribute name="captionProperty" type="xs:string" use="optional"/>
                     <xs:attribute name="lookupScreen" type="xs:string" use="optional"/>
-                    <xs:attribute name="lookup" type="xs:string" use="optional"/>
+                    <xs:attribute name="lookup" type="xs:boolean" use="optional"/>
                     <xs:attribute name="filterMode" type="filterMode" use="optional"/>
                     <xs:attribute name="openType" type="openType" use="optional"/>
                     <xs:attribute name="multiselect" type="xs:string" use="optional"/>
@@ -857,11 +857,11 @@
             </xs:element>
             <xs:element name="button" maxOccurs="1">
                 <xs:complexType>
-                    <xs:attribute name="caption" type="xs:string" use="required" default="msg://"/>
+                    <xs:attribute name="caption" type="xs:string" use="optional" default="msg://"/>
                     <xs:attribute name="icon" type="xs:string" use="optional"/>
                 </xs:complexType>
             </xs:element>
-        </xs:choice>
+        </xs:sequence>
 
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
@@ -877,7 +877,7 @@
 
         <xs:attribute name="position" type="tokenListPosition" use="optional"/>
         <xs:attribute name="inline" type="xs:string" use="optional"/>
-        <xs:attribute name="simple" type="xs:string" use="optional"/>
+        <xs:attribute name="simple" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- WidgetsTree -->

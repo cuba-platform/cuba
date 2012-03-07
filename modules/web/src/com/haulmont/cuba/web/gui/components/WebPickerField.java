@@ -14,7 +14,10 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.CaptionMode;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.gui.data.DsManager;
@@ -22,7 +25,6 @@ import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.AbstractProperty;
-import com.vaadin.data.util.PropertyFormatter;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
@@ -30,16 +32,18 @@ import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class WebPickerField
         extends
-            WebAbstractField<com.haulmont.cuba.web.toolkit.ui.PickerField>
+        WebAbstractField<com.haulmont.cuba.web.toolkit.ui.PickerField>
         implements
-            PickerField, Component.Wrapper
-{
+        PickerField, Component.Wrapper {
     private static final long serialVersionUID = -938974178359790495L;
-    
+
     protected CaptionMode captionMode = CaptionMode.ITEM;
     protected String captionProperty;
 
@@ -102,6 +106,7 @@ public class WebPickerField
         };
     }
 
+    @Override
     public MetaClass getMetaClass() {
         final Datasource ds = getDatasource();
         if (ds != null) {
@@ -111,6 +116,7 @@ public class WebPickerField
         }
     }
 
+    @Override
     public void setMetaClass(MetaClass metaClass) {
         final Datasource ds = getDatasource();
         if (ds != null) throw new IllegalStateException("Datasource is not null");
@@ -218,12 +224,14 @@ public class WebPickerField
 
     }
 
+    @Override
     protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {
         return new ItemWrapper(datasource, propertyPaths, dsManager) {
             @Override
             protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
                 return new PropertyWrapper(item, propertyPath, dsManager) {
-                    public Object getValue(){
+                    @Override
+                    public Object getValue() {
                         if (value == null)
                             return super.getValue();
                         else
@@ -251,18 +259,22 @@ public class WebPickerField
         };
     }
 
+    @Override
     public CaptionMode getCaptionMode() {
         return captionMode;
     }
 
+    @Override
     public void setCaptionMode(CaptionMode captionMode) {
         this.captionMode = captionMode;
     }
 
+    @Override
     public String getCaptionProperty() {
         return captionProperty;
     }
 
+    @Override
     public void setCaptionProperty(String captionProperty) {
         this.captionProperty = captionProperty;
     }
@@ -287,14 +299,15 @@ public class WebPickerField
         }
     }
 
-    public void addFieldListener(FieldListener listener){
+    @Override
+    public void addFieldListener(FieldListener listener) {
         component.addFieldListener(listener);
     }
 
     @Override
     public void setFieldEditable(boolean editable) {
         if (isEditable())
-        component.getField().setReadOnly(!editable);
+            component.getField().setReadOnly(!editable);
     }
 
     @Override
@@ -340,7 +353,7 @@ public class WebPickerField
         @Override
         public void setReadOnly(boolean readOnly) {
             super.setReadOnly(readOnly);
-            if(readOnly)
+            if (readOnly)
                 field.setReadOnly(readOnly);
             for (Action action : owner.getActions()) {
                 if (action instanceof StandardAction) {

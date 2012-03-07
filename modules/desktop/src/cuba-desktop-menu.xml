@@ -10,4 +10,8 @@
         <item id="core$LockInfo.browse"/>
     </menu>
 
+    <menu id="reports">
+        <item id="report$Report.run"/>
+    </menu>
+
 </menu-config>

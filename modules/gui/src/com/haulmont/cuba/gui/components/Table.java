@@ -88,22 +88,31 @@ public interface Table
             this.id = id;
         }
 
+        public Column(Object id, String caption) {
+            this.id = id;
+            this.caption = caption;
+        }
+
         public Object getId() {
             return id;
         }
 
+        @Override
         public String getCaption() {
             return caption;
         }
 
+        @Override
         public void setCaption(String caption) {
             this.caption = caption;
         }
 
+        @Override
         public String getDescription() {
             return null;
         }
 
+        @Override
         public void setDescription(String description) {
         }
 
@@ -123,10 +132,12 @@ public interface Table
             this.type = type;
         }
 
+        @Override
         public Formatter getFormatter() {
             return formatter;
         }
 
+        @Override
         public void setFormatter(Formatter formatter) {
             this.formatter = formatter;
         }
@@ -179,10 +190,12 @@ public interface Table
             return id.hashCode();
         }
 
+        @Override
         public Element getXmlDescriptor() {
             return element;
         }
 
+        @Override
         public void setXmlDescriptor(Element element) {
             this.element = element;
         }

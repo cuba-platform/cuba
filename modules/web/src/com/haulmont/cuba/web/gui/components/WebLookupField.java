@@ -23,6 +23,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.ui.AbstractSelect;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -165,7 +166,7 @@ public class WebLookupField
     }
 
     @Override
-    public void setValue(Object value) {
+    public void setValue(@Nullable Object value) {
         super.setValue(getKeyFromValue(value));
     }
 

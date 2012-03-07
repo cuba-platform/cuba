@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 
 import java.util.Map;
 
-public interface TokenList extends Component, Component.BelongToFrame,
+public interface TokenList extends Field, Component.BelongToFrame,
         Component.Expandable, Component.HasCaption, Component.Editable {
 
     String NAME = "tokenList";
@@ -52,6 +52,9 @@ public interface TokenList extends Component, Component.BelongToFrame,
 
     String getLookupScreen();
     void setLookupScreen(String lookupScreen);
+
+    void setLookupScreenParams(Map<String, Object> params);
+    Map<String, Object> getLookupScreenParams();
 
     boolean isMultiSelect();
     void setMultiSelect(boolean multiselect);

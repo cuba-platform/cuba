@@ -11,19 +11,16 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.CustomField;
 import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
@@ -35,7 +32,7 @@ import com.vaadin.ui.*;
 
 import java.util.*;
 
-public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImpl> implements TokenList {
+public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> implements TokenList {
 
     private static final long serialVersionUID = -6490244006772570832L;
 
@@ -52,13 +49,12 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
     private boolean inline;
 
     private WebButton button;
-    private WebActionsField actionsField;
 
-    private ActionsFieldHelper actionsHelper;
+    private WebLookupPickerField lookupPickerField;
 
-    private MetaClass metaClass;
     private String lookupScreen;
     private WindowManager.OpenType lookupOpenMode = WindowManager.OpenType.THIS_TAB;
+    private Map<String, Object> lookupScreenParams = null;
 
     private TokenStyleGenerator tokenStyleGenerator;
 
@@ -69,45 +65,61 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
     private boolean simple;
 
     private boolean multiselect;
+    private PickerField.LookupAction lookupAction;
 
     public WebTokenList() {
         button = new WebButton();
-        button.setCaption("Add");
-        actionsField = new WebActionsField();
-        actionsField.enableButton(ActionsField.DROPDOWN, true);
+        button.setCaption(MessageProvider.getMessage(TokenList.class, "actions.Add"));
+
+        lookupPickerField = new WebLookupPickerField();
         component = new TokenListImpl();
 
         setMultiSelect(false);
     }
 
+    @Override
     public CollectionDatasource getDatasource() {
         return datasource;
     }
 
+    @Override
+    public MetaProperty getMetaProperty() {
+        return null;
+    }
+
+    @Override
+    public void setDatasource(Datasource datasource, String property) {
+    }
+
+    @Override
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
-        metaClass = datasource.getMetaClass();
         datasource.addListener(new CollectionDatasourceListener() {
+            @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation) {
-                if (actionsHelper == null) {
-                    actionsHelper = new ActionsFieldHelper(actionsField, metaClass);
+                if (lookupPickerField != null) {
                     if (isLookup()) {
-                        if (getLookupScreen() != null) {
-                            actionsHelper.createLookupAction(getLookupScreen(), lookupOpenMode, Collections.<String, Object>emptyMap());
-                        } else {
-                            actionsHelper.createLookupAction(lookupOpenMode);
-                        }
+                        if (getLookupScreen() != null)
+                            lookupAction.setLookupScreen(getLookupScreen());
+                        else
+                            lookupAction.setLookupScreen(null);
+
+                        lookupAction.setLookupScreenOpenType(lookupOpenMode);
+                        lookupAction.setLookupScreenParams(lookupScreenParams);
                     }
                 }
                 component.refreshComponent();
             }
 
+            @Override
             public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
             }
 
+            @Override
             public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
             }
 
+            @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
             }
         });
@@ -116,201 +128,272 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
     @Override
     public void setFrame(IFrame frame) {
         super.setFrame(frame);
-        actionsField.setFrame(frame);
+        lookupPickerField.setFrame(frame);
     }
 
+    @Override
     public String getCaptionProperty() {
         return captionProperty;
     }
 
+    @Override
     public void setCaptionProperty(String captionProperty) {
         this.captionProperty = captionProperty;
     }
 
+    @Override
     public WindowManager.OpenType getLookupOpenMode() {
         return lookupOpenMode;
     }
 
+    @Override
     public void setLookupOpenMode(WindowManager.OpenType lookupOpenMode) {
         this.lookupOpenMode = lookupOpenMode;
     }
 
+    @Override
     public CaptionMode getCaptionMode() {
         return captionMode;
     }
 
+    @Override
     public void setCaptionMode(CaptionMode captionMode) {
         this.captionMode = captionMode;
     }
 
+    @Override
     public LookupField.FilterMode getFilterMode() {
-        return actionsField.getFilterMode();
+        return lookupPickerField.getFilterMode();
     }
 
+    @Override
     public void setFilterMode(LookupField.FilterMode mode) {
-        actionsField.setFilterMode(mode);
+        lookupPickerField.setFilterMode(mode);
     }
 
+    @Override
     public String getOptionsCaptionProperty() {
-        return actionsField.getCaptionProperty();
+        return lookupPickerField.getCaptionProperty();
     }
 
+    @Override
     public void setOptionsCaptionProperty(String captionProperty) {
-        actionsField.setCaptionProperty(captionProperty);
+        lookupPickerField.setCaptionProperty(captionProperty);
     }
 
+    @Override
     public CaptionMode getOptionsCaptionMode() {
-        return actionsField.getCaptionMode();
+        return lookupPickerField.getCaptionMode();
     }
 
+    @Override
     public void setOptionsCaptionMode(CaptionMode captionMode) {
-        actionsField.setCaptionMode(captionMode);
+        lookupPickerField.setCaptionMode(captionMode);
     }
 
+    @Override
     public CollectionDatasource getOptionsDatasource() {
-        return actionsField.getOptionsDatasource();
+        return lookupPickerField.getOptionsDatasource();
     }
 
+    @Override
     public void setOptionsDatasource(CollectionDatasource datasource) {
-        actionsField.setOptionsDatasource(datasource);
+        lookupPickerField.setOptionsDatasource(datasource);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getValue() {
         if (datasource != null) {
-            metaClass = datasource.getMetaClass();
-        }
+            List<Object> items = new ArrayList<Object>();
+            for (final Object itemId : datasource.getItemIds()) {
+                items.add(datasource.getItem(itemId));
+            }
+            return (T) items;
+        } else
+            return null;
     }
 
+    @Override
     public List getOptionsList() {
-        return actionsField.getOptionsList();
+        return lookupPickerField.getOptionsList();
     }
 
+    @Override
     public void setOptionsList(List optionsList) {
-        actionsField.setOptionsList(optionsList);
+        lookupPickerField.setOptionsList(optionsList);
     }
 
+    @Override
     public Map<String, Object> getOptionsMap() {
-        return actionsField.getOptionsMap();
+        return lookupPickerField.getOptionsMap();
     }
 
+    @Override
     public void setOptionsMap(Map<String, Object> map) {
-        actionsField.setOptionsMap(map);
+        lookupPickerField.setOptionsMap(map);
     }
 
+    @Override
     public boolean isLookup() {
         return lookup;
     }
 
+    @Override
     public void setLookup(boolean lookup) {
-        this.lookup = lookup;
-        actionsField.enableButton(ActionsField.DROPDOWN, !lookup);
-        actionsField.enableButton(ActionsField.LOOKUP, lookup);
-        if (getOptionsDatasource() != null) {
-            metaClass = getOptionsDatasource().getMetaClass();
+        if (this.lookup != lookup) {
+            if (lookup)
+                lookupAction = lookupPickerField.addLookupAction();
+            else
+               lookupPickerField.removeAction(lookupAction);
         }
+        this.lookup = lookup;
+        component.refreshComponent();
     }
 
+    @Override
     public String getLookupScreen() {
         return lookupScreen;
     }
 
+    @Override
     public void setLookupScreen(String lookupScreen) {
         this.lookupScreen = lookupScreen;
     }
 
+    @Override
+    public void setLookupScreenParams(Map<String, Object> params) {
+        this.lookupScreenParams = params;
+    }
+
+    @Override
+    public Map<String, Object> getLookupScreenParams() {
+        return lookupScreenParams;
+    }
+
+    @Override
     public boolean isMultiSelect() {
         return multiselect;
     }
 
+    @Override
     public void setMultiSelect(boolean multiselect) {
         this.multiselect = multiselect;
-        actionsField.setMultiSelect(multiselect);
+        lookupPickerField.setMultiSelect(multiselect);
     }
 
+    @Override
     public String getAddButtonCaption() {
         return button.getCaption();
     }
 
+    @Override
     public void setAddButtonCaption(String caption) {
         button.setCaption(caption);
     }
 
+    @Override
     public String getAddButtonIcon() {
         return button.getIcon();
     }
 
+    @Override
     public void setAddButtonIcon(String icon) {
         button.setIcon(icon);
     }
 
+    @Override
     public ItemChangeHandler getItemChangeHandler() {
         return itemChangeHandler;
     }
 
+    @Override
     public void setItemChangeHandler(ItemChangeHandler handler) {
         this.itemChangeHandler = handler;
     }
 
+    @Override
     public Position getPosition() {
         return position;
     }
 
+    @Override
     public void setPosition(Position position) {
         this.position = position;
     }
 
+    @Override
     public boolean isInline() {
         return inline;
     }
 
+    @Override
     public void setInline(boolean inline) {
         this.inline = inline;
     }
 
+    @Override
     public String getCaption() {
         return component.getCaption();
     }
 
+    @Override
     public void setCaption(String caption) {
         component.setCaption(caption);
     }
 
+    @Override
     public String getDescription() {
         return null;
     }
 
+    @Override
     public void setDescription(String description) {
     }
 
+    @Override
     public boolean isEditable() {
         return editable;
     }
 
+    @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
     }
 
+    @Override
     public boolean isSimple() {
         return simple;
     }
 
+    @Override
     public void setSimple(boolean simple) {
         this.simple = simple;
+        this.component.editor = null;
+        this.component.refreshComponent();
     }
 
+    @Override
     public void setTokenStyleGenerator(TokenStyleGenerator tokenStyleGenerator) {
         this.tokenStyleGenerator = tokenStyleGenerator;
     }
 
+    @Override
     public TokenStyleGenerator getTokenStyleGenerator() {
         return tokenStyleGenerator;
     }
 
     protected String instanceCaption(Instance instance) {
         if (instance == null) { return ""; }
-        if (instance.getMetaClass().getPropertyEx(captionProperty) != null) {
-            Object o = instance.getValueEx(captionProperty);
-            return o != null ? o.toString() : " ";
-        }
-        throw new IllegalArgumentException(String.format("Couldn't find property with name '%s'",
-                captionProperty));
+        if (captionProperty != null) {
+            if (instance.getMetaClass().getPropertyPath(captionProperty) != null) {
+                Object o = instance.getValueEx(captionProperty);
+                return o != null ? o.toString() : " ";
+            }
+            throw new IllegalArgumentException(String.format("Couldn't find property with name '%s'",
+                    captionProperty));
+        } else
+            return instance.getInstanceName();
     }
 
     public class TokenListImpl extends CustomField {
@@ -349,12 +432,14 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             layout.setWidth("100%");
 
             if (!isSimple()) {
-                actionsField.setWidth("100%");
-                Component lookupComponent = WebComponentsHelper.unwrap(actionsField);
+                lookupPickerField.setWidth("100%");
+                Component lookupComponent = WebComponentsHelper.getComposition(lookupPickerField);
                 lookupComponent.setWidth("100%");
 
                 layout.addComponent(lookupComponent);
                 layout.setExpandRatio(lookupComponent, 1);
+            } else {
+                lookupPickerField.setVisible(false);
             }
 
             button.setStyleName("add-btn");
@@ -362,21 +447,24 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             Button wrappedButton = (Button) WebComponentsHelper.unwrap(button);
             if (!isSimple()) {
                 wrappedButton.addListener(new Button.ClickListener() {
+                    @Override
                     public void buttonClick(Button.ClickEvent event) {
                         if (isEditable()) {
-                            final Entity newItem = actionsField.getValue();
+                            final Entity newItem = lookupPickerField.getValue();
                             if (newItem == null) return;
                             if (itemChangeHandler != null) {
                                 itemChangeHandler.addItem(newItem);
                             } else {
-                                datasource.addItem(newItem);
+                                if (datasource != null)
+                                    datasource.addItem(newItem);
                             }
-                            actionsField.setValue(null);
+                            lookupPickerField.setValue(null);
                         }
                     }
                 });
             } else {
                 wrappedButton.addListener(new Button.ClickListener() {
+                    @Override
                     public void buttonClick(Button.ClickEvent event) {
 
                         String windowAlias;
@@ -399,6 +487,7 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
 
                         WindowManager wm = App.getInstance().getWindowManager();
                         wm.openLookup(windowInfo, new Window.Lookup.Handler() {
+                            @Override
                             public void handleLookup(Collection items) {
                                 if (isEditable()) {
                                     if (items == null || items.isEmpty()) return;
@@ -438,81 +527,43 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
                     root.addComponentAsFirst(editor);
                 } else {
                     root.addComponent(editor);
+                    editor.setWidth("100%");
                 }
             }
 
             container.removeAllComponents();
 
-            for (final Object itemId : datasource.getItemIds()) {
-                final Instance item = datasource.getItem(itemId);
-                TokenListLabel f = itemComponents.get(item);
-                if (f == null) {
-                    f = createToken();
-                    itemComponents.put(item, f);
-                    componentItems.put(f, item);
-                }
-                f.setEditable(isEditable());
-                if (captionProperty != null) {
+            if (datasource != null) {
+                // New tokens
+                for (final Object itemId : datasource.getItemIds()) {
+                    final Instance item = datasource.getItem(itemId);
+                    TokenListLabel f = itemComponents.get(item);
+                    if (f == null) {
+                        f = createToken();
+                        itemComponents.put(item, f);
+                        componentItems.put(f, item);
+                    }
+                    f.setEditable(isEditable());
                     f.setValue(instanceCaption(item));
-                } else {
-                    f.setValue(item);
+                    f.setWidth("100%");
+                    setTokenStyle(f, itemId);
+                    container.addComponent(f);
                 }
-                setTokenStyle(f, itemId);
-                container.addComponent(f);
             }
 
-            requestRepaint();
+            root.requestRepaint();
         }
 
         protected TokenListLabel createToken() {
             final TokenListLabel label = new TokenListLabel();
             String key = componentsMapper.key(label);
             label.setKey(key);
+            label.setWidth("100%");
             label.addListener(new TokenListLabel.RemoveTokenListener() {
+                @Override
                 public void removeToken(final TokenListLabel source) {
                     if (isEditable()) {
-                        final String messagesPackage = AppConfig.getMessagesPack();
-                        App.getInstance().getWindowManager().showOptionDialog(
-                                MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation"),
-                                MessageProvider.getMessage(messagesPackage, "dialogs.Confirmation.Remove"),
-                                IFrame.MessageType.CONFIRMATION,
-                                new Action[]{
-                                        new AbstractAction("ok") {
-                                            public String getCaption() {
-                                                return MessageProvider.getMessage(messagesPackage, "actions.Ok");
-                                            }
-
-                                            public boolean isEnabled() {
-                                                return true;
-                                            }
-
-                                            @Override
-                                            public String getIcon() {
-                                                return "icons/ok.png";
-                                            }
-
-                                            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                                                doRemove(source);
-                                            }
-                                        }, new AbstractAction("cancel") {
-                                            public String getCaption() {
-                                                return MessageProvider.getMessage(messagesPackage, "actions.Cancel");
-                                            }
-
-                                            public boolean isEnabled() {
-                                                return true;
-                                            }
-
-                                            @Override
-                                            public String getIcon() {
-                                                return "icons/cancel.png";
-                                            }
-
-                                            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-                                            }
-                                        }
-                                }
-                        );
+                        doRemove(source);
                     }
                 }
             });
@@ -522,14 +573,14 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
         private void doRemove(TokenListLabel source) {
             Instance item = componentItems.get(source);
             if (item != null) {
+                itemComponents.remove(item);
+                componentItems.remove(source);
+
                 if (itemChangeHandler != null) { //todo test
                     itemChangeHandler.removeItem(item);
                 } else {
                     datasource.removeItem((Entity) item);
                 }
-
-                itemComponents.remove(item);
-                componentItems.remove(source);
             }
         }
 
@@ -547,5 +598,4 @@ public class WebTokenList extends WebAbstractComponent<WebTokenList.TokenListImp
             }
         }
     }
-
 }

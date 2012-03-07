@@ -108,8 +108,9 @@ public class TokenListLoader extends AbstractFieldLoader {
         Element buttonElement = element.element("button");
         if (buttonElement != null) {
             String caption = buttonElement.attributeValue("caption");
-            if (!StringUtils.isEmpty(caption)) {
-                caption = loadResourceString(caption);
+            if (caption != null) {
+                if (!StringUtils.isEmpty(caption))
+                    caption = loadResourceString(caption);
                 component.setAddButtonCaption(caption);
             }
 

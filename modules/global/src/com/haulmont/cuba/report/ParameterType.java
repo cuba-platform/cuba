@@ -24,6 +24,7 @@ public enum ParameterType implements EnumClass<Integer> {
 
     private Integer id;
 
+    @Override
     public Integer getId() {
         return id;
     }

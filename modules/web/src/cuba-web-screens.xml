@@ -33,14 +33,8 @@
     <screen id="report$Report.fileUploadDialog"
             template="/com/haulmont/cuba/web/ui/report/fileuploaddialog/file-upload-dialog.xml"/>
 
-    <screen id="report$Report.run"
-            template="/com/haulmont/cuba/web/ui/report/run/report-run.xml"/>
-
     <screen id="report$BandDefinition.edit"
             template="/com/haulmont/cuba/web/ui/report/definition/edit/definition-edit.xml"/>
-
-    <screen id="report$inputParameters"
-            template="/com/haulmont/cuba/web/ui/report/browse/input-parameters.xml"/>
 
     <screen id="report$commonLookup"
             template="/com/haulmont/cuba/web/ui/report/browse/common-lookup.xml"/>

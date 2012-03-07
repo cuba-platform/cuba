@@ -34,11 +34,14 @@ public class WebOptionsGroup
             @Override
             public void setPropertyDataSource(Property newDataSource) {
                 super.setPropertyDataSource(new PropertyAdapter(newDataSource) {
+
+                    @Override
                     public Object getValue() {
                         final Object o = itemProperty.getValue();
                         return getKeyFromValue(o);
                     }
 
+                    @Override
                     public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
                         final Object v = getValueFromKey(newValue);
                         itemProperty.setValue(v);

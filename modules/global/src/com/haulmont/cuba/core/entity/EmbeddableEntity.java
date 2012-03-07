@@ -28,11 +28,12 @@ public abstract class EmbeddableEntity extends AbstractInstance implements Entit
     @Transient
     private UUID id;
 
+    @Override
     public UUID getId() {
         return id;
     }
 
-    protected EmbeddableEntity() {
+    public EmbeddableEntity() {
         id = UuidProvider.createUuid();
     }
 

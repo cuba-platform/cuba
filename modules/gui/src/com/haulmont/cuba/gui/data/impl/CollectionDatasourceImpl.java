@@ -123,8 +123,10 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         if (inRefresh)
             return;
 
-        if (refreshMode == RefreshMode.NEVER)
+        if (refreshMode == RefreshMode.NEVER) {
+            valid();
             return;
+        }
 
         inRefresh = true;
         try {

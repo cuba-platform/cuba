@@ -103,6 +103,7 @@ public class PickerField extends CustomField {
         });
     }
 
+    @Override
     public Object getValue() {
         Property property = getPropertyDataSource();
         if (property != null) {
@@ -111,33 +112,40 @@ public class PickerField extends CustomField {
         return field.getValue();
     }
 
+    @Override
     public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
         boolean fieldReadOnly = field.isReadOnly();
         field.setReadOnly(false);
         field.setValue(newValue);
-        field.setReadOnly(!fieldReadOnly && isReadOnly() ? true :isReadOnly());
+        field.setReadOnly(fieldReadOnly);
     }
 
+    @Override
     public void addListener(ValueChangeListener listener) {
         field.addListener(listener);
     }
 
+    @Override
     public void removeListener(ValueChangeListener listener) {
         field.removeListener(listener);
     }
 
+    @Override
     public void valueChange(Property.ValueChangeEvent event) {
         field.valueChange(event);
     }
 
+    @Override
     public Class getType() {
         return field.getType();
     }
 
+    @Override
     public Property getPropertyDataSource() {
         return field.getPropertyDataSource();
     }
 
+    @Override
     public void setPropertyDataSource(Property newDataSource) {
         field.setPropertyDataSource(newDataSource);
     }

@@ -1,6 +1,6 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
-        class="com.haulmont.cuba.web.ui.report.browse.InputParametersController"
+        class="com.haulmont.cuba.gui.report.browse.InputParametersController"
         messagesPack="com.haulmont.cuba.web.ui.report"
         caption="msg://inputParameters"
         >
@@ -9,7 +9,8 @@
     <metadataContext>
     </metadataContext>
 
-    <dsContext></dsContext>
+    <dsContext>
+    </dsContext>
 
     <layout expand="parametersGrid">
         <vbox spacing="true">
@@ -19,10 +20,12 @@
                     <column flex="2"/>
                 </columns>
                 <rows>
-                    <row></row>
+                    <row>
+                    </row>
                 </rows>
             </grid>
-            <button id="printReport" icon="icons/print.png"/>
+            <button id="printReportBtn" invoke="printReport"
+                    caption="msg://input.printReport" icon="icons/print.png"/>
         </vbox>
 
     </layout>

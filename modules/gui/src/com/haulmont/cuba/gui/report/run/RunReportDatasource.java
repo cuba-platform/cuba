@@ -8,7 +8,7 @@
  *
  * $Id$
  */
-package com.haulmont.cuba.web.ui.report.run;
+package com.haulmont.cuba.gui.report.run;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.global.View;
@@ -22,8 +22,9 @@ import com.haulmont.cuba.security.entity.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-public class RunReportDatasource extends CollectionDatasourceImpl {
+public class RunReportDatasource extends CollectionDatasourceImpl<Report, UUID> {
     private static final long serialVersionUID = -4470826840980416614L;
 
     public RunReportDatasource(DsContext context, DataService dataservice, String id, MetaClass metaClass, String viewName) {
