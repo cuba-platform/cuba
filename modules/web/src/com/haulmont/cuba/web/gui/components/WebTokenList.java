@@ -11,7 +11,6 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -20,7 +19,10 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.*;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.ValueChangingListener;
+import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.ui.CustomField;
 import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
@@ -48,7 +50,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
 
     private boolean inline;
 
-    private WebButton button;
+    private WebButton addButton;
 
     private WebLookupPickerField lookupPickerField;
 
@@ -68,8 +70,8 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
     private PickerField.LookupAction lookupAction;
 
     public WebTokenList() {
-        button = new WebButton();
-        button.setCaption(MessageProvider.getMessage(TokenList.class, "actions.Add"));
+        addButton = new WebButton();
+        addButton.setCaption(MessageProvider.getMessage(TokenList.class, "actions.Add"));
 
         lookupPickerField = new WebLookupPickerField();
         component = new TokenListImpl();
@@ -83,18 +85,9 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
     }
 
     @Override
-    public MetaProperty getMetaProperty() {
-        return null;
-    }
-
-    @Override
-    public void setDatasource(Datasource datasource, String property) {
-    }
-
-    @Override
     public void setDatasource(CollectionDatasource datasource) {
         this.datasource = datasource;
-        datasource.addListener(new CollectionDatasourceListener() {
+        datasource.addListener(new CollectionDsListenerAdapter() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation) {
                 if (lookupPickerField != null) {
@@ -109,18 +102,6 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
                     }
                 }
                 component.refreshComponent();
-            }
-
-            @Override
-            public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-            }
-
-            @Override
-            public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-            }
-
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
             }
         });
     }
@@ -211,7 +192,32 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
             }
             return (T) items;
         } else
-            return null;
+            return (T) Collections.emptyList();
+    }
+
+    @Override
+    public void setValue(Object value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void addListener(ValueListener listener) {
+        // todo
+    }
+
+    @Override
+    public void removeListener(ValueListener listener) {
+        // todo
+    }
+
+    @Override
+    public void setValueChangingListener(ValueChangingListener listener) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removeValueChangingListener() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -284,22 +290,22 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
 
     @Override
     public String getAddButtonCaption() {
-        return button.getCaption();
+        return addButton.getCaption();
     }
 
     @Override
     public void setAddButtonCaption(String caption) {
-        button.setCaption(caption);
+        addButton.setCaption(caption);
     }
 
     @Override
     public String getAddButtonIcon() {
-        return button.getIcon();
+        return addButton.getIcon();
     }
 
     @Override
     public void setAddButtonIcon(String icon) {
-        button.setIcon(icon);
+        addButton.setIcon(icon);
     }
 
     @Override
@@ -400,7 +406,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
 
         private VerticalLayout root;
 
-        private Panel container;
+        private Panel scrollContainer;
 
         private Component editor;
 
@@ -413,13 +419,13 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
             root.setSpacing(true);
             root.setSizeFull();
 
-            container = new ScrollablePanel();
+            scrollContainer = new ScrollablePanel();
             CssLayout layout = new CssLayout();
-            container.setContent(layout);
-            container.setSizeFull();
+            scrollContainer.setContent(layout);
+            scrollContainer.setSizeFull();
 
-            root.addComponent(container);
-            root.setExpandRatio(container, 1);
+            root.addComponent(scrollContainer);
+            root.setExpandRatio(scrollContainer, 1);
 
             setCompositionRoot(root);
 
@@ -442,9 +448,9 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
                 lookupPickerField.setVisible(false);
             }
 
-            button.setStyleName("add-btn");
+            addButton.setStyleName("add-btn");
 
-            Button wrappedButton = (Button) WebComponentsHelper.unwrap(button);
+            Button wrappedButton = (Button) WebComponentsHelper.unwrap(addButton);
             if (!isSimple()) {
                 wrappedButton.addListener(new Button.ClickListener() {
                     @Override
@@ -514,12 +520,12 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
                 addStyleName("inline");
             }
 
-            if (editor == null) {
-                initField();
-            }
-
             if (editor != null) {
                 root.removeComponent(editor);
+            }
+
+            if (editor == null) {
+                initField();
             }
 
             if (isEditable()) {
@@ -531,9 +537,11 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
                 }
             }
 
-            container.removeAllComponents();
+            scrollContainer.removeAllComponents();
 
             if (datasource != null) {
+                List<Instance> usedItems = new ArrayList<Instance>();
+
                 // New tokens
                 for (final Object itemId : datasource.getItemIds()) {
                     final Instance item = datasource.getItem(itemId);
@@ -547,7 +555,16 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
                     f.setValue(instanceCaption(item));
                     f.setWidth("100%");
                     setTokenStyle(f, itemId);
-                    container.addComponent(f);
+                    scrollContainer.addComponent(f);
+                    usedItems.add(item);
+                }
+
+                // Remove obsolete items
+                for (Instance componentItem : new ArrayList<Instance>(itemComponents.keySet())) {
+                    if (!usedItems.contains(componentItem)) {
+                        componentItems.remove(itemComponents.get(componentItem));
+                        itemComponents.remove(componentItem);
+                    }
                 }
             }
 

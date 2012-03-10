@@ -103,10 +103,12 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
             if (component instanceof DatasourceComponent
                     && ((DatasourceComponent) component).getDatasource() != null) {
                 DatasourceComponent dsComponent = (DatasourceComponent) component;
-                if (!security.isEntityAttrModificationPermitted(dsComponent.getDatasource().getMetaClass(),
-                        dsComponent.getMetaProperty())) {
-                    ((Component.Editable) component).setEditable(false);
-                    return;
+                if (dsComponent.getMetaProperty() != null) {
+                    if (!security.isEntityAttrModificationPermitted(dsComponent.getDatasource().getMetaClass(),
+                            dsComponent.getMetaProperty())) {
+                        ((Component.Editable) component).setEditable(false);
+                        return;
+                    }
                 }
             }
 
@@ -136,7 +138,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
     }
 
     protected void loadVisible(Component component, Element element) {
-        if (component instanceof DatasourceComponent 
+        if (component instanceof DatasourceComponent
                 && ((DatasourceComponent) component).getDatasource() != null)
         {
             MetaClass metaClass = ((DatasourceComponent) component).getDatasource().getMetaClass();
@@ -144,7 +146,8 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
             UserSession userSession = UserSessionProvider.getUserSession();
             if (!userSession.isEntityOpPermitted(metaClass, EntityOp.READ)
-                    || !userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.VIEW)) {
+                    || ( (metaProperty != null) &&
+                         !userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.VIEW))) {
                 component.setVisible(false);
                 return;
             }

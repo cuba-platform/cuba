@@ -123,6 +123,8 @@ public class TokenListLoader extends AbstractFieldLoader {
         String simple = element.attributeValue("simple");
         if (!StringUtils.isEmpty(simple)) {
             component.setSimple(BooleanUtils.toBoolean(simple));
+        } else {
+            component.setSimple(false);
         }
 
         assignFrame(component);

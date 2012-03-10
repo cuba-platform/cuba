@@ -51,6 +51,7 @@ public class InputParametersController extends AbstractWindow {
     private int number = 0;
     private HashMap<String, Field> parameterComponents = new HashMap<String, Field>();
     private Map<ParameterType, FieldCreator> fieldCreationMapping = new HashMap<ParameterType, FieldCreator>();
+
     {
         fieldCreationMapping.put(ParameterType.BOOLEAN, new CheckBoxCreator());
         fieldCreationMapping.put(ParameterType.DATE, new DataFieldCreator());
@@ -74,7 +75,7 @@ public class InputParametersController extends AbstractWindow {
             else
                 parametersGrid.setRows(0);
 
-            for (ReportInputParameter parameter: report.getInputParameters()) {
+            for (ReportInputParameter parameter : report.getInputParameters()) {
                 createComponent(parameter);
             }
         }
@@ -118,11 +119,10 @@ public class InputParametersController extends AbstractWindow {
         field.setEditable(true);
 
         parameterComponents.put(parameter.getAlias(), field);
-        if (parameter.getRequired()) {
-            field.setRequired(true);
-        }
+        field.setRequired(parameter.getRequired());
 
         Label label = cFactory.createComponent(Label.NAME);
+        label.setAlignment(Alignment.TOP_LEFT);
         label.setValue(parameter.getLocName());
 
         parametersGrid.add(label, 0, number);
@@ -249,7 +249,7 @@ public class InputParametersController extends AbstractWindow {
             tokenList.setEditable(true);
             tokenList.setLookup(true);
             tokenList.setLookupOpenMode(WindowManager.OpenType.DIALOG);
-//            tokenList.setHeight("150px");
+            tokenList.setHeight("150px");
             String alias = parameter.getScreen();
 
             if (StringUtils.isNotEmpty(alias)) {

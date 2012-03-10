@@ -29,6 +29,7 @@ import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsImpl;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
@@ -1248,6 +1249,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             this.formatter = formatter;
         }
 
+        @Override
         public void valueChange(Property.ValueChangeEvent event) {
             WebComponentsHelper.setLabelText(component, event.getProperty().getValue(), formatter);
         }
@@ -1271,16 +1273,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         return new AggregationDatasourceListener();
     }
 
-    protected class AggregationDatasourceListener implements CollectionDatasourceListener<Entity> {
-        public void collectionChanged(CollectionDatasource ds, Operation operation) {
-        }
+    protected class AggregationDatasourceListener extends CollectionDsListenerAdapter<Entity> {
 
-        public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-        }
-
-        public void stateChanged(Datasource ds, Datasource.State prevState, Datasource.State state) {
-        }
-
+        @Override
         public void valueChanged(Entity source, String property, Object prevValue, Object value) {
             final CollectionDatasource ds = WebAbstractTable.this.getDatasource();
             component.aggregate(new AggregationContainer.Context(ds.getItemIds()));
