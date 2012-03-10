@@ -21,6 +21,7 @@ import com.haulmont.cuba.web.toolkit.Timer;
 import com.haulmont.cuba.web.toolkit.ui.MultiUpload;
 import com.vaadin.Application;
 import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.VariableOwner;
 import com.vaadin.terminal.gwt.server.CommunicationManager;
 import com.vaadin.terminal.gwt.server.JsonPaintTarget;
@@ -40,12 +41,15 @@ import java.util.*;
 public class CubaCommunicationManager extends CommunicationManager {
 
     private static final int BYTES_IN_MEGABYTE = 1048576;
+    private static final String TIMER_ID_PREFIX = "TID";
 
     private long timerIdSequence = 0;
 
     private Map<String, Timer> id2Timer = new HashMap<String, Timer>();
 
     private Map<Timer, String> timer2Id = new HashMap<Timer, String>();
+
+    private List<String> deadTimers = new ArrayList<String>();
 
     private Log log = LogFactory.getLog(CubaCommunicationManager.class);
 
@@ -97,13 +101,28 @@ public class CubaCommunicationManager extends CommunicationManager {
             }
         }
 
+        // remove dead timers from browser
+        for (String deadTimerId : deadTimers)
+            paintDeadTimer(paintTarget, deadTimerId);
+
+        deadTimers.clear();
+
         paintTarget.close();
 
         writer.print("]");
     }
 
+    private void paintDeadTimer(PaintTarget target, String timerId) throws PaintException {
+        target.startTag("timer");
+        target.addAttribute("id", timerId);
+        target.addAttribute("stopped", true);
+        target.endTag("timer");
+    }
+
     @Override
     public boolean handleVariableBurst(Object source, Application app, boolean success, String burst) {
+        deadTimers.clear();
+
         // extract variables to two dim string array
         final String[] tmp = burst.split(VAR_RECORD_SEPARATOR);
         final String[][] variableRecords = new String[tmp.length][4];
@@ -193,6 +212,12 @@ public class CubaCommunicationManager extends CommunicationManager {
                             msg += ", caption=" + caption;
                         }
                     } else {
+                        String missedVar = variable[VAR_PID];
+                        if (missedVar.startsWith(TIMER_ID_PREFIX)) {
+                            deadTimers.add(missedVar);
+                            continue;
+                        }
+
                         msg += "non-existent component, VAR_PID="
                                 + variable[VAR_PID];
                         success = false;
@@ -205,7 +230,7 @@ public class CubaCommunicationManager extends CommunicationManager {
     }
 
     private String timerId() {
-        return "TID" + ++timerIdSequence;
+        return TIMER_ID_PREFIX + ++timerIdSequence;
     }
 
     private void fireTimer(Timer timer) {
