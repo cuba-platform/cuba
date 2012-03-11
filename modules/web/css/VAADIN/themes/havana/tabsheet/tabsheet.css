@@ -77,6 +77,47 @@
     padding-left: 0;
 }
 
+.v-verticallayout-single .v-tabsheet-tabs {
+    background: transparent url(img/bg-middle-tabseet.png) repeat-x bottom;
+}
+
+.v-verticallayout-single .v-tabsheet-content {
+    background: #F5F7F9;
+    border: 1px solid #D2E3EE;
+    border-top-style: none;
+}
+
+.v-verticallayout-single .v-tabsheet-spacertd div {
+    border-bottom: 0;
+}
+
+.v-verticallayout-single .v-tabsheet-tabs .v-tabsheet-tabitem-selected,
+.v-verticallayout-single .v-tabsheet-tabs .v-tabsheet-tabitem-selected-first  {
+    border-bottom: 0;
+}
+
+.v-verticallayout-single .v-tabsheet-tabitem-selected-first,
+.v-verticallayout-single .v-tabsheet-tabitem-selected {
+    background: #F5F7F9;
+    border-color: #D2E3EE;
+}
+
+.v-verticallayout-single .v-tabsheet-tabitem .v-caption .v-captiontext {
+    color:#1E3146;
+}
+
+.v-verticallayout-single .v-tabsheet-content {
+    border: 1px solid #D2E3EE;
+    border-top-style: none;
+    background: #F5F7F9;
+}
+
+.v-verticallayout-single .v-tabsheet-tabs .v-tabsheet-tabitemcell-selected-first,
+.v-verticallayout-single .v-tabsheet-tabs .v-tabsheet-tabitemcell-selected {
+    border: 0;
+    padding-left: 0;
+}
+
 /* Third level tabsheet */
 
 .v-tabsheet-content .v-tabsheet-content .v-tabsheet-tabs {
@@ -97,6 +138,30 @@
     background: #EBF0F4;
     border: 1px solid #A4C5DF;
     border-top-style: none;
+}
+
+.v-verticallayout-single .v-tabsheet-content .v-tabsheet-tabs {
+    background: transparent url(img/bg-inner-tabseet.png) repeat-x bottom;
+}
+
+.v-verticallayout-single .v-tabsheet-content .v-tabsheet-tabitem-selected-first,
+.v-verticallayout-single .v-tabsheet-content .v-tabsheet-tabitem-selected {
+    background: #EBF0F4;
+    border-color: #A4C5DF;
+}
+
+.v-verticallayout-single .v-tabsheet-content .v-tabsheet-tabitem .v-caption .v-captiontext {
+    color:#2B4666;
+}
+
+.v-verticallayout-single.v-tabsheet-content .v-tabsheet-content {
+    background: #EBF0F4;
+    border: 1px solid #A4C5DF;
+    border-top-style: none;
+}
+
+.v-verticallayout-single .v-tabsheet-content .v-tabsheet-content {
+    background: #EBF0F4;
 }
 
 /* Tabsheet in dialog windows */

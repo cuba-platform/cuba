@@ -132,6 +132,12 @@
     background: #fff url("images/bg_main.gif") repeat-x;
 }
 
+.v-horizontallayout-work-area-single,
+.v-verticallayout-work-area-single,
+.v-customlayout-work-area-single {
+    background: #fff url("images/bg_main.gif") repeat-x;
+}
+
 /*
  * Login page styles
  */

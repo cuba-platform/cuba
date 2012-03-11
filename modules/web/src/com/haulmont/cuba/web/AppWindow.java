@@ -203,7 +203,12 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         layout.addComponent(emptyLayout);
 
         middleLayout = new HorizontalLayout();
-        middleLayout.addStyleName("work-area");
+
+        if (Mode.TABBED.equals(getMode())) {
+            middleLayout.addStyleName("work-area");
+        } else
+            middleLayout.addStyleName("work-area-single");
+
         middleLayout.setSizeFull();
 
         foldersPane = createFoldersPane();

@@ -63,12 +63,13 @@ public class WindowBreadCrumbs extends HorizontalLayout {
 
         if (!tabbedMode) {
             closeBtn = new Button("", new Button.ClickListener() {
+                @Override
                 public void buttonClick(Button.ClickEvent event) {
                     final Window window = getCurrentWindow();
                     window.close("close");
                 }
             });
-            closeBtn.setIcon(new ThemeResource("images/close.gif"));
+            closeBtn.setIcon(new ThemeResource("images/close.png"));
             closeBtn.setStyleName("closetab-button");
             App.getInstance().getWindowManager()
                     .setDebugId(closeBtn, "closeBtn");
@@ -157,6 +158,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
     }
 
     public class BtnClickListener implements Button.ClickListener {
+        @Override
         public void buttonClick(Button.ClickEvent event) {
             Window win = btn2win.get(event.getButton());
             if (win != null)

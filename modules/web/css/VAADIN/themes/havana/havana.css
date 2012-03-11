@@ -148,6 +148,12 @@
     background: #8398AF;
 }
 
+.v-horizontallayout-work-area-single,
+.v-verticallayout-work-area-single,
+.v-customlayout-work-area-single {
+    background: #F5F8FB;
+}
+
 /*
  * Login page styles
  */

@@ -23,7 +23,6 @@ import org.apache.commons.lang.StringUtils;
 import javax.persistence.*;
 import java.text.MessageFormat;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * User
