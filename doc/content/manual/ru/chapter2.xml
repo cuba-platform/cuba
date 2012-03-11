@@ -112,7 +112,7 @@
         <para>Настроить аудит изменений.</para>
       </listitem>
       <listitem>
-        <para>В экране редактирования информации о продаже должна быть кнопка, по нажатии на которую считается цена продажи исходя из выбранного покупателя, товара, даты заказа и количества товара.</para>
+        <para>В экране редактирования информации о продаже должна быть кнопка, по нажатию на которую считается цена продажи исходя из выбранного покупателя, товара, даты заказа и количества товара.</para>
       </listitem>
     </itemizedlist>
   </section>
@@ -174,7 +174,7 @@
   </section>
   <section>
     <title>Создание сущностей</title>
-    <para>Предметная область моделируется в системе с помощью взаимосвязанных классов сущностей. Класс сущностей – это простой класс Java, как правило, соответствующий таблице в базе данных. Все персистентные (хранящиеся в БД) сущности должны находиться в пакете <package>com.haulmont.ext.core.entity</package> модуля <structname>global</structname>.</para>
+    <para>Предметная область моделируется в системе с помощью взаимосвязанных классов сущностей. Класс сущностей – это простой класс Java, как правило, соответствующий таблице в базе данных. Все персистентные (хранящиеся в БД) сущности должны находиться в пакете <package>com.haulmont.shop.core.entity</package> модуля <structname>global</structname>.</para>
     <para>Из ER-диаграммы видно, что сущности <database>Продавец (Sales person)</database> и <database>Покупатель (Buyer)</database> имеют одинаковый набор атрибутов (<database>Полное имя</database>, <database>Дата рождения</database>, <database>Электронная почта</database>, <database>Мобильный телефон</database>). Поэтому выделим данные атрибуты в отдельную сущность <database>Личные данные (Personal data)</database>. Диаграмма классов представлена на рисунке ниже:</para>
     <mediaobject>
       <imageobject>
@@ -970,8 +970,8 @@ public class SaleServiceBean implements SaleService {
     &lt;/property&gt;
     &lt;/bean&gt;</programlisting></para>
     <para>Все импортируемые сервисы должны быть объявлены в одном словаре (map) бина <classname>shop_proxyCreator</classname>.</para>
-    <para>Метод <methodname>getPrice(Sale sale)</methodname> сервиса <classname>SaleService</classname> должен вызываться по нажатию на кнопку <guibutton>Посчитать</guibutton>, расположенную на экране редактирования информации о продаже. Возвращаемое методом значение должно проставляться в поле <guilabel>Цена</guilabel>.</para>
-    <para>Изменим <glossterm linkend="glossary_xml_descriptor_id">XML-дескриптор</glossterm> экрана редактирования информации о продаже <filename>sale-edit.xml</filename>, добавив в него описание кнопки <guibutton>Посчитать</guibutton>.</para>
+    <para>Метод <methodname>getPrice(Sale sale)</methodname> сервиса <classname>SaleService</classname> должен вызываться по нажатию на кнопку <guibutton>Посчитать цену</guibutton>, расположенную на экране редактирования информации о продаже. Возвращаемое методом значение должно проставляться в поле <guilabel>Цена</guilabel>.</para>
+    <para>Изменим <glossterm linkend="glossary_xml_descriptor_id">XML-дескриптор</glossterm> экрана редактирования информации о продаже <filename>sale-edit.xml</filename>, добавив в него описание кнопки <guibutton>Посчитать цену</guibutton>.</para>
     <para><programlisting>&lt;window
         xmlns=&quot;http://www.haulmont.com/schema/cuba/gui/window.xsd&quot;
         class=&quot;com.haulmont.shop.gui.ui.sale.SaleEditor&quot;
@@ -1049,7 +1049,7 @@ public class SaleServiceBean implements SaleService {
     &lt;/layout&gt;
 &lt;/window&gt;</programlisting></para>
     <para>Обратите внимание, в элементе <parameter>button</parameter> дескриптора используется атрибут <property>invoke=&quot;calcPrice&quot;</property>. В этом атрибуте указывается  имя вызываемого метода контроллера. Метод должен быть <classname>public</classname>, не возвращать результата и либо не иметь аргументов, либо иметь один аргумент типа <classname>Component</classname>. Если метод имеет аргумент <classname>Component</classname>, то при вызове в него будет передан экземпляр вызвавшей кнопки. Данный атрибут игнорируется, если для кнопки задан атрибут <property>action</property>.</para>
-    <para>Далее изменим класс контроллера <classname>SaleEditor</classname>. Необходимо написать метод, который будет вызываться при нажатии на кнопку <guibutton>Посчитать</guibutton>.</para>
+    <para>Далее изменим класс контроллера <classname>SaleEditor</classname>. Необходимо написать метод, который будет вызываться при нажатии на кнопку <guibutton>Посчитать цену</guibutton>.</para>
     <para><programlisting>    public void calcPrice() {
         Sale sale = saleDs.getItem();
         if ((sale.getBuyer() == null) || (sale.getProduct() == null) || (sale.getOrderDate() == null) || (sale.getQuantity() == null)) {

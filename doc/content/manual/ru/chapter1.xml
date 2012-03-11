@@ -102,7 +102,7 @@
         <para>Файл <filename>web\WEB-INF\web.xml</filename> − это дескриптор веб-приложения среднего слоя. Среди прочего содержит список конфигурационных файлов <filename>*-app.properties</filename>, используемых данным приложением.</para>
       </listitem>
     </itemizedlist>
-    <para>Модуль <structname>gui</structname> определяет компоненты графического пользовательского интрефейса. Этот модуль доступен всем типам клиентов. Модуль <structname>gui</structname> содержит универсальные экраны: классы <glossterm linkend="glossary_controller_id">контроллеров</glossterm>, <glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторы</glossterm> экранов, файлы <glossterm linkend="glossary_localized_folders_id">локализованных сообщений</glossterm>.</para>
+    <para>Модуль <structname>gui</structname> определяет компоненты графического пользовательского интерфейса. Этот модуль доступен всем типам клиентов. Модуль <structname>gui</structname> содержит универсальные экраны: классы <glossterm linkend="glossary_controller_id">контроллеров</glossterm>, <glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторы</glossterm> экранов, файлы <glossterm linkend="glossary_localized_folders_id">локализованных сообщений</glossterm>.</para>
     <itemizedlist>
       <listitem>
         <para>В пакете <package>com.haulmont.shop.gui.ui</package> создаются экраны приложения.</para>
