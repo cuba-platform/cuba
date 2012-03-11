@@ -102,4 +102,7 @@
     <screen id="report$inputParameters"
             template="/com/haulmont/cuba/gui/report/browse/input-parameters.xml"/>
 
+    <screen id="report$commonLookup"
+            template="/com/haulmont/cuba/gui/report/browse/common-lookup.xml"/>
+
 </screen-config>
