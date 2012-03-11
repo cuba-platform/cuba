@@ -51,14 +51,16 @@ public class EntitySnapshotsDatasource extends CollectionDatasourceImpl<EntitySn
     protected void loadData(Map<String, Object> params) {
         clear();
 
-        EntitySnapshotService snapshotService = ServiceLocator.lookup(EntitySnapshotService.NAME);
-        snapshots = snapshotService.getSnapshots(
-                MetadataProvider.getSession().getClass(entity.getClass()),
-                entity.getUuid());
+        if (entity != null) {
+            EntitySnapshotService snapshotService = ServiceLocator.lookup(EntitySnapshotService.NAME);
+            snapshots = snapshotService.getSnapshots(
+                    MetadataProvider.getSession().getClass(entity.getClass()),
+                    entity.getUuid());
 
-        for (EntitySnapshot snapshot : snapshots) {
-            data.put(snapshot.getId(), snapshot);
-            attachListener(snapshot);
+            for (EntitySnapshot snapshot : snapshots) {
+                data.put(snapshot.getId(), snapshot);
+                attachListener(snapshot);
+            }
         }
     }
 
