@@ -72,6 +72,12 @@ public class CubaCommunicationManager extends CommunicationManager {
 
         final JsonPaintTarget paintTarget = new JsonPaintTarget(this, writer, false);
 
+        // remove dead timers from browser
+        for (String deadTimerId : deadTimers)
+            paintDeadTimer(paintTarget, deadTimerId);
+
+        deadTimers.clear();
+
         // WebBackgroundWorker special timer
         WebTimer workerTimer = application.getWorkerTimer();
         int workerListenersCount = workerTimer.getTimerListeners().size();
@@ -85,6 +91,7 @@ public class CubaCommunicationManager extends CommunicationManager {
                 workerTimer.stopTimer();
         }
 
+        // paint timers
         final Set<Timer> timers = new HashSet<Timer>(application.getTimers().getAll(window));
         for (final Timer timer : timers) {
             if (repaintAll || timer != null && timer.isDirty()) {
@@ -100,12 +107,6 @@ public class CubaCommunicationManager extends CommunicationManager {
                 }
             }
         }
-
-        // remove dead timers from browser
-        for (String deadTimerId : deadTimers)
-            paintDeadTimer(paintTarget, deadTimerId);
-
-        deadTimers.clear();
 
         paintTarget.close();
 
