@@ -140,6 +140,12 @@
     border-top-style: none;
 }
 
+.v-verticallayout-single .v-tabsheet-content .v-tabsheet-content {
+    background: #EBF0F4;
+    border: 1px solid #A4C5DF;
+    border-top-style: none;
+}
+
 .v-verticallayout-single .v-tabsheet-content .v-tabsheet-tabs {
     background: transparent url(img/bg-inner-tabseet.png) repeat-x bottom;
 }
@@ -152,12 +158,6 @@
 
 .v-verticallayout-single .v-tabsheet-content .v-tabsheet-tabitem .v-caption .v-captiontext {
     color:#2B4666;
-}
-
-.v-verticallayout-single.v-tabsheet-content .v-tabsheet-content {
-    background: #EBF0F4;
-    border: 1px solid #A4C5DF;
-    border-top-style: none;
 }
 
 .v-verticallayout-single .v-tabsheet-content .v-tabsheet-content {
