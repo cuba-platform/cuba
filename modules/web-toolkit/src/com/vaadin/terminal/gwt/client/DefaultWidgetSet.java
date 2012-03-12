@@ -52,8 +52,12 @@ public class DefaultWidgetSet extends WidgetSet {
                 return VPasswordField.class;
             }
         } else if (widgetClass == VResizableTextField.class) {
-            if (!uidl.hasAttribute("multiline"))
-                return VTextField.class;
+            if (!uidl.hasAttribute("multiline")) {
+                if (uidl.hasAttribute("secret"))
+                    return VPasswordField.class;
+                else
+                    return VTextField.class;
+            }
         } else if (widgetClass == VSplitPanelHorizontal.class
                 && uidl.hasAttribute("vertical")) {
             return VSplitPanelVertical.class;
