@@ -383,7 +383,11 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         String themeName = AppContext.getProperty(AppConfig.THEME_NAME_PROP);
         if (themeName == null) themeName = App.THEME_NAME;
         themeName = UserSettingHelper.loadAppWindowTheme() == null ? themeName : UserSettingHelper.loadAppWindowTheme();
-        setTheme(themeName);
+        if (!StringUtils.equals(themeName, getTheme())) {
+            setTheme(themeName);
+            // set cookie
+            App.getInstance().setUserAppTheme(themeName);
+        }
     }
 
     /**
@@ -1104,6 +1108,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             final App app = App.getInstance();
             app.cleanupBackgroundTasks();
             app.getTimers().stopAll();
+            app.reinitializeAppearanceProperties();
             app.getWindowManager().checkModificationsAndCloseAll(
                     new Runnable() {
                         @Override

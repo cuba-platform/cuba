@@ -174,6 +174,13 @@ public interface WebConfig extends Config
     String getAppWindowTheme();
 
     /**
+     * @return Supported web themes
+     */
+    @Factory(factory = StringListTypeFactory.class)
+    @Default("peyto|havana")
+    List<String> getAvailableAppThemes();
+
+    /**
      * @return Whether to use lightweight header (app icon, menu, app settings in the same row)
      */
     @DefaultBoolean(false)

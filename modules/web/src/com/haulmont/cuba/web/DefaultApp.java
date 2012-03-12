@@ -40,6 +40,7 @@ public class DefaultApp extends App implements ConnectionListener {
 
     /**
      * Should be overridden in descendant to create an application-specific login window
+     * @return Login form
      */
     protected LoginWindow createLoginWindow() {
         LoginWindow window = new LoginWindow(this, connection);
@@ -64,6 +65,7 @@ public class DefaultApp extends App implements ConnectionListener {
         return createLoginWindow();
     }
 
+    @Override
     public void init() {
         log.debug("Initializing application");
 
@@ -77,9 +79,11 @@ public class DefaultApp extends App implements ConnectionListener {
 
         checkDeployedViews();
 
-        String themeName = AppContext.getProperty(AppConfig.THEME_NAME_PROP);
-        if (themeName == null) themeName = THEME_NAME;
-        setTheme(themeName);
+        if (getTheme() == null) {
+            String themeName = AppContext.getProperty(AppConfig.THEME_NAME_PROP);
+            if (themeName == null) themeName = THEME_NAME;
+            setTheme(themeName);
+        }
     }
 
     @Override
@@ -111,13 +115,14 @@ public class DefaultApp extends App implements ConnectionListener {
         return window;
     }
 
+    @Override
     public void connectionStateChanged(Connection connection) throws LoginException {
         if (connection.isConnected()) {
             log.debug("Creating AppWindow");
 
             getTimers().stopAll();
 
-            for (Object win : new ArrayList(getWindows())) {
+            for (Object win : new ArrayList<Object>(getWindows())) {
                 removeWindow((Window) win);
             }
 
@@ -143,7 +148,7 @@ public class DefaultApp extends App implements ConnectionListener {
 
             getTimers().stopAll();
 
-            for (Object win : new ArrayList(getWindows())) {
+            for (Object win : new ArrayList<Object>(getWindows())) {
                 removeWindow((Window) win);
             }
 
@@ -161,7 +166,7 @@ public class DefaultApp extends App implements ConnectionListener {
         }
     }
 
-
+    @Override
     protected boolean loginOnStart(HttpServletRequest request) {
         if (request.getUserPrincipal() != null
                 && !principalIsWrong
@@ -180,5 +185,4 @@ public class DefaultApp extends App implements ConnectionListener {
 
         return false;
     }
-
 }

@@ -62,8 +62,6 @@ public abstract class App extends Application
 
     public static final Pattern WIN_PATTERN = Pattern.compile("win([0-9]{1,4})");
 
-//    private static final Pattern BAD_WIN_PATTERN = Pattern.compile("win([0-9]{1,4})_.+");
-
     private static Log log = LogFactory.getLog(App.class);
 
     public static final String THEME_NAME = "peyto";
@@ -75,6 +73,8 @@ public abstract class App extends Application
     public static final List<String> ACTION_NAMES = Arrays.asList("open", "login");
 
     public static final String USER_SESSION_ATTR = "userSessionId";
+
+    public static final String APP_THEME_COOKIE_KEY = "APP_THEME_NAME";
 
     protected Connection connection;
     private WebWindowManager windowManager;
@@ -107,6 +107,8 @@ public abstract class App extends Application
 
     protected boolean testModeRequest = false;
 
+    protected boolean themeInitialized = false;
+
     protected String clientAddress;
 
     protected WebConfig webConfig;
@@ -124,6 +126,7 @@ public abstract class App extends Application
         windowManager = createWindowManager();
         exceptionHandlers = new ExceptionHandlers(this);
         cookies = new AppCookies() {
+            @Override
             protected void addCookie(Cookie cookie) {
                 response.addCookie(cookie);
             }
@@ -143,6 +146,22 @@ public abstract class App extends Application
     public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
         this.response = response;
         cookies.updateCookies(request);
+
+        if (!themeInitialized) {
+            String userAppTheme = cookies.getCookieValue(APP_THEME_COOKIE_KEY);
+            if (userAppTheme != null) {
+                if (!StringUtils.equals(userAppTheme, getTheme())) {
+                    // check theme support
+                    WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+                    List<String> supportedThemes = webConfig.getAvailableAppThemes();
+                    if (supportedThemes.contains(userAppTheme)) {
+                        setTheme(userAppTheme);
+                    }
+                }
+            }
+            themeInitialized = true;
+        }
+
         if (ConfigProvider.getConfig(GlobalConfig.class).getTestMode()) {
             String paramName = webConfig.getTestModeParamName();
             testModeRequest = (paramName == null || request.getParameter(paramName) != null);
@@ -224,7 +243,7 @@ public abstract class App extends Application
     }
 
     /**
-     * Current App instance. Can be invoked anywhere in application code.
+     * @return Current App instance. Can be invoked anywhere in application code.
      */
     public static App getInstance() {
         App app = currentApp.get();
@@ -311,7 +330,7 @@ public abstract class App extends Application
     }
 
     /**
-     * Get current connection object
+     * @return Current connection object
      */
     public Connection getConnection() {
         return connection;
@@ -564,6 +583,15 @@ public abstract class App extends Application
         workerTimer = new WebTimer(uiCheckInterval, true);
         workerTimer.stopTimer();
         return workerTimer;
+    }
+
+    public void reinitializeAppearanceProperties() {
+        themeInitialized = false;
+    }
+
+    public void setUserAppTheme(String themeName) {
+        addCookie(APP_THEME_COOKIE_KEY, themeName);
+        super.setTheme(themeName);
     }
 
     protected Timer createSessionPingTimer(final boolean connected) {
