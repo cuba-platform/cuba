@@ -192,10 +192,10 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
 
         LinkedList<Cell> relativeHeighted = new LinkedList<Cell>();
 
-        for (final Iterator<?> i = uidl.getChildIterator(); i.hasNext();) {
+        for (final Iterator<?> i = uidl.getChildIterator(); i.hasNext(); ) {
             final UIDL r = (UIDL) i.next();
             if ("gr".equals(r.getTag())) {
-                for (final Iterator<?> j = r.getChildIterator(); j.hasNext();) {
+                for (final Iterator<?> j = r.getChildIterator(); j.hasNext(); ) {
                     final UIDL c = (UIDL) j.next();
                     if ("gc".equals(c.getTag())) {
                         Cell cell = getCell(c);
@@ -224,9 +224,10 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
             }
         }
 
-        distributeColSpanWidths();
+        //distributeColSpanWidths();
         colExpandRatioArray = uidl.getIntArrayAttribute("colExpand");
         rowExpandRatioArray = uidl.getIntArrayAttribute("rowExpand");
+        distributeColSpanWidths();
 
         minColumnWidths = cloneArray(columnWidths);
         expandColumns();
@@ -547,7 +548,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
             LinkedList<Cell> pendingCells) {
 
         for (Iterator<Cell> iterator = pendingCells.iterator(); iterator
-                .hasNext();) {
+                .hasNext(); ) {
             Cell cell = iterator.next();
             if (!cell.hasRelativeHeight()) {
                 cell.render();
@@ -567,31 +568,8 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
                 // cells with relative content may return non 0 here if on
                 // subsequent renders
                 int width = cell.hasRelativeWidth() ? 0 : cell.getWidth();
-                int allocated = columnWidths[cell.col];
-                for (int i = 1; i < cell.colspan; i++) {
-                    allocated += spacingPixelsHorizontal
-                            + columnWidths[cell.col + i];
-                }
-                if (allocated < width) {
-                    // columnWidths needs to be expanded due colspanned cell
-                    int neededExtraSpace = width - allocated;
-                    int spaceForColunms = neededExtraSpace / cell.colspan;
-                    for (int i = 0; i < cell.colspan; i++) {
-                        int col = cell.col + i;
-                        columnWidths[col] += spaceForColunms;
-                        neededExtraSpace -= spaceForColunms;
-                    }
-                    if (neededExtraSpace > 0) {
-                        for (int i = 0; i < cell.colspan; i++) {
-                            int col = cell.col + i;
-                            columnWidths[col] += 1;
-                            neededExtraSpace -= 1;
-                            if (neededExtraSpace == 0) {
-                                break;
-                            }
-                        }
-                    }
-                }
+                distributeSpanSize(columnWidths, cell.col, cell.colspan,
+                        spacingPixelsHorizontal, width, colExpandRatioArray);
             }
         }
     }
@@ -606,29 +584,58 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
                 // cells with relative content may return non 0 here if on
                 // subsequent renders
                 int height = cell.hasRelativeHeight() ? 0 : cell.getHeight();
-                int allocated = rowHeights[cell.row];
-                for (int i = 1; i < cell.rowspan; i++) {
-                    allocated += spacingPixelsVertical
-                            + rowHeights[cell.row + i];
+                distributeSpanSize(rowHeights, cell.row, cell.rowspan,
+                        spacingPixelsVertical, height, rowExpandRatioArray);
+            }
+        }
+    }
+
+    private static void distributeSpanSize(int[] dimensions,
+                                           int spanStartIndex, int spanSize, int spacingSize, int size,
+                                           int[] expansionRatios) {
+        int allocated = dimensions[spanStartIndex];
+        for (int i = 1; i < spanSize; i++) {
+            allocated += spacingSize + dimensions[spanStartIndex + i];
+        }
+        if (allocated < size) {
+            // dimensions needs to be expanded due spanned cell
+            int neededExtraSpace = size - allocated;
+            int allocatedExtraSpace = 0;
+
+            // Divide space according to expansion ratios if any span has a
+            // ratio
+            int totalExpansion = 0;
+            for (int i = 0; i < spanSize; i++) {
+                int itemIndex = spanStartIndex + i;
+                totalExpansion += expansionRatios[itemIndex];
+            }
+
+            for (int i = 0; i < spanSize; i++) {
+                int itemIndex = spanStartIndex + i;
+                int expansion;
+                if (totalExpansion == 0) {
+                    // Divide equally among all cells if there are no
+                    // expansion ratios
+                    expansion = neededExtraSpace / spanSize;
+                } else {
+                    expansion = neededExtraSpace * expansionRatios[itemIndex]
+                            / totalExpansion;
                 }
-                if (allocated < height) {
-                    // columnWidths needs to be expanded due colspanned cell
-                    int neededExtraSpace = height - allocated;
-                    int spaceForColunms = neededExtraSpace / cell.rowspan;
-                    for (int i = 0; i < cell.rowspan; i++) {
-                        int row = cell.row + i;
-                        rowHeights[row] += spaceForColunms;
-                        neededExtraSpace -= spaceForColunms;
-                    }
-                    if (neededExtraSpace > 0) {
-                        for (int i = 0; i < cell.rowspan; i++) {
-                            int row = cell.row + i;
-                            rowHeights[row] += 1;
-                            neededExtraSpace -= 1;
-                            if (neededExtraSpace == 0) {
-                                break;
-                            }
-                        }
+                dimensions[itemIndex] += expansion;
+                allocatedExtraSpace += expansion;
+            }
+
+            // We might still miss a couple of pixels because of
+            // rounding errors...
+            if (neededExtraSpace > allocatedExtraSpace) {
+                for (int i = 0; i < spanSize; i++) {
+                    // Add one pixel to every cell until we have
+                    // compensated for any rounding error
+                    int itemIndex = spanStartIndex + i;
+                    dimensions[itemIndex] += 1;
+                    allocatedExtraSpace += 1;
+                    if (neededExtraSpace == allocatedExtraSpace) {
+                        break;
                     }
                 }
             }
@@ -789,7 +796,14 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
                 } else if (allocated != width) {
                     // size is smaller thant allocated, column might
                     // shrink
-                    dirtyColumns.add(cell.col);
+                    if (cell.colspan == 1) {
+                        //do simple row expansion
+                        dirtyColumns.add(cell.col);
+                    } else {
+                        for (int i = 1; i < cell.colspan; i++) {
+                            dirtyColumns.add(cell.col + i - 1);
+                        }
+                    }
                 }
 
                 int height = cell.getHeight();
@@ -810,7 +824,14 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
                     }
                 } else if (allocated != height) {
                     // size is smaller than allocated, row might shrink
-                    dirtyRows.add(cell.row);
+                    if (cell.rowspan == 1) {
+                        //do simple row expansion
+                        dirtyRows.add(cell.row);
+                    } else {
+                        for (int i = 1; i < cell.rowspan; i++) {
+                            dirtyRows.add(cell.row + i - 1);
+                        }
+                    }
                 }
             }
         }
@@ -880,7 +901,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
                     if (cell != null
                             && cell.cc != null
                             && (cell.hasRelativeHeight() || cell
-                                    .hasRelativeWidth())) {
+                            .hasRelativeWidth())) {
                         client.handleComponentRelativeSize(cell.cc.getWidget());
                     }
                 }
@@ -902,7 +923,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
 
     protected ChildComponentContainer createComponentContainer(Paintable paintable) {
         return new ChildComponentContainer((Widget) paintable,
-                        CellBasedLayout.ORIENTATION_VERTICAL);
+                CellBasedLayout.ORIENTATION_VERTICAL);
     }
 
     protected Cell[][] cells;
@@ -1025,7 +1046,7 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
                 } else {
                     // A new component
                     cc = createComponentContainer(paintable);//new ChildComponentContainer((Widget) paintable,
-                         //   CellBasedLayout.ORIENTATION_VERTICAL);
+                    //   CellBasedLayout.ORIENTATION_VERTICAL);
                     widgetToComponentContainer.put((Widget) paintable, cc);
                     paintableToCell.put(paintable, this);
                     cc.setWidth("");
@@ -1146,9 +1167,8 @@ public class VGridLayout extends SimplePanel implements Paintable, Container {
      * Returns the deepest nested child component which contains "element". The
      * child component is also returned if "element" is part of its caption.
      *
-     * @param element
-     *            An element that is a nested sub element of the root element in
-     *            this layout
+     * @param element An element that is a nested sub element of the root element in
+     *                this layout
      * @return The Paintable which the element is a part of. Null if the element
      *         belongs to the layout and not to a child.
      */
