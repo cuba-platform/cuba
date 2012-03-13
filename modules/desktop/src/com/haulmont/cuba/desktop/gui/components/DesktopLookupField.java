@@ -61,7 +61,7 @@ public class DesktopLookupField
     private JPanel composition;
 
     private DefaultValueFormatter valueFormatter;
-    private boolean enabled;
+    private boolean enabled = true;
 
     public DesktopLookupField() {
         composition = new JPanel();
