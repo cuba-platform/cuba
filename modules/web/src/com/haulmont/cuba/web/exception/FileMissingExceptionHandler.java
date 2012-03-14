@@ -32,9 +32,4 @@ public class FileMissingExceptionHandler extends AbstractExceptionHandler {
         String msg = MessageProvider.formatMessage(getClass(), "fileNotFoundWarning.message", fileName);
         app.getAppWindow().showNotification(msg, Window.Notification.TYPE_WARNING_MESSAGE);
     }
-
-    public boolean handle(FileMissingException e, App app) {
-        doHandle(app, FileMissingException.class.getName(), e.getMessage(), e);
-        return true;
-    }
 }

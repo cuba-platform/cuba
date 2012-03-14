@@ -41,9 +41,4 @@ public class ReportExceptionHandler extends AbstractExceptionHandler {
         String msg = MessageProvider.getMessage(getClass(), messageCode);
         app.getAppWindow().showNotification(msg, Window.Notification.TYPE_ERROR_MESSAGE);
     }
-
-    public boolean handle(ReportingException e, App app) {
-        doHandle(app, e.getClass().getName(), e.getMessage(), e);
-        return true;
-    }
 }
