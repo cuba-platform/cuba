@@ -210,7 +210,7 @@ actions.Edit=Edit
         <emphasis role="bold">Рабочий каталог</emphasis>
       </glossterm>
       <glossdef>
-        <para>Каталог файловой системы, в котором содержится Ваш проект. Рабочий каталог, если он был создан, должен содержать скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>Intellij IDEA</application>. Информация о том, как создать такой каталог, содержится в главе <link linkend="chapter2_extension_creation">Создание и запуск проекта расширения для системы <application>&quot;ТЕЗИС&quot;</application></link>.</para>
+        <para>Каталог файловой системы, в котором содержится Ваш проект. Рабочий каталог, если он был создан, должен содержать скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>Intellij IDEA</application>. Информация о том, как создать такой каталог, содержится в главе <link linkend="chapter1_create_app_project">Создание и настройка проекта приложения</link>.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
