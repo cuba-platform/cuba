@@ -157,7 +157,7 @@ public class ExcelExporter {
         }
 
         String fileName = MessageUtils.getEntityCaption(datasource.getMetaClass());
-        display.show(new ByteArrayDataProvider(out.toByteArray()), fileName, ExportFormat.XLS);
+        display.show(new ByteArrayDataProvider(out.toByteArray()), fileName + ".xls", ExportFormat.XLS);
     }
 
     protected int createHierarhicalRow(TreeTable table, List<Table.Column> columns,
