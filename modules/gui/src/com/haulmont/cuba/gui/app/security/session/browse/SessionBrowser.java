@@ -50,6 +50,6 @@ public class SessionBrowser extends AbstractLookup {
                 table.getDatasource().refresh();
             }
         });
-        table.setAllowMultiStringCells(true);
+//        table.setAllowMultiStringCells(true);
     }
 }
