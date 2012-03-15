@@ -312,6 +312,12 @@ public class ExcelExporter {
             if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
                 sizers[sizersIndex].notifyCellValue(str, stdFont);
             }
+        } else if (val instanceof Collection){
+            String str = "";
+            cell.setCellValue(new HSSFRichTextString(str));
+            if (sizers[sizersIndex].isNotificationRequired(notificationReqiured)) {
+                sizers[sizersIndex].notifyCellValue(str, stdFont);
+            }
         }
         else {
             String str = sizersIndex == 0 ? createSpaceString(level) + val.toString() : val.toString();
