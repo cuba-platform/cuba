@@ -28,7 +28,7 @@ public class CubaMssqlDictionary extends SQLServerDictionary {
     }
 
     protected SQLBuffer getWhere(Select sel, boolean forUpdate) {
-        return DBDictionaryUtils.getWhere(this, sel, forUpdate, false);
+        return DBDictionaryUtils.getWhere(this, sel, forUpdate, true);
     }
 
     @Override
