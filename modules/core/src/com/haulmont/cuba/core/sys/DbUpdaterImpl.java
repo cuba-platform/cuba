@@ -248,20 +248,9 @@ public class DbUpdaterImpl implements DbUpdater {
      * Try to execute Groovy scripts
      */
     private void prepareScripts() {
-        List<File> groovyScripts = new ArrayList<File>();
         List<File> updateFiles = getUpdateScripts();
-        for (File file : updateFiles) {
-            String fileExt = getFileExtension(file.getName());
-            if (GROOVY_EXTENSION.equals(fileExt))
-                groovyScripts.add(file);
-            else
-                markScript(getScriptName(file), true);
-        }
-
-        for (File file : groovyScripts) {
-            executeScript(file);
+        for (File file : updateFiles)
             markScript(getScriptName(file), true);
-        }
     }
 
     private Set<String> getExecutedScripts() {
