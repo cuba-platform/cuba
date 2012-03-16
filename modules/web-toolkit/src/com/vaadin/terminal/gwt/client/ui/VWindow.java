@@ -1332,4 +1332,8 @@ public class VWindow extends VOverlay implements Container,
         contentPanel.focus();
     }
 
+    // Prevent memory leaks, remove windows from windowOrder
+    public static void closeWindow(VWindow vWindow) {
+        windowOrder.remove(vWindow);
+    }
 }

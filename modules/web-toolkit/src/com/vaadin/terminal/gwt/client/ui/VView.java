@@ -436,12 +436,12 @@ public class VView extends SimplePanel implements Container, ResizeHandler,
         }
 
         // Close old windows which where not in UIDL anymore
-        for (final Iterator<VWindow> rem = removedSubWindows.iterator(); rem
-                .hasNext();) {
-            final VWindow w = rem.next();
+        for (final VWindow w : removedSubWindows) {
             client.unregisterPaintable(w);
             subWindows.remove(w);
             w.hide();
+            // remove window from ordering for prevent memory leak
+            VWindow.closeWindow(w);
         }
 
         if (uidl.hasAttribute("focused")) {
