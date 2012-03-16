@@ -56,12 +56,12 @@
                         <lookupField id="substUser" datasource="subst" property="substitutedUser"
                                      required="true" optionsDatasource="users" requiredMessage="msg://substUserMsg" width="250"/>
                     </row>
-                    <row>
+                    <row id="startDateRow">
                         <label value="msg://startDate"/>
                         <dateField id="startDate" datasource="subst" property="startDate" dateFormat="dd/MM/yyyy"
                                    resolution="DAY"/>
                     </row>
-                    <row>
+                    <row id="endDateRow">
                         <label value="msg://endDate"/>
                         <dateField id="endDate" datasource="subst" property="endDate" dateFormat="dd/MM/yyyy" 
                                    resolution="DAY"/>
