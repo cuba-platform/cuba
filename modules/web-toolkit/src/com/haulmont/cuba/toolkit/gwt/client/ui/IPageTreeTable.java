@@ -20,6 +20,9 @@ import com.vaadin.terminal.gwt.client.RenderInformation;
 import com.vaadin.terminal.gwt.client.RenderSpace;
 import com.vaadin.terminal.gwt.client.UIDL;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class IPageTreeTable extends IPageTable {
 
     private static int LEVEL_STEP_SIZE = 19;
@@ -231,6 +234,8 @@ public class IPageTreeTable extends IPageTable {
 
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
+
+                tableCells.add(td);
 
                 Tools.textSelectionEnable(td, textSelectionEnabled);
             }

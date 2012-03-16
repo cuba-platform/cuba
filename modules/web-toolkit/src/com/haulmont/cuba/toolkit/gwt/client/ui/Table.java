@@ -21,20 +21,17 @@ import com.haulmont.cuba.toolkit.gwt.client.ColumnWidth;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
 import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.Focusable;
-import com.vaadin.terminal.gwt.client.RenderInformation;
 import com.vaadin.terminal.gwt.client.ui.*;
-import com.vaadin.terminal.gwt.client.ui.VGridLayout;
-import com.vaadin.terminal.gwt.client.ui.VFilterSelect;
 import com.vaadin.terminal.gwt.client.ui.dd.VDragAndDropManager;
 import com.vaadin.terminal.gwt.client.ui.dd.VDragEvent;
 import com.vaadin.terminal.gwt.client.ui.dd.VTransferable;
-import org.apache.xpath.operations.Bool;
 import org.vaadin.hene.popupbutton.widgetset.client.ui.VPopupButton;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
-public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt.client.ui.Table, ScrollHandler, FocusHandler, BlurHandler, Focusable {
+public abstract class Table extends FlowPanel
+        implements com.vaadin.terminal.gwt.client.ui.Table, ScrollHandler, FocusHandler, BlurHandler, Focusable {
     public static final String CLASSNAME = "v-table";
     public static final String CLASSNAME_SELECTION_FOCUS = CLASSNAME + "-focus";
 
@@ -684,6 +681,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     /**
      * Moves the focus down by 1+offset rows
      *
+     * @param offset Offset
      * @return Returns true if succeeded, else false if the selection could not
      *         be move downwards
      */
@@ -717,6 +715,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
     /**
      * Moves the focus row upwards
      *
+     * @param offset Offset
      * @return Returns true if succeeded, else false if the selection could not
      *         be move upwards
      *
@@ -740,7 +739,6 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
         return false;
     }
-
 
     /**
      * Get the key that moves the selection head upwards. By default it is the
@@ -2286,6 +2284,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             private int touchStartY;
             private int touchStartX;
 
+            protected List<Element> tableCells = new ArrayList<Element>();
+
             protected ITableRow() {
                 this(0);
             }
@@ -2435,7 +2435,19 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
                     DOM.setElementPropertyBoolean(container, "__cell", true);
                 }
 
+                tableCells.add(td);
+
                 Tools.textSelectionEnable(td, textSelectionEnabled);
+            }
+
+            @Override
+            protected void onDetach() {
+                for (Element td : tableCells)
+                    Tools.removeEvents(td);
+
+                tableCells.clear();
+
+                super.onDetach();
             }
 
             public void addCell(Widget w, char align, String style, int col) {
@@ -3319,6 +3331,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
         protected boolean initialized = false;
 
+        protected List<Element> tableCells = new ArrayList<Element>();
+
         protected char[] aligns;
         protected Element tr;
 
@@ -3432,6 +3446,8 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
             DOM.appendChild(td, container);
             DOM.appendChild(tr, td);
 
+            tableCells.add(td);
+
             Tools.textSelectionEnable(td, textSelectionEnabled);
         }
 
@@ -3452,6 +3468,18 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
 
             DOM.appendChild(td, container);
             DOM.appendChild(tr, td);
+
+            tableCells.add(td);
+        }
+
+        @Override
+        protected void onDetach() {
+            for (Element td : tableCells)
+                Tools.removeEvents(td);
+
+            tableCells.clear();
+
+            super.onDetach();
         }
 
         public void setHorizontalScrollPosition(int scrollLeft) {
@@ -3752,6 +3780,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
         bodyContainer.setScrollPosition(newPixels);
     }
 
+    @Override
     public void focus(){
         bodyContainer.focus();    
     }
@@ -3763,6 +3792,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
      * com.google.gwt.event.dom.client.FocusHandler#onFocus(com.google.gwt.event
      * .dom.client.FocusEvent)
      */
+    @Override
     public void onFocus(FocusEvent event) {
         if (isFocusable()) {
             hasFocus = true;
@@ -3784,6 +3814,7 @@ public abstract class Table extends FlowPanel implements com.vaadin.terminal.gwt
      * com.google.gwt.event.dom.client.BlurHandler#onBlur(com.google.gwt.event
      * .dom.client.BlurEvent)
      */
+    @Override
     public void onBlur(BlurEvent event) {
         hasFocus = false;
         navKeyDown = false;

@@ -74,6 +74,10 @@ public class ToolsImpl {
         }
     }-*/;
 
+    public native void removeEvents(Element el) /*-{
+        $wnd.jQuery(el).remove();
+    }-*/;
+
     public native void updatePrimaryAndDependentStyleNames(Element elem,
                                                            String newPrimaryStyle) /*-{
         var classes = elem.className.split(/\s+/);

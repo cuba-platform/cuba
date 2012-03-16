@@ -105,6 +105,13 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
                 Tools.textSelectionEnable(getElement(), false);
             }
 
+            @Override
+            protected void onDetach() {
+                Tools.removeEvents(getElement());
+
+                super.onDetach();
+            }
+
             private String buildHtmlSnippet(String caption, String desc, String icon) {
                 boolean hasIcon = icon != null && !"".equals(icon);
 

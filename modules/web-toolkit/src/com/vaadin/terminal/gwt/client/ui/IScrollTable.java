@@ -21,6 +21,7 @@ import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.VConsole;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -82,6 +83,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
         rowRequestHandler = new RowRequestHandler();
     }
 
+    @Override
     public void updateFromUIDL(UIDL uidl) {
 
         // we may have pending cache row fetch, cancel it. See #2136
@@ -95,32 +97,27 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
         if (firstvisible != lastRequestedFirstvisible && tBody != null) {
             // received 'surprising' firstvisible from server: scroll there
             firstRowInViewPort = firstvisible;
-            bodyContainer
-                    .setScrollPosition(firstvisible * tBody.getRowHeight());
+            bodyContainer.setScrollPosition(firstvisible * tBody.getRowHeight());
         }
 
         super.updateFromUIDL(uidl);
-
-        boolean keyboardSelectionOverRowFetchInProgress = false;
 
         if (uidl.hasVariable("selected")) {
             final Set<String> selectedKeys = uidl
                     .getStringArrayVariableAsSet("selected");
             if (tBody != null) {
-                Iterator<Widget> iterator = tBody.iterator();
-                while (iterator.hasNext()) {
+                for (Object aTBody : tBody) {
                     /*
                      * Make the focus reflect to the server side state unless we
                      * are currently selecting multiple rows with keyboard.
                      */
-                    IScrollTableBody.IScrollTableRow row = (IScrollTableBody.IScrollTableRow) iterator.next();
+                    IScrollTableBody.IScrollTableRow row = (IScrollTableBody.IScrollTableRow) (Widget) aTBody;
                     boolean selected = selectedKeys.contains(row.getKey());
                     if (!selected
                             && unSyncedselectionsBeforeRowFetch != null
                             && unSyncedselectionsBeforeRowFetch.contains(row
-                                    .getKey())) {
+                            .getKey())) {
                         selected = true;
-                        keyboardSelectionOverRowFetchInProgress = true;
                     }
                     if (selected != row.isSelected()) {
                         row.toggleSelection();
@@ -134,6 +131,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
         purgeUnregistryBag();
     }
 
+    @Override
     protected void focusRowFromBody() {
         if (selectedRowKeys.size() == 1) {
             // try to focus a row currently selected and in viewport
@@ -152,18 +150,22 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
         }
     }
 
+    @Override
     protected IScrollTableBody createBody() {
         return new IScrollTableBody();
     }
 
+    @Override
     protected IScrollTableHead createHead() {
         return new IScrollTableHead();
     }
 
+    @Override
     protected boolean updateImmediate() {
         return true;
     }
 
+    @Override
     protected void updateBody(UIDL rowData) {
         if (!recalcWidths && initializedAndAttached) {
             updateBody(rowData, firstrow, rows);
@@ -275,7 +277,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
 
     @Override
     public void onScroll(ScrollEvent event) {
-        ApplicationConnection.getConsole().log("Scroll event processing");
+        VConsole.log("Scroll event processing");
 
         int scrollLeft = bodyContainer.getElement().getScrollLeft();
         int scrollTop = bodyContainer.getScrollPosition();
@@ -606,6 +608,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             DOM.appendChild(container, postSpacer);
         }
 
+        @Override
         public int getAvailableWidth() {
             return DOM.getElementPropertyInt(preSpacer, "offsetWidth");
         }
@@ -696,6 +699,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             }
         }
 
+        @Override
         protected IScrollTableRow createRow(UIDL uidl) {
             final IScrollTableRow row = createRowInstance(uidl);
             final int cells = DOM.getChildCount(row.getElement());
@@ -709,6 +713,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             return row;
         }
 
+        @Override
         protected IScrollTableRow createRowInstance(UIDL uidl) {
             return new IScrollTableRow(uidl, aligns);
         }
@@ -763,6 +768,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
         }
 
         /**
+         * @param fromBeginning Remove all from beginning
          * @return false if couldn't remove row
          */
         public boolean unlinkRow(boolean fromBeginning) {
@@ -777,8 +783,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
                 index = renderedRows.size() - 1;
                 lastRendered--;
             }
-            final IScrollTableRow toBeRemoved = (IScrollTableRow) renderedRows
-                    .get(index);
+            final IScrollTableRow toBeRemoved = (IScrollTableRow) renderedRows.get(index);
             lazyUnregistryBag.add(toBeRemoved);
             DOM.removeChild(tBody, toBeRemoved.getElement());
             orphan(toBeRemoved);
@@ -787,6 +792,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
             return true;
         }
 
+        @Override
         public void setContainerHeight() {
             fixSpacers();
             super.setContainerHeight();
@@ -811,67 +817,6 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
 
         public int getFirstRendered() {
             return firstRendered;
-        }
-
-/*        public String aboveRow(String rowKey) {
-            IScrollTableRow row = (IScrollTableRow) getRenderedRowByKey(rowKey);
-            int index = rowRealIndex(row);
-            if (index > 0) {
-                if (index - 1 < getBody().getFirstRendered()) return null;
-
-                int rowRenderIndex = renderedRows.indexOf(row);
-                row = (IScrollTableRow) renderedRows.get(--rowRenderIndex);
-                int topVisibleRow = (int) Math.ceil(bodyContainer.getScrollPosition()
-                        / (double) getRowHeight());
-
-                int newRowIndex = rowRealIndex(row);
-                if (topVisibleRow > newRowIndex) {
-                    bodyContainer.setScrollPosition(newRowIndex * getRowHeight());
-                }
-
-                return row.getKey();
-            } else {
-                return null;
-            }
-        }*/
-
-/*        public String bellowRow(String rowKey) {
-            IScrollTableRow row = (IScrollTableRow) getRenderedRowByKey(rowKey);
-            int index = rowRealIndex(row);
-            if (index > -1 && index < totalRows - 1) {
-                if (index + 1 > getBody().getLastRendered()) return null; //todo request rows
-
-                int rowRenderIndex = renderedRows.indexOf(row);
-                row = (IScrollTableRow) renderedRows.get(++rowRenderIndex);
-
-                int bottomVisibleRow = (int) (
-                        (bodyContainer.getScrollPosition() + bodyContainer.getOffsetHeight() - getRowHeight())
-                                / (double) getRowHeight()
-                );
-                if (bottomVisibleRow < 0) bottomVisibleRow = 0;
-
-                if (bottomVisibleRow >= totalRows) {
-                    bodyContainer.scrollToBottom();
-                } else {
-                    int newRowIndex = rowRealIndex(row);
-                    if (newRowIndex > bottomVisibleRow) {
-                        bodyContainer.setScrollPosition(bodyContainer.getScrollPosition() + getRowHeight());
-                    }
-                }
-
-                return row.getKey();
-            } else {
-                return null;
-            }
-        }*/
-
-        protected int rowRealIndex(IScrollTableRow row) {
-            if (row == null) return -1;
-            int rowIndex = renderedRows.indexOf(row);
-            if (rowIndex > -1) {
-                rowIndex += firstRendered;
-            }
-            return rowIndex;
         }
 
         public class IScrollTableRow extends ITableRow {
@@ -931,10 +876,12 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
         }
     }
 
+    @Override
     public IScrollTableBody getBody() {
         return (IScrollTableBody) super.getBody();
     }
 
+    @Override
     protected boolean handleNavigationPageDownKey( boolean ctrl, boolean shift ) {
         if (isSelectable()) {
             /*

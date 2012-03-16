@@ -552,6 +552,8 @@ public class IScrollGroupTable extends IScrollTable {
                 DOM.appendChild(td, container);
                 DOM.appendChild(getElement(), td);
 
+                tableCells.add(td);
+
                 Tools.textSelectionEnable(td, textSelectionEnabled);
             }
 

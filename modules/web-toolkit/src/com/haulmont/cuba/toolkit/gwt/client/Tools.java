@@ -62,6 +62,10 @@ public class Tools {
         impl.textSelectionEnable(el, b);
     }
 
+    public static void removeEvents(Element el) {
+        impl.removeEvents(el);
+    }
+
     public static String setStyleName(Element el, String style) {
         if (style == null) throw new RuntimeException("Style cannot be null");
         style = style.trim();
