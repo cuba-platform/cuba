@@ -18,7 +18,6 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Formatter;
@@ -36,10 +35,7 @@ import com.haulmont.cuba.web.toolkit.ui.FieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
-import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -49,7 +45,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.*;
-import java.util.List;
 
 public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements com.haulmont.cuba.gui.components.FieldGroup {
 
@@ -121,10 +116,12 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
+    @Override
     public List<Field> getFields() {
         return new ArrayList<Field>(fields.values());
     }
 
+    @Override
     public Field getField(String id) {
         for (final Map.Entry<String, Field> entry : fields.entrySet()) {
             if (entry.getKey().equals(id)) {
@@ -134,12 +131,14 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         return null;
     }
 
+    @Override
     public void addField(Field field) {
         fields.put(field.getId(), field);
         fieldsColumn.put(field, 0);
         fillColumnFields(0, field);
     }
 
+    @Override
     public void addField(Field field, int col) {
         if (col < 0 || col >= cols) {
             throw new IllegalStateException(String.format("Illegal column number %s, available amount of columns is %s",
@@ -160,29 +159,34 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         fields.add(field);
     }
 
+    @Override
     public void removeField(Field field) {
         if (fields.remove(field.getId()) != null) {
-            Integer col = fieldsColumn.get(field.getId());
+            Integer col = fieldsColumn.get(field);
 
             final List<Field> fields = columnFields.get(col);
             fields.remove(field);
-            fieldsColumn.remove(field.getId());
+            fieldsColumn.remove(field);
         }
     }
 
+    @Override
     public float getColumnExpandRatio(int col) {
         return component.getColumnExpandRatio(col);
     }
 
+    @Override
     public void setColumnExpandRatio(int col, float ratio) {
         component.setColumnExpandRatio(col, ratio);
     }
 
+    @Override
     public void setCaptionAlignment(FieldCaptionAlignment captionAlignment) {
         FieldGroupLayout layout = component.getLayout();
         layout.setCaptionAlignment(WebComponentsHelper.convertFieldGroupCaptionAlignment(captionAlignment));
     }
 
+    @Override
     public void addCustomField(String fieldId, CustomFieldGenerator fieldGenerator) {
         Field field = getField(fieldId);
         if (field == null)
@@ -190,6 +194,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         addCustomField(field, fieldGenerator);
     }
 
+    @Override
     public void addCustomField(final Field field, final CustomFieldGenerator fieldGenerator) {
         if (!field.isCustom()) {
             throw new IllegalStateException(String.format("Field '%s' must by custom", field.getId()));
@@ -263,10 +268,12 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
+    @Override
     public Datasource getDatasource() {
         return datasource;
     }
 
+    @Override
     public void setDatasource(Datasource datasource) {
         this.datasource = datasource;
         this.dsManager = new DsManager(datasource, this);
@@ -409,10 +416,12 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         return rowsCount;
     }
 
+    @Override
     public int getColumns() {
         return cols;
     }
 
+    @Override
     public void setColumns(int cols) {
         this.cols = cols;
     }
@@ -447,6 +456,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         return value;
     }
 
+    @Override
     public void addValidator(final Field field, final com.haulmont.cuba.gui.components.Field.Validator validator) {
         List<com.haulmont.cuba.gui.components.Field.Validator> validators = fieldValidators.get(field);
         if (validators == null) {
@@ -457,6 +467,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             validators.add(validator);
     }
 
+    @Override
     public void addValidator(String fieldId, com.haulmont.cuba.gui.components.Field.Validator validator) {
         Field field = getField(fieldId);
         if (field == null)
@@ -464,44 +475,54 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         addValidator(field, validator);
     }
 
+    @Override
     public boolean isExpanded() {
         return component.isExpanded();
     }
 
+    @Override
     public void setExpanded(boolean expanded) {
         component.setExpanded(expanded);
     }
 
+    @Override
     public boolean isCollapsible() {
         return component.isCollapsable();
     }
 
+    @Override
     public void setCollapsible(boolean collapsable) {
         component.setCollapsable(collapsable);
     }
 
+    @Override
     public String getCaption() {
         return caption;
     }
 
+    @Override
     public void setCaption(String caption) {
         this.caption = caption;
         component.setCaption(caption);
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
         component.setDescription(description);
     }
 
+    @Override
     public boolean isEditable() {
         return !component.isReadOnly();
     }
 
+    @Override
     public void setEditable(boolean editable) {
         component.setReadOnly(!editable);
         // if we have editable field group with some read-only fields then we keep them read-only
@@ -513,11 +534,13 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
+    @Override
     public boolean isRequired(Field field) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         return f.isRequired();
     }
 
+    @Override
     public void setRequired(Field field, boolean required, String message) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setRequired(required);
@@ -526,6 +549,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
+    @Override
     public boolean isRequired(String fieldId) {
         Field field = getField(fieldId);
         if (field == null)
@@ -533,6 +557,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         return isRequired(field);
     }
 
+    @Override
     public void setRequired(String fieldId, boolean required, String message) {
         Field field = getField(fieldId);
         if (field == null)
@@ -540,10 +565,12 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         setRequired(field, required, message);
     }
 
+    @Override
     public boolean isEditable(Field field) {
         return !readOnlyFields.contains(field);
     }
 
+    @Override
     public void setEditable(Field field, boolean editable) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setReadOnly(!editable);
@@ -554,6 +581,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
+    @Override
     public void setEditable(String fieldId, boolean editable) {
         Field field = getField(fieldId);
         if (field == null)
@@ -561,6 +589,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         setEditable(field, editable);
     }
 
+    @Override
     public boolean isEditable(String fieldId) {
         Field field = getField(fieldId);
         if (field == null)
@@ -568,16 +597,19 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         return isEditable(field);
     }
 
+    @Override
     public boolean isEnabled(Field field) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         return f.isEnabled();
     }
 
+    @Override
     public void setEnabled(Field field, boolean enabled) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setEnabled(enabled);
     }
 
+    @Override
     public boolean isEnabled(String fieldId) {
         Field field = getField(fieldId);
         if (field == null)
@@ -585,6 +617,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         return isEnabled(field);
     }
 
+    @Override
     public void setEnabled(String fieldId, boolean enabled) {
         Field field = getField(fieldId);
         if (field == null)
@@ -592,16 +625,19 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         setEnabled(field, enabled);
     }
 
+    @Override
     public boolean isVisible(Field field) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         return f.isVisible();
     }
 
+    @Override
     public void setVisible(Field field, boolean visible) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setVisible(visible);
     }
 
+    @Override
     public boolean isVisible(String fieldId) {
         Field field = getField(fieldId);
         if (field == null)
@@ -609,6 +645,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         return isVisible(field);
     }
 
+    @Override
     public void setVisible(String fieldId, boolean visible) {
         Field field = getField(fieldId);
         if (field == null)
@@ -640,16 +677,19 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         setStyleName(styleName);
     }
 
+    @Override
     public Object getFieldValue(Field field) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         return f.getValue();
     }
 
+    @Override
     public void setFieldValue(Field field, Object value) {
         com.vaadin.ui.Field f = component.getField(field.getId());
         f.setValue(value);
     }
 
+    @Override
     public Object getFieldValue(String fieldId) {
         Field field = getField(fieldId);
         if (field == null)
@@ -657,6 +697,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         return getFieldValue(field);
     }
 
+    @Override
     public void setFieldValue(String fieldId, Object value) {
         Field field = getField(fieldId);
         if (field == null)
@@ -678,6 +719,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         return new FieldGroupItemWrapper(datasource, propertyPaths, dsManager);
     }
 
+    @Override
     public void addListener(ExpandListener listener) {
         if (expandListeners == null) {
             expandListeners = new ArrayList<ExpandListener>();
@@ -685,6 +727,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         expandListeners.add(listener);
     }
 
+    @Override
     public void removeListener(ExpandListener listener) {
         if (expandListeners != null) {
             expandListeners.remove(listener);
@@ -702,6 +745,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
+    @Override
     public void addListener(CollapseListener listener) {
         if (collapseListeners == null) {
             collapseListeners = new ArrayList<CollapseListener>();
@@ -709,6 +753,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         collapseListeners.add(listener);
     }
 
+    @Override
     public void removeListener(CollapseListener listener) {
         if (collapseListeners != null) {
             collapseListeners.remove(listener);
@@ -718,6 +763,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
+    @Override
     public void postInit() {
     }
 
@@ -729,6 +775,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
+    @Override
     public void applySettings(Element element) {
         Element fieldGroupElement = element.element("fieldGroup");
         if (fieldGroupElement != null) {
@@ -739,6 +786,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
     }
 
+    @Override
     public boolean saveSettings(Element element) {
         Element fieldGroupElement = element.element("fieldGroup");
         if (fieldGroupElement != null) {

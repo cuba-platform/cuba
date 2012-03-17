@@ -101,6 +101,7 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         loadCaptionAlignment(component, element);
 
         context.addPostInitTask(new PostInitTask() {
+            @Override
             public void execute(Context context, IFrame window) {
                 component.postInit();
                 final List<FieldGroup.Field> fields = component.getFields();
@@ -315,8 +316,6 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 if (!StringUtils.isEmpty(editable)) {
                     component.setEditable(field, BooleanUtils.toBoolean(editable));
                 }
-            } else {
-                component.setEditable(field, false);
             }
         }
     }
