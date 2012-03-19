@@ -57,19 +57,13 @@ public class EntityInspectorEditor extends AbstractEditor {
     protected DataService dataService;
 
     @Inject
-    protected BoxLayout dataBox;
-
-    @Inject
     protected BoxLayout buttonsBox;
-    
+
     @Inject
     protected BoxLayout contentPane;
 
     @Inject
     protected BoxLayout tablesBox;
-
-    @Inject
-    protected ScrollBoxLayout fieldsScrollBox;
 
     @Inject
     protected ComponentsFactory componentsFactory;
@@ -166,7 +160,7 @@ public class EntityInspectorEditor extends AbstractEditor {
 
         datasource.setItem(item);
         if (datasource instanceof CollectionDatasource && createRequest) {
-                ((CollectionDatasource) datasource).addItem(item);
+            ((CollectionDatasource) datasource).addItem(item);
         }
 
         if (categorizedEntity) {
@@ -316,7 +310,7 @@ public class EntityInspectorEditor extends AbstractEditor {
      */
     private void createDataComponents(MetaClass metaClass) {
         fieldGroup = componentsFactory.createComponent(FieldGroup.NAME);
-        contentPane.add(fieldGroup);                   
+        contentPane.add(fieldGroup);
         fieldGroup.setFrame(frame);
         boolean custom;
         for (MetaProperty metaProperty : metaClass.getProperties()) {
@@ -402,6 +396,9 @@ public class EntityInspectorEditor extends AbstractEditor {
     }
 
     private boolean isRequired(MetaProperty metaProperty) {
+        if (metaProperty.isMandatory())
+            return true;
+
         ManyToOne many2One = metaProperty.getAnnotatedElement().getAnnotation(ManyToOne.class);
         if (many2One != null && !many2One.optional())
             return true;
@@ -552,7 +549,6 @@ public class EntityInspectorEditor extends AbstractEditor {
                             }
                             field.setValue(parent);
                         }
-
                         field.setEditable(false);
                     }
                     field.setDatasource(datasource, propertyId.toString());
@@ -613,7 +609,7 @@ public class EntityInspectorEditor extends AbstractEditor {
         label.setValue(getPropertyCaption(childMeta.getDomain(), childMeta));
         label.setStyleName("h2");
 
-        Table table = componentsFactory.createComponent(Table.NAME);        
+        Table table = componentsFactory.createComponent(Table.NAME);
         table.setMultiSelect(true);
         table.setFrame(frame);
         //place non-system properties columns first
@@ -792,7 +788,8 @@ public class EntityInspectorEditor extends AbstractEditor {
     }
 
     /**
-     * Creates a view that includes all of the properties. Related entities will be loaded with a local view. 
+     * Creates a view that includes all of the properties. Related entities will be loaded with a local view.
+     *
      * @param property
      * @return
      */
