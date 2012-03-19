@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter2_working_in_nix">
+  <title>Особенности работы в *nix системах</title>
+  <para>Движок отчетов использует <application>OpenOffice</application> для создания doc и pdf отчетов. Для работы в серверном режиме необходима установка <application>OpenOffice</application>.</para>
+  <para>По опыту развертывания отчетов на серверах <application>ubuntu</application>, для корректного запуска движка <application>openoffice.org</application> необходимо следующее:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Установить пакет <application>openoffice.org</application>, например командой </para>
+      <para><prompt>sudo aptitude install openoffice.org</prompt></para>
+    </listitem>
+    <listitem>
+      <para>Установить свойство в файле <filename>local.app.properties</filename></para>
+      <para><prompt>cuba.reporting.openoffice.path = /usr/lib/openoffice/program (путь к установленному OOO)</prompt></para>
+    </listitem>
+    <listitem>
+      <para>Если на сервере не установлена <application>X window system</application> (оконный интерфейс), то движок <application>openoffice.org</application> при старте будет выдавать ошибку вида <errortext>Caused by: java.awt.HeadlessException: No X11 DISPLAY variable was set, but this program performed an operation which requires it.</errortext>, или же просто завершаться без сообщений об ошибках. Для устранения проблемы установите свойство в <filename>local.app.properties</filename>:</para>
+      <para> <prompt>cuba.reporting.displayDeviceUnavailable = true</prompt>, </para>
+      <para>а также установите пакет <application>openoffice.org-headless</application>: </para>
+      <para><prompt>sudo aptitude install openoffice.org-headless</prompt></para>
+    </listitem>
+    <listitem>
+      <para>Какие-либо программы в фоновом режиме запускать не нужно, клиентская заглушка <application>openoffice</application> в приложении <application>CUBA</application> сама запускает нужный исполняемый файл при первом обращении (занимает ~20 секунд)</para>
+    </listitem>
+    <listitem>
+      <para>Проверена работа движка на версии OOO 2.x</para>
+    </listitem>
+    <listitem>
+      <para>ООО вроде бы не ведет никаких логов, для диагностики ошибок при старте OOO можно выполнить следующую команду:</para>
+      <para><prompt>strace -e trace=signal /usr/lib/openoffice/program/soffice.bin -headless -accept=&quot;socket,host=localhost,port=8100;urp&quot; -nofirststartwizard -nologo -nolockcheck</prompt></para>
+    </listitem>
+  </itemizedlist>
+</chapter>

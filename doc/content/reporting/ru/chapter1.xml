@@ -1,0 +1,279 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter1_tool_description">
+  <title>Описание инструментария</title>
+  <para>Для того чтобы войти в подсистему создания отчетов, необходимо в главном меню приложения перейти к пункту меню <guimenu>Отчеты</guimenu> −&gt; <guimenu>Отчеты</guimenu>. Перед Вами откроется окно, представленное на рисунке ниже.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/reporting_ui_1.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>В верхней области закладки расположена панель с кнопками</para>
+  <itemizedlist>
+    <listitem>
+      <para><guibutton>Создать</guibutton> − возможность создания нового отчета.</para>
+    </listitem>
+    <listitem>
+      <para><guibutton>Изменить</guibutton> − предоставляет возможность редактировать уже существующий в системе отчет.</para>
+    </listitem>
+    <listitem>
+      <para><guibutton>Удалить</guibutton> − по нажатию на эту кнопку происходит вызов окна подтверждения операции удаление отчета.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/reporting_ui_2.png"/>
+        </imageobject>
+      </mediaobject>
+    </listitem>
+    <listitem>
+      <para><guibutton>Импортировать</guibutton> − предоставляет возможность  загрузить сохраненный ранее отчет. </para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/reporting_ui_4.png"/>
+        </imageobject>
+      </mediaobject>
+      <warning>
+        <para>При импорте новой версии отчета старая удаляется.</para>
+      </warning>
+    </listitem>
+    <listitem>
+      <para><guibutton>Экспортировать</guibutton> − предоставляет возможность сохранять выбранный в списке отчет.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/reporting_ui_3.png"/>
+        </imageobject>
+      </mediaobject>
+    </listitem>
+    <listitem>
+      <para><guibutton>Выполнить</guibutton> − по нажатию на эту кнопку происходит запуск отчета.</para>
+    </listitem>
+  </itemizedlist>
+  <para>В нижней области закладки располагается таблица с колонками <guilabel>Группа</guilabel> и <guilabel>Имя отчета</guilabel>, содержащая уже созданные в системе отчеты.</para>
+  <para>Остановимся подробнее на описании экрана редактора отчета. Перейти в него можно по нажатию на кнопку <guibutton>Создать</guibutton> или на кнопку <guibutton>Изменить</guibutton>.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/reporting_ui_5.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Экран редактора отчета содержит в себе три закладки:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Параметры отчета</para>
+    </listitem>
+    <listitem>
+      <para>Роли и экраны</para>
+    </listitem>
+    <listitem>
+      <para>Локализация</para>
+    </listitem>
+  </itemizedlist>
+  <para><emphasis role="bold">Закладка Параметры отчета</emphasis></para>
+  <para>На этой закладке содержатся основные параметры отчета. Пространство этой закладки разделено на четыре области:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Область, содержащая основные свойства отчета</para>
+    </listitem>
+    <listitem>
+      <para>Область, задающая входные параметры</para>
+    </listitem>
+    <listitem>
+      <para>Область, в которой задается  структура данных</para>
+    </listitem>
+    <listitem>
+      <para>Область, в которой задаются форматы выходных значений.</para>
+    </listitem>
+  </itemizedlist>
+  <para>Панель Свойства</para>
+  <para>Содержит следующие поля:</para>
+  <itemizedlist>
+    <listitem>
+      <para><guilabel>Имя</guilabel>. Это поле является обязательным для заполнения. Здесь необходимо ввести имя отчета. </para>
+      <caution>
+        <title>Подсказка</title>
+        <para>Есть возможность локализовать имя на закладке <guilabel>Локализация</guilabel>.</para>
+      </caution>
+    </listitem>
+    <listitem>
+      <para><guilabel>Системный код</guilabel>. В это поле целесообразно вводить символьный код отчета в том случае, если название отчета будет использоваться при программировании.</para>
+    </listitem>
+    <listitem>
+      <para><guilabel>Тип вывода отчета</guilabel> представляет из себя список выбора и является обязательным для заполнения.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/reporting_ui_6.png"/>
+        </imageobject>
+      </mediaobject>
+    </listitem>
+    <listitem>
+      <para><guilabel>Группа</guilabel> предоставляет из себя список выбора. Служит для группирования отчетов по каким-либо признакам. Поле является обязательным для заполнения.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/reporting_ui_7.png"/>
+        </imageobject>
+      </mediaobject>
+    </listitem>
+  </itemizedlist>
+  <para><emphasis role="bold">Шаблон</emphasis> является обязательным компонентом любого отчета. Создать шаблон можно по кнопке <guibutton>Создать</guibutton> на панели <guilabel>Шаблоны</guilabel>. После этого откроется окно, представленное на рисунке.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/reporting_ui_8.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>В данном окне существуют следующие поля:</para>
+  <itemizedlist>
+    <listitem>
+      <para><guilabel>Код шаблона</guilabel>. Является обязательным для заполнения. По умолчанию имеет значение <userinput>DEFAULT</userinput>.</para>
+    </listitem>
+    <listitem>
+      <para><guilabel>Тип вывода</guilabel> представляет собой список выбора. Является обязательным для заполнения.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/reporting_ui_9.png"/>
+        </imageobject>
+      </mediaobject>
+    </listitem>
+    <listitem>
+      <para><guilabel>Файл шаблона</guilabel> можно загрузить по кнопке <guibutton>Загрузить</guibutton>.</para>
+    </listitem>
+    <listitem>
+      <para>Опцию <guilabel>Определен классом</guilabel> необходимо ставить для отчета, определяемого классом.</para>
+    </listitem>
+    <listitem>
+      <para>Поле <guilabel>Имя класса</guilabel> становится доступным после того, как была выбрана опция <guilabel>Определен классом</guilabel>. В это поле необходимо ввести пусть к классу, который будет определять отчет.</para>
+    </listitem>
+  </itemizedlist>
+  <para>Если существует несколько шаблонов на один отчет, есть возможность сделать один из них главным, выделив этот шаблон в таблице и нажав на кнопку <guibutton>Сделать главным</guibutton>.</para>
+  <para>Панель Параметры</para>
+  <para>Параметр создается с помощью кнопки <guibutton>Создать</guibutton>. После нажатия на кнопку на экране появится окно, представленное на рисунке.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/reporting_ui_10.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>В окне редактора параметров существуют следующие поля:</para>
+  <itemizedlist>
+    <listitem>
+      <para><guilabel>Имя параметра</guilabel>. Это имя, которое отображается на экране ввода параметров.  Поле является обязательным для заполнения.</para>
+      <caution>
+        <title>Подсказка</title>
+        <para>Есть возможность локализовать имя на закладке <guilabel>Локализация</guilabel>.</para>
+      </caution>
+    </listitem>
+    <listitem>
+      <para><guilabel>Алиас параметра</guilabel>. Это название параметра, которое используется источниками данных. Поле является обязательным для заполнения.</para>
+    </listitem>
+    <listitem>
+      <para><guilabel>Тип параметра</guilabel> представляет собой выпадающий список, в котором предлагается выбрать одно из значений. Поле является обязательным для заполнения.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/reporting_ui_11.png"/>
+        </imageobject>
+      </mediaobject>
+    </listitem>
+    <listitem>
+      <para>Если в качестве типа параметра был выбран <type>Объект</type> или <type>Список объектов</type>, опция <guilabel>Связанная сущность?</guilabel> становится доступной. Отметив данную опцию, далее при создании структуры данных можно указать тип данных <guilabel>Связанная сущность</guilabel> или <guilabel>Группа связанных сущностей</guilabel>.</para>
+    </listitem>
+    <listitem>
+      <para>Параметр можно сделать обязательным для заполнения с помощью опции <guilabel>Обязательный параметр?</guilabel>.</para>
+    </listitem>
+    <listitem>
+      <para>Если в качестве типа параметра был выбран <type>Объект</type> или <type>Список объектов</type>, поле <guilabel>Сущность</guilabel> становится доступным. Данное поле представляет собой выпадающий список, в котором есть возможность выбрать сущность из списка доступных сущностей, существующих в системе.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/reporting_ui_12.png"/>
+        </imageobject>
+      </mediaobject>
+    </listitem>
+    <listitem>
+      <para>Если в качестве типа параметра был выбран тип <type>Перечисление</type>, поле <guilabel>Перечисление</guilabel> становится доступным. Данное поле представляет собой выпадающий список, в котором есть возможность выбрать перечисление из списка доступных перечислений, существующих в системе.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/reporting_ui_13.png"/>
+        </imageobject>
+      </mediaobject>
+    </listitem>
+    <listitem>
+      <para>Если в качестве типа параметра был выбран <type>Объект</type> или <type>Список объектов</type>, поле <guilabel>Экран выбора сущности</guilabel> становится доступным. Данное поле представляет собой выпадающий список, в котором есть возможность выбрать экран из списка доступных экранов, существующих в системе.<mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/reporting_ui_14.png"/>
+          </imageobject>
+        </mediaobject></para>
+    </listitem>
+  </itemizedlist>
+  <para>Панель Полосы отчета</para>
+  <para>По умолчанию для каждого отчета уже существует родительская полоса отчета <varname>Root</varname>. Для того чтобы создать новую полосу отчета, необходимо выделить родительскую полосу и нажать на кнопку <guibutton>Создать</guibutton>. Для изменения и удаления существующих полос отчета нужно нажать на кнопки <guibutton>Изменить</guibutton> и <guibutton>Удалить</guibutton> соответсвтенно. Полосы отчета можно перемещать друг относительно друга с помощью кнопок <guibutton>Сдвинуть вверх</guibutton> и <guibutton>Сдвинуть вниз</guibutton>.</para>
+  <para>После нажатия на кнопку <guibutton>Создать</guibutton> откроется окно, представленное на рисунке.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/reporting_ui_15.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Для полосы необходимо задать имя полосы в поле <guilabel>Имя</guilabel>, а также выбрать ориентацию полосы из выпадающего списка выбора <guilabel>Ориентация</guilabel>.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/reporting_ui_16.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Чтобы создать источник данных для полосы, нужно нажать на кнопку <guibutton>Создать</guibutton>. Для одной полосы можно создать несколько источников данных. После того как источник данных для полосы был создан, нужно выделить его в таблице источников данных. После этого имя источника и тип источника отобразятся в панели справа. Тип источника данных можно изменить с помощью выпадающего списка выбора <guilabel>Тип</guilabel>.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/reporting_ui_17.png"/>
+    </imageobject>
+  </mediaobject>
+  <warning>
+    <para>Имена полос, источников данных и извлекаемых параметров должны содержать только латинские буквы, цифры или символ подчеркивания.</para>
+  </warning>
+  <para>Если в качестве типа источника данных был выбран <type>sql</type> или <type>jpql</type>, в поле <guilabel>Текст</guilabel> необходимо вписать текст запроса. При этом при написании запроса <type>jpql</type> предоставляется возможность выбирать имя сущности, из которой делается выборка. Делается это с помощью комбинации клавиш <keycombo>
+      <keycap>ALT</keycap>
+      <keycap>SPACE</keycap>
+    </keycombo>. После нажатия данной комбинации на экране появляется список выбора, в котором пользователю предлагается выбрать одну из сущностей системы.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/reporting_ui_18.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Если в качестве типа был выбран <type>Groovy</type>, то в поле <guilabel>Текст</guilabel> нужно вписать скрипт, возвращающий данные.</para>
+  <para>Если в  качестве типа был выбран тип <type>Связянная сущность</type> или <type>Группа связанных сущностей</type>, то вместо поля <guilabel>Текст</guilabel> будет отображено поле <guilabel>Имя параметра для связанной сущности</guilabel> или <guilabel>Имя параметра для списка сущностей</guilabel> соответственно. В этих полях нужно ввести имя параметра, который был определен на панели <guilabel>Параметры</guilabel> главного окна редактора отчета.</para>
+  <para><emphasis role="bold">Панель Форматы значений</emphasis></para>
+  <para>Для создания формата для выходного значения отчета нажмите на кнопку <guibutton>Создать</guibutton>. Для удаления и изменения существующего формата нажмите на кнопки <guibutton>Удалить</guibutton> и <guibutton>Изменить</guibutton> соответственно.</para>
+  <para>После нажатия на кнопку <guibutton>Создать</guibutton> на экране откроется диалоговое окно, представленное на рисунке.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/reporting_ui_19.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>В окне <guilabel>Формат для значений</guilabel> необходимо ввести имя параметра в поле <guilabel>Имя выходного параметра</guilabel>. Имя параметра должно быть полным, имя должно начинаться от пути от корня. Например, <code>Test.name</code>, <code>Test</code> − имя полосы, <code>name</code> − имя параметра. </para>
+  <para>Далее необходимо выбрать строку форматирования из выпадающего списка <guilabel>Строка форматирования</guilabel>.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/reporting_ui_20.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Закладка Роли и экраны</para>
+  <para>На закладке <guilabel>Роли и экраны</guilabel> можно привязать отчет к экранам и\или ролям пользователей. Вид данной закладки представлен на рисунке ниже.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/reporting_ui_21.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Для задания роли, для которой будет доступен отчет, нажмите на кнопку <guibutton>Добавить роль</guibutton>. После этого откроется окно выбора роли из списка существующих в системе ролей.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/reporting_ui_22.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Выделите нужную роль в таблице и нажмите на кнопку <guibutton>Выбрать</guibutton>.</para>
+  <para>Для задания экранов, с которых можно вызвать отчет, нажмите на кнопку <guibutton>Добавить экран</guibutton>. После этого откроется окно выбора экрана из списка существующих в системе экранов.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/reporting_ui_23.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Закладка Локализация</para>
+  <para>На закладке Локализация можно задать локализованное значение названия отчета. </para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/reporting_ui_24.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Для того чтобы это сделать, нужно в поле <guilabel>Строки локализации</guilabel> ввести локализованное значение следующего формата: </para>
+  <para><prompt>&lt;название локали&gt;=&lt;название отчета на языке локали&gt;</prompt></para>
+</chapter>

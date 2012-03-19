@@ -1,0 +1,377 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><chapter id="chapter0_theoretical_info" lang="ru">
+  <title>Теоретические сведения</title>
+  <para>В платформе <application>CUBA</application> существует подсистема создания отчетов. Подсистема позволяет  добавлять в систему новые отчетыи изменять существующие. Подсистема позволяет:</para>
+  <itemizedlist>
+    <listitem>
+      <para>использовать  редактор  отчета для создания отчета непрограммистами;</para>
+    </listitem>
+    <listitem>
+      <para>хранить шаблон отчета в форматах *.doc, *.odt, *.html, *.xls;</para>
+    </listitem>
+    <listitem>
+      <para>определять состав доступных отчетов для роли системы;</para>
+    </listitem>
+    <listitem>
+      <para>определять состав доступных отчетов для экрана системы;</para>
+    </listitem>
+    <listitem>
+      <para>сохранять результаты отчетов в форматах, доступных для просмотра без использования специальных средств:</para>
+      <itemizedlist>
+        <listitem>
+          <para>*.doc;</para>
+        </listitem>
+        <listitem>
+          <para>*.pdf;</para>
+        </listitem>
+        <listitem>
+          <para>*.xls;</para>
+        </listitem>
+        <listitem>
+          <para>*.html.</para>
+        </listitem>
+      </itemizedlist>
+    </listitem>
+    <listitem>
+      <para>задавать форматы выходных значений отчета.</para>
+    </listitem>
+  </itemizedlist>
+  <para>На диаграмме представлены виды отчетов.</para>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/types.png"/>
+    </imageobject>
+  </mediaobject>
+  <para>Рассмотрим более подробно эту структуру. </para>
+  <para><emphasis role="bold">Печатная форма</emphasis>  используется для создания отчета, содержащего информацию о конкретном экземпляре сущности системы.</para>
+  <para><emphasis role="bold">Печатная форма списка</emphasis> используется для создания отчета с информацией обо всех экземплярах выбранной сущности системы.</para>
+  <para><emphasis role="bold">Простая форма</emphasis> используется при создании остальных отчетов.</para>
+  <para><emphasis role="bold">Отчет, определенный классом</emphasis>, создается на основе класса на языке Java, написанного программистом. Для такого отчета достаточно определить класс и задать входные параметры. Класс должен реализовать интерфейс <classname>com.haulmont.cuba.report.CustomReport</classname>.</para>
+  <para>Алгоритм создания отчета:</para>
+  <orderedlist>
+    <listitem>
+      <para>Создать структуру выбираемых данных.</para>
+    </listitem>
+    <listitem>
+      <para>Создать шаблон и определить тип формата вывода отчета (<filename>*.xls</filename>, <filename>*.doc</filename>, <filename>*.pdf</filename>, <filename>*.html</filename>).</para>
+    </listitem>
+    <listitem>
+      <para>Задать входные параметры отчета, если необходимо.</para>
+    </listitem>
+    <listitem>
+      <para>Задать формат выходных значений отчета, если необходимо.</para>
+    </listitem>
+  </orderedlist>
+  <para>Особенности создания печатных форм и печатных ворм списков</para>
+  <para>Для создания печатной формы или печатной формы списка необходимо:</para>
+  <orderedlist id="inner_param">
+    <listitem>
+      <para>Создать шаблон отчета.</para>
+    </listitem>
+    <listitem>
+      <para>Указать тип отчета <type>Печатная форма</type> или <type>Печатная форма списка</type>.</para>
+    </listitem>
+    <listitem>
+      <para>Задать параметр с типом <type>Объект</type> или <type>Список объектов</type>.</para>
+    </listitem>
+    <listitem>
+      <para>Создать полосу отчета, имещую источник данных с типом <type>Связанная сущность</type> или <type>Группа связанных сущностей</type>. Имя параметра в источнике данных должность совпадать с алиасом параметра из <link linkend="inner_param">пункта 3</link>.</para>
+    </listitem>
+    <listitem>
+      <para>Cоздать кнопку печатной формы или печатной формы списка на соответстветствующем экране.</para>
+    </listitem>
+  </orderedlist>
+  <para>Создавать кнопку нужно следующим образом:</para>
+  <itemizedlist>
+    <listitem>
+      <para>Для печатной формы, вызываемой из экрана редактирования сущности, необходимо создать кнопку и задать ей <parameter>action</parameter>, <classname>EditorPrintFormAction</classname>. В конструктор необходимо передать текущий <classname>Editor</classname>  и <classname>message id</classname> подписи кнопки.</para>
+    </listitem>
+    <listitem>
+      <para>Для печатной формы, вызываемой из браузера сущности, необходимо создать кнопку и задать ей <classname>action</classname><classname> TablePrintFormAction</classname>. В конструктор необходимо передать текущее окно,  таблицу, из которой будут выбираться сущности, и булевский параметр <varname>multiObjects</varname>, который определяет, является ли отчет печатной формой (<varname>false</varname>) или печатной формой списка (<varname>true</varname>). В первом случае берется один выбранный объект и передается в параметр типа <type>Объект</type>. Во втором случае берется <type>List</type> выбранных объектов и передается в параметр типа <type>Список объектов</type>.</para>
+    </listitem>
+  </itemizedlist>
+  <section>
+    <title>Создание структуры данных отчета</title>
+    <para>Структура данных отчета представляет из себя дерево определителей полос (band definition). Определитель полосы имеет имя, ориентацию и список источников данных.</para>
+    <warning>
+      <para>Имена полос и извлекаемых параметров должны содержать только латинские буквы, цифры или символ подчеркивания.</para>
+    </warning>
+    <para><emphasis role="bold">Источник данных</emphasis></para>
+    <para>Источник данных − это объект, который описывает извлечение данных. Он может извлекать данные различными путями — Sql или Jpql запросом, Groovy скриптом или брать данные из переданных в параметрах сущностей (типы <type>Связная сущность</type>, <type>Группа связных сущностей</type>).</para>
+    <orderedlist>
+      <listitem>
+        <para><emphasis role="bold">Sql и Jpql</emphasis></para>
+        <para>Sql и Jpql  скрипты должны возвращать данные, помеченные алиасами с помощью AS. </para>
+        <warning>
+          <para>Данные алиасы далее будут далее использованы в шаблоне отчета.</para>
+        </warning>
+        <para>В запросе можно использовать входные параметры отчета и данные из родительских полос. К параметрам нужно обращаться по имени, заключенному в конструкцию <prompt>${}</prompt> (<prompt>${userName}</prompt>). К данным родительской полосы нужно обращаться аналогично, добавляя имя полосы перед именем параметра (<prompt>${Band1.param1}</prompt>)
+Пример запроса на sql:</para>
+        <para><programlisting>select u.name as userName, u.login as userLogin 
+from sec_user u 
+where u.update_ts &gt; ${date1} and 
+      u.group_id = ${Group.id}</programlisting></para>
+        <para>Пример запроса на jpql:</para>
+        <para><programlisting>select u.name as userName, u.login as userLogin 
+from sec$user u 
+where u.updateTs &gt; ${date1}</programlisting></para>
+        <tip>
+          <title>Совет</title>
+          <para>В целях универсальности рекомендуется использовать язык запросов jpql.</para>
+        </tip>
+      </listitem>
+      <listitem>
+        <para><emphasis role="bold">Groovy</emphasis></para>
+        <para>Groovy скрипт должен возвращать объект типа <varname>List&lt;Map&lt;String, Object&gt;&gt;</varname>. Объект <varname>Map&lt;String, Object&gt;</varname> соответствует одной записи в sql-запросе. Ключ в мапе должен содержать алиас параметра.</para>
+        <warning>
+          <para>Данные алиасы далее будут далее использованы в шаблоне отчета.</para>
+        </warning>
+        <para>Groovy-скрипт может использовать входные параметры отчета и данные родительских полос. В каждый скрипт передаются параметры <varname>Band parentBand</varname> и <varname>Map&lt;String, Object&gt; params</varname>. В мапе <varname>params</varname> содержатся входные параметры, а у <varname>parentBand</varname> можно вызвать метод <methodname>getParameter</methodname>, который принимает строку с именем параметра.</para>
+        <para>Скрипты Groovy выполняются ниже уровня сервисов, по этой причине не стоит использовать в них загрузку сущностей из БД через <classname>LoadContext</classname>, можно напрямую вызывать методы <classname>Query</classname> и <classname>EntityManager</classname>.</para>
+        <para>Пример скрипта:</para>
+        <para><programlisting>User user = parentBand.getParameter(&apos;entity&apos;)
+Group group = params[[&apos;group&apos;]
+return [[&apos;userName&apos;: user.name,
+         &apos;userLogin&apos;: user.login,
+         &apos;group&apos;: group]]</programlisting></para>
+      </listitem>
+      <listitem>
+        <para><emphasis role="bold">Связная сущность и Группа связных сущностей</emphasis></para>
+        <para>Чтобы использовать данные типы источников данных необходимо, чтобы в отчете типы параметров  были <type>Объект</type> и <type>Группа объектов</type> соответственно, а сам параметр был связной сущностью. В этом случае в шаблоне будут использованы поля сущностей. Алиасы в шаблоне следует задавать равными именам выгружаемых полей сущности.</para>
+      </listitem>
+    </orderedlist>
+  </section>
+  <section>
+    <title>Создание шаблона отчета</title>
+    <para><emphasis role="bold">xls шаблон</emphasis></para>
+    <para><filename>xls</filename> шаблон создается в с помощью <application>Microsoft Office</application> или <application>OpenOffice</application>. </para>
+    <para>Именование регионов</para>
+    <para>Для того чтобы полоса отчета отобразилась на результирующем листе, необходимо создать в шаблоне именованный регион, имя которого совпадает с именем полосы. </para>
+    <tip>
+      <title>Подсказка</title>
+      <para>Как задать именованный регион?</para>
+      <para>Описанные ниже действия применены для <application>OpenOffice</application>.</para>
+      <para>Откройте <application>OpenOffice.org Calc</application>.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/xls_region.png"/>
+        </imageobject>
+      </mediaobject>
+      <para>Далее выделите диапазон ячеек, куда будут выводиться данные. После этого можно задать имя этому диапазону в окне, где отображаются названия ячеек. Название диапазона должно совпадать с именем полосы отчета.</para>
+      <para>Возможно управлять названиями диапазонов (удалять, изменять, добавлять). Для этого перейдите к подпункту меню <guimenu>Вставка</guimenu> −&gt; <guimenu>Названия</guimenu> −&gt; <guimenu>Определить</guimenu>.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/xls_menu.png"/>
+        </imageobject>
+      </mediaobject>
+      <para>После этого откроется окно, представленное на рисунке ниже.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/xls_menu1.png"/>
+        </imageobject>
+      </mediaobject>
+      <para>Именованные регионы можно удалять, назначать им другие диапазоны.</para>
+    </tip>
+    <para>Регионы в результирующем отчете отрисовываются в том порядке, в котором идут соответствующие им полосы.</para>
+    <para>Полосы в xls-отчете могут быть двух видов: горизонтальные и вертикальные. Горизонтальные растут вниз, вертикальные — вправо.</para>
+    <para>Горизонтальные полосы могут содержать вложенные полосы. Поэтому необходимо для вложенных полос создавать именованные регионы непосредственно под регионами, соответствующими родительским полосам.</para>
+    <para>Вертикальные полосы  вложенных полос иметь не могут.</para>
+    <para>Задание выходных параметров</para>
+    <para>В каждом именованном регионе нужно проставить алиасы параметров.  При формировании отчета эти алиасы будут заменены на значения параметров из полос. Алиасы должны иметь вид <prompt>${имя параметра}</prompt>. Имя параметра в алиасе должно совпадать с именем параметра из полосы. Ячейки могут содержать форматирование и несколько алиасов внутри.
+Шаблон может содержать картинки и формулы. Они должны целиком лежать в некотором именованном регионе.</para>
+    <para><emphasis role="bold">doc шаблон</emphasis></para>
+    <para><filename>doc</filename> шаблон создается в с помощью <application>Microsoft Office</application> или <application>OpenOffice</application> и должен быть файлом в формате <filename>odt/doc</filename> (или ином, сохраняющем названия таблиц).  Отчет с doc-шаблоном может отрисовываться в doc-файл или pdf-файл.</para>
+    <para>Именование таблиц</para>
+    <para>Имя таблицы должно соответствовать имени полосы, которая в нее отрисовывается.</para>
+    <tip>
+      <title>Подсказка</title>
+      <para>Как задать имя таблицы?</para>
+      <para>Описанные ниже действия применены для <application>OpenOffice</application>.</para>
+      <para>Откройте <application>OpenOffice.org Writer</application>.</para>
+      <para>Создайте новую таблицу, перейдя к подпункту меню <guimenu>Таблица</guimenu> −&gt; <guimenu>Вставить</guimenu> −&gt; <guimenu>Таблицу</guimenu>.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/doc_menu.png"/>
+        </imageobject>
+      </mediaobject>
+      <para>Далее в открывшемся окне в поле <guilabel>Название</guilabel> введите название таблицы. </para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/doc_menu1.png"/>
+        </imageobject>
+      </mediaobject>
+      <para>Задать или изменить имя уже созданной таблицы можно и другим образом. Нажмите правой кнопкой мыши на области таблицы и в контекстном меню выберите пункт <guilabel>Таблица</guilabel>. Перед Вами откроется окно, представленное на рисунке.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/doc_menu2.png"/>
+        </imageobject>
+      </mediaobject>
+      <para>В поле <guilabel>Название</guilabel> можно ввести новое название таблицы.</para>
+    </tip>
+    <para>Задание выходных параметров</para>
+    <para>В doc-шаблоне алиасы могут быть двух  видов − в таблицах и в тексте. В тексте алиас должен иметь вид <prompt>${имя полосы.имя параметра}</prompt>. В таблице алиас должен иметь вид <prompt>${имя параметра}</prompt>. Текст может содержать форматирование, а в ячейках таблиц может содержаться несколько алиасов.</para>
+    <para><emphasis role="bold">Специальные объекты в документе</emphasis></para>
+    <orderedlist>
+      <listitem>
+        <para>Изображения</para>
+        <para>Форматы позволяют вставлять изображения в документы. Для этого выходное значение должно быть строкой URL для доступа к изображению, а в формате значения должен быть задан формат: <prompt>${image:&lt;Width&gt;x&lt;Height&gt;}</prompt> , например <prompt>${image:200x300}</prompt>.</para>
+      </listitem>
+      <listitem>
+        <para>HTML блоки</para>
+        <para>Для вставки необходимо возвращать в выходном значении html разметку, а в формате значения указать формат <prompt>${html}</prompt>. В значении возвращается только содержимое <prompt>&lt;body&gt; Содержимое &lt;/body&gt;</prompt>, разметка дополняется до документа автоматически. Кодировка всех блоков <code>UTF-8</code>. CSS и атрибут <parameter>style</parameter> не поддерживаются.</para>
+      </listitem>
+    </orderedlist>
+    <para><emphasis role="bold">HTML шаблон</emphasis></para>
+    <para>Html-шаблон должен быть простым текстовым файлом (html/htm/txt) в кодировке <code>UTF-8</code> (без <code>BOM</code>). Для форматирования в шаблоне можно использовать тэги <application>FreeMarker</application>. 
+Модель документа имеет следующую структуру:</para>
+    <para><programlisting>Band { 
+      bands [ bandName : [ Band, .. ], .. ] 
+      fields [ fieldName : fieldValue, .. ] 
+}</programlisting></para>
+    <para>Например, для доступа к полю <varname>name</varname> в полосе <varname>band1</varname> в нулевой строке выборки используется путь:</para>
+    <para><programlisting>Root.bands.band1[0].fields.name</programlisting></para>
+    <para>Для удобства в шаблоне можно использовать присваивание <parameter>assign</parameter>:</para>
+    <para><programlisting>&lt;#assign Table1Header = Root.bands.HeaderBand&gt;</programlisting></para>
+    <para><emphasis role="bold">Структура шаблона</emphasis></para>
+    <para><programlisting>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1//EN&quot; &quot;http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;ru&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt; &lt;!-- Report title --&gt; &lt;/title&gt;
+        &lt;style type=&quot;text/css&quot;&gt;
+            /* Write your styles here */
+        &lt;/style&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;!-- Write your template here --&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</programlisting></para>
+    <para><emphasis role="bold">Примеры</emphasis></para>
+    <para>Имеем структуру полос следующего вида:</para>
+    <para><programlisting>Root {
+    HeaderBand {
+        query = return [[ &quot;name&quot; : &quot;Column1&quot; ],[ &quot;name&quot; : &quot;Column2&quot; ]]
+    }
+    Band1 { 
+        query = return [
+            [&quot;field1&quot; : &quot;Value 11&quot;, &quot;field2&quot; : &quot;Value 12&quot;], 
+            [&quot;field1&quot; : &quot;Value 21&quot; , &quot;field2&quot; : &quot;Value 22&quot;]
+        ]
+    }
+    Band2 {
+        query = return [[ &quot;header&quot; : &quot;Header1&quot; ], [ &quot;header&quot; : &quot;Header2&quot; ]]
+        SubBand1 {
+            query = return [[&quot;header&quot; : &apos;SubHeader1&apos;] , [ &quot;header&quot; : &apos;SubHeader2&apos; ]]
+        }
+    }
+}</programlisting></para>
+    <para><emphasis role="bold">Обращение к полю</emphasis></para>
+    <para><programlisting>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1//EN&quot; &quot;http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;ru&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt; Простой шаблон &lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;#assign Tree1 = Root.bands.Band2&gt;
+        &lt;h1&gt; Заголовок&lt;/h1&gt;
+        &lt;p&gt;
+            ${Tree1[1].bands.SubBand1[0].fields.header}
+        &lt;/p&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</programlisting></para>
+    <para><emphasis role="bold">Список</emphasis></para>
+    <para><programlisting>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1//EN&quot; &quot;http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;ru&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt; Пример списка &lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;#assign Table1Header = Root.bands.HeaderBand&gt;
+        
+        &lt;#if Table1Header?has_content&gt;
+        &lt;ol&gt; 
+            &lt;#list Table1Header as header&gt;
+            &lt;li&gt; ${header.fields.name} &lt;/li&gt;
+            &lt;/#list&gt;  
+        &lt;/ol&gt;
+        &lt;/#if&gt; 
+    &lt;/body&gt;
+&lt;/html&gt;</programlisting></para>
+    <para><emphasis role="bold">Таблица</emphasis></para>
+    <para><programlisting>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1//EN&quot; &quot;http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;ru&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt; Таблица &lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;#assign Table1Header = Root.bands.HeaderBand&gt;
+        &lt;#assign Table1 = Root.bands.Band1&gt;
+       
+        &lt;table border=&quot;1&quot; cellpadding=&quot;5&quot; cellspacing=&quot;0&quot; width=&quot;200&quot;&gt;
+            &lt;thead&gt;
+                &lt;tr&gt;
+                &lt;#list Table1Header as header&gt;
+                    &lt;td&gt; ${header.fields.name} &lt;/td&gt;
+                &lt;/#list&gt;
+                &lt;/tr&gt;
+            &lt;/thead&gt;
+            &lt;tbody&gt;
+            &lt;#list Table1 as row&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;
+                        ${row.fields.field1}
+                    &lt;/td&gt;
+                    &lt;td&gt;
+                        ${row.fields.field2}
+                    &lt;/td&gt;
+                &lt;/tr&gt;
+            &lt;/#list&gt;
+            &lt;/tbody&gt;
+        &lt;/table&gt;  
+    &lt;/body&gt;
+&lt;/html&gt;</programlisting></para>
+    <para><emphasis role="bold">Многоуровневый список</emphasis></para>
+    <para><programlisting>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1//EN&quot; &quot;http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd&quot;&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;ru&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt; Многоуровневый список &lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;#assign Tree1 = Root.bands.Band2&gt;
+        
+        &lt;ul&gt;
+            &lt;#list Tree1 as item&gt;
+            &lt;li&gt;
+                &lt;h2&gt; ${item.fields.header} &lt;/h2&gt;
+                &lt;#if item.bands.SubBand1?has_content&gt;
+                &lt;ul&gt;
+                    &lt;#list item.bands.SubBand1 as subitem&gt;
+                    &lt;li&gt;
+                        &lt;h3&gt; ${subitem.fields.header} &lt;/h3&gt;
+                    &lt;/li&gt;
+                    &lt;/#list&gt;
+                &lt;/ul&gt;
+                &lt;/#if&gt;
+            &lt;/li&gt;
+            &lt;/#list&gt;
+        &lt;/ul&gt;  
+    &lt;/body&gt;
+&lt;/html&gt;</programlisting></para>
+  </section>
+  <section>
+    <title>Задание входных параметров отчета</title>
+    <para>Отчет может иметь параметры, которые используются источниками данных для извлечения данных.  Параметр должен иметь алиас и имя. Имя параметра отображается на экране ввода параметров, алиас используется источниками данных. Параметры могут быть следующих типов: дата, текст, булевский тип, число, перечисление, объект, список объектов. Параметры могут быть обязательными или не обязательными. Если тип параметра − объект или группа объектов, существует возможность задать экран выбора сущностей. </para>
+  </section>
+  <section>
+    <title>Задание форматирования значений выходных параметров отчета</title>
+    <para>Для каждого из выходных значений отчёта можно задать форматирование. Для этого нужно добавить элемент-форматтер, где указать полное имя выходного параметра (путь от корня, например <prompt>Test.name</prompt>, <prompt>Test</prompt> − имя полосы, <prompt>name</prompt> − имя параметра) и выбрать строку форматирования из списка часто используемых форматов для чисел и дат или задать этот формат самостоятельно.  Для чисел применяется <classname>DecimalFormat</classname>, для дат − <classname>SimpleDateFormat</classname>.</para>
+  </section>
+  <section>
+    <title>Разграничение прав доступа к отчетам</title>
+    <para>Отчеты можно привязывать к экранам и\или ролям пользователей. Для этого необходимо на закладке <guilabel>Экраны и роли</guilabel> добавить экраны, с которых можно вызывать отчет, и роли пользователей, которым позволено это делать. По умолчанию отчет может вызываться из любых экранов и любыми ролями. Если экран или роль заданы явно, то отчет может быть вызван только из этого экрана или только данной ролью.</para>
+  </section>
+</chapter>
