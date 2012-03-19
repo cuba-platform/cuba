@@ -468,6 +468,13 @@ task transformManual(type: TransformDocbook) {
     classpath = configurations.buildDoc
 }
 
+task transformReporting(type: TransformDocbook) {
+    sourceDir = new File(docSrcDir, 'reporting/ru')
+    sourceFile = new File(sourceDir, 'reporting.xml')
+    destFile = new File(docTmpDir, 'reporting/ru/reporting.xml')
+    classpath = configurations.buildDoc
+}
+
 task buildManualHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     source transformManual.destFile
     destDir = new File(docDstDir, 'manual/ru/html')
@@ -498,8 +505,23 @@ task buildManualSingleHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     }
 }
 
+task buildReportingSingleHtml(type: Docbook2Xhtml, dependsOn: transformReporting) {
+    source transformReporting.destFile
+    destFile = new File(docDstDir, 'reporting/ru/html-single/reporting.html')
+    stylesheetName = 'html-single.xsl'
+    resources = fileTree {
+        from new File(docSrcDir, 'reporting/ru')
+        include 'img/**/*.png'
+        include 'img/**/*.jpg'
+    }
+    resources += fileTree {
+        from docCssDir
+        include '*.css'
+    }
+}
+
 task buildDoc(type: Zip, description: 'Build documentation',
-        dependsOn: [buildManualSingleHtml]) {
+        dependsOn: [buildManualSingleHtml, buildReportingSingleHtml]) {
     from 'build/doc'
     destinationDir = file('build/distributions')
     baseName = 'cuba-doc'
