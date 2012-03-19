@@ -500,6 +500,7 @@ public class FoldersPane extends VerticalLayout {
         }
 
         params.put("disableApplySettings", true);
+        params.put("folderId", folder.getId());
 
         Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
                 WindowManager.OpenType.NEW_TAB, params);
