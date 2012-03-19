@@ -9,6 +9,7 @@ package com.haulmont.cuba.gui.upload;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
@@ -179,7 +180,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
         fDesc.setSize(fileSize);
         fDesc.setExtension(ext);
-        fDesc.setName(name);
+        fDesc.setName(name.substring(0, name.indexOf(".")));
         fDesc.setCreateDate(TimeProvider.currentTimestamp());
 
         return fDesc;
