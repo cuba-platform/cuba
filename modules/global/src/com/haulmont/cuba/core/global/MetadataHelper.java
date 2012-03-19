@@ -10,10 +10,12 @@
  */
 package com.haulmont.cuba.core.global;
 
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.SoftDelete;
 import com.haulmont.cuba.core.entity.Updatable;
+import com.haulmont.cuba.core.entity.Versioned;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -76,6 +78,10 @@ public abstract class MetadataHelper {
             if (name.equals(property))
                 return true;
         }
+        for (String property : Versioned.PROPERTIES) {
+            if (name.equals(property))
+                return true;
+        }
         return false;
     }
 
@@ -88,7 +94,7 @@ public abstract class MetadataHelper {
         return true;
     }
 
-    public static boolean isEmbedded(MetaProperty metaProperty){
+    public static boolean isEmbedded(MetaProperty metaProperty) {
         return metaProperty.getAnnotatedElement().getAnnotation(Embedded.class) != null;
     }
 
@@ -127,6 +133,25 @@ public abstract class MetadataHelper {
     public static void walkProperties(Instance instance, PropertyVisitor visitor) {
         Session metadata = MetadataProvider.getSession();
         __walkProperties(instance, visitor, metadata, new HashSet<Instance>());
+    }
+
+    /**
+     * Returns collection of the properties included into entity's name pattern
+     * @param metaClass meta class
+     * @return collection of the properties
+     */
+    public static Collection<MetaProperty> getNamePatternProperties(MetaClass metaClass) {
+        Collection<MetaProperty> properties = new ArrayList<MetaProperty>();
+        Class javaClass = metaClass.getJavaClass();
+        Annotation annotation = javaClass.getAnnotation(NamePattern.class);
+        if (annotation != null) {
+            String value = StringUtils.substringAfter(((NamePattern) annotation).value(), "|");
+            String[] fields = StringUtils.splitPreserveAllTokens(value, ",");
+            for (String field : fields) {
+                properties.add(metaClass.getProperty(field));
+            }
+        }
+        return properties;
     }
 
     private static void __walkProperties(Instance instance, PropertyVisitor visitor,
@@ -266,7 +291,7 @@ public abstract class MetadataHelper {
         }
         return result;
     }
-    
+
     public static Collection<Class> getAllEnums() {
         if (enums == null) {
             synchronized (MetadataHelper.class) {

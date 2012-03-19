@@ -9,7 +9,10 @@ package com.haulmont.cuba.gui.components;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.*;
-import com.haulmont.chile.core.model.*;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.CategoryAttributeValue;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.SetValueEntity;
@@ -24,7 +27,9 @@ import com.haulmont.cuba.gui.data.RuntimePropsDatasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  *  Universal frame for editing Runtime properties
@@ -44,7 +49,8 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     private static final String DEFAULT_FIELD_WIDTH = "100%";
     private String rows;
     private String cols;
-    private String fieldWidth;
+    private String fieldWidth;  
+    private Boolean borderVisible;
     private BoxLayout contentPane;
     private FieldGroup categoryFieldGroup;
     private boolean requiredControlEnabled = true;
@@ -59,8 +65,11 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         rows = (String) params.get("rows");
         cols = (String) params.get("cols");
         fieldWidth = (String) params.get("fieldWidth");
-        if (StringUtils.isEmpty(fieldWidth))
+        borderVisible = Boolean.valueOf((String) params.get("borderVisible"));
+
+        if (StringUtils.isEmpty(fieldWidth)) {
             fieldWidth = DEFAULT_FIELD_WIDTH;
+        }
         rds = getDsContext().get(dsId);
         categoriesDs = getDsContext().<CollectionDatasource>get(categoriesDsId);
 
@@ -73,6 +82,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
         categoryFieldGroup = AppConfig.getFactory().createComponent(FieldGroup.NAME);
         categoryFieldGroup.setId("categoryFieldGroup");
         categoryFieldGroup.setFrame(this.<IFrame>getFrame());
+        categoryFieldGroup.setBorderVisible(borderVisible);
 
         contentPane.add(categoryFieldGroup);
         registerComponent(categoryFieldGroup);
@@ -107,7 +117,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                 }
                 Component runtime = getComponent("runtime");
                 final FieldGroup newRuntime = AppConfig.getFactory().createComponent(FieldGroup.NAME);
-                newRuntime.setBorderVisible(false);
+                newRuntime.setBorderVisible(borderVisible);
                 newRuntime.setId("runtime");
                 if (runtime != null) {
                     contentPane.remove(runtime);

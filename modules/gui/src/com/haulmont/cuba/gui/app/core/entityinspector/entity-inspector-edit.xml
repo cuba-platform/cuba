@@ -1,0 +1,21 @@
+<!--
+  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window
+        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        class="com.haulmont.cuba.gui.app.core.entityinspector.EntityInspectorEditor"
+        caption="msg://editorCaption">
+    <dsContext/>
+    <layout expand="fieldsScrollBox" spacing="true">
+        <scrollbox id="fieldsScrollBox" height="100%" width="100%" spacing="true">
+            <vbox id="buff">
+                <vbox id="contentPane" spacing="true"/>
+                <vbox id="tablesBox" spacing="true"/>
+            </vbox>
+        </scrollbox>
+        <vbox id="buttonsBox"/>
+    </layout>
+</window>

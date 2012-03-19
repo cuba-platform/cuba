@@ -536,6 +536,10 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
             } else if (StringUtils.isNotEmpty(description)) {
                 ((HasCaption) component).setDescription(description);
             }
+            if (!((com.haulmont.cuba.gui.components.Field) component).isRequired()) {
+                ((com.haulmont.cuba.gui.components.Field) component).setRequired(field.isRequired());
+                ((com.haulmont.cuba.gui.components.Field) component).setRequiredMessage(field.getRequiredError());
+            }
         }
 
         JLabel label = new JLabel(caption);

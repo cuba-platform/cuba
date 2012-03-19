@@ -93,6 +93,12 @@
     <screen id="core$ScheduledExecution.browse"
             template="/com/haulmont/cuba/gui/app/core/scheduled/scheduled-execution-browse.xml"/>
 
+    <screen id="entityInspector.browse"
+            template="/com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-browse.xml"/>
+
+    <screen id="entityInspector.edit"
+            template="/com/haulmont/cuba/gui/app/core/entityinspector/entity-inspector-edit.xml"/>
+
     <screen id="license"
             template="/com/haulmont/cuba/gui/app/core/credits/license-window.xml"/>
 

@@ -252,6 +252,14 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     f.setWidth(field.getWidth());
                 }
 
+                if (!f.isRequired()) {
+                    f.setRequired(field.isRequired());
+                }
+                
+                if ((f.getRequiredError() == null || f.getRequiredError().isEmpty()) 
+                        && field.getRequiredError() != null)
+                    f.setRequiredError(field.getRequiredError());
+
                 applyPermissions(c);
 
                 return f;
@@ -378,6 +386,12 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     }
                     if (fieldConf.getDescription() != null) {
                         field.setDescription(fieldConf.getDescription());
+                    }
+                    if (!field.isRequired()) {
+                        field.setRequired(fieldConf.isRequired());
+                    }
+                    if (fieldConf.getRequiredError() != null) {
+                        field.setRequiredError(fieldConf.getRequiredError());
                     }
                 }
 

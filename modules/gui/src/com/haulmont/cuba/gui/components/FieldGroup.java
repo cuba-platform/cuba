@@ -87,9 +87,11 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
         private Element element;
         private String width;
         private Datasource datasource;
-
+        private String requiredError;
+        
         private boolean custom;
-
+        private boolean required; 
+        
         private Class type;
         
         private static final long serialVersionUID = -148321034678616282L;
@@ -164,6 +166,22 @@ public interface FieldGroup extends Component, Component.BelongToFrame, Componen
 
         public void setCustom(boolean custom) {
             this.custom = custom;
+        }
+
+        public boolean isRequired() {
+            return required;
+        }
+
+        public void setRequired(boolean required) {
+            this.required = required;
+        }
+
+        public String getRequiredError() {
+            return requiredError;
+        }
+
+        public void setRequiredError(String requiredError) {
+            this.requiredError = requiredError;
         }
     }
 

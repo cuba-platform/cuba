@@ -49,6 +49,7 @@ public class DataServiceController {
     private DataService svc;
     //todo wire
     private ConversionFactory conversionFactory = new ConversionFactory();
+    private Collection availableBasicTypes;
 
     @Autowired
     public DataServiceController(DataService svc) {
@@ -288,10 +289,7 @@ public class DataServiceController {
             Map<String, Object> values = new HashMap<String, Object>();
             values.put("knownEntities", classes);
 
-            int typesNumber = Datatypes.getNames().size();
-            String[] availableTypes = Datatypes.getNames().toArray(new String[typesNumber]);
-            Arrays.sort(availableTypes);
-
+            String[] availableTypes = getAvailableBasicTypes();
             values.put("availableTypes", availableTypes);
             Configuration cfg = new Configuration();
             cfg.setDefaultEncoding("UTF-8");
@@ -476,5 +474,17 @@ public class DataServiceController {
         else if ("delete".equals(op))
             return EntityOp.DELETE;
         return null;
+    }
+
+    public String[] getAvailableBasicTypes() {
+        Set<String> allAvailableTypes = Datatypes.getNames();
+        TreeSet<String> availableTypes = new TreeSet<String>();
+
+        //byteArray is not supported as a GET parameter
+        for (String type : allAvailableTypes)
+            if (!"byteArray".equals(type))
+                availableTypes.add(type);
+
+        return availableTypes.toArray(new String[availableTypes.size()]);
     }
 }

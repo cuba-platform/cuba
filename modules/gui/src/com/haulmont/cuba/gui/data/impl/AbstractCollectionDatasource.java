@@ -10,7 +10,6 @@
 
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
@@ -18,7 +17,6 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
@@ -26,21 +24,18 @@ import com.haulmont.cuba.gui.xml.ParametersHelper;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
-    extends
+        extends
         DatasourceImpl<T>
-    implements
-        CollectionDatasource<T, K>
-{
+        implements
+        CollectionDatasource<T, K> {
     protected String query;
     protected QueryFilter filter;
     protected int maxResults;
@@ -69,8 +64,7 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         if (State.VALID.equals(state)) {
             Object prevItem = this.item;
 
-            if (prevItem != item)
-            {
+            if (prevItem != item) {
                 if (item != null) {
                     final MetaClass aClass = item.getMetaClass();
                     if (!aClass.equals(this.metaClass) && !this.metaClass.getDescendants().contains(aClass)) {
@@ -422,17 +416,14 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             q = context.setQueryString(queryString);
             q.setParameters(parameters);
         } else {
-            Class javaClass = metaClass.getJavaClass();
-            Annotation annotation = javaClass.getAnnotation(NamePattern.class);
-            if (annotation != null) {
+            Collection<MetaProperty> properties = MetadataHelper.getNamePatternProperties(metaClass);
+            if (!properties.isEmpty()) {
                 StringBuilder orderBy = new StringBuilder();
-                String value = StringUtils.substringAfter(((NamePattern) annotation).value(), "|");
-                String[] fields = StringUtils.splitPreserveAllTokens(value, ",");
-                for (int i = 0; i < fields.length; i++) {
-                    MetaProperty metaProperty = metaClass.getProperty(fields[i]);
+                for (MetaProperty metaProperty : properties) {
                     if (metaProperty != null
-                            && metaProperty.getAnnotatedElement().getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class) == null)
-                        orderBy.append("e.").append(fields[i]).append(", ");
+                            && metaProperty.getAnnotatedElement().
+                            getAnnotation(com.haulmont.chile.core.annotations.MetaProperty.class) == null)
+                        orderBy.append("e.").append(metaProperty.getName()).append(", ");
                 }
                 if (orderBy.length() > 0) {
                     orderBy.delete(orderBy.length() - 2, orderBy.length());
@@ -449,7 +440,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
      * Return number of rows for the current query set in the datasource.
      * <p>This method transforms the current query to "select count()" query with the same conditions, and sends it
      * to the middleware.</p>
-     * @return  number of rows. In case of error returns 0 and sets {@link #dataLoadError} field to the exception object
+     *
+     * @return number of rows. In case of error returns 0 and sets {@link #dataLoadError} field to the exception object
      */
     public int getCount() {
         LoadContext context = new LoadContext(metaClass);

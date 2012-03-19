@@ -5,6 +5,8 @@
         <item id="sec$Group.browse"/>
         <item id="sec$Role.browse"/>
         <item id="-"/>
+        <item id="entityInspector.browse"/>
+        <item id="-"/>
         <item id="sec$UserSessionEntity.browse"/>
         <item id="core$FileDescriptor.browse"/>
         <item id="core$LockInfo.browse"/>
