@@ -12,12 +12,12 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.DateTimeDatatype;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.persistence.Persistent;
 
-import javax.persistence.Column;
+import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.util.Date;
 import java.util.UUID;
 
@@ -45,6 +45,10 @@ public class EntitySnapshot extends BaseUuidEntity {
 
     @Column(name = "SNAPSHOT_DATE")
     private Date snapshotDate;
+
+    @ManyToOne
+    @JoinColumn(name = "AUTHOR_ID", nullable = false)
+    private User author;
 
     @Column(name = "ENTITY_ID")
     @Persistent
@@ -82,21 +86,24 @@ public class EntitySnapshot extends BaseUuidEntity {
         this.entityId = entityId;
     }
 
-    @MetaProperty
-    public String getLabel() {
-        String name = "";
-        if (StringUtils.isNotEmpty(this.createdBy))
-           name += this.createdBy + " ";
+    public void setAuthor(User author) {
+        this.author = author;
+    }
 
-        Datatype datatype = Datatypes.get(DateTimeDatatype.NAME);
-        name += datatype.format(createTs, UserSessionProvider.getLocale());
-
-        return name;
+    public User getAuthor() {
+        return author;
     }
 
     @MetaProperty
-    public String getAuthor() {
-        return this.createdBy;
+    public String getLabel() {
+        String name = "";
+        if (StringUtils.isNotEmpty(this.author.getCaption()))
+           name += this.author.getCaption() + " ";
+
+        Datatype<Date> datatype = Datatypes.get(DateTimeDatatype.NAME);
+        name += datatype.format(snapshotDate, UserSessionProvider.getLocale());
+
+        return name;
     }
 
     @MetaProperty

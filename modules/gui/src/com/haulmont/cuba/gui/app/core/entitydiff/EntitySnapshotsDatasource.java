@@ -64,9 +64,9 @@ public class EntitySnapshotsDatasource extends CollectionDatasourceImpl<EntitySn
         }
     }
 
-    public EntitySnapshot getFirstSnapshot() {
+    public EntitySnapshot getLatestSnapshot() {
         if ((snapshots != null) && (snapshots.size() > 0))
-            return snapshots.get(0);
+            return snapshots.get(snapshots.size() - 1);
         return null;
     }
 }

@@ -815,12 +815,15 @@ create table SYS_ENTITY_SNAPSHOT (
     ID uuid not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
-    ENTITY_META_CLASS varchar(50),
-    ENTITY_ID uuid,
-    VIEW_XML text,
-    SNAPSHOT_XML text,
-    SNAPSHOT_DATE timestamp,
-	primary key (ID)
+    ENTITY_META_CLASS varchar(50) not null,
+    ENTITY_ID uuid not null,
+    AUTHOR_ID uuid not null,
+    VIEW_XML text not null,
+    SNAPSHOT_XML text not null,
+    SNAPSHOT_DATE timestamp not null,
+
+	primary key (ID),
+    constraint FK_SYS_ENTITY_SNAPSHOT_AUTHOR_ID foreign key (AUTHOR_ID) references SEC_USER(ID)
 )^
 
 create index IDX_SYS_ENTITY_SNAPSHOT_ENTITY_ID on SYS_ENTITY_SNAPSHOT (ENTITY_ID)^

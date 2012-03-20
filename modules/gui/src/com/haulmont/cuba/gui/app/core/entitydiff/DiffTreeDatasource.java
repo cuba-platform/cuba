@@ -31,7 +31,7 @@ import java.util.UUID;
  *
  * @author artamonov
  */
-public class DiffTreeDatasource<T extends EntityPropertyDiff> extends AbstractTreeDatasource<T, UUID> {
+public class DiffTreeDatasource extends AbstractTreeDatasource<EntityPropertyDiff, UUID> {
 
     private static final long serialVersionUID = -6298466301673067199L;
 
@@ -41,7 +41,8 @@ public class DiffTreeDatasource<T extends EntityPropertyDiff> extends AbstractTr
         super(context, dataservice, id, metaClass, viewName);
     }
 
-    protected Tree loadTree(Map params) {
+    @Override
+    protected Tree<EntityPropertyDiff> loadTree(Map params) {
         Tree<EntityPropertyDiff> diffTree = new Tree<EntityPropertyDiff>();
         List<Node<EntityPropertyDiff>> rootNodes = new ArrayList<Node<EntityPropertyDiff>>();
         if (entityDiff != null) {

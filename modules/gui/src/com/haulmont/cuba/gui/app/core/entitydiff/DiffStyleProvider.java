@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.gui.app.core.entitydiff;
 
-import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.EntityBasicPropertyDiff;
@@ -23,6 +22,7 @@ import com.haulmont.cuba.gui.components.Table;
  */
 public class DiffStyleProvider implements Table.StyleProvider {
 
+    @Override
     public String getStyleName(Entity item, Object property) {
         if (property != null) {
             MetaPropertyPath metaPropertyPath = (MetaPropertyPath) property;
@@ -54,6 +54,7 @@ public class DiffStyleProvider implements Table.StyleProvider {
         return null;
     }
 
+    @Override
     public String getItemIcon(Entity item) {
         return null;
     }

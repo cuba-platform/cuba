@@ -12,7 +12,7 @@ import com.haulmont.cuba.core.global.EntityDiff;
 import com.haulmont.cuba.core.global.EntityPropertyDiff;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DatasourceListener;
+import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class EntityDiffViewer extends AbstractFrame {
     private Datasource<EntityDiff> entityDiffDs;
 
     @Inject
-    private DiffTreeDatasource<EntityPropertyDiff> diffDs;
+    private DiffTreeDatasource diffDs;
 
     @Inject
     private Table snapshotsTable;
@@ -63,7 +63,7 @@ public class EntityDiffViewer extends AbstractFrame {
 
         diffTable.setStyleProvider(new DiffStyleProvider());
 
-        diffDs.addListener(new DatasourceListener<EntityPropertyDiff>() {
+        diffDs.addListener(new DsListenerAdapter<EntityPropertyDiff>() {
             @Override
             public void itemChanged(Datasource<EntityPropertyDiff> ds,
                                     EntityPropertyDiff prevItem, EntityPropertyDiff item) {
@@ -85,21 +85,11 @@ public class EntityDiffViewer extends AbstractFrame {
                     }
                 }
             }
-
-            @Override
-            public void stateChanged(Datasource<EntityPropertyDiff> ds,
-                                     Datasource.State prevState, Datasource.State state) {
-            }
-
-            @Override
-            public void valueChanged(EntityPropertyDiff source, String property,
-                                     Object prevValue, Object value) {
-            }
         });
     }
 
     @SuppressWarnings("unused")
-    public void compareSnapshoots() {
+    public void compareSnapshots() {
         entityDiffDs.setItem(null);
 
         EntitySnapshot firstSnap = null;
@@ -112,7 +102,7 @@ public class EntityDiffViewer extends AbstractFrame {
             secondSnap = (EntitySnapshot) selectedItems[1];
         } else if (selected.size() == 1) {
             secondSnap = (EntitySnapshot) selectedItems[0];
-            firstSnap = snapshotsDs.getFirstSnapshot();
+            firstSnap = snapshotsDs.getLatestSnapshot();
             if (firstSnap == secondSnap)
                 firstSnap = null;
         }
