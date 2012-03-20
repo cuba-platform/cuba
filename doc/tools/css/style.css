@@ -209,7 +209,7 @@ pre {
 
 .prompt {
     font-family: 'Courier New', Courier, monospace;
-    margin-left: 2em;
+    margin-left: 1em;
 }
 
 /*
@@ -512,7 +512,7 @@ pre {
 	border-bottom: 1px dotted
 }
 
-.classname,.methodname,.interfacename {
+.classname,.methodname,.interfacename,.errortext,.type {
 	font-family:  'Courier New', Courier, monospace;
 }
 
