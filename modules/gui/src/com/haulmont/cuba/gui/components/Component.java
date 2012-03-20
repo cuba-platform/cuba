@@ -192,7 +192,9 @@ public interface Component {
     }
 
     /**
-     * Component supporting "editable" state
+     * Component supporting "editable" state.
+     * Editable means not read-only, so user can view a value but can not edit it. Not editable value can be copied to
+     * clipboard.
      */
     interface Editable extends Component {
         boolean isEditable();
@@ -201,7 +203,7 @@ public interface Component {
 
     /**
      * Object supporting save/restore of user settings.
-     * See also {@link com.haulmont.cuba.security.app.UserSettingServiceBean}
+     * @see com.haulmont.cuba.security.app.UserSettingService
      */
     interface HasSettings {
         void applySettings(Element element);
@@ -209,7 +211,9 @@ public interface Component {
     }
 
     /**
-     * Component supporting "expandable" state
+     * Component supporting "expandable" state.
+     * Expandable means that if the component is alone in a container,
+     * it will be automatically expanded - will take all available space inside the container.
      */
     interface Expandable extends Component {
         void setExpandable(boolean expandable);

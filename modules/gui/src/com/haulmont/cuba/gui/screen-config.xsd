@@ -13,6 +13,9 @@
     </xs:complexType>
 
     <xs:complexType name="screenType">
+        <xs:sequence>
+            <xs:element type="paramsType" name="params" maxOccurs="1" minOccurs="0"/>
+        </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="class" type="xs:string" use="optional"/>
         <xs:attribute name="template" type="xs:string" use="optional"/>
@@ -21,6 +24,17 @@
 
     <xs:complexType name="includeType">
         <xs:attribute name="file" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="paramsType">
+        <xs:sequence>
+            <xs:element type="paramType" name="param" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="paramType">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="value" type="xs:string" use="required"/>
     </xs:complexType>
 
 </xs:schema>

@@ -5,8 +5,6 @@
         <item id="sec$Group.browse"/>
         <item id="sec$Role.browse"/>
         <item id="-"/>
-        <item id="entityInspector.browse"/>
-        <item id="-"/>
         <item id="sys$Categories.browse"/>
         <item id="-"/>
         <item id="sec$UserSessionEntity.browse"/>
@@ -15,6 +13,7 @@
         <item id="sys$SendingMessage.browse"/>
         <item id="core$ScheduledTask.browse"/>
         <item id="core$Entity.restore"/>
+        <item id="entityInspector.browse"/>
         <item id="-"/>
         <item id="jmxcontrol$DisplayMbeans"/>
         <item id="serverLog"/>
