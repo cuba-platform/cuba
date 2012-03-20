@@ -46,7 +46,7 @@ public class EntitySnapshot extends BaseUuidEntity {
     @Column(name = "SNAPSHOT_DATE")
     private Date snapshotDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "AUTHOR_ID", nullable = false)
     private User author;
 
