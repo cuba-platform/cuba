@@ -459,12 +459,12 @@ public class EntityInspectorEditor extends AbstractEditor {
         buttonsPanel = componentsFactory.createComponent(ButtonsPanel.NAME);
         commitButton = componentsFactory.createComponent(Button.NAME);
         commitButton.setIcon("icons/ok.png");
-        commitButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "commitButton"));
-        commitButton.setAction(new CommitAction("commit"));
+        commitButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "commit"));
+        commitButton.setAction(new CommitAction());
         cancelButton = componentsFactory.createComponent(Button.NAME);
         cancelButton.setIcon("icons/cancel.png");
-        cancelButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "cancelButton"));
-        cancelButton.setAction(new CancelAction("cancel"));
+        cancelButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "cancel"));
+        cancelButton.setAction(new CancelAction());
         buttonsPanel.add(commitButton);
         buttonsPanel.add(cancelButton);
         buttonsBox.add(buttonsPanel);
@@ -665,20 +665,20 @@ public class EntityInspectorEditor extends AbstractEditor {
 
         Button createButton = componentsFactory.createComponent(Button.NAME);
         createButton.setAction(new CreateAction(metaProperty, propertyDs, propertyMetaClass));
-        createButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "createButton"));
+        createButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "create"));
         createButton.setIcon("icons/create.png");
 
         Button addButton = componentsFactory.createComponent(Button.NAME);
         AddAction addAction = createAddAction(metaProperty, propertyDs, table, propertyMetaClass);
         addButton.setAction(addAction);
-        addButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "addButton"));
+        addButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "add"));
         addButton.setIcon("icons/add.png");
 
         Button editButton = componentsFactory.createComponent(Button.NAME);
         EditAction editAction = new EditAction(metaProperty, table, propertyDs);
         propertyDs.addListener(editAction);
         editButton.setAction(editAction);
-        editButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "editButton"));
+        editButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "edit"));
         editButton.setIcon("icons/edit.png");
         table.setItemClickAction(editAction);
         table.setEnterPressAction(editAction);
@@ -687,7 +687,7 @@ public class EntityInspectorEditor extends AbstractEditor {
         propertyDs.addListener(removeAction);
         Button removeButton = componentsFactory.createComponent(Button.NAME);
         removeButton.setAction(removeAction);
-        removeButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "removeButton"));
+        removeButton.setCaption(MessageProvider.getMessage(EntityInspectorEditor.class, "remove"));
         removeButton.setIcon("icons/remove.png");
 
         propertyButtonsPanel.addButton(createButton);
@@ -822,8 +822,8 @@ public class EntityInspectorEditor extends AbstractEditor {
 
     protected class CommitAction extends AbstractAction {
 
-        protected CommitAction(String id) {
-            super(id);
+        protected CommitAction() {
+            super("commit");
         }
 
         @Override
@@ -841,8 +841,8 @@ public class EntityInspectorEditor extends AbstractEditor {
 
     protected class CancelAction extends AbstractAction {
 
-        protected CancelAction(String id) {
-            super(id);
+        protected CancelAction() {
+            super("cancel");
         }
 
         @Override
@@ -867,7 +867,7 @@ public class EntityInspectorEditor extends AbstractEditor {
         protected MetaProperty metaProperty;
 
         protected CreateAction(MetaProperty metaProperty, CollectionDatasource entitiesDs, MetaClass entityMeta) {
-            super(metaProperty.getName() + "CreateAction");
+            super("create");
             this.entitiesDs = entitiesDs;
             this.entityMeta = entityMeta;
             this.metaProperty = metaProperty;
@@ -901,7 +901,7 @@ public class EntityInspectorEditor extends AbstractEditor {
         private MetaProperty metaProperty;
 
         protected EditAction(MetaProperty metaProperty, Table entitiesTable, CollectionDatasource entitiesDs) {
-            super(metaProperty.getName() + "EditAction");
+            super("edit");
             this.entitiesTable = entitiesTable;
             this.entitiesDs = entitiesDs;
             this.metaProperty = metaProperty;

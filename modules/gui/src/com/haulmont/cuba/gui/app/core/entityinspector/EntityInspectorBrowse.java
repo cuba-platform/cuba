@@ -92,13 +92,12 @@ public class EntityInspectorBrowse extends AbstractLookup {
 
             showButton = componentsFactory.createComponent(Button.NAME);
             showButton.setIcon("icons/refresh.png");
-            showButton.setAction(new ShowButtonAction("showButton"));
-            showButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "showButton"));
+            showButton.setAction(new ShowButtonAction("show"));
+            showButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "show"));
 
             lookupBox.add(entities);
             lookupBox.add(showButton);
         }
-
     }
 
     protected Map<String, Object> getEntitiesLookupFieldOptions() {
@@ -195,31 +194,31 @@ public class EntityInspectorBrowse extends AbstractLookup {
         ButtonsPanel buttonsPanel = componentsFactory.createComponent("buttonsPanel");
 
         createButton = componentsFactory.createComponent(Button.NAME);
-        createButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "createButton"));
+        createButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "create"));
         createButton.setAction(new CreateAction());
         createButton.setIcon("icons/create.png");
 
         editButton = componentsFactory.createComponent(Button.NAME);
-        editButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "editButton"));
+        editButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "edit"));
         EditAction editAction = new EditAction();
         editButton.setAction(editAction);
         entitiesDs.addListener(editAction);
         editButton.setIcon("icons/edit.png");
 
         removeButton = componentsFactory.createComponent(Button.NAME);
-        removeButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "removeButton"));
+        removeButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "remove"));
         RemoveAction removeAction = new RemoveAction(entitiesTable);
         entitiesDs.addListener(removeAction);
         removeButton.setAction(removeAction);
         removeButton.setIcon("icons/remove.png");
 
         excelButton = componentsFactory.createComponent(Button.NAME);
-        excelButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "excelButton"));
+        excelButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "excel"));
         excelButton.setAction(new ExcelAction(entitiesTable));
         excelButton.setIcon("icons/excel.png");
 
         refreshButton = componentsFactory.createComponent(Button.NAME);
-        refreshButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "refreshButton"));
+        refreshButton.setCaption(MessageProvider.getMessage(EntityInspectorBrowse.class, "refresh"));
         refreshButton.setAction(new RefreshAction(entitiesTable));
         refreshButton.setIcon("icons/refresh.png");
 
@@ -277,7 +276,7 @@ public class EntityInspectorBrowse extends AbstractLookup {
     protected class EditAction extends ItemTrackingAction {
 
         protected EditAction() {
-            super("create");
+            super("edit");
         }
 
         @Override
