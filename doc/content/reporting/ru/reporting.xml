@@ -16,22 +16,22 @@
     <section>
       <title>Структура руководства</title>
       <para>Данное руководство состоит из следующих разделов:</para>
+      <para><link linkend="chapter2_working_in_nix">
+          <emphasis role="bold">Глава 1. Установка и настройка OpenOffice.org</emphasis>
+        </link></para>
+      <para>В данной главе  описана последовательность действий при установке и настройке <application>OpenOffice.org</application>. </para>
       <para><link linkend="chapter0_theoretical_info">
-          <emphasis role="bold">Глава 1. Общие сведения</emphasis>
+          <emphasis role="bold">Глава 2. Общие сведения</emphasis>
         </link></para>
       <para>Данная глава содержит описание структуры и функциональности отчетов.</para>
       <para><link linkend="chapter1_tool_description">
-          <emphasis role="bold">Глава 2. Описание инструментария</emphasis>
+          <emphasis role="bold">Глава 3. Описание инструментария</emphasis>
         </link></para>
       <para>В данной главе содержится описание интерфейса подсистемы, с помощью которой можно создавать отчеты. </para>
-      <para><link linkend="chapter2_working_in_nix">
-          <emphasis role="bold">Глава 3. Особенности работы в *nix системах</emphasis>
-        </link></para>
-      <para>В данной главе  описана последовательность действия при создании отчетов в *nix системах. </para>
       <para><link linkend="chapter3_examples">
           <emphasis role="bold">Глава 4. Примеры построения отчетов</emphasis>
         </link></para>
-      <para>В главе 4 приводится подробное описание создания основных видов ответов.</para>
+      <para>В главе 4 приводится подробное описание создания основных видов отчетов.</para>
     </section>
     <section>
       <title>Соглашения</title>
@@ -100,9 +100,9 @@
       </formalpara>
     </section>
   </preface>
-  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter0.xml" encoding="UTF-8"/>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter2.xml" encoding="UTF-8"/>
+   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter0.xml" encoding="UTF-8"/>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter1.xml" encoding="UTF-8"/>
-   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter2.xml" encoding="UTF-8"/>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter3.xml" encoding="UTF-8"/>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="glossary.xml" encoding="UTF-8"/>
 </book>
