@@ -15,7 +15,7 @@
   </orderedlist>
   <section>
     <title>Простой отчет с шаблоном *.odt</title>
-    <para>Данный отчет представляет из себя информацию о факте продажи товара − накладную на продажу.</para>
+    <para>Данный отчет представляет собой информацию о факте продажи товара − накладную на продажу.</para>
     <para>Начнем формирование отчета с создания шаблона. Для этого откройте <application>OpenOffice.org Writer</application>. Создайте в файле следующий шаблон отчета, представленный на рисунке.</para>
     <mediaobject>
       <imageobject>
@@ -44,7 +44,7 @@
         <imagedata align="center" fileref="img/example1_4.png"/>
       </imageobject>
     </mediaobject>
-    <para>Заполните поля параметра. В поле <guilabel>Имя параметра</guilabel> введите <userinput>Sale</userinput>, в качестве алиаса параметра укажите <userinput>sale</userinput>. Выберите тип параметра <userinput>Объект</userinput> из списка типов. Далее установите опцию <guilabel>Обязательный параметр?</guilabel>. В качестве сущности выберите <userinput>Sale</userinput> из списка сущностей. В списке экранов выбора сущности найдите экран <userinput>shop$Sale.browse</userinput>. Далее перейдите на закладку <guilabel>Локализация</guilabel>.</para>
+    <para>Заполните поля параметра. В поле <guilabel>Имя параметра</guilabel> введите <userinput>Sale</userinput>, в качестве <glossterm linkend="glossary_alias_id">алиаса</glossterm> параметра укажите <userinput>sale</userinput>. Выберите тип параметра <userinput>Объект</userinput> из списка типов. Далее установите опцию <guilabel>Обязательный параметр?</guilabel>. В качестве сущности выберите <userinput>Sale</userinput> из списка сущностей. В списке экранов выбора сущности найдите экран <userinput>shop$Sale.browse</userinput>. Далее перейдите на закладку <guilabel>Локализация</guilabel>.</para>
     <mediaobject>
       <imageobject>
         <imagedata align="center" fileref="img/example1_5.png"/>
@@ -63,7 +63,7 @@
         <imagedata align="center" fileref="img/example1_7.png"/>
       </imageobject>
     </mediaobject>
-    <para>Текст запроса jpql:</para>
+    <para>Текст запроса <glossterm linkend="glossary_jpql_id">JPQL</glossterm>:</para>
     <para><programlisting>select 
 sb.personalData.fullName as buyer, 
 ss.orderDate as orderDate,
@@ -77,7 +77,7 @@ ss.id = ${sale}
 and sb.id = ss.buyer.id
 and sp.id = ss.salesPerson.id</programlisting></para>
     <warning>
-      <para>Обратите внимание, что алиасы в запросе называются также, как в создаваемом шаблоне, а в качестве идентификатора сущности <classname>shop$Sale</classname> передается входной параметр <varname>sale</varname>, заключенный в конструкцию <code>${}</code> − <code>${sale}</code>.</para>
+      <para>Обратите внимание, что <glossterm linkend="glossary_alias_id">алиасы</glossterm> в запросе называются так же, как в создаваемом шаблоне, а в качестве идентификатора сущности <classname>shop$Sale</classname> передается входной параметр <varname>sale</varname>, заключенный в конструкцию <code>${}</code> − <code>${sale}</code>.</para>
     </warning>
     <para>После создания полосы отчета <guilabel>Sale</guilabel> создадим полосу отчета <guilabel>Product</guilabel>. Для этого выделите корневую полосу отчета <guilabel>Root</guilabel> и нажмите на кнопку <guibutton>Создать</guibutton>. Далее заполните поля источника данных в соответствии с рисунком.</para>
     <mediaobject>
@@ -135,14 +135,14 @@ and  sp.id = ss.product.id</programlisting></para>
   </section>
   <section>
     <title>Простой отчет с шаблоном *.xls</title>
-    <para>Данный отчет представляет из себя информацию о  продажах, произведенных за определенный период, который задается параметрами отчета.</para>
+    <para>Данный отчет представляет собой информацию о  продажах, произведенных за определенный период, который задается параметрами отчета.</para>
     <para>Начнем формирование отчета с создания шаблона. Для этого откройте <application>OpenOffice.org Calc</application>. Создайте в файле следующий шаблон отчета, представленный на рисунке.</para>
     <mediaobject>
       <imageobject>
         <imagedata align="center" fileref="img/example2_1.png"/>
       </imageobject>
     </mediaobject>
-    <para>Задайте именованный регионы согласно изображениям, представленным ниже.</para>
+    <para>Задайте именованные регионы согласно изображениям, представленным ниже.</para>
     <mediaobject>
       <imageobject>
         <imagedata align="center" fileref="img/example2_10.png"/>
@@ -184,7 +184,7 @@ and  sp.id = ss.product.id</programlisting></para>
         <imagedata align="center" fileref="img/example2_7.png"/>
       </imageobject>
     </mediaobject>
-    <para>Заполните поля параметра. В поле <guilabel>Имя параметра</guilabel> введите <userinput>Period start</userinput>, в качестве алиаса параметра укажите <userinput>start</userinput>. Выберите тип параметра <userinput>Дата</userinput> из списка типов. Далее установите опцию <guilabel>Обязательный параметр?</guilabel>.  Далее перейдите на закладку <guilabel>Локализация</guilabel>.</para>
+    <para>Заполните поля параметра. В поле <guilabel>Имя параметра</guilabel> введите <userinput>Period start</userinput>, в качестве <glossterm linkend="glossary_alias_id">алиаса</glossterm> параметра укажите <userinput>start</userinput>. Выберите тип параметра <userinput>Дата</userinput> из списка типов. Далее установите опцию <guilabel>Обязательный параметр?</guilabel>.  Далее перейдите на закладку <guilabel>Локализация</guilabel>.</para>
     <mediaobject>
       <imageobject>
         <imagedata align="center" fileref="img/example2_8.png"/>
@@ -209,7 +209,7 @@ and  sp.id = ss.product.id</programlisting></para>
         <imagedata align="center" fileref="img/example2_13.png"/>
       </imageobject>
     </mediaobject>
-    <para>Текст запроса sql:</para>
+    <para>Текст запроса SQL:</para>
     <para><programlisting>select SB.NAME as buyer,
 SP.NAME as product,
 SS.NAME as salesPerson,
@@ -227,7 +227,7 @@ where S.ORDER_DATE&gt;=${start}
 and S.ORDER_DATE&lt;=${end}
 and S.DELETE_TS is null</programlisting></para>
     <warning>
-      <para>Обратите внимание, что алиасы в запросе называются также, как в созданном шаблоне, а для фильтрации значений передаются входные параметры отчета <code>${start}</code> и <code>${end}</code>.</para>
+      <para>Обратите внимание, что <glossterm linkend="glossary_alias_id">алиасы</glossterm> в запросе называются также, как в созданном шаблоне, а для фильтрации значений передаются входные параметры отчета <code>${start}</code> и <code>${end}</code>.</para>
     </warning>
     <para>После создания полосы отчета <guilabel>Sales</guilabel> создайте пустые полосы отчета и расположите их в порядке, определенном на рисунке. </para>
     <mediaobject>
@@ -235,7 +235,7 @@ and S.DELETE_TS is null</programlisting></para>
         <imagedata align="center" fileref="img/example2_14.png"/>
       </imageobject>
     </mediaobject>
-    <para>Полосы отчета пустые, так как в соответствующие им именованные регионы шаблона не трубуется выводить данные из базы данных.</para>
+    <para>Полосы отчета пустые, так как в соответствующие им именованные регионы шаблона не требуется выводить данные из базы данных.</para>
     <para>После создания полос перейдите на вкладку <guilabel>Локализация</guilabel> редактора отчетов и введите в поле <guilabel>Строки локализации </guilabel>следующее:</para>
     <para><userinput>ru=Список продаж за период</userinput></para>
     <para>После этого нажмите на кнопку <guibutton>ОК</guibutton>. Новый отчет создан и сохранен в базе данных.</para>
@@ -271,7 +271,7 @@ and S.DELETE_TS is null</programlisting></para>
   </section>
   <section>
     <title>Печатная форма отчета с шаблоном *.odt</title>
-    <para>Данный отчет представляет из себя информацию о товаре.</para>
+    <para>Данный отчет представляет собой информацию о товаре.</para>
     <para>Начнем  формирование отчета с создания шаблона. Для этого откройте <application>OpenOffice.org Writer</application>. Создайте в файле следующий шаблон отчета, представленный на рисунке.</para>
     <mediaobject>
       <imageobject>
@@ -300,7 +300,7 @@ and S.DELETE_TS is null</programlisting></para>
         <imagedata align="center" fileref="img/example3_4.png"/>
       </imageobject>
     </mediaobject>
-    <para>Заполните поля параметра. В поле <guilabel>Имя параметра</guilabel> введите <userinput>Product</userinput>, в качестве алиаса параметра укажите <userinput>product</userinput>. Выберите тип параметра <userinput>Объект</userinput> из списка типов. Далее установите опцию <guilabel>Связанная сущность?</guilabel> и <guilabel>Обязательный параметр?</guilabel>. В качестве сущности выберите <userinput>Product</userinput> из списка сущностей. В списке экранов выбора сущности найдите экран <userinput>shop$Product.browse</userinput>. Далее перейдите на закладку <guilabel>Локализация</guilabel>.</para>
+    <para>Заполните поля параметра. В поле <guilabel>Имя параметра</guilabel> введите <userinput>Product</userinput>, в качестве <glossterm linkend="glossary_alias_id">алиаса</glossterm> параметра укажите <userinput>product</userinput>. Выберите тип параметра <userinput>Объект</userinput> из списка типов. Далее установите опцию <guilabel>Связанная сущность?</guilabel> и <guilabel>Обязательный параметр?</guilabel>. В качестве сущности выберите <userinput>Product</userinput> из списка сущностей. В списке экранов выбора сущности найдите экран <userinput>shop$Product.browse</userinput>. Далее перейдите на закладку <guilabel>Локализация</guilabel>.</para>
     <mediaobject>
       <imageobject>
         <imagedata align="center" fileref="img/example3_5.png"/>
@@ -320,12 +320,21 @@ and S.DELETE_TS is null</programlisting></para>
       </imageobject>
     </mediaobject>
     <warning>
-      <para>Обратите внимание, имя параметра для связанной сущности  должно совпадать с  алиасом входного параметра.</para>
+      <para>Обратите внимание, имя параметра для связанной сущности  должно совпадать с  <glossterm linkend="glossary_alias_id">алиасом</glossterm> входного параметра.</para>
     </warning>
     <para>После создания полос перейдите на вкладку <guilabel>Локализация</guilabel> редактора отчетов и введите в поле <guilabel>Строки локализации </guilabel>следующее:</para>
     <para><userinput>ru=Информация о товаре</userinput></para>
     <para>После этого нажмите на кнопку <guibutton>ОК</guibutton>. Новый отчет создан и сохранен в базе данных.</para>
     <para>Создадим кнопку в браузере сущности, по которой будет вызываться созданный отчет.</para>
+    <para>Создавать кнопку нужно следующим образом:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Для печатной формы, вызываемой из экрана редактирования сущности, необходимо создать кнопку и задать ей <parameter>action</parameter>, <classname>EditorPrintFormAction</classname>. В конструктор необходимо передать текущий <classname>Editor</classname>  и <classname>message id</classname> подписи кнопки.</para>
+      </listitem>
+      <listitem>
+        <para>Для печатной формы, вызываемой из браузера сущности, необходимо создать кнопку и задать ей <classname>action</classname><classname> TablePrintFormAction</classname>. В конструктор необходимо передать текущее окно,  таблицу, из которой будут выбираться сущности, и булевский параметр <varname>multiObjects</varname>, который определяет, является ли отчет печатной формой (<varname>false</varname>) или печатной формой списка (<varname>true</varname>). В первом случае берется один выбранный объект и передается в параметр типа <type>Объект</type>. Во втором случае берется <type>List</type> выбранных объектов и передается в параметр типа <type>Список объектов</type>.</para>
+      </listitem>
+    </itemizedlist>
     <para>В XML-дескрипторе браузера сущности <classname>Product</classname> определите кнопку следующим образом:</para>
     <para><programlisting>&lt;buttonsPanel&gt;
     &lt;!--others buttons--&gt;
