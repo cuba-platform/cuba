@@ -114,16 +114,25 @@ public class UniqueNumbers
         if (existingSequences.contains(seqName))
             return;
 
-        EntityManager em = persistence.getEntityManager();
+        // Create sequence in separate transaction because it's name is cached and we want to be sure it is created
+        // regardless of possible errors in the invoking code
+        Transaction tx = persistence.createTransaction();
+        try {
+            EntityManager em = persistence.getEntityManager();
 
-        SequenceSupport support = getSequenceSqlProvider();
-        Query query = em.createNativeQuery(support.sequenceExistsSql(seqName));
-        List list = query.getResultList();
-        if (list.isEmpty()) {
-            query = em.createNativeQuery(support.createSequenceSql(seqName, 1, 1));
-            query.executeUpdate();
+            SequenceSupport support = getSequenceSqlProvider();
+            Query query = em.createNativeQuery(support.sequenceExistsSql(seqName));
+            List list = query.getResultList();
+            if (list.isEmpty()) {
+                query = em.createNativeQuery(support.createSequenceSql(seqName, 1, 1));
+                query.executeUpdate();
+            }
+            existingSequences.add(seqName);
+
+            tx.commit();
+        } finally {
+            tx.end();
         }
-        existingSequences.add(seqName);
     }
 
     private String getSequenceName(String domain) {
