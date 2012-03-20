@@ -3155,7 +3155,7 @@ public abstract class Table extends FlowPanel
             public void onScroll() {
                 if (childWidgets != null) {
                     for (Object widget : childWidgets) {
-                        if (widget instanceof VCustomComponent) {
+                        if (widget instanceof VCustomComponent && ((VCustomComponent) widget).getWidget() instanceof VCustomComponent) {
                             VCustomComponent root = (VCustomComponent) ((VCustomComponent) widget).getWidget();
                             if (root != null && root.getWidget() instanceof VGridLayout) {
                                 for (Widget child : ((VGridLayout) root.getWidget()).getChildWidgets()) {
