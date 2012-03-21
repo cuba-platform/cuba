@@ -79,7 +79,11 @@ public class MyJSONObject implements MyJSON {
 
     private static StringBuilder quoted(Object o) {
         if (o == null) return new StringBuilder(NULL_LITERAL);
-        return new StringBuilder().append(QUOTE).append(o.toString()).append(QUOTE);
+        String escaped = o.toString().replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\r", "\\r")
+                .replace("\n", "\\n");
+        return new StringBuilder().append(QUOTE).append(escaped).append(QUOTE);
     }
 
     public static class Array implements MyJSON {
