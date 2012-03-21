@@ -78,7 +78,7 @@ public class EntityRestore extends AbstractWindow {
                         entitiesDs.refresh();
                         entitiesTable.setDatasource(entitiesDs);
                         filter = new WebFilter();
-                        filter.setId("genericFilter-" + metaClass.getName());
+                        filter.setId("genericFilter");
                         filter.setFrame(getFrame());
                         filter.setStyleName(primaryFilter.getStyleName());
                         filter.setXmlDescriptor(primaryFilter.getXmlDescriptor());
