@@ -864,30 +864,37 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     public void setPagingProvider(final Table.PagingProvider pagingProvider) {
         this.pagingProvider = pagingProvider;
         component.setPagingProvider(new com.haulmont.cuba.web.toolkit.ui.Table.PagingProvider() {
+            @Override
             public String firstCaption() {
                 return pagingProvider.firstCaption();
             }
 
+            @Override
             public String prevCaption() {
                 return pagingProvider.prevCaption();
             }
 
+            @Override
             public String nextCaption() {
                 return pagingProvider.nextCaption();
             }
 
+            @Override
             public String lastCaption() {
                 return pagingProvider.lastCaption();
             }
 
+            @Override
             public String pageLengthSelectorCaption() {
                 return pagingProvider.pageLengthSelectorCaption();
             }
 
+            @Override
             public boolean showPageLengthSelector() {
                 return pagingProvider.showPageLengthSelector();
             }
 
+            @Override
             public int[] pageLengths() {
                 return pagingProvider.pageLengths();
             }
@@ -911,12 +918,20 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.addGeneratedColumn(
                 generatedColumnId,
                 new com.vaadin.ui.Table.ColumnGenerator() {
+                    @Override
                     public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
                         com.haulmont.cuba.gui.components.Component component = generator.generateCell(WebAbstractTable.this, itemId);
                         if (component == null)
                             return null;
                         else {
                             Component vComponent = WebComponentsHelper.unwrap(component);
+                            // wrap field for show required asterisk
+                            if ((vComponent instanceof com.vaadin.ui.Field)
+                                && (((com.vaadin.ui.Field) vComponent).isRequired())) {
+                                VerticalLayout layout = new VerticalLayout();
+                                layout.addComponent(vComponent);
+                                vComponent = layout;
+                            }
                             return vComponent;
                         }
                     }
@@ -1083,6 +1098,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             component.setStyleName("link");
 
             component.addListener(new Button.ClickListener() {
+                @Override
                 public void buttonClick(Button.ClickEvent event) {
                     final Element element = column.getXmlDescriptor();
 
@@ -1095,6 +1111,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                             final Window window = frame.openEditor(screenName, getItem(item, property), WindowManager.OpenType.THIS_TAB);
 
                             window.addListener(new Window.CloseListener() {
+                                @Override
                                 public void windowClosed(String actionId) {
                                     if (Window.COMMIT_ACTION_ID.equals(actionId) && window instanceof Window.Editor) {
                                         Object item = ((Window.Editor) window).getItem();
@@ -1129,10 +1146,12 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             return component;
         }
 
+        @Override
         public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             return generateCell(((AbstractSelect) source), itemId, columnId);
         }
 
+        @Override
         public Component generateCell(TableSupport source, Object itemId, Object columnId) {
             return generateCell(((AbstractSelect) source), itemId, columnId);
         }
@@ -1145,6 +1164,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             super(column);
         }
 
+        @Override
         protected Entity getItem(Item item, Property property) {
             return (Entity) property.getValue();
         }
@@ -1155,6 +1175,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             super(column);
         }
 
+        @Override
         protected Entity getItem(Item item, Property property) {
             return ((ItemWrapper) item).getItem();
         }
@@ -1171,10 +1192,12 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             return label;
         }
 
+        @Override
         public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             return generateCell(((AbstractSelect) source), itemId, columnId);
         }
 
+        @Override
         public Component generateCell(TableSupport source, Object itemId, Object columnId) {
             return generateCell(((AbstractSelect) source), itemId, columnId);
         }
@@ -1183,10 +1206,12 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     private class ReadOnlyBooleanDatatypeGenerator
             implements com.vaadin.ui.Table.ColumnGenerator,
             TableSupport.ColumnGenerator {
+        @Override
         public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             return generateCell((AbstractSelect) source, itemId, columnId);
         }
 
+        @Override
         public Component generateCell(TableSupport source, Object itemId, Object columnId) {
             return generateCell((AbstractSelect) source, itemId, columnId);
         }
@@ -1207,10 +1232,12 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     private class CalculatableColumnGenerator implements com.vaadin.ui.Table.ColumnGenerator, TableSupport.ColumnGenerator {
+        @Override
         public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
             return generateCell((AbstractSelect) source, itemId, columnId);
         }
 
+        @Override
         public Component generateCell(TableSupport source, Object itemId, Object columnId) {
             return generateCell((AbstractSelect) source, itemId, columnId);
         }
