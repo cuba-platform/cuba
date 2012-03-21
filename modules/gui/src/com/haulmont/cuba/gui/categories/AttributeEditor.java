@@ -327,6 +327,8 @@ public class AttributeEditor extends AbstractEditor {
         screenField.setId("screenField");
         screenField.setCaption(getMessage("screen"));
         screenField.setWidth(FIELD_WIDTH);
+        screenField.setRequired(true);
+        screenField.setRequiredMessage(getMessage("entityScreenRequired"));
         fieldsContainer.add(screenField);
 
         Collection<WindowInfo> windowInfoCollection = windowConfig.getWindows();
