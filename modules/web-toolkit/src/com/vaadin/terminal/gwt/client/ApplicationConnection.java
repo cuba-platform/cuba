@@ -105,6 +105,8 @@ public class ApplicationConnection {
 
     private VContextMenu contextMenu = null;
 
+    private long lastEndedRequest = 0L;
+
     private Timer loadTimer;
     private Timer blockUITimer;
     private Element loadElement;
@@ -149,7 +151,9 @@ public class ApplicationConnection {
         private boolean repeat;
         private int delay;
 
-        ApplicationTimer(String id, boolean repeat, int delay) {
+        private long lastCompleteTimerRequest = 0;
+
+        public ApplicationTimer(String id, boolean repeat, int delay) {
             this.id = id;
             this.repeat = repeat;
             this.delay = delay;
@@ -163,7 +167,21 @@ public class ApplicationConnection {
             }
         }
 
+        @Override
         public void run() {
+            if (repeat) {
+                if (lastEndedRequest > lastCompleteTimerRequest) {
+                    runTimerAction();
+//                    VConsole.log("TIMER COMPLETE " + id);
+                    lastCompleteTimerRequest = lastEndedRequest;
+                }/* else {
+                    VConsole.log("SKIP HANGING OUT TIMER ACTION " + id);
+                }*/
+            } else
+                runTimerAction();
+        }
+
+        private void runTimerAction() {
             updateVariable(id, "timer", "", true);
         }
 
@@ -230,8 +248,6 @@ public class ApplicationConnection {
      * called once this application has started (first response received) or
      * failed to start. This ensures that the applications are started in order,
      * to avoid session-id problems.
-     *
-     * @return
      */
     public void start() {
         repaintAll();
@@ -269,6 +285,7 @@ public class ApplicationConnection {
 
     /**
      * Helper for tt initialization
+     * @return JSO
      */
     private JavaScriptObject getVersionInfo() {
         return configuration.getVersionInfoJSObject();
@@ -732,7 +749,7 @@ public class ApplicationConnection {
             };
             // First one kicks in at 300ms
         }
-        VConsole.log("Start loading timer");
+//        VConsole.log("Start loading timer");
         loadTimer.schedule(300);
     }
 
@@ -752,9 +769,11 @@ public class ApplicationConnection {
         activeRequests--;
         // deferring to avoid flickering
         Scheduler.get().scheduleDeferred(new Command() {
+            @Override
             public void execute() {
                 if (activeRequests == 0) {
                     hideLoadingIndicator();
+                    lastEndedRequest++;
                 }
             }
         });
@@ -844,10 +863,10 @@ public class ApplicationConnection {
 
         if (loadTimer != null) {
             loadTimer.cancel();
-            VConsole.log("Stop loading timer");
+//            VConsole.log("Stop loading timer");
             if (blockUITimer != null) {
                 blockUITimer.cancel();
-                VConsole.log("Stop blocking timer");
+//                VConsole.log("Stop blocking timer");
                 blockUITimer = null;
             }
             loadTimer = null;
@@ -855,7 +874,7 @@ public class ApplicationConnection {
 
         if (applicationRunning && uiblocked) {
             unBlockUI();
-            VConsole.log("Unblock UI");
+//            VConsole.log("Unblock UI");
             uiblocked = false;
         }
 
