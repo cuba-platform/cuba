@@ -126,4 +126,9 @@
         <property name="isDefault"/>
     </view>
 
+    <view entity="core$EntitySnapshot" name="entitySnapshot.browse" extends="_local">
+        <property name="createTs"/>
+        <property name="author" view="_minimal"/>
+    </view>
+
 </views>

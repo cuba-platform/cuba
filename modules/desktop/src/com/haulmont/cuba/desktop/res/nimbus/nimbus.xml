@@ -46,16 +46,25 @@
         </components>
     </style>
 
-    <!--<style name="addedItem">
-        <foreground color="#00ff00"/>
+    <!-- empty styles for diff-view frame -->
+    <style name="addedItem">
+
     </style>
 
     <style name="modifiedItem">
-        <foreground color="#0000ff"/>
+
     </style>
 
     <style name="removedItem">
-        <foreground color="#ff0000"/>
-    </style>-->
+
+    </style>
+
+    <style name="chainItem">
+
+    </style>
+
+    <style name="categoryItem">
+
+    </style>
 
 </theme>

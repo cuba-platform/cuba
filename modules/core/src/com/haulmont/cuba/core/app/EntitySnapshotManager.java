@@ -41,6 +41,9 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     @Inject
     private Persistence persistence;
 
+    @Inject
+    private Metadata metadata;
+
     private EntityDiffManager diffManager;
 
     public EntitySnapshotManager() {
@@ -50,7 +53,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
     @Override
     public List<EntitySnapshot> getSnapshots(MetaClass metaClass, UUID id) {
         List<EntitySnapshot> resultList = null;
-
+        View view = metadata.getViewRepository().getView(EntitySnapshot.class, "entitySnapshot.browse");
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
@@ -58,6 +61,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
                     "select s from core$EntitySnapshot s where s.entityId = :entityId and s.entityMetaClass = :metaClass");
             query.setParameter("entityId", id);
             query.setParameter("metaClass", metaClass.getName());
+            query.setView(view);
             resultList = query.getResultList();
 
             tx.commit();

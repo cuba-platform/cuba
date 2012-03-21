@@ -12,7 +12,7 @@
 
     <dsContext>
         <collectionDatasource id="snapshotsDs" class="com.haulmont.cuba.core.entity.EntitySnapshot"
-                              view="_local">
+                              view="entitySnapshot.browse">
             <datasourceClass>com.haulmont.cuba.gui.app.core.entitydiff.EntitySnapshotsDatasource</datasourceClass>
         </collectionDatasource>
 
