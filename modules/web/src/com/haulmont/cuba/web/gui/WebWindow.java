@@ -88,10 +88,12 @@ public class WebWindow
         component = createLayout();
         delegate = createDelegate();
         ((com.vaadin.event.Action.Container) component).addActionHandler(new com.vaadin.event.Action.Handler() {
+            @Override
             public com.vaadin.event.Action[] getActions(Object target, Object sender) {
                 return actionsHolder.getActionImplementations();
             }
 
+            @Override
             public void handleAction(com.vaadin.event.Action actionImpl, Object sender, Object target) {
                 Action action = actionsHolder.getAction(actionImpl);
                 if (action != null && action.isEnabled() && action.isVisible()) {
@@ -115,45 +117,54 @@ public class WebWindow
         return (ComponentContainer) component;
     }
 
+    @Override
     public String getMessagesPack() {
         return messagePack;
     }
 
+    @Override
     public void setMessagesPack(String name) {
         messagePack = name;
     }
 
+    @Override
     public String getMessage(String key) {
         if (messagePack == null)
             throw new IllegalStateException("MessagePack is not set");
         return MessageProvider.getMessage(messagePack, key);
     }
 
+    @Override
     public void registerComponent(Component component) {
         if (component.getId() != null)
             allComponents.put(component.getId(), component);
     }
 
+    @Override
     public String getStyleName() {
         return component.getStyleName();
     }
 
+    @Override
     public void setStyleName(String name) {
         component.setStyleName(name);
     }
 
+    @Override
     public void setSpacing(boolean enabled) {
         if (component instanceof Layout.SpacingHandler) {
             ((Layout.SpacingHandler) component).setSpacing(true);
         }
     }
 
+    @Override
     public void setMargin(boolean enable) {
         if (component instanceof Layout.MarginHandler) {
             ((Layout.MarginHandler) component).setMargin(new Layout.MarginInfo(enable));
         }
     }
 
+    @Override
     public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
         if (component instanceof Layout.MarginHandler) {
             ((Layout.MarginHandler) component).setMargin(new Layout.MarginInfo(topEnable, rightEnable, bottomEnable, leftEnable));
@@ -162,88 +173,109 @@ public class WebWindow
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    @Override
     public void addAction(final com.haulmont.cuba.gui.components.Action action) {
         actionsHolder.addAction(action);
     }
 
+    @Override
     public void removeAction(com.haulmont.cuba.gui.components.Action action) {
         actionsHolder.removeAction(action);
     }
 
+    @Override
     public Collection<com.haulmont.cuba.gui.components.Action> getActions() {
         return actionsHolder.getActions();
     }
 
+    @Override
     public com.haulmont.cuba.gui.components.Action getAction(String id) {
         return actionsHolder.getAction(id);
     }
 
+    @Override
     public boolean isValid() {
         return delegate.isValid();
     }
 
+    @Override
     public void validate() throws ValidationException {
         delegate.validate();
     }
 
+    @Override
     public DialogParams getDialogParams() {
         return App.getInstance().getWindowManager().getDialogParams();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    @Override
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         return delegate.<T>openWindow(windowAlias, openType, params);
     }
 
+    @Override
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType) {
         return delegate.<T>openWindow(windowAlias, openType);
     }
 
+    @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params, Datasource parentDs) {
         return delegate.<T>openEditor(windowAlias, item, openType, params, parentDs);
     }
 
+    @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Map<String, Object> params) {
         return delegate.<T>openEditor(windowAlias, item, openType, params);
     }
 
+    @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType, Datasource parentDs) {
         return delegate.<T>openEditor(windowAlias, item, openType, parentDs);
     }
 
+    @Override
     public <T extends Window> T openEditor(String windowAlias, Entity item, WindowManager.OpenType openType) {
         return delegate.<T>openEditor(windowAlias, item, openType);
     }
 
+    @Override
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType, Map<String, Object> params) {
         return delegate.<T>openLookup(windowAlias, handler, openType, params);
     }
 
+    @Override
     public <T extends Window> T openLookup(String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType) {
         return delegate.<T>openLookup(windowAlias, handler, openType);
     }
 
+    @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
         return delegate.<T>openFrame(parent, windowAlias);
     }
 
+    @Override
     public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
         return delegate.<T>openFrame(parent, windowAlias, params);
     }
 
+    @Override
     public void showMessageDialog(String title, String message, MessageType messageType) {
         App.getInstance().getWindowManager().showMessageDialog(title, message, messageType);
     }
 
+    @Override
     public void showOptionDialog(String title, String message, MessageType messageType, Action[] actions) {
         App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions);
     }
 
+    @Override
     public void showOptionDialog(String title, String message, MessageType messageType, java.util.List<Action> actions) {
         App.getInstance().getWindowManager().showOptionDialog(title, message, messageType, actions.toArray(new Action[actions.size()]));
     }
 
+    @Override
     public void showNotification(String caption, NotificationType type) {
         com.vaadin.ui.Window.Notification notification =
                 new com.vaadin.ui.Window.Notification(caption, WebComponentsHelper.convertNotificationType(type));
@@ -257,6 +289,7 @@ public class WebWindow
             App.getInstance().getAppWindow().showNotification(notification);
     }
 
+    @Override
     public void showNotification(String caption, String description, NotificationType type) {
         com.vaadin.ui.Window.Notification notification =
                 new com.vaadin.ui.Window.Notification(caption, description, WebComponentsHelper.convertNotificationType(type));
@@ -272,22 +305,27 @@ public class WebWindow
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    @Override
     public WindowContext getContext() {
         return context;
     }
 
+    @Override
     public void setContext(WindowContext ctx) {
         this.context = ctx;
     }
 
+    @Override
     public DsContext getDsContext() {
         return dsContext;
     }
 
+    @Override
     public void setDsContext(DsContext dsContext) {
         this.dsContext = dsContext;
     }
 
+    @Override
     public void setFocusComponent(String componentId) {
         Component component = getComponent(componentId);
         if (component != null) {
@@ -297,41 +335,50 @@ public class WebWindow
         }
     }
 
+    @Override
     public void addListener(CloseListener listener) {
         if (!listeners.contains(listener))
             listeners.add(listener);
     }
 
+    @Override
     public void removeListener(CloseListener listener) {
         listeners.remove(listener);
     }
 
+    @Override
     public void applySettings(Settings settings) {
         delegate.applySettings(settings);
     }
 
+    @Override
     public void addTimer(Timer timer) {
         App.getInstance().addTimer((WebTimer) timer, this);
     }
 
+    @Override
     public Timer getTimer(String id) {
         return (Timer) App.getInstance().getTimers().getTimer(id);
     }
 
+    @Override
     public Settings getSettings() {
         return delegate.getSettings();
     }
 
+    @Override
     public Element getXmlDescriptor() {
         return element;
     }
 
+    @Override
     public void setXmlDescriptor(Element element) {
         this.element = element;
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    @Override
     public void add(Component component) {
         getContainer().addComponent(WebComponentsHelper.getComposition(component));
         if (component.getId() != null) {
@@ -341,6 +388,7 @@ public class WebWindow
         ownComponents.add(component);
     }
 
+    @Override
     public void remove(Component component) {
         getContainer().removeComponent(WebComponentsHelper.getComposition(component));
         if (component.getId() != null) {
@@ -349,10 +397,12 @@ public class WebWindow
         ownComponents.remove(component);
     }
 
+    @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(ownComponents);
     }
 
+    @Override
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
     }
@@ -370,70 +420,87 @@ public class WebWindow
         }
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public void setId(String id) {
         this.id = id;
     }
 
+    @Override
     public String getDebugId() {
         return debugId;
     }
 
+    @Override
     public void setDebugId(String debugId) {
         this.debugId = debugId;
     }
 
+    @Override
     public boolean isEnabled() {
         return component.isEnabled();
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         component.setEnabled(enabled);
     }
 
+    @Override
     public boolean isVisible() {
         return true;
     }
 
+    @Override
     public void setVisible(boolean visible) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void requestFocus() {
     }
 
+    @Override
     public float getHeight() {
         return component.getHeight();
     }
 
+    @Override
     public int getHeightUnits() {
         return component.getHeightUnits();
     }
 
+    @Override
     public void setHeight(String height) {
         component.setHeight(height);
     }
 
+    @Override
     public float getWidth() {
         return component.getWidth();
     }
 
+    @Override
     public int getWidthUnits() {
         return component.getWidthUnits();
     }
 
+    @Override
     public void setWidth(String width) {
         component.setWidth(width);
     }
 
+    @Override
     public <T extends Component> T getOwnComponent(String id) {
         //noinspection unchecked
         return (T) componentByIds.get(id);
     }
 
+    @Override
     public <T extends Component> T getComponent(String id) {
         final String[] elements = ValuePathHelper.parse(id);
         if (elements.length == 1) {
@@ -450,13 +517,16 @@ public class WebWindow
 //        return WebComponentsHelper.<T>getComponent(this, id);
     }
 
+    @Override
     public Alignment getAlignment() {
         return Alignment.MIDDLE_CENTER;
     }
 
+    @Override
     public void setAlignment(Alignment alignment) {
     }
 
+    @Override
     public void expand(Component component, String height, String width) {
         final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(component);
         if (getContainer() instanceof AbstractOrderedLayout) {
@@ -466,29 +536,35 @@ public class WebWindow
         }
     }
 
+    @Override
     public void expand(Component component) {
         expand(component, "", "");
     }
 
+    @Override
     public <T> T getComponent() {
         //noinspection unchecked
         return (T) component;
     }
 
+    @Override
     public com.vaadin.ui.Component getComposition() {
         return component;
     }
 
+    @Override
     public void closeAndRun(String actionId, Runnable runnable) {
         this.doAfterClose = runnable;
         close(actionId);
     }
 
+    @Override
     public boolean close(final String actionId, boolean force) {
         forceClose = force;
         return close(actionId);
     }
 
+    @Override
     public boolean close(final String actionId) {
         if (closing)
             return true;
@@ -502,12 +578,14 @@ public class WebWindow
                     MessageType.WARNING,
                     new Action[]{
                             new DialogAction(DialogAction.Type.YES) {
+                                @Override
                                 public void actionPerform(Component component) {
                                     forceClose = true;
                                     close(actionId);
                                 }
                             },
                             new DialogAction(DialogAction.Type.NO) {
+                                @Override
                                 public void actionPerform(Component component) {
                                     doAfterClose = null;
                                 }
@@ -532,35 +610,43 @@ public class WebWindow
         return res;
     }
 
+    @Override
     public void saveSettings() {
         delegate.saveSettings();
     }
 
+    @Override
     public String getCaption() {
         return caption;
     }
 
+    @Override
     public void setCaption(String caption) {
         this.caption = caption;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public <A extends IFrame> A getFrame() {
         //noinspection unchecked
         return (A) this;
     }
 
+    @Override
     public void setFrame(IFrame frame) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void expandLayout(boolean expandLayout) {
         if (expandLayout) {
             getContainer().setSizeFull();
@@ -570,10 +656,12 @@ public class WebWindow
         }
     }
 
+    @Override
     public Window wrapBy(Class<Window> wrapperClass) {
         return delegate.wrapBy(wrapperClass);
     }
 
+    @Override
     public Window getWrapper() {
         return delegate.getWrapper();
     }
@@ -596,10 +684,12 @@ public class WebWindow
             return new EditorWindowDelegate(this, App.getInstance().getWindowManager());
         }
 
+        @Override
         public Entity getItem() {
             return ((EditorWindowDelegate) delegate).getItem();
         }
 
+        @Override
         public void setItem(Entity item) {
             ((EditorWindowDelegate) delegate).setItem(item);
         }
@@ -614,6 +704,7 @@ public class WebWindow
             ((EditorWindowDelegate) delegate).releaseLock();
         }
 
+        @Override
         public void setParentDs(Datasource parentDs) {
             ((EditorWindowDelegate) delegate).setParentDs(parentDs);
         }
@@ -648,10 +739,12 @@ public class WebWindow
             }
         }
 
+        @Override
         public boolean commit() {
             return commit(true);
         }
 
+        @Override
         public boolean commit(boolean validate) {
             if (validate && !((Window.Editor) getWrapper()).validateOnCommit())
                 return false;
@@ -660,16 +753,19 @@ public class WebWindow
             return true;
         }
 
+        @Override
         public void commitAndClose() {
             if (commit()) {
                 close(COMMIT_ACTION_ID);
             }
         }
 
+        @Override
         public boolean isLocked() {
             return ((EditorWindowDelegate) delegate).isLocked();
         }
 
+        @Override
         public boolean validateOnCommit() {
             Map<Exception, Component> problems = new HashMap<Exception, Component>();
 
@@ -770,10 +866,12 @@ public class WebWindow
             });
         }
 
+        @Override
         public com.haulmont.cuba.gui.components.Component getLookupComponent() {
             return lookupComponent;
         }
 
+        @Override
         public void setLookupComponent(Component lookupComponent) {
             this.lookupComponent = lookupComponent;
 
@@ -795,10 +893,12 @@ public class WebWindow
             }
         }
 
+        @Override
         public Handler getLookupHandler() {
             return handler;
         }
 
+        @Override
         public void setLookupHandler(Handler handler) {
             this.handler = handler;
         }
@@ -808,10 +908,12 @@ public class WebWindow
             return container;
         }
 
+        @Override
         public void setLookupValidator(Validator validator) {
             this.validator = validator;
         }
 
+        @Override
         public Validator getLookupValidator() {
             return validator;
         }
@@ -829,6 +931,31 @@ public class WebWindow
         protected void fireSelectAction() {
             if (selectAction != null)
                 selectAction.buttonClick(null);
+        }
+
+        @Override
+        public void setSpacing(boolean enabled) {
+            container.setSpacing(enabled);
+        }
+
+        @Override
+        public void setStyleName(String name) {
+            container.setStyleName(name);
+        }
+
+        @Override
+        public String getStyleName() {
+            return container.getStyleName();
+        }
+
+        @Override
+        public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
+            container.setMargin(topEnable, rightEnable, bottomEnable, leftEnable);
+        }
+
+        @Override
+        public void setMargin(boolean enable) {
+            container.setMargin(enable);
         }
 
         @Override
@@ -854,6 +981,7 @@ public class WebWindow
             cancelButton = WebComponentsHelper.createButton();
             cancelButton.setCaption(MessageProvider.getMessage(messagesPackage, "actions.Cancel"));
             cancelButton.addListener(new Button.ClickListener() {
+                @Override
                 public void buttonClick(Button.ClickEvent event) {
                     close("cancel");
                 }
