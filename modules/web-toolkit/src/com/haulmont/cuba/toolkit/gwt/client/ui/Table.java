@@ -2443,7 +2443,7 @@ public abstract class Table extends FlowPanel
             @Override
             protected void onDetach() {
                 for (Element td : tableCells)
-                    Tools.removeEvents(td);
+                    Tools.removeElementWithEvents(td);
 
                 tableCells.clear();
 
@@ -3475,7 +3475,7 @@ public abstract class Table extends FlowPanel
         @Override
         protected void onDetach() {
             for (Element td : tableCells)
-                Tools.removeEvents(td);
+                Tools.removeElementWithEvents(td);
 
             tableCells.clear();
 

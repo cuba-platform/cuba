@@ -74,8 +74,8 @@ public class ToolsImpl {
         }
     }-*/;
 
-    public native void removeEvents(Element el) /*-{
-        $wnd.jQuery(el).unbind();
+    public native void removeElementWithEvents(Element el) /*-{
+        $wnd.jQuery(el).remove();
     }-*/;
 
     public native void updatePrimaryAndDependentStyleNames(Element elem,

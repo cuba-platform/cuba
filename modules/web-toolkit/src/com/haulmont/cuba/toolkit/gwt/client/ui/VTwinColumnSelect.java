@@ -107,7 +107,7 @@ public class VTwinColumnSelect extends VOptionGroupBase implements DoubleClickHa
 
             @Override
             protected void onDetach() {
-                Tools.removeEvents(getElement());
+                Tools.textSelectionEnable(getElement(), true);
 
                 super.onDetach();
             }

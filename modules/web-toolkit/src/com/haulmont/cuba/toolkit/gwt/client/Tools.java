@@ -62,8 +62,8 @@ public class Tools {
         impl.textSelectionEnable(el, b);
     }
 
-    public static void removeEvents(Element el) {
-        impl.removeEvents(el);
+    public static void removeElementWithEvents(Element el) {
+        impl.removeElementWithEvents(el);
     }
 
     public static String setStyleName(Element el, String style) {
