@@ -72,7 +72,6 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
 
     public DesktopTextField() {
         doc = new TextComponentDocument();
-        doc.setMaxLength(maxLength);
 
         valueFormatter = new DefaultValueFormatter(locale);
     }

@@ -19,7 +19,9 @@ public class TextComponentDocument extends PlainDocument {
 
     private static final long serialVersionUID = -3290292622981584624L;
 
-    private int maxLength;
+    public static final int UNLIMITED_LENGTH = -1;
+
+    private int maxLength = UNLIMITED_LENGTH;
 
     public int getMaxLength() {
         return maxLength;
@@ -34,7 +36,7 @@ public class TextComponentDocument extends PlainDocument {
         if (str == null)
             return;
 
-        if (maxLength == 0 || (getLength() + str.length()) <= maxLength) {
+        if (maxLength == UNLIMITED_LENGTH || (getLength() + str.length()) <= maxLength) {
             super.insertString(offs, str, a);
         }
     }

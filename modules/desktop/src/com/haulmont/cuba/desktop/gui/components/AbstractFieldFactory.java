@@ -76,10 +76,21 @@ public abstract class AbstractFieldFactory {
     private Component createStringField(Datasource datasource, String property, Element xmlDescriptor) {
         DesktopTextField textField = new DesktopTextField();
         textField.setDatasource(datasource, property);
+        MetaProperty metaProperty = textField.getMetaProperty();
         if (xmlDescriptor != null) {
             final String rows = xmlDescriptor.attributeValue("rows");
             if (!StringUtils.isEmpty(rows)) {
                 textField.setRows(Integer.valueOf(rows));
+            }
+        }
+
+        final String maxLength = xmlDescriptor != null ? xmlDescriptor.attributeValue("maxLength") : null;
+        if (!StringUtils.isEmpty(maxLength)) {
+            textField.setMaxLength(Integer.valueOf(maxLength));
+        } else {
+            Integer len = (Integer) metaProperty.getAnnotations().get("length");
+            if (len != null) {
+                textField.setMaxLength(len);
             }
         }
 
