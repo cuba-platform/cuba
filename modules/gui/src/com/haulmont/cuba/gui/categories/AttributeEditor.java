@@ -334,7 +334,8 @@ public class AttributeEditor extends AbstractEditor {
         Collection<WindowInfo> windowInfoCollection = windowConfig.getWindows();
         List screensList = new ArrayList();
         for (WindowInfo windowInfo : windowInfoCollection) {
-            screensList.add(windowInfo.getId());
+            if(!windowInfo.getId().contains(".") || windowInfo.getId().contains(".browse") || windowInfo.getId().contains(".lookup"))
+                screensList.add(windowInfo.getId());
         }
         screenField.setOptionsList(screensList);
 

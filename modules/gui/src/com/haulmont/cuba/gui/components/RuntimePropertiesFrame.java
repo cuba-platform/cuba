@@ -32,9 +32,9 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- *  Universal frame for editing Runtime properties
- *  of any {@link com.haulmont.cuba.core.entity.CategorizedEntity} subclass.
- *
+ * Universal frame for editing Runtime properties
+ * of any {@link com.haulmont.cuba.core.entity.CategorizedEntity} subclass.
+ * <p/>
  * <p>$Id$</p>
  *
  * @author devyatkin
@@ -49,7 +49,7 @@ public class RuntimePropertiesFrame extends AbstractWindow {
     private static final String DEFAULT_FIELD_WIDTH = "100%";
     private String rows;
     private String cols;
-    private String fieldWidth;  
+    private String fieldWidth;
     private Boolean borderVisible;
     private BoxLayout contentPane;
     private FieldGroup categoryFieldGroup;
@@ -210,17 +210,21 @@ public class RuntimePropertiesFrame extends AbstractWindow {
                             pickerField.setMetaClass(ds.getMetaClass());
                             pickerField.setFrame(RuntimePropertiesFrame.this);
                             pickerField.setDatasource(ds, (String) propertyId);
-                            pickerField.addOpenAction();
+                            pickerField.addClearAction();
+                            pickerField.addLookupAction();
                             PickerField.LookupAction lookupAction = (PickerField.LookupAction) pickerField.getAction(PickerField.LookupAction.NAME);
-                            if (lookupAction != null) {
-                                RuntimePropertiesEntity runtimePropertiesEntity = (RuntimePropertiesEntity) ds.getItem();
-                                CategoryAttributeValue categoryAttributeValue = runtimePropertiesEntity.getCategoryValue(property.getName());
-                                if (categoryAttributeValue != null) {
-                                    String screen = categoryAttributeValue.getCategoryAttribute().getScreen();
-                                    if (StringUtils.isNotBlank(screen))
-                                        lookupAction.setLookupScreen(screen);
+                            RuntimePropertiesEntity runtimePropertiesEntity = (RuntimePropertiesEntity) ds.getItem();
+                            CategoryAttributeValue categoryAttributeValue = runtimePropertiesEntity.getCategoryValue(property.getName());
+                            if (categoryAttributeValue != null) {
+                                String screen = categoryAttributeValue.getCategoryAttribute().getScreen();
+                                if (StringUtils.isNotBlank(screen))
+                                    lookupAction.setLookupScreen(screen);
+                                else {
+                                    screen = pickerField.getMetaClass().getName() + ".browse";
+                                    lookupAction.setLookupScreen(screen);
                                 }
                             }
+                            pickerField.addOpenAction();
                             pickerField.setWidth(fieldWidth);
                             return pickerField;
                         }
