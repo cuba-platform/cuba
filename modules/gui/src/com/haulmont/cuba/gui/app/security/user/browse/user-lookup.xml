@@ -19,7 +19,7 @@
                 view="user.browse"
                 >
             <query><![CDATA[
-                select u from sec$User u where u.active = true
+                select u from sec$User u
                 ]]>
             </query>
         </collectionDatasource>
