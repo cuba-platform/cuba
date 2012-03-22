@@ -119,7 +119,7 @@ create table SYS_SCHEDULED_TASK (
     primary key (ID)
 )^
 
-create unique index IDX_SYS_SCHEDULED_TASK_UNIQ_BEAN_METHOD on SYS_SCHEDULED_TASK (BEAN_NAME, METHOD_NAME) where DELETE_TS is null^
+create unique index IDX_SYS_SCHEDULED_TASK_UNIQ_BEAN_METHOD on SYS_SCHEDULED_TASK (BEAN_NAME, METHOD_NAME, DELETE_TS)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -163,7 +163,7 @@ create table SEC_ROLE (
     primary key (ID)
 )^
 
-create unique index IDX_SEC_ROLE_UNIQ_NAME on SEC_ROLE (NAME) where DELETE_TS is null^
+create unique index IDX_SEC_ROLE_UNIQ_NAME on SEC_ROLE (NAME, DELETE_TS)^
 
 ------------------------------------------------------------------------------------------------------------
 
@@ -234,7 +234,7 @@ create table SEC_USER (
     constraint SEC_USER_DEFAULT_SUBSTITUTED_USER foreign key (DEFAULT_SUBSTITUTED_USER_ID) references SEC_USER(ID)
 )^
 
-create unique index IDX_SEC_USER_UNIQ_LOGIN on SEC_USER (LOGIN_LC) where DELETE_TS is null^
+create unique index IDX_SEC_USER_UNIQ_LOGIN on SEC_USER (LOGIN_LC, DELETE_TS)^
 
 create clustered index IDX_SEC_USER_LOGIN on SEC_USER (LOGIN_LC)^
 
@@ -258,7 +258,7 @@ create table SEC_USER_ROLE (
     constraint SEC_USER_ROLE_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID)
 )^
 
-create unique index IDX_SEC_USER_ROLE_UNIQ_ROLE on SEC_USER_ROLE (USER_ID, ROLE_ID) where DELETE_TS is null^
+create unique index IDX_SEC_USER_ROLE_UNIQ_ROLE on SEC_USER_ROLE (USER_ID, ROLE_ID, DELETE_TS)^
 
 create clustered index IDX_SEC_USER_ROLE_USER on SEC_USER_ROLE (USER_ID)^
 
@@ -283,7 +283,7 @@ create table SEC_PERMISSION (
     constraint SEC_PERMISSION_ROLE foreign key (ROLE_ID) references SEC_ROLE(ID)
 )^
 
-create unique index IDX_SEC_PERMISSION_UNIQUE on SEC_PERMISSION (ROLE_ID, TYPE, TARGET) where DELETE_TS is null^
+create unique index IDX_SEC_PERMISSION_UNIQUE on SEC_PERMISSION (ROLE_ID, TYPE, TARGET, DELETE_TS)^
 
 create clustered index IDX_SEC_PERMISSION_ROLE on SEC_PERMISSION (ROLE_ID)^
 
