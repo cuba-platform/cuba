@@ -804,7 +804,8 @@ public class WebWindow
                 return true;
 
             Component component = null;
-            StringBuilder buffer = new StringBuilder(MessageProvider.getMessage(WebWindow.class, "validationFail") + "<br>");
+//            StringBuilder buffer = new StringBuilder(MessageProvider.getMessage(WebWindow.class, "validationFail") + "<br>");
+            StringBuilder buffer = new StringBuilder();
             for (Exception exception : problems.keySet()) {
                 if (component == null)
                     component = problems.get(exception);

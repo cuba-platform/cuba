@@ -65,8 +65,10 @@ public class FeedbackWindow extends AbstractWindow {
             }
         }
         if(sb.length() > 0){
+//            showNotification(MessageProvider.getMessage(WebWindow.class, "validationFail.caption"),
+//                    MessageProvider.getMessage(WebWindow.class,  "validationFail") + "<br>" +
+//                    sb.toString(), NotificationType.TRAY);
             showNotification(MessageProvider.getMessage(WebWindow.class, "validationFail.caption"),
-                    MessageProvider.getMessage(WebWindow.class,  "validationFail") + "<br>" +
                     sb.toString(), NotificationType.TRAY);
             result = false;
         }
