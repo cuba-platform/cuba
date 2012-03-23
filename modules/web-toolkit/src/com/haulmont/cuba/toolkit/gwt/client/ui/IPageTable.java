@@ -18,9 +18,8 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.*;
 import com.haulmont.cuba.toolkit.gwt.client.Tools;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.Console;
 import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.VConsole;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,16 +30,17 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
 
     protected IPager pager;
 
-    private static Console log = ApplicationConnection.getConsole();
-
+    @Override
     protected ITableBody createBody() {
         return new IPageTableBody();
     }
 
+    @Override
     protected TableHead createHead() {
         return new TableHead();
     }
 
+    @Override
     protected boolean updateImmediate() {
         return true;
     }
@@ -59,11 +59,17 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
         purgeUnregistryBag();
     }
 
+    @Override
     protected void updateBody(UIDL rowData) {
         if (!recalcWidths && initializedAndAttached) {
             ((IPageTableBody) tBody).renderRows(rowData);
         } else {
             if (tBody != null) {
+                for (Object w : tBody) {
+                    if (w instanceof ITableBody.ITableRow) {
+                        lazyUnregistryBag.add((Widget) w);
+                    }
+                }
                 tBody.removeFromParent();
                 lazyUnregistryBag.add(tBody);
             }
@@ -120,6 +126,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
             DOM.appendChild(container, table);
         }
 
+        @Override
         public int getAvailableWidth() {
             return DOM.getElementPropertyInt(sizer, "offsetWidth");
         }
@@ -143,11 +150,11 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
             }
         }
 
+        @Override
         public void clear() {
-            final  Vector v = new Vector(renderedRows);
-            for (final Object o : v) {
-                final Widget w = (Widget) o;
-                remove(w);
+            final  Vector<Widget> v = new Vector<Widget>(renderedRows);
+            for (final Widget o : v) {
+                remove(o);
             }
         }
 
@@ -177,6 +184,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
             DOM.setStyleAttribute(container, "height", containerHeight + "px");
         }
 
+        @Override
         protected ITableRow createRow(UIDL uidl) {
             final ITableRow row = createRowInstance(uidl);
             final int cells = DOM.getChildCount(row.getElement());
@@ -256,8 +264,8 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
         private final Panel pagerRoot = new FlowPanel();
         private final Panel pagesContainer = new FlowPanel();
 
-        private final Vector pages = new Vector();
-        private final Map handlers = new HashMap();
+        private final Vector<Widget> pages = new Vector<Widget>();
+        private final Map<Widget, HandlerRegistration> handlers = new HashMap<Widget, HandlerRegistration>();
 
         private Label prev;
         private Label next;
@@ -315,7 +323,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
                 pagesCount = uidl.getIntAttribute("pagescount");
             }
 
-            log.log("[Pager] pages count:" + String.valueOf(pagesCount));
+            VConsole.log("[Pager] pages count:" + String.valueOf(pagesCount));
 
             if (uidl.hasAttribute("curpage")) {
                 currentPage = uidl.getIntAttribute("curpage");
@@ -325,7 +333,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
                 setStyle(uidl.getStringAttribute("style"));
             }
 
-            log.log("[Pager] current page:" + String.valueOf(currentPage));
+            VConsole.log("[Pager] current page:" + String.valueOf(currentPage));
 
             for (Iterator it = uidl.getChildIterator(); it.hasNext();) {
                 final UIDL data = (UIDL) it.next();
@@ -359,7 +367,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
         }
 
         protected void setStyle(String style) {
-            StringBuffer styleBuf = new StringBuffer(CLASSNAME);
+            StringBuilder styleBuf = new StringBuilder(CLASSNAME);
 
             final String[] styles = style.split(" ");
             for (String style1 : styles) {
@@ -469,6 +477,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
             return page;
         }
 
+        @Override
         public void add(Widget w) {
             pagesContainer.add(w);
             pages.add(w);
@@ -477,6 +486,7 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
             }
         }
 
+        @Override
         public void clear() {
             if (pages.isEmpty()) return;
 
@@ -489,10 +499,12 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
             Tools.removeChildren(pagesContainer.getElement());
         }
 
-        public Iterator iterator() {
+        @Override
+        public Iterator<Widget> iterator() {
             return pages.iterator();
         }
 
+        @Override
         public boolean remove(Widget w) {
             if (pages.contains(w)) {
                 pagesContainer.remove(w);
@@ -507,13 +519,14 @@ public class IPageTable extends Table implements Pager.PageChangeListener {
             return false;
         }
 
+        @Override
         public void onClick(ClickEvent event) {
             Widget sender = (Widget) event.getSource();
             if (sender != null
                     && sender instanceof Label
                     && pageChangeListeners != null)
             {
-                log.log("[Pager] Page " + ((Label) sender).getText() + " has been clicked");
+                VConsole.log("[Pager] Page " + ((Label) sender).getText() + " has been clicked");
                 if (sender == pages.firstElement()) {
                     pageChangeListeners.fireFirstPage();
                 } else if (sender == prev) {

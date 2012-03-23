@@ -171,9 +171,9 @@ public class ApplicationConnection {
         public void run() {
             if (repeat) {
                 if (lastEndedRequest > lastCompleteTimerRequest) {
+                    lastCompleteTimerRequest = lastEndedRequest;
                     runTimerAction();
 //                    VConsole.log("TIMER COMPLETE " + id);
-                    lastCompleteTimerRequest = lastEndedRequest;
                 }/* else {
                     VConsole.log("SKIP HANGING OUT TIMER ACTION " + id);
                 }*/

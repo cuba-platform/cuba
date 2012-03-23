@@ -32,6 +32,7 @@ import java.util.*;
 
 public abstract class Table extends FlowPanel
         implements com.vaadin.terminal.gwt.client.ui.Table, ScrollHandler, FocusHandler, BlurHandler, Focusable {
+
     public static final String CLASSNAME = "v-table";
     public static final String CLASSNAME_SELECTION_FOCUS = CLASSNAME + "-focus";
 
@@ -65,6 +66,8 @@ public abstract class Table extends FlowPanel
 
     //[6.6]
     private KeyPressHandler navKeyPressHandler = new KeyPressHandler() {
+
+        @Override
         public void onKeyPress(KeyPressEvent keyPressEvent) {
             // This is used for Firefox only, since Firefox auto-repeat
             // works correctly only if we use a key press handler, other
@@ -97,11 +100,11 @@ public abstract class Table extends FlowPanel
                 startScrollingVelocityTimer();
             }
         }
-
     };
 
     private KeyUpHandler navKeyUpHandler = new KeyUpHandler() {
 
+        @Override
         public void onKeyUp(KeyUpEvent keyUpEvent) {
             NativeEvent event = keyUpEvent.getNativeEvent();
             int keyCode = event.getKeyCode();
@@ -132,6 +135,7 @@ public abstract class Table extends FlowPanel
 
     private KeyDownHandler navKeyDownHandler = new KeyDownHandler() {
 
+        @Override
         public void onKeyDown(KeyDownEvent keyDownEvent) {
             NativeEvent event = keyDownEvent.getNativeEvent();
             // This is not used for Firefox
@@ -198,7 +202,7 @@ public abstract class Table extends FlowPanel
 
     protected int calculatedWidth = -1;
 
-    protected final ArrayList lazyUnregistryBag = new ArrayList();
+    protected final Set<Widget> lazyUnregistryBag = new HashSet<Widget>();
     protected String height;
     protected String width = "";
 
@@ -382,6 +386,7 @@ public abstract class Table extends FlowPanel
 
     }
 
+    @Override
     public void onScroll(ScrollEvent event) {
         int scrollLeft = bodyContainer.getElement().getScrollLeft();
         tHead.setHorizontalScrollPosition(scrollLeft);
@@ -394,6 +399,7 @@ public abstract class Table extends FlowPanel
 
     protected abstract TableHead createHead();
 
+    @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         if (client.updateComponent(this, uidl, true)) {
             return;
@@ -403,7 +409,6 @@ public abstract class Table extends FlowPanel
         paintableId = uidl.getStringAttribute("id");
 
         updateFromUIDL(uidl);
-
 
         if (BrowserInfo.get().getWebkitVersion() > 0) {
             if (parentOverflowContainer == null) {
@@ -536,8 +541,7 @@ public abstract class Table extends FlowPanel
             }
         }
 
-        dragmode = uidl.hasAttribute("dragmode") ? uidl
-        .getIntAttribute("dragmode") : 0;
+        dragmode = uidl.hasAttribute("dragmode") ? uidl.getIntAttribute("dragmode") : 0;
         if (BrowserInfo.get().isIE()) {
             if (dragmode > 0) {
                 getElement().setPropertyJSO("onselectstart",
@@ -857,6 +861,7 @@ public abstract class Table extends FlowPanel
      * @param row
      *            The row to calculate from
      *
+     * @param offset Offset
      * @return The next row or null if no row exists
      */
     private ITableBody.ITableRow getNextRow(ITableBody.ITableRow row, int offset) {
@@ -882,6 +887,7 @@ public abstract class Table extends FlowPanel
      *
      * @param row
      *            The row to calculate from
+     * @param offset Offset
      * @return The previous row or null if no row exists
      */
     private ITableBody.ITableRow getPreviousRow(ITableBody.ITableRow row, int offset) {
@@ -2122,8 +2128,6 @@ public abstract class Table extends FlowPanel
 
         protected int firstRendered;
 
-        protected int lastRendered;
-
         public ITableBody() {
             setElement(container);
             aligns = tHead.getColumnAlignments();
@@ -2155,7 +2159,8 @@ public abstract class Table extends FlowPanel
             setContainerHeight();
         }
 
-        public Iterator iterator() {
+        @Override
+        public Iterator<Widget> iterator() {
             return renderedRows.iterator();
         }
 
@@ -2266,14 +2271,14 @@ public abstract class Table extends FlowPanel
                 Container {
             private static final int TOUCHSCROLL_TIMEOUT = 70;
             private static final int DRAGMODE_MULTIROW = 2;
-            protected Vector childWidgets = new Vector();
+            protected Vector<Widget> childWidgets = new Vector<Widget>();
             private boolean selected = false;
             private final int rowKey;
             private Map<Paintable, UIDL> pendingComponentPaints;
 
             protected String[] actionKeys = null;
 
-            protected Map widgetColumns = null;
+            protected Map<Widget, Integer> widgetColumns = null;
 
             private boolean mDown;
             private final TableRowElement rowElement;
@@ -2440,14 +2445,13 @@ public abstract class Table extends FlowPanel
                 Tools.textSelectionEnable(td, textSelectionEnabled);
             }
 
-            @Override
-            protected void onDetach() {
+            public void removeCells() {
+                VConsole.log("REMOVE");
+
                 for (Element td : tableCells)
                     Tools.removeElementWithEvents(td);
 
                 tableCells.clear();
-
-                super.onDetach();
             }
 
             public void addCell(Widget w, char align, String style, int col) {
@@ -2502,12 +2506,13 @@ public abstract class Table extends FlowPanel
                 adopt(w);
                 childWidgets.add(w);
                 if (widgetColumns == null) {
-                    widgetColumns = new HashMap();
+                    widgetColumns = new HashMap<Widget, Integer>();
                 }
                 widgetColumns.put(w, colIndex);
 
                 if (w instanceof HasFocusHandlers) {
                     ((HasFocusHandlers) w).addFocusHandler(new FocusHandler() {
+                        @Override
                         public void onFocus(FocusEvent event) {
                             Table.this.focusWidgetIndex = childWidgets.indexOf(w);
                             VConsole.log("onFocus: Focus widget index: " + Table.this.focusWidgetIndex);
@@ -2516,7 +2521,8 @@ public abstract class Table extends FlowPanel
                 }
             }
 
-            public Iterator iterator() {
+            @Override
+            public Iterator<Widget> iterator() {
                 return childWidgets.iterator();
             }
 
@@ -2875,15 +2881,13 @@ public abstract class Table extends FlowPanel
                 event.stopPropagation();
             }
 
-
-
             /**
              * Finds the TD that the event interacts with. Returns null if the
              * target of the event should not be handled. If the event target is
              * the row directly this method returns the TR element instead of
              * the TD.
              *
-             * @param event
+             * @param event Event
              * @return TD or TR element that the event targets (the actual event
              *         target is this element or a child of it)
              */
@@ -3057,6 +3061,7 @@ public abstract class Table extends FlowPanel
              * ()
              */
 
+            @Override
             public Action[] getActions() {
                 if (actionKeys == null) {
                     return new Action[]{};
@@ -3073,14 +3078,17 @@ public abstract class Table extends FlowPanel
                 return actions;
             }
 
+            @Override
             public ApplicationConnection getClient() {
                 return client;
             }
 
+            @Override
             public String getPaintableId() {
                 return paintableId;
             }
 
+            @Override
             public RenderSpace getAllocatedSpace(Widget child) {
                 int w = 0;
                 int i = getColIndexOf(child);
@@ -3106,7 +3114,7 @@ public abstract class Table extends FlowPanel
             protected int getColIndexOf(Widget child) {
                 int index = -1;
                 if (widgetColumns != null) {
-                    Integer i = (Integer) widgetColumns.get(child);
+                    Integer i = widgetColumns.get(child);
                     if (i != null) {
                         index = i;
                     }
@@ -3114,10 +3122,12 @@ public abstract class Table extends FlowPanel
                 return index;
             }
 
+            @Override
             public boolean hasChildComponent(Widget component) {
                 return childWidgets.contains(component);
             }
 
+            @Override
             public void replaceChildComponent(Widget oldComponent,
                                               Widget newComponent) {
                 com.google.gwt.dom.client.Element parentElement = oldComponent
@@ -3128,7 +3138,7 @@ public abstract class Table extends FlowPanel
                 parentElement.appendChild(newComponent.getElement());
                 childWidgets.insertElementAt(newComponent, index);
                 if (widgetColumns == null) {
-                    widgetColumns = new HashMap();
+                    widgetColumns = new HashMap<Widget, Integer>();
                 }
                 widgetColumns.remove(oldComponent);
                 widgetColumns.put(newComponent, index);
@@ -3136,16 +3146,19 @@ public abstract class Table extends FlowPanel
 
             }
 
+            @Override
             public boolean requestLayout(Set<Paintable> children) {
                 // row size should never change and system wouldn't event
                 // survive as this is a kind of fake paitable
                 return true;
             }
 
+            @Override
             public void updateCaption(Paintable component, UIDL uidl) {
                 // NOP, not rendered
             }
 
+            @Override
             public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
                 // Should never be called,
                 // Component container interface faked here to get layouts
@@ -3174,10 +3187,12 @@ public abstract class Table extends FlowPanel
     }
 
     public void deselectAll() {
-        for (Widget w : tBody) {
-            ITableBody.ITableRow row = (ITableBody.ITableRow) w;
-            if (row.isSelected()) {
-                row.toggleSelection();
+        if (tBody != null) {
+            for (Widget w : tBody) {
+                ITableBody.ITableRow row = (ITableBody.ITableRow) w;
+                if (row.isSelected()) {
+                    row.toggleSelection();
+                }
             }
         }
         // still ensure all selects are removed from (not necessary rendered)
@@ -3321,8 +3336,11 @@ public abstract class Table extends FlowPanel
      * "subtreecaching" logic.
      */
     protected void purgeUnregistryBag() {
-        for (final Object aLazyUnregistryBag : lazyUnregistryBag) {
-            client.unregisterChildPaintables((HasWidgets) aLazyUnregistryBag);
+        for (final Widget bagItem : lazyUnregistryBag) {
+            if (bagItem instanceof ITableBody.ITableRow) {
+                ((ITableBody.ITableRow) bagItem).removeCells();
+            }
+            client.unregisterChildPaintables((HasWidgets) bagItem);
         }
         lazyUnregistryBag.clear();
     }
@@ -3394,6 +3412,7 @@ public abstract class Table extends FlowPanel
             }
         }
 
+        @Override
         public void replaceChildComponent(Widget oldComponent, Widget newComponent) {
             Element container = DOM.getParent(oldComponent.getElement());
             if (remove(oldComponent)) {
@@ -3401,22 +3420,27 @@ public abstract class Table extends FlowPanel
             }
         }
 
+        @Override
         public boolean hasChildComponent(Widget component) {
             return getChildren().contains(component);
         }
 
+        @Override
         public void updateCaption(Paintable component, UIDL uidl) {
             //do nothing
         }
 
+        @Override
         public boolean requestLayout(Set<Paintable> children) {
             return true;
         }
 
+        @Override
         public RenderSpace getAllocatedSpace(Widget child) {
             return new RenderSpace(child.getElement().getOffsetWidth(), child.getElement().getOffsetHeight());
         }
 
+        @Override
         public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
             //do nothing
         }
@@ -3470,16 +3494,6 @@ public abstract class Table extends FlowPanel
             DOM.appendChild(tr, td);
 
             tableCells.add(td);
-        }
-
-        @Override
-        protected void onDetach() {
-            for (Element td : tableCells)
-                Tools.removeElementWithEvents(td);
-
-            tableCells.clear();
-
-            super.onDetach();
         }
 
         public void setHorizontalScrollPosition(int scrollLeft) {
@@ -3782,7 +3796,7 @@ public abstract class Table extends FlowPanel
 
     @Override
     public void focus(){
-        bodyContainer.focus();    
+        bodyContainer.focus();
     }
 
     /*
@@ -3825,7 +3839,7 @@ public abstract class Table extends FlowPanel
         }
     }
 
-     /**
+    /**
      * Can the Table be focused?
      *
      * @return True if the table can be focused, else false

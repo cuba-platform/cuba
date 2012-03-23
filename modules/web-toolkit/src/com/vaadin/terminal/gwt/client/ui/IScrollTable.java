@@ -16,6 +16,7 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.Widget;
@@ -111,7 +112,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
                      * Make the focus reflect to the server side state unless we
                      * are currently selecting multiple rows with keyboard.
                      */
-                    IScrollTableBody.IScrollTableRow row = (IScrollTableBody.IScrollTableRow) (Widget) aTBody;
+                    IScrollTableBody.IScrollTableRow row = (IScrollTableBody.IScrollTableRow) aTBody;
                     boolean selected = selectedKeys.contains(row.getKey());
                     if (!selected
                             && unSyncedselectionsBeforeRowFetch != null
@@ -175,8 +176,7 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
                 lazyUnregistryBag.add(tBody);
             }
             tBody = createBody();
-            ((IScrollTableBody) tBody).renderInitialRows(rowData,
-                    firstrow, rows);
+            ((IScrollTableBody) tBody).renderInitialRows(rowData, firstrow, rows);
             bodyContainer.add(tBody);
             initialContentReceived = true;
             if (isAttached()) {
@@ -195,7 +195,8 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
         if (firstvisible > 0) {
             // Deferred due some Firefox oddities. IE & Safari could survive
             // without
-            DeferredCommand.addCommand(new Command() {
+            Scheduler.get().scheduleDeferred(new Command() {
+                @Override
                 public void execute() {
                     bodyContainer.setScrollPosition(firstvisible
                             * tBody.getRowHeight());
@@ -211,10 +212,8 @@ public class IScrollTable extends com.haulmont.cuba.toolkit.gwt.client.ui.Table 
                     + CACHE_REACT_RATE * pageLength) {
                 if (totalRows - 1 > body.getLastRendered()) {
                     // fetch cache rows
-                    rowRequestHandler
-                            .setReqFirstRow(body.getLastRendered() + 1);
-                    rowRequestHandler
-                            .setReqRows((int) (pageLength * CACHE_RATE));
+                    rowRequestHandler.setReqFirstRow(body.getLastRendered() + 1);
+                    rowRequestHandler.setReqRows((int) (pageLength * CACHE_RATE));
                     rowRequestHandler.deferRowFetch(1);
                 }
             }
