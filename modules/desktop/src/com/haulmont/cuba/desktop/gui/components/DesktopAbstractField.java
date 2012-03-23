@@ -26,10 +26,7 @@ import java.util.Set;
  */
 public abstract class DesktopAbstractField<C extends JComponent>
         extends DesktopAbstractComponent<C>
-        implements Field
-{
-    //public static final String MISSING_VALUE_STATE = "mandatoryState";
-
+        implements Field {
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
     protected ValueChangingListener valueChangingListener;
 
@@ -135,34 +132,11 @@ public abstract class DesktopAbstractField<C extends JComponent>
     }
 
     protected void decorateMissingValue(JComponent jComponent, boolean missingValueState) {
-        //jComponent.putClientProperty(MISSING_VALUE_STATE, missingValueState);
         jComponent.setBackground(missingValueState ? requiredBgColor : defaultBgColor);
     }
-
-    /*protected void attachMissingValueStateListener(JTextComponent textComponent) {
-        textComponent.getDocument().addDocumentListener(new MissingValueStateRefreshListener());
-    }*/
 
     @Override
     public void setRequiredMessage(String msg) {
         requiredMessage = msg;
     }
-
-    /*protected class MissingValueStateRefreshListener implements DocumentListener {
-
-        @Override
-        public void insertUpdate(DocumentEvent e) {
-            updateMissingValueState();
-        }
-
-        @Override
-        public void removeUpdate(DocumentEvent e) {
-            updateMissingValueState();
-        }
-
-        @Override
-        public void changedUpdate(DocumentEvent e) {
-            updateMissingValueState();
-        }
-    }*/
 }
