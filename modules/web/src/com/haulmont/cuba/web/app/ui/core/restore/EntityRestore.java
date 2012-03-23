@@ -87,7 +87,6 @@ public class EntityRestore extends AbstractWindow {
                         entitiesTable.setWidth("100%");
                         entitiesTable.setHeight("100%");
                         entitiesTable.setMultiSelect(true);
-                        entitiesTable.setRowsCount(new WebRowsCount());
                         entitiesTable.addAction(new AbstractAction("restore") {
                             public void actionPerform(Component component) {
                                 final Set<Entity> listEntity = entitiesTable.getSelected();
