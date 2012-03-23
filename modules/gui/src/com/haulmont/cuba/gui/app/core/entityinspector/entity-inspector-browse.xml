@@ -10,8 +10,8 @@
         caption="msg://browserCaption">
     <dsContext/>
     <layout expand="tableBox" spacing="true">
-        <hbox id="lookupBox"/>
-        <vbox id="filterBox">
+        <hbox id="lookupBox" spacing="true"/>
+        <vbox id="filterBox" spacing="true">
             <filter id="filter" visible="false">
                 <properties include=".*"/>
             </filter>

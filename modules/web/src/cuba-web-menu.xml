@@ -30,6 +30,7 @@
         <item id="feedback"/>
         <item id="sec$ScreenHistory.browse"/>
         <item id="logWindow"/>
+        <item id="printDomain"/>
     </menu>
 
 </menu-config>

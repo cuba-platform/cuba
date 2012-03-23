@@ -13,7 +13,7 @@ import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
 
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,8 +33,18 @@ public class MetaClassRepresentation {
     public MetaClassRepresentation(MetaClass meta, List<View> views) {
         this.meta = meta;
         this.views = views;
+        getTableName();
     }
 
+    public String getTableName() {
+        boolean isEmbeddable = meta.getJavaClass().isAnnotationPresent(Embeddable.class);
+        if (isEmbeddable)
+            return "not defined for embeddable entities";
+
+        Table tableAnn = (Table) meta.getJavaClass().getAnnotation(Table.class);
+        return tableAnn != null ? tableAnn.name() : "not defined";
+    }
+    
     public String getName() {
         return meta.getName();
     }
@@ -81,11 +91,19 @@ public class MetaClassRepresentation {
 
     public static class MetaClassRepProperty {
         private MetaProperty property;
-
         public MetaClassRepProperty(MetaProperty property) {
             this.property = property;
         }
 
+        public String getTableName() {
+            Column column = property.getAnnotatedElement().getAnnotation(Column.class);
+            if (column != null)
+                return column.name();
+
+            JoinColumn joinColumn = property.getAnnotatedElement().getAnnotation(JoinColumn.class);
+            return joinColumn != null ? joinColumn.name() : "";
+        }
+        
         public String getName() {
             return property.getName();
         }
