@@ -13,6 +13,7 @@ package com.haulmont.cuba.web.sys;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AccessDeniedException;
+import com.haulmont.cuba.core.global.EntityDeletedException;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -78,6 +79,8 @@ public class LinkHandler implements Serializable {
                             entity,
                             WindowManager.OpenType.NEW_TAB,
                             getParamsMap());
+                } else {
+                    throw new EntityDeletedException();
                 }
             }
         } catch (AccessDeniedException e) {
