@@ -3,6 +3,7 @@
  *
  * Version: 1.1
  * Updated: 2007-11-28
+ * Requirements: jQuery (John Resig, http://www.jquery.com/)
  *
  * Used to stop users from selecting text
  *
@@ -11,11 +12,11 @@
  * Dual licensed under the MIT (MIT-LICENSE.txt)
  * and GPL (GPL-LICENSE.txt) licenses.
  **/
-/**
- * Requirements:
- * - jQuery (John Resig, http://www.jquery.com/)
- **/
 (function ($) {
+    // minimal optimization
+    var falseFunction = function () {
+        return false
+    };
     if ($.browser.mozilla) {
         $.fn.disableTextSelect = function () {
             return this.each(function () {
@@ -35,9 +36,7 @@
         if ($.browser.msie) {
             $.fn.disableTextSelect = function () {
                 return this.each(function () {
-                    $(this).bind("selectstart.disableTextSelect", function () {
-                        return false
-                    })
+                    $(this).bind("selectstart.disableTextSelect", falseFunction)
                 })
             };
             $.fn.enableTextSelect = function () {
@@ -48,9 +47,7 @@
         } else {
             $.fn.disableTextSelect = function () {
                 return this.each(function () {
-                    $(this).bind("selectstart", function () {
-                        return false;
-                    })
+                    $(this).bind("selectstart", falseFunction)
                 })
             };
             $.fn.enableTextSelect = function () {
@@ -60,4 +57,4 @@
             }
         }
     }
-})(jQuery)
+})(jQuery);
