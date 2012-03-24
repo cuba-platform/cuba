@@ -32,14 +32,17 @@ public class WebButtonsPanel extends WebHBoxLayout
         setMargin(false);
     }
 
+    @Override
     public void addButton(com.haulmont.cuba.gui.components.Button actionButton) {
         add(actionButton);
     }
 
+    @Override
     public void removeButton(com.haulmont.cuba.gui.components.Button actionButton) {
         remove(actionButton);
     }
 
+    @Override
     public Collection<com.haulmont.cuba.gui.components.Button> getButtons() {
         final Collection<Component> components = getComponents();
         final Collection<com.haulmont.cuba.gui.components.Button> buttons = new ArrayList<Button>(components.size());
@@ -50,30 +53,13 @@ public class WebButtonsPanel extends WebHBoxLayout
         return buttons;
     }
 
+    @Override
     public com.haulmont.cuba.gui.components.Button getButton(String id) {
         Component component = getComponent(id);
         if (component instanceof Button)
             return (Button) component;
         else
             return null;
-    }
-
-    @Override
-    public void add(Component component) {
-//        if (component instanceof com.haulmont.cuba.gui.components.Button) {
-            super.add(component);
-//        } else {
-//            throw new IllegalArgumentException("Component is not a button");
-//        }
-    }
-
-    @Override
-    public void remove(Component component) {
-//        if (component instanceof com.haulmont.cuba.gui.components.Button) {
-            super.remove(component);
-//        } else {
-//            throw new IllegalArgumentException("Component is not a button");
-//        }
     }
 
     @Override

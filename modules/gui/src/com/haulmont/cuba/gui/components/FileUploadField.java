@@ -47,12 +47,12 @@ public interface FileUploadField
     /**
      * Get content bytes for uploaded file
      * @return Bytes for uploaded file
-     * @deprecated Please use {@link FileUploadField#getFileId()} method and {@link com.haulmont.cuba.core.app.FileUploadService}
+     * @deprecated Please use {@link FileUploadField#getFileId()} method and {@link com.haulmont.cuba.gui.upload.FileUploading}
      */
     byte[] getBytes();
 
     /**
-     * Get id for uploaded file in {@link com.haulmont.cuba.core.app.FileUploadService}
+     * Get id for uploaded file in {@link com.haulmont.cuba.gui.upload.FileUploading}
      * @return File Id
      */
     UUID getFileId();

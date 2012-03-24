@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
-import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.toolkit.ui.Upload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -27,13 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class WebFileUploadField
-        extends
-        WebAbstractComponent<Upload>
-        implements
-        FileUploadField {
+public class WebFileUploadField extends WebAbstractComponent<Upload> implements FileUploadField {
 
-    private static final int BUFFER_SIZE = 64 * 1024;
     private static final int BYTES_IN_MEGABYTE = 1048576;
 
     protected FileUploadingAPI fileUploading;
@@ -56,6 +50,7 @@ public class WebFileUploadField
                 * If caption == "", the VerticalLayout reserves an empty space */
                 StringUtils.isEmpty(caption) ? null : caption,
                 new Upload.Receiver() {
+                    @Override
                     public OutputStream receiveUpload(String filename, String MIMEType) {
                         fileName = filename;
                         try {
@@ -73,6 +68,7 @@ public class WebFileUploadField
         component.setAction("");
 
         component.addListener(new Upload.StartedListener() {
+            @Override
             public void uploadStarted(Upload.StartedEvent event) {
                 final Integer maxUploadSizeMb = ConfigProvider.getConfig(ClientConfig.class).getMaxUploadSizeMb();
                 final long maxSize = maxUploadSizeMb * BYTES_IN_MEGABYTE;
@@ -90,6 +86,7 @@ public class WebFileUploadField
             }
         });
         component.addListener(new Upload.FinishedListener() {
+            @Override
             public void uploadFinished(Upload.FinishedEvent event) {
                 if (outputStream != null)
                     try {
@@ -104,6 +101,7 @@ public class WebFileUploadField
             }
         });
         component.addListener(new Upload.SucceededListener() {
+            @Override
             public void uploadSucceeded(Upload.SucceededEvent event) {
                 final Listener.Event e = new Listener.Event(event.getFilename());
                 for (Listener listener : listeners) {
@@ -112,6 +110,7 @@ public class WebFileUploadField
             }
         });
         component.addListener(new Upload.FailedListener() {
+            @Override
             public void uploadFailed(Upload.FailedEvent event) {
                 try {
                     // close and remove temp file
@@ -128,6 +127,7 @@ public class WebFileUploadField
             }
         });
         component.addListener(new Upload.ProgressListener() {
+            @Override
             public void updateProgress(long readBytes, long contentLength) {
                 for (Listener listener : listeners) {
                     listener.updateProgress(readBytes, contentLength);
@@ -138,32 +138,39 @@ public class WebFileUploadField
                 "upload.submit"));
     }
 
+    @Override
     public String getFilePath() {
         return fileName;
     }
 
+    @Override
     public String getFileName() {
         String[] strings = fileName.split("[/\\\\]");
         return strings[strings.length - 1];
     }
 
+    @Override
     public boolean isUploading() {
         return component.isUploading();
     }
 
+    @Override
     public long getBytesRead() {
         return component.getBytesRead();
     }
 
+    @Override
     public void release() {
         outputStream = null;
         bytes = null;
     }
 
+    @Override
     public void addListener(Listener listener) {
         if (!listeners.contains(listener)) listeners.add(listener);
     }
 
+    @Override
     public void removeListener(Listener listener) {
         listeners.remove(listener);
     }
@@ -193,18 +200,22 @@ public class WebFileUploadField
         return bytes;
     }
 
+    @Override
     public String getCaption() {
         return component.getCaption();
     }
 
+    @Override
     public void setCaption(String caption) {
         component.setCaption(caption);
     }
 
+    @Override
     public String getDescription() {
         return component.getDescription();
     }
 
+    @Override
     public void setDescription(String description) {
         component.setDescription(description);
     }
@@ -218,10 +229,9 @@ public class WebFileUploadField
     }
 
     /**
-     * Get id for uploaded file in {@link FileUploadingAPI}
-     *
-     * @return File Id
+     * @return File id for uploaded file in {@link FileUploadingAPI}
      */
+    @Override
     public UUID getFileId() {
         return fileId;
     }

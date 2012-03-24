@@ -42,17 +42,19 @@ public interface IFrame
     void setDsContext(DsContext dsContext);
 
     /**
-     * Get message pack associated with the frame
+     * @return Message pack associated with the frame
      */
     String getMessagesPack();
 
     /**
      * Set message pack for this frame
+     * @param name Message pack name
      */
     void setMessagesPack(String name);
 
     /**
-     * Get message from message pack assigned by {@link #setMessagesPack(String)} or from XML descriptor
+     * @param key Message key
+     * @return Message from message pack assigned by {@link #setMessagesPack(String)} or from XML descriptor
      */
     String getMessage(String key);
 

@@ -9,7 +9,6 @@ package com.haulmont.cuba.gui.upload;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
@@ -49,6 +48,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
     private static final String CORE_FILE_UPLOAD_CONTEXT = "/remoting/upload";
 
+    @Override
     public UUID saveFile(byte[] data) throws FileStorageException {
         checkNotNull(data, "No file content");
 
@@ -83,6 +83,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         return uuid;
     }
 
+    @Override
     public UUID saveFile(InputStream stream, UploadProgressListener listener)
             throws FileStorageException {
         if (stream == null)
@@ -122,6 +123,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         return uuid;
     }
 
+    @Override
     public UUID createEmptyFile() throws FileStorageException {
         UUID uuid = UuidProvider.createUuid();
         String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
@@ -143,6 +145,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         return uuid;
     }
 
+    @Override
     public UUID getNewDescriptor() throws FileStorageException {
         UUID uuid = UuidProvider.createUuid();
         String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
@@ -161,6 +164,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         return uuid;
     }
 
+    @Override
     public File getFile(UUID fileId) {
         if (tempFiles.containsKey(fileId))
             return tempFiles.get(fileId);
@@ -168,6 +172,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             return null;
     }
 
+    @Override
     public FileDescriptor getFileDescriptor(UUID fileId, String name) {
         File file = getFile(fileId);
         int fileSize = (int) file.length();
@@ -186,6 +191,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         return fDesc;
     }
 
+    @Override
     public InputStream loadFile(UUID fileId) throws FileNotFoundException {
         if (tempFiles.containsKey(fileId)) {
             File f = tempFiles.get(fileId);
@@ -194,6 +200,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             return null;
     }
 
+    @Override
     public void deleteFile(UUID fileId) throws FileStorageException {
         if (tempFiles.containsKey(fileId)) {
             File file = tempFiles.get(fileId);
@@ -206,6 +213,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         }
     }
 
+    @Override
     public void deleteFileLink(String fileName) {
         Iterator<Map.Entry<UUID, File>> iterator = tempFiles.entrySet().iterator();
         UUID forDelete = null;
@@ -219,6 +227,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
             tempFiles.remove(forDelete);
     }
 
+    @Override
     public void putFileIntoStorage(UUID fileId, FileDescriptor fileDescr) throws FileStorageException {
         File file = getFile(fileId);
         String connectionUrl = ConfigProvider.getConfig(ClientConfig.class).getConnectionUrl()
@@ -242,6 +251,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         deleteFile(fileId);
     }
 
+    @Override
     public void clearTempDirectory() {
         try {
             GlobalConfig config = ConfigProvider.getConfig(GlobalConfig.class);
@@ -264,6 +274,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         }
     }
 
+    @Override
     public String showTempFiles() {
         StringBuilder builder = new StringBuilder();
         Iterator<Map.Entry<UUID, File>> iterator = tempFiles.entrySet().iterator();
