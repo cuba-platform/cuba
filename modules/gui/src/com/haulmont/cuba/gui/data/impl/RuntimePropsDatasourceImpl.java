@@ -246,7 +246,7 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
 
                     if (attrValue != null) {
                         String stringValue = attrValue.getStringValue();
-                        if (stringValue != null)
+                        if (stringValue != null && !StringUtils.isBlank(stringValue))
                             return new SetValueEntity(stringValue);
                         else
                             return null;
