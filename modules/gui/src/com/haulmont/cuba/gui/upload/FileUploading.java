@@ -185,7 +185,7 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
         fDesc.setSize(fileSize);
         fDesc.setExtension(ext);
-        fDesc.setName(name.substring(0, name.indexOf(".")));
+        fDesc.setName(name);
         fDesc.setCreateDate(TimeProvider.currentTimestamp());
 
         return fDesc;
