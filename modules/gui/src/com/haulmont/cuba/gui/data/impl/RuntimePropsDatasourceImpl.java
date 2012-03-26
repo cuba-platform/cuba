@@ -244,9 +244,13 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
                         return attribute.getDefaultDate();
                 case ENUMERATION:
 
-                    if (attrValue != null)
-                        return new SetValueEntity(attrValue.getStringValue());
-                    else {
+                    if (attrValue != null) {
+                        String stringValue = attrValue.getStringValue();
+                        if (stringValue != null)
+                            return new SetValueEntity(stringValue);
+                        else
+                            return null;
+                    } else {
                         String eValue = attribute.getDefaultString();
                         if (eValue != null)
                             return new SetValueEntity(eValue);

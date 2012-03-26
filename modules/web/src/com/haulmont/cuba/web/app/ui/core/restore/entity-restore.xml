@@ -3,6 +3,7 @@
         class="com.haulmont.cuba.web.app.ui.core.restore.EntityRestore"
         messagesPack="com.haulmont.cuba.web.app.ui.core.restore"
         caption="msg://entityRestore.caption"
+        focusComponent="entities"
         >
 
     <dsContext/>
