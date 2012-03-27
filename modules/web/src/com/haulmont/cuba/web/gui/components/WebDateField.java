@@ -17,23 +17,24 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.data.DsManager;
-import com.haulmont.cuba.web.toolkit.ui.*;
+import com.haulmont.cuba.web.toolkit.ui.DateFieldWrapper;
+import com.haulmont.cuba.web.toolkit.ui.MaskedTextField;
 import com.vaadin.data.Property;
-import com.vaadin.ui.HorizontalLayout;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class WebDateField
         extends
@@ -56,7 +57,7 @@ public class WebDateField
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
     protected List<Field.Validator> validators = new ArrayList<Field.Validator>();
 
-    protected HorizontalLayout composition;
+    protected com.vaadin.ui.GridLayout composition;
 
     private Datasource datasource;
     private DsManager dsManager;
@@ -74,7 +75,7 @@ public class WebDateField
     private String timeFormat;
 
     public WebDateField() {
-        composition = new HorizontalLayout();
+        composition = new com.vaadin.ui.GridLayout(2, 1);
 
         composition.setSpacing(true);
         dateField = new com.haulmont.cuba.web.toolkit.ui.DateField();
@@ -125,7 +126,7 @@ public class WebDateField
         if (ConfigProvider.getConfig(WebConfig.class).getCloseCalendarWhenDateSelected()) {
             setCloseWhenDateSelected(true);
         }
-        component = new DateFieldWrapper(this,composition);
+        component = new DateFieldWrapper(this, composition);
         component.setWidth("150px");
     }
 
@@ -157,9 +158,11 @@ public class WebDateField
     public void updateLayout() {
         composition.removeAllComponents();
         composition.addComponent(dateField);
-        composition.setExpandRatio(dateField, 1.0f);
+        composition.setColumnExpandRatio(0, 1.0f);
+        composition.setComponentAlignment(dateField, com.vaadin.ui.Alignment.MIDDLE_LEFT);
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
             composition.addComponent(timeField.<com.vaadin.ui.Component>getComponent());
+            composition.setComponentAlignment(timeField.<com.vaadin.ui.Component>getComponent(), com.vaadin.ui.Alignment.MIDDLE_RIGHT);
         }
     }
 
@@ -350,7 +353,7 @@ public class WebDateField
                         if (updatingInstance)
                             return;
                         if (property.equals(metaPropertyPath.toString())) {
-                           setValueFromDs(value);
+                            setValueFromDs(value);
                             fireValueChanged(value);
                         }
                     }
