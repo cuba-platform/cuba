@@ -12,27 +12,31 @@ package com.haulmont.cuba.web.sys;
 
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.AccessDeniedException;
-import com.haulmont.cuba.core.global.EntityDeletedException;
-import com.haulmont.cuba.core.global.EntityLoadInfo;
-import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
+import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.exception.AccessDeniedHandler;
 import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class LinkHandler implements Serializable {
 
@@ -56,7 +60,7 @@ public class LinkHandler implements Serializable {
             }
 
             WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
-            WindowInfo windowInfo = windowConfig.getWindowInfo(screenName);
+            final WindowInfo windowInfo = windowConfig.getWindowInfo(screenName);
             if (windowInfo == null) {
                 log.warn("WindowInfo not found for screen: " + screenName);
                 return;
@@ -68,26 +72,133 @@ public class LinkHandler implements Serializable {
                         WindowManager.OpenType.NEW_TAB,
                         getParamsMap());
             } else {
-                EntityLoadInfo info = EntityLoadInfo.parse(itemStr);
+                final EntityLoadInfo info = EntityLoadInfo.parse(itemStr);
                 if (info == null) {
                     log.warn("Invalid item definition: " + itemStr);
                     return;
                 }
-                Entity entity = loadEntityInstance(info);
-                if (entity != null) {
-                    app.getWindowManager().openEditor(windowInfo,
-                            entity,
-                            WindowManager.OpenType.NEW_TAB,
-                            getParamsMap());
-                } else {
-                    throw new EntityDeletedException();
-                }
+
+                UUID userId = getUUID(requestParams.get("user"));
+                final User currentUser = app.getConnection().getSession().getCurrentOrSubstitutedUser();
+                if (!(userId == null || currentUser.getId().equals(userId))) {
+                    final User substitutedUser = loadUser(userId, currentUser);
+                    if (substitutedUser != null)
+                        app.getWindowManager().showOptionDialog(
+                                MessageProvider.getMessage(getClass(), "toSubstitutedUser.title"),
+                                getDialogMessage(substitutedUser),
+                                IFrame.MessageType.CONFIRMATION,
+                                new Action[]{
+                                        new ChangeSubstUserAction(substitutedUser){
+                                            @Override
+                                            public void doAfterChangeUser() {
+                                                super.doAfterChangeUser();
+                                                openWindow(windowInfo, info);
+                                            }
+
+                                            @Override
+                                            public void doRevert() {
+                                                super.doRevert();
+                                                app.getAppWindow().executeJavaScript("window.close();");
+                                            }
+
+                                            @Override
+                                            public String getCaption() {
+                                                return MessageProvider.getMessage(getClass(), "action.switch");
+                                            }
+                                        },
+                                        new DoNotChangeSubstUserAction() {
+                                            @Override
+                                            public void actionPerform(Component component) {
+                                                super.actionPerform(component);
+                                                app.getAppWindow().executeJavaScript("window.close();");
+                                            }
+
+                                            @Override
+                                            public String getCaption() {
+                                                return MessageProvider.getMessage(getClass(), "action.cancel");
+                                            }
+                                        }
+                                });
+                    else {
+                        User user = loadUser(userId);
+                        app.getWindowManager().showOptionDialog(
+                                MessageProvider.getMessage(getClass(), "warning.title"),
+                                getWarningMessage(user),
+                                IFrame.MessageType.WARNING,
+                                new Action[]{
+                                        new DialogAction(DialogAction.Type.OK) {
+                                            @Override
+                                            public void actionPerform(Component component) {
+                                                app.getAppWindow().executeJavaScript("window.close();");
+                                            }
+                                        }
+                                });
+                    }
+                } else
+                    openWindow(windowInfo, info);
+
             }
         } catch (AccessDeniedException e) {
             new AccessDeniedHandler().handle(e, app);
         } catch (NoSuchScreenException e) {
             new NoSuchScreenHandler().handle(e, app);
         }
+    }
+
+    private UUID getUUID(String id) {
+        if (StringUtils.isBlank(id))
+            return null;
+
+        UUID uuid;
+        try {
+            uuid = UUID.fromString(id);
+        } catch (IllegalArgumentException e) {
+            uuid = null;
+        }
+        return uuid;
+    }
+
+    private String getWarningMessage(User user) {
+        if (user == null)
+            return MessageProvider.getMessage(getClass(), "warning.userNotFound");
+        return MessageProvider.formatMessage(getClass(), "warning.msg", StringUtils.isBlank(user.getName()) ? user.getLogin() : user.getName());
+    }
+
+    private User loadUser(UUID userId, User user) {
+        LoadContext loadContext = new LoadContext(UserSubstitution.class);
+        LoadContext.Query query = new LoadContext.Query("select su from sec$UserSubstitution us join us.user u " +
+                "join us.substitutedUser su where u.id = :id and su.id = :userId and " +
+                "(us.endDate is null or us.endDate >= :currentDate) and (us.startDate is null or us.startDate <= :currentDate)");
+        query.addParameter("id", user);
+        query.addParameter("userId", userId);
+        query.addParameter("currentDate", TimeProvider.currentTimestamp());
+        loadContext.setQuery(query);
+        List<User> users = ServiceLocator.getDataService().loadList(loadContext);
+        return users.isEmpty() ? null : users.get(0);
+    }
+    
+    private User loadUser(UUID userId) {
+        LoadContext loadContext = new LoadContext(User.class);
+        LoadContext.Query query = new LoadContext.Query("select u from sec$User u where u.id = :userId");
+        query.addParameter("userId", userId);
+        loadContext.setQuery(query);
+        List<User> users = ServiceLocator.getDataService().loadList(loadContext);
+        return users.isEmpty() ? null : users.get(0);
+    }
+
+    private String getDialogMessage(User user) {
+        return MessageProvider.formatMessage(getClass(), "toSubstitutedUser.msg", StringUtils.isBlank(user.getName()) ? user.getLogin() : user.getName());
+    }
+
+    private void openWindow(WindowInfo windowInfo, EntityLoadInfo info) {
+        Entity entity = loadEntityInstance(info);
+        if (entity != null) 
+            app.getWindowManager().openEditor(windowInfo,
+                    entity,
+                    WindowManager.OpenType.NEW_TAB,
+                    getParamsMap());
+    else 
+        throw new EntityDeletedException();
     }
 
     private Map<String, Object> getParamsMap() {

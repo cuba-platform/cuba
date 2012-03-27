@@ -19,7 +19,6 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.NoSuchScreenException;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ShowInfoAction;
@@ -27,6 +26,8 @@ import com.haulmont.cuba.gui.config.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
+import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
@@ -803,6 +804,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
             }
             foldersSplit.replaceComponent(oldFoldersPane, foldersPane);
         }
+        substUserSelect.select(connection.getSession().getCurrentOrSubstitutedUser());
     }
 
     protected String getMessagesPack() {
@@ -875,67 +877,6 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         substUserSelect.select(us.getCurrentOrSubstitutedUser());
     }
 
-    private class ChangeSubstUserAction extends AbstractAction {
-        private AbstractSelect substUserSelect;
-
-        protected ChangeSubstUserAction(AbstractSelect substUserSelect) {
-            super("changeSubstUserAction");
-            this.substUserSelect = substUserSelect;
-        }
-
-        @Override
-        public String getIcon() {
-            return "icons/ok.png";
-        }
-
-        @Override
-        public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-            final App app = App.getInstance();
-            app.cleanupBackgroundTasks();
-            app.getTimers().stopAll();
-            app.getWindowManager().checkModificationsAndCloseAll(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            app.getWindowManager().closeAll();
-                            User user = (User) substUserSelect.getValue();
-                            try {
-                                app.getConnection().substituteUser(user);
-                            } catch (javax.persistence.NoResultException e) {
-                                showNotification(
-                                        MessageProvider.formatMessage(getMessagesPack(), "userDeleteMsg", user.getName()),
-                                        Window.Notification.TYPE_WARNING_MESSAGE
-                                );
-                                revertToCurrentUser();
-                            }
-                        }
-                    },
-                    new Runnable() {
-                        public void run() {
-                            revertToCurrentUser();
-                        }
-                    }
-            );
-        }
-    }
-
-    private class DoNotChangeSubstUserAction extends AbstractAction {
-
-        protected DoNotChangeSubstUserAction() {
-            super("doNotChangeSubstUserAction");
-        }
-
-        @Override
-        public String getIcon() {
-            return "icons/cancel.png";
-        }
-
-        @Override
-        public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
-            revertToCurrentUser();
-        }
-    }
-
     protected class SubstitutedUserChangeListener implements Property.ValueChangeListener {
 
         private final AbstractSelect substUserSelect;
@@ -959,7 +900,19 @@ public class AppWindow extends Window implements UserSubstitutionListener {
                         MessageProvider.getMessage(getMessagesPack(), "substUserSelectDialog.title"),
                         MessageProvider.formatMessage(getMessagesPack(), "substUserSelectDialog.msg", name),
                         IFrame.MessageType.WARNING,
-                        new Action[]{new ChangeSubstUserAction(substUserSelect), new DoNotChangeSubstUserAction()}
+                        new Action[]{new ChangeSubstUserAction((User) substUserSelect.getValue()) {
+                            @Override
+                            public void doRevert() {
+                                super.doRevert();
+                                revertToCurrentUser();
+                            }
+                        }, new DoNotChangeSubstUserAction() {
+                            @Override
+                            public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
+                                super.actionPerform(component);
+                                revertToCurrentUser();
+                            }
+                        }}
                 );
             }
 
