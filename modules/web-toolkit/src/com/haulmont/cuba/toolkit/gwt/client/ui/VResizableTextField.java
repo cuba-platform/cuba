@@ -70,6 +70,7 @@ public class VResizableTextField extends VTextArea {
     }
 
     private void captureEvents(Event event) {
+        event.preventDefault();
         if (isResizeRegion(event) && DOM.eventGetButton(event) == Event.BUTTON_LEFT) {
             if (!dragDrop) {
                 dragDrop = true;
@@ -131,6 +132,7 @@ public class VResizableTextField extends VTextArea {
                 Element parentDiv = DOM.createDiv();
                 DOM.setStyleAttribute(parentDiv, "position", "relative");
                 DOM.setStyleAttribute(parentDiv, "overflow", "hidden");
+                DOM.setStyleAttribute(parentDiv, "display", "inline");
 
                 getElement().getParentElement().appendChild(parentDiv);
                 getElement().getParentElement().removeChild(getElement());
