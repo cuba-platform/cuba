@@ -76,7 +76,7 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
         compile(group: 'aopalliance', name: 'aopalliance', version: '1.0')
         compile(asm)
         compile(group: 'com.google.guava', name: 'guava', version: 'r07')
-        compile(group: 'org.apache.openjpa', name: 'openjpa', version: '2.1.1')
+        compile(group: 'com.haulmont.thirdparty', name: 'openjpa', version: '2.1.1.20111005')
         compile(group: 'commons-cli', name: 'commons-cli', version: '1.2')
         compile(group: 'commons-pool', name: 'commons-pool', version: '1.5.1')
         compile(group: 'net.sourceforge.serp', name: 'serp', version: '1.13.1')
