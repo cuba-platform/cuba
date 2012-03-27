@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.config.Prefix;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
+import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
 
 /**
@@ -62,4 +63,18 @@ public interface EmailerConfig extends Config
      */
     @DefaultInt(120)
     int getMaxSendingTimeSec();
+
+    /**
+     *
+     * @return Admin's email address
+     */
+    @Default("address@company.com")
+    String getAdminAddress();
+
+    /**
+     * If this parameter is set to true, all email messages will be sent to admin's email address
+     * @return
+     */
+    @DefaultBoolean(false)
+    boolean getSendAllToAdmin();
 }

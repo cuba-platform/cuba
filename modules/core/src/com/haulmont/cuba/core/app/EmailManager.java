@@ -35,7 +35,6 @@ public class EmailManager extends ManagementBean implements EmailManagerMBean,Em
 
     private Set<SendingMessage> messageQueue;
     private static int callCount = 0;
-    private static final int MAX_SENDING_TIME_SEC = 120;
     private static final String EMAIL_DELAY_CALL_COUNT_PROPERTY_NAME = "cuba.email.delayCallCount";
     private static final String EMAIL_MESSAGE_QUEUE_CAPACITY_PROPERTY_NAME = "cuba.email.messageQueueCapacity";
 

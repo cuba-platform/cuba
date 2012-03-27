@@ -18,6 +18,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.global.LoginException;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.codec.net.QCodec;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -67,6 +68,8 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
 
     private static final String EMAIL_SMTP_HOST_PROPERTY_NAME = "cuba.email.smtpHost";
     private static final String EMAIL_DEFAULT_FROM_ADDRESS_PROPERTY_NAME = "cuba.email.fromAddress";
+    private static final String SEND_ALL_TO_ADMIN_PROPERTY_NAME = "cuba.email.sendAllToAdmin";
+    private static final String ADMIN_ADDRESS_PROPERTY_NAME = "cuba.email.adminAddress";
 
     @Inject
     public void setMailSender(JavaMailSender mailSender) {
@@ -168,7 +171,6 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
             MimeMessage message = createMessage(addr, sendingMessage.getCaption(), sendingMessage.getContentText(), getEmailAttachments(sendingMessage), fromEmail);
             send(addr, message);
 
-            log.info("Email '" + sendingMessage.getCaption() + "' to '" + addr + "' sent succesfully");
             updateSendingMessageStatus(sendingMessage, SendingStatus.SENT);
         } catch (MessagingException e) {
             log.warn("Unable to send email to '" + sendingMessage.getAddress() + "'", e);
@@ -201,7 +203,6 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
                 MimeMessage message = createMessage(addr, caption, body, attachment, fromEmail);
                 send(addr, message);
 
-                log.info("Email '" + caption + "' to '" + addr + "' sent succesfully");
                 updateSendingMessageStatus(sendingMessage, SendingStatus.SENT);
             } catch (MessagingException e) {
                 log.warn("Unable to send email to '" + addr + "'", e);
@@ -255,9 +256,14 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
     }
 
     private void send(String addr, MimeMessage message) throws MessagingException {
+        if (getSendAllToAdmin()) {
+            addr = getAdminAddress();
+        }
         InternetAddress internetAddress = new InternetAddress(addr);
         message.setRecipient(Message.RecipientType.TO, internetAddress);
         mailSender.send(message);
+        log.info("Email '" + message.getSubject() + "' to '" + addr + "' sent succesfully");
+
     }
 
     private MimeMessage createMessage(
@@ -343,6 +349,16 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         String smtpHost = AppContext.getProperty(EMAIL_SMTP_HOST_PROPERTY_NAME);
         return smtpHost != null ? smtpHost : config.getSmtpHost();
     }
+    
+    private String getAdminAddress() {
+        final String adminAddress = AppContext.getProperty(ADMIN_ADDRESS_PROPERTY_NAME);
+        return adminAddress != null ? adminAddress : config.getAdminAddress();
+    }
+
+    private boolean getSendAllToAdmin() {
+        final Boolean sendAllToAdmin = BooleanUtils.toBooleanObject(AppContext.getProperty(SEND_ALL_TO_ADMIN_PROPERTY_NAME));
+        return sendAllToAdmin != null ? sendAllToAdmin : config.getSendAllToAdmin();
+    }
 
     public String sendTestEmail(String addresses) {
         try {
@@ -423,6 +439,8 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
             }
         }
         sendingMessage.setAttachments(sendingAttachments);
+        if (getSendAllToAdmin())
+            addr = getAdminAddress();
         sendingMessage.setAddress(addr);
         sendingMessage.setFrom(from);
         sendingMessage.setContentText(body);
