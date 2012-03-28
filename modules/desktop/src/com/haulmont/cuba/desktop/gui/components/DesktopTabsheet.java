@@ -241,6 +241,7 @@ public class DesktopTabsheet
             ComponentsHelper.walkComponents(
                     lti.tabContent,
                     new ComponentVisitor() {
+                        @Override
                         public void visit(Component component, String name) {
                             if (component instanceof HasSettings) {
                                 Settings settings = window.getSettings();
@@ -285,13 +286,16 @@ public class DesktopTabsheet
             impl.removeTabAt(idx);
         }
         // if we just detach component, it will return isVisible() == true
-        comp.setVisible(tab.isVisible());
+        if (!tab.isVisible())
+            comp.setVisible(false);
     }
 
+    @Override
     public boolean expandsWidth() {
         return true;
     }
 
+    @Override
     public boolean expandsHeight() {
         return false;
     }
@@ -383,6 +387,7 @@ public class DesktopTabsheet
             ButtonTabComponent tabComponent = new ButtonTabComponent(
                     impl,
                     new ButtonTabComponent.CloseListener() {
+                        @Override
                         public void onTabClose(int tabIndex) {
                             if (closeHandler != null) {
                                 closeHandler.onTabClose(TabImpl.this);
@@ -404,6 +409,7 @@ public class DesktopTabsheet
             }
         }
 
+        @Override
         public TabCloseHandler getCloseHandler() {
             return closeHandler;
         }
