@@ -467,7 +467,25 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 // enable selection change listener
                 isRowsAjusting = false;
             }
+
+            @Override
+            public void dataSorted() {
+                clearGeneratedColumnsCache();
+                packRows();
+            }
         });
+    }
+
+    protected void clearGeneratedColumnsCache() {
+        TableColumnModel columnModel = impl.getColumnModel();
+        for (Column column: columnsOrder) {
+            if (tableModel.isGeneratedColumn(column)) {
+                int columnIndex = columnModel.getColumnIndex(column);
+                TableColumn tableColumn = columnModel.getColumn(columnIndex);
+                DesktopTableCellEditor cellEditor = (DesktopTableCellEditor) tableColumn.getCellEditor();
+                cellEditor.clearCache();
+            }
+        }
     }
 
     protected void initSelectionListener(final CollectionDatasource datasource) {

@@ -44,5 +44,7 @@ public interface AnyTableModelAdapter extends TableModel {
         void beforeChange();
 
         void afterChange();
+
+        void dataSorted();
     }
 }
