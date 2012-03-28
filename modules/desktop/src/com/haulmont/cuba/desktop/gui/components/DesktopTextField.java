@@ -53,6 +53,7 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     private int rows;
     private int columns;
     private int maxLength;
+    private boolean trimming = true;
 
     private boolean secret;
     private boolean editable = true;
@@ -221,6 +222,16 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     }
 
     @Override
+    public boolean isTrimming() {
+        return trimming;
+    }
+
+    @Override
+    public void setTrimming(boolean trimming) {
+        this.trimming = trimming;
+    }
+
+    @Override
     public Datatype getDatatype() {
         return datatype;
     }
@@ -260,6 +271,9 @@ public class DesktopTextField extends DesktopAbstractField<JTextComponent> imple
     }
 
     private Object validateRawValue(String rawValue) {
+        if (trimming && rawValue != null)
+            rawValue = rawValue.trim();
+
         if ((datasource != null) && (metaPropertyPath != null)) {
             Range range = metaProperty.getRange();
             if (range.isDatatype())

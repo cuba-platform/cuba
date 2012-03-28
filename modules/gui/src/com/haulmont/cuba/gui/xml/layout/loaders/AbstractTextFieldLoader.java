@@ -54,6 +54,11 @@ public abstract class AbstractTextFieldLoader extends AbstractFieldLoader {
             component.setDatatype(datatype);
         }
 
+        String trim = element.attributeValue("trim");
+        if (!StringUtils.isEmpty(trim)) {
+            component.setTrimming(Boolean.valueOf(trim));
+        }
+
         component.setFormatter(loadFormatter(element));
 
         return component;

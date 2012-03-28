@@ -45,6 +45,8 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
 
     protected Formatter formatter;
 
+    protected boolean trimming = true;
+
     public WebAbstractTextField() {
         this.component = createTextFieldImpl();
         this.component.setValidationVisible(false);
@@ -209,6 +211,13 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
                     private static final long serialVersionUID = -6484626348078235396L;
 
                     @Override
+                    public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+                        if (newValue instanceof String && trimming)
+                            newValue = ((String) newValue).trim();
+                        super.setValue(newValue);
+                    }
+
+                    @Override
                     public String toString() {
                         if (formatter != null) {
                             Object value = getValue();
@@ -238,5 +247,15 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
             return StringUtils.isBlank((String) value);
         else
             return value == null;
+    }
+
+    @Override
+    public boolean isTrimming() {
+        return trimming;
+    }
+
+    @Override
+    public void setTrimming(boolean trimming) {
+        this.trimming = trimming;
     }
 }

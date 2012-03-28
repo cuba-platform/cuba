@@ -1136,6 +1136,13 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 }
 
                 @Override
+                public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+                    if (newValue instanceof String)
+                        newValue = ((String) newValue).trim();
+                    super.setValue(newValue);
+                }
+
+                @Override
                 public String toString() {
                     Object value = getValue();
                     if (value == null) return null;

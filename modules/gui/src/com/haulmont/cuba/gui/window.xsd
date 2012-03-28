@@ -445,6 +445,7 @@
                 <xs:attribute name="secret" type="xs:boolean" use="optional"/>
                 <xs:attribute name="maxLength" type="xs:int" use="optional"/>
                 <xs:attribute name="resizable" type="xs:boolean" use="optional"/>
+                <xs:attribute name="trim" type="xs:boolean" use="optional"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

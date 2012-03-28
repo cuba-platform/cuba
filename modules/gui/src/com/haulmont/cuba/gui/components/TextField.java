@@ -27,6 +27,9 @@ public interface TextField extends Field, Component.HasFomatter {
     int getMaxLength();
     void setMaxLength(int value);
 
+    boolean isTrimming();
+    void setTrimming(boolean trimming);
+
     Datatype getDatatype();
     void setDatatype(Datatype datatype);
 }
