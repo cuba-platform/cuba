@@ -167,7 +167,7 @@ public class DesktopPickerField
 
     @Override
     public <T> T getValue() {
-        if ((datasource != null) && (metaPropertyPath != null)) {
+        if ((datasource != null) && (metaPropertyPath != null) && (datasource.getState() == Datasource.State.VALID)) {
             return (T) datasource.getItem().getValue(metaProperty.getName());
         } else
             return (T) prevValue;
