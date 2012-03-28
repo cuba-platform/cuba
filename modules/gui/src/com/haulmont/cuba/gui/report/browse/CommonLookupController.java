@@ -52,7 +52,7 @@ public class CommonLookupController extends AbstractLookup {
         table.setId("lookupTable");
 
         Table.Column nameColumn = new Table.Column(nameProperty);
-        nameColumn.setCaption("Name");
+        nameColumn.setCaption(MessageProvider.getMessage(getClass(), "name"));
 
         table.addColumn(nameColumn);
         table.setDatasource(cds);
