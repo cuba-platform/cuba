@@ -775,7 +775,7 @@ public class WebWindow
                     try {
                         ((Validatable) component).validate();
                     } catch (ValidationException e) {
-                        log.warn("Validation failed", e);
+                        log.debug("Validation failed", e);
                         problems.put(e, component);
                     }
                 }

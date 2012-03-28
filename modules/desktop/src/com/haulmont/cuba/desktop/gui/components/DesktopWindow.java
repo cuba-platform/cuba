@@ -780,7 +780,7 @@ public class DesktopWindow implements Window, Component.Disposable,
                     try {
                         ((Validatable) component).validate();
                     } catch (ValidationException e) {
-                        log.warn("Validation failed", e);
+                        log.debug("Validation failed", e);
                         problems.add(e.getMessage());
                     }
                 }
