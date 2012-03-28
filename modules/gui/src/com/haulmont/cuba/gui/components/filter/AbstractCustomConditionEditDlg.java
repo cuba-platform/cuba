@@ -137,14 +137,17 @@ public abstract class AbstractCustomConditionEditDlg<T> {
         typeCheckBox.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.typeCheckBox"));
         typeCheckBox.setValue(condition.isInExpr());
 
+        boolean entitySelectEnabled = ParamType.ENTITY.equals(typeSelect.getValue())
+                || ParamType.ENUM.equals(typeSelect.getValue());
+
         entityLab = factory.createComponent(Label.NAME);
         entityLab.setValue(MessageProvider.getMessage(MESSAGES_PACK, "CustomConditionEditDlg.entityLabel"));
-        entityLab.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()));
+        entityLab.setEnabled(entitySelectEnabled);
 
         entitySelect = factory.createComponent(LookupField.NAME);
 
         entitySelect.setWidth(FIELD_WIDTH);
-        entitySelect.setEnabled(ParamType.ENTITY.equals(typeSelect.getValue()) || ParamType.ENUM.equals(typeSelect.getValue()));
+        entitySelect.setEnabled(entitySelectEnabled);
         fillEntitySelect(condition.getParam());
 
         entityParamWhereLab = factory.createComponent(Label.NAME);
@@ -326,16 +329,30 @@ public abstract class AbstractCustomConditionEditDlg<T> {
             entitySelect.setValue(selectedItem);
 
         } else if (ParamType.ENUM.equals(typeSelect.getValue())) {
-            for (Class enumClass : MetadataHelper.getAllEnums()) {
-                items.put(enumClass.getSimpleName() + " (" + MessageProvider.getMessage(enumClass, enumClass.getSimpleName()) + ")", enumClass);
-            }
-
             if (param != null && AbstractParam.Type.ENUM.equals(param.getType())) {
                 selectedItem = param.getJavaClass();
             }
+
+            boolean selectedItemFound = false;
+            for (Class enumClass : MetadataHelper.getAllEnums()) {
+                items.put(getEnumClassName(enumClass), enumClass);
+
+                if (selectedItem == null || selectedItem.equals(enumClass))
+                    selectedItemFound = true;
+            }
+            // In case of a predefined custom condition parameter value may be of type which is not contained in
+            // the metamodel, hence not in MetadataHelper.getAllEnums(). So we just add it here.
+            if (selectedItem != null && !selectedItemFound) {
+                items.put(getEnumClassName((Class) selectedItem), selectedItem);
+            }
+
             entitySelect.setOptionsMap(items);
             entitySelect.setValue(selectedItem);
         }
+    }
+
+    protected String getEnumClassName(Class enumClass) {
+        return enumClass.getSimpleName() + " (" + MessageProvider.getMessage(enumClass, enumClass.getSimpleName()) + ")";
     }
 
     protected void fillTypeSelect(AbstractParam param) {
