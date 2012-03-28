@@ -202,12 +202,14 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
 
     @Override
     public String getCaption() {
-        return component.getCaption();
+//        return component.getCaption();
+        return component.getButtonCaption();
     }
 
     @Override
     public void setCaption(String caption) {
-        component.setCaption(caption);
+//        component.setCaption(caption);
+        component.setButtonCaption(caption);
     }
 
     @Override
