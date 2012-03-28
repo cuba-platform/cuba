@@ -12,8 +12,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.Nullable;
+
 /**
- * Utility class to get localized messages by references defined in XML descriptors
+ * Utility class to obtain localized messages.
  *
  * $Id$
  */
@@ -22,7 +24,7 @@ public class MessageUtils {
     private static Log log = LogFactory.getLog(MessageUtils.class);
 
     /**
-     * Prefix pointing that the string is actually a key in a localized messages pack
+     * Prefix pointing that the string is actually a key in a localized messages pack.
      */
     public static final String MARK = "msg://";
 
@@ -33,32 +35,32 @@ public class MessageUtils {
     }
 
     /**
-     * Returns main message pack set for the application
+     * @return main message pack set for the application
      */
     public static String getMessagePack() {
         return messagePack;
     }
 
     /**
-     * Get localized message by reference provided in full format
-     * @param ref reference to message in the following format: <code>msg://message_pack/message_id</code>
-     * @return localized message or input string itself if it doesn't begin with <code>msg://</code>
+     * Get localized message by reference provided in the full format.
+     * @param ref   reference to message in the following format: <code>msg://message_pack/message_id</code>
+     * @return      localized message or input string itself if it doesn't begin with <code>msg://</code>
      */
     public static String loadString(String ref) {
         return loadString(null, ref);
     }
 
     /**
-     * Get localized message by reference provided in full or brief format
-     * @param messagesPack messages pack to use if the second parameter is in brief format
-     * @param ref reference to message in the following format:
+     * Get localized message by reference provided in full or brief format.
+     * @param messagesPack  messages pack to use if the second parameter is in brief format
+     * @param ref           reference to message in the following format:
      * <ul>
      * <li>Full: <code>msg://message_pack/message_id</code>
-     * <li>Brief: <code>msg://message_id</code>, in this case first parameter is taken into account
+     * <li>Brief: <code>msg://message_id</code>, in this case the first parameter is taken into account
      * </ul>
      * @return localized message or input string itself if it doesn't begin with <code>msg://</code>
      */
-    public static String loadString(String messagesPack, String ref) {
+    public static String loadString(@Nullable String messagesPack, String ref) {
         if (ref.startsWith(MARK)) {
             String path = ref.substring(6);
             final String[] strings = path.split("/");
@@ -74,7 +76,7 @@ public class MessageUtils {
     }
 
     /**
-     * Get localized name of an entity. Messages pack should be placed in the packet of entity.
+     * @return a localized name of an entity. Messages pack must be located in the same package as entity.
      */
     public static String getEntityCaption(MetaClass metaClass) {
         String className = metaClass.getJavaClass().getName();
@@ -86,7 +88,10 @@ public class MessageUtils {
     }
 
     /**
-     * Get localized name of an entity property. Messages pack should be placed in the packet of entity.
+     * Get localized name of an entity property. Messages pack must be located in the same package as entity.
+     * @param metaClass     MetaClass containing the property
+     * @param propertyName  property's name
+     * @return              localized name
      */
     public static String getPropertyCaption(MetaClass metaClass, String propertyName) {
         Class<?> ownClass = metaClass.getJavaClass();
@@ -104,10 +109,15 @@ public class MessageUtils {
     }
 
     /**
-     * Get localized name of an entity property. Messages pack should be placed in the packet of entity.
+     * Get localized name of an entity property. Messages pack must be located in the same package as entity.
+     * @param property  MetaProperty
+     * @return          localized name
      */
     public static String getPropertyCaption(MetaProperty property) {
         Class<?> declaringClass = property.getDeclaringClass();
+        if (declaringClass == null)
+            return property.getName();
+
         String className = declaringClass.getName();
         int i = className.lastIndexOf('.');
         if (i > -1)
@@ -117,7 +127,30 @@ public class MessageUtils {
     }
 
     /**
-     * Get message key of an entity property. Messages pack part of the key points to the packet of entity.
+     * Checks whether a localized name of the property exists.
+     * @param property  MetaProperty
+     * @return          true if {@link #getPropertyCaption(com.haulmont.chile.core.model.MetaProperty)} returns a
+     * string which has no dots inside or the first part befor a dot is not equal to the declaring class
+     */
+    public static boolean hasPropertyCaption(MetaProperty property) {
+        Class<?> declaringClass = property.getDeclaringClass();
+        if (declaringClass == null)
+            return false;
+
+        String caption = getPropertyCaption(property);
+        int i = caption.indexOf('.');
+        if (i > 0 && declaringClass.getSimpleName().equals(caption.substring(0, i)))
+            return false;
+        else
+            return true;
+    }
+
+    /**
+     * Get message reference of an entity property.
+     * Messages pack part of the reference corresponds to the entity's package.
+     * @param metaClass     MetaClass containing the property
+     * @param propertyName  property's name
+     * @return              message key in the form <code>msg://message_pack/message_id</code>
      */
     public static String getMessageRef(MetaClass metaClass, String propertyName) {
         MetaProperty property = metaClass.getProperty(propertyName);
@@ -128,10 +161,16 @@ public class MessageUtils {
     }
 
     /**
-     * Get message key of an entity property. Messages pack part of the key points to the packet of entity.
+     * Get message reference of an entity property.
+     * Messages pack part of the reference corresponds to the entity's package.
+     * @param property  MetaProperty
+     * @return          message key in the form <code>msg://message_pack/message_id</code>
      */
     public static String getMessageRef(MetaProperty property) {
         Class<?> declaringClass = property.getDeclaringClass();
+        if (declaringClass == null)
+            return MARK + property.getName();
+
         String className = declaringClass.getName();
         String packageName= "";
         int i = className.lastIndexOf('.');
@@ -144,10 +183,11 @@ public class MessageUtils {
     }
 
     /**
-     * Get localized value of an attribute based on {@link LocalizedValue} annotation
+     * Get localized value of an attribute based on {@link LocalizedValue} annotation.
      * @param attribute attribute name
-     * @param instance entity instance
-     * @return localized value or the value itself, if the value is null or the message pack can not be inferred
+     * @param instance  entity instance
+     * @return          localized value or the value itself, if the value is null or the message pack
+     * can not be inferred
      */
     public static String getLocValue(String attribute, Instance instance) {
         String value = instance.getValue(attribute);
@@ -162,10 +202,10 @@ public class MessageUtils {
     }
 
     /**
-     * Returns message pack inferred from {@link LocalizedValue} annotation
+     * Returns message pack inferred from {@link LocalizedValue} annotation.
      * @param attribute attribute name
-     * @param instance entity instance
-     * @return inferred message pack or null
+     * @param instance  entity instance
+     * @return          inferred message pack or null
      */
     public static String inferMessagePack(String attribute, Instance instance) {
         MetaClass metaClass = instance.getMetaClass();
@@ -186,10 +226,10 @@ public class MessageUtils {
     }
 
     /**
-     * Formats a value according to property type
-     * @param value object to format
-     * @param property metadata
-     * @return formatted value as string, or null if value is null
+     * Formats a value according to the property type.
+     * @param value     object to format
+     * @param property  metadata
+     * @return          formatted value as string, or null if value is null
      */
     public static String format(Object value, MetaProperty property) {
         if (value == null)
