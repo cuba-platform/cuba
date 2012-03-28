@@ -7,7 +7,7 @@
     border: 1px solid #c3c3c3;
     background: #fff none;
     float: left;
-    overflow-x: hidden;
+    overflow-x: auto;
     overflow-y: auto;
 }
 
