@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.gui.components.Table;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.table.TableColumnExt;
@@ -36,6 +37,8 @@ public class SwingXTableSettings implements TableSettings {
 
     @Override
     public boolean saveSettings(Element element) {
+        element.addAttribute("horizontalScroll", String.valueOf(table.isHorizontalScrollEnabled()));
+
         Element columnsElem = element.element("columns");
         if (columnsElem != null)
             element.remove(columnsElem);
@@ -85,6 +88,10 @@ public class SwingXTableSettings implements TableSettings {
 
     @Override
     public void apply(Element element, boolean sortable) {
+        String horizontalScroll = element.attributeValue("horizontalScroll");
+        if (!StringUtils.isBlank(horizontalScroll))
+            table.setHorizontalScrollEnabled(Boolean.valueOf(horizontalScroll));
+
         final Element columnsElem = element.element("columns");
         if (columnsElem == null)
             return;
