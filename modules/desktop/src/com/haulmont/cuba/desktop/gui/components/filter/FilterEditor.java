@@ -260,22 +260,7 @@ public class FilterEditor extends AbstractFilterEditor {
         JButton button = new JButton(getMessage("FilterEditor.addCondition"));
         panel.add(button, new CC().alignX("right"));
 
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                AddConditionDlg dlg = new AddConditionDlg(metaClass,
-                        descriptors,
-                        new AddConditionDlg.DescriptorBuilder(messagesPack, filterComponentName, datasource),
-                        new SelectionHandler() {
-                            @Override
-                            public void select(AbstractConditionDescriptor descriptor) {
-                                addCondition(descriptor);
-                            }
-                        });
-                App.getInstance().disable(null);
-                dlg.setVisible(true);
-            }
-        });
+        button.addActionListener(new AddConditionActionListener());
     }
 
     private void initAddSelect(JPanel panel) {
@@ -323,6 +308,11 @@ public class FilterEditor extends AbstractFilterEditor {
         size.width = 100;
         addSelect.setSize(size);
         addSelect.setPreferredSize(size);
+
+        JButton button = new JButton(getMessage("FilterEditor.addMoreConditions"));
+        panel.add(button, new CC().alignX("right"));
+
+        button.addActionListener(new AddConditionActionListener());
     }
 
     private void setComponentWidth(JComponent component, int width) {
@@ -653,6 +643,23 @@ public class FilterEditor extends AbstractFilterEditor {
     private class ConditionsTable extends JTable {
         public boolean isCellSelected(int row, int column) {
             return (row == getSelectedRow());
+        }
+    }
+
+    private class AddConditionActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            AddConditionDlg dlg = new AddConditionDlg(metaClass,
+                    descriptors,
+                    new AddConditionDlg.DescriptorBuilder(messagesPack, filterComponentName, datasource),
+                    new SelectionHandler() {
+                        @Override
+                        public void select(AbstractConditionDescriptor descriptor) {
+                            addCondition(descriptor);
+                        }
+                    });
+            App.getInstance().disable(null);
+            dlg.setVisible(true);
         }
     }
 }

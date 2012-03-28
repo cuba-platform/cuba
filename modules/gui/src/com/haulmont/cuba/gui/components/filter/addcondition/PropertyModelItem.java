@@ -60,9 +60,8 @@ public class PropertyModelItem implements ModelItem {
         if (metaProperty.getRange().isClass()) {
             List<ModelItem> list = new ArrayList<ModelItem>();
             for (MetaProperty property : metaProperty.getRange().asClass().getProperties()) {
-                String caption = MessageUtils.getPropertyCaption(property);
-                // exclude not localized properties (they are usually not for end user)
-                if (!caption.contains(".")) {
+                // exclude not localized properties (they are usually not for end user) and ToMany
+                if (MessageUtils.hasPropertyCaption(property) && !property.getRange().getCardinality().isMany()) {
                     list.add(new PropertyModelItem(this, property, null, descriptorBuilder));
                 }
             }

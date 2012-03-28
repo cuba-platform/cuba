@@ -17,7 +17,6 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.filter.HasAction;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.*;
 import com.haulmont.cuba.gui.components.filter.addcondition.SelectionHandler;
@@ -236,23 +235,7 @@ public class FilterEditor extends AbstractFilterEditor {
 
     private void initAddDialog(HorizontalLayout addLayout) {
         Button addBtn = new Button(getMessage("FilterEditor.addCondition"));
-        addBtn.addListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                AddConditionDlg dlg = new AddConditionDlg(
-                        metaClass,
-                        descriptors,
-                        new AddConditionDlg.DescriptorBuilder(messagesPack, filterComponentName, datasource),
-                        new SelectionHandler() {
-                            @Override
-                            public void select(AbstractConditionDescriptor descriptor) {
-                                addCondition(descriptor);
-                            }
-                        });
-                dlg.center();
-                App.getInstance().getAppWindow().addWindow(dlg);
-            }
-        });
+        addBtn.addListener(new AddConditionClickListener());
         addLayout.addComponent(addBtn);
     }
 
@@ -299,6 +282,10 @@ public class FilterEditor extends AbstractFilterEditor {
             }
         });
         layout.addComponent(addSelect);
+
+        Button addBtn = new Button(getMessage("FilterEditor.addMoreConditions"));
+        addBtn.addListener(new AddConditionClickListener());
+        layout.addComponent(addBtn);
     }
 
     private void initTable(AbstractLayout layout) {
@@ -441,5 +428,23 @@ public class FilterEditor extends AbstractFilterEditor {
 
     public FilterEntity getFilterEntity() {
         return filterEntity;
+    }
+
+    private class AddConditionClickListener implements Button.ClickListener {
+        @Override
+        public void buttonClick(Button.ClickEvent event) {
+            AddConditionDlg dlg = new AddConditionDlg(
+                    metaClass,
+                    descriptors,
+                    new AddConditionDlg.DescriptorBuilder(messagesPack, filterComponentName, datasource),
+                    new SelectionHandler() {
+                        @Override
+                        public void select(AbstractConditionDescriptor descriptor) {
+                            addCondition(descriptor);
+                        }
+                    });
+            dlg.center();
+            App.getInstance().getAppWindow().addWindow(dlg);
+        }
     }
 }
