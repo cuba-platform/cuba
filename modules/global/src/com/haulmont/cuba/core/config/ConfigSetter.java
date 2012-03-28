@@ -52,7 +52,7 @@ public class ConfigSetter extends ConfigAccessorMethod
      */
     public void setProperty(ConfigPersister persister, Object value) {
         String str;
-        if (stringifier == null)
+        if (stringifier == null || value == null)
             str = (String) value;
         else
             str = stringifier.stringify(value);
