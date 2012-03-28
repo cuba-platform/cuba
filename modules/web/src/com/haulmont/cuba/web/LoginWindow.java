@@ -213,7 +213,7 @@ public class LoginWindow extends Window implements Action.Handler {
     }
 
     protected void initUI(App app) {
-        initStandartUI(app, 310, -1, 125, true);
+        initStandartUI(app, 310, -1, 125, ConfigProvider.getConfig(GlobalConfig.class).getLocaleSelectVisible());
     }
 
     protected void initRememberMe(final App app) {
