@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class SettingsWindow extends AbstractWindow {
 
-    private boolean changeThemeEnabled = true;
+    private boolean changeThemeEnabled = false;
     protected OptionsGroup modeOptions;
     protected String msgTabbed;
     protected String msgSingle;
