@@ -55,16 +55,18 @@ public class CommonLookupController extends AbstractLookup {
         nameColumn.setCaption("Name");
 
         table.addColumn(nameColumn);
+        table.setDatasource(cds);
+
         table.addGeneratedColumn(nameProperty.getMetaProperty().getName(), new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Table table, Object itemId) {
-                Entity item = table.getDatasource().getItem(itemId);
+                // noinspection unchecked
+                Entity item = cds.getItem(itemId);
                 Label label = cFactory.createComponent(Label.NAME);
                 label.setValue(item.getInstanceName());
                 return label;
             }
         });
-        table.setDatasource(cds);
 
         table.setMultiSelect(true);
 
@@ -74,5 +76,7 @@ public class CommonLookupController extends AbstractLookup {
         table.refresh();
 
         this.setLookupComponent(table);
+
+        getDialogParams().setHeight(350);
     }
 }

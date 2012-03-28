@@ -204,8 +204,15 @@ public class InputParametersController extends AbstractWindow {
 
             pickerField.setMetaClass(entityMetaClass);
 
-            PickerField.LookupAction pickerlookupAction = pickerField.addLookupAction();
+            PickerField.LookupAction pickerlookupAction = new PickerField.LookupAction(pickerField) {
+                @Override
+                public void actionPerform(Component component) {
+                    getDialogParams().setHeight(400);
+                    super.actionPerform(component);
+                }
+            };
             pickerlookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
+            pickerField.addAction(pickerlookupAction);
 
             String alias = parameter.getScreen();
 
