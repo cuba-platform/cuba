@@ -191,7 +191,8 @@ public class DesktopPickerField
 
         updatingInstance = true;
         try {
-            if (datasource != null && metaProperty != null && datasource.getItem() != null)
+            if (datasource != null && metaProperty != null && datasource.getState() == Datasource.State.VALID &&
+                    datasource.getItem() != null)
                 InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
         } finally {
             updatingInstance = false;
