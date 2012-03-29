@@ -51,12 +51,14 @@ public class MetaClassRepresentation {
 
     public String getParent() {
         MetaClass ancestor = meta.getAncestor();
-        if (!readPermitted(ancestor))
-            return null;
 
         if (ancestor == null || !ancestor.getName().contains("$") ||
                 ancestor.getJavaClass().isAnnotationPresent(MappedSuperclass.class))
             return "";
+
+        if (!readPermitted(ancestor)) {
+            return null;
+        }
 
         return "Parent is " + asHref(ancestor);
     }

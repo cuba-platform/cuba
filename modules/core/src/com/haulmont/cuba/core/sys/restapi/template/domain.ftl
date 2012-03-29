@@ -58,7 +58,7 @@
 <h2>Known entities:</h2>
 <ul>
     <#list knownEntities as entity>
-        <li><a href="#${entity.name}">${entity.name}</a></li>
+        <li><a href="#${entity.name}">${entity.name} - ${entity.description}</a></li>
     </#list>
 </ul>
 
