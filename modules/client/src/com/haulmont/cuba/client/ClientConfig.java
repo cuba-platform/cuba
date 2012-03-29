@@ -10,7 +10,6 @@ import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
-import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInteger;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
@@ -102,4 +101,10 @@ public interface ClientConfig extends Config {
     @Property("cuba.gui.genericFilterTreeConditionSelect")
     @DefaultBoolean(true)
     boolean getGenericFilterTreeConditionSelect();
+
+    @DefaultString("INSERT")
+    String getTableInsertShortcut();
+
+    @DefaultString("DELETE")
+    String getTableRemoveShortcut();
 }

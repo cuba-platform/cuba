@@ -17,6 +17,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.ComponentsHelper;
@@ -26,6 +27,7 @@ import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
@@ -67,8 +69,6 @@ import org.dom4j.Element;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-
-import com.haulmont.cuba.web.toolkit.ui.CheckBox;
 
 public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.Table>
         extends WebAbstractList<T> implements Table {
@@ -386,6 +386,32 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         componentComposition.setSizeFull();
 
         component.setEnableCancelSorting(ConfigProvider.getConfig(WebConfig.class).getEnableCancelTableSorting());
+
+        ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
+
+        addShortcutActionBridge(INSERT_SHORTCUT_ID, clientConfig.getTableInsertShortcut(), ListActionType.CREATE);
+        addShortcutActionBridge(REMOVE_SHORTCUT_ID, clientConfig.getTableRemoveShortcut(), ListActionType.REMOVE);
+    }
+
+    /**
+     * Connect shortcut action to default list action
+     * @param shortcutActionId Shortcut action id
+     * @param keyCombination Keys
+     * @param defaultAction List action
+     */
+    protected void addShortcutActionBridge(String shortcutActionId, String keyCombination,
+                                           final ListActionType defaultAction) {
+
+        ShortcutAction.KeyCombination actionKeyCombination = ShortcutAction.KeyCombination.create(keyCombination);
+        component.addShortcutListener(new ShortcutListener(shortcutActionId, actionKeyCombination.getKey().getCode(),
+                ShortcutAction.Modifier.codes(actionKeyCombination.getModifiers())) {
+            @Override
+            public void handleAction(Object sender, Object target) {
+                Action listAction = getAction(defaultAction.getId());
+                if (listAction != null)
+                    listAction.actionPerform(WebAbstractTable.this);
+            }
+        });
     }
 
     protected void handleClickAction() {

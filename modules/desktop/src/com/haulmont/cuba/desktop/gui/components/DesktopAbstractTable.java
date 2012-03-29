@@ -9,7 +9,9 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.UserSessionProvider;
@@ -22,6 +24,7 @@ import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.cuba.gui.components.actions.ListActionType;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsActionsNotifier;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
@@ -143,12 +146,31 @@ public abstract class DesktopAbstractTable<C extends JTable>
             }
         });
 
+        ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
+        addShortcutActionBridge(INSERT_SHORTCUT_ID, clientConfig.getTableInsertShortcut(), ListActionType.CREATE);
+        addShortcutActionBridge(REMOVE_SHORTCUT_ID, clientConfig.getTableRemoveShortcut(), ListActionType.REMOVE);
+
         scrollPane.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 if (!columnsInitialized)
                     adjustColumnHeaders();
                 columnsInitialized = true;
+            }
+        });
+    }
+
+    protected void addShortcutActionBridge(String shortcutActionId, String keyCombination,
+                                           final ListActionType defaultAction) {
+        ShortcutAction.KeyCombination actionKeyCombination = ShortcutAction.KeyCombination.create(keyCombination);
+        impl.getInputMap().put(DesktopComponentsHelper.convertKeyCombination(actionKeyCombination), shortcutActionId);
+        impl.getActionMap().put(shortcutActionId, new AbstractAction(){
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Action listAction = getAction(defaultAction.getId());
+                if (listAction != null)
+                    listAction.actionPerform(DesktopAbstractTable.this);
             }
         });
     }

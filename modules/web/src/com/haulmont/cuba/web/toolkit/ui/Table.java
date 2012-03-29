@@ -1038,6 +1038,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         }
     }
 
+    @Override
     public Map<Object, Object> aggregate(Context context) {
         if (items instanceof AggregationContainer && isAggregatable()) {
             return ((AggregationContainer) items).aggregate(context);
@@ -1049,6 +1050,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         return aggregate(new Context(getItemIds()));
     }
 
+    @Override
     public Collection getAggregationPropertyIds() {
         if (items instanceof AggregationContainer) {
             return ((AggregationContainer) items).getAggregationPropertyIds();
@@ -1056,6 +1058,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
     }
 
+    @Override
     public Type getContainerPropertyAggregation(Object propertyId) {
         if (items instanceof AggregationContainer) {
             return ((AggregationContainer) items).getContainerPropertyAggregation(propertyId);
@@ -1063,6 +1066,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         throw new IllegalStateException("Table container is not AggregationContainer: " + items.getClass());
     }
 
+    @Override
     public void addContainerPropertyAggregation(Object propertyId, Type type) {
         if (items instanceof AggregationContainer) {
             ((AggregationContainer) items).addContainerPropertyAggregation(propertyId, type);
@@ -1071,6 +1075,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         }
     }
 
+    @Override
     public void removeContainerPropertyAggregation(Object propertyId) {
         if (items instanceof AggregationContainer) {
             ((AggregationContainer) items).removeContainerPropertyAggregation(propertyId);
@@ -1082,14 +1087,17 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
     @Override
     public void addShortcutListener(ShortcutListener listener) {
         if (listener.getKeyCode() != 13 || !(listener.getModifiers() == null || listener.getModifiers().length > 0)) {
-            throw new UnsupportedOperationException("Table only support Enter shortcuts");
+            super.addShortcutListener(listener);
         } else
             shortcutListeners.add(listener);
     }
 
     @Override
-    public void removeShortcutListener(ShortcutListener listener){
-        shortcutListeners.remove(listener);
+    public void removeShortcutListener(ShortcutListener listener) {
+        if (shortcutListeners.contains(listener))
+            shortcutListeners.remove(listener);
+        else
+            super.removeShortcutListener(listener);
     }
 
     public boolean isAggregatable() {

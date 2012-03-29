@@ -24,6 +24,9 @@ public interface Table
 {
     String NAME = "table";
 
+    String INSERT_SHORTCUT_ID = "INSERT_SHORTCUT";
+    String REMOVE_SHORTCUT_ID = "REMOVE_SHORTCUT";
+
     List<Column> getColumns();
     Column getColumn(String id);
     void addColumn(Column column);
