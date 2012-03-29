@@ -335,7 +335,7 @@ public class FilterEditor extends AbstractFilterEditor {
                         if (action.equals(showNameAction)) {
                             App.getInstance().getWindowManager().showMessageDialog(
                                     MessageProvider.getMessage(MESSAGES_PACK, "FilterEditor.showNameTitle"),
-                                    ((AbstractCondition) target).getParam().getName(),
+                                    ((Node<AbstractCondition>) target).getData().getParam().getName(),
                                     IFrame.MessageType.CONFIRMATION
                             );
                         }
