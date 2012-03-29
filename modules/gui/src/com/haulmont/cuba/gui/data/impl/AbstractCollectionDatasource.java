@@ -96,7 +96,10 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
     }
 
     public void setQueryFilter(QueryFilter filter) {
-        setQuery(getQuery(), filter);
+        String query = getQuery();
+        if (query == null)
+            throw new IllegalStateException("Unable to use filter on '" + getId() + "' datasource without query");
+        setQuery(query, filter);
     }
 
     public int getMaxResults() {
