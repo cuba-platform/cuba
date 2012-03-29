@@ -9,7 +9,7 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.RowsCount;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import net.miginfocom.layout.LC;
@@ -18,7 +18,8 @@ import org.jdesktop.swingx.JXHyperlink;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * <p>$Id$</p>
@@ -27,11 +28,11 @@ import java.awt.event.*;
  */
 public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.RowsCountComponent> implements RowsCount {
 
-    private CollectionDatasource datasource;
-    private boolean refreshing;
-    private State state;
-    private int start;
-    private int size;
+    protected CollectionDatasource datasource;
+    protected boolean refreshing;
+    protected State state;
+    protected int start;
+    protected int size;
 
     public DesktopRowsCount() {
         impl = new RowsCountComponent();
@@ -52,7 +53,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
                         }
                     }
             );
-            impl.getCountButton().addActionListener(new ActionListener(){
+            impl.getCountButton().addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     onLinkClick();
@@ -78,7 +79,7 @@ public class DesktopRowsCount extends DesktopAbstractComponent<DesktopRowsCount.
         }
     }
 
-    private void onCollectionChanged() {
+    protected void onCollectionChanged() {
         if (datasource == null)
             return;
 

@@ -19,13 +19,12 @@ import com.vaadin.ui.Button;
 
 public class WebRowsCount
         extends WebAbstractComponent<com.haulmont.cuba.web.toolkit.ui.RowsCount>
-        implements RowsCount
-{
-    private CollectionDatasource datasource;
-    private boolean refreshing;
-    private State state;
-    private int start;
-    private int size;
+        implements RowsCount {
+    protected CollectionDatasource datasource;
+    protected boolean refreshing;
+    protected State state;
+    protected int start;
+    protected int size;
 
     public WebRowsCount() {
         component = new com.haulmont.cuba.web.toolkit.ui.RowsCount();
@@ -116,7 +115,7 @@ public class WebRowsCount
         component.getCountButton().setCaption(String.valueOf(count));
     }
 
-    private void onCollectionChanged() {
+    protected void onCollectionChanged() {
         if (datasource == null)
             return;
 

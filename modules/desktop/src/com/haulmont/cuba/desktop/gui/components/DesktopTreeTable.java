@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import org.jdesktop.swingx.JXTreeTable;
 
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.TableCellEditor;
@@ -192,9 +193,15 @@ public class DesktopTreeTable
     }
 
     @Override
-    public void setSelected(Entity item) {
-        TreePath treePath = ((TreeTableModelAdapter) tableModel).getTreePath(item);
-        impl.getTreeSelectionModel().setSelectionPath(treePath);
+    public void setSelected(final Entity item) {
+        // JXTreeTable deferres some work after tree structural changes, so it won't work if we select immediately
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                TreePath treePath = ((TreeTableModelAdapter) tableModel).getTreePath(item);
+                impl.getTreeSelectionModel().setSelectionPath(treePath);
+            }
+        });
     }
 
     @Override

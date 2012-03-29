@@ -73,7 +73,7 @@ import java.util.regex.Pattern;
 public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements Filter {
     private static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
-    private PersistenceManagerService persistenceManager;
+    protected PersistenceManagerService persistenceManager;
     private CollectionDatasource datasource;
     private QueryFilter dsQueryFilter;
     private String mainMessagesPack = AppConfig.getMessagesPack();
@@ -81,7 +81,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     private FilterEntity noFilter;
     private ItemWrapper<FilterEntity> noFilterWrapper;
     private FilterEntity filterEntity;
-    private ConditionsTree conditions = new ConditionsTree();
+    protected ConditionsTree conditions = new ConditionsTree();
 
     private DesktopLookupField select;
     private JPanel maxResultsPanel;
@@ -99,7 +99,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     private boolean useMaxResults;
     private JCheckBox maxResultsCb;
     //private DesktopTextField maxResultsField;
-    private MaxResultsField maxResultsField;
+    protected MaxResultsField maxResultsField;
     private Boolean manualApplyRequired;
 
     private DesktopPopupButton actions;
@@ -600,14 +600,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     public boolean apply(boolean isNewWindow) {
         if (clientConfig.getGenericFilterChecking()) {
             if (filterEntity != null) {
-                boolean haveCorrectCondition = false;
-
-                for (AbstractCondition condition : conditions.toConditionsList()) {
-                    if ((condition.getParam() != null) && (condition.getParam().getValue() != null)) {
-                        haveCorrectCondition = true;
-                        break;
-                    }
-                }
+                boolean haveCorrectCondition = hasCorrectCondition();
 
                 if (!haveCorrectCondition) {
                     if (!isNewWindow) {
@@ -634,15 +627,27 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         if (datasource instanceof CollectionDatasource.SupportsPaging)
             ((CollectionDatasource.SupportsPaging) datasource).setFirstResult(0);
 
-        refreshDatasourse();
+        refreshDatasource();
         return true;
+    }
+
+    protected boolean hasCorrectCondition() {
+        boolean haveCorrectCondition = false;
+
+        for (AbstractCondition condition : conditions.toConditionsList()) {
+            if ((condition.getParam() != null) && (condition.getParam().getValue() != null)) {
+                haveCorrectCondition = true;
+                break;
+            }
+        }
+        return haveCorrectCondition;
     }
 
     /**
      * extenders should be able to modify the datasource
      * before it will be refreshed
      */
-    protected void refreshDatasourse() {
+    protected void refreshDatasource() {
         datasource.refresh();
     }
 
@@ -1464,7 +1469,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         }
     }
 
-    private class MaxResultsField extends JTextField {
+    protected class MaxResultsField extends JTextField {
         private Integer value;
         private final int ENTER_CODE = 10;
 

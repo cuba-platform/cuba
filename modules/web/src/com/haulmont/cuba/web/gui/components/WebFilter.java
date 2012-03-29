@@ -74,7 +74,7 @@ public class WebFilter
         extends WebAbstractComponent<VerticalActionsLayout> implements Filter {
     private static final String MESSAGES_PACK = "com.haulmont.cuba.gui.components.filter";
 
-    private PersistenceManagerService persistenceManager;
+    protected PersistenceManagerService persistenceManager;
 
     private CollectionDatasource datasource;
     private QueryFilter dsQueryFilter;
@@ -97,7 +97,7 @@ public class WebFilter
 
     private boolean useMaxResults;
     private CheckBox maxResultsCb;
-    private TextField maxResultsField;
+    protected TextField maxResultsField;
     private AbstractOrderedLayout maxResultsLayout;
     private Boolean manualApplyRequired;
 
@@ -294,14 +294,7 @@ public class WebFilter
     public boolean apply(boolean isNewWindow) {
         if (clientConfig.getGenericFilterChecking()) {
             if (filterEntity != null) {
-                boolean haveCorrectCondition = false;
-
-                for (AbstractCondition condition : conditions.toConditionsList()) {
-                    if ((condition.getParam() != null) && (condition.getParam().getValue() != null)) {
-                        haveCorrectCondition = true;
-                        break;
-                    }
-                }
+                boolean haveCorrectCondition = hasCorrectCondition();
 
                 if (!haveCorrectCondition) {
                     if (!isNewWindow) {
@@ -328,15 +321,27 @@ public class WebFilter
         if (datasource instanceof CollectionDatasource.SupportsPaging)
             ((CollectionDatasource.SupportsPaging) datasource).setFirstResult(0);
 
-        refreshDatasourse();
+        refreshDatasource();
         return true;
+    }
+
+    protected boolean hasCorrectCondition() {
+        boolean haveCorrectCondition = false;
+
+        for (AbstractCondition condition : conditions.toConditionsList()) {
+            if ((condition.getParam() != null) && (condition.getParam().getValue() != null)) {
+                haveCorrectCondition = true;
+                break;
+            }
+        }
+        return haveCorrectCondition;
     }
 
     /**
      * extenders should be able to modify the datasource
      * before it will be refreshed
      */
-    protected void refreshDatasourse() {
+    protected void refreshDatasource() {
         datasource.refresh();
     }
 
