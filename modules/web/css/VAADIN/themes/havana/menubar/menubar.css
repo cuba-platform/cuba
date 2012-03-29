@@ -39,7 +39,7 @@
 
 .v-menubar .menuitem div {
     color: #fff;
-    text-shadow: #000 1px 1px 0;
+    text-shadow: black 1px 1px;
     font-size: 13px;
 }
 
@@ -47,13 +47,13 @@
     padding-left: 10px;
     padding-right: 10px;
     color: #000000;
-    text-shadow: #fff 1px 1px 0;
+    text-shadow: black 1px 1px;
     height: 19px;
     background-color: #506D8D;
 }
 
 .v-menubar .menuitem-selected div {
-    text-shadow: #000 0 0 6px;
+    /*text-shadow: #000 0 0 6px;*/
 }
 
 .v-menubar-submenu {
@@ -78,6 +78,7 @@
     padding-left: 6px;
     padding-right: 6px;
     background: transparent;
+    text-shadow: black 1px 1px;
 }
 
 .v-menubar-submenu .menuitem div {

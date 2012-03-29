@@ -25,8 +25,6 @@
 	height: 23px;
 }
 
-
-
 .v-table-header table,
 .v-table-table {
 	border-collapse: collapse;
@@ -233,7 +231,7 @@
 /* datefield button is too high for table cell */
 .v-table-cell-content .v-datefield-button {
 	height: 25px;
-	margin: -2px 0;
+	/*margin: -2px 0;*/
 }
 
 .v-table-column-selector {
@@ -250,7 +248,7 @@
  */
 
 .v-table-cell-content .v-button {
-    height: 24px;
+    height: 25px;
     width: 24px;
     background: #FFF none;
 }

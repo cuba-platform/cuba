@@ -64,7 +64,10 @@
     font-family: Verdana, Arial, sans-serif;
 }
 
-.v-menubar menuitem {
+.v-menubar .menuitem,
+.v-menubar-submenu menuitem,
+.v-button-white-border .v-button-caption,
+.v-horizontallayout-titlebar .v-label-select-label {
     text-shadow: black 1px 1px;
 }
 

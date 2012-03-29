@@ -232,8 +232,8 @@
 
 /* datefield button is too high for table cell */
 .v-table-cell-content .v-datefield-button {
-	height: 25px;
-	margin: -2px 0;
+	height: 24px;
+	/*margin: -2px 0;*/
 }
 
 .v-table-column-selector {
