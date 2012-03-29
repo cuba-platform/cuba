@@ -17,10 +17,7 @@ import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.PropertyDatasource;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.security.entity.EntityOp;
 
@@ -113,6 +110,18 @@ public class CreateAction extends AbstractAction {
             }
 
             item.setValue(hierarchyProperty, parentItem);
+        }
+
+        if (datasource instanceof NestedDatasource) {
+            // Initialize reference to master entity
+            Datasource masterDs = ((NestedDatasource) datasource).getMaster();
+            MetaProperty metaProperty = ((NestedDatasource) datasource).getProperty();
+            if (masterDs != null && metaProperty != null) {
+                MetaProperty inverseProp = metaProperty.getInverse();
+                if (inverseProp != null && inverseProp.getDomain().equals(datasource.getMetaClass())) {
+                    item.setValue(inverseProp.getName(), masterDs.getItem());
+                }
+            }
         }
 
         Map<String, Object> values = getInitialValues();
