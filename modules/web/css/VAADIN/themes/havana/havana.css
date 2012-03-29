@@ -159,18 +159,11 @@
  */
 .v-verticallayout-loginBottom {
     padding-bottom: 5px;
-    background: url(images/login-bg.png) no-repeat;
-    background-size: 100% 100%;
-    -moz-background-size: 100% 100%;
-    -webkit-background-size: 100% 100%;
-    -o-background-size: 100% 100%;
-    -ms-background-size: 100% 100%;
-}
-
-.v-ie .v-verticallayout-loginBottom  {
-    background: transparent;
-    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='VAADIN/themes/havana/images/login-bg.png', sizingMethod='scale');
-    -ms-filter:"progid:DXImageTransform.Microsoft.AlphaImageLoader(src='VAADIN/themes/havana/images/login-bg.png', sizingMethod='scale')";
+    background: #F4F6F8;
+    border: thin solid #CDE0EC;
+    box-shadow: 0 0 5px rgba(0,0,0,0.25);
+    -moz-box-shadow: 0 0 5px rgba(0,0,0,0.25);
+    -webkit-box-shadow: 0 0 5px rgba(0,0,0,0.25);
 }
 
 .v-verticallayout-loginBottom * {
