@@ -102,9 +102,9 @@ public interface ClientConfig extends Config {
     @DefaultBoolean(true)
     boolean getGenericFilterTreeConditionSelect();
 
-    @DefaultString("INSERT")
+    @DefaultString("CTRL-INSERT")
     String getTableInsertShortcut();
 
-    @DefaultString("DELETE")
+    @DefaultString("CTRL-DELETE")
     String getTableRemoveShortcut();
 }
