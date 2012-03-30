@@ -185,6 +185,7 @@ public class WebFilter
 
         initMaxResultsLayout();
         topLayout.addComponent(maxResultsLayout);
+        topLayout.setComponentAlignment(maxResultsLayout, com.vaadin.ui.Alignment.MIDDLE_LEFT);
 
         component.addComponent(topLayout);
 
@@ -211,6 +212,7 @@ public class WebFilter
                     }
                 }
         );
+        maxResultsCb.setStyleName("filter-maxresults");
         maxResultsLayout.addComponent(maxResultsCb);
 
         maxResultsField = new TextField();
@@ -235,6 +237,9 @@ public class WebFilter
 
         Label maxResultsLabel2 = new Label(MessageProvider.getMessage(mainMessagesPack, "filter.maxResults.label2"));
         maxResultsLayout.addComponent(maxResultsLabel2);
+        maxResultsLayout.setComponentAlignment(maxResultsLabel2, com.vaadin.ui.Alignment.MIDDLE_LEFT);
+
+        maxResultsLayout.setStyleName("filter-maxresults");
     }
 
     private void fillActions() {
