@@ -31,9 +31,9 @@ import java.util.List;
  */
 public class TreeModelAdapter implements TreeModel {
 
-    private HierarchicalDatasource<Entity<Object>, Object> datasource;
+    protected HierarchicalDatasource<Entity<Object>, Object> datasource;
 
-    private Object rootNode = "Root";
+    protected Object rootNode = "Root";
 
     private List<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
 

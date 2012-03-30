@@ -517,7 +517,7 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
 
             final boolean allowChildren = areChildrenAllowed(itemId);
             if (allowChildren && hasChildren(itemId)) {
-                target.addAttribute("children", getChildren(itemId).size());
+                target.addAttribute("children", getChildrenCount(itemId));
                 if (isExpanded(itemId)) {
                     target.addAttribute("expanded", true);
                 }
@@ -635,6 +635,10 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
             }
         }
         return ids;
+    }
+
+    protected int getChildrenCount(Object itemId) {
+        return getChildren(itemId).size();
     }
 
     @Override

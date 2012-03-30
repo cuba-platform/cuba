@@ -13,8 +13,8 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -41,34 +41,12 @@ public class WebTreeTable
     private static final long serialVersionUID = 4587793124533649610L;
 
     public WebTreeTable() {
-        component = new com.haulmont.cuba.web.toolkit.ui.TreeTable() {
-            @Override
-            public Resource getItemIcon(Object itemId) {
-                if (styleProvider != null) {
-                    @SuppressWarnings({"unchecked"})
-                    final Entity item = datasource.getItem(itemId);
-                    final String resURL = styleProvider.getItemIcon(item);
-
-                    return resURL == null ? null : WebComponentsHelper.getResource(resURL);
-                } else {
-                    return null;
-                }
-            }
-
-            @Override
-            protected boolean changeVariables(Map<String, Object> variables) {
-                boolean b = super.changeVariables(variables);
-                b = handleSpecificVariables(variables) || b;
-                return b;
-            }
-
-            @Override
-            public void paintContent(PaintTarget target) throws PaintException {
-                super.paintContent(target);
-                paintSpecificContent(target);
-            }
-        };
+        component = createTreeTableComponent();
         initComponent(component);
+    }
+
+    protected com.haulmont.cuba.web.toolkit.ui.TreeTable createTreeTableComponent() {
+        return new MyTreeTable();
     }
 
     @Override
@@ -267,6 +245,34 @@ public class WebTreeTable
 
         public Map<Object, Object> aggregate(Context context) {
             return __aggregate(this, context);
+        }
+    }
+
+    protected class MyTreeTable extends com.haulmont.cuba.web.toolkit.ui.TreeTable {
+        @Override
+        public Resource getItemIcon(Object itemId) {
+            if (styleProvider != null) {
+                @SuppressWarnings({"unchecked"})
+                final Entity item = datasource.getItem(itemId);
+                final String resURL = styleProvider.getItemIcon(item);
+
+                return resURL == null ? null : WebComponentsHelper.getResource(resURL);
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        protected boolean changeVariables(Map<String, Object> variables) {
+            boolean b = super.changeVariables(variables);
+            b = handleSpecificVariables(variables) || b;
+            return b;
+        }
+
+        @Override
+        public void paintContent(PaintTarget target) throws PaintException {
+            super.paintContent(target);
+            paintSpecificContent(target);
         }
     }
 }

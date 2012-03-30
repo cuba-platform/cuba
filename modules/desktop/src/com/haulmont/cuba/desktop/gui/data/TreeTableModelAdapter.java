@@ -28,7 +28,7 @@ import java.util.List;
 public class TreeTableModelAdapter extends AbstractTreeTableModel implements AnyTableModelAdapter {
 
     private JXTreeTable treeTable;
-    private TreeModelAdapter treeDelegate;
+    protected TreeModelAdapter treeDelegate;
     private TableModelAdapter tableDelegate;
 
     public TreeTableModelAdapter(
@@ -37,7 +37,7 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
             List<Table.Column> columns,
             boolean autoRefresh) {
         this.treeTable = treeTable;
-        treeDelegate = new TreeModelAdapter(datasource, CaptionMode.ITEM, null, autoRefresh);
+        treeDelegate = createTreeModelAdapter(datasource, autoRefresh);
         tableDelegate = new TableModelAdapter(datasource, columns, autoRefresh);
 
         datasource.addListener(
@@ -49,6 +49,10 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
                     }
                 }
         );
+    }
+
+    protected TreeModelAdapter createTreeModelAdapter(HierarchicalDatasource datasource, boolean autoRefresh) {
+        return new TreeModelAdapter(datasource, CaptionMode.ITEM, null, autoRefresh);
     }
 
     @Override
