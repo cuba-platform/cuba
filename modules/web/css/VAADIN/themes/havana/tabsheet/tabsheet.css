@@ -58,7 +58,7 @@
 .v-tabsheet-content .v-tabsheet-tabitem-selected-first,
 .v-tabsheet-content .v-tabsheet-tabitem-selected {
     background: #F5F7F9;
-    border-color: #D2E3EE;
+    border-color: #B4D0E4;
 }
 
 .v-tabsheet-content .v-tabsheet-tabitem .v-caption .v-captiontext {
@@ -66,7 +66,7 @@
 }
 
 .v-tabsheet-content .v-tabsheet-content {
-    border: 1px solid #D2E3EE;
+    border: 1px solid #B4D0E4;
     border-top-style: none;
     background: #F5F7F9;
 }
@@ -182,7 +182,7 @@
 .v-window-contents .v-tabsheet-tabitem-selected-first,
 .v-window-contents  .v-tabsheet-tabitem-selected {
     background: #F5F7F9;
-    border-color: #D2E3EE;
+    border-color: #B4D0E4;
 }
 
 .v-window-contents .v-tabsheet-tabitem .v-caption .v-captiontext {
@@ -190,7 +190,7 @@
 }
 
 .v-window-contents .v-tabsheet-content {
-    border: 1px solid #D2E3EE;
+    border: 1px solid #B4D0E4;
     border-top-style: none;
     background: #F5F7F9;
 }
