@@ -14,7 +14,7 @@
 >
     <dsContext>
         <hierarchicalDatasource
-            id="groups"
+            id="groupsDs"
             class="com.haulmont.cuba.security.entity.Group"
             view="group.browse"
             hierarchyProperty="parent"
@@ -25,7 +25,7 @@
 
     <layout expandLayout="true">
         <tree id="groups">
-            <treechildren datasource="groups" captionProperty="name" hierarchyProperty="parent"/>
+            <treechildren datasource="groupsDs" captionProperty="name" hierarchyProperty="parent"/>
         </tree>
     </layout>
 </window>
