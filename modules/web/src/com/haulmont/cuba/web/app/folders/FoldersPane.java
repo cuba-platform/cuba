@@ -389,7 +389,7 @@ public class FoldersPane extends VerticalLayout {
             return null;
 
         appFoldersTree = new com.haulmont.cuba.web.toolkit.ui.Tree();
-        appFoldersTree.setDoubleClickMode(true);
+//        appFoldersTree.setDoubleClickMode(true);
         appFoldersTree.setItemStyleGenerator(new Tree.ItemStyleGenerator() {
             public String getStyle(Object itemId) {
                 Folder folder = ((Folder) itemId);
@@ -411,7 +411,7 @@ public class FoldersPane extends VerticalLayout {
 
     protected Component createSearchFoldersPane() {
         searchFoldersTree = new com.haulmont.cuba.web.toolkit.ui.Tree();
-        searchFoldersTree.setDoubleClickMode(true);
+//        searchFoldersTree.setDoubleClickMode(true);
 
         FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
         List<SearchFolder> searchFolders = service.loadSearchFolders();
@@ -590,6 +590,7 @@ public class FoldersPane extends VerticalLayout {
 
         }
 
+        @Override
         public void itemClick(ItemClickEvent event) {
             if (event.getItemId() instanceof AbstractSearchFolder
                     && !StringUtils.isBlank(((AbstractSearchFolder) event.getItemId()).getFilterComponentId())) {
@@ -609,6 +610,7 @@ public class FoldersPane extends VerticalLayout {
         public AppFolderActionsHandler() {
         }
 
+        @Override
         public Action[] getActions(Object target, Object sender) {
             if (target instanceof Folder) {
                 if (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.appFolder.global")) {
@@ -623,6 +625,7 @@ public class FoldersPane extends VerticalLayout {
             }
         }
 
+        @Override
         public void handleAction(Action action, Object sender, Object target) {
             if (target instanceof Folder)
                 ((FolderAction) action).perform((Folder) target);
@@ -720,6 +723,7 @@ public class FoldersPane extends VerticalLayout {
             super(MessageProvider.getMessage(messagesPack, "folders.openFolderAction"));
         }
 
+        @Override
         public void perform(Folder folder) {
             if (folder instanceof AbstractSearchFolder)
                 openFolder((AbstractSearchFolder) folder);
@@ -735,6 +739,7 @@ public class FoldersPane extends VerticalLayout {
             this.isAppFolder = isAppFolder;
         }
 
+        @Override
         public void perform(final Folder folder) {
             final Folder newFolder = isAppFolder ? MetadataProvider.create(AppFolder.class) : (new SearchFolder());
             newFolder.setName("");
@@ -742,6 +747,7 @@ public class FoldersPane extends VerticalLayout {
             newFolder.setParent(folder);
             final FolderEditWindow window = AppFolderEditWindow.create(isAppFolder, true, newFolder, null,
                     new Runnable() {
+                        @Override
                         public void run() {
                             saveFolder(newFolder);
                             refreshFolders();
@@ -749,6 +755,7 @@ public class FoldersPane extends VerticalLayout {
                     });
 
             window.addListener(new com.vaadin.ui.Window.CloseListener() {
+                @Override
                 public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                     App.getInstance().getAppWindow().removeWindow(window);
                 }
@@ -762,6 +769,7 @@ public class FoldersPane extends VerticalLayout {
             super(MessageProvider.getMessage(messagesPack, "folders.copyFolderAction"));
         }
 
+        @Override
         public void perform(final Folder folder) {
             final AbstractSearchFolder newFolder;
             newFolder = MetadataProvider.create(folder.getMetaClass());
@@ -776,10 +784,12 @@ public class FoldersPane extends VerticalLayout {
             super(MessageProvider.getMessage(messagesPack, "folders.editFolderAction"));
         }
 
+        @Override
         public void perform(final Folder folder) {
             final FolderEditWindow window;
             if (folder instanceof SearchFolder) {
                 window = new FolderEditWindow(false, folder, null, new Runnable() {
+                    @Override
                     public void run() {
                         saveFolder(folder);
                         refreshFolders();
@@ -788,6 +798,7 @@ public class FoldersPane extends VerticalLayout {
             } else {
                 if (folder instanceof AppFolder) {
                     window = AppFolderEditWindow.create(true, false, folder, null, new Runnable() {
+                        @Override
                         public void run() {
                             saveFolder(folder);
                             refreshFolders();
@@ -797,6 +808,7 @@ public class FoldersPane extends VerticalLayout {
                     return;
             }
             window.addListener(new com.vaadin.ui.Window.CloseListener() {
+                @Override
                 public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                     App.getInstance().getAppWindow().removeWindow(window);
                 }
@@ -811,6 +823,7 @@ public class FoldersPane extends VerticalLayout {
             super(MessageProvider.getMessage(messagesPack, "folders.removeFolderAction"));
         }
 
+        @Override
         public void perform(final Folder folder) {
             App.getInstance().getWindowManager().showOptionDialog(
                     MessageProvider.getMessage(messagesPack, "dialogs.Confirmation"),
@@ -842,8 +855,7 @@ public class FoldersPane extends VerticalLayout {
             try {
                 new WebExportDisplay().show(new ByteArrayDataProvider(
                         service.exportFolder(folder)), "Folders", ExportFormat.ZIP);
-            } catch (IOException e) {
-
+            } catch (IOException ignored) {
             }
         }
     }
@@ -853,6 +865,7 @@ public class FoldersPane extends VerticalLayout {
             super(MessageProvider.getMessage(messagesPack, "folders.importFolderAction"));
         }
 
+        @Override
         public void perform(final Folder folder) {
             WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
             final ReportImportDialog importDialog = App.getInstance().getWindowManager().
@@ -860,6 +873,7 @@ public class FoldersPane extends VerticalLayout {
                             WindowManager.OpenType.DIALOG);
 
             importDialog.addListener(new Window.CloseListener() {
+                @Override
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         try {
@@ -881,10 +895,12 @@ public class FoldersPane extends VerticalLayout {
 
     public class AppFoldersUpdater implements Timer.Listener {
 
+        @Override
         public void onTimer(Timer timer) {
             reloadAppFolders();
         }
 
+        @Override
         public void onStopTimer(Timer timer) {
         }
     }

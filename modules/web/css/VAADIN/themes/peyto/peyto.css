@@ -87,6 +87,14 @@
     font-size: 14px;
 }
 
+/**
+ * Folders Pane
+ */
+
+.v-verticallayout-folderspane .v-tree-node .v-tree-node-caption span {
+    cursor: pointer;
+}
+
 /* Breadcrumbs close button */
 
 .v-button-closetab-button {

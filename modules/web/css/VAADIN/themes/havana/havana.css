@@ -73,6 +73,14 @@
 }
 
 /**
+ * Folders Pane
+ */
+
+.v-verticallayout-folderspane .v-tree-node .v-tree-node-caption span {
+    cursor: pointer;
+}
+
+/**
  *  Breadcrumbs styles
  */
 .v-horizontallayout-breadcrumbs .v-label {
