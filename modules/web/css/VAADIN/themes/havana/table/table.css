@@ -270,6 +270,29 @@
     height: 20px;
 }
 
+.v-table-cell-content .v-button {
+    height: 24px;
+    width: 24px;
+    background: #FFF none;
+}
+
+.v-table-cell-content .v-button-icon-autosize .v-icon {
+    height: auto;
+    width: auto;
+}
+
+.v-table-cell-content .v-button-icon-autosize {
+    background: transparent none;
+    height: auto;
+    width: auto;
+}
+
+.v-table-cell-content .v-button-icon-autosize:hover {
+    background: transparent none;
+    height: auto;
+    width: auto;
+}
+
 .v-table-cell-content .v-button-wrap {
     background: none;
 }
