@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.report.locale;
+package com.haulmont.cuba.locale;
 
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import org.apache.commons.lang.StringUtils;
@@ -19,9 +19,9 @@ import java.util.Properties;
  *
  * @author artamonov
  */
-public final class ReportLocaleHelper {
+public final class LocaleHelper {
 
-    private ReportLocaleHelper() {
+    private LocaleHelper() {
     }
 
     public static String getLocalizedName(String localeBundle) {

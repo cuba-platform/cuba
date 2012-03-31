@@ -16,7 +16,7 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.DeletePolicy;
-import com.haulmont.cuba.report.locale.ReportLocaleHelper;
+import com.haulmont.cuba.locale.LocaleHelper;
 import com.haulmont.cuba.security.entity.Role;
 import org.apache.commons.lang.StringUtils;
 
@@ -224,7 +224,7 @@ public class Report extends HardDeleteEntity {
     @MetaProperty
     public String getLocName() {
         if (localeName == null) {
-            localeName = ReportLocaleHelper.getLocalizedName(localeNames);
+            localeName = LocaleHelper.getLocalizedName(localeNames);
             if (localeName == null)
                 localeName = name;
         }

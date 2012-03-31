@@ -9,7 +9,7 @@ package com.haulmont.cuba.report;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.report.locale.ReportLocaleHelper;
+import com.haulmont.cuba.locale.LocaleHelper;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
@@ -79,7 +79,7 @@ public class ReportGroup extends HardDeleteEntity {
     @MetaProperty
     public String getLocName() {
         if (localeName == null) {
-            localeName = ReportLocaleHelper.getLocalizedName(localeNames);
+            localeName = LocaleHelper.getLocalizedName(localeNames);
             if (localeName == null)
                 localeName = title;
         }
