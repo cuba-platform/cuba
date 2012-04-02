@@ -350,15 +350,24 @@ public class FilterEditor extends AbstractFilterEditor {
         AbstractCondition condition = descriptor.createCondition();
         Node<AbstractCondition> node = new Node<AbstractCondition>(condition);
 
+        Node<AbstractCondition> parentNode = null;
         Object selected = table.getValue();
         if (selected != table.getNullSelectionItemId()) {
-            Node<AbstractCondition> parentNode = (Node<AbstractCondition>) selected;
+            parentNode = (Node<AbstractCondition>) selected;
             if (parentNode.getData().isGroup()) {
                 parentNode.addChild(node);
             }
         }
         container.addItem(node);
         table.setExpanded(node);
+
+        if (node.getData().isGroup()) {
+            // Select the added node if it is a group
+            table.setValue(node);
+        } else if (parentNode != null) {
+            // Otherwise select a parent node if it is a group
+            table.setValue(parentNode);
+        }
 
         AbstractOperationEditor operationEditor = condition.getOperationEditor();
         if (operationEditor instanceof HasAction && descriptor.isShowImmediately()) {

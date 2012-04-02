@@ -369,14 +369,26 @@ public class FilterEditor extends AbstractFilterEditor {
         AbstractCondition condition = descriptor.createCondition();
         Node<AbstractCondition> node = new Node<AbstractCondition>(condition);
 
+        Node<AbstractCondition> parentNode = null;
         if (table.getSelectedRow() > -1) {
-            Node<AbstractCondition> parentNode = model.getNode(table.getSelectedRow());
+            parentNode = model.getNode(table.getSelectedRow());
             if (parentNode.getData().isGroup()) {
                 parentNode.addChild(node);
             }
         }
 
         model.addNode(node);
+
+        if (node.getData().isGroup()) {
+            // Select the added node if it is a group
+            int row = model.getRow(node);
+            table.setRowSelectionInterval(row, row);
+        } else if (parentNode != null) {
+            // Otherwise select a parent node if it is a group
+            int row = model.getRow(parentNode);
+            table.setRowSelectionInterval(row, row);
+        }
+
         table.revalidate();
         table.repaint();
 

@@ -222,4 +222,8 @@ class ConditionsTableModel extends AbstractTableModel {
             fireTableDataChanged();
         }
     }
+
+    public int getRow(Node<AbstractCondition> node) {
+        return conditions.toList().indexOf(node);
+    }
 }
