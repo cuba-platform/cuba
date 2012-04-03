@@ -175,8 +175,9 @@ public class LogManagerServiceBean implements LogManagerService {
     }
 
     private String shieldingTags(String text) {
-        text = text.replaceAll("<", "&lt");
-        text = text.replaceAll(">", "&gt");
+        text = text.replaceAll("&", "&amp;");
+        text = text.replaceAll("<", "&lt;");
+        text = text.replaceAll(">", "&gt;");
         return text;
     }
 
