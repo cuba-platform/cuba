@@ -54,6 +54,9 @@ public class JespaAuthProvider extends HttpSecurityService implements CubaAuthPr
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+
+        initDomains();
+
         Map<String, String> properties = new HashMap<String, String>();
 
         properties.put("jespa.bindstr", getBindStr());
@@ -66,8 +69,6 @@ public class JespaAuthProvider extends HttpSecurityService implements CubaAuthPr
 
         try {
             super.init(properties);
-
-            initDomains();
         } catch (SecurityProviderException e) {
             throw new ServletException(e);
         }
