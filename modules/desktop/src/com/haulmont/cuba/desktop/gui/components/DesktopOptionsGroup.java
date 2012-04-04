@@ -281,4 +281,10 @@ public class DesktopOptionsGroup
         this.orientation = orientation;
         updateLayout();
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        for (JToggleButton button : items.values())
+            button.setEnabled(enabled);
+    }
 }
