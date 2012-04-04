@@ -900,6 +900,7 @@ create table SYS_CATEGORY_ATTR (
 	ORDER_NO integer,
 	SCREEN varchar(255),
 	REQUIRED tinyint,
+	LOOKUP tinyint,
 	--
 	primary key nonclustered (ID),
 	constraint SYS_CATEGORY_ATTR_CATEGORY_ID foreign key (CATEGORY_ID) references SYS_CATEGORY(ID)
