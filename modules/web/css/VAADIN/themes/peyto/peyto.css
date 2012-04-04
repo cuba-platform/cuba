@@ -95,6 +95,11 @@
     cursor: pointer;
 }
 
+.folderspane .v-tree-node .v-tree-node-caption-clickable-folder span:hover {
+    text-decoration: underline;
+    background: transparent none;
+}
+
 .folderspane .v-tree-node .v-tree-node-caption-nonclickable-folder span:hover {
     background: transparent none;
 }
