@@ -164,7 +164,6 @@ public class InputParametersController extends AbstractWindow {
             TextField textField = cFactory.createComponent(TextField.NAME);
             textField.addValidator(new DoubleValidator());
             textField.setDatatype(Datatypes.get(Double.class));
-            textField.setValue(0);
             return textField;
         }
     }
