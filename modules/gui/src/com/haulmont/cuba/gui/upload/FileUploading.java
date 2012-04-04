@@ -128,19 +128,20 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
+
+        if (file.exists()) {
+            throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
+        }
+
         try {
-            if (file.exists()) {
-                throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
-            }
             if (file.createNewFile())
                 tempFiles.put(uuid, file);
             else
                 throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
-        } catch (FileStorageException ex) {
-            throw ex;
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath());
         }
+
         return uuid;
     }
 
@@ -150,14 +151,10 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         String tempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir();
         File dir = new File(tempDir);
         File file = new File(dir, uuid.toString());
-        try {
-            if (file.exists()) {
-                throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
-            }
-            tempFiles.put(uuid, file);
-        } catch (Exception ex) {
+        if (file.exists()) {
             throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
         }
+        tempFiles.put(uuid, file);
         return uuid;
     }
 
