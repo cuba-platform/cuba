@@ -7,11 +7,14 @@
 package com.haulmont.cuba.gui.export;
 
 /**
+ * DEPRECATED! Will be removed in Release 3.2.
+ *
  * User space FileNotFoundException
  * <p>$Id$</p>
  *
  * @author artamonov
  */
+@Deprecated
 public class FileMissingException extends ResourceException {
 
     private String fileName;

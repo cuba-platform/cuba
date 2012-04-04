@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.UUID;
 
 /**
@@ -62,16 +61,12 @@ public class FileUploadController {
             if (fd == null)
                 return;
 
-            OutputStream os = null;
             try {
-                os = fileStorage.openFileOutputStream(fd);
-                IOUtils.copy(is, os);
-                os.flush();
+                fileStorage.saveStream(fd, is);
             } catch (FileStorageException e) {
                 log.error("Unable to upload file", e);
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.sendError(e.getType().getHttpStatus());
             } finally {
-                IOUtils.closeQuietly(os);
                 IOUtils.closeQuietly(is);
             }
         } finally {

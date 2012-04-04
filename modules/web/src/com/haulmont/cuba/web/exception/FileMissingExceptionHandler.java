@@ -14,12 +14,15 @@ import com.vaadin.ui.Window;
 import javax.annotation.Nullable;
 
 /**
+ * DEPRECATED! Will be removed in Release 3.2.
+ *
  * Handles {@link FileMissingException}.
  *
  * <p>$Id$</p>
  *
  * @author artamonov
  */
+@Deprecated
 public class FileMissingExceptionHandler extends AbstractExceptionHandler {
 
     public FileMissingExceptionHandler() {
@@ -29,7 +32,7 @@ public class FileMissingExceptionHandler extends AbstractExceptionHandler {
     @Override
     protected void doHandle(App app, String className, String message, @Nullable Throwable throwable) {
         String fileName = throwable != null ? ((FileMissingException) throwable).getFileName() : "?";
-        String msg = MessageProvider.formatMessage(getClass(), "fileNotFoundWarning.message", fileName);
+        String msg = MessageProvider.formatMessage(getClass(), "fileNotFound.message", fileName);
         app.getAppWindow().showNotification(msg, Window.Notification.TYPE_WARNING_MESSAGE);
     }
 }

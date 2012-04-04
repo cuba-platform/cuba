@@ -12,6 +12,7 @@ import com.haulmont.cuba.core.global.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.FileEntity;
@@ -33,8 +34,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @ManagedBean("cuba_FileUploading")
 public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
-
-    private static final int HTTP_OK = 200;
 
     private Map<UUID, File> tempFiles = new ConcurrentHashMap<UUID, File>();
 
@@ -156,8 +155,6 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
                 throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
             }
             tempFiles.put(uuid, file);
-        } catch (FileStorageException ex) {
-            throw ex;
         } catch (Exception ex) {
             throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
         }
@@ -240,9 +237,10 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
         HttpClient client = new DefaultHttpClient();
         try {
             HttpResponse response = client.execute(method);
-            if (response.getStatusLine().getStatusCode() != HTTP_OK) {
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != HttpStatus.SC_OK) {
                 log.error("Unable to upload file to " + connectionUrl + "\n" + response.getStatusLine());
-                throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getName());
+                throw new FileStorageException(FileStorageException.Type.fromHttpStatus(statusCode), fileDescr.getName());
             }
         } catch (IOException e) {
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getName(), e);

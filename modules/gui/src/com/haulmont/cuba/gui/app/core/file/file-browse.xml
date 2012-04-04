@@ -23,14 +23,12 @@
         </vbox>
         <table id="filesTable" editable="false">
             <actions>
-                <action id="refresh"/>
                 <action id="create"/>
                 <action id="edit"/>
                 <action id="remove"/>
                 <action id="excel"/>
             </actions>
             <buttonsPanel>
-                <button action="filesTable.refresh" icon="icons/refresh.png"/>
                 <button action="filesTable.create" icon="icons/create.png"/>
                 <button action="filesTable.edit" icon="icons/edit.png"/>
                 <button action="filesTable.remove" icon="icons/remove.png"/>

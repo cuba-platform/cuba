@@ -9,18 +9,17 @@ package com.haulmont.cuba.gui.export;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Data provider for FileDescriptor
@@ -31,7 +30,6 @@ import java.io.*;
 public class FileDataProvider implements ExportDataProvider {
 
     private static final int HTTP_OK = 200;
-    private static final int HTTP_NOT_FOUND = 468;
 
     private FileDescriptor fileDescriptor;
     private InputStream inputStream;
@@ -62,22 +60,21 @@ public class FileDataProvider implements ExportDataProvider {
 
         try {
             HttpResponse httpResponse = httpClient.execute(httpGet);
-            switch (httpResponse.getStatusLine().getStatusCode()) {
+            int httpStatus = httpResponse.getStatusLine().getStatusCode();
+            switch (httpStatus) {
                 case HTTP_OK:
                     HttpEntity httpEntity = httpResponse.getEntity();
                     if (httpEntity != null)
                         inputStream = httpEntity.getContent();
                     else
-                        throw new IOException("Couldn't load file from core layer");
+                        throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION,
+                                fileDescriptor.getName());
                     break;
-
-                case HTTP_NOT_FOUND:
-                    throw new FileMissingException(fileDescriptor.getName());
-
                 default:
-                    throw new IOException("Unknown status code");
+                    throw new FileStorageException(FileStorageException.Type.fromHttpStatus(httpStatus),
+                            fileDescriptor.getName());
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             throw new RuntimeException(ex);
         } finally {
             connectionManager = httpClient.getConnectionManager();

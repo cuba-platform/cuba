@@ -10,9 +10,14 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.FileDescriptor;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.SecurityContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,6 +31,8 @@ import java.io.*;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -35,57 +42,122 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
     @Inject
     private UserSessionSource userSessionSource;
 
+    @Inject
+    private Persistence persistence;
+
+    private ExecutorService writeExecutor = Executors.newFixedThreadPool(5);
+
     private Log log = LogFactory.getLog(FileStorage.class);
 
-    public FileStorageAPI getAPI() {
-        return this;
-    }
-
-    public String getStoragePath() {
-        String storagePath = ConfigProvider.getConfig(ServerConfig.class).getFileStorageDir();
-        if (StringUtils.isBlank(storagePath)) {
+    public File[] getStorageRoots() {
+        String conf = ConfigProvider.getConfig(ServerConfig.class).getFileStorageDir();
+        if (StringUtils.isBlank(conf)) {
             String dataDir = ConfigProvider.getConfig(GlobalConfig.class).getDataDir();
-            storagePath = dataDir + "/filestorage/";
+            return new File[] { new File(dataDir,  "filestorage") };
+        } else {
+            List<File> list = new ArrayList<File>();
+            for (String str : conf.split(",")) {
+                str = str.trim();
+                if (!StringUtils.isEmpty(str)) {
+                    File file = new File(str);
+                    if (!list.contains(file))
+                        list.add(file);
+                }
+            }
+            return list.toArray(new File[list.size()]);
         }
-        return storagePath;
     }
 
-    public void saveFile(FileDescriptor fileDescr, byte[] data) throws FileStorageException {
+    @Override
+    public void saveStream(final FileDescriptor fileDescr, final InputStream inputStream) throws FileStorageException {
         checkNotNull(fileDescr, "No file descriptor");
         checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
-        checkNotNull(data, "No file content");
 
-        File dir = getStorageDir(fileDescr.getCreateDate());
+        File[] roots = getStorageRoots();
 
-        File file = new File(dir, fileDescr.getFileName());
-        if (file.exists()) {
-            throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
+        // Store to primary storage
+
+        if (roots.length == 0) {
+            log.error("No storage directories defined");
+            throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, fileDescr.getFileName());
+        }
+        if (!roots[0].exists()) {
+            log.error("Inaccessible primary storage at " + roots[0]);
+            throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, fileDescr.getFileName());
         }
 
+        File dir = getStorageDir(roots[0], fileDescr.getCreateDate());
+        dir.mkdirs();
+        if (!dir.exists())
+            throw new FileStorageException(FileStorageException.Type.STORAGE_INACCESSIBLE, dir.getAbsolutePath());
+
+        final File file = new File(dir, fileDescr.getFileName());
+        if (file.exists())
+            throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
+
+        OutputStream os = null;
         try {
-            FileOutputStream os = new FileOutputStream(file);
-            try {
-                os.write(data);
-            } finally {
-                os.close();
-            }
-            writeLog(fileDescr, file);
+            os = FileUtils.openOutputStream(file);
+            IOUtils.copy(inputStream, os);
+            os.flush();
+            writeLog(file, false);
         } catch (IOException e) {
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath(), e);
+        } finally {
+            IOUtils.closeQuietly(os);
+        }
+
+        // Copy file to secondary storages asynchronously
+
+        final SecurityContext securityContext = AppContext.getSecurityContext();
+        for (int i = 1; i < roots.length; i++) {
+            if (!roots[i].exists()) {
+                log.error("Error saving " + fileDescr + " into " + roots[i] + " : directory doesn't exist");
+                continue;
+            }
+
+            File copyDir = getStorageDir(roots[i], fileDescr.getCreateDate());
+            final File fileCopy = new File(copyDir, fileDescr.getFileName());
+
+            writeExecutor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        AppContext.setSecurityContext(securityContext);
+                        FileUtils.copyFile(file, fileCopy, true);
+                        writeLog(fileCopy, false);
+                    } catch (Exception e) {
+                        log.error("Error saving " + fileDescr + " into " + fileCopy.getAbsolutePath() + " : "
+                                + e.getMessage());
+                    }
+                }
+            });
         }
     }
 
-    private synchronized void writeLog(FileDescriptor fileDescr, File file) {
+    @Override
+    public void saveFile(final FileDescriptor fileDescr, final byte[] data) throws FileStorageException {
+        checkNotNull(data, "No file content");
+        saveStream(fileDescr, new ByteArrayInputStream(data));
+    }
+
+    private synchronized void writeLog(File file, boolean remove) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
         StringBuilder sb = new StringBuilder();
         sb.append(df.format(TimeProvider.currentTimestamp())).append(" ");
         sb.append("[").append(userSessionSource.getUserSession().getUser()).append("] ");
-        sb.append("CREATE").append(" ");
-        sb.append("\"").append(file.getAbsolutePath()).append("\" ");
-        sb.append("\"").append(fileDescr.getName()).append("\"\n");
+        sb.append(remove ? "REMOVE" : "CREATE").append(" ");
+        sb.append("\"").append(file.getAbsolutePath()).append("\"\n");
 
-        File logFile = new File(getStoragePath(), "storage.log");
+        File rootDir;
+        try {
+            rootDir = file.getParentFile().getParentFile().getParentFile().getParentFile();
+        } catch (NullPointerException e) {
+            log.error("Unable to write log: invalid file storage structure", e);
+            return;
+        }
+        File logFile = new File(rootDir, "storage.log");
         try {
             FileOutputStream fos = new FileOutputStream(logFile, true);
             try {
@@ -98,59 +170,64 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         }
     }
 
+    @Override
     public void removeFile(FileDescriptor fileDescr) throws FileStorageException {
         checkNotNull(fileDescr, "No file descriptor");
         checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
 
-        File dir = getStorageDir(fileDescr.getCreateDate());
+        File[] roots = getStorageRoots();
+        if (roots.length == 0) {
+            log.error("No storage directories defined");
+            return;
+        }
 
-        File file = new File(dir, fileDescr.getFileName());
-        if (!file.delete())
-            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, "Unable to delete file " + file.getAbsolutePath());
+        for (File root : roots) {
+            File dir = getStorageDir(root, fileDescr.getCreateDate());
+            File file = new File(dir, fileDescr.getFileName());
+            if (file.exists()) {
+                if (!file.delete())
+                    throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, "Unable to delete file " + file.getAbsolutePath());
+                else
+                    writeLog(file, true);
+            }
+        }
     }
 
+    @Override
     public InputStream openFileInputStream(FileDescriptor fileDescr) throws FileStorageException {
         checkNotNull(fileDescr, "No file descriptor");
         checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
 
-        File dir = getStorageDir(fileDescr.getCreateDate());
-
-        File file = new File(dir, fileDescr.getFileName());
-        if (!file.exists())
-            throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, file.getAbsolutePath());
-
-        try {
-            return FileUtils.openInputStream(file);
-        } catch (IOException e) {
-            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath(), e);
+        File[] roots = getStorageRoots();
+        if (roots.length == 0) {
+            log.error("No storage directories available");
+            throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, fileDescr.getFileName());
         }
+
+        InputStream inputStream = null;
+        for (File root : roots) {
+            File dir = getStorageDir(root, fileDescr.getCreateDate());
+
+            File file = new File(dir, fileDescr.getFileName());
+            if (!file.exists()) {
+                log.error("File " + file + " not found");
+                continue;
+            }
+
+            try {
+                inputStream = FileUtils.openInputStream(file);
+                break;
+            } catch (IOException e) {
+                log.error("Error opening input stream for " + file, e);
+            }
+        }
+        if (inputStream != null)
+            return inputStream;
+        else
+            throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, fileDescr.getFileName());
     }
 
-    public OutputStream openFileOutputStream(FileDescriptor fileDescr) throws FileStorageException {
-        checkNotNull(fileDescr, "No file descriptor");
-        checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
-
-        File dir = getStorageDir(fileDescr.getCreateDate());
-
-        File file = new File(dir, fileDescr.getFileName());
-        if (file.exists())
-            throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
-
-        try {
-            return FileUtils.openOutputStream(file);
-        } catch (IOException e) {
-            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath(), e);
-        }
-    }
-
-    /**
-     * Get bytes for file descriptor
-     * @deprecated Please use FileDataProvider
-     * @param fileDescr FileDescriptor
-     * @return ByteArray
-     * @throws FileStorageException Exception from file storage
-     */
-    @Deprecated
+    @Override
     public byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException {
         InputStream inputStream = openFileInputStream(fileDescr);
         try {
@@ -160,60 +237,49 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         }
     }
 
-    public void putFile(FileDescriptor fileDescr, File file) throws FileStorageException {
+    @Override
+    public void putFile(final FileDescriptor fileDescr, final File file) throws FileStorageException {
         checkNotNull(fileDescr, "No file descriptor");
         checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
         checkNotNull(file, "No file");
 
-        File dir = getStorageDir(fileDescr.getCreateDate());
-
-        File destFile = new File(dir, fileDescr.getFileName());
-        if (destFile.exists()) {
-            throw new FileStorageException(FileStorageException.Type.FILE_ALREADY_EXISTS, file.getAbsolutePath());
-        }
-
+        FileInputStream inputStream = null;
         try {
-            if (!file.renameTo(destFile))
-                throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath());
-            writeLog(fileDescr, file);
-        } catch (FileStorageException ex){
-            throw ex;
-        }
-        catch (Exception e) {
-            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath(), e);
+            inputStream = new FileInputStream(file);
+            saveStream(fileDescr, inputStream);
+        } catch (FileNotFoundException e) {
+            throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, file.getAbsolutePath(), e);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
         }
     }
 
-    private File getStorageDir(Date createDate) {
-        String storageDir = ConfigProvider.getConfig(ServerConfig.class).getFileStorageDir();
-        if (StringUtils.isBlank(storageDir)) {
-            String dataDir = ConfigProvider.getConfig(GlobalConfig.class).getDataDir();
-            storageDir = dataDir + "/filestorage/";
-        }
-
+    private File getStorageDir(File rootDir, Date createDate) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(createDate);
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH) + 1;
         int day = cal.get(Calendar.DAY_OF_MONTH);
 
-        File dir = new File(storageDir + year + "/"
+        return new File(rootDir, year + "/"
                 + StringUtils.leftPad(String.valueOf(month), 2, '0') + "/"
                 + StringUtils.leftPad(String.valueOf(day), 2, '0'));
-
-        dir.mkdirs();
-        return dir;
     }
 
+    @Override
     public String findInvalidDescriptors() {
+        File[] roots = getStorageRoots();
+        if (roots.length == 0)
+            return "No storage directories defined";
+
         StringBuilder sb = new StringBuilder();
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query query = em.createQuery("select fd from core$FileDescriptor fd");
             List<FileDescriptor> fileDescriptors = query.getResultList();
             for (FileDescriptor fileDescriptor : fileDescriptors) {
-                File dir = getStorageDir(fileDescriptor.getCreateDate());
+                File dir = getStorageDir(roots[0], fileDescriptor.getCreateDate());
                 File file = new File(dir, fileDescriptor.getFileName());
                 if (!file.exists()) {
                     sb.append(fileDescriptor.getId())
@@ -233,11 +299,15 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         return sb.toString();
     }
 
+    @Override
     public String findInvalidFiles() {
+        File[] roots = getStorageRoots();
+        if (roots.length == 0)
+            return "No storage directories defined";
+
         StringBuilder sb = new StringBuilder();
 
-        String storagePath = getStoragePath();
-        File storageFolder = new File(storagePath);
+        File storageFolder = roots[0];
         if (!storageFolder.exists())
             return ExceptionUtils.getStackTrace(
                     new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, storageFolder.getAbsolutePath()));
@@ -248,9 +318,9 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         systemFiles.removeAll(filesInRootFolder);
 
         List<FileDescriptor> fileDescriptors = new ArrayList<FileDescriptor>();
-        Transaction tx = Locator.createTransaction();
+        Transaction tx = persistence.createTransaction();
         try {
-            EntityManager em = PersistenceProvider.getEntityManager();
+            EntityManager em = persistence.getEntityManager();
             Query query = em.createQuery("select fd from core$FileDescriptor fd");
             fileDescriptors = query.getResultList();
             tx.commit();
@@ -282,34 +352,4 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
 
         return sb.toString();
     }
-
-
-//    public void updateFileExt(FileDescriptor fileDescr) throws FileStorageException {
-//        checkNotNull(fileDescr, "No file descriptor");
-//        checkNotNull(fileDescr.getCreateDate(), "Empty creation date");
-//
-//        final String fileName = fileDescr.getId().toString();
-//
-//        File dir = getStorageDir(fileDescr.getCreateDate());
-//
-//        String[] fileNames = dir.list(new FilenameFilter() {
-//            public boolean accept(File dir, String name) {
-//                int i = name.lastIndexOf('.');
-//                if (i > -1)
-//                    name = StringUtils.substring(name, 0, i);
-//                return fileName.equalsIgnoreCase(name);
-//            }
-//        });
-//        if (fileNames.length == 0)
-//            throw new FileStorageException(FileStorageException.Type.FILE_NOT_FOUND, dir.getAbsolutePath() + "/" + fileName);
-//        if (fileNames.length > 1)
-//            throw new FileStorageException(FileStorageException.Type.MORE_THAN_ONE_FILE, dir.getAbsolutePath() + "/" + fileName);
-//        if (fileDescr.getFileName().equalsIgnoreCase(fileNames[0]))
-//            return;
-//
-//        File file = new File(dir, fileNames[0]);
-//        File newFile = new File(dir, fileDescr.getFileName());
-//        if (!file.renameTo(newFile))
-//            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, "Unable to rename file " + file.getAbsolutePath());
-//    }
 }

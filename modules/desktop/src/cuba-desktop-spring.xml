@@ -69,6 +69,7 @@
                 <value>com.haulmont.cuba.desktop.exception.OptimisticExceptionHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.ReportExceptionHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.FileMissingExceptionHandler</value>
+                <value>com.haulmont.cuba.desktop.exception.FileStorageExceptionHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.EntityDeletedExceptionHandler</value>
                 <value>com.haulmont.cuba.desktop.exception.SQLExceptionHandler</value>
             </list>

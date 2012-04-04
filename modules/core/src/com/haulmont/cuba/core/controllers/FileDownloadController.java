@@ -87,7 +87,7 @@ public class FileDownloadController {
                 os.flush();
             } catch (FileStorageException e) {
                 log.error("Unable to download file", e);
-                response.sendError(HTTP_NOT_FOUND);
+                response.sendError(e.getType().getHttpStatus());
             } catch (Exception ex) {
                 log.error("Unable to download file", ex);
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

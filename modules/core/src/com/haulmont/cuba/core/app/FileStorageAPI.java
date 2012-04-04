@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 30.10.2009 14:13:25
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
@@ -15,37 +10,62 @@ import com.haulmont.cuba.core.global.FileStorageException;
 
 import java.io.File;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.UUID;
-import java.util.Date;
 
+/**
+ * Interface to store and load files defined by {@link FileDescriptor}s.
+ *
+ * <p>$Id$</p>
+ *
+ * @author krivopustov
+ */
 public interface FileStorageAPI {
 
     String NAME = "cuba_FileStorage";
-    
+
+    /**
+     * Save an InputStream contents into file storage.
+     * @param fileDescr             file descriptor
+     * @param inputStream           input stream
+     * @throws FileStorageException if something goes wrong
+     */
+    void saveStream(FileDescriptor fileDescr, InputStream inputStream) throws FileStorageException;
+
+    /**
+     * Save a byte array into file storage.
+     * @param fileDescr             file descriptor
+     * @param data                  byte array
+     * @throws FileStorageException if something goes wrong
+     */
     void saveFile(FileDescriptor fileDescr, byte[] data) throws FileStorageException;
 
-    void removeFile(FileDescriptor fileDescr) throws FileStorageException;    
-
-    InputStream openFileInputStream(FileDescriptor fileDescr) throws FileStorageException;
-
-    OutputStream openFileOutputStream(FileDescriptor fileDescr) throws FileStorageException;
-
     /**
-     * Get bytes for file descriptor
-     * @deprecated Please use FileDataProvider
-     * @param fileDescr FileDescriptor
-     * @return ByteArray
-     * @throws FileStorageException Exception from file storage
-     */
-    @Deprecated
-    byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException;
-
-    /**
-     * Relocate existing file to storage
-     *
-     * @param fileDescr
-     * @param file
+     * Relocate an existing file into storage.
+     * @param fileDescr             file descriptor
+     * @param file                  existing file
+     * @throws FileStorageException if something goes wrong
      */
     void putFile(FileDescriptor fileDescr, File file) throws FileStorageException;
+
+    /**
+     * Remove a file from the file storage.
+     * @param fileDescr             file descriptor
+     * @throws FileStorageException if something goes wrong
+     */
+    void removeFile(FileDescriptor fileDescr) throws FileStorageException;
+
+    /**
+     * Return an input stream to load a file contents.
+     * @param fileDescr             file descriptor
+     * @return                      input stream
+     * @throws FileStorageException if something goes wrong
+     */
+    InputStream openFileInputStream(FileDescriptor fileDescr) throws FileStorageException;
+
+    /**
+     * Load a file contents into byte array.
+     * @param fileDescr             file descriptor
+     * @return                      file contents
+     * @throws FileStorageException if something goes wrong
+     */
+    byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException;
 }
