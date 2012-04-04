@@ -50,6 +50,7 @@ public class AttributeEditor extends AbstractEditor {
     private Container fieldsContainer;
     private TextField nameField;
     private CheckBox requiredField;
+    private CheckBox lookupField;
     private LookupField dataTypeField;
     private CategoryAttribute attribute;
     private boolean dataTypeFieldInited = false;
@@ -122,10 +123,11 @@ public class AttributeEditor extends AbstractEditor {
                 if (prevValue != null) {
                     clearValue(attribute);
                 }
+                lookupField.setVisible(false);
                 if (RuntimePropsDatasource.PropertyType.ENTITY.equals(value)) {
                     attribute.setIsEntity(true);
                     generateDefaultEntityValueField(!dataTypeFieldInited);
-
+                    lookupField.setVisible(true);
                 } else if (RuntimePropsDatasource.PropertyType.ENUMERATION.equals(value)) {
                     attribute.setIsEntity(false);
                     attribute.setDataType(value.toString());
@@ -139,6 +141,19 @@ public class AttributeEditor extends AbstractEditor {
             }
         });
         fieldsContainer.add(dataTypeField);
+
+        lookupField = factory.createComponent(CheckBox.NAME);
+        lookupField.setId("lookup");
+        lookupField.setCaption(getMessage("lookup"));
+        lookupField.setWidth(FIELD_WIDTH);
+        lookupField.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                attribute.setLookup((Boolean)value);
+            }
+        });
+        lookupField.setVisible(false);
+        fieldsContainer.add(lookupField);
     }
 
     @Override
@@ -390,6 +405,7 @@ public class AttributeEditor extends AbstractEditor {
         attribute = (CategoryAttribute) getItem();
         nameField.setValue(attribute.getName());
         requiredField.setValue(attribute.getRequired());
+        lookupField.setValue(attribute.getLookup());
         if (BooleanUtils.isTrue(attribute.getIsEntity())) {
             dataTypeField.setValue(RuntimePropsDatasource.PropertyType.ENTITY);
         } else {

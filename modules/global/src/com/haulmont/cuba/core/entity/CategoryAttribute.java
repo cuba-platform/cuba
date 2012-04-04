@@ -72,6 +72,9 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name = "REQUIRED")
     private Boolean required = false;
 
+    @Column(name = "LOOKUP")
+    private Boolean lookup = false;
+
     public void setCategory(Category entityType) {
         this.category = entityType;
     }
@@ -195,5 +198,13 @@ public class CategoryAttribute extends StandardEntity {
 
     public void setRequired(Boolean required) {
         this.required = required;
+    }
+
+    public Boolean getLookup() {
+        return lookup;
+    }
+
+    public void setLookup(Boolean lookup) {
+        this.lookup = lookup;
     }
 }

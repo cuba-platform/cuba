@@ -242,7 +242,7 @@ public class WebPickerField
                     public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
                         if (newValue instanceof String)
                             return;
-
+                        value = newValue;
                         super.setValue(newValue);
                     }
 

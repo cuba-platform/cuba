@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Component;
 
@@ -33,13 +34,25 @@ public class WebLookupPickerField
 
     public WebLookupPickerField() {
         super();
-        Picker picker = new Picker(this, component);
+        final Component selectComponent = component;
+        Picker picker = new Picker(this, component) {
+            @Override
+            public void setRequired(boolean required) {
+                super.setRequired(required);
+                ((FilterSelect)selectComponent).setNullSelectionAllowed(!required);
+            }
+        };
         pickerField = new WebPickerField(picker);
     }
 
     @Override
     public Component getComposition() {
         return pickerField.getComposition();
+    }
+
+    @Override
+    public Component getComponent() {
+        return pickerField.getComponent();  
     }
 
     @Override
@@ -54,14 +67,14 @@ public class WebLookupPickerField
 
     @Override
     public LookupAction addLookupAction() {
-        LookupAction action = new LookupAction(this);
+        LookupAction action = new LookupAction(pickerField);
         addAction(action);
         return action;
     }
 
     @Override
     public ClearAction addClearAction() {
-        ClearAction action = new ClearAction(this);
+        ClearAction action = new ClearAction(pickerField);
         addAction(action);
         return action;
     }
@@ -128,7 +141,7 @@ public class WebLookupPickerField
         super.setEditable(editable);
         pickerField.setEditable(editable);
     }
-
+    
     @Override
     public void setRequired(boolean required) {
         component.setNullSelectionAllowed(!required);
@@ -143,6 +156,16 @@ public class WebLookupPickerField
     @Override
     public void setHeight(String height) {
         pickerField.setHeight(height);
+    }
+
+    @Override
+    public float getHeight() {
+        return pickerField.getHeight();
+    }
+
+    @Override
+    public float getWidth() {
+        return pickerField.getWidth();
     }
 
     public static class Picker extends WebPickerField.Picker {
