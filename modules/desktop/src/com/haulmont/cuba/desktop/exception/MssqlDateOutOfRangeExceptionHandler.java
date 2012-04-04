@@ -18,18 +18,20 @@ import java.sql.SQLException;
  *
  * @author Novikov
  */
-public class SQLExceptionHandler extends AbstractExceptionHandler {
-    public SQLExceptionHandler() {
+public class MssqlDateOutOfRangeExceptionHandler extends AbstractExceptionHandler {
+
+    private static final String MESSAGE = "Only dates between January 1, 1753 and December 31, 9999 are accepted";
+
+    public MssqlDateOutOfRangeExceptionHandler() {
         super(SQLException.class.getName());
     }
 
     @Override
     protected void doHandle(Thread thread, String className, String message, @Nullable Throwable throwable) {
         if (SQLException.class.getName().equals(className)) {
-            String tMessage = MessageProvider.getMessage(getClass(), "sqlException.text");
-            boolean dateBetweenException = message != null ? message.contains(tMessage) : false;
+            boolean dateBetweenException = message != null ? message.contains(MESSAGE) : false;
             if (dateBetweenException) {
-                String msg = MessageProvider.formatMessage(getClass(), "sqlException.message");
+                String msg = MessageProvider.formatMessage(getClass(), "mssqlDateOutOfRangeException.message");
                 App.getInstance().showNotification(msg, IFrame.NotificationType.ERROR);
             }
         }
