@@ -5,13 +5,14 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Config;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.text.StrBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -177,21 +178,22 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
 
     private void loadCache() {
         if (!cacheLoaded) {
+            List<Config> list;
+            Transaction tx = persistence.createTransaction();
+            try {
+                EntityManager em = persistence.getEntityManager();
+                String s = "select c from core$Config c";
+                Query query = em.createQuery(s);
+                list = query.getResultList();
+                tx.commit();
+            } finally {
+                tx.end();
+            }
             synchronized (this) {
                 if (!cacheLoaded) {
-                    Transaction tx = persistence.createTransaction();
-                    try {
-                        EntityManager em = persistence.getEntityManager();
-                        String s = "select c from core$Config c";
-                        Query query = em.createQuery(s);
-                        List<Config> list = query.getResultList();
-                        cache.clear();
-                        for (Config config : list) {
-                            cache.put(config.getName(), config.getValue());
-                        }
-                        tx.commit();
-                    } finally {
-                        tx.end();
+                    cache.clear();
+                    for (Config config : list) {
+                        cache.put(config.getName(), config.getValue());
                     }
                     cacheLoaded = true;
                 }
