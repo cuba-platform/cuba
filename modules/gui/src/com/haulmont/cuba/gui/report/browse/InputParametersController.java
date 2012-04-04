@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.gui.report.browse;
 
+import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
@@ -162,6 +163,8 @@ public class InputParametersController extends AbstractWindow {
         public Field createField(ReportInputParameter parameter) {
             TextField textField = cFactory.createComponent(TextField.NAME);
             textField.addValidator(new DoubleValidator());
+            textField.setDatatype(Datatypes.get(Double.class));
+            textField.setValue(0);
             return textField;
         }
     }
