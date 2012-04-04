@@ -75,6 +75,9 @@ public class CategoryAttribute extends StandardEntity {
     @Column(name = "LOOKUP")
     private Boolean lookup = false;
 
+    @Column(name = "DEFAULT_DATE_IS_CURRENT")
+    private Boolean defaultDateIsCurrent;
+
     public void setCategory(Category entityType) {
         this.category = entityType;
     }
@@ -206,5 +209,13 @@ public class CategoryAttribute extends StandardEntity {
 
     public void setLookup(Boolean lookup) {
         this.lookup = lookup;
+    }
+
+    public Boolean getDefaultDateIsCurrent() {
+        return defaultDateIsCurrent;
+    }
+
+    public void setDefaultDateIsCurrent(Boolean defaultDateIsCurrent) {
+        this.defaultDateIsCurrent = defaultDateIsCurrent;
     }
 }

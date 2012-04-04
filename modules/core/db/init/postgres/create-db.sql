@@ -869,6 +869,7 @@ create table SYS_CATEGORY_ATTR (
 	DEFAULT_INT integer,
 	DEFAULT_DOUBLE numeric,
 	DEFAULT_DATE timestamp,
+	DEFAULT_DATE_IS_CURRENT boolean,
 	DEFAULT_BOOLEAN boolean,
 	DEFAULT_ENTITY_VALUE uuid,
 	ENUMERATION varchar(500),

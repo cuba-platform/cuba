@@ -110,7 +110,8 @@ public class RuntimePropsDatasourceImpl extends AbstractDatasource<RuntimeProper
                     attrValue.setIntValue(attribute.getDefaultInt());
                     attrValue.setDoubleValue(attribute.getDefaultDouble());
                     attrValue.setBooleanValue(attribute.getDefaultBoolean());
-                    attrValue.setDateValue(attribute.getDefaultDate());
+                    attrValue.setDateValue(BooleanUtils.isTrue(attribute.getDefaultDateIsCurrent()) ?
+                            TimeProvider.currentTimestamp() : attribute.getDefaultDate());
                     attrValue.setEntityValue(attribute.getDefaultEntityId());
                     value = parseValue(attribute, attrValue);
                     itemToUpdate.add(attrValue);

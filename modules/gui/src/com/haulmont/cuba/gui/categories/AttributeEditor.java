@@ -197,10 +197,28 @@ public class AttributeEditor extends AbstractEditor {
         }
 
         if (RuntimePropsDatasource.PropertyType.DATE.equals(dataType)) {
-            DateField dateField = factory.createComponent(DateField.NAME);
+            BoxLayout boxLayout = factory.createComponent(BoxLayout.VBOX);
+            CheckBox checkBox = factory.createComponent(CheckBox.NAME);
+            checkBox.setId("defaultDateIsCurrent");
+            checkBox.setCaption(getMessage("currentDate"));
+            final DateField dateField = factory.createComponent(DateField.NAME);
             dateField.setId("defaultValue");
             dateField.setCaption(getMessage("defaultValue"));
-            fieldsContainer.add(dateField);
+            boxLayout.add(checkBox);
+            boxLayout.add(dateField);
+            fieldsContainer.add(boxLayout);
+            checkBox.addListener(new ValueListener() {
+                @Override
+                public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                    if (BooleanUtils.isTrue((Boolean)value)) {
+                        dateField.setVisible(false);
+                        attribute.setDefaultDateIsCurrent(true);
+                    } else {
+                        dateField.setVisible(true);
+                        attribute.setDefaultDateIsCurrent(false);
+                    }
+                }
+            });
             dateField.addValidator(new DateValidator(MessageProvider.getMessage(AppConfig.getMessagesPack(), "validation.invalidDate")));
             dateField.addListener(new ValueListener() {
                 @Override
@@ -208,6 +226,10 @@ public class AttributeEditor extends AbstractEditor {
                     attribute.setDefaultDate((Date) value);
                 }
             });
+            if (BooleanUtils.isTrue(attribute.getDefaultDateIsCurrent())) {
+                checkBox.setValue(true);
+                dateField.setVisible(false);
+            }
             if (hasValue)
                 dateField.setValue(attribute.getDefaultDate());
         } else if (RuntimePropsDatasource.PropertyType.INTEGER.equals(dataType)) {

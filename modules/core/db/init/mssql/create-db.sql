@@ -894,6 +894,7 @@ create table SYS_CATEGORY_ATTR (
 	DEFAULT_INT integer,
 	DEFAULT_DOUBLE numeric,
 	DEFAULT_DATE datetime,
+	DEFAULT_DATE_IS_CURRENT tinyint,
 	DEFAULT_BOOLEAN tinyint,
 	DEFAULT_ENTITY_VALUE uniqueidentifier,
 	ENUMERATION varchar(500),

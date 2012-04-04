@@ -176,6 +176,8 @@ public class CategoryAttrsFrame extends AbstractFrame {
                                 String dateTimeFormat = Datatypes.getFormatStrings(UserSessionProvider.getLocale()).getDateTimeFormat();
                                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateTimeFormat);
                                 defaultValue = simpleDateFormat.format(date);
+                            } else if (BooleanUtils.isTrue(attribute.getDefaultDateIsCurrent())) {
+                                defaultValue = getMessage("currentDate");
                             }
                             break;
                         case BOOLEAN:
