@@ -76,8 +76,12 @@
  * Folders Pane
  */
 
-.v-verticallayout-folderspane .v-tree-node .v-tree-node-caption span {
+.folderspane .v-tree-node .v-tree-node-caption-clickable-folder span {
     cursor: pointer;
+}
+
+.folderspane .v-tree-node .v-tree-node-caption-nonclickable-folder span:hover {
+    background: transparent none;
 }
 
 /**

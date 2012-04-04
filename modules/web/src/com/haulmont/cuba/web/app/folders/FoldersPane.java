@@ -19,7 +19,6 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
@@ -55,6 +54,8 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.util.*;
+
+import com.haulmont.cuba.web.toolkit.Timer;
 
 @SuppressWarnings("serial")
 public class FoldersPane extends VerticalLayout {
@@ -131,6 +132,7 @@ public class FoldersPane extends VerticalLayout {
 
     protected MenuBar.Command createMenuBarCommand() {
         return new MenuBar.Command() {
+            @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 showFolders(!visible);
                 selectedItem.setText(getMenuItemCaption());
@@ -266,6 +268,7 @@ public class FoldersPane extends VerticalLayout {
             }
         }
         tree.addListener(new Tree.ExpandListener() {
+            @Override
             public void nodeExpand(Tree.ExpandEvent event) {
                 if (event.getItemId() instanceof AbstractSearchFolder) {
                     UUID uuid = ((AbstractSearchFolder) event.getItemId()).getId();
@@ -275,6 +278,7 @@ public class FoldersPane extends VerticalLayout {
             }
         });
         tree.addListener(new Tree.CollapseListener() {
+            @Override
             public void nodeCollapse(Tree.CollapseEvent event) {
                 if (event.getItemId() instanceof AbstractSearchFolder) {
                     UUID uuid = ((AbstractSearchFolder) event.getItemId()).getId();
@@ -390,12 +394,7 @@ public class FoldersPane extends VerticalLayout {
 
         appFoldersTree = new com.haulmont.cuba.web.toolkit.ui.Tree();
 //        appFoldersTree.setDoubleClickMode(true);
-        appFoldersTree.setItemStyleGenerator(new Tree.ItemStyleGenerator() {
-            public String getStyle(Object itemId) {
-                Folder folder = ((Folder) itemId);
-                return folder != null ? folder.getItemStyle() : "";
-            }
-        });
+        appFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
 
         appFoldersRoot = MessageProvider.getMessage(messagesPack, "folders.appFoldersRoot");
         fillTree(appFoldersTree, appFolders, isNeedRootAppFolder() ? appFoldersRoot : null);
@@ -412,6 +411,7 @@ public class FoldersPane extends VerticalLayout {
     protected Component createSearchFoldersPane() {
         searchFoldersTree = new com.haulmont.cuba.web.toolkit.ui.Tree();
 //        searchFoldersTree.setDoubleClickMode(true);
+        searchFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
 
         FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
         List<SearchFolder> searchFolders = service.loadSearchFolders();
@@ -585,15 +585,41 @@ public class FoldersPane extends VerticalLayout {
         }
     }
 
-    protected class FolderClickListener implements ItemClickEvent.ItemClickListener {
-        public FolderClickListener() {
+    protected boolean getItemClickable(Folder folder) {
+        return folder instanceof AbstractSearchFolder
+                        && !StringUtils.isBlank(((AbstractSearchFolder) folder).getFilterComponentId());
+    }
 
+    protected class FolderTreeStyleProvider implements Tree.ItemStyleGenerator {
+        @Override
+        public String getStyle(Object itemId) {
+            Folder folder = ((Folder) itemId);
+            if (folder != null) {
+                String style = "";
+                // clickable tree item
+                if (getItemClickable(folder))
+                    style = "clickable-folder";
+                else
+                    style = "nonclickable-folder";
+                // handle custom styles
+                if (StringUtils.isNotBlank(folder.getItemStyle())) {
+                    if (style.equals(""))
+                        style = folder.getItemStyle();
+                    else
+                        style += " " + folder.getItemStyle();
+                }
+
+                return style;
+            }
+            return "";
         }
+    }
 
+    protected class FolderClickListener implements ItemClickEvent.ItemClickListener {
         @Override
         public void itemClick(ItemClickEvent event) {
-            if (event.getItemId() instanceof AbstractSearchFolder
-                    && !StringUtils.isBlank(((AbstractSearchFolder) event.getItemId()).getFilterComponentId())) {
+            Folder folder = (Folder) event.getItemId();
+            if (getItemClickable(folder)) {
                 if (event.getButton() == ItemClickEvent.BUTTON_RIGHT) {
                     if (appFoldersTree.containsId(event.getItemId()))
                         appFoldersTree.select(event.getItemId());
@@ -607,9 +633,6 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class AppFolderActionsHandler implements Action.Handler {
-        public AppFolderActionsHandler() {
-        }
-
         @Override
         public Action[] getActions(Object target, Object sender) {
             if (target instanceof Folder) {
@@ -682,11 +705,11 @@ public class FoldersPane extends VerticalLayout {
         }
 
         private boolean isOwner(SearchFolder folder) {
-            return UserSessionClient.getUserSession().getUser().equals(folder.getUser());
+            return UserSessionProvider.getUserSession().getUser().equals(folder.getUser());
         }
 
         private boolean isGlobalSearchFolderPermitted() {
-            return (UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global"));
+            return (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global"));
         }
 
         private Action[] createAllActions() {
@@ -909,4 +932,3 @@ public class FoldersPane extends VerticalLayout {
         return menuBar.getItems().isEmpty() ? null : menuBar.getItems().get(0);
     }
 }
-
