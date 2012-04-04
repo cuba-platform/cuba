@@ -236,9 +236,14 @@ public class VGroupBox extends VPanel {
 
     @Override
     public void runHacks(boolean runGeckoFix) {
+        runWebkitOverflowAutoFix();
+    }
+
+    public void runWebkitOverflowAutoFix() {
         client.runDescendentsLayout(this);
 
-        Util.runWebkitOverflowAutoFix(contentNode);
+        if (BrowserInfo.get().isWebkit())
+            Util.runWebkitOverflowAutoFix(contentNode);
     }
 
     @Override

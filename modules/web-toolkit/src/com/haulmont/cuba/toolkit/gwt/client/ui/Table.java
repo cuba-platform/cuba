@@ -416,7 +416,7 @@ public abstract class Table extends FlowPanel
                 Container container;
                 while ((container = Util.getLayout(w)) != null) {
                     w = (Widget) container;
-                    if ((w instanceof VTabsheet) || (w instanceof VWindow)) {
+                    if ((w instanceof VTabsheet) || (w instanceof VWindow) || (w instanceof VGroupBox)) {
                         parentOverflowContainer = w;
                         break;
                     }
@@ -3641,6 +3641,8 @@ public abstract class Table extends FlowPanel
                     ((VWindow) parentOverflowContainer).runWebkitOverflowFix();
                 else if (parentOverflowContainer instanceof VTabsheet)
                     ((VTabsheet) parentOverflowContainer).runWebkitOverflowAutoFix();
+                if (parentOverflowContainer instanceof VGroupBox)
+                    ((VGroupBox) parentOverflowContainer).runWebkitOverflowAutoFix();
             }
         }
     }
