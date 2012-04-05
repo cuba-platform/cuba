@@ -198,7 +198,7 @@ public class LinkHandler implements Serializable {
                     WindowManager.OpenType.NEW_TAB,
                     getParamsMap());
     else 
-        throw new EntityDeletedException();
+        throw new EntityAccessException();
     }
 
     private Map<String, Object> getParamsMap() {

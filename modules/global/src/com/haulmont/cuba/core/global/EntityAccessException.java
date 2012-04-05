@@ -13,10 +13,10 @@ package com.haulmont.cuba.core.global;
  *
  * @author pavlov
  */
-public class EntityDeletedException extends RuntimeException {
-    public static final String ERR_MESSAGE = "Unable to load entiny because it has been deleted";
+public class EntityAccessException extends RuntimeException {
+    public static final String ERR_MESSAGE = "Unable to load entiny because it has been deleted or access denied";
 
-    public EntityDeletedException() {
+    public EntityAccessException() {
         super(ERR_MESSAGE);
     }
 }

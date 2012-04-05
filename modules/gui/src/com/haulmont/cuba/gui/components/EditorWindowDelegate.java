@@ -139,7 +139,7 @@ public class EditorWindowDelegate extends WindowDelegate {
         }
 
         if (item == null) {
-            throw new EntityDeletedException();
+            throw new EntityAccessException();
         }
 
         if (PersistenceHelper.isNew(item)
