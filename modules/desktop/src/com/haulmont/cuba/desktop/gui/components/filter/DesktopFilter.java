@@ -131,7 +131,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         InputMap inputMap = impl.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         ActionMap actionMap = impl.getActionMap();
 
-        KeyStroke applyFilterKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.ALT_DOWN_MASK, false);
+        KeyStroke applyFilterKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.SHIFT_DOWN_MASK, false);
         inputMap.put(applyFilterKeyStroke, "applyFilter");
         actionMap.put("applyFilter", new javax.swing.AbstractAction() {
             @Override

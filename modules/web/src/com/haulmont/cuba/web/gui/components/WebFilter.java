@@ -22,6 +22,7 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
@@ -47,6 +48,8 @@ import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.IntegerValidator;
+import com.vaadin.event.*;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
@@ -124,7 +127,7 @@ public class WebFilter
             private com.vaadin.event.ShortcutAction shortcutAction =
                     new com.vaadin.event.ShortcutAction("applyFilterAction",
                             com.vaadin.event.ShortcutAction.KeyCode.ENTER,
-                            new int[]{com.vaadin.event.ShortcutAction.ModifierKey.ALT});
+                            new int[]{ShortcutAction.ModifierKey.SHIFT});
 
             @Override
             public com.vaadin.event.Action[] getActions(Object target, Object sender) {
