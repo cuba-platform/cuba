@@ -17,6 +17,7 @@
 
 .twincolumn-listBox-deco {
     padding: 1px 1px 0 1px;
+    float: left;
 }
 
 .twincolumn-listBox .twincolumn-listBox-opt {
