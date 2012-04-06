@@ -53,7 +53,9 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         String conf = ConfigProvider.getConfig(ServerConfig.class).getFileStorageDir();
         if (StringUtils.isBlank(conf)) {
             String dataDir = ConfigProvider.getConfig(GlobalConfig.class).getDataDir();
-            return new File[] { new File(dataDir,  "filestorage") };
+            File dir = new File(dataDir, "filestorage");
+            dir.mkdirs();
+            return new File[] {dir};
         } else {
             List<File> list = new ArrayList<File>();
             for (String str : conf.split(",")) {
