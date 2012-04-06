@@ -42,6 +42,38 @@
 
 /* Second level tabsheet */
 
+.v-tabsheet-content .v-tabsheet-tabitemcell .v-tabsheet-tabitem {
+    border-left: 1px solid #C9D7E9;
+    height: 14px;
+    line-height: 14px;
+    margin-bottom: 9px;
+    padding-top: 0;
+    padding-left: 5px;
+}
+
+.v-tabsheet-content .v-tabsheet-tabitemcell:first-child .v-tabsheet-tabitem {
+    border-left: 1px transparent;
+    padding-left: 0;
+}
+
+.v-tabsheet-content .v-tabsheet-tabitemcell:first-child .v-tabsheet-tabitem-selected  {
+    border-left: 1px solid #C9D7E9;
+    padding-left: 6px;
+}
+
+.v-tabsheet-content .v-tabsheet-tabitemcell-selected-after .v-tabsheet-tabitem {
+    border-left: 1px transparent;
+    padding-left: 0;
+}
+
+.v-tabsheet-content .v-tabsheet-tabitemcell .v-tabsheet-tabitem-selected {
+    height: 25px;
+    line-height: 14px;
+    margin-bottom: 0;
+    padding-left: 6px;
+    padding-top: 3px;
+}
+
 .v-tabsheet-content .v-tabsheet-tabs {
     background: transparent url(img/bg-middle-tabseet.png) repeat-x bottom;
 }
@@ -120,6 +152,38 @@
 
 /* Third level tabsheet */
 
+.v-tabsheet-content .v-tabsheet-content .v-tabsheet-tabitemcell .v-tabsheet-tabitem {
+    border-left: 1px solid #A4C5DF;
+    height: 14px;
+    line-height: 14px;
+    margin-bottom: 9px;
+    padding-top: 0;
+    padding-left: 5px;
+}
+
+.v-tabsheet-content .v-tabsheet-content .v-tabsheet-tabitemcell:first-child .v-tabsheet-tabitem {
+    border-left: 1px transparent;
+    padding-left: 0;
+}
+
+.v-tabsheet-content .v-tabsheet-content .v-tabsheet-tabitemcell:first-child .v-tabsheet-tabitem-selected  {
+    border-left: 1px solid #A4C5DF;
+    padding-left: 6px;
+}
+
+.v-tabsheet-content .v-tabsheet-content .v-tabsheet-tabitemcell-selected-after .v-tabsheet-tabitem {
+    border-left: 1px transparent;
+    padding-left: 0;
+}
+
+.v-tabsheet-content .v-tabsheet-content .v-tabsheet-tabitemcell .v-tabsheet-tabitem-selected {
+    height: 25px;
+    line-height: 14px;
+    margin-bottom: 0;
+    padding-left: 6px;
+    padding-top: 3px;
+}
+
 .v-tabsheet-content .v-tabsheet-content .v-tabsheet-tabs {
     background: transparent url(img/bg-inner-tabseet.png) repeat-x bottom;
 }
@@ -166,6 +230,38 @@
 
 /* Tabsheet in dialog windows */
 
+.v-window-contents .v-tabsheet-tabitemcell .v-tabsheet-tabitem {
+    border-left: 1px solid #B4D0E4;
+    height: 14px;
+    line-height: 14px;
+    margin-bottom: 9px;
+    padding-top: 0;
+    padding-left: 5px;
+}
+
+.v-window-contents .v-tabsheet-tabitemcell:first-child .v-tabsheet-tabitem {
+    border-left: 1px transparent;
+    padding-left: 0;
+}
+
+.v-window-contents .v-tabsheet-tabitemcell:first-child .v-tabsheet-tabitem-selected  {
+    border-left: 1px solid #B4D0E4;
+    padding-left: 6px;
+}
+
+.v-window-contents .v-tabsheet-tabitemcell-selected-after .v-tabsheet-tabitem {
+    border-left: 1px transparent;
+    padding-left: 0;
+}
+
+.v-window-contents .v-tabsheet-tabitemcell .v-tabsheet-tabitem-selected {
+    height: 25px;
+    line-height: 14px;
+    margin-bottom: 0;
+    padding-left: 6px;
+    padding-top: 3px;
+}
+
 .v-window-contents .v-tabsheet-tabs {
     background: transparent url(img/bg-middle-tabseet.png) repeat-x bottom;
 }
@@ -202,6 +298,38 @@
 }
 
 /* Second level tabsheet in dialog window */
+
+.v-window-contents .v-tabsheet-content .v-tabsheet-tabitemcell .v-tabsheet-tabitem {
+    border-left: 1px solid #A4C5DF;
+    height: 14px;
+    line-height: 14px;
+    margin-bottom: 9px;
+    padding-top: 0;
+    padding-left: 5px;
+}
+
+.v-window-contents .v-tabsheet-content .v-tabsheet-tabitemcell:first-child .v-tabsheet-tabitem {
+    border-left: 1px transparent;
+    padding-left: 0;
+}
+
+.v-window-contents .v-tabsheet-content .v-tabsheet-tabitemcell:first-child .v-tabsheet-tabitem-selected  {
+    border-left: 1px solid #A4C5DF;
+    padding-left: 6px;
+}
+
+.v-window-contents .v-tabsheet-content .v-tabsheet-tabitemcell-selected-after .v-tabsheet-tabitem {
+    border-left: 1px transparent;
+    padding-left: 0;
+}
+
+.v-window-contents .v-tabsheet-content .v-tabsheet-tabitemcell .v-tabsheet-tabitem-selected {
+    height: 25px;
+    line-height: 14px;
+    margin-bottom: 0;
+    padding-left: 6px;
+    padding-top: 3px;
+}
 
 .v-window-contents .v-tabsheet-content .v-tabsheet-tabs {
     background: transparent url(img/bg-inner-tabseet.png) repeat-x bottom;

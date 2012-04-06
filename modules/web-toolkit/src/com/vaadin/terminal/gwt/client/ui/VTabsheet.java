@@ -145,6 +145,7 @@ public class VTabsheet extends VTabsheetBase {
             }
         }
 
+        @Override
         public Action[] getActions() {
             if (actionKeys == null) {
                 return new Action[]{};
@@ -160,10 +161,12 @@ public class VTabsheet extends VTabsheetBase {
             return actions;
         }
 
+        @Override
         public ApplicationConnection getClient() {
             return client;
         }
 
+        @Override
         public String getPaintableId() {
             return id;
         }
@@ -275,8 +278,12 @@ public class VTabsheet extends VTabsheetBase {
             DOM.insertBefore(tr, td, spacerTd);
             c.addClickHandler(this);
             add(c, div);
+
+            // update style markers
+            selectTab(activeTabIndex);
         }
 
+        @Override
         public void onClick(ClickEvent event) {
             int index = getWidgetIndex((Widget) event.getSource());
             onTabSelected(index);
@@ -288,22 +295,66 @@ public class VTabsheet extends VTabsheetBase {
                     + (index == 0 ? "-first" : "");
 
             final Widget newSelected = getWidget(index);
-            final com.google.gwt.dom.client.Element div = newSelected
-                    .getElement().getParentElement();
+            final com.google.gwt.dom.client.Element div = newSelected.getElement().getParentElement();
 
+            // assign style to selected tab
             Widget.setStyleName(div, classname, true);
             Widget.setStyleName(div.getParentElement(), classname2, true);
 
             if (oldSelected != null && oldSelected != newSelected) {
                 classname2 = CLASSNAME + "-tabitemcell-selected"
                         + (getWidgetIndex(oldSelected) == 0 ? "-first" : "");
-                final com.google.gwt.dom.client.Element divOld = oldSelected
-                        .getElement().getParentElement();
+                final com.google.gwt.dom.client.Element divOld = oldSelected.getElement().getParentElement();
                 Widget.setStyleName(divOld, classname, false);
-                Widget.setStyleName(divOld.getParentElement(), classname2,
-                        false);
+                Widget.setStyleName(divOld.getParentElement(), classname2, false);
             }
             oldSelected = newSelected;
+
+            String tabClassName = CLASSNAME + "-tabitemcell-selected";
+
+            final String previousTabClassName = tabClassName + "-before";
+            final String previousDivClassName = classname + "-before";
+
+            final String nextTabClassName = tabClassName + "-after";
+            final String nextDivClassName = classname + "-after";
+
+            // remove before and next classes from tabs
+            for (int i = 0; i < getTabCount(); i++) {
+                final Widget tabWidget = getWidget(i);
+                final com.google.gwt.dom.client.Element widgetDiv = tabWidget.getElement().getParentElement();
+
+                Widget.setStyleName(widgetDiv, previousDivClassName, false);
+                Widget.setStyleName(widgetDiv, nextDivClassName, false);
+
+                Widget.setStyleName(widgetDiv.getParentElement(), previousTabClassName, false);
+                Widget.setStyleName(widgetDiv.getParentElement(), nextTabClassName, false);
+            }
+
+            // assign style to previous tab
+            if (index > 0) {
+                final Widget widgetBeforeSelected = getWidget(index - 1);
+                final com.google.gwt.dom.client.Element divBeforeSelected =
+                        widgetBeforeSelected.getElement().getParentElement();
+
+                Widget.setStyleName(divBeforeSelected, nextDivClassName, false);
+                Widget.setStyleName(divBeforeSelected.getParentElement(), nextTabClassName, false);
+
+                Widget.setStyleName(divBeforeSelected, previousDivClassName, true);
+                Widget.setStyleName(divBeforeSelected.getParentElement(), previousTabClassName, true);
+            }
+
+            // assign style to next tab
+            if (index < getTabCount() - 1) {
+                final Widget widgetAfterSelected = getWidget(index + 1);
+                final com.google.gwt.dom.client.Element divAfterSelected =
+                        widgetAfterSelected.getElement().getParentElement();
+
+                Widget.setStyleName(divAfterSelected, previousDivClassName, false);
+                Widget.setStyleName(divAfterSelected.getParentElement(), previousTabClassName, false);
+
+                Widget.setStyleName(divAfterSelected, nextDivClassName, true);
+                Widget.setStyleName(divAfterSelected.getParentElement(), nextTabClassName, true);
+            }
 
             // The selected tab might need more (or less) space
             updateCaptionSize(index);
@@ -362,7 +413,6 @@ public class VTabsheet extends VTabsheetBase {
         public void updateCaptionSize(int index) {
             VCaption c = getTab(index);
             c.setWidth(c.getRequiredWidth() + "px");
-
         }
 
     }
@@ -421,13 +471,12 @@ public class VTabsheet extends VTabsheetBase {
             // run updating variables in deferred command to bypass some FF
             // optimization issues
             Scheduler.get().scheduleDeferred(new Command() {
+                @Override
                 public void execute() {
                     previousVisibleWidget = tp.getWidget(tp.getVisibleWidget());
                     DOM.setStyleAttribute(
-                            DOM.getParent(previousVisibleWidget.getElement()),
-                            "visibility", "hidden");
-                    client.updateVariable(id, "selected", tabKeys.get(tabIndex)
-                            .toString(), true);
+                            DOM.getParent(previousVisibleWidget.getElement()), "visibility", "hidden");
+                    client.updateVariable(id, "selected", tabKeys.get(tabIndex).toString(), true);
                 }
             });
             waitingForResponse = true;
@@ -609,8 +658,7 @@ public class VTabsheet extends VTabsheetBase {
         // Re run relative size update to ensure optimal scrollbars
         // TODO isolate to situation that visible tab has undefined height
         try {
-            client.handleComponentRelativeSize(tp.getWidget(tp
-                    .getVisibleWidget()));
+            client.handleComponentRelativeSize(tp.getWidget(tp.getVisibleWidget()));
         } catch (Exception e) {
             // Ignore, most likely empty tabsheet
         }
@@ -629,8 +677,7 @@ public class VTabsheet extends VTabsheetBase {
             final String caption = action.getStringAttribute("caption");
             actions.put(key + "_c", caption);
             if (action.hasAttribute("icon")) {
-                actions.put(key + "_i", client.translateVaadinUri(action
-                        .getStringAttribute("icon")));
+                actions.put(key + "_i", client.translateVaadinUri(action.getStringAttribute("icon")));
             }
         }
     }
@@ -657,11 +704,11 @@ public class VTabsheet extends VTabsheetBase {
                 String contentClass = contentBaseClass;
                 final String decoBaseClass = CLASSNAME + "-deco";
                 String decoClass = decoBaseClass;
-                for (int i = 0; i < styles.length; i++) {
-                    tb.addStyleDependentName(styles[i]);
-                    tabsClass += " " + tabsBaseClass + "-" + styles[i];
-                    contentClass += " " + contentBaseClass + "-" + styles[i];
-                    decoClass += " " + decoBaseClass + "-" + styles[i];
+                for (String styleItem : styles) {
+                    tb.addStyleDependentName(styleItem);
+                    tabsClass += " " + tabsBaseClass + "-" + styleItem;
+                    contentClass += " " + contentBaseClass + "-" + styleItem;
+                    decoClass += " " + decoBaseClass + "-" + styleItem;
                 }
                 DOM.setElementProperty(tabs, "className", tabsClass);
                 DOM.setElementProperty(contentNode, "className", contentClass);
@@ -1013,6 +1060,7 @@ public class VTabsheet extends VTabsheetBase {
             final Style style = scroller.getStyle();
             style.setProperty("whiteSpace", "normal");
             Scheduler.get().scheduleDeferred(new Command() {
+                @Override
                 public void execute() {
                     style.setProperty("whiteSpace", "");
                 }
@@ -1056,6 +1104,7 @@ public class VTabsheet extends VTabsheetBase {
         return tp.iterator();
     }
 
+    @Override
     public boolean hasChildComponent(Widget component) {
         if (tp.getWidgetIndex(component) < 0) {
             return false;
@@ -1064,14 +1113,17 @@ public class VTabsheet extends VTabsheetBase {
         }
     }
 
+    @Override
     public void replaceChildComponent(Widget oldComponent, Widget newComponent) {
         tp.replaceComponent(oldComponent, newComponent);
     }
 
+    @Override
     public void updateCaption(Paintable component, UIDL uidl) {
         /* Tabsheet does not render its children's captions */
     }
 
+    @Override
     public boolean requestLayout(Set<Paintable> child) {
         if (!isDynamicHeight() && !isDynamicWidth()) {
             /*
