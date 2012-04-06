@@ -927,12 +927,14 @@ create table SYS_CATEGORY_ATTR(
 	DEFAULT_INT integer,
 	DEFAULT_DOUBLE numeric,
 	DEFAULT_DATE date,
+	DEFAULT_DATE_IS_CURRENT boolean,
 	DEFAULT_BOOLEAN boolean,
 	DEFAULT_ENTITY_VALUE varchar(36),
 	ENUMERATION varchar(500),
     ORDER_NO integer,
 	SCREEN varchar(255),
 	REQUIRED boolean,
+	LOOKUP boolean,
 	primary key (ID)
 );
 
