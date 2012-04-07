@@ -14,23 +14,25 @@
     background: #EBF0F5;
 }
 
-.v-splitpanel-with-hookButton-left .v-splitpanel-hsplitter {
+.v-splitpanel-with-hookButton-left > div > .v-splitpanel-hsplitter {
 	width: 5px;
     background: url(img/hook-split-left.png) center repeat-y;
 }
 
-.v-splitpanel-with-hookButton-right .v-splitpanel-hsplitter {
+.v-splitpanel-with-hookButton-right > div > .v-splitpanel-hsplitter {
 	width: 5px;
     background: url(img/hook-split-right.png) center repeat-y;
 }
 
-.v-splitpanel-with-hookButton-right .v-splitpanel-second-container
-.v-tabsheet-tabsheetpanel > div {
+/* Padding for main tabsheet content */
+
+.v-splitpanel-with-hookButton-right > div > div.v-splitpanel-second-container > div.v-verticallayout
+> div > div > div > div.v-tabsheet > div.v-tabsheet-content > .v-tabsheet-tabsheetpanel > div {
     padding-left: 4px;
 }
 
-.v-splitpanel-with-hookButton-left .v-splitpanel-second-container
-.v-tabsheet-tabsheetpanel > div {
+.v-splitpanel-with-hookButton-left > div > div.v-splitpanel-second-container > div.v-verticallayout
+> div > div > div > div.v-tabsheet > div.v-tabsheet-content > .v-tabsheet-tabsheetpanel > div {
     padding-left: 4px;
 }
 
@@ -54,11 +56,11 @@
 	margin: 0 0;
 }
 
-.v-splitpanel-with-hookButton-left .v-splitpanel-hsplitter div {
+.v-splitpanel-with-hookButton-left > div > .v-splitpanel-hsplitter > div {
     background: transparent none;
 }
 
-.v-splitpanel-with-hookButton-right .v-splitpanel-hsplitter div {
+.v-splitpanel-with-hookButton-right > div > .v-splitpanel-hsplitter > div {
     background: transparent none;
 }
 
