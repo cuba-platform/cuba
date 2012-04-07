@@ -308,7 +308,6 @@ public class CubaApplicationServlet extends ApplicationServlet {
 
         writeScriptResource(request, page, "jquery-1.4.2.min.js", false);
         writeScriptResource(request, page, "jquery.blockUI.js", false);
-        writeScriptResource(request, page, "jquery.disable.text.select.pack.js", false);
         writeScriptResource(request, page, "scripts.js", true);
     }
 

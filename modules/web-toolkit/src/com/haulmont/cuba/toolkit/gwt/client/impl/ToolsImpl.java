@@ -67,11 +67,76 @@ public class ToolsImpl {
     }-*/;
 
     public native void textSelectionEnable(Element el, boolean b) /*-{
-        if (b) {
-            $wnd.jQuery(el).enableTextSelect();
-        } else {
-            $wnd.jQuery(el).disableTextSelect();
+
+        // DISCLAIMER: Do not use jQuery disable text selection pack, it caches html nodes and we have memory leaks
+
+        if (typeof document.falseFunction != "function") {
+            document.falseFunction = function() {
+                return false;
+            };
         }
+
+        var walkEach = function(element, action) {
+            if (typeof element != "undefined") {
+                action(element);
+                var children = element.childNodes;
+                if (typeof children != "undefined") {
+                    for (var i = 0; i < children.length; i++)
+                        if (children[i].nodeType == 1)
+                            walkEach(children[i], action);
+                }
+            }
+        };
+
+        if (!b) {
+            // disable
+            if ($wnd.jQuery.browser.mozilla) {
+                walkEach(el, function(x) {
+                    if (typeof x.style == "undefined")
+                        x.style = {};
+                    x.style.MozUserSelect = "none";
+                });
+            } else if ($wnd.jQuery.browser.msie) {
+                walkEach(el, function(x) {
+                    x.onselectstart = document.falseFunction;
+                });
+            } else if ($wnd.jQuery.browser.webkit) {
+                walkEach(el, function(x) {
+                    if (typeof x.style == "undefined")
+                        x.style = {};
+                    x.style.webkitUserSelect = "none";
+                });
+            } else {
+                walkEach(el, function(x) {
+                    x.addEventListener("selectstart", document.falseFunction, true);
+                });
+            }
+        } else {
+            // enable
+            if ($wnd.jQuery.browser.mozilla) {
+                walkEach(el, function(x) {
+                    if (typeof x.style == "undefined")
+                        x.style = {};
+                    x.style.MozUserSelect = "";
+                });
+            } else if ($wnd.jQuery.browser.msie) {
+                walkEach(el, function(x) {
+                    x.onselectstart = null;
+                });
+            } else if ($wnd.jQuery.browser.webkit) {
+                walkEach(el, function(x) {
+                    if (typeof x.style == "undefined")
+                        x.style = {};
+                    x.style.webkitUserSelect = "";
+                });
+            } else {
+                walkEach(el, function(x) {
+                    x.removeEventListener("selectstart", document.falseFunction, true);
+                });
+            }
+        }
+
+        walkEach = null;
     }-*/;
 
     public native void removeElementWithEvents(Element el) /*-{
