@@ -69,6 +69,9 @@
 
     <screen id="sysInfoWindow" template="/com/haulmont/cuba/gui/app/core/showinfo/show-info.xml"/>
 
+    <screen id="core$BackgroundWorkWindow"
+            template="/com/haulmont/cuba/gui/backgroundwork/background-work-window.xml"/>
+
     <screen id="core$FileDescriptor.browse"
             template="/com/haulmont/cuba/gui/app/core/file/file-browse.xml"/>
 
