@@ -295,10 +295,8 @@ public class VSplitPanel extends ComplexPanel implements Container,
             DOM.setStyleAttribute(secondContainer, "overflowY", "auto");
         }
 
-        DOM.setElementProperty(firstContainer, "className", CLASSNAME
-                + "-first-container");
-        DOM.setElementProperty(secondContainer, "className", CLASSNAME
-                + "-second-container");
+        DOM.setElementProperty(firstContainer, "className", CLASSNAME + "-first-container");
+        DOM.setElementProperty(secondContainer, "className", CLASSNAME + "-second-container");
     }
 
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
@@ -556,13 +554,13 @@ public class VSplitPanel extends ComplexPanel implements Container,
     public void onBrowserEvent(Event event) {
         switch (DOM.eventGetType(event)) {
         case Event.ONMOUSEMOVE:
-            // case Event.ONTOUCHMOVE:
+        case Event.ONTOUCHMOVE:
             if (resizing) {
                 onMouseMove(event);
             }
             break;
         case Event.ONMOUSEDOWN:
-            // case Event.ONTOUCHSTART:
+        case Event.ONTOUCHSTART:
             onMouseDown(event);
             break;
         case Event.ONMOUSEOUT:
@@ -574,7 +572,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
             }
             break;
         case Event.ONMOUSEUP:
-            // case Event.ONTOUCHEND:
+        case Event.ONTOUCHEND:
             if (resizing) {
                 onMouseUp(event);
             }
@@ -607,6 +605,9 @@ public class VSplitPanel extends ComplexPanel implements Container,
                     hookButton.addStyleName(CLASSNAME + "-hookButton-left");
                     hookButtonState = VSplitPanel.HookButtonState.LEFT;
                 }
+
+                this.removeStyleName(CLASSNAME + "-with-hookButton-right");
+                this.addStyleName(CLASSNAME + "-with-hookButton-left");
             } else {
                 hookButtonContainer.setPopupPosition(
                         left,
@@ -617,6 +618,9 @@ public class VSplitPanel extends ComplexPanel implements Container,
                     hookButton.addStyleName(CLASSNAME + "-hookButton-right");
                     hookButtonState = VSplitPanel.HookButtonState.RIGHT;
                 }
+
+                this.removeStyleName(CLASSNAME + "-with-hookButton-left");
+                this.addStyleName(CLASSNAME + "-with-hookButton-right");
             }
         }
     }

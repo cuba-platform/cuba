@@ -9,9 +9,29 @@
 
 .v-splitpanel-hookButton {
     cursor: pointer;
-    width: 12px;
+    width: 11px;
     height: 40px;
     background: #EBF0F5;
+}
+
+.v-splitpanel-with-hookButton-left .v-splitpanel-hsplitter {
+	width: 5px;
+    background: url(img/hook-split-left.png) center repeat-y;
+}
+
+.v-splitpanel-with-hookButton-right .v-splitpanel-hsplitter {
+	width: 5px;
+    background: url(img/hook-split-right.png) center repeat-y;
+}
+
+.v-splitpanel-with-hookButton-right .v-splitpanel-second-container
+.v-tabsheet-tabsheetpanel > div {
+    padding-left: 4px;
+}
+
+.v-splitpanel-with-hookButton-left .v-splitpanel-second-container
+.v-tabsheet-tabsheetpanel > div {
+    padding-left: 4px;
 }
 
 .v-splitpanel-hookButton-left {
@@ -32,6 +52,14 @@
 	/*border: 0 solid #d7dddb;*/
 	cursor: e-resize;
 	margin: 0 0;
+}
+
+.v-splitpanel-with-hookButton-left .v-splitpanel-hsplitter div {
+    background: transparent none;
+}
+
+.v-splitpanel-with-hookButton-right .v-splitpanel-hsplitter div {
+    background: transparent none;
 }
 
 .v-splitpanel-vertical .v-splitpanel-vsplitter {
