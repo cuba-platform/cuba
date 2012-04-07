@@ -1,0 +1,21 @@
+<!--
+  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        caption="msg://backgroundWork.caption"
+        class="com.haulmont.ccpayments.gui.screen.background_work.BackgroundWorkWindow"
+        messagesPack="com.haulmont.ccpayments.gui.screen.background_work">
+    <dsContext>
+
+    </dsContext>
+    <layout expandLayout="true" margin="true" spacing="true">
+        <label id="text" value="msg://backgroundWork.defaultText"/>
+        <progressBar id="taskProgress" width="100%" indeterminate="true"/>
+        <hbox align="MIDDLE_RIGHT">
+            <button id="cancelButton" action="cancel" icon="icons/cancel.png"/>
+        </hbox>
+    </layout>
+</window>
