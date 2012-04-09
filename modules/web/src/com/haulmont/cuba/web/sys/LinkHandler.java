@@ -79,9 +79,8 @@ public class LinkHandler implements Serializable {
                 }
 
                 UUID userId = getUUID(requestParams.get("user"));
-                final User currentUser = app.getConnection().getSession().getCurrentOrSubstitutedUser();
-                if (!(userId == null || currentUser.getId().equals(userId))) {
-                    final User substitutedUser = loadUser(userId, currentUser);
+                if (!(userId == null || app.getConnection().getSession().getCurrentOrSubstitutedUser().getId().equals(userId))) {
+                    final User substitutedUser = loadUser(userId, app.getConnection().getSession().getUser());
                     if (substitutedUser != null)
                         app.getWindowManager().showOptionDialog(
                                 MessageProvider.getMessage(getClass(), "toSubstitutedUser.title"),
@@ -165,6 +164,8 @@ public class LinkHandler implements Serializable {
     }
 
     private User loadUser(UUID userId, User user) {
+        if (user.getId().equals(userId))
+            return user;
         LoadContext loadContext = new LoadContext(UserSubstitution.class);
         LoadContext.Query query = new LoadContext.Query("select su from sec$UserSubstitution us join us.user u " +
                 "join us.substitutedUser su where u.id = :id and su.id = :userId and " +
