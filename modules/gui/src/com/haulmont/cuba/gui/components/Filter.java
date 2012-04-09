@@ -39,4 +39,10 @@ public interface Filter
     
     void setManualApplyRequired(Boolean manualApplyRequired);
     Boolean getManualApplyRequired();
+
+    void setEditable(boolean editable);
+    boolean isEditable();
+
+    void setRequired(boolean required);
+    boolean isRequired();
 }

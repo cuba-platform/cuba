@@ -102,6 +102,9 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     protected MaxResultsField maxResultsField;
     private Boolean manualApplyRequired;
 
+    private boolean editable = true;
+    private boolean required = false;
+
     private DesktopPopupButton actions;
 
     private GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
@@ -117,6 +120,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     public DesktopFilter() {
         persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
         LC topLc = new LC();
+        topLc.hideMode(3);
         topLc.insets("0", "5", "0", "5");
         if (LayoutAdapter.isDebug())
             topLc.debug(1000);
@@ -310,6 +314,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         actions.setPopupVisible(false);
         select.setEnabled(!editing);
         applyBtn.setVisible(!editing);
+
+        actions.setVisible(editable);
     }
 
     private boolean checkGlobalAppFolderPermission() {
@@ -541,7 +547,9 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         );
 
         select.setOptionsList(list);
-        select.setNullOption(noFilterWrapper);
+        if (!required)
+            select.setNullOption(noFilterWrapper);
+
         for (ItemWrapper filterWrapper : list) {
             if (filterWrapper.getItem() == filterEntity) {
                 select.setValue(filterWrapper);
@@ -794,7 +802,12 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             wrappedList.add(new ItemWrapper<FilterEntity>(filter, getFilterCaption(filter)));
         }
         select.setOptionsList(wrappedList);
-        select.setNullOption(noFilterWrapper);
+        if (!required)
+            select.setNullOption(noFilterWrapper);
+        else {
+            if (!wrappedList.isEmpty())
+                select.setValue(wrappedList.iterator().next());
+        }
     }
 
     private FilterEntity getDefaultFilter(Collection<ItemWrapper<FilterEntity>> filterWrappers, Window window) {
@@ -1136,6 +1149,30 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     @Override
     public Boolean getManualApplyRequired() {
         return manualApplyRequired;
+    }
+
+    @Override
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+        actions.setVisible(editable);
+    }
+
+    @Override
+    public boolean isEditable() {
+        return editable;
+    }
+
+    @Override
+    public void setRequired(boolean required) {
+        if (this.required != required)
+            select.setRequired(required);
+
+        this.required = required;
+    }
+
+    @Override
+    public boolean isRequired() {
+        return required;
     }
 
     private boolean getResultingManualApplyRequired() {
@@ -1480,7 +1517,6 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             addFocusListener(new FocusListener() {
                 @Override
                 public void focusGained(FocusEvent e) {
-
                 }
 
                 @Override
@@ -1501,7 +1537,6 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             try {
                 Integer newValue = Integer.parseInt(getText());
                 setValue(newValue);
-
             } catch (NumberFormatException ex) {
                 setValue(value);
             }

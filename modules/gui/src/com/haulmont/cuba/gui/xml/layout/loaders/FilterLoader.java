@@ -25,6 +25,7 @@ public class FilterLoader extends ComponentLoader {
         super(context);
     }
 
+    @Override
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent)
             throws InstantiationException, IllegalAccessException {
         final Filter filter = factory.createComponent("filter");
@@ -32,9 +33,6 @@ public class FilterLoader extends ComponentLoader {
         return filter;
     }
 
-    /**
-     *
-     */
     protected void initFilter(final Filter filter, final Element element) {
         assignXmlDescriptor(filter, element);
         loadId(filter, element);
@@ -46,6 +44,17 @@ public class FilterLoader extends ComponentLoader {
 
         final String manualApplyRequired = element.attributeValue("manualApplyRequired");
         filter.setManualApplyRequired(BooleanUtils.toBooleanObject(manualApplyRequired));
+
+        String requiredAttr = element.attributeValue("required");
+        Boolean required = BooleanUtils.toBooleanObject(requiredAttr);
+        if (required != null)
+            filter.setRequired(required);
+
+        String editableAttr = element.attributeValue("editable");
+        Boolean editable = BooleanUtils.toBooleanObject(editableAttr);
+
+        if (editable != null)
+            filter.setEditable(editable);
 
         String datasource = element.attributeValue("datasource");
         if (!StringUtils.isBlank(datasource)) {
@@ -62,6 +71,7 @@ public class FilterLoader extends ComponentLoader {
         final String applyTo = element.attributeValue("applyTo");
         if (!StringUtils.isEmpty(applyTo)) {
             context.addPostInitTask(new PostInitTask() {
+                @Override
                 public void execute(Context context, IFrame window) {
                     Component c = frame.getComponent(applyTo);
                     if (c == null) {
@@ -74,6 +84,7 @@ public class FilterLoader extends ComponentLoader {
 
         context.addPostInitTask(
                 new PostInitTask() {
+                    @Override
                     public void execute(Context context, IFrame window) {
                         filter.loadFiltersAndApplyDefault();
                     }

@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
@@ -48,7 +47,6 @@ import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.IntegerValidator;
-import com.vaadin.event.*;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.terminal.Sizeable;
 import com.vaadin.ui.*;
@@ -103,6 +101,9 @@ public class WebFilter
     protected TextField maxResultsField;
     private AbstractOrderedLayout maxResultsLayout;
     private Boolean manualApplyRequired;
+
+    private boolean editable = true;
+    private boolean required = false;
 
     private Component applyTo;
 
@@ -197,6 +198,7 @@ public class WebFilter
         updateControls();
     }
 
+    @Override
     public void requestFocus() {
         select.focus();
     }
@@ -655,6 +657,8 @@ public class WebFilter
             defaultFilterEmpty = true;
             updateControls();
         }
+
+        updateComponentRequired(required);
     }
 
     @Override
@@ -976,10 +980,10 @@ public class WebFilter
         fillActions();
         actions.setVisible(!editing);
         ((PopupButton) actions.getComponent()).setPopupVisible(false);
+        ((PopupButton) actions.getComponent()).setVisible(editable);
 
         select.setEnabled(!editing);
         applyBtn.setVisible(!editing);
-
     }
 
     private boolean checkGlobalAppFolderPermission() {
@@ -1313,7 +1317,6 @@ public class WebFilter
             select.setItemCaption(filterEntity, getFilterCaption(filterEntity) + " " + defaultFilterCaption);
     }
 
-
     @Override
     public void setManualApplyRequired(Boolean manualApplyRequired) {
         this.manualApplyRequired = manualApplyRequired;
@@ -1322,6 +1325,52 @@ public class WebFilter
     @Override
     public Boolean getManualApplyRequired() {
         return manualApplyRequired;
+    }
+
+    @Override
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+        ((PopupButton) actions.getComponent()).setVisible(editable);
+    }
+
+    @Override
+    public boolean isEditable() {
+        return editable;
+    }
+
+    @Override
+    public void setRequired(boolean required) {
+        updateComponentRequired(required);
+
+        if (this.required != required)
+            select.setNullSelectionAllowed(!required);
+        this.required = required;
+    }
+
+    private void updateComponentRequired(boolean required) {
+        if (required && (select.getValue() == null)) {
+            // select first item
+            Collection<?> itemIds = select.getItemIds();
+            if ((itemIds != null) && (!itemIds.isEmpty())) {
+                Object nullSelectionItemId = select.getNullSelectionItemId();
+                Object defaultItemId = null;
+
+                Iterator<?> iterator = itemIds.iterator();
+                while (iterator.hasNext() && (defaultItemId == null)) {
+                    Object itemId = iterator.next();
+                    if (itemId != nullSelectionItemId)
+                        defaultItemId = itemId;
+                }
+
+                if (defaultItemId != null)
+                    select.select(defaultItemId);
+            }
+        }
+    }
+
+    @Override
+    public boolean isRequired() {
+        return required;
     }
 
     private boolean getResultingManualApplyRequired() {
@@ -1389,10 +1438,12 @@ public class WebFilter
             super("copyAction");
         }
 
+        @Override
         public String getCaption() {
             return MessageProvider.getMessage(MESSAGES_PACK, getId());
         }
 
+        @Override
         public void actionPerform(Component component) {
             copyFilterEntity();
             parseFilterXml();
@@ -1412,6 +1463,7 @@ public class WebFilter
             return MessageProvider.getMessage(MESSAGES_PACK, getId());
         }
 
+        @Override
         public void actionPerform(Component component) {
             switchToEdit();
         }
@@ -1428,6 +1480,7 @@ public class WebFilter
             return MessageProvider.getMessage(MESSAGES_PACK, getId());
         }
 
+        @Override
         public void actionPerform(Component component) {
             delete();
         }
@@ -1464,6 +1517,7 @@ public class WebFilter
             return MessageProvider.getMessage(MESSAGES_PACK, getId());
         }
 
+        @Override
         public void actionPerform(Component component) {
             saveAsFolder(isAppFolder);
         }
@@ -1675,9 +1729,8 @@ public class WebFilter
             return MessageProvider.getMessage(MESSAGES_PACK, getId());
         }
 
-
+        @Override
         public void actionPerform(Component component) {
-
             if (!table.getSelected().isEmpty()) {
                 String entityType = table.getDatasource().getMetaClass().getName();
                 Map<String, Object> params = new HashMap<String, Object>();
@@ -1710,6 +1763,7 @@ public class WebFilter
             return MessageProvider.getMessage(MESSAGES_PACK, getId());
         }
 
+        @Override
         public void actionPerform(Component component) {
             Set selected = table.getSelected();
             if (selected.isEmpty())
@@ -1747,11 +1801,13 @@ public class WebFilter
             return MessageProvider.getMessage(MESSAGES_PACK, getId());
         }
 
+        @Override
         public void actionPerform(Component component) {
             IFrame frame = WebFilter.this.getFrame();
             String[] strings = ValuePathHelper.parse(getComponentPath());
             String windowAlias = strings[0];
             frame.openLookup(windowAlias, new Window.Lookup.Handler() {
+                @Override
                 public void handleLookup(Collection items) {
                     String filterXml = filterEntity.getXml();
                     filterEntity.setXml(WebFilter.UserSetHelper.addEntities(filterXml, items));
