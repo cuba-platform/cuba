@@ -325,19 +325,17 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         component.addListener(new Property.ValueChangeListener() {
             @Override
+            @SuppressWarnings("unchecked")
             public void valueChange(Property.ValueChangeEvent event) {
                 if (datasource == null) return;
 
                 final Set selected = getSelected();
                 if (selected.isEmpty()) {
-                    //noinspection unchecked
                     datasource.setItem(null);
-                } else if (selected.size() > 1) {
-                    datasource.setItem(null);
-                    datasource.setItem((Entity) selected.iterator().next());
                 } else {
-                    //noinspection unchecked
-                    datasource.setItem(null);
+                    // reset selection and select new item
+                    if (isMultiSelect())
+                        datasource.setItem(null);
                     datasource.setItem((Entity) selected.iterator().next());
                 }
             }
@@ -355,6 +353,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         });
 
         component.addListener(new ItemClickEvent.ItemClickListener() {
+            @Override
             public void itemClick(ItemClickEvent event) {
                 if (event.isDoubleClick() && event.getItem() != null) {
                     handleClickAction();

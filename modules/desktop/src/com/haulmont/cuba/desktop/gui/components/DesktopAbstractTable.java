@@ -513,15 +513,21 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected void initSelectionListener(final CollectionDatasource datasource) {
         impl.getSelectionModel().addListSelectionListener(
                 new ListSelectionListener() {
-
                     @Override
+                    @SuppressWarnings("unchecked")
                     public void valueChanged(ListSelectionEvent e) {
                         if (e.getValueIsAdjusting() || isRowsAjusting)
                             return;
 
-                        Entity entity = getSingleSelected();
-                        datasource.setItem(null);
-                        datasource.setItem(entity);
+                        final Set selected = getSelected();
+                        if (selected.isEmpty()) {
+                            datasource.setItem(null);
+                        } else {
+                            // reset selection and select new item
+                            if (isMultiSelect())
+                                datasource.setItem(null);
+                            datasource.setItem((Entity) selected.iterator().next());
+                        }
                     }
                 }
         );
