@@ -40,6 +40,11 @@
 	position: relative;
 }
 
+.v-tabsheet-tabitem .v-caption {
+	height: 20px;
+	padding: 0 6px 5px 12px;
+}
+
 /* Second level tabsheet */
 
 .v-tabsheet-content .v-tabsheet-tabitemcell .v-tabsheet-tabitem {
@@ -109,6 +114,11 @@
     padding-left: 0;
 }
 
+.v-tabsheet-content .v-tabsheet-tabitem .v-caption {
+	height: 20px;
+	padding: 0 6px 5px 4px;
+}
+
 .v-verticallayout-single .v-tabsheet-tabs {
     background: transparent url(img/bg-middle-tabseet.png) repeat-x bottom;
 }
@@ -148,6 +158,11 @@
 .v-verticallayout-single .v-tabsheet-tabs .v-tabsheet-tabitemcell-selected {
     border: 0;
     padding-left: 0;
+}
+
+.v-verticallayout-single .v-tabsheet-tabitem .v-caption {
+	height: 20px;
+	padding: 0 6px 5px 4px;
 }
 
 /* Third level tabsheet */
@@ -204,6 +219,11 @@
     border-top-style: none;
 }
 
+.v-tabsheet-content .v-tabsheet-content .v-tabsheet-tabitem .v-caption {
+	height: 20px;
+	padding: 0 6px 5px 4px;
+}
+
 .v-verticallayout-single .v-tabsheet-content .v-tabsheet-content {
     background: #EBF0F4;
     border: 1px solid #A4C5DF;
@@ -226,6 +246,11 @@
 
 .v-verticallayout-single .v-tabsheet-content .v-tabsheet-content {
     background: #EBF0F4;
+}
+
+.v-verticallayout-single .v-tabsheet-content .v-tabsheet-tabitem .v-caption {
+	height: 20px;
+	padding: 0 6px 5px 4px;
 }
 
 /* Tabsheet in dialog windows */
@@ -297,6 +322,11 @@
     padding-left: 0;
 }
 
+.v-window-contents .v-tabsheet-tabitem .v-caption {
+	height: 20px;
+	padding: 0 6px 5px 4px;
+}
+
 /* Second level tabsheet in dialog window */
 
 .v-window-contents .v-tabsheet-content .v-tabsheet-tabitemcell .v-tabsheet-tabitem {
@@ -349,6 +379,11 @@
     background: #EBF0F4;
     border: 1px solid #A4C5DF;
     border-top-style: none;
+}
+
+.v-window-contents .v-tabsheet-content .v-caption {
+	height: 20px;
+	padding: 0 6px 5px 4px;
 }
 
 /* General */
@@ -462,13 +497,6 @@
     padding-left: 4px;
     border-bottom: 0;
     margin: 10px;
-}
-
-
-
-.v-tabsheet-tabitem .v-caption {
-	height: 20px;
-	padding: 0 6px 5px 4px;
 }
 
 .v-tabsheet-tabitem .v-caption .v-captiontext,
@@ -779,7 +807,7 @@
     cursor: pointer;
     width: 14px;
     height: 24px;
-    background: transparent url(../icons/tab-remove.png) no-repeat center left;
+    background: transparent url(../icons/tab-remove-inactive.png) no-repeat center left;
     text-indent: 100px;
     overflow: hidden;
     font-size: 20px;
