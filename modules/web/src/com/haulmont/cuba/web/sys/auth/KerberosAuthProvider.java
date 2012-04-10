@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ietf.jgss.*;
@@ -42,8 +43,8 @@ public class KerberosAuthProvider implements CubaAuthProvider {
         WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
         // Setup system properties
         System.setProperty("sun.security.krb5.debug", "false");
-        System.setProperty("java.security.krb5.conf", webConfig.getKerberosConf());
-        System.setProperty("java.security.auth.login.config", webConfig.getKerberosJaasConf());
+        System.setProperty("java.security.krb5.conf", StringUtils.trim(webConfig.getKerberosConf()));
+        System.setProperty("java.security.auth.login.config", StringUtils.trim(webConfig.getKerberosJaasConf()));
         System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
     }
 
@@ -73,7 +74,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
                 final String authString = auth.substring("Negotiate ".length());
 
                 WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
-                LoginContext loginContext = new LoginContext(webConfig.getKerberosLoginModule(),
+                LoginContext loginContext = new LoginContext(StringUtils.trim(webConfig.getKerberosJaasConf()),
                         new CallbackHandler() {
                             @Override
                             public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
