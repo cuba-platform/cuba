@@ -7,7 +7,6 @@
 package com.haulmont.cuba.desktop.gui.components.filter;
 
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.cuba.gui.components.filter.AbstractParam;
 import com.haulmont.cuba.gui.components.filter.ParamFactory;
 import com.haulmont.cuba.gui.data.Datasource;
 
@@ -21,19 +20,19 @@ import java.util.UUID;
 public class ParamFactoryImpl implements ParamFactory<Param> {
     @Override
     public Param createParam(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
-                             boolean inExpr) {
-        return new Param(name, javaClass, entityWhere, entityView, datasource, inExpr);
+                             boolean inExpr, boolean required) {
+        return new Param(name, javaClass, entityWhere, entityView, datasource, inExpr, required);
     }
 
     @Override
     public Param createParam(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
-                             boolean inExpr, UUID categoryAttrId) {
-        return new Param(name, javaClass, entityWhere, entityView, datasource, inExpr, categoryAttrId);
+                             boolean inExpr, UUID categoryAttrId, boolean required) {
+        return new Param(name, javaClass, entityWhere, entityView, datasource, inExpr, categoryAttrId, required);
     }
 
     @Override
     public Param createParam(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
-                             MetaProperty property, boolean inExpr) {
-        return new Param(name, javaClass, entityWhere, entityView, datasource, property, inExpr);
+                             MetaProperty property, boolean inExpr, boolean required) {
+        return new Param(name, javaClass, entityWhere, entityView, datasource, property, inExpr, required);
     }
 }

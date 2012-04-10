@@ -73,7 +73,7 @@ public abstract class AbstractConditionDescriptor<T extends AbstractParam> {
 
     public T createParam(AbstractCondition condition) {
         return paramFactory.createParam(condition.createParamName(), getJavaClass(),
-                getEntityParamWhere(), getEntityParamView(), datasource, inExpr);
+                getEntityParamWhere(), getEntityParamView(), datasource, inExpr, condition.isRequired());
     }
 
     protected abstract ParamFactory<T> getParamFactory();

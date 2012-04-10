@@ -16,10 +16,7 @@ import com.haulmont.cuba.core.entity.CategoryAttribute;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.App;
-import com.haulmont.cuba.desktop.gui.components.DesktopDateField;
-import com.haulmont.cuba.desktop.gui.components.DesktopLookupField;
-import com.haulmont.cuba.desktop.gui.components.DesktopPickerField;
-import com.haulmont.cuba.desktop.gui.components.DesktopTextField;
+import com.haulmont.cuba.desktop.gui.components.*;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
@@ -54,18 +51,22 @@ public class Param extends AbstractParam<JComponent> {
 
     public static final Dimension TEXT_COMPONENT_DIM = new Dimension(120, Integer.MAX_VALUE);
 
-    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, boolean inExpr) {
-        super(name, javaClass, entityWhere, entityView, datasource, inExpr);
+    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
+                 boolean inExpr, boolean required) {
+        super(name, javaClass, entityWhere, entityView, datasource, inExpr, required);
     }
 
-    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, boolean inExpr, UUID categoryAttrId) {
-        super(name, javaClass, entityWhere, entityView, datasource, inExpr, categoryAttrId);
+    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
+                 boolean inExpr, UUID categoryAttrId, boolean required) {
+        super(name, javaClass, entityWhere, entityView, datasource, inExpr, categoryAttrId, required);
     }
 
-    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, MetaProperty property, boolean inExpr) {
-        super(name, javaClass, entityWhere, entityView, datasource, property, inExpr);
+    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
+                 MetaProperty property, boolean inExpr, boolean required) {
+        super(name, javaClass, entityWhere, entityView, datasource, property, inExpr, required);
     }
 
+    @Override
     public JComponent createEditComponent() {
         JComponent component;
 
@@ -161,6 +162,9 @@ public class Param extends AbstractParam<JComponent> {
             field.setValue(stringValue.toString());
         } else
             field.setValue(value);
+
+        field.setRequired(required);
+
         JComponent component = field.getComponent();
         component.setMaximumSize(TEXT_COMPONENT_DIM);
         return component;
@@ -208,6 +212,7 @@ public class Param extends AbstractParam<JComponent> {
         });
 
         field.setValue(value);
+        field.setRequired(required);
         return field.getComposition();
     }
 
@@ -254,6 +259,7 @@ public class Param extends AbstractParam<JComponent> {
         });
 
         field.setValue(value == null ? "" : datatype.format(value, UserSessionProvider.getLocale()));
+        field.setRequired(required);
         return field.getComposition();
     }
 
@@ -267,8 +273,10 @@ public class Param extends AbstractParam<JComponent> {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 setValue(field.getSelectedItem());
+                DesktopComponentsHelper.decorateMissingValue(field, required);
             }
         });
+        DesktopComponentsHelper.decorateMissingValue(field, required);
 
         field.setSelectedItem(value);
         return field;
@@ -306,6 +314,7 @@ public class Param extends AbstractParam<JComponent> {
         });
 
         field.setValue(value == null ? "" : value.toString());
+        field.setRequired(required);
         return field.getComposition();
     }
 
@@ -325,12 +334,14 @@ public class Param extends AbstractParam<JComponent> {
                 picker.setMetaClass(metaClass);
                 picker.addListener(
                         new ValueListener() {
+                            @Override
                             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                                 setValue(value);
                             }
                         }
                 );
                 picker.setValue(value);
+                picker.setRequired(required);
                 JComponent component = picker.getComponent();
                 component.setMaximumSize(TEXT_COMPONENT_DIM);
                 return component;
@@ -394,6 +405,7 @@ public class Param extends AbstractParam<JComponent> {
                 });
 
                 lookup.setValue(value);
+                lookup.setRequired(required);
                 JComponent component = lookup.getComponent();
                 component.setMaximumSize(TEXT_COMPONENT_DIM);
                 return component;
@@ -404,7 +416,6 @@ public class Param extends AbstractParam<JComponent> {
     private void initListEdit(final ListEditComponent component) {
         component.addListener(
                 new ValueListener() {
-
                     @Override
                     public void valueChanged(Object source, String property, Object prevValue, Object value) {
                         setValue(value);
@@ -450,6 +461,8 @@ public class Param extends AbstractParam<JComponent> {
             });
 
             lookup.setValue(value);
+            lookup.setRequired(required);
+
             return lookup.getComponent();
         }
     }
@@ -468,12 +481,14 @@ public class Param extends AbstractParam<JComponent> {
             DesktopLookupField lookup = new DesktopLookupField();
             lookup.setOptionsMap(options);
             lookup.addListener(new ValueListener() {
+                @Override
                 public void valueChanged(Object source, String property, Object prevValue, Object value) {
                     setValue(value);
                 }
             });
 
             lookup.setValue(value);
+            lookup.setRequired(required);
             return lookup.getComponent();
         }
     }

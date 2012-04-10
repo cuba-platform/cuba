@@ -268,7 +268,7 @@ public abstract class AbstractCustomConditionEditDlg<T> {
             condition.setEntityParamView(entityParamView);
 
             AbstractParam param = paramFactory.createParam(paramName, javaClass, entityParamWhere, entityParamView, condition.getDatasource(),
-                    condition.isInExpr());
+                    condition.isInExpr(), condition.isRequired());
             condition.setParam(param);
         }
 

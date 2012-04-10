@@ -17,10 +17,7 @@ import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.dom4j.Element;
 
-import java.util.List;
-
 public class FilterParser extends AbstractFilterParser {
-
 
     public FilterParser(ConditionsTree conditions, String messagesPack, String filterComponentName, Datasource datasource) {
         super(conditions, messagesPack, filterComponentName, datasource);

@@ -11,16 +11,16 @@ import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import com.haulmont.cuba.gui.data.Datasource;
 import org.apache.commons.lang.BooleanUtils;
-import org.dom4j.Element;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.dom4j.Element;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.UUID;
 
 /**
  * Class that encapsulates common filter condition behaviour.
@@ -48,6 +48,7 @@ public abstract class AbstractCondition<T extends AbstractParam> {
     protected T param;
     protected String entityAlias;
     protected boolean hidden;
+    protected boolean required;
     protected String entityParamWhere;
     protected String entityParamView;
     protected Datasource datasource;
@@ -68,6 +69,7 @@ public abstract class AbstractCondition<T extends AbstractParam> {
         unary = Boolean.valueOf(element.attributeValue("unary"));
         inExpr = Boolean.valueOf(element.attributeValue("inExpr"));
         hidden = Boolean.valueOf(element.attributeValue("hidden"));
+        required = Boolean.valueOf(element.attributeValue("required"));
         entityParamWhere = element.attributeValue("paramWhere");
         entityParamView = element.attributeValue("paramView");
         this.datasource = datasource;
@@ -93,7 +95,7 @@ public abstract class AbstractCondition<T extends AbstractParam> {
             }
 
             if (unary) {
-                param = paramFactory.createParam(paramName, null, null, null, null, false);
+                param = paramFactory.createParam(paramName, null, null, null, null, false, required);
             } else {
                 param = createParam(paramName);
             }
@@ -117,9 +119,9 @@ public abstract class AbstractCondition<T extends AbstractParam> {
 
     protected T createParam(String paramName) {
         if (categoryAttrId != null) {
-            return paramFactory.createParam(paramName, paramClass, entityParamWhere, entityParamView, datasource, inExpr, categoryAttrId);
+            return paramFactory.createParam(paramName, paramClass, entityParamWhere, entityParamView, datasource, inExpr, categoryAttrId, required);
         } else
-            return paramFactory.createParam(paramName, paramClass == null ? javaClass : paramClass, entityParamWhere, entityParamView, datasource, inExpr);
+            return paramFactory.createParam(paramName, paramClass == null ? javaClass : paramClass, entityParamWhere, entityParamView, datasource, inExpr, required);
     }
 
     public void addListener(Listener listener) {
@@ -188,6 +190,14 @@ public abstract class AbstractCondition<T extends AbstractParam> {
         this.hidden = hidden;
     }
 
+    public boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
+
     public void toXml(Element element) {
         String text = getText();
         if (text != null)
@@ -209,6 +219,9 @@ public abstract class AbstractCondition<T extends AbstractParam> {
 
         if (hidden)
             element.addAttribute("hidden", "true");
+
+        if (required)
+            element.addAttribute("required", "true");
 
         if (param != null) {
             param.toXml(element);

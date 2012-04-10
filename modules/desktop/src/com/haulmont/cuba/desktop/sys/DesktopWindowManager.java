@@ -342,7 +342,7 @@ public class DesktopWindowManager extends WindowManager {
 
     protected String formatTabDescription(final String caption, final String description) {
         if (!StringUtils.isEmpty(description)) {
-            return String.format("%s | %s", caption, description);
+            return String.format("%s: %s", caption, description);
         } else {
             return caption;
         }

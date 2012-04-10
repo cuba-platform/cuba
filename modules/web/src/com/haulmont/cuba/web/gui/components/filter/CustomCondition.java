@@ -29,7 +29,6 @@ public class CustomCondition extends AbstractCustomCondition<Param> {
         super(descriptor, where, join, entityAlias);
     }
 
-
     @Override
     public OperationEditor createOperationEditor() {
         operationEditor = new CustomOperationEditor(this);
@@ -45,5 +44,4 @@ public class CustomCondition extends AbstractCustomCondition<Param> {
     protected ParamFactory<Param> getParamFactory() {
         return new ParamFactoryImpl();
     }
-
 }

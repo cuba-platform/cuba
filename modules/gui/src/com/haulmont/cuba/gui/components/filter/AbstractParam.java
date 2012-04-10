@@ -53,24 +53,25 @@ public abstract class AbstractParam<T> {
     protected Datasource datasource;
     protected MetaProperty property;
     protected boolean inExpr;
+    protected boolean required;
     protected List<String> runtimeEnum;
     protected UUID categoryAttrId;
 
     private List<ValueListener> listeners = new ArrayList<ValueListener>();
 
     public AbstractParam(String name, Class javaClass, String entityWhere, String entityView,
-                         Datasource datasource, boolean inExpr) {
-        this(name, javaClass, entityWhere, entityView, datasource, null, inExpr);
+                         Datasource datasource, boolean inExpr, boolean required) {
+        this(name, javaClass, entityWhere, entityView, datasource, null, inExpr, required);
     }
 
     public AbstractParam(String name, Class javaClass, String entityWhere, String entityView,
-                         Datasource datasource, boolean inExpr, UUID categoryAttrId) {
-        this(name, javaClass, entityWhere, entityView, datasource, null, inExpr);
+                         Datasource datasource, boolean inExpr, UUID categoryAttrId, boolean required) {
+        this(name, javaClass, entityWhere, entityView, datasource, null, inExpr, required);
         this.categoryAttrId = categoryAttrId;
     }
 
     public AbstractParam(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
-                         MetaProperty property, boolean inExpr) {
+                         MetaProperty property, boolean inExpr, boolean required) {
         this.name = name;
         if (javaClass != null) {
             this.javaClass = javaClass;
@@ -92,6 +93,7 @@ public abstract class AbstractParam<T> {
         this.datasource = datasource;
         this.property = property;
         this.inExpr = inExpr;
+        this.required = required;
     }
 
     public String getName() {
@@ -289,5 +291,4 @@ public abstract class AbstractParam<T> {
     public MetaProperty getProperty() {
         return property;
     }
-
 }

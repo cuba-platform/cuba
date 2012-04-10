@@ -11,10 +11,7 @@
 package com.haulmont.cuba.web.gui.components.filter;
 
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.*;
 
 public class ParamEditor extends CustomComponent implements AbstractCondition.Listener {
 
@@ -36,12 +33,16 @@ public class ParamEditor extends CustomComponent implements AbstractCondition.Li
                 layout.addComponent(opLab);
             }
             field = condition.getParam().createEditComponent();
+            if (field instanceof Field) {
+                ((Field) field).setRequired(condition.isRequired());
+            }
             layout.addComponent(field);
         }
 
         condition.addListener(this);
     }
 
+    @Override
     public void paramChanged() {
         if (field != null) {
             layout.removeComponent(field);
@@ -50,6 +51,7 @@ public class ParamEditor extends CustomComponent implements AbstractCondition.Li
         layout.addComponent(field);
     }
 
+    @Override
     public void captionChanged() {
     }
 

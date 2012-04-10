@@ -55,10 +55,11 @@ public abstract class AbstractPropertyConditionDescriptor<T extends AbstractPara
         entityParamView = element.attributeValue("paramView");
     }
 
+    @Override
     public T createParam(AbstractCondition condition) {
         MetaProperty metaProperty = datasource.getMetaClass().getProperty(name);
         T param = paramFactory.createParam(condition.createParamName(), getJavaClass(),
-                getEntityParamWhere(), getEntityParamView(), datasource, metaProperty, inExpr);
+                getEntityParamWhere(), getEntityParamView(), datasource, metaProperty, inExpr, condition.isRequired());
         return param;
     }
 

@@ -62,6 +62,7 @@ public class FilterEditor extends AbstractFilterEditor {
         super(webFilter, filterEntity, filterDescriptor, existingNames);
     }
 
+    @Override
     public void init() {
         container = new ConditionsContainer(conditions);
         container.addListener(new Container.ItemSetChangeListener() {
@@ -90,6 +91,7 @@ public class FilterEditor extends AbstractFilterEditor {
         // Move up button
         upBtn = WebComponentsHelper.createButton("icons/up.png");
         upBtn.addListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 Object item = table.getValue();
                 if (item != table.getNullSelectionItemId()) {
@@ -102,6 +104,7 @@ public class FilterEditor extends AbstractFilterEditor {
         // Move down button
         downBtn = WebComponentsHelper.createButton("icons/down.png");
         downBtn.addListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 Object item = table.getValue();
                 if (item != table.getNullSelectionItemId()) {
@@ -115,6 +118,7 @@ public class FilterEditor extends AbstractFilterEditor {
         saveBtn = WebComponentsHelper.createButton("icons/ok.png");
         saveBtn.setCaption(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Ok"));
         saveBtn.addListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (commit())
                     ((WebFilter) filter).editorCommitted();
@@ -128,6 +132,7 @@ public class FilterEditor extends AbstractFilterEditor {
         Button cancelBtn = WebComponentsHelper.createButton("icons/cancel.png");
         cancelBtn.setCaption(MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Cancel"));
         cancelBtn.addListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 ((WebFilter) filter).editorCancelled();
             }
@@ -150,7 +155,7 @@ public class FilterEditor extends AbstractFilterEditor {
         defaultCb.setImmediate(true);
 
         defaultCb.addListener(new Property.ValueChangeListener() {
-
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if ((Boolean) defaultCb.getValue()) {
                     applyDefaultCb.setEnabled(true);
@@ -172,6 +177,7 @@ public class FilterEditor extends AbstractFilterEditor {
         applyDefaultCb.setImmediate(true);
         applyDefaultCb.setEnabled(false);
         applyDefaultCb.addListener(new Property.ValueChangeListener() {
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (filterEntity != null) {
                     filterEntity.setApplyDefault(isTrue((Boolean) applyDefaultCb.getValue()));
@@ -274,6 +280,7 @@ public class FilterEditor extends AbstractFilterEditor {
         }
 
         addSelect.addListener(new Property.ValueChangeListener() {
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (addSelect.getValue() != null) {
                     addCondition((AbstractConditionDescriptor) addSelect.getValue());
@@ -305,9 +312,10 @@ public class FilterEditor extends AbstractFilterEditor {
         String opCol = getMessage("FilterEditor.column.op");
         String paramCol = getMessage("FilterEditor.column.param");
         String hiddenCol = getMessage("FilterEditor.column.hidden");
+        String requiredCol = getMessage("FilterEditor.column.required");
         String cntrCol = getMessage("FilterEditor.column.control");
 
-        table.setColumnWidth(ConditionsContainer.NAME_PROP_ID, 230);
+        table.setColumnWidth(ConditionsContainer.NAME_PROP_ID, 220);
         table.setColumnHeader(ConditionsContainer.NAME_PROP_ID, nameCol);
 
         table.setColumnWidth(ConditionsContainer.OP_PROP_ID, 100);
@@ -316,8 +324,11 @@ public class FilterEditor extends AbstractFilterEditor {
         table.setColumnWidth(ConditionsContainer.PARAM_PROP_ID, 160);
         table.setColumnHeader(ConditionsContainer.PARAM_PROP_ID, paramCol);
 
-        table.setColumnWidth(ConditionsContainer.HIDDEN_PROP_ID, 50);
+        table.setColumnWidth(ConditionsContainer.HIDDEN_PROP_ID, 30);
         table.setColumnHeader(ConditionsContainer.HIDDEN_PROP_ID, hiddenCol);
+
+        table.setColumnWidth(ConditionsContainer.REQUIRED_PROP_ID, 30);
+        table.setColumnHeader(ConditionsContainer.REQUIRED_PROP_ID, requiredCol);
 
         table.setColumnWidth(ConditionsContainer.CONTROL_PROP_ID, 30);
         table.setColumnHeader(ConditionsContainer.CONTROL_PROP_ID, cntrCol);
@@ -327,10 +338,12 @@ public class FilterEditor extends AbstractFilterEditor {
         final Action showNameAction = new Action(MessageProvider.getMessage(MESSAGES_PACK, "FilterEditor.showNameAction"));
         table.addActionHandler(
                 new Action.Handler() {
+                    @Override
                     public Action[] getActions(Object target, Object sender) {
                         return new Action[]{showNameAction};
                     }
 
+                    @Override
                     public void handleAction(Action action, Object sender, Object target) {
                         if (action.equals(showNameAction)) {
                             App.getInstance().getWindowManager().showMessageDialog(
@@ -435,6 +448,7 @@ public class FilterEditor extends AbstractFilterEditor {
         return layout;
     }
 
+    @Override
     public FilterEntity getFilterEntity() {
         return filterEntity;
     }

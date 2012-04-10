@@ -19,7 +19,6 @@ public class PropertyCondition extends AbstractPropertyCondition<Param> {
 
     public PropertyCondition(Element element, String messagesPack, String filterComponentName, Datasource datasource) {
         super(element, messagesPack,filterComponentName, datasource);
-
     }
 
     public PropertyCondition(AbstractConditionDescriptor descriptor, String entityAlias) {
@@ -38,9 +37,7 @@ public class PropertyCondition extends AbstractPropertyCondition<Param> {
     }
 
     @Override
-    protected ParamFactory getParamFactory() {
+    protected ParamFactory<Param> getParamFactory() {
         return new ParamFactoryImpl();
     }
-
-
 }

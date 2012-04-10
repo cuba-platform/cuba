@@ -45,18 +45,19 @@ public class Param extends AbstractParam<Component> {
 
     public static final String TEXT_COMPONENT_WIDTH = "120px";
 
-    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, boolean inExpr) {
-        super(name,javaClass,entityWhere,entityView,datasource,inExpr);
+    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, boolean inExpr, boolean required) {
+        super(name,javaClass,entityWhere,entityView,datasource,inExpr, required);
     }
 
-    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, boolean inExpr, UUID categoryAttrId) {
-        super(name,javaClass,entityWhere,entityView,datasource,inExpr,categoryAttrId);
+    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, boolean inExpr, UUID categoryAttrId, boolean required) {
+        super(name,javaClass,entityWhere,entityView,datasource,inExpr,categoryAttrId, required);
     }
 
-    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, MetaProperty property, boolean inExpr) {
-        super(name, javaClass, entityWhere, entityView, datasource, property, inExpr);
+    public Param(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, MetaProperty property, boolean inExpr, boolean required) {
+        super(name, javaClass, entityWhere, entityView, datasource, property, inExpr, required);
     }
 
+    @Override
     public Component createEditComponent() {
         Component component;
 
@@ -88,6 +89,7 @@ public class Param extends AbstractParam<Component> {
         field.setImmediate(true);
 
         field.addListener(new Property.ValueChangeListener() {
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 Object v = field.getValue();
                 setValue(Boolean.TRUE.equals(v) ? true : null);
@@ -126,6 +128,7 @@ public class Param extends AbstractParam<Component> {
         field.setWidth(TEXT_COMPONENT_WIDTH);
 
         field.addListener(new Property.ValueChangeListener() {
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 Object value = null;
                 if (!StringUtils.isBlank((String) field.getValue())) {
@@ -209,6 +212,7 @@ public class Param extends AbstractParam<Component> {
         ((TextField) field).setNullRepresentation("");
 
         field.addListener(new Property.ValueChangeListener() {
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 Object value = field.getValue();
                 if (value == null || value instanceof Number)
@@ -262,6 +266,7 @@ public class Param extends AbstractParam<Component> {
         field.setItemCaption(Boolean.FALSE, MessageProvider.getMessage(AbstractParam.class, "Boolean.FALSE"));
 
         field.addListener(new Property.ValueChangeListener() {
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 setValue(field.getValue());
             }
@@ -276,6 +281,7 @@ public class Param extends AbstractParam<Component> {
         field.setNullRepresentation("");
 
         field.addListener(new Property.ValueChangeListener() {
+            @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 Object value = field.getValue();
                 if (value == null || value instanceof UUID)
@@ -337,6 +343,7 @@ public class Param extends AbstractParam<Component> {
 
                 picker.addListener(
                         new ValueListener() {
+                            @Override
                             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                                 setValue(value);
                             }
@@ -393,6 +400,7 @@ public class Param extends AbstractParam<Component> {
                 );
 
                 lookup.addListener(new ValueListener() {
+                    @Override
                     public void valueChanged(Object source, String property, Object prevValue, Object value) {
                         setValue(value);
                     }
@@ -409,6 +417,7 @@ public class Param extends AbstractParam<Component> {
         component.setWidth(TEXT_COMPONENT_WIDTH);
         component.addListener(
                 new Property.ValueChangeListener() {
+                    @Override
                     public void valueChange(Property.ValueChangeEvent event) {
                         setValue(component.getValue());
                     }
@@ -448,6 +457,7 @@ public class Param extends AbstractParam<Component> {
             lookup.setOptionsList(runtimeEnum);
 
             lookup.addListener(new ValueListener() {
+                @Override
                 public void valueChanged(Object source, String property, Object prevValue, Object value) {
                     setValue(value);
                 }
@@ -475,6 +485,7 @@ public class Param extends AbstractParam<Component> {
             lookup.setOptionsMap(options);
 
             lookup.addListener(new ValueListener() {
+                @Override
                 public void valueChanged(Object source, String property, Object prevValue, Object value) {
                     setValue(value);
                 }
@@ -485,5 +496,4 @@ public class Param extends AbstractParam<Component> {
             return lookup.getComponent();
         }
     }
-
 }

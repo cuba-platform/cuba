@@ -24,6 +24,7 @@ import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
@@ -115,7 +116,6 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     private static final String GLOBAL_FILTER_PERMISSION = "cuba.gui.filter.global";
     private static final String GLOBAL_APP_FOLDERS_PERMISSION = "cuba.gui.appFolder.global";
-
 
     public DesktopFilter() {
         persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
@@ -608,21 +608,29 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     public boolean apply(boolean isNewWindow) {
         if (clientConfig.getGenericFilterChecking()) {
             if (filterEntity != null) {
-                boolean haveCorrectCondition = hasCorrectCondition();
+                WindowManager wm = App.getInstance().getWindowManager();
 
-                if (!haveCorrectCondition) {
+                boolean haveRequiredConditions = haveFilledRequiredConditions();
+                if (!haveRequiredConditions) {
                     if (!isNewWindow) {
-                        App.getInstance().getWindowManager().showNotification
-                                (MessageProvider.getMessage(mainMessagesPack, "filter.emptyConditions"), IFrame.NotificationType.HUMANIZED);
+                        wm.showNotification(MessageProvider.getMessage(mainMessagesPack, "filter.emptyRequiredConditions"),
+                                IFrame.NotificationType.HUMANIZED);
                     }
                     return false;
-                } else
-                    applyDatasourceFilter();
-            } else
-                applyDatasourceFilter();
-        } else {
-            applyDatasourceFilter();
+                }
+
+                boolean haveCorrectCondition = hasCorrectCondition();
+                if (!haveCorrectCondition) {
+                    if (!isNewWindow) {
+                        wm.showNotification(MessageProvider.getMessage(mainMessagesPack, "filter.emptyConditions"),
+                                IFrame.NotificationType.HUMANIZED);
+                    }
+                    return false;
+                }
+            }
         }
+
+        applyDatasourceFilter();
 
         if (useMaxResults) {
             int maxResults;
@@ -636,6 +644,17 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             ((CollectionDatasource.SupportsPaging) datasource).setFirstResult(0);
 
         refreshDatasource();
+        return true;
+    }
+
+    protected boolean haveFilledRequiredConditions() {
+        for (AbstractCondition condition : conditions.toConditionsList()) {
+            if ((condition.isRequired())
+                    && (condition.getParam() != null)
+                    && (condition.getParam().getValue() == null)) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -802,9 +821,10 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             wrappedList.add(new ItemWrapper<FilterEntity>(filter, getFilterCaption(filter)));
         }
         select.setOptionsList(wrappedList);
-        if (!required)
+        if (!required) {
             select.setNullOption(noFilterWrapper);
-        else {
+            select.setValue(noFilterWrapper);
+        } else {
             if (!wrappedList.isEmpty())
                 select.setValue(wrappedList.iterator().next());
         }

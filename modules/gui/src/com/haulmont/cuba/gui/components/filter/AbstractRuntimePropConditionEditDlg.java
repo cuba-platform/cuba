@@ -20,10 +20,8 @@ import com.haulmont.cuba.gui.data.RuntimePropertiesHelper;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
-import java.util.List;
 
 /**
  * <p>$Id$</p>
@@ -187,17 +185,17 @@ public abstract class AbstractRuntimePropConditionEditDlg<T> {
         if (SetValueEntity.class.isAssignableFrom(javaClass)) {
             condition.setJavaClass(String.class);
             param = getParamFactory().createParam(paramName, paramJavaClass, null, null, condition.getDatasource(),
-                    condition.isInExpr(), attribute.getId());
+                    condition.isInExpr(), attribute.getId(), condition.isRequired());
         } else {
             condition.setJavaClass(javaClass);
             param = getParamFactory().createParam(paramName, paramJavaClass, null, null, condition.getDatasource(),
-                    condition.isInExpr());
+                    condition.isInExpr(), condition.isRequired());
         }
 
         condition.setParam(param);
 
         AbstractParam categoryAttrParam = getParamFactory().createParam(categoryAttrParamName, UUID.class,
-                null, null, condition.getDatasource(), false);
+                null, null, condition.getDatasource(), false, condition.isRequired());
         categoryAttrParam.setValue(attributeSelect.<CategoryAttribute>getValue().getId());
         condition.setCategoryAttributeParam(categoryAttrParam);
         condition.setCategoryId(categorySelect.<Category>getValue().getId());

@@ -30,7 +30,7 @@ import java.util.List;
 */
 class ConditionsTableModel extends AbstractTableModel {
 
-    private String[] columnNames = new String[5];
+    private String[] columnNames = new String[6];
 
     private ConditionsTree conditions;
 
@@ -42,7 +42,8 @@ class ConditionsTableModel extends AbstractTableModel {
         columnNames[1] = msgs.getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.column.op");
         columnNames[2] = msgs.getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.column.param");
         columnNames[3] = msgs.getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.column.hidden");
-        columnNames[4] = msgs.getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.column.control");
+        columnNames[4] = msgs.getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.column.required");
+        columnNames[5] = msgs.getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.column.control");
     }
 
     @Override
@@ -58,7 +59,7 @@ class ConditionsTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 5;
+        return columnNames.length;
     }
 
     @Override
@@ -84,6 +85,9 @@ class ConditionsTableModel extends AbstractTableModel {
                 c = Boolean.class;
                 break;
             case 4:
+                c = Boolean.class;
+                break;
+            case 5:
                 c = JButton.class;
                 break;
         }
@@ -109,6 +113,8 @@ class ConditionsTableModel extends AbstractTableModel {
             case 3:
                 return condition.isHidden();
             case 4:
+                return condition.isRequired();
+            case 5:
                 return condition;
             default:
                 throw new IllegalArgumentException("Invalid column index: " + columnIndex);
@@ -148,11 +154,15 @@ class ConditionsTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        Pair<Node<AbstractCondition>, Integer> nodeWithLevel = getNodeWithLevel(rowIndex);
+        AbstractCondition condition = nodeWithLevel.getFirst().getData();
         switch (columnIndex) {
             case 3:
-                Pair<Node<AbstractCondition>, Integer> nodeWithLevel = getNodeWithLevel(rowIndex);
-                AbstractCondition condition = nodeWithLevel.getFirst().getData();
                 condition.setHidden((Boolean) aValue);
+                break;
+
+            case 4:
+                condition.setRequired((Boolean) aValue);
                 break;
         }
     }

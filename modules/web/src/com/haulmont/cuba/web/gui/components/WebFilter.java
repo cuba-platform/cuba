@@ -39,6 +39,7 @@ import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebWindowManager;
 import com.haulmont.cuba.web.app.folders.AppFolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FolderEditWindow;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
@@ -304,21 +305,29 @@ public class WebFilter
     public boolean apply(boolean isNewWindow) {
         if (clientConfig.getGenericFilterChecking()) {
             if (filterEntity != null) {
-                boolean haveCorrectCondition = hasCorrectCondition();
+                WebWindowManager wm = App.getInstance().getWindowManager();
 
-                if (!haveCorrectCondition) {
+                boolean haveRequiredConditions = haveFilledRequiredConditions();
+                if (!haveRequiredConditions) {
                     if (!isNewWindow) {
-                        App.getInstance().getWindowManager().showNotification
-                                (MessageProvider.getMessage(mainMessagesPack, "filter.emptyConditions"), IFrame.NotificationType.HUMANIZED);
+                        wm.showNotification(MessageProvider.getMessage(mainMessagesPack, "filter.emptyRequiredConditions"),
+                                IFrame.NotificationType.HUMANIZED);
                     }
                     return false;
-                } else
-                    applyDatasourceFilter();
-            } else
-                applyDatasourceFilter();
-        } else {
-            applyDatasourceFilter();
+                }
+
+                boolean haveCorrectCondition = hasCorrectCondition();
+                if (!haveCorrectCondition) {
+                    if (!isNewWindow) {
+                        wm.showNotification(MessageProvider.getMessage(mainMessagesPack, "filter.emptyConditions"),
+                                IFrame.NotificationType.HUMANIZED);
+                    }
+                    return false;
+                }
+            }
         }
+
+        applyDatasourceFilter();
 
         if (useMaxResults) {
             int maxResults;
@@ -332,6 +341,17 @@ public class WebFilter
             ((CollectionDatasource.SupportsPaging) datasource).setFirstResult(0);
 
         refreshDatasource();
+        return true;
+    }
+
+    protected boolean haveFilledRequiredConditions() {
+        for (AbstractCondition condition : conditions.toConditionsList()) {
+            if ((condition.isRequired())
+                    && (condition.getParam() != null)
+                    && (condition.getParam().getValue() == null)) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -495,6 +515,7 @@ public class WebFilter
                         paramEditor.setFocused();
                         focusSet = true;
                     }
+
                     paramLayout.addComponent(paramEditor);
                 }
                 cellContent = paramLayout;

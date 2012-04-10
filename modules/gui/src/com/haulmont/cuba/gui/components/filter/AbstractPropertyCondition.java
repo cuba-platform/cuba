@@ -64,7 +64,8 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
     @Override
     protected T createParam(String paramName) {
         MetaProperty metaProperty = datasource.getMetaClass().getProperty(name);
-        return paramFactory.createParam(paramName, javaClass, entityParamWhere, entityParamView, datasource, metaProperty, inExpr);
+        return paramFactory.createParam(paramName, javaClass, entityParamWhere, entityParamView,
+                datasource, metaProperty, inExpr, required);
     }
 
     @Override
@@ -121,12 +122,12 @@ public abstract class AbstractPropertyCondition<T extends AbstractParam> extends
             if (operator.isUnary()) {
                 unary = true;
                 inExpr = false;
-                setParam(paramFactory.createParam(paramName, null, null, null, null, false));
+                setParam(paramFactory.createParam(paramName, null, null, null, null, false, required));
             } else {
                 unary = false;
                 inExpr = operator.equals(Op.IN) || operator.equals(Op.NOT_IN);
                 setParam(paramFactory.createParam(
-                        paramName, javaClass, entityParamWhere, entityParamView, datasource, param.getProperty(), inExpr));
+                        paramName, javaClass, entityParamWhere, entityParamView, datasource, param.getProperty(), inExpr, required));
             }
         }
     }

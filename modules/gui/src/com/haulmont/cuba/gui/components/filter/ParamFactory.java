@@ -18,11 +18,12 @@ import java.util.UUID;
  */
 public interface ParamFactory<T extends AbstractParam> {
 
-    T createParam(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource, boolean inExpr);
+    T createParam(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
+                  boolean inExpr, boolean required);
 
     T createParam(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
-                  boolean inExpr, UUID categoryAttrId);
+                  boolean inExpr, UUID categoryAttrId, boolean required);
 
     T createParam(String name, Class javaClass, String entityWhere, String entityView, Datasource datasource,
-                  MetaProperty property, boolean inExpr);
+                  MetaProperty property, boolean inExpr, boolean required);
 }

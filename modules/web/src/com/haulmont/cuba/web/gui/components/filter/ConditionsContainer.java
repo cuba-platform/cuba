@@ -34,6 +34,7 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
     public static final String OP_PROP_ID = "op";
     public static final String PARAM_PROP_ID = "param";
     public static final String HIDDEN_PROP_ID = "hidden";
+    public static final String REQUIRED_PROP_ID = "required";
     public static final String CONTROL_PROP_ID = "control";
 
     public static final Collection<String> PROP_IDS = Collections.unmodifiableCollection(Arrays.asList(
@@ -41,6 +42,7 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
             OP_PROP_ID,
             PARAM_PROP_ID,
             HIDDEN_PROP_ID,
+            REQUIRED_PROP_ID,
             CONTROL_PROP_ID
     ));
 
@@ -178,9 +180,24 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
         checkBox.setImmediate(true);
         checkBox.setValue(condition.isHidden());
         checkBox.addListener(new Button.ClickListener() {
+            @Override
             public void buttonClick(Button.ClickEvent event) {
                 boolean hidden = BooleanUtils.isTrue((Boolean) checkBox.getValue());
                 condition.setHidden(hidden);
+            }
+        });
+        return checkBox;
+    }
+
+    private CheckBox createRequiredCheckbox(final AbstractCondition condition) {
+        final CheckBox checkBox = new CheckBox();
+        checkBox.setImmediate(true);
+        checkBox.setValue(condition.isRequired());
+        checkBox.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                boolean required = BooleanUtils.isTrue((Boolean) checkBox.getValue());
+                condition.setRequired(required);
             }
         });
         return checkBox;
@@ -217,6 +234,9 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
             return ParamEditor.class;
 
         } else if (propertyId.equals(HIDDEN_PROP_ID)) {
+            return CheckBox.class;
+
+        } else if (propertyId.equals(REQUIRED_PROP_ID)) {
             return CheckBox.class;
 
         } else if (propertyId.equals(CONTROL_PROP_ID)) {
@@ -344,6 +364,9 @@ class ConditionsContainer implements Container.Hierarchical, Container.Sortable,
 
             } else if (id.equals(HIDDEN_PROP_ID)) {
                 return new ObjectProperty<CheckBox>(createHiddenCheckbox(condition));
+
+            } else if (id.equals(REQUIRED_PROP_ID)) {
+                return new ObjectProperty<CheckBox>(createRequiredCheckbox(condition));
 
             } else if (id.equals(CONTROL_PROP_ID)) {
                 return new ObjectProperty<Button>(createDeleteConditionBtn(condition));

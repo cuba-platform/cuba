@@ -54,7 +54,8 @@ public class FilterEditor extends AbstractFilterEditor {
     private static final int NAME_COLUMN_WIDTH = 130;
     private static final int OPERATION_COLUMN_WIDTH = 107;
     private static final int PARAM_COLUMN_WIDTH = 150;
-    private static final int HIDDEN_COLUMN_WIDTH = 58;
+    private static final int HIDDEN_COLUMN_WIDTH = 30;
+    private static final int REQUIRED_COLUMN_WIDTH = 30;
     private static final int DELETE_COLUMN_WIDTH = 38;
 
     private JPanel panel;
@@ -338,9 +339,10 @@ public class FilterEditor extends AbstractFilterEditor {
         table.getColumnModel().getColumn(1).setPreferredWidth(OPERATION_COLUMN_WIDTH);
         table.getColumnModel().getColumn(2).setPreferredWidth(PARAM_COLUMN_WIDTH);
         table.getColumnModel().getColumn(3).setPreferredWidth(HIDDEN_COLUMN_WIDTH);
-        table.getColumnModel().getColumn(4).setMaxWidth(DELETE_COLUMN_WIDTH);
-        table.getColumnModel().getColumn(4).setPreferredWidth(DELETE_COLUMN_WIDTH);
-        table.getColumnModel().getColumn(4).setMinWidth(DELETE_COLUMN_WIDTH);
+        table.getColumnModel().getColumn(4).setPreferredWidth(REQUIRED_COLUMN_WIDTH);
+        table.getColumnModel().getColumn(5).setMaxWidth(DELETE_COLUMN_WIDTH);
+        table.getColumnModel().getColumn(5).setPreferredWidth(DELETE_COLUMN_WIDTH);
+        table.getColumnModel().getColumn(5).setMinWidth(DELETE_COLUMN_WIDTH);
 
         table.setCellSelectionEnabled(false);
 
@@ -355,8 +357,8 @@ public class FilterEditor extends AbstractFilterEditor {
         table.getColumnModel().getColumn(2).setCellEditor(paramCell);
 
         DeleteCell deleteCell = new DeleteCell();
-        table.getColumnModel().getColumn(4).setCellRenderer(deleteCell);
-        table.getColumnModel().getColumn(4).setCellEditor(deleteCell);
+        table.getColumnModel().getColumn(5).setCellRenderer(deleteCell);
+        table.getColumnModel().getColumn(5).setCellEditor(deleteCell);
 
         panel.add(pane, new CC().height("150:150:150").width("520:520:520"));
 

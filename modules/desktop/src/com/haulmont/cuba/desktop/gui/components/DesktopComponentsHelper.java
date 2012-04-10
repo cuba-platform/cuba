@@ -28,6 +28,9 @@ public class DesktopComponentsHelper {
     public static final int BUTTON_HEIGHT = 30;
     public static final int FIELD_HEIGHT = 28;
 
+    public static Color requiredBgColor = (Color) UIManager.get("cubaRequiredBackground");
+    public static Color defaultBgColor = (Color) UIManager.get("nimbusLightBackground");
+
     public static JComponent unwrap(Component component) {
         Object comp = component;
         while (comp instanceof Component.Wrapper) {
@@ -175,5 +178,9 @@ public class DesktopComponentsHelper {
         InputMap inputMap = component.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         inputMap.put(key, name);
         actionMap.put(name, action);
+    }
+
+    public static void decorateMissingValue(JComponent jComponent, boolean missingValueState) {
+        jComponent.setBackground(missingValueState ? requiredBgColor : defaultBgColor);
     }
 }

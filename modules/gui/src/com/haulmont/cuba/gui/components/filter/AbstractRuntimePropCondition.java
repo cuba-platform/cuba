@@ -40,7 +40,7 @@ public abstract class AbstractRuntimePropCondition<T extends AbstractParam> exte
         for (Element paramElement : paramElements) {
             if (BooleanUtils.toBoolean(paramElement.attributeValue("hidden", "false"), "true", "false")) {
                 String paramName = paramElement.attributeValue("name");
-                categoryAttributeParam = paramFactory.createParam(paramName, UUID.class, null, null, this.getDatasource(), false);
+                categoryAttributeParam = paramFactory.createParam(paramName, UUID.class, null, null, this.getDatasource(), false, required);
                 categoryAttributeParam.parseValue(paramElement.getText());
             }
         }
