@@ -212,7 +212,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
 
         LoginContext loginContext;
         try {
-            loginContext = new LoginContext(webConfig.getKerberosAuthModule(),
+            loginContext = new LoginContext(StringUtils.trim(webConfig.getKerberosAuthModule()),
                     new ClientLoginCallbackHandler(login, password));
 
             loginContext.login();
