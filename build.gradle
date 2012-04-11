@@ -117,7 +117,7 @@ configure(sharedLibModule) {
 configure(globalModule) {
     dependencies {
         // This dependency is required by CubaEnhancing task
-        provided(group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.2-SNAPSHOT')
+        provided(group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.2.0')
     }
 
     task enhance(type: CubaEnhancing) {
