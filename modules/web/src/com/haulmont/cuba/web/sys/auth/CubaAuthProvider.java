@@ -19,5 +19,13 @@ public interface CubaAuthProvider extends Filter {
 
     public static final String NAME = "cuba_AuthProvider";
 
+    /**
+     * Login procedure with user and password
+     *
+     * @param login    User login
+     * @param password User password
+     * @param loc      Locale
+     * @throws LoginException Login exception
+     */
     void authenticate(String login, String password, Locale loc) throws LoginException;
 }

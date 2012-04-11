@@ -36,6 +36,8 @@ import java.util.Locale;
 public class KerberosAuthProvider implements CubaAuthProvider {
 
     private static final String AD_INTEGRATION_SUPPORT = "ADIntegrationSupport";
+    private static final String WINDOWS_USER_AGENT = "Windows";
+
     private Log log = LogFactory.getLog(KerberosAuthProvider.class);
 
     @Override
@@ -61,66 +63,112 @@ public class KerberosAuthProvider implements CubaAuthProvider {
             return;
         }
 
+        // Filter unsupported User-Agent
+        String userAgent = request.getHeader("User-Agent");
+        if (!StringUtils.contains(userAgent, WINDOWS_USER_AGENT)) {
+            // Unsupported User-Agent, use default auth
+            markUnsupportedSession(request);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // Need auth
         String auth = request.getHeader("Authorization");
         if (auth == null) {
-            // Request auth credentials
-            response.reset();
-            response.setHeader("WWW-Authenticate", "Negotiate");
-            response.setContentLength(0);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.flushBuffer();
+            requestCredentials(response);
         } else {
-            try {
-                final String authString = auth.substring("Negotiate ".length());
-
-                WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
-                LoginContext loginContext = new LoginContext(StringUtils.trim(webConfig.getKerberosJaasConf()),
-                        new CallbackHandler() {
-                            @Override
-                            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                                // Do nothing,
-                                // We are use keytab file, no password needed
-                                // Principal specified in jaas.conf
-                            }
-                        });
-
-                // Login as Service Principal
-                loginContext.login();
-
-                try {
-                    Subject serviceSubject = loginContext.getSubject();
-                    if (serviceSubject != null) {
-                        final GSSName clientName = authentication(serviceSubject, authString);
-                        if (clientName != null) {
-                            // New User Principal for request
-                            HttpServletRequestWrapper securedRequest = new HttpServletRequestWrapper(request) {
-                                @Override
-                                public Principal getUserPrincipal() {
-                                    return new KerberosPrincipal(clientName);
-                                }
-                            };
-                            log.debug("Success auth: " + securedRequest.getUserPrincipal().getName());
-
-                            // Proceed filter with new User Principal with auth name
-                            filterChain.doFilter(securedRequest, response);
-                        } else {
-                            // Allow user to login normally
-                            // Mark session, unsupported AD flag
-                            request.getSession().setAttribute(AD_INTEGRATION_SUPPORT, Boolean.FALSE);
-                            filterChain.doFilter(request, response);
-                        }
-                    } else
-                        throw new LoginException("Null serviceSubject returned from LoginContext");
-                } finally {
-                    loginContext.logout();
-                }
-
-            } catch (LoginException le) {
-                log.error("Unabled to login service subject: ", le);
-            } catch (Exception e) {
-                log.debug("Exception while authetification", e);
-            }
+            kerberosAuth(filterChain, request, response, auth);
         }
+    }
+
+    /**
+     * Allow user to login normally
+     * Mark session, unsupported AD flag
+     *
+     * @param request Request
+     */
+    private void markUnsupportedSession(HttpServletRequest request) {
+        request.getSession().setAttribute(AD_INTEGRATION_SUPPORT, Boolean.FALSE);
+    }
+
+    /**
+     * Send negotiation to client
+     *
+     * @param response Response
+     * @throws IOException IO exception
+     */
+    private void requestCredentials(HttpServletResponse response) throws IOException {
+        // Request auth credentials
+        response.reset();
+        response.setHeader("WWW-Authenticate", "Negotiate");
+        response.setContentLength(0);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.flushBuffer();
+    }
+
+    /**
+     * Kerberos Auth proceedure
+     *
+     * @param filterChain Filter chain
+     * @param request     HttpRequest
+     * @param response    HttpResponse
+     * @param auth        Auth header
+     */
+    private void kerberosAuth(FilterChain filterChain, final HttpServletRequest request, HttpServletResponse response, String auth) {
+        try {
+            LoginContext loginContext = loginAsServicePrincipal();
+            try {
+                Subject serviceSubject = loginContext.getSubject();
+                if (serviceSubject != null) {
+                    final String authString = auth.substring("Negotiate ".length());
+                    final GSSName clientName = acquireClientInfo(serviceSubject, authString);
+                    if (clientName != null) {
+                        // New User Principal for request
+                        HttpServletRequestWrapper securedRequest = new HttpServletRequestWrapper(request) {
+                            @Override
+                            public Principal getUserPrincipal() {
+                                return new KerberosPrincipal(clientName);
+                            }
+                        };
+                        log.debug("Success auth: " + securedRequest.getUserPrincipal().getName());
+
+                        // Proceed filter with new User Principal with auth name
+                        filterChain.doFilter(securedRequest, response);
+                    } else {
+                        markUnsupportedSession(request);
+                        filterChain.doFilter(request, response);
+                    }
+                } else
+                    throw new LoginException("Null serviceSubject returned from LoginContext");
+            } finally {
+                loginContext.logout();
+            }
+        } catch (LoginException le) {
+            log.error("Unabled to login service subject: ", le);
+        } catch (Exception e) {
+            log.debug("Exception while authetification", e);
+        }
+    }
+
+    /**
+     * Login as Service Principal
+     *
+     * @return Login contxext
+     * @throws LoginException Kerberos login exception
+     */
+    private LoginContext loginAsServicePrincipal() throws LoginException {
+        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+        LoginContext loginContext = new LoginContext(StringUtils.trim(webConfig.getKerberosJaasConf()),
+                new CallbackHandler() {
+                    @Override
+                    public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
+                        // Do nothing,
+                        // We are use keytab file, no password needed
+                        // Principal specified in jaas.conf
+                    }
+                });
+        loginContext.login();
+        return loginContext;
     }
 
     /**
@@ -130,7 +178,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
      * @param authString     Client auth string
      * @return Client name
      */
-    private GSSName authentication(Subject serviceSubject, final String authString) {
+    private GSSName acquireClientInfo(Subject serviceSubject, final String authString) {
         final byte[] kerberosToken = Base64.decodeBase64(authString.getBytes());
         return Subject.doAs(serviceSubject, new PrivilegedAction<GSSName>() {
             @Override
