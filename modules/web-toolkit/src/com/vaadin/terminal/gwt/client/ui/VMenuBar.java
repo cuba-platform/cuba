@@ -15,22 +15,11 @@
  */
 package com.vaadin.terminal.gwt.client.ui;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Stack;
-
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.*;
@@ -38,21 +27,19 @@ import com.google.gwt.user.client.ui.HasHTML;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
-import com.vaadin.terminal.gwt.client.ContainerResizedListener;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.TooltipInfo;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.Util;
-import com.vaadin.terminal.gwt.client.VTooltip;
+import com.vaadin.terminal.gwt.client.*;
 
-import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Stack;
 
 /**
  * VMenuBar
  * <br/>
  * [Compatible with Vaadin 6.6]
+ *
+ * @version $Id$
  */
 public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         CloseHandler<PopupPanel>, ContainerResizedListener, KeyPressHandler,
@@ -70,17 +57,14 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
     protected final VMenuBar hostReference = this;
     protected String submenuIcon = null;
-    protected boolean collapseItems = true;
     protected CustomMenuItem moreItem = null;
 
-    private String debugId;
-
     // Only used by the root menu bar
-//    protected VMenuBar collapsedRootItems;
+    protected VMenuBar collapsedRootItems;
 
     // Construct an empty command to be used when the item has no command
     // associated
-//    protected static final Command emptyCommand = null;
+    protected static final Command emptyCommand = null;
 
     public static final String OPEN_ROOT_MENU_ON_HOWER = "ormoh";
 
@@ -100,13 +84,13 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
     private VLazyExecutor iconLoadedExecutioner = new VLazyExecutor(100,
             new ScheduledCommand() {
-
+                @Override
                 public void execute() {
-                    iLayout();
+                    iLayout(true);
                 }
             });
 
-//    private boolean openRootOnHover;
+    private boolean openRootOnHover;
 
     public VMenuBar() {
         // Create an empty horizontal menubar
@@ -133,23 +117,12 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         popup = null;
         visibleChildMenu = null;
 
-//        containerElement = getElement();
-        Element table = DOM.createTable();
-        //gorodnov changed in #941
-        DOM.setElementAttribute(table, "cellspacing", "0");
-        DOM.setElementAttribute(table, "cellpadding", "0");
-        Element tbody = DOM.createTBody();
-        DOM.appendChild(getElement(), table);
-        DOM.appendChild(table, tbody);
+        containerElement = getElement();
 
         if (!subMenu) {
             setStyleName(CLASSNAME);
-            Element tr = DOM.createTR();
-            DOM.appendChild(tbody, tr);
-            containerElement = tr;
         } else {
             setStyleName(CLASSNAME + "-submenu");
-            containerElement = tbody;
             this.parentMenu = parentMenu;
         }
         this.subMenu = subMenu;
@@ -206,10 +179,11 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
     /**
      * This method must be implemented to update the client-side component from
      * UIDL data received from server.
-     * 
+     *
      * This method is called when the page is loaded for the first time, and
      * every time UI changes in the component are received from the server.
      */
+    @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         // This call should be made first. Ensure correct implementation,
         // and let the containing layout manage caption, etc.
@@ -217,7 +191,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             return;
         }
 
-        boolean openRootOnHover = uidl.getBooleanAttribute(OPEN_ROOT_MENU_ON_HOWER);
+        openRootOnHover = uidl.getBooleanAttribute(OPEN_ROOT_MENU_ON_HOWER);
 
         enabled = !uidl.getBooleanAttribute("disabled");
 
@@ -240,7 +214,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             submenuIcon = null;
         }
 
-        /*if (uidl.hasAttribute("width")) {
+        if (uidl.hasAttribute("width")) {
             UIDL moreItemUIDL = options.getChildUIDL(0);
             StringBuffer itemHTML = new StringBuffer();
 
@@ -257,12 +231,11 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             }
             itemHTML.append(moreItemText);
 
-            moreItem = new CustomMenuItem(itemHTML.toString(), emptyCommand);
-            collapsedRootItems = new VMenuBar(true,
-                    (VMenuBar) client.getPaintable(uidlId));
+            moreItem = new CustomMenuItem(itemHTML.toString(), emptyCommand, "");
+            collapsedRootItems = new VMenuBar(true, (VMenuBar) client.getPaintable(uidlId));
             moreItem.setSubMenu(collapsedRootItems);
             moreItem.addStyleName(CLASSNAME + "-more-menuitem");
-        }*/
+        }
 
         UIDL uidlItems = uidl.getChildUIDL(1);
         Iterator<Object> itr = uidlItems.getChildIterator();
@@ -278,56 +251,52 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             final int itemId = item.getIntAttribute("id");
             String shortcut = item.getStringAttribute("shortcut");
 
-            boolean itemHasCommand = item.getBooleanAttribute("command");
+            boolean itemHasCommand = item.hasAttribute("command");
 
             // Construct html from the text and the optional icon
             StringBuffer itemHTML = new StringBuffer();
             Command cmd = null;
 
             if (item.hasAttribute("separator")) {
-                itemHTML.append("<div class=\"menu-separator\"/>");
+                itemHTML.append("<span>---</span>");
             } else {
                 // Add submenu indicator
-                itemHTML.append("<div>");
+                if (item.getChildCount() > 0) {
+                    // FIXME For compatibility reasons: remove in version 7
+                    String bgStyle = "";
+                    if (submenuIcon != null) {
+                        bgStyle = " style=\"background-image: url("
+                                + submenuIcon
+                                + "); text-indent: -999px; width: 1em;\"";
+                    }
+                    itemHTML.append("<span class=\"" + CLASSNAME
+                            + "-submenu-indicator\"" + bgStyle
+                            + ">&#x25BA;</span>");
+                }
+
+                itemHTML.append("<span class=\"" + CLASSNAME
+                        + "-menuitem-caption\">");
                 if (item.hasAttribute("icon")) {
-                    itemHTML.append("<img src=\"").append(client.translateVaadinUri(item
-                            .getStringAttribute("icon"))).append("\" align=\"left\" />");
+                    itemHTML.append("<img src=\""
+                            + client.translateVaadinUri(item
+                                    .getStringAttribute("icon"))
+                            + "\" class=\"" + Icon.CLASSNAME + "\" alt=\"\" />");
                 }
-
-                itemHTML.append(itemText);
-
-                if (currentMenu != this && item.getChildCount() > 0
-                        && submenuIcon != null) {
-                    itemHTML.append("<img src=\"").append(submenuIcon)
-                            .append("\" align=\"right\" />");
-                }
-
-                itemHTML.append("</div>");
-
-                final String debugId = item.hasAttribute("debugId")
-                        ? Util.escapeHTML(item.getStringAttribute("debugId")) : null;
+                itemHTML.append(Util.escapeHTML(itemText) + "</span>");
 
                 if (itemHasCommand) {
                     // Construct a command that fires onMenuClick(int) with the
                     // item's id-number
                     cmd = new Command() {
+                        @Override
                         public void execute() {
-                            if (debugId == null) {
-                                hostReference.onMenuClick(itemId);
-                            } else {
-                                hostReference.onMenuClick_debugMode(debugId);
-                            }
+                            hostReference.onMenuClick(itemId);
                         }
                     };
                 }
             }
 
-            currentItem = currentMenu.addItem(
-                    itemHTML.toString(),
-                    cmd,
-                    shortcut,
-                    debugId
-            );
+            currentItem = currentMenu.addItem(itemHTML.toString(), cmd, shortcut, item.hasAttribute("separator"));
             currentItem.updateFromUIDL(item, client);
 
             if (item.getChildCount() > 0) {
@@ -335,13 +304,12 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                 iteratorStack.push(itr);
                 itr = item.getChildIterator();
                 currentMenu = new VMenuBar(true, currentMenu);
-                currentMenu.client = client;
-//                if (uidl.hasAttribute("style")) {
-//                    for (String style : uidl.getStringAttribute("style").split(
-//                            " ")) {
-//                        currentMenu.addStyleDependentName(style);
-//                    }
-//                }
+                if (uidl.hasAttribute("style")) {
+                    for (String style : uidl.getStringAttribute("style").split(
+                            " ")) {
+                        currentMenu.addStyleDependentName(style);
+                    }
+                }
                 currentItem.setSubMenu(currentMenu);
             }
 
@@ -351,14 +319,14 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             }
         }// while
 
-        iLayout();
+        iLayout(false);
 
     }// updateFromUIDL
 
     /**
      * This is called by the items in the menu and it communicates the
      * information to the server
-     * 
+     *
      * @param clickedItemId
      *            id of the item that was clicked
      */
@@ -370,12 +338,6 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             // Communicate the user interaction parameters to server. This call
             // will initiate an AJAX request to the server.
             client.updateVariable(uidlId, "clickedId", clickedItemId, true);
-        }
-    }
-
-    public void onMenuClick_debugMode(String id) {
-        if (uidlId != null && client != null) {
-            client.updateVariable(uidlId, "clickedDebugId", id, true);
         }
     }
 
@@ -392,7 +354,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
      * Remove all the items in this menu
      */
     public void clearItems() {
-        Element e = getContainingElement();
+        Element e = getContainerElement();
         while (DOM.getChildCount(e) > 0) {
             DOM.removeChild(e, DOM.getChild(e, 0));
         }
@@ -404,57 +366,47 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
      *
      * @return
      */
-    public Element getContainingElement() {
+    @Override
+    public Element getContainerElement() {
         return containerElement;
     }
 
     /**
-     * Returns a new child element to add an item to
-     *
-     * @return
-     */
-    public Element getNewChildElement() {
-        if (subMenu) {
-            Element tr = DOM.createTR();
-            DOM.appendChild(getContainingElement(), tr);
-            return tr;
-        } else {
-            return getContainingElement();
-        }
-
-    }
-
-    /**
      * Add a new item to this menu
-     * 
+     *
+     *
      * @param html
      *            items text
      * @param cmd
      *            items command
+     * @param isSeparator
      * @return the item created
      */
-    public CustomMenuItem addItem(String html, Command cmd, String shortcut, String id) {
-        CustomMenuItem item = new CustomMenuItem(html, cmd, shortcut, id);
+    public CustomMenuItem addItem(String html, Command cmd, String shortcut, boolean isSeparator) {
+        CustomMenuItem item = new CustomMenuItem(html, cmd, shortcut);
+        item.setSeparator(isSeparator);
         addItem(item);
         return item;
     }
 
     /**
      * Add a new item to this menu
-     * 
+     *
      * @param item
      */
     public void addItem(CustomMenuItem item) {
-        Element row = getNewChildElement();
-        DOM.appendChild(row, item.getElement());
+        if (items.contains(item)) {
+            return;
+        }
 
-        if (subMenu) {
-            Element sc = DOM.createTD();
-            sc.addClassName("menuitem-shortcut");
+        DOM.appendChild(getContainerElement(), item.getElement());
+        if (subMenu && !item.isSeparator()) {
+            Element sc = DOM.createSpan();
+            sc.addClassName(CLASSNAME + "-menuitem-shortcut");
             if (item.getShortcut() != null) {
                 DOM.setInnerHTML(sc, Util.escapeHTML(item.getShortcut()));
             }
-            DOM.appendChild(row, sc);
+            DOM.appendChild(item.getElement(), sc);
 
             item.setShortcutElement(sc);
         }
@@ -475,15 +427,15 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
     /**
      * Remove the given item from this menu
-     * 
+     *
      * @param item
      */
     public void removeItem(CustomMenuItem item) {
         if (items.contains(item)) {
             int index = items.indexOf(item);
-            Element container = getContainingElement();
 
-            DOM.removeChild(container, DOM.getChild(container, index));
+            DOM.removeChild(getContainerElement(),
+                    DOM.getChild(getContainerElement(), index));
             items.remove(index);
         }
     }
@@ -528,7 +480,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         // Handle tooltips
         if (targetItem == null && client != null) {
             // Handle root menubar tooltips
-           /* client.handleTooltipEvent(e, this);*/
+            client.handleTooltipEvent(e, this);
         } else if (targetItem != null) {
             // Handle item tooltips
             targetItem.onBrowserEvent(e);
@@ -538,7 +490,9 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             switch (DOM.eventGetType(e)) {
 
             case Event.ONCLICK:
-                itemClick(targetItem);
+                if (isEnabled() && targetItem.isEnabled()) {
+                    itemClick(targetItem);
+                }
                 if (subMenu) {
                     // Prevent moving keyboard focus to child menus
                     VMenuBar parent = parentMenu;
@@ -553,7 +507,9 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             case Event.ONMOUSEOVER:
                 LazyCloser.cancelClosing();
 
-                itemOver(targetItem);
+                if (isEnabled() && targetItem.isEnabled()) {
+                    itemOver(targetItem);
+                }
                 break;
 
             case Event.ONMOUSEOUT:
@@ -581,11 +537,10 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
     /**
      * When an item is clicked
-     * 
+     *
      * @param item
      */
     public void itemClick(CustomMenuItem item) {
-        focus();
         if (item.getCommand() != null) {
             setSelected(null);
 
@@ -593,7 +548,8 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                 visibleChildMenu.hideChildren();
             }
 
-            hideParents();
+            hideParents(true);
+            menuVisible = false;
             Scheduler.get().scheduleDeferred(item.getCommand());
 
         } else {
@@ -612,17 +568,16 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
     /**
      * When the user hovers the mouse over the item
-     * 
+     *
      * @param item
      */
     public void itemOver(CustomMenuItem item) {
-        setSelected(item);
-
-        boolean menuWasVisible = visibleChildMenu != null;
-
-        if (menuWasVisible && visibleChildMenu != item.getSubMenu()) {
-            popup.hide();
-            visibleChildMenu = null;
+        if ((openRootOnHover || subMenu || menuVisible) && !item.isSeparator()) {
+            setSelected(item);
+            if (!subMenu && openRootOnHover && !menuVisible) {
+                menuVisible = true; // start opening menus
+                LazyCloser.prepare(this);
+            }
         }
 
         if (menuVisible && visibleChildMenu != item.getSubMenu()
@@ -630,7 +585,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             popup.hide();
         }
 
-        if (item.getSubMenu() != null && (parentMenu != null || menuWasVisible)
+        if (menuVisible && item.getSubMenu() != null
                 && visibleChildMenu != item.getSubMenu()) {
             showChildMenu(item);
         }
@@ -638,60 +593,15 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
     /**
      * When the mouse is moved away from an item
-     * 
+     *
      * @param item
      */
     public void itemOut(CustomMenuItem item) {
-        if (visibleChildMenu != item.getSubMenu() || visibleChildMenu == null) {
+        if (visibleChildMenu != item.getSubMenu()) {
             hideChildMenu(item);
             setSelected(null);
-        }
-    }
-
-    @Override
-    public void iLayout() {
-        // we might need to collapse the top-level menu
-        // Only needed if there is more than 1 top level item
-        // TODO and if width is defined
-        if (collapseItems && getItems().size() > 1) {
-
-            int topLevelWidth = 0;
-
-            int ourWidth = getOffsetWidth();
-
-            int i = 0;
-            for (; i < getItems().size() && topLevelWidth < ourWidth; i++) {
-                CustomMenuItem item = getItems().get(i);
-                topLevelWidth += item.getOffsetWidth();
-            }
-
-            if (topLevelWidth > getOffsetWidth()) {
-                ArrayList<CustomMenuItem> toBeCollapsed = new ArrayList<CustomMenuItem>();
-                VMenuBar collapsed = new VMenuBar(true, null);
-                collapsed.client = client;
-                for (int j = i - 2; j < getItems().size(); j++) {
-                    toBeCollapsed.add(getItems().get(j));
-                }
-
-                for (int j = 0; j < toBeCollapsed.size(); j++) {
-                    CustomMenuItem item = toBeCollapsed.get(j);
-                    removeItem(item);
-
-                    // it's ugly, but we have to insert the submenu icon
-                    if (item.getSubMenu() != null && submenuIcon != null) {
-                        StringBuffer itemText = new StringBuffer(item.getHTML());
-                        itemText.append("<img src=\"");
-                        itemText.append(submenuIcon);
-                        itemText.append("\" align=\"right\" />");
-                        item.setHTML(itemText.toString());
-                    }
-
-                    collapsed.addItem(item);
-                }
-
-//                moreItem.setSubMenu(collapsed);
-//                addItem(moreItem);
-            }
+        } else if (visibleChildMenu == null) {
+            setSelected(null);
         }
     }
 
@@ -741,49 +651,25 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
     /**
      * Shows the child menu of an item. The caller must ensure that the item has
      * a submenu.
-     * 
-     * @param item Menu item
+     *
+     * @param item Item
      */
     public void showChildMenu(CustomMenuItem item) {
-        popup = new VOverlay(true, false, true);
-
-        //sets Id for popup if Ids in DOM are available
-        client.setElementId(popup.getElement(), getDebugId());
-
-        popup.setWidget(item.getSubMenu());
-        popup.addCloseHandler(this);
-        popup.addAutoHidePartner(this.getElement());
-        popup.addAutoHidePartner(item.getElement());
-
+        int left = 0;
+        int top = 0;
         if (subMenu) {
-            popup.setPopupPosition(item.getParentMenu().getAbsoluteLeft()
-                    + item.getParentMenu().getOffsetWidth(), item
-                    .getAbsoluteTop());
+            left = item.getParentMenu().getAbsoluteLeft()
+                    + item.getParentMenu().getOffsetWidth();
+            top = item.getAbsoluteTop();
         } else {
-            popup.setPopupPosition(item.getAbsoluteLeft(), item.getParentMenu()
-                    .getAbsoluteTop()
-                    + item.getParentMenu().getOffsetHeight());
+            left = item.getAbsoluteLeft();
+            top = item.getParentMenu().getAbsoluteTop()
+                    + item.getParentMenu().getOffsetHeight();
         }
-
-        item.getSubMenu().onShow();
-        visibleChildMenu = item.getSubMenu();
-        item.getSubMenu().setParentMenu(this);
-
-        popup.show();
+        showChildMenuAt(item, top, left);
     }
 
-    private String getDebugId() {
-        if (debugId == null) {
-            if (subMenu) {
-                debugId = getParentMenu().getDebugId() + "-subMenu";
-            } else {
-                debugId = uidlId + "-subMenu";
-            }
-        }
-        return debugId;
-    }
-
-    /*protected void showChildMenuAt(CustomMenuItem item, int top, int left) {
+    protected void showChildMenuAt(CustomMenuItem item, int top, int left) {
         final int shadowSpace = 10;
 
         popup = new VOverlay(true, false, true);
@@ -801,14 +687,12 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
         popup.show();
 
-        if (left + popup.getOffsetWidth() >= RootPanel.getBodyElement()
-                .getOffsetWidth() - shadowSpace) {
+        if (left + popup.getOffsetWidth() >= RootPanel.getBodyElement().getOffsetWidth()) {
             if (subMenu) {
                 left = item.getParentMenu().getAbsoluteLeft()
-                        - popup.getOffsetWidth() - shadowSpace;
+                        - popup.getOffsetWidth();
             } else {
-                left = RootPanel.getBodyElement().getOffsetWidth()
-                        - popup.getOffsetWidth() - shadowSpace;
+                left = RootPanel.getBodyElement().getOffsetWidth() - popup.getOffsetWidth();
             }
             // Accommodate space for shadow
             if (left < shadowSpace) {
@@ -822,6 +706,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         if (BrowserInfo.get().isIE7()) {
             popup.getElement().getStyle().setProperty("zoom", "");
             Scheduler.get().scheduleDeferred(new Command() {
+                @Override
                 public void execute() {
                     if (popup == null) {
                         // The child menu can be hidden before this command is
@@ -839,11 +724,11 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             });
         }
     }
-*/
+
     /**
      * Hides the submenu of an item
-     * 
-     * @param item Menu item
+     *
+     * @param item
      */
     public void hideChildMenu(CustomMenuItem item) {
         if (visibleChildMenu != null
@@ -857,9 +742,24 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
      */
     public void onShow() {
         // remove possible previous selection
-        if (!items.isEmpty()) {
-            (items.get(0)).setSelected(true);
+        if (selected != null) {
+            selected.setSelected(false);
+            selected = null;
         }
+        menuVisible = true;
+    }
+
+    /**
+     * Listener method, fired when this menu is closed
+     */
+    public void onClose(CloseEvent<PopupPanel> event) {
+        hideChildren();
+        if (event.isAutoClosed()) {
+            hideParents(true);
+            menuVisible = false;
+        }
+        visibleChildMenu = null;
+        popup = null;
     }
 
     /**
@@ -875,21 +775,22 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
     /**
      * Recursively hide all parent menus
      */
-    public void hideParents() {
+    public void hideParents(boolean autoClosed) {
         if (visibleChildMenu != null) {
             popup.hide();
             setSelected(null);
+            menuVisible = !autoClosed;
         }
 
         if (getParentMenu() != null) {
-            getParentMenu().hideParents();
+            getParentMenu().hideParents(autoClosed);
         }
     }
 
     /**
      * Returns the parent menu of this menu, or null if this is the top-level
      * menu
-     * 
+     *
      * @return
      */
     public VMenuBar getParentMenu() {
@@ -898,7 +799,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
     /**
      * Set the parent menu of this menu
-     * 
+     *
      * @param parent
      */
     public void setParentMenu(VMenuBar parent) {
@@ -908,7 +809,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
     /**
      * Returns the currently selected item of this menu, or null if nothing is
      * selected
-     * 
+     *
      * @return
      */
     public CustomMenuItem getSelected() {
@@ -917,10 +818,10 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
     /**
      * Set the currently selected item of this menu
-     * 
+     *
      * @param item
      */
-    public void setSelected(@Nullable CustomMenuItem item) {
+    public void setSelected(CustomMenuItem item) {
         // If we had something selected, unselect
         if (item != selected && selected != null) {
             selected.setSelected(false);
@@ -934,23 +835,9 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
     }
 
     /**
-     * Listener method, fired when this menu is closed
-     */
-    public void onClose(CloseEvent<PopupPanel> event) {
-        hideChildren();
-        if (event.isAutoClosed()) {
-            hideParents();
-        }
-        // setSelected(null);
-        visibleChildMenu = null;
-        popup = null;
-
-    }
-
-    /**
-     * 
+     *
      * A class to hold information on menu items
-     * 
+     *
      */
     protected static class CustomMenuItem extends Widget implements HasHTML {
 
@@ -960,27 +847,23 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         protected Command command = null;
         protected VMenuBar subMenu = null;
         protected VMenuBar parentMenu = null;
+        protected boolean enabled = true;
+        protected boolean isSeparator = false;
         protected String shortcut = null;
 
         private Element shortcutElement = null;
-        protected boolean isSeparator = false;
 
         private static final String shortcutClassSel = "menuitem-shortcut-selected";
 
-        public CustomMenuItem(String html, Command cmd, String shortcut, String id) {
+        public CustomMenuItem(String html, Command cmd, String shortcut) {
             // We need spans to allow inline-block in IE
-            setElement(DOM.createTD());
-            if (id != null) {
-                DOM.setElementAttribute(getElement(), "id", id);
-            }
+            setElement(DOM.createSpan());
+            this.shortcut = shortcut;
 
             setHTML(html);
             setCommand(cmd);
             setSelected(false);
-
-            this.shortcut = shortcut;
-
-            addStyleName("menuitem");
+            setStyleName(CLASSNAME + "-menuitem");
 
             sinkEvents(VTooltip.TOOLTIP_EVENTS);
 
@@ -1003,17 +886,20 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             }
         }
 
-        private void setSeparator(boolean separator) {
-            isSeparator = separator;
-            if (separator) {
-                addStyleName("separator");
-            } else {
-                removeStyleName("separator");
-            }
+        public String getShortcut() {
+            return shortcut;
         }
 
-        public boolean isSeparator() {
-            return isSeparator;
+        public void setShortcut(String shortcut) {
+            this.shortcut = shortcut;
+        }
+
+        public Element getShortcutElement() {
+            return shortcutElement;
+        }
+
+        public void setShortcutElement(Element shortcutElement) {
+            this.shortcutElement = shortcutElement;
         }
 
         /*
@@ -1044,42 +930,58 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             return command;
         }
 
+        @Override
         public String getHTML() {
             return html;
         }
 
+        @Override
         public void setHTML(String html) {
             this.html = html;
             DOM.setInnerHTML(getElement(), html);
         }
 
+        @Override
         public String getText() {
             return html;
         }
 
+        @Override
         public void setText(String text) {
             setHTML(Util.escapeHTML(text));
         }
 
-        public String getShortcut() {
-            return shortcut;
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+            if (enabled) {
+                removeStyleDependentName("disabled");
+            } else {
+                addStyleDependentName("disabled");
+            }
         }
 
-        public void setShortcut(String shortcut) {
-            this.shortcut = shortcut;
+        public boolean isEnabled() {
+            return enabled;
         }
 
-        public Element getShortcutElement() {
-            return shortcutElement;
+        private void setSeparator(boolean separator) {
+            isSeparator = separator;
+            if (separator) {
+                setStyleName(CLASSNAME + "-separator");
+            } else {
+                setStyleName(CLASSNAME + "-menuitem");
+                setEnabled(enabled);
+            }
         }
 
-        public void setShortcutElement(Element shortcutElement) {
-            this.shortcutElement = shortcutElement;
+        public boolean isSeparator() {
+            return isSeparator;
         }
 
         public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
             this.client = client;
             setSeparator(uidl.hasAttribute("separator"));
+            setEnabled(!uidl.hasAttribute("disabled"));
 
             if (uidl.hasAttribute("style")) {
                 String itemStyle = uidl.getStringAttribute("style");
@@ -1116,13 +1018,146 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
     }
 
+    /**
+     * @author Jouni Koivuviita / IT Mill Ltd.
+     */
+    private int paddingWidth = -1;
+
+    @Override
+    public void iLayout() {
+        iLayout(false);
+    }
+
+    public void iLayout(boolean iconLoadEvent) {
+        // Only collapse if there is more than one item in the root menu and the
+        // menu has an explicit size
+        if ((getItems().size() > 1 || (collapsedRootItems != null && collapsedRootItems
+                .getItems().size() > 0))
+                && getElement().getStyle().getProperty("width") != null
+                && moreItem != null) {
+
+            // Measure the width of the "more" item
+            final boolean morePresent = getItems().contains(moreItem);
+            addItem(moreItem);
+            final int moreItemWidth = moreItem.getOffsetWidth();
+            if (!morePresent) {
+                removeItem(moreItem);
+            }
+
+            // Measure available space
+            if (paddingWidth == -1) {
+                int widthBefore = getElement().getClientWidth();
+                getElement().getStyle().setProperty("padding", "0");
+                paddingWidth = widthBefore - getElement().getClientWidth();
+                getElement().getStyle().setProperty("padding", "");
+            }
+            String overflow = "";
+            if (BrowserInfo.get().isIE6()) {
+                // IE6 cannot measure available width correctly without
+                // overflow:hidden
+                overflow = getElement().getStyle().getProperty("overflow");
+                getElement().getStyle().setProperty("overflow", "hidden");
+            }
+
+            int availableWidth = getElement().getClientWidth() - paddingWidth;
+
+            if (BrowserInfo.get().isIE6()) {
+                // IE6 cannot measure available width correctly without
+                // overflow:hidden
+                getElement().getStyle().setProperty("overflow", overflow);
+            }
+
+            // Used width includes the "more" item if present
+            int usedWidth = getConsumedWidth();
+            int diff = availableWidth - usedWidth;
+            removeItem(moreItem);
+
+            if (diff < 0) {
+                // Too many items: collapse last items from root menu
+                int widthNeeded = usedWidth - availableWidth;
+                if (!morePresent) {
+                    widthNeeded += moreItemWidth;
+                }
+                int widthReduced = 0;
+
+                while (widthReduced < widthNeeded && getItems().size() > 0) {
+                    // Move last root menu item to collapsed menu
+                    CustomMenuItem collapse = getItems().get(
+                            getItems().size() - 1);
+                    widthReduced += collapse.getOffsetWidth();
+                    removeItem(collapse);
+                    collapsedRootItems.addItem(collapse, 0);
+                }
+            } else if (collapsedRootItems.getItems().size() > 0) {
+                // Space available for items: expand first items from collapsed
+                // menu
+                int widthAvailable = diff + moreItemWidth;
+                int widthGrowth = 0;
+
+                while (widthAvailable > widthGrowth
+                        && collapsedRootItems.getItems().size() > 0) {
+                    // Move first item from collapsed menu to the root menu
+                    CustomMenuItem expand = collapsedRootItems.getItems()
+                            .get(0);
+                    collapsedRootItems.removeItem(expand);
+                    addItem(expand);
+                    widthGrowth += expand.getOffsetWidth();
+                    if (collapsedRootItems.getItems().size() > 0) {
+                        widthAvailable -= moreItemWidth;
+                    }
+                    if (widthGrowth > widthAvailable) {
+                        removeItem(expand);
+                        collapsedRootItems.addItem(expand, 0);
+                    } else {
+                        widthAvailable = diff;
+                    }
+
+                    if (BrowserInfo.get().isIE6()) {
+                        /*
+                         * Handle transparency for IE6 here as we cannot
+                         * implement it in CustomMenuItem.onAttach because
+                         * onAttach is never called for CustomMenuItem due to an
+                         * invalid component hierarchy (#6203)...
+                         */
+                        reloadImages(expand.getElement());
+                    }
+                }
+            }
+            if (collapsedRootItems.getItems().size() > 0) {
+                addItem(moreItem);
+            }
+        }
+
+        // If a popup is open we might need to adjust the shadow as well if an
+        // icon shown in that popup was loaded
+        if (popup != null) {
+            // Forces a recalculation of the shadow size
+            popup.show();
+        }
+        if (iconLoadEvent) {
+            // Size have changed if the width is undefined
+            Util.notifyParentOfSizeChange(this, false);
+        }
+    }
+
+    private int getConsumedWidth() {
+        int w = 0;
+        for (CustomMenuItem item : getItems()) {
+            if (!collapsedRootItems.getItems().contains(item)) {
+                w += item.getOffsetWidth();
+            }
+        }
+        return w;
+    }
+
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.google.gwt.event.dom.client.KeyPressHandler#onKeyPress(com.google
      * .gwt.event.dom.client.KeyPressEvent)
      */
+    @Override
     public void onKeyPress(KeyPressEvent event) {
         if (handleNavigation(event.getNativeEvent().getKeyCode(),
                 event.isControlKeyDown() || event.isMetaKeyDown(),
@@ -1133,11 +1168,12 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.google.gwt.event.dom.client.KeyDownHandler#onKeyDown(com.google.gwt
      * .event.dom.client.KeyDownEvent)
      */
+    @Override
     public void onKeyDown(KeyDownEvent event) {
         if (handleNavigation(event.getNativeEvent().getKeyCode(),
                 event.isControlKeyDown() || event.isMetaKeyDown(),
@@ -1150,7 +1186,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
      * Get the key that moves the selection upwards. By default it is the up
      * arrow key but by overriding this you can change the key to whatever you
      * want.
-     * 
+     *
      * @return The keycode of the key
      */
     protected int getNavigationUpKey() {
@@ -1161,7 +1197,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
      * Get the key that moves the selection downwards. By default it is the down
      * arrow key but by overriding this you can change the key to whatever you
      * want.
-     * 
+     *
      * @return The keycode of the key
      */
     protected int getNavigationDownKey() {
@@ -1172,7 +1208,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
      * Get the key that moves the selection left. By default it is the left
      * arrow key but by overriding this you can change the key to whatever you
      * want.
-     * 
+     *
      * @return The keycode of the key
      */
     protected int getNavigationLeftKey() {
@@ -1183,7 +1219,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
      * Get the key that moves the selection right. By default it is the right
      * arrow key but by overriding this you can change the key to whatever you
      * want.
-     * 
+     *
      * @return The keycode of the key
      */
     protected int getNavigationRightKey() {
@@ -1193,7 +1229,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
     /**
      * Get the key that selects a menu item. By default it is the Enter key but
      * by overriding this you can change the key to whatever you want.
-     * 
+     *
      * @return
      */
     protected int getNavigationSelectKey() {
@@ -1203,7 +1239,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
     /**
      * Get the key that closes the menu. By default it is the escape key but by
      * overriding this yoy can change the key to whatever you want.
-     * 
+     *
      * @return
      */
     protected int getCloseMenuKey() {
@@ -1212,9 +1248,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
     /**
      * Handles the keyboard events handled by the MenuBar
-     * 
-     * @param event
-     *            The keyboard event received
+     *
      * @return true iff the navigation event was handled
      */
     public boolean handleNavigation(int keycode, boolean ctrl, boolean shift) {
@@ -1236,7 +1270,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             if (getSelected() == null) {
                 // If nothing is selected then select the last item
                 setSelected(items.get(items.size() - 1));
-                if (getSelected().isSeparator()) {
+                if (getSelected().isSeparator() || !getSelected().isEnabled()) {
                     handleNavigation(keycode, ctrl, shift);
                 }
             } else if (visibleChildMenu == null && getParentMenu() == null) {
@@ -1248,7 +1282,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                     setSelected(items.get(items.size() - 1));
                 }
 
-                if (getSelected().isSeparator()) {
+                if (getSelected().isSeparator() || !getSelected().isEnabled()) {
                     handleNavigation(keycode, ctrl, shift);
                 }
             } else if (visibleChildMenu != null) {
@@ -1268,7 +1302,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                 idx = idx > 0 ? idx : root.getItems().size();
                 CustomMenuItem selected = root.getItems().get(--idx);
 
-                while (selected.isSeparator()) {
+                while (selected.isSeparator() || !selected.isEnabled()) {
                     idx = idx > 0 ? idx : root.getItems().size();
                     selected = root.getItems().get(--idx);
                 }
@@ -1292,7 +1326,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             if (getSelected() == null) {
                 // If nothing is selected then select the first item
                 setSelected(items.get(0));
-                if (getSelected().isSeparator()) {
+                if (getSelected().isSeparator() || !getSelected().isEnabled()) {
                     handleNavigation(keycode, ctrl, shift);
                 }
             } else if (visibleChildMenu == null && getParentMenu() == null) {
@@ -1305,7 +1339,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                     setSelected(items.get(0));
                 }
 
-                if (getSelected().isSeparator()) {
+                if (getSelected().isSeparator() || !getSelected().isEnabled()) {
                     handleNavigation(keycode, ctrl, shift);
                 }
             } else if (visibleChildMenu == null
@@ -1331,7 +1365,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                 idx = idx < root.getItems().size() - 1 ? idx : -1;
                 CustomMenuItem selected = root.getItems().get(++idx);
 
-                while (selected.isSeparator()) {
+                while (selected.isSeparator() || !selected.isEnabled()) {
                     idx = idx < root.getItems().size() - 1 ? idx : -1;
                     selected = root.getItems().get(++idx);
                 }
@@ -1355,7 +1389,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             if (getSelected() == null) {
                 // If nothing is selected then select the last item
                 setSelected(items.get(items.size() - 1));
-                if (getSelected().isSeparator()) {
+                if (getSelected().isSeparator() || !getSelected().isEnabled()) {
                     handleNavigation(keycode, ctrl, shift);
                 }
             } else if (visibleChildMenu != null) {
@@ -1370,7 +1404,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                     setSelected(items.get(items.size() - 1));
                 }
 
-                if (getSelected().isSeparator()) {
+                if (getSelected().isSeparator() || !getSelected().isEnabled()) {
                     handleNavigation(keycode, ctrl, shift);
                 }
             }
@@ -1382,7 +1416,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             if (getSelected() == null) {
                 // If nothing is selected then select the first item
                 setSelected(items.get(0));
-                if (getSelected().isSeparator()) {
+                if (getSelected().isSeparator() || !getSelected().isEnabled()) {
                     handleNavigation(keycode, ctrl, shift);
                 }
             } else if (visibleChildMenu == null && getParentMenu() == null) {
@@ -1403,7 +1437,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                     setSelected(items.get(0));
                 }
 
-                if (getSelected().isSeparator()) {
+                if (getSelected().isSeparator() || !getSelected().isEnabled()) {
                     handleNavigation(keycode, ctrl, shift);
                 }
             }
@@ -1433,7 +1467,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                 }
 
                 setSelected(null);
-                hideParents();
+                hideParents(true);
             }
         }
 
@@ -1442,17 +1476,18 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.google.gwt.event.dom.client.FocusHandler#onFocus(com.google.gwt.event
      * .dom.client.FocusEvent)
      */
+    @Override
     public void onFocus(FocusEvent event) {
-
     }
 
     private final String SUBPART_PREFIX = "item";
 
+    @Override
     public Element getSubPartElement(String subPart) {
         int index = Integer
                 .parseInt(subPart.substring(SUBPART_PREFIX.length()));
@@ -1461,6 +1496,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         return item.getElement();
     }
 
+    @Override
     public String getSubPartName(Element subElement) {
         if (!getElement().isOrHasChild(subElement)) {
             return null;
@@ -1476,8 +1512,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         final int itemCount = getItems().size();
         for (int i = 0; i < itemCount; i++) {
             if (getItems().get(i).getElement() == menuItemRoot) {
-                String name = SUBPART_PREFIX + i;
-                return name;
+                return SUBPART_PREFIX + i;
             }
         }
         return null;
@@ -1494,6 +1529,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
     /**
      * Force a new onload event for all images. Used only for IE6 to deal with
      * PNG transparency.
+     * @param root Root
      */
     private void reloadImages(Element root) {
 
@@ -1509,5 +1545,4 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             e.setAttribute("src", src);
         }
     }
-
 }

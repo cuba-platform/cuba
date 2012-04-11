@@ -492,6 +492,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
      */
     protected com.haulmont.cuba.web.toolkit.ui.MenuBar createMenuBar() {
         menuBar = new com.haulmont.cuba.web.toolkit.ui.MenuBar();
+        menuBar.setWidth("100%");
         if (globalConfig.getTestMode()) {
             App.getInstance().getWindowManager().setDebugId(menuBar, "appMenu");
         }
