@@ -4,7 +4,7 @@
   <para>Для того чтобы войти в подсистему создания отчетов, необходимо в главном меню приложения перейти к пункту меню <guimenu>Отчеты</guimenu> −&gt; <guimenu>Отчеты</guimenu>. Перед Вами откроется окно, представленное на рисунке ниже.</para>
   <mediaobject>
     <imageobject>
-      <imagedata align="center" fileref="img/reporting_ui_1.png"/>
+      <imagedata align="center" fileref="img/reporting_ui_1.png" width="100%"/>
     </imageobject>
   </mediaobject>
   <para>В верхней области закладки расположена панель с кнопками</para>
@@ -38,7 +38,7 @@
       <para><guibutton>Экспортировать</guibutton> − предоставляет возможность сохранять выбранный в списке отчет.</para>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="img/reporting_ui_3.png"/>
+          <imagedata align="center" fileref="img/reporting_ui_3.png" width="100%"/>
         </imageobject>
       </mediaobject>
     </listitem>
@@ -50,9 +50,10 @@
   <para>Остановимся подробнее на описании экрана редактора отчета. Перейти в него можно по нажатию на кнопку <guibutton>Создать</guibutton> или на кнопку <guibutton>Изменить</guibutton>.</para>
   <mediaobject>
     <imageobject>
-      <imagedata align="center" fileref="img/reporting_ui_5.png"/>
+      <imagedata align="center" fileref="img/reporting_ui_5.png" width="100%"/>
     </imageobject>
   </mediaobject>
+  <para/>
   <para>Экран редактора отчета содержит в себе три закладки:</para>
   <itemizedlist>
     <listitem>
@@ -67,6 +68,7 @@
   </itemizedlist>
   <section>
     <title>Закладка Параметры отчета</title>
+    <para/>
     <para>На этой закладке содержатся основные параметры отчета. Пространство этой закладки разделено на четыре области:</para>
     <itemizedlist>
       <listitem>
@@ -204,7 +206,7 @@
     <para>После нажатия на кнопку <guibutton>Создать</guibutton> откроется окно, представленное на рисунке.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/reporting_ui_15.png"/>
+        <imagedata align="center" fileref="img/reporting_ui_15.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Для полосы необходимо задать имя полосы в поле <guilabel>Имя</guilabel>, а также выбрать ориентацию полосы из выпадающего списка выбора <guilabel>Ориентация</guilabel>.</para>
@@ -231,7 +233,7 @@
       </keycombo>. </para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/reporting_ui_18.png"/>
+        <imagedata align="center" fileref="img/reporting_ui_18.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Если в качестве типа был выбран <type>Groovy</type>, то в поле <guilabel>Текст</guilabel> нужно вписать скрипт, возвращающий данные.</para>
@@ -257,20 +259,20 @@
     <para>На закладке <guilabel>Роли и экраны</guilabel> можно привязать отчет к экранам и\или ролям пользователей. Вид данной закладки представлен на рисунке ниже.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/reporting_ui_21.png"/>
+        <imagedata align="center" fileref="img/reporting_ui_21.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Для задания роли, для которой будет доступен отчет, нажмите на кнопку <guibutton>Добавить роль</guibutton>. После этого откроется окно выбора роли из списка существующих в системе ролей.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/reporting_ui_22.png"/>
+        <imagedata align="center" fileref="img/reporting_ui_22.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Выделите нужную роль в таблице и нажмите на кнопку <guibutton>Выбрать</guibutton>.</para>
     <para>Для задания экранов, с которых можно вызвать отчет, нажмите на кнопку <guibutton>Добавить экран</guibutton>. После этого откроется окно выбора экрана из списка существующих в системе экранов.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/reporting_ui_23.png"/>
+        <imagedata align="center" fileref="img/reporting_ui_23.png" width="100%"/>
       </imageobject>
     </mediaobject>
   </section>
@@ -279,7 +281,7 @@
     <para>На закладке Локализация можно задать локализованное значение названия отчета. </para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/reporting_ui_24.png"/>
+        <imagedata align="center" fileref="img/reporting_ui_24.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Для того чтобы это сделать, нужно в поле <guilabel>Строки локализации</guilabel> ввести локализованное значение следующего формата: </para>

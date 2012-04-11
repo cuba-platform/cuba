@@ -329,6 +329,10 @@ p {
 	color: #3b1245;
 }
 
+.varname {
+	color: #101b45;
+}
+
 .package {
 	color: #141f4e;
 }

@@ -95,7 +95,7 @@
         <para><emphasis role="bold">SQL и JPQL</emphasis></para>
         <para>SQL и <glossterm linkend="glossary_jpql_id">JPQL</glossterm>  скрипты должны возвращать данные, помеченные <glossterm linkend="glossary_alias_id">алиасами</glossterm> с помощью <database>AS</database>. </para>
         <warning>
-          <para>Данные <glossterm linkend="glossary_alias_id">алиасы</glossterm> далее будут далее использованы в шаблоне отчета.</para>
+          <para>Данные <glossterm linkend="glossary_alias_id">алиасы</glossterm> далее будут  использованы в шаблоне отчета.</para>
         </warning>
         <para>В запросе можно использовать входные параметры отчета и данные из родительских полос. К параметрам нужно обращаться по имени, заключенному в конструкцию <prompt>${}</prompt> (<prompt>${userName}</prompt>). К данным родительской полосы нужно обращаться аналогично, добавляя имя полосы перед именем параметра (<prompt>${Band1.param1}</prompt>)
 Пример запроса на SQL:</para>
@@ -116,7 +116,7 @@ where u.updateTs &gt; ${date1}</programlisting></para>
         <para><emphasis role="bold">Groovy</emphasis></para>
         <para>Groovy скрипт должен возвращать объект типа <varname>List&lt;Map&lt;String, Object&gt;&gt;</varname>. Объект <varname>Map&lt;String, Object&gt;</varname> соответствует одной записи в SQL-запросе. Ключ в отображении должен содержать <glossterm linkend="glossary_alias_id">алиас</glossterm> параметра.</para>
         <warning>
-          <para>Данные <glossterm linkend="glossary_alias_id">алиасы</glossterm> далее будут далее использованы в шаблоне отчета.</para>
+          <para>Данные <glossterm linkend="glossary_alias_id">алиасы</glossterm> далее будут  использованы в шаблоне отчета.</para>
         </warning>
         <para>Groovy-скрипт может использовать входные параметры отчета и данные родительских полос. В каждый скрипт передаются параметры <varname>Band parentBand</varname> и <varname>Map&lt;String, Object&gt; params</varname>. В отображении <varname>params</varname> содержатся входные параметры, а у <varname>parentBand</varname> можно вызвать метод <methodname>getParameter</methodname>, который принимает строку с именем параметра.</para>
         <para>Скрипты Groovy для загрузки данных могут напрямую вызывать методы <classname>Query</classname> и <classname>EntityManager</classname>.</para>
@@ -186,13 +186,13 @@ return [[&apos;userName&apos;: user.name,
         <para>Создайте новую таблицу, перейдя к подпункту меню <guimenu>Таблица</guimenu> −&gt; <guimenu>Вставить</guimenu> −&gt; <guimenu>Таблицу</guimenu>.</para>
         <mediaobject>
           <imageobject>
-            <imagedata align="center" fileref="img/doc_menu.png"/>
+            <imagedata align="center" fileref="img/doc_menu.png" contentdepth="100%" width="100%"/>
           </imageobject>
         </mediaobject>
         <para>Далее в открывшемся окне в поле <guilabel>Название</guilabel> введите название таблицы. </para>
         <mediaobject>
           <imageobject>
-            <imagedata align="center" fileref="img/doc_menu1.png"/>
+            <imagedata align="center" width="100%" fileref="img/doc_menu1.png"/>
           </imageobject>
         </mediaobject>
         <para>Задать или изменить имя уже созданной таблицы можно и другим образом. Нажмите правой кнопкой мыши на области таблицы и в контекстном меню выберите пункт <guilabel>Таблица</guilabel>. Перед Вами откроется окно, представленное на рисунке.</para>
@@ -369,7 +369,7 @@ return [[&apos;userName&apos;: user.name,
   </section>
   <section>
     <title>Задание форматирования значений выходных параметров отчета</title>
-    <para>Для каждого из выходных значений отчёта можно задать форматирование. Для этого нужно добавить элемент-форматтер, где указать полное имя выходного параметра (путь от корня, например <prompt>Test.name</prompt>, <prompt>Test</prompt> − имя полосы, <prompt>name</prompt> − имя параметра) и выбрать строку форматирования из списка часто используемых форматов для чисел и дат или задать этот формат самостоятельно.  Для чисел применяется <classname>DecimalFormat</classname> (более подробно о <classname>DecimalFormat</classname> можно прочитать на сайте <ulink url="http://docs.oracle.com/javase/6/docs/api/java/text/DecimalFormat.html">http://docs.oracle.com/javase/6/docs/api/java/text/DecimalFormat.html</ulink>), для дат − <classname>SimpleDateFormat</classname> (более подробно о <classname>DecimalFormat</classname> можно прочитать на сайте <ulink url="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html</ulink>).</para>
+    <para>Для каждого из выходных значений отчёта можно задать форматирование. Для этого нужно добавить элемент-форматтер, где указать полное имя выходного параметра (путь от корня, например <prompt>Test.name</prompt>, <prompt>Test</prompt> − имя полосы, <prompt>name</prompt> − имя параметра) и выбрать строку форматирования из списка часто используемых форматов для чисел и дат или задать этот формат самостоятельно.  Для чисел применяется <classname>DecimalFormat</classname> (более подробно о <classname>DecimalFormat</classname> можно прочитать на сайте <ulink url="http://docs.oracle.com/javase/6/docs/api/java/text/DecimalFormat.html">http://docs.oracle.com/javase/6/docs/api/java/text/DecimalFormat.html</ulink>), для дат − <classname>SimpleDateFormat</classname> (более подробно о <classname>DecimalFormat</classname> можно прочитать на сайте <ulink url="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html).</ulink></para>
   </section>
   <section>
     <title>Разграничение прав доступа к отчетам</title>

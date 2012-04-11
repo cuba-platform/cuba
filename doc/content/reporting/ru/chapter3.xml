@@ -4,22 +4,25 @@
   <para>Рассмотрим создание следующих отчетов.</para>
   <orderedlist>
     <listitem>
-      <para>Отчет <guilabel>Накладная на продажу</guilabel></para>
+      <para><link linkend="report1_id">Отчет <guilabel>Накладная на продажу</guilabel></link></para>
     </listitem>
     <listitem>
-      <para>Отчет <guilabel>Список продаж за период</guilabel></para>
+      <para><link linkend="report2_id">Отчет <guilabel>Список продаж за период</guilabel></link></para>
     </listitem>
     <listitem>
-      <para>Отчет <guilabel>Информация о товаре</guilabel></para>
+      <para><link linkend="report3_id">Отчет <guilabel>Информация о товаре</guilabel></link></para>
+    </listitem>
+    <listitem>
+      <para><link linkend="report4_id">Отчет <guilabel>По согласуемым документам</guilabel> (на примере системы <application>ТЕЗИС</application>)</link></para>
     </listitem>
   </orderedlist>
-  <section>
+  <section id="report1_id">
     <title>Простой отчет с шаблоном *.odt</title>
     <para>Данный отчет представляет собой информацию о факте продажи товара − накладную на продажу.</para>
     <para>Начнем формирование отчета с создания шаблона. Для этого откройте <application>OpenOffice.org Writer</application>. Создайте в файле следующий шаблон отчета, представленный на рисунке.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example1_1.png"/>
+        <imagedata align="center" fileref="img/example1_1.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Обратите внимание на название таблицы.</para>
@@ -28,7 +31,7 @@
     <para>В поле <guilabel>Имя</guilabel> введите имя отчета − <userinput>Sale invoice</userinput>, в качестве типа вывода отчета выберите значение <type>Простой отчет</type>. </para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example1_2.png"/>
+        <imagedata align="center" fileref="img/example1_2.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Далее на панели <guilabel>Шаблоны</guilabel> нажмите на кнопку <guibutton>Создать</guibutton>. После этого откроется диалоговое окно, представленное на рисунке.</para>
@@ -54,13 +57,13 @@
     <para>Далее приступим к созданию полос отчета. Для создания новой полосы выделите корневую полосу отчета <guilabel>Root</guilabel> и нажмите на кнопку <guibutton>Создать</guibutton>.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example1_6.png"/>
+        <imagedata align="center" fileref="img/example1_6.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Заполните поля источника данных значениями, приведенными на рисунке.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example1_7.png"/>
+        <imagedata align="center" fileref="img/example1_7.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Текст запроса <glossterm linkend="glossary_jpql_id">JPQL</glossterm>:</para>
@@ -82,7 +85,7 @@ and sp.id = ss.salesPerson.id</programlisting></para>
     <para>После создания полосы отчета <guilabel>Sale</guilabel> создадим полосу отчета <guilabel>Product</guilabel>. Для этого выделите корневую полосу отчета <guilabel>Root</guilabel> и нажмите на кнопку <guibutton>Создать</guibutton>. Далее заполните поля источника данных в соответствии с рисунком.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example1_8.png"/>
+        <imagedata align="center" fileref="img/example1_8.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Текст скрипта:</para>
@@ -100,7 +103,7 @@ and  sp.id = ss.product.id</programlisting></para>
     <para>Запустим отчет на выполнение. Для этого вернитесь на закладку <guilabel>Список отчетов</guilabel> (<guimenu>Отчеты</guimenu> −&gt; <guimenu>Отчеты</guimenu>). </para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example1_9.png"/>
+        <imagedata align="center" fileref="img/example1_9.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Выделите отчет <guilabel>Накладная на продажу</guilabel> в списке отчетов и нажмите на кнопку <guibutton>Выполнить</guibutton>. После этого откроется окно ввода параметров отчета. Данное окно представлено на рисунке.</para>
@@ -123,44 +126,54 @@ and  sp.id = ss.product.id</programlisting></para>
     <para>После этого нажмите на кнопку <guibutton>Печатать отчет</guibutton> в окне ввода параметров отчета.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example1_12.png"/>
+        <imagedata align="center" fileref="img/example1_12.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Выгруженный отчет представлен на рисунке ниже.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example1_13.png"/>
+        <imagedata align="center" fileref="img/example1_13.png" width="100%"/>
       </imageobject>
     </mediaobject>
   </section>
-  <section>
+  <section id="report2_id">
     <title>Простой отчет с шаблоном *.xls</title>
     <para>Данный отчет представляет собой информацию о  продажах, произведенных за определенный период, который задается параметрами отчета.</para>
     <para>Начнем формирование отчета с создания шаблона. Для этого откройте <application>OpenOffice.org Calc</application>. Создайте в файле следующий шаблон отчета, представленный на рисунке.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example2_1.png"/>
+        <imagedata align="center" fileref="img/example2_1.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Задайте именованные регионы согласно изображениям, представленным ниже.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example2_10.png"/>
+        <imagedata align="center" fileref="img/example2_10.png" width="100%"/>
       </imageobject>
+    </mediaobject>
+    <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example2_11.png"/>
+        <imagedata align="center" fileref="img/example2_11.png" width="100%"/>
       </imageobject>
+    </mediaobject>
+    <mediaobject>
       <imageobject>
         <imagedata align="center" fileref="img/example2_2.png"/>
       </imageobject>
+    </mediaobject>
+    <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example2_12.png"/>
+        <imagedata align="center" fileref="img/example2_12.png" width="100%"/>
       </imageobject>
+    </mediaobject>
+    <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example2_3.png"/>
+        <imagedata align="center" fileref="img/example2_3.png" width="100%"/>
       </imageobject>
+    </mediaobject>
+    <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example2_4.png"/>
+        <imagedata align="center" fileref="img/example2_4.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Сохраните шаблон отчета, назвав его <filename>saleForPeriod.xls</filename>.</para>
@@ -168,7 +181,7 @@ and  sp.id = ss.product.id</programlisting></para>
     <para>В поле <guilabel>Имя</guilabel> введите имя отчета − <userinput>Sales for period</userinput>, в качестве типа вывода отчета выберите значение <type>Простой отчет</type>. </para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example2_5.png"/>
+        <imagedata align="center" fileref="img/example2_5.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Далее на панели <guilabel>Шаблоны</guilabel> нажмите на кнопку <guibutton>Создать</guibutton>. После этого откроется диалоговое окно, представленное на рисунке.</para>
@@ -200,13 +213,13 @@ and  sp.id = ss.product.id</programlisting></para>
     <para>Далее приступим к созданию полос отчета. Для создания новой полосы выделите корневую полосу отчета <guilabel>Root</guilabel> и нажмите на кнопку <guibutton>Создать</guibutton>.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example1_6.png"/>
+        <imagedata align="center" fileref="img/example1_6.png" width="100%" contentdepth="100%"/>
       </imageobject>
     </mediaobject>
     <para>Заполните поля источника данных значениями, приведенными на рисунке.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example2_13.png"/>
+        <imagedata align="center" fileref="img/example2_13.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Текст запроса SQL:</para>
@@ -220,9 +233,12 @@ S.PRICE as price,
 S.PRICE_DESCRIPTION as priceDescription,
 S.DELIVERY_ADDRESS as deliveryAddress
 from SHOP_SALE S
-left join (select SB.ID as ID, SB.FULL_NAME as NAME from SHOP_BUYER SB) as SB on SB.ID = S.BUYER_ID
-left join (select SP.ID as ID, SP.FULL_NAME as NAME from SHOP_SALES_PERSON SP) as SS on SS.ID = S.SALES_PERSON_ID
-left join (select SP.ID as ID, SP.NAME as NAME from SHOP_PRODUCT SP) as SP on SP.ID= S.PRODUCT_ID
+left join (select SB.ID as ID, SB.FULL_NAME as NAME from SHOP_BUYER SB) 
+as SB on SB.ID = S.BUYER_ID
+left join (select SP.ID as ID, SP.FULL_NAME as NAME from SHOP_SALES_PERSON SP) 
+as SS on SS.ID = S.SALES_PERSON_ID
+left join (select SP.ID as ID, SP.NAME as NAME from SHOP_PRODUCT SP) 
+as SP on SP.ID= S.PRODUCT_ID
 where S.ORDER_DATE&gt;=${start}
 and S.ORDER_DATE&lt;=${end}
 and S.DELETE_TS is null</programlisting></para>
@@ -242,7 +258,7 @@ and S.DELETE_TS is null</programlisting></para>
     <para>Запустим отчет на выполнение. Для этого вернитесь на закладку <guilabel>Список отчетов</guilabel> (<guimenu>Отчеты</guimenu> −&gt; <guimenu>Отчеты</guimenu>). </para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example2_15.png"/>
+        <imagedata align="center" fileref="img/example2_15.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Выделите отчет <guilabel>Список продаж за период</guilabel> в списке отчетов и нажмите на кнопку <guibutton>Выполнить</guibutton>. После этого откроется окно ввода параметров отчета. Данное окно представлено на рисунке.</para>
@@ -259,23 +275,23 @@ and S.DELETE_TS is null</programlisting></para>
     <para>После этого нажмите на кнопку <guibutton>Печатать отчет</guibutton> в окне ввода параметров отчета.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example2_17.png"/>
+        <imagedata align="center" fileref="img/example2_17.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Выгруженный отчет представлен на рисунке ниже.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example2_18.png"/>
+        <imagedata align="center" fileref="img/example2_18.png" width="100%"/>
       </imageobject>
     </mediaobject>
   </section>
-  <section>
+  <section id="report3_id">
     <title>Печатная форма отчета с шаблоном *.odt</title>
     <para>Данный отчет представляет собой информацию о товаре.</para>
     <para>Начнем  формирование отчета с создания шаблона. Для этого откройте <application>OpenOffice.org Writer</application>. Создайте в файле следующий шаблон отчета, представленный на рисунке.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example3_1.png"/>
+        <imagedata align="center" fileref="img/example3_1.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Обратите внимание на название таблицы.</para>
@@ -284,7 +300,7 @@ and S.DELETE_TS is null</programlisting></para>
     <para>В поле <guilabel>Имя</guilabel> введите имя отчета − <userinput>Product info</userinput>, в качестве типа вывода отчета выберите значение <type>Печатная форма</type>. </para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example3_2.png"/>
+        <imagedata align="center" fileref="img/example3_2.png" width="100%" contentdepth="100%"/>
       </imageobject>
     </mediaobject>
     <para>Далее на панели <guilabel>Шаблоны</guilabel> нажмите на кнопку <guibutton>Создать</guibutton>. После этого откроется диалоговое окно, представленное на рисунке.</para>
@@ -310,13 +326,13 @@ and S.DELETE_TS is null</programlisting></para>
     <para>Далее приступим к созданию полос отчета. Для создания новой полосы выделите корневую полосу отчета <guilabel>Root</guilabel> и нажмите на кнопку <guibutton>Создать</guibutton>.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example1_6.png"/>
+        <imagedata align="center" fileref="img/example1_6.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Заполните поля источника данных значениями, приведенными на рисунке.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example3_6.png"/>
+        <imagedata align="center" fileref="img/example3_6.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <warning>
@@ -346,13 +362,170 @@ print.setAction(tablePrintFormAction);</programlisting></para>
     <para>Пересоберите проект и зайдите на экран со списком сущностей.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example3_7.png"/>
+        <imagedata align="center" fileref="img/example3_7.png" width="100%"/>
       </imageobject>
     </mediaobject>
     <para>Как видно из рисунка, на панели с кнопками появилась кнопка <guibutton>Отчет</guibutton>. Выделите интересующий товар и нажмите на кнопку <guibutton>Отчет</guibutton>. Далее можно посмотреть выгрузившийся отчет.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/example3_8.png"/>
+        <imagedata align="center" fileref="img/example3_8.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+  </section>
+  <section id="report4_id">
+    <title>Простой отчет с шаблоном *.xls в системе ТЕЗИС</title>
+    <para>Данный отчет представляет собой информацию о  документах, находящихся на согласовании у пользователя, который задается параметром отчета.</para>
+    <para>Начнем формирование отчета с создания шаблона. Для этого откройте <application>OpenOffice.org Calc</application>. Создайте в файле следующий шаблон отчета, представленный на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_1.png" width="100%" contentdepth="100%"/>
+      </imageobject>
+    </mediaobject>
+    <para>Задайте именованные регионы согласно изображениям, представленным ниже.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_2.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_3.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_4.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_5.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_6.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_7.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_8.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <para>Сохраните шаблон отчета, назвав его <filename>forEndorsement.xls</filename>.</para>
+    <para>Далее зайдите в подсистему создания отчетов и нажмите на кнопку <guibutton>Создать</guibutton>.</para>
+    <para>В поле <guilabel>Имя</guilabel> введите имя отчета − <userinput>Отчет по согласуемым документам</userinput>, в качестве типа вывода отчета выберите значение <type>Простой отчет</type>. </para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_9.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Далее на панели <guilabel>Шаблоны</guilabel> нажмите на кнопку <guibutton>Создать</guibutton>. После этого откроется диалоговое окно, представленное на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_10.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В качестве кода шаблона оставьте значение по умолчанию, в поле <guilabel>Тип вывода</guilabel> выберите значение <type>Xls</type>. Далее нажмите на кнопку <guibutton>Загрузить</guibutton> и в открывшемся окне укажите путь к созданному ранее шаблону <filename>forEndorsement.xls</filename>.</para>
+    <para>Далее создадим входные параметры отчета. Очевидно, входным параметром будет являться пользователь, выбранный из списка пользователей. Для создания параметра нажмите на кнопку <guibutton>Создать</guibutton> на панели <guilabel>Параметры</guilabel>. </para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_11.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Заполните поля параметра. В поле <guilabel>Имя параметра</guilabel> введите <userinput>Пользователь</userinput>, в качестве <glossterm linkend="glossary_alias_id">алиаса</glossterm> параметра укажите <userinput>user</userinput>. Выберите тип параметра <userinput>Объект</userinput> из списка типов. Далее установите опцию <guilabel>Обязательный параметр?</guilabel>. В качестве сущности выберите <type>User</type> из списка сущностей. В списке экранов выбора сущности найдите экран <type>sec$User.browse</type>.</para>
+    <para>Далее приступим к созданию полос отчета. Для создания новой полосы выделите корневую полосу отчета <guilabel>Root</guilabel> и нажмите на кнопку <guibutton>Создать</guibutton>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example1_6.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <para>Заполните поля источника данных значениями, приведенными на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_12.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <para>Текст запроса JPQL:</para>
+    <para><programlisting>select u.name as user from sec$User u where u.id = ${user}</programlisting></para>
+    <warning>
+      <para>Обратите внимание, что <glossterm linkend="glossary_alias_id">алиас</glossterm> в запросе называется также, как в созданном шаблоне, а для фильтрации значений передается входной параметр отчета <code>${user}</code>.</para>
+    </warning>
+    <para>После создания полосы отчета <guilabel>User</guilabel> создайте  полосу отчета <guilabel>Date</guilabel>. </para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_13.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <para>Далее создайте полосу отчета <guilabel>Band</guilabel>, в которую будут выгружаться основные данные отчета.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_14.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <para>Текст запроса JPQL:</para>
+    <para><programlisting>select wa.card.description as name, wa.dueDate as planDate from wf$Assignment wa 
+where wa.user.id=${user} and wa.name = &apos;Endorsement&apos;
+and wa.finished is null</programlisting></para>
+    <para>Далее создадим полосу отчета <guilabel>Band_2</guilabel>, в которой будет проводиться подсчет общего количества документов, находящихся на согласовании у пользователя.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_15.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <para>Текст запроса JPQL:</para>
+    <para><programlisting>select count(wa.id) as total from wf$Assignment wa where wa.user.id=${user} 
+and wa.name = &apos;Endorsement&apos; and wa.finished is null</programlisting></para>
+    <para>Далее создадим полосу отчета <guilabel>Band_2_red</guilabel>, в которой будет проводиться подсчет  количества документов, находящихся на согласовании у пользователя, срок которых истек.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_16.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <para>Текст запроса SQL:</para>
+    <para><programlisting>select count(WA.ID) as overdue from WF_ASSIGNMENT WA left outer join SEC_USER SU 
+on (WA.USER_ID=SU.ID) where SU.ID=${user} and WA.NAME= &apos;Endorsement&apos;
+and WA.FINISHED is null and WA.DUE_DATE&lt;now()</programlisting></para>
+    <para>После создания полос отчета создайте пустые полосы отчета и расположите их в порядке, определенном на рисунке. </para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_17.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Полосы отчета пустые, так как в соответствующие им именованные регионы шаблона не требуется выводить данные из базы данных.</para>
+    <para>После этого нажмите на кнопку <guibutton>ОК</guibutton>. Новый отчет создан и сохранен в базе данных.</para>
+    <para>Запустим отчет на выполнение. Для этого вернитесь на закладку <guilabel>Список отчетов</guilabel> (<guimenu>Отчеты</guimenu> −&gt; <guimenu>Отчеты</guimenu>). </para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_18.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <para>Выделите отчет <guilabel>Отчет по согласуемым документам</guilabel> в списке отчетов и нажмите на кнопку <guibutton>Выполнить</guibutton>. После этого откроется окно ввода параметров отчета. Данное окно представлено на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_19.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Выберите пользователя, у которого Вы хотели бы просмотреть документы, находящиеся на согласовании, с помощью кнопки <inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="img/dots.png"/>
+        </imageobject>
+      </inlinemediaobject>. </para>
+    <para>После этого нажмите на кнопку <guibutton>Печатать отчет</guibutton> в окне ввода параметров отчета.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_20.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <para>Выгруженный отчет представлен на рисунке ниже.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example4_21.png" width="100%" contentdepth="100%"/>
       </imageobject>
     </mediaobject>
   </section>
