@@ -37,6 +37,8 @@ import java.util.Set;
  * VTabsheet
  * <br/>
  * [Compatible with Vaadin 6.6]
+ *
+ * @version $Id$
  */
 public class VTabsheet extends VTabsheetBase {
 
@@ -330,30 +332,44 @@ public class VTabsheet extends VTabsheetBase {
                 Widget.setStyleName(widgetDiv.getParentElement(), nextTabClassName, false);
             }
 
-            // assign style to previous tab
+            // assign style to previous visible tab
             if (index > 0) {
-                final Widget widgetBeforeSelected = getWidget(index - 1);
-                final com.google.gwt.dom.client.Element divBeforeSelected =
-                        widgetBeforeSelected.getElement().getParentElement();
+                int beforeIndex = index;
+                Widget widgetBeforeSelected;
+                com.google.gwt.dom.client.Element tabElement;
+                do {
+                    beforeIndex = beforeIndex - 1;
+                    widgetBeforeSelected = getWidget(beforeIndex);
+                    tabElement = widgetBeforeSelected.getElement().getParentElement().getParentElement();
+                } while ((beforeIndex > 0) && !Widget.isVisible(tabElement));
 
-                Widget.setStyleName(divBeforeSelected, nextDivClassName, false);
-                Widget.setStyleName(divBeforeSelected.getParentElement(), nextTabClassName, false);
+                if (beforeIndex >= 0) {
+                    final com.google.gwt.dom.client.Element divBeforeSelected =
+                            widgetBeforeSelected.getElement().getParentElement();
 
-                Widget.setStyleName(divBeforeSelected, previousDivClassName, true);
-                Widget.setStyleName(divBeforeSelected.getParentElement(), previousTabClassName, true);
+                    Widget.setStyleName(divBeforeSelected, previousDivClassName, true);
+                    Widget.setStyleName(divBeforeSelected.getParentElement(), previousTabClassName, true);
+                }
             }
 
-            // assign style to next tab
+            // assign style to next visible tab
             if (index < getTabCount() - 1) {
-                final Widget widgetAfterSelected = getWidget(index + 1);
-                final com.google.gwt.dom.client.Element divAfterSelected =
-                        widgetAfterSelected.getElement().getParentElement();
+                int afterIndex = index;
+                Widget widgetAfterSelected;
+                com.google.gwt.dom.client.Element tabElement;
+                do {
+                    afterIndex = afterIndex + 1;
+                    widgetAfterSelected = getWidget(afterIndex);
+                    tabElement = widgetAfterSelected.getElement().getParentElement().getParentElement();
+                } while ((afterIndex < getTabCount() - 1) && !Widget.isVisible(tabElement));
 
-                Widget.setStyleName(divAfterSelected, previousDivClassName, false);
-                Widget.setStyleName(divAfterSelected.getParentElement(), previousTabClassName, false);
+                if (afterIndex <= getTabCount() - 1) {
+                    final com.google.gwt.dom.client.Element divAfterSelected =
+                            widgetAfterSelected.getElement().getParentElement();
 
-                Widget.setStyleName(divAfterSelected, nextDivClassName, true);
-                Widget.setStyleName(divAfterSelected.getParentElement(), nextTabClassName, true);
+                    Widget.setStyleName(divAfterSelected, nextDivClassName, true);
+                    Widget.setStyleName(divAfterSelected.getParentElement(), nextTabClassName, true);
+                }
             }
 
             // The selected tab might need more (or less) space
