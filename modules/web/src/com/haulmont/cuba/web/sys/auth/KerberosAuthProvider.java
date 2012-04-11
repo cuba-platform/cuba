@@ -158,7 +158,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
      */
     private LoginContext loginAsServicePrincipal() throws LoginException {
         WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
-        LoginContext loginContext = new LoginContext(StringUtils.trim(webConfig.getKerberosJaasConf()),
+        LoginContext loginContext = new LoginContext(StringUtils.trim(webConfig.getKerberosLoginModule()),
                 new CallbackHandler() {
                     @Override
                     public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
