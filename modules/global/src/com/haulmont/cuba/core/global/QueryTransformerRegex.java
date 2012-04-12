@@ -107,7 +107,7 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         else
             sb.append(" where ");
 
-        sb.append(where);
+        sb.append("(").append(where).append(")");
 
         buffer.insert(insertPos, sb);
 
