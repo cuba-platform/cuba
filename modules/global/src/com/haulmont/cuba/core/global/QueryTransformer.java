@@ -38,6 +38,12 @@ public interface QueryTransformer
     /** Replaces <code>select e.f1, e.f2, ...</code> clause with <code>select count(e) ...</code> */
     void replaceWithCount();
 
+    /**
+     * Replaces 'select distinct' with 'select'.
+     * @return  true if 'distinct' was really removed, false if there was no 'distinct' in the query
+     */
+    boolean removeDistinct();
+
     /** Adds or replaces 'order by' clause */
     void replaceOrderBy(String property, boolean asc);
 

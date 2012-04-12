@@ -14,10 +14,7 @@ import com.haulmont.bali.util.StringHelper;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.PersistenceSecurity;
-import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ViewHelper;
@@ -201,6 +198,7 @@ public class DataServiceBean implements DataService {
         return (A) result;
     }
 
+    @SuppressWarnings("unchecked")
     @Nonnull
     public <A extends Entity> List<A> loadList(LoadContext context) {
         if (log.isDebugEnabled())
@@ -222,11 +220,23 @@ public class DataServiceBean implements DataService {
         try {
             final EntityManager em = persistence.getEntityManager();
             em.setSoftDeletion(context.isSoftDeletion());
-            com.haulmont.cuba.core.Query query = createQuery(em, context);
-            resultList = query.getResultList();
+
+            boolean ensureDistinct = false;
+            if (configuration.getConfig(ServerConfig.class).getInMemoryDistinct()) {
+                QueryTransformer transformer = QueryTransformerFactory.createTransformer(
+                        context.getQuery().getQueryString(), context.getMetaClass());
+                ensureDistinct = transformer.removeDistinct();
+                if (ensureDistinct) {
+                    context.getQuery().setQueryString(transformer.getResult());
+                }
+            }
+            Query query = createQuery(em, context);
+            resultList = getResultList(context, query, ensureDistinct);
 
             // Fetch if StoreCache is enabled or there are lazy properties in the view
-            if (context.getView() != null && (dataCacheAPI.isStoreCacheEnabled() || ViewHelper.hasLazyProperties(context.getView()))) {
+            if (context.getView() != null && (dataCacheAPI.isStoreCacheEnabled()
+                    || ViewHelper.hasLazyProperties(context.getView())))
+            {
                 em.setView(null);
                 for (Object entity : resultList) {
                     ViewHelper.fetchInstance((Instance) entity, context.getView());
@@ -239,6 +249,59 @@ public class DataServiceBean implements DataService {
         }
 
         return resultList;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List getResultList(LoadContext context, Query query, boolean ensureDistinct) {
+        List list = query.getResultList();
+        if (!ensureDistinct)
+            return list;
+
+        int requestedFirst = context.getQuery().getFirstResult();
+        LinkedHashSet set = new LinkedHashSet(list);
+        if (set.size() == list.size() && requestedFirst == 0) {
+            // If this is the first chunk and it has no duplicates, just return it
+            return list;
+        }
+        // In case of not first chunk, even if there where no duplicates, start filling the set from zero
+        // to ensure correct paging
+
+        int requestedMax = context.getQuery().getMaxResults();
+        int setSize = list.size() + requestedFirst;
+        int factor = list.size() / set.size() * 2;
+
+        set.clear();
+
+        int firstResult = 0;
+        int maxResults = (requestedFirst + requestedMax) * factor;
+        int i = 0;
+        while (set.size() < setSize) {
+            if (i++ > 10) {
+                log.warn("In-memory distinct: endless loop detected for " + context);
+                break;
+            }
+            query.setFirstResult(firstResult);
+            query.setMaxResults(maxResults);
+            list = query.getResultList();
+            if (list.size() == 0)
+                break;
+            set.addAll(list);
+
+            firstResult = firstResult + maxResults;
+        }
+
+        // Copy by iteration because subList() returns non-serializable class
+        int max = Math.min(requestedFirst + requestedMax, set.size());
+        List result = new ArrayList(max - requestedFirst);
+        int j = 0;
+        for (Object item : set) {
+            if (j >= max)
+                break;
+            if (j >= requestedFirst)
+                result.add(item);
+            j++;
+        }
+        return result;
     }
 
     private String printQuery(String query) {

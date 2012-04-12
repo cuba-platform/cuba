@@ -193,4 +193,37 @@ public class QueryTransformerRegexTest extends TestCase
                 "select c from ref$Car c left join c.model.manufacturer c_model_manufacturer where c.deleteTs is null order by c_model_manufacturer.name desc",
                 res);
     }
+
+    public void testRemoveDistinct() {
+        QueryTransformerRegex transformer;
+        String res;
+
+        transformer = new QueryTransformerRegex(
+                "select c from ref$Car c where c.deleteTs is null",
+                "ref$Car");
+        transformer.removeDistinct();
+        res = transformer.getResult();
+        assertEquals(
+                "select c from ref$Car c where c.deleteTs is null",
+                res);
+
+        transformer = new QueryTransformerRegex(
+                "select distinct c from ref$Car c where c.deleteTs is null",
+                "ref$Car");
+        transformer.removeDistinct();
+        res = transformer.getResult();
+        assertEquals(
+                "select c from ref$Car c where c.deleteTs is null",
+                res);
+
+        transformer = new QueryTransformerRegex(
+                "select " +
+                        " distinct c from ref$Car c where c.deleteTs is null",
+                "ref$Car");
+        transformer.removeDistinct();
+        res = transformer.getResult();
+        assertEquals(
+                "select c from ref$Car c where c.deleteTs is null",
+                res);
+    }
 }

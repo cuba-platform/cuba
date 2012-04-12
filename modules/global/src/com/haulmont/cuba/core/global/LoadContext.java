@@ -105,6 +105,19 @@ public class LoadContext implements Serializable {
         this.useSecurityConstraints = useSecurityConstraints;
     }
 
+    @Override
+    public String toString() {
+        return "LoadContext{" +
+                "metaClass='" + metaClass + '\'' +
+                ", query=" + query +
+                ", view=" + view +
+                ", id=" + id +
+                ", ids=" + ids +
+                ", softDeletion=" + softDeletion +
+                ", useSecurityConstraints=" + useSecurityConstraints +
+                '}';
+    }
+
     public static class Query implements Serializable {
 
         private static final long serialVersionUID = 3819951144050635838L;
@@ -155,6 +168,15 @@ public class LoadContext implements Serializable {
 
         public int getMaxResults() {
             return maxResults;
+        }
+
+        @Override
+        public String toString() {
+            return "Query{" +
+                    "queryString='" + queryString + '\'' +
+                    ", firstResult=" + firstResult +
+                    ", maxResults=" + maxResults +
+                    '}';
         }
     }
 }

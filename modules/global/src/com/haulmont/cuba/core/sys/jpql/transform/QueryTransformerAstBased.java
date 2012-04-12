@@ -161,6 +161,12 @@ public class QueryTransformerAstBased implements QueryTransformer {
         queryAnalyzer.replaceWithCount(ref);
     }
 
+    @Override
+    public boolean removeDistinct() {
+        // TODO
+        return false;
+    }
+
     public void replaceOrderBy(String newOrderingFieldPath, boolean desc) {
         EntityReferenceInferer inferer = new EntityReferenceInferer(entityName);
         EntityReference ref = inferer.infer(queryAnalyzer);

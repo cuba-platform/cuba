@@ -126,4 +126,13 @@ public interface ServerConfig extends Config {
     @Property("cuba.releaseTimestampPath")
     @DefaultString("/com/haulmont/cuba/core/global/release.timestamp")
     String getReleaseTimestampPath();
+
+    /**
+     * @return Tells DataService to ensure distinct results by processing them in memory, instead of issue
+     * 'select distinct' to the database.
+     */
+    @Property("cuba.inMemoryDistinct")
+    @DefaultBoolean(false)
+    boolean getInMemoryDistinct();
+    void setInMemoryDistinct(boolean value);
 }

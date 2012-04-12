@@ -28,6 +28,9 @@ public class QueryParserRegex implements QueryParser {
     public static final String DISTINCT_PATTERN_REGEX = "\\bDISTINCT\\b";
     public static final Pattern DISTINCT_PATTERN = Pattern.compile(DISTINCT_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
+    public static final String SELECT_DISTINCT_PATTERN_REGEX = "\\bSELECT\\s+DISTINCT\\b";
+    public static final Pattern SELECT_DISTINCT_PATTERN = Pattern.compile(SELECT_DISTINCT_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
+
     public static final String WHERE_PATTERN_REGEX = "\\bWHERE\\b";
     public static final Pattern WHERE_PATTERN = Pattern.compile(WHERE_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 

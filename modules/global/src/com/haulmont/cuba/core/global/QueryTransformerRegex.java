@@ -264,6 +264,16 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         }
     }
 
+    @Override
+    public boolean removeDistinct() {
+        Matcher matcher = SELECT_DISTINCT_PATTERN.matcher(buffer);
+        if (matcher.find()) {
+            buffer.replace(matcher.start(), matcher.end(), "select");
+            return true;
+        }
+        return false;
+    }
+
     public void replaceOrderBy(String property, boolean desc) {
         String alias = null;
         Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
