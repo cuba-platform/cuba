@@ -81,9 +81,9 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
         compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.2')
         compile(group: 'org.freemarker', name: 'freemarker', version: '2.3.16')
         compile(group: 'org.perf4j', name: 'perf4j', version: '0.9.10')
-        compile(group: 'org.springframework', name: 'spring-beans', version: '3.0.5.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-context', version: '3.0.5.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-web', version: '3.0.5.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-beans', version: '3.0.7.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-context', version: '3.0.7.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-web', version: '3.0.7.RELEASE')
 
         testCompile(group: 'com.haulmont.thirdparty', name: 'jmockit', version: '0.999.10')
         testCompile(group: 'junit', name: 'junit', version: '4.5')
@@ -159,10 +159,10 @@ configure(coreModule) {
         compile(group: 'org.openoffice', name: 'juh', version: '3.0.0')
         compile(group: 'org.openoffice', name: 'ridl', version: '3.0.0')
         compile(group: 'org.openoffice', name: 'unoil', version: '3.0.0')
-        compile(group: 'org.springframework', name: 'spring-context-support', version: '3.0.5.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-orm', version: '3.0.5.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-tx', version: '3.0.5.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.0.5.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-context-support', version: '3.0.7.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-orm', version: '3.0.7.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-tx', version: '3.0.7.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.0.7.RELEASE')
 
         provided(servletApi)
 
@@ -276,7 +276,7 @@ configure(webModule) {
         compile(group: 'com.haulmont.thirdparty', name: 'jespa', version: '1.0.7')
         compile(group: 'commons-fileupload', name: 'commons-fileupload', version: '1.2.2')
         compile(group: 'org.jasig.cas', name: 'cas-client-core', version: '3.1.10')
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.0.5.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.0.7.RELEASE')
         compile(vaadin)
         compile(popupbutton)
 
