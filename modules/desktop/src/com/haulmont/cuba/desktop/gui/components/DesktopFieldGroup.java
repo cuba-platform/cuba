@@ -594,6 +594,9 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
         return new CustomFieldGenerator() {
             public Component generateField(Datasource datasource, Object propertyId) {
                 Component component = fieldFactory.createField(datasource, (String) propertyId, field.getXmlDescriptor());
+                if (component instanceof HasFomatter) {
+                    ((HasFomatter) component).setFormatter(field.getFormatter());
+                }
                 return component;
             }
         };
