@@ -17,6 +17,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -42,8 +44,30 @@ public class Connection {
         session = new ClientUserSession(userSession);
         AppContext.setSecurityContext(new SecurityContext(session));
 
+        updateSessionClientInfo();
+
         connected = true;
         fireConnectionListeners();
+    }
+
+    private void updateSessionClientInfo() {
+        try {
+            InetAddress address = InetAddress.getLocalHost();
+            session.setAddress(address.getHostName() + " (" + address.getHostAddress() + ")");
+        } catch (UnknownHostException e) {
+            log.warn("Unable to obtain local IP address", e);
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("os{");
+        sb.append("name=").append(System.getProperty("os.name"));
+        sb.append(", arch=").append(System.getProperty("os.arch"));
+        sb.append(", version=").append(System.getProperty("os.version"));
+        sb.append("}, ");
+        sb.append("java{");
+        sb.append("vendor=").append(System.getProperty("java.vendor"));
+        sb.append(", version=").append(System.getProperty("java.version"));
+        sb.append("}");
+        session.setClientInfo(sb.toString());
     }
 
     public void logout() {
