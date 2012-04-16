@@ -242,9 +242,10 @@
     text-shadow: black 1px 1px;
 }
 
-.v-menubar-submenu .v-menubar-menuitem span {
+.v-menubar-submenu .v-menubar-menuitem .v-menubar-menuitem-caption {
     color: #fff;
     display: inline-block;
+    /*padding-right: 5px;*/
 }
 
 .v-menubar-submenu {
@@ -262,11 +263,11 @@
 
 .v-menubar-submenu span .v-menubar-menuitem-shortcut,
 .v-menubar-submenu span .v-menubar-menuitem-shortcut-selected {
-    padding-right: 5px;
-    padding-left: 0;
+    /*padding-right: 5px;*/
+    padding: 0;
     color: #c0c0c0;
-    position: absolute;
-    right: 0;
+    /*position: absolute;*/
+    /*right: 0;*/
     display: inline-block;
 }
 

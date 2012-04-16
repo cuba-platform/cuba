@@ -220,13 +220,12 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
             if (moreItemUIDL.hasAttribute("icon")) {
                 itemHTML.append("<img src=\""
-                        + client.translateVaadinUri(moreItemUIDL
-                                .getStringAttribute("icon")) + "\" class=\""
+                        + client.translateVaadinUri(moreItemUIDL.getStringAttribute("icon")) + "\" class=\""
                         + Icon.CLASSNAME + "\" alt=\"\" />");
             }
 
             String moreItemText = moreItemUIDL.getStringAttribute("text");
-            if ("".equals(moreItemText)) {
+            if ("".equals(moreItemText) && (moreItemUIDL.getStringAttribute("icon") == null)) {
                 moreItemText = "&#x25BA;";
             }
             itemHTML.append(moreItemText);
@@ -320,7 +319,6 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         }// while
 
         iLayout(false);
-
     }// updateFromUIDL
 
     /**
@@ -394,14 +392,14 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
      *
      * @param item
      */
-    public void addItem(CustomMenuItem item) {
+    public void addItem(final CustomMenuItem item) {
         if (items.contains(item)) {
             return;
         }
 
         DOM.appendChild(getContainerElement(), item.getElement());
         if (subMenu && !item.isSeparator()) {
-            Element sc = DOM.createSpan();
+            final Element sc = DOM.createSpan();
             sc.addClassName(CLASSNAME + "-menuitem-shortcut");
             if (item.getShortcut() != null) {
                 DOM.setInnerHTML(sc, Util.escapeHTML(item.getShortcut()));
@@ -669,7 +667,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         showChildMenuAt(item, top, left);
     }
 
-    protected void showChildMenuAt(CustomMenuItem item, int top, int left) {
+    protected void showChildMenuAt(final CustomMenuItem item, int top, int left) {
         final int shadowSpace = 10;
 
         popup = new VOverlay(true, false, true);
@@ -699,6 +697,20 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                 left = shadowSpace;
             }
         }
+
+        // layout paddings in menu
+        if (!item.isLayoutAplied()) {
+            if (!BrowserInfo.get().isIE7())
+                item.setLayoutAplied(true);
+
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    layoutShortcutItems(item);
+                }
+            });
+        }
+
         popup.setPopupPosition(left, top);
 
         // IE7 really tests one's patience sometimes
@@ -722,6 +734,62 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                     popup.getElement().getStyle().setProperty("zoom", "1");
                 }
             });
+        }
+    }
+
+    private void layoutShortcutItems(CustomMenuItem item) {
+        VMenuBar layoutingMenu = item.getSubMenu();
+
+        // no need to be layouted
+        if (item == moreItem)
+            return;
+
+        int maxCaptionWidth = 0;
+        for (CustomMenuItem subItem : layoutingMenu.getItems()) {
+            Element captionElement = (Element) subItem.getElement().getChild(0);
+            int captionWidth = captionElement.getOffsetWidth();
+            if (subItem.getShortcut() != null) {
+                Element sc = subItem.getShortcutElement();
+                int shortcutLabelWidth = sc.getOffsetWidth();
+                captionWidth += shortcutLabelWidth;
+            }
+            if (captionWidth > maxCaptionWidth)
+                maxCaptionWidth = captionWidth;
+        }
+        // apply widths
+        for (CustomMenuItem subItem : layoutingMenu.getItems()) {
+            Element itemElement = subItem.getElement();
+
+            int shortcutWidth = 0;
+            if (subItem.getShortcut() != null) {
+                Element sc = subItem.getShortcutElement();
+                shortcutWidth = sc.getOffsetWidth();
+            }
+
+            Element captionElement = (Element) itemElement.getChild(0);
+            if (captionElement.getStyle() == null)
+                captionElement.setAttribute("style", "");
+            if (itemElement.getStyle() == null)
+                itemElement.setAttribute("style", "");
+
+            captionElement.getStyle().setWidth(maxCaptionWidth - shortcutWidth, Unit.PX);
+            itemElement.getStyle().setWidth(maxCaptionWidth, Unit.PX);
+        }
+
+        // If a popup is open we might need to adjust the shadow as well if an
+        // icon shown in that popup was loaded
+        if (popup != null) {
+            if (BrowserInfo.get().isIE7()) {
+                if (popup.getElement().getStyle().getProperty("width") == null
+                        || popup.getElement().getStyle()
+                        .getProperty("width") == "") {
+                    popup.setWidth(popup.getOffsetWidth() + "px");
+                }
+                popup.getElement().getStyle().setProperty("zoom", "1");
+            }
+            // Forces a recalculation of the shadow size
+//            popup.hide();
+            popup.show();
         }
     }
 
@@ -752,6 +820,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
     /**
      * Listener method, fired when this menu is closed
      */
+    @Override
     public void onClose(CloseEvent<PopupPanel> event) {
         hideChildren();
         if (event.isAutoClosed()) {
@@ -853,6 +922,8 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
         private Element shortcutElement = null;
 
+        private boolean layoutAplied = false;
+
         private static final String shortcutClassSel = "menuitem-shortcut-selected";
 
         public CustomMenuItem(String html, Command cmd, String shortcut) {
@@ -902,10 +973,17 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             this.shortcutElement = shortcutElement;
         }
 
-        /*
-         * setters and getters for the fields
-         */
+        public boolean isLayoutAplied() {
+            return layoutAplied;
+        }
 
+        public void setLayoutAplied(boolean layoutAplied) {
+            this.layoutAplied = layoutAplied;
+        }
+
+        /*
+        * setters and getters for the fields
+        */
         public void setSubMenu(VMenuBar subMenu) {
             this.subMenu = subMenu;
         }

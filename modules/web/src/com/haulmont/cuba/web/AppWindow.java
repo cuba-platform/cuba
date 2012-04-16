@@ -494,6 +494,9 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     protected com.haulmont.cuba.web.toolkit.ui.MenuBar createMenuBar() {
         menuBar = new com.haulmont.cuba.web.toolkit.ui.MenuBar();
         menuBar.setWidth("100%");
+        menuBar.setMoreMenuItem(null);
+        menuBar.getMoreMenuItem().setIcon(new ThemeResource("icons/more-item.png"));
+
         if (globalConfig.getTestMode()) {
             App.getInstance().getWindowManager().setDebugId(menuBar, "appMenu");
         }
@@ -648,9 +651,10 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     private void addUserSelect(HorizontalLayout parentLayout) {
 
-        if (webConfig.getUseLightHeader())
+        if (webConfig.getUseLightHeader()) {
             substUserSelect = new FilterSelect();
-        else
+            substUserSelect.setWidth("200px");
+        } else
             substUserSelect = new NativeSelect();
 
         substUserSelect.setNullSelectionAllowed(false);
