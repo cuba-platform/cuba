@@ -1,29 +1,133 @@
 .v-menubar {
-    padding-top: 3px;
+    height: 23px;
+    padding: 0 8px;
 }
 
-.v-menubar table {
-    font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif;
-    font-size: 11px;
+.v-menubar .v-menubar-menuitem {
+    height: 17px;
+    line-height: 16px;
+    padding: 3px 8px;
+}
+
+.v-menubar-submenu {
+    overflow: hidden;
+    padding: 4px 0;
+}
+
+.v-menubar-submenu .v-menubar-menuitem {
+    line-height: 16px;
+    padding: 1px 26px 1px 10px;
+}
+
+.v-menubar-submenu .v-menubar-menuitem-caption .v-icon {
+    vertical-align: middle;
+}
+
+.v-menubar-submenu .v-menubar-submenu-indicator {
+    background: url("menubar/img/submenu-icon.png") no-repeat scroll right 70% transparent;
+    height: 16px;
+    text-indent: -9999px;
+    width: 26px;
+}
+
+.v-menubar-submenu .v-menubar-menuitem-selected .v-menubar-submenu-indicator {
+    background-image: url("menubar/img/submenu-icon-hover.png");
+}
+
+.v-menubar-submenu-check-column .v-menubar-menuitem {
+    padding-left: 6px;
+}
+
+.v-menubar-submenu-check-column .v-menubar-menuitem-caption {
+    padding-left: 18px;
+}
+
+.v-menubar-submenu .v-menubar-menuitem-checked .v-menubar-menuitem-caption {
+    background: url("menubar/img/checked.png") no-repeat scroll left center transparent;
+}
+
+.v-menubar-submenu .v-menubar-menuitem-unchecked .v-menubar-menuitem-caption {
+    background: url("menubar/img/unchecked.png") no-repeat scroll left center transparent;
+}
+
+.v-menubar-submenu .v-menubar-menuitem-selected-checked .v-menubar-menuitem-caption {
+    background: url("menubar/img/checked-selected.png") no-repeat scroll left center transparent;
+}
+
+.v-menubar-submenu .v-menubar-menuitem-selected-unchecked .v-menubar-menuitem-caption {
+    background: url("menubar/img/unchecked-selected.png") no-repeat scroll left center transparent;
+}
+
+.v-menubar {
+    float: left;
     white-space: nowrap;
-    border: 0;
-    margin: 0 0 0 5px;
-    vertical-align: top;
-    padding: 0;
-    height:22px;
 }
 
-.v-menubar tbody {
-    margin: 0;
-    border: 0;
-    padding: 0;
+.v-menubar .v-menubar-menuitem {
+    /*cursor: default;*/
+    display: inline-block;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+.v-menubar .v-menubar-menuitem-caption .v-icon {
+    vertical-align: middle;
+    white-space: nowrap;
 }
 
-.v-menubar table td {
-    
+.v-menubar-submenu .v-menubar-menuitem {
+    display: block;
+    padding-right: 1.5em;
+    position: relative;
+}
+.v-menubar-submenu .v-menubar-menuitem-caption {
+    display: block;
+}
+.v-menubar-submenu .v-menubar-menuitem *, .v-menubar-submenu .v-menubar-menuitem-caption * {
+    white-space: nowrap;
+}
+.v-menubar-submenu-indicator {
+    display: none;
+}
+.v-menubar-submenu .v-menubar-submenu-indicator {
+    display: block;
+    font-size: 0.9em;
+    height: 1em;
+    position: absolute;
+    right: 0;
+    width: 1em;
 }
 
-.v-menubar .menuitem {
+.v-menubar-separator {
+    overflow: hidden;
+}
+.v-menubar-separator span {
+    border-top: 1px solid #DDDDDD;
+    display: block;
+    font-size: 1px;
+    line-height: 1px;
+    margin: 3px 0 2px;
+    overflow: hidden;
+    text-indent: -9999px;
+}
+.v-menubar .v-icon, .v-menubar-submenu .v-icon {
+    margin-right: 3px;
+}
+.v-menubar:focus, .v-menubar-popup:focus, .v-menubar-popup .popupContent:focus, .v-menubar-popup .popupContent .v-menubar-submenu:focus {
+    outline: medium none;
+}
+.v-menubar-submenu-check-column .v-menubar-menuitem {
+    padding-left: 6px;
+}
+.v-menubar-submenu-check-column .v-menubar-menuitem-caption {
+    padding-left: 18px;
+}
+.v-menubar-submenu .v-menubar-menuitem-checked .v-menubar-menuitem-caption {
+    background: url("../base/menubar/img/check.gif") no-repeat scroll left center transparent;
+}
+
+/* End default styles */
+
+.v-menubar .v-menubar-menuitem {
     cursor: pointer;
     padding-left: 10px;
     padding-right: 10px;
@@ -31,19 +135,19 @@
     height: 19px;
 }
 
-.v-menubar .menuitem div {
+.v-menubar .v-menubar-menuitem .v-menubar-menuitem-caption {
     color: #fff;
     font-size: 13px;
 }
 
-.v-menubar .menuitem-selected {
+.v-menubar .v-menubar-menuitem-selected {
     padding-left: 10px;
     padding-right: 10px;
     background: #fff repeat-x top left;
     height: 19px;
 }
 
-.v-menubar .menuitem-selected div {
+.v-menubar .v-menubar-menuitem-selected .v-menubar-menuitem-caption {
     color: #4d7ab2;
 }
 
@@ -56,41 +160,34 @@
     font-size: 12px;
 }
 
-.v-menubar-submenu table td {
-    padding: 3px;
-}
-
-.v-menubar-submenu table {
-    border-collapse: collapse;
-}
-
-.v-menubar-submenu .menuitem {
+.v-menubar-submenu .v-menubar-menuitem {
     cursor: pointer;
     padding-left: 6px;
     padding-right: 6px;
     background: transparent;
 }
 
-.v-menubar-submenu .menuitem div {
+.v-menubar-submenu .v-menubar-menuitem .v-menubar-menuitem-caption {
     color: #4d7ab2;
+    display: inline-block;
 }
 
-.v-menubar-submenu .menuitem-shortcut-selected,
-.v-menubar-submenu .menuitem-selected {
+.v-menubar-submenu .v-menubar-menuitem-shortcut-selected,
+.v-menubar-submenu .v-menubar-menuitem-selected {
     background-color: #4d7ab2;
 }
 
-.v-menubar-submenu .menuitem-selected div {
+.v-menubar-submenu .v-menubar-menuitem-selected .v-menubar-menuitem-caption {
     color: #fff;
 }
 
-.v-menubar-submenu .menuitem-shortcut,
-.v-menubar-submenu .menuitem-shortcut-selected {
-    padding-right: 5px;
-    padding-left: 0;
+.v-menubar-submenu .v-menubar-menuitem-shortcut,
+.v-menubar-submenu .v-menubar-menuitem-shortcut-selected {
+    padding: 0;
     color: #c0c0c0;
+    display: inline-block;
 }
 
-.v-menubar .menuitem div{
+.v-menubar .v-menubar-menuitem .v-menubar-menuitem-caption {
 	white-space: nowrap;
 }

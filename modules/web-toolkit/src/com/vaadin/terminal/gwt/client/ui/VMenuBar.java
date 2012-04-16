@@ -788,7 +788,6 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                 popup.getElement().getStyle().setProperty("zoom", "1");
             }
             // Forces a recalculation of the shadow size
-//            popup.hide();
             popup.show();
         }
     }
