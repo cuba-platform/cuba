@@ -207,7 +207,14 @@ public class MenuConfig implements Serializable
         if (shortcut == null || shortcut.isEmpty()) {
             return;
         }
-
+        // If the shortcut string looks like a property, try to get it from the application properties
+        if (shortcut.startsWith("${") && shortcut.endsWith("}")) {
+            String property = AppContext.getProperty(shortcut.substring(2, shortcut.length() - 1));
+            if (!StringUtils.isEmpty(property))
+                shortcut = property;
+            else
+                return;
+        }
         try {
             menuItem.setShortcut(ShortcutAction.KeyCombination.create(shortcut));
         } catch (IllegalArgumentException e) {
