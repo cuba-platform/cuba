@@ -219,6 +219,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
             if (webConfig.getUseLightHeader()) {
                 foldersSplit.setShowHookButton(true);
+                foldersPane.setVisible(true);
                 foldersSplit.setDefaultPosition(webConfig.getFoldersPaneDefaultWidth() + "px");
             }
 
