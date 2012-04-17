@@ -59,6 +59,17 @@ public class DesktopSplitPanel
     }
 
     @Override
+    public void setPositionUpdateListener(PositionUpdateListener positionListener) {
+        // not supported
+    }
+
+    @Override
+    public PositionUpdateListener getPositionUpdateListener() {
+        // not supported
+        return null;
+    }
+
+    @Override
     public void add(Component component) {
         JComponent jComponent = DesktopComponentsHelper.getComposition(component);
         if (ownComponents.isEmpty())

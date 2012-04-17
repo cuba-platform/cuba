@@ -23,4 +23,11 @@ public interface SplitPanel extends Component.Container, Component.Expandable, C
 
     void setLocked(boolean locked);
     boolean isLocked();
+
+    void setPositionUpdateListener(PositionUpdateListener positionListener);
+    PositionUpdateListener getPositionUpdateListener();
+
+    interface PositionUpdateListener {
+        void updatePosition(int previousPosition, int newPosition);
+    }
 }

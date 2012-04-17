@@ -32,14 +32,15 @@ import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
-import com.haulmont.cuba.web.toolkit.ui.*;
+import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
+import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
+import com.haulmont.cuba.web.toolkit.ui.JavaScriptHost;
+import com.haulmont.cuba.web.toolkit.ui.RichNotification;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.vaadin.data.Property;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.*;
 import com.vaadin.ui.*;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.StringUtils;
 
@@ -219,6 +220,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
             if (webConfig.getUseLightHeader()) {
                 foldersSplit.setShowHookButton(true);
+                foldersSplit.setImmediate(true);
                 foldersPane.setVisible(true);
                 foldersSplit.setDefaultPosition(webConfig.getFoldersPaneDefaultWidth() + "px");
             }

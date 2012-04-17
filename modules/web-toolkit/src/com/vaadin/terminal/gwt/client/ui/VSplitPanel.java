@@ -890,6 +890,7 @@ public class VSplitPanel extends ComplexPanel implements Container,
 
     }
 
+    @Override
     public void updateCaption(Paintable component, UIDL uidl) {
         // TODO Implement caption handling
     }
@@ -900,11 +901,9 @@ public class VSplitPanel extends ComplexPanel implements Container,
     private void updateSplitPositionToServer() {
         int pos = 0;
         if (position.indexOf("%") > 0) {
-            pos = Float.valueOf(position.substring(0, position.length() - 1))
-                    .intValue();
+            pos = Float.valueOf(position.substring(0, position.length() - 1)).intValue();
         } else {
-            pos = Integer
-                    .parseInt(position.substring(0, position.length() - 2));
+            pos = Integer.parseInt(position.substring(0, position.length() - 2));
         }
         client.updateVariable(id, "position", pos, immediate);
     }

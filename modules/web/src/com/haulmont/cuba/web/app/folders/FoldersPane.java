@@ -103,9 +103,10 @@ public class FoldersPane extends VerticalLayout {
 
         boolean visible;
         UserSettingHelper.FoldersState state = UserSettingHelper.loadFoldersState();
+        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
         if (state == null) {
             WebConfig config = ConfigProvider.getConfig(WebConfig.class);
-            visible = config.getFoldersPaneVisibleByDefault();
+            visible = config.getFoldersPaneVisibleByDefault() || webConfig.getUseLightHeader();
             horizontalSplitPos = config.getFoldersPaneDefaultWidth();
             verticalSplitPos = DEFAULT_VERT_SPLIT_POS;
         } else {
@@ -117,8 +118,6 @@ public class FoldersPane extends VerticalLayout {
         showFolders(visible);
 
         MenuBar.MenuItem firstItem = getFirstMenuItem(menuBar);
-
-        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
 
         if (!webConfig.getUseLightHeader()) {
             menuItem = menuBar.addItemBefore(getMenuItemCaption(),
@@ -659,6 +658,7 @@ public class FoldersPane extends VerticalLayout {
 
     protected class SearchFolderActionsHandler extends AppFolderActionsHandler {
 
+        @Override
         public Action[] getActions(Object target, Object sender) {
             if (target instanceof SearchFolder) {
                 if (isGlobalFolder((SearchFolder) target)) {
@@ -694,7 +694,6 @@ public class FoldersPane extends VerticalLayout {
                 return createOnlyCreateAction();
             }
         }
-
 
         private boolean isGlobalFolder(SearchFolder folder) {
             return (folder.getUser() == null);

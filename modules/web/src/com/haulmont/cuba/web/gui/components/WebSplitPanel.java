@@ -37,7 +37,18 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
     private boolean showHookButton = false;
     private String defaultPosition = null;
 
+    private PositionUpdateListener positionListener;
+
     private IFrame frame;
+
+    @Override
+    public void changeVariables(Object source, Map<String, Object> variables) {
+        int previousPosition = this.getSplitPosition();
+        super.changeVariables(source, variables);
+        int newPosition = this.getSplitPosition();
+        if ((newPosition != previousPosition) && (positionListener != null))
+            positionListener.updatePosition(previousPosition, newPosition);
+    }
 
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
@@ -176,5 +187,15 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
 
     public void setDefaultPosition(String defaultPosition) {
         this.defaultPosition = defaultPosition;
+    }
+
+    @Override
+    public void setPositionUpdateListener(PositionUpdateListener positionListener) {
+        this.positionListener = positionListener;
+    }
+
+    @Override
+    public PositionUpdateListener getPositionUpdateListener() {
+        return positionListener;
     }
 }
