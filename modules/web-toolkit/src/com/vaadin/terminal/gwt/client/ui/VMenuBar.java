@@ -267,7 +267,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                                     .getStringAttribute("icon"))
                             + "\" class=\"" + Icon.CLASSNAME + "\" alt=\"\" />");
                 }
-                itemHTML.append(Util.escapeHTML(itemText) + "</span>");
+                itemHTML.append(itemText + "</span>");
 
                 // Add submenu indicator
                 if (item.getChildCount() > 0) {
