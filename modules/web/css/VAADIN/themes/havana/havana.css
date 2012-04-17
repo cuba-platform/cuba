@@ -828,13 +828,6 @@
     padding: 0;
 }
 
-.popup-container .v-menubar table {
-    padding: 0;
-    margin: 0;
-    font-family: Verdana, helvetica,arial,tahoma,verdana,sans-serif;
-    border-collapse: collapse;
-}
-
 .popup-container .v-menubar .v-menubar-menuitem {
     border-top: 2px solid #fff;
     border-bottom: 2px solid #fff;
@@ -843,6 +836,7 @@
     margin: 0;
 }
 
+/*
 .popup-container .v-menubar .v-menubar-menuitem  div {
     padding: 1px 0;
     margin: 0 15px;
@@ -851,14 +845,17 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+*/
 
 .popup-container .v-menubar .v-menubar-menuitem-selected {
     background-color: #5280B7;
 }
 
+/*
 .popup-container .v-menubar .v-menubar-menuitem-selected div {
     color: #fff;
 }
+*/
 
 .popup-container .v-menubar .v-menubar-menuitem-current {
     font-weight: bold;
