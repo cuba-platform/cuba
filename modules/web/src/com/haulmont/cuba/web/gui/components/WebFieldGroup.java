@@ -200,6 +200,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             throw new IllegalStateException(String.format("Field '%s' must by custom", field.getId()));
         }
         component.addCustomField(field.getId(), new FieldGroup.CustomFieldGenerator() {
+            @Override
             public com.vaadin.ui.Field generateField(Item item, Object propertyId, FieldGroup component) {
                 Datasource ds;
                 if (field.getDatasource() != null) {
@@ -879,10 +880,12 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     protected class ExpandCollapseListener implements FieldGroup.ExpandCollapseListener {
         private static final long serialVersionUID = 4917475472402160597L;
 
+        @Override
         public void onExpand(FieldGroup component) {
             fireExpandListeners();
         }
 
+        @Override
         public void onCollapse(FieldGroup component) {
             fireCollapseListeners();
         }
@@ -904,6 +907,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 }
             } else if (field instanceof TextField) {
                 ((TextField) field).setNullRepresentation("");
+                field.setInvalidCommitted(true);
                 if (fieldConf != null) {
                     initTextField((TextField) field, propertyPath.getMetaProperty(), fieldConf.getXmlDescriptor());
                 }
@@ -1051,6 +1055,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
             component = new Button();
             component.setStyleName("link");
             component.addListener(new Button.ClickListener() {
+                @Override
                 public void buttonClick(Button.ClickEvent event) {
                     final Instance entity = datasource.getItem();
                     final Entity value = entity.getValueEx(fieldConf.getId());
@@ -1066,6 +1071,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                                             WindowManager.OpenType.THIS_TAB);
 
                             window.addListener(new com.haulmont.cuba.gui.components.Window.CloseListener() {
+                                @Override
                                 public void windowClosed(String actionId) {
                                     if (com.haulmont.cuba.gui.components.Window.COMMIT_ACTION_ID.equals(actionId)
                                             && window instanceof com.haulmont.cuba.gui.components.Window.Editor) {
