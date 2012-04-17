@@ -24,14 +24,14 @@
 }
 
 .v-menubar-submenu .v-menubar-submenu-indicator {
-    background: url("menubar/img/submenu-icon.png") no-repeat scroll right 70% transparent;
+    background: url(img/submenu-icon.png) no-repeat scroll right center transparent;
     height: 16px;
     text-indent: -9999px;
-    width: 26px;
+    width: 16px;
 }
 
 .v-menubar-submenu .v-menubar-menuitem-selected .v-menubar-submenu-indicator {
-    background-image: url("menubar/img/submenu-icon-hover.png");
+    background-image: url(img/submenu-icon-hover.png);
 }
 
 .v-menubar-submenu-check-column .v-menubar-menuitem {
@@ -89,12 +89,7 @@
     display: none;
 }
 .v-menubar-submenu .v-menubar-submenu-indicator {
-    display: block;
-    font-size: 0.9em;
-    height: 1em;
-    position: absolute;
-    right: 0;
-    width: 1em;
+    display: inline-block;
 }
 
 .v-menubar-separator {

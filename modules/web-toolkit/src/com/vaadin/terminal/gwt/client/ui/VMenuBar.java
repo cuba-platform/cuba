@@ -259,6 +259,16 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             if (item.hasAttribute("separator")) {
                 itemHTML.append("<span>---</span>");
             } else {
+                itemHTML.append("<span class=\"" + CLASSNAME
+                        + "-menuitem-caption\">");
+                if (item.hasAttribute("icon")) {
+                    itemHTML.append("<img src=\""
+                            + client.translateVaadinUri(item
+                                    .getStringAttribute("icon"))
+                            + "\" class=\"" + Icon.CLASSNAME + "\" alt=\"\" />");
+                }
+                itemHTML.append(Util.escapeHTML(itemText) + "</span>");
+
                 // Add submenu indicator
                 if (item.getChildCount() > 0) {
                     // FIXME For compatibility reasons: remove in version 7
@@ -272,16 +282,6 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                             + "-submenu-indicator\"" + bgStyle
                             + ">&#x25BA;</span>");
                 }
-
-                itemHTML.append("<span class=\"" + CLASSNAME
-                        + "-menuitem-caption\">");
-                if (item.hasAttribute("icon")) {
-                    itemHTML.append("<img src=\""
-                            + client.translateVaadinUri(item
-                                    .getStringAttribute("icon"))
-                            + "\" class=\"" + Icon.CLASSNAME + "\" alt=\"\" />");
-                }
-                itemHTML.append(Util.escapeHTML(itemText) + "</span>");
 
                 if (itemHasCommand) {
                     // Construct a command that fires onMenuClick(int) with the
@@ -699,7 +699,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         }
 
         // layout paddings in menu
-        if (!item.isLayoutAplied()) {
+        if (!item.isLayoutAplied() || (item == moreItem)) {
             if (!BrowserInfo.get().isIE7())
                 item.setLayoutAplied(true);
 
@@ -740,10 +740,6 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
     private void layoutShortcutItems(CustomMenuItem item) {
         VMenuBar layoutingMenu = item.getSubMenu();
 
-        // no need to be layouted
-        if (item == moreItem)
-            return;
-
         int maxCaptionWidth = 0;
         for (CustomMenuItem subItem : layoutingMenu.getItems()) {
             Element captionElement = (Element) subItem.getElement().getChild(0);
@@ -753,6 +749,12 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                 int shortcutLabelWidth = sc.getOffsetWidth();
                 captionWidth += shortcutLabelWidth;
             }
+            if (subItem.getSubMenu() != null) {
+                int childCount = subItem.getElement().getChildCount();
+                Element subMenuIndicator = (Element) subItem.getElement().getChild(childCount - 1);
+                int indicatorWidth = subMenuIndicator.getOffsetWidth();
+                captionWidth += indicatorWidth;
+            }
             if (captionWidth > maxCaptionWidth)
                 maxCaptionWidth = captionWidth;
         }
@@ -760,20 +762,29 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         for (CustomMenuItem subItem : layoutingMenu.getItems()) {
             Element itemElement = subItem.getElement();
 
-            int shortcutWidth = 0;
             if (subItem.getShortcut() != null) {
                 Element sc = subItem.getShortcutElement();
-                shortcutWidth = sc.getOffsetWidth();
+                int shortcutWidth = sc.getOffsetWidth();
+
+                Element captionElement = (Element) itemElement.getChild(0);
+                if (captionElement.getStyle() == null)
+                    captionElement.setAttribute("style", "");
+                if (itemElement.getStyle() == null)
+                    itemElement.setAttribute("style", "");
+
+                captionElement.getStyle().setWidth(maxCaptionWidth - shortcutWidth, Unit.PX);
+                itemElement.getStyle().setWidth(maxCaptionWidth, Unit.PX);
+            } else if (subItem.getSubMenu() != null) {
+                Element captionElement = (Element) itemElement.getChild(0);
+
+                int childCount = subItem.getElement().getChildCount();
+                Element subMenuIndicator = (Element) subItem.getElement().getChild(childCount - 1);
+
+                if (subMenuIndicator.getStyle() == null)
+                    subMenuIndicator.setAttribute("style", "");
+
+                subMenuIndicator.getStyle().setWidth(maxCaptionWidth - captionElement.getOffsetWidth(), Unit.PX);
             }
-
-            Element captionElement = (Element) itemElement.getChild(0);
-            if (captionElement.getStyle() == null)
-                captionElement.setAttribute("style", "");
-            if (itemElement.getStyle() == null)
-                itemElement.setAttribute("style", "");
-
-            captionElement.getStyle().setWidth(maxCaptionWidth - shortcutWidth, Unit.PX);
-            itemElement.getStyle().setWidth(maxCaptionWidth, Unit.PX);
         }
 
         // If a popup is open we might need to adjust the shadow as well if an
