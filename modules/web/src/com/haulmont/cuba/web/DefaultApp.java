@@ -31,6 +31,9 @@ public class DefaultApp extends App implements ConnectionListener {
 
     private static final long serialVersionUID = 70273562618123015L;
 
+    // Login on start only on first request from user
+    protected boolean tryLoginOnStart = true;
+
     @Override
     protected Connection createConnection() {
         Connection connection = new DefaultConnection();
@@ -168,9 +171,11 @@ public class DefaultApp extends App implements ConnectionListener {
 
     @Override
     protected boolean loginOnStart(HttpServletRequest request) {
-        if (request.getUserPrincipal() != null
+        if (tryLoginOnStart &&
+                request.getUserPrincipal() != null
                 && !principalIsWrong
                 && ActiveDirectoryHelper.useActiveDirectory()) {
+
             String userName = request.getUserPrincipal().getName();
             log.debug("Trying to login ActiveDirectory as " + userName);
             try {
@@ -180,6 +185,9 @@ public class DefaultApp extends App implements ConnectionListener {
                 return true;
             } catch (LoginException e) {
                 principalIsWrong = true;
+            } finally {
+                // Close attempt login on start
+                tryLoginOnStart = false;
             }
         }
 
