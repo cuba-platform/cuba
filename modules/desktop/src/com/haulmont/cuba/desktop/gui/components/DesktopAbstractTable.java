@@ -169,7 +169,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
             @Override
             public void actionPerformed(ActionEvent e) {
                 Action listAction = getAction(defaultAction.getId());
-                if (listAction != null)
+                if ((listAction != null) && (listAction.isEnabled()))
                     listAction.actionPerform(DesktopAbstractTable.this);
             }
         });

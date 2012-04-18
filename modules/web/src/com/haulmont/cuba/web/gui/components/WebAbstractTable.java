@@ -406,9 +406,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 ShortcutAction.Modifier.codes(actionKeyCombination.getModifiers())) {
             @Override
             public void handleAction(Object sender, Object target) {
-                Action listAction = getAction(defaultAction.getId());
-                if (listAction != null)
-                    listAction.actionPerform(WebAbstractTable.this);
+                if (target == component) {
+                    Action listAction = getAction(defaultAction.getId());
+                    if ((listAction != null) && listAction.isEnabled())
+                        listAction.actionPerform(WebAbstractTable.this);
+                }
             }
         });
     }

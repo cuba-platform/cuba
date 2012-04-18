@@ -79,9 +79,7 @@
     padding-right: 1.5em;
     position: relative;
 }
-.v-menubar-submenu .v-menubar-menuitem-caption {
-    display: block;
-}
+
 .v-menubar-submenu .v-menubar-menuitem *, .v-menubar-submenu .v-menubar-menuitem-caption * {
     white-space: nowrap;
 }
@@ -193,6 +191,7 @@
 .v-menubar-submenu .v-menubar-menuitem .v-menubar-menuitem-caption {
     color: #fff;
     display: inline-block;
+    padding-right: 4px;
 }
 
 .v-menubar-submenu {

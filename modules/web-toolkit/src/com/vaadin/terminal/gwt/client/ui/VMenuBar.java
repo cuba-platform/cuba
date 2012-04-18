@@ -398,7 +398,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         }
 
         DOM.appendChild(getContainerElement(), item.getElement());
-        if (subMenu && !item.isSeparator()) {
+        if (subMenu && !item.isSeparator() && (item.shortcut != null)) {
             final Element sc = DOM.createSpan();
             sc.addClassName(CLASSNAME + "-menuitem-shortcut");
             if (item.getShortcut() != null) {
@@ -700,13 +700,28 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
 
         // layout paddings in menu
         if (!item.isLayoutAplied() || (item == moreItem)) {
-            if (!BrowserInfo.get().isIE7())
-                item.setLayoutAplied(true);
+            item.setLayoutAplied(true);
 
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
                 @Override
                 public void execute() {
                     layoutShortcutItems(item);
+
+                    if (BrowserInfo.get().isIE7()) {
+                        if (popup == null) {
+                            // The child menu can be hidden before this command is run.
+                            return;
+                        }
+
+                        if (popup.getElement().getStyle().getProperty("width") == null
+                                || popup.getElement().getStyle()
+                                .getProperty("width") == "") {
+                            popup.setWidth(popup.getOffsetWidth() + "px");
+                        }
+                        popup.getElement().getStyle().setProperty("zoom", "1");
+                    }
+                    // Forces a recalculation of the shadow size
+                    popup.show();
                 }
             });
         }
@@ -717,23 +732,6 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         // Part of a fix to correct #3850
         if (BrowserInfo.get().isIE7()) {
             popup.getElement().getStyle().setProperty("zoom", "");
-            Scheduler.get().scheduleDeferred(new Command() {
-                @Override
-                public void execute() {
-                    if (popup == null) {
-                        // The child menu can be hidden before this command is
-                        // run.
-                        return;
-                    }
-
-                    if (popup.getElement().getStyle().getProperty("width") == null
-                            || popup.getElement().getStyle()
-                                    .getProperty("width") == "") {
-                        popup.setWidth(popup.getOffsetWidth() + "px");
-                    }
-                    popup.getElement().getStyle().setProperty("zoom", "1");
-                }
-            });
         }
     }
 
@@ -744,14 +742,13 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         for (CustomMenuItem subItem : layoutingMenu.getItems()) {
             Element captionElement = (Element) subItem.getElement().getChild(0);
             int captionWidth = captionElement.getOffsetWidth();
-            if (subItem.getShortcut() != null) {
+            if ((subItem.getShortcut() != null) && (!"".equals(subItem.getShortcut()))) {
                 Element sc = subItem.getShortcutElement();
                 int shortcutLabelWidth = sc.getOffsetWidth();
                 captionWidth += shortcutLabelWidth;
             }
             if (subItem.getSubMenu() != null) {
-                int childCount = subItem.getElement().getChildCount();
-                Element subMenuIndicator = (Element) subItem.getElement().getChild(childCount - 1);
+                Element subMenuIndicator = (Element) subItem.getElement().getChild(1);
                 int indicatorWidth = subMenuIndicator.getOffsetWidth();
                 captionWidth += indicatorWidth;
             }
@@ -762,7 +759,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         for (CustomMenuItem subItem : layoutingMenu.getItems()) {
             Element itemElement = subItem.getElement();
 
-            if (subItem.getShortcut() != null) {
+            if ((subItem.getShortcut() != null) && (!"".equals(subItem.getShortcut()))) {
                 Element sc = subItem.getShortcutElement();
                 int shortcutWidth = sc.getOffsetWidth();
 
@@ -773,33 +770,26 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                     itemElement.setAttribute("style", "");
 
                 captionElement.getStyle().setWidth(maxCaptionWidth - shortcutWidth, Unit.PX);
-                itemElement.getStyle().setWidth(maxCaptionWidth, Unit.PX);
+                // fix width for items
+                if (parentMenu != null)
+                    itemElement.getStyle().setWidth(maxCaptionWidth, Unit.PX);
+                else
+                    itemElement.getStyle().setProperty("width", "auto");
             } else if (subItem.getSubMenu() != null) {
                 Element captionElement = (Element) itemElement.getChild(0);
 
-                int childCount = subItem.getElement().getChildCount();
-                Element subMenuIndicator = (Element) subItem.getElement().getChild(childCount - 1);
+                Element subMenuIndicator = (Element) subItem.getElement().getChild(1);
 
                 if (subMenuIndicator.getStyle() == null)
                     subMenuIndicator.setAttribute("style", "");
 
                 subMenuIndicator.getStyle().setWidth(maxCaptionWidth - captionElement.getOffsetWidth(), Unit.PX);
+                // fix width for items
+                if (parentMenu != null)
+                    itemElement.getStyle().setWidth(maxCaptionWidth, Unit.PX);
+                else
+                    itemElement.getStyle().setProperty("width", "auto");
             }
-        }
-
-        // If a popup is open we might need to adjust the shadow as well if an
-        // icon shown in that popup was loaded
-        if (popup != null) {
-            if (BrowserInfo.get().isIE7()) {
-                if (popup.getElement().getStyle().getProperty("width") == null
-                        || popup.getElement().getStyle()
-                        .getProperty("width") == "") {
-                    popup.setWidth(popup.getOffsetWidth() + "px");
-                }
-                popup.getElement().getStyle().setProperty("zoom", "1");
-            }
-            // Forces a recalculation of the shadow size
-            popup.show();
         }
     }
 
