@@ -408,7 +408,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             public void handleAction(Object sender, Object target) {
                 if (target == component) {
                     Action listAction = getAction(defaultAction.getId());
-                    if ((listAction != null) && listAction.isEnabled())
+                    if (listAction != null && listAction.isEnabled())
                         listAction.actionPerform(WebAbstractTable.this);
                 }
             }

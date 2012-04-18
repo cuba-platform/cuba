@@ -249,6 +249,8 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             String itemText = item.getStringAttribute("text");
             final int itemId = item.getIntAttribute("id");
             String shortcut = item.getStringAttribute("shortcut");
+            if ("".equals(shortcut))
+                shortcut = null;
 
             boolean itemHasCommand = item.hasAttribute("command");
 
@@ -742,7 +744,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         for (CustomMenuItem subItem : layoutingMenu.getItems()) {
             Element captionElement = (Element) subItem.getElement().getChild(0);
             int captionWidth = captionElement.getOffsetWidth();
-            if ((subItem.getShortcut() != null) && (!"".equals(subItem.getShortcut()))) {
+            if (subItem.getShortcut() != null) {
                 Element sc = subItem.getShortcutElement();
                 int shortcutLabelWidth = sc.getOffsetWidth();
                 captionWidth += shortcutLabelWidth;
@@ -759,7 +761,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         for (CustomMenuItem subItem : layoutingMenu.getItems()) {
             Element itemElement = subItem.getElement();
 
-            if ((subItem.getShortcut() != null) && (!"".equals(subItem.getShortcut()))) {
+            if (subItem.getShortcut() != null) {
                 Element sc = subItem.getShortcutElement();
                 int shortcutWidth = sc.getOffsetWidth();
 
