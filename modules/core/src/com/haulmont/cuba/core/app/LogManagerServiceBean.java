@@ -109,15 +109,15 @@ public class LogManagerServiceBean implements LogManagerService {
     public String packLog(String fileName) {
         final String ENCODING = "CP866";
         final String FORMAT = ".zip";
+        final long AMOUNT_BYTES = 20971520;
 
         String pathTempDir = ConfigProvider.getConfig(GlobalConfig.class).getTempDir()
                 + File.separator + UUID.randomUUID().toString() + FORMAT;
         String pathFileLogs = logDir + File.separator + fileName;
 
-        File file = new File(pathFileLogs);
-        if (!file.exists()) {
+        byte[] bytes = getBytesTail(pathFileLogs, AMOUNT_BYTES);
+        if (bytes == null)
             return null;
-        }
 
         ZipArchiveOutputStream zipOutputStream = null;
         try {
@@ -125,9 +125,6 @@ public class LogManagerServiceBean implements LogManagerService {
             zipOutputStream = new ZipArchiveOutputStream(fileOutputStream);
             zipOutputStream.setMethod(ZipArchiveOutputStream.DEFLATED);
             zipOutputStream.setEncoding(ENCODING);
-
-            InputStream in = new FileInputStream(pathFileLogs);
-            byte[] bytes = IOUtils.toByteArray(in);
 
             ArchiveEntry archiveEntry = newEntry(fileName, bytes);
             zipOutputStream.putArchiveEntry(archiveEntry);
@@ -179,6 +176,34 @@ public class LogManagerServiceBean implements LogManagerService {
         text = text.replaceAll("<", "&lt;");
         text = text.replaceAll(">", "&gt;");
         return text;
+    }
+
+    private byte[] getBytesTail(String pathFile, long lengthTail) {
+        File file = new File(pathFile);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        if (!file.exists()) {
+            return null;
+        }
+
+        byte[] buf = null;
+        int len;
+        int size = 1024;
+        try {
+            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
+            long lengthFile = randomAccessFile.length();
+            if (lengthFile >= lengthTail) {
+                randomAccessFile.seek(lengthFile - lengthTail);
+            }
+            buf = new byte[size];
+            while ((len = randomAccessFile.read(buf, 0, size)) != -1)
+                bos.write(buf, 0, len);
+            buf = bos.toByteArray();
+        } catch (IOException e) {
+            log.error("Pack error", e);
+        } finally {
+            IOUtils.closeQuietly(bos);
+        }
+        return buf;
     }
 
 }
