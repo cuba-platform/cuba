@@ -30,8 +30,12 @@ import org.vaadin.hene.popupbutton.widgetset.client.ui.VPopupButton;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public abstract class Table extends FlowPanel
-        implements com.vaadin.terminal.gwt.client.ui.Table, ScrollHandler, FocusHandler, BlurHandler, Focusable {
+public abstract class Table
+        extends
+            FlowPanel
+        implements
+            com.vaadin.terminal.gwt.client.ui.Table, ShortcutActionHandler.ShortcutActionHandlerOwner,
+            ScrollHandler, FocusHandler, BlurHandler, Focusable {
 
     public static final String CLASSNAME = "v-table";
     public static final String CLASSNAME_SELECTION_FOCUS = CLASSNAME + "-focus";
@@ -41,6 +45,10 @@ public abstract class Table extends FlowPanel
     public static final char ALIGN_RIGHT = 'e';
     private static final int CHARCODE_SPACE = 32;
     protected int pageLength = 15;
+
+    protected String id;
+
+    protected ShortcutActionHandler shortcutHandler;
 
     protected boolean showRowHeaders = false;
 
@@ -372,6 +380,9 @@ public abstract class Table extends FlowPanel
             }
         }, ContextMenuEvent.getType());
 
+        // handle shortcuts
+        DOM.sinkEvents(getElement(), Event.ONKEYDOWN);
+
         setStyleName(CLASSNAME);
         add(tHead);
         add(bodyContainer);
@@ -406,9 +417,24 @@ public abstract class Table extends FlowPanel
         }
 
         this.client = client;
+        id = uidl.getId();
         paintableId = uidl.getStringAttribute("id");
 
         updateFromUIDL(uidl);
+
+        // We may have actions attached to this panel
+        if (uidl.getChildCount() > 1) {
+            final int cnt = uidl.getChildCount();
+            for (int i = 1; i < cnt; i++) {
+                UIDL childUidl = uidl.getChildUIDL(i);
+                if (childUidl.getTag().equals("actions")) {
+                    if (shortcutHandler == null) {
+                        shortcutHandler = new ShortcutActionHandler(id, client);
+                    }
+                    shortcutHandler.updateActionMap(childUidl);
+                }
+            }
+        }
 
         if (BrowserInfo.get().getWebkitVersion() > 0) {
             if (parentOverflowContainer == null) {
@@ -425,6 +451,16 @@ public abstract class Table extends FlowPanel
         }
 
         runWebkitOverflowAutoFix();
+    }
+
+    @Override
+    public void onBrowserEvent(Event event) {
+        super.onBrowserEvent(event);
+
+        final int type = DOM.eventGetType(event);
+        if (type == Event.ONKEYDOWN && shortcutHandler != null) {
+            shortcutHandler.handleKeyboardEvent(event);
+        }
     }
 
     protected void updateFromUIDL(UIDL uidl) {
@@ -1394,7 +1430,7 @@ public abstract class Table extends FlowPanel
             if (enabled && event != null) {
                 if (isResizing || event.getEventTarget().cast() == colResizeWidget) {
                     onResizeEvent(event);
-                    //Fixes #415 (��������� ������ �������� ������� �������� � �� ������� �����������)
+                    //Fixes #415
                     int scrollLeft = bodyContainer.getElement().getScrollLeft();
                     tHead.setHorizontalScrollPosition(scrollLeft);
                 } else {
@@ -3801,13 +3837,18 @@ public abstract class Table extends FlowPanel
         bodyContainer.focus();
     }
 
+    @Override
+    public ShortcutActionHandler getShortcutActionHandler() {
+        return shortcutHandler;
+    }
+
     /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.google.gwt.event.dom.client.FocusHandler#onFocus(com.google.gwt.event
-     * .dom.client.FocusEvent)
-     */
+    * (non-Javadoc)
+    *
+    * @see
+    * com.google.gwt.event.dom.client.FocusHandler#onFocus(com.google.gwt.event
+    * .dom.client.FocusEvent)
+    */
     @Override
     public void onFocus(FocusEvent event) {
         if (isFocusable()) {

@@ -15,6 +15,7 @@ import com.haulmont.cuba.web.toolkit.data.util.AggregationContainerOrderedWrappe
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
+import com.vaadin.event.ActionManager;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
@@ -49,6 +50,8 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
     private boolean textSelectionEnabled;
 
     private boolean showTotalAggregation = true;
+
+    protected ActionManager actionManager;
 
     private List<CollapseListener> columnCollapseListeners = new ArrayList<CollapseListener>();
 
@@ -141,6 +144,11 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         super.changeVariables(source, variables);
         if (variables.containsKey("enterPressed")) {
             fireShortcutListeners();
+        }
+
+        // Actions
+        if (actionManager != null) {
+            actionManager.handleActions(variables, this);
         }
     }
 
@@ -602,6 +610,10 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
         if (getDropHandler() != null) {
             getDropHandler().getAcceptCriterion().paint(target);
+        }
+
+        if (actionManager != null) {
+            actionManager.paintActions(null, target);
         }
     }
 
@@ -1183,6 +1195,51 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
             }
         }
         super.setColumnCollapsed(propertyId, collapsed);
+    }
+
+    /*
+     * ACTIONS
+     */
+    @Override
+    protected ActionManager getActionManager() {
+        if (actionManager == null) {
+            actionManager = new ActionManager(this);
+        }
+        return actionManager;
+    }
+
+    public <T extends Action & com.vaadin.event.Action.Listener> void addAction(
+            T action) {
+        getActionManager().addAction(action);
+    }
+
+    public <T extends Action & com.vaadin.event.Action.Listener> void removeAction(
+            T action) {
+        if (actionManager != null) {
+            actionManager.removeAction(action);
+        }
+    }
+
+    @Override
+    public void addActionHandler(Action.Handler actionHandler) {
+        getActionManager().addActionHandler(actionHandler);
+    }
+
+    @Override
+    public void removeActionHandler(Action.Handler actionHandler) {
+        if (actionManager != null) {
+            actionManager.removeActionHandler(actionHandler);
+        }
+    }
+
+    /**
+     * Removes all action handlers
+     */
+    @Override
+    public void removeAllActionHandlers() {
+        if (actionManager != null) {
+            actionManager.removeAllActionHandlers();
+        }
     }
 
     public interface PagingProvider extends Serializable {

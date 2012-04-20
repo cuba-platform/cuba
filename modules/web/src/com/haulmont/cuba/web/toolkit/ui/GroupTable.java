@@ -396,6 +396,10 @@ public class GroupTable extends Table implements GroupTableContainer {
         if (getDropHandler() != null) {
             getDropHandler().getAcceptCriterion().paint(target);
         }
+
+        if (actionManager != null) {
+            actionManager.paintActions(null, target);
+        }
     }
 
     private Collection<?> allItemIds() {

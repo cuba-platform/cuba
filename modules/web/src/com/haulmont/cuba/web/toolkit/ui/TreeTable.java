@@ -614,6 +614,10 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
         if (getDropHandler() != null) {
             getDropHandler().getAcceptCriterion().paint(target);
         }
+
+        if (actionManager != null) {
+            actionManager.paintActions(null, target);
+        }
     }
 
     protected Set<Object> getItemIdsInRange(Object startItemId, final int length) {
