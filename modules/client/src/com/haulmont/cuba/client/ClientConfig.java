@@ -103,8 +103,10 @@ public interface ClientConfig extends Config {
     boolean getGenericFilterTreeConditionSelect();
 
     @DefaultString("CTRL-INSERT")
+    @Property("cuba.gui.tableInsertShortcut")
     String getTableInsertShortcut();
 
     @DefaultString("CTRL-DELETE")
+    @Property("cuba.gui.tableRemoveShortcut")
     String getTableRemoveShortcut();
 }
