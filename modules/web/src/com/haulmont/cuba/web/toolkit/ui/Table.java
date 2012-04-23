@@ -51,7 +51,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
     private boolean showTotalAggregation = true;
 
-    protected ActionManager actionManager;
+    protected ActionManager shortcutsManager = new ActionManager();
 
     private List<CollapseListener> columnCollapseListeners = new ArrayList<CollapseListener>();
 
@@ -147,8 +147,8 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         }
 
         // Actions
-        if (actionManager != null) {
-            actionManager.handleActions(variables, this);
+        if (shortcutsManager != null) {
+            shortcutsManager.handleActions(variables, this);
         }
     }
 
@@ -578,22 +578,8 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         target.addVariable(this, "reqfirstrow", reqFirstRowToPaint);
 
         // Actions
-        if (!actionSet.isEmpty()) {
-            target.addVariable(this, "action", "");
-            target.startTag("actions");
-            for (final Action a : actionSet) {
-                target.startTag("action");
-                if (a.getCaption() != null) {
-                    target.addAttribute("caption", a.getCaption());
-                }
-                if (a.getIcon() != null) {
-                    target.addAttribute("icon", a.getIcon());
-                }
-                target.addAttribute("key", actionMapper.key(a));
-                target.endTag("action");
-            }
-            target.endTag("actions");
-        }
+        paintActions(target, actionSet);
+
         if (isColumnReorderingAllowed()) {
             final String[] colorder = new String[visibleColumns.size()];
             int i = 0;
@@ -611,10 +597,29 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         if (getDropHandler() != null) {
             getDropHandler().getAcceptCriterion().paint(target);
         }
+    }
 
-        if (actionManager != null) {
-            actionManager.paintActions(null, target);
+    protected void paintActions(PaintTarget target, Set<Action> actionSet) throws PaintException {
+        if (!actionSet.isEmpty()) {
+            target.addVariable(this, "action", "");
+            target.startTag("actions");
+
+            for (final Action a : actionSet) {
+                target.startTag("action");
+                if (a.getCaption() != null) {
+                    target.addAttribute("caption", a.getCaption());
+                }
+                if (a.getIcon() != null) {
+                    target.addAttribute("icon", a.getIcon());
+                }
+                target.addAttribute("key", actionMapper.key(a));
+                target.endTag("action");
+            }
+
+            target.endTag("actions");
         }
+        // paint shortcut actions
+        shortcutsManager.paintActions(null, target);
     }
 
     protected void paintCollapsedColumns(PaintTarget target) throws PaintException {
@@ -678,14 +683,12 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
     protected void paintRowActions(PaintTarget target, Set actionSet, Object itemId) {
         if (actionHandlers != null) {
             final ArrayList keys = new ArrayList();
-            for (final Iterator ahi = actionHandlers.iterator(); ahi
-                    .hasNext();) {
-                final Action[] aa = ((Action.Handler) ahi.next())
-                        .getActions(itemId, this);
+            for (Action.Handler actionHandler : actionHandlers) {
+                final Action[] aa = (actionHandler).getActions(itemId, this);
                 if (aa != null) {
-                    for (int ai = 0; ai < aa.length; ai++) {
-                        final String key = actionMapper.key(aa[ai]);
-                        actionSet.add(aa[ai]);
+                    for (Action anAa : aa) {
+                        final String key = actionMapper.key(anAa);
+                        actionSet.add(anAa);
                         keys.add(key);
                     }
                 }
@@ -1099,17 +1102,15 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
     @Override
     public void addShortcutListener(ShortcutListener listener) {
         if (listener.getKeyCode() != 13 || !(listener.getModifiers() == null || listener.getModifiers().length > 0)) {
-            super.addShortcutListener(listener);
+            shortcutsManager.addAction(listener);
         } else
             shortcutListeners.add(listener);
     }
 
     @Override
-    public void removeShortcutListener(ShortcutListener listener) {
-        if (shortcutListeners.contains(listener))
-            shortcutListeners.remove(listener);
-        else
-            super.removeShortcutListener(listener);
+    public void removeShortcutListener(ShortcutListener listener){
+        shortcutListeners.remove(listener);
+        shortcutsManager.removeAction(listener);
     }
 
     public boolean isAggregatable() {
@@ -1195,51 +1196,6 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
             }
         }
         super.setColumnCollapsed(propertyId, collapsed);
-    }
-
-    /*
-     * ACTIONS
-     */
-    @Override
-    protected ActionManager getActionManager() {
-        if (actionManager == null) {
-            actionManager = new ActionManager(this);
-        }
-        return actionManager;
-    }
-
-    public <T extends Action & com.vaadin.event.Action.Listener> void addAction(
-            T action) {
-        getActionManager().addAction(action);
-    }
-
-    public <T extends Action & com.vaadin.event.Action.Listener> void removeAction(
-            T action) {
-        if (actionManager != null) {
-            actionManager.removeAction(action);
-        }
-    }
-
-    @Override
-    public void addActionHandler(Action.Handler actionHandler) {
-        getActionManager().addActionHandler(actionHandler);
-    }
-
-    @Override
-    public void removeActionHandler(Action.Handler actionHandler) {
-        if (actionManager != null) {
-            actionManager.removeActionHandler(actionHandler);
-        }
-    }
-
-    /**
-     * Removes all action handlers
-     */
-    @Override
-    public void removeAllActionHandlers() {
-        if (actionManager != null) {
-            actionManager.removeAllActionHandlers();
-        }
     }
 
     public interface PagingProvider extends Serializable {

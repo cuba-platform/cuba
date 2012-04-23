@@ -580,23 +580,8 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
         target.addVariable(this, "reqfirstrow", reqFirstRowToPaint);
 
         // Actions
-        if (!actions.isEmpty()) {
-            target.addVariable(this, "action", "");
-            target.startTag("actions");
-            for (final Object anActionSet : actions) {
-                final Action a = (Action) anActionSet;
-                target.startTag("action");
-                if (a.getCaption() != null) {
-                    target.addAttribute("caption", a.getCaption());
-                }
-                if (a.getIcon() != null) {
-                    target.addAttribute("icon", a.getIcon());
-                }
-                target.addAttribute("key", actionMapper.key(a));
-                target.endTag("action");
-            }
-            target.endTag("actions");
-        }
+        paintActions(target, actions);
+
         if (isColumnCollapsingAllowed()) {
             final String[] colorder = new String[visibleColumns.size()];
             int i = 0;
@@ -613,10 +598,6 @@ public class TreeTable extends Table implements Container.Hierarchical, TreeTabl
 
         if (getDropHandler() != null) {
             getDropHandler().getAcceptCriterion().paint(target);
-        }
-
-        if (actionManager != null) {
-            actionManager.paintActions(null, target);
         }
     }
 

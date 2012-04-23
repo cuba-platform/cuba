@@ -951,11 +951,13 @@ public abstract class Table
             final UIDL action = (UIDL) it.next();
             final String key = action.getStringAttribute("key");
             final String caption = action.getStringAttribute("caption");
-            actionMap.put(key + "_c", caption);
-            if (action.hasAttribute("icon")) {
-                // TODO need some uri handling ??
-                actionMap.put(key + "_i", client.translateVaadinUri(action
-                        .getStringAttribute("icon")));
+            // if it is not shortcut action
+            if (!action.hasAttribute("kc")) {
+                actionMap.put(key + "_c", caption);
+                if (action.hasAttribute("icon")) {
+                    // TODO need some uri handling ??
+                    actionMap.put(key + "_i", client.translateVaadinUri(action.getStringAttribute("icon")));
+                }
             }
         }
     }
@@ -2064,7 +2066,7 @@ public abstract class Table
         /*
          * Returns columns as Action array for column select popup
          */
-
+        @Override
         public Action[] getActions() {
             if (clickedSelector == columnSelector) {
                 return getColumnSelectionActions();
@@ -2077,18 +2079,19 @@ public abstract class Table
             final Object[] cols = getActionColumns();
             final Action[] actions = new Action[cols.length];
 
-            boolean oneColumnLeft = (collapsedColumns.size() >= (cols.length - 1)); // Indicates whether there is only one displayed column
+            // Indicates whether there is only one displayed column
+            boolean oneColumnLeft = (collapsedColumns.size() >= (cols.length - 1));
 
             for (int i = 0; i < cols.length; i++) {
                 final String cid = (String) cols[i];
                 final HeaderCell c = getHeaderCell(cid);
-                final VisibleColumnAction a = createColumnAction(c
-                        .getColKey());
+                final VisibleColumnAction a = createColumnAction(c.getColKey());
                 a.setCaption(c.getCaption());
                 if (!c.isEnabled()) {
                     a.setCollapsed(true);
                 }
-                else if (oneColumnLeft){ //Disable ability to collapse if it's the last not collapsed column
+                else if (oneColumnLeft){
+                    //Disable ability to collapse if it's the last not collapsed column
                     a.setEnabled(false);
                 }
                 actions[i] = a;
@@ -2120,10 +2123,12 @@ public abstract class Table
             return new VisibleColumnAction(key);
         }
 
+        @Override
         public ApplicationConnection getClient() {
             return client;
         }
 
+        @Override
         public String getPaintableId() {
             return paintableId;
         }
@@ -3105,8 +3110,7 @@ public abstract class Table
                 final Action[] actions = new Action[actionKeys.length];
                 for (int i = 0; i < actions.length; i++) {
                     final String actionKey = actionKeys[i];
-                    final TreeAction a = new TreeAction(this, String
-                            .valueOf(rowKey), actionKey);
+                    final TreeAction a = new TreeAction(this, String.valueOf(rowKey), actionKey);
                     a.setCaption(getActionCaption(actionKey));
                     a.setIconUrl(getActionIcon(actionKey));
                     actions[i] = a;

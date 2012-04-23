@@ -352,22 +352,8 @@ public class GroupTable extends Table implements GroupTableContainer {
         target.addVariable(this, "reqfirstrow", reqFirstRowToPaint);
 
         // Actions
-        if (!actionSet.isEmpty()) {
-            target.addVariable(this, "action", "");
-            target.startTag("actions");
-            for (final Action a : actionSet) {
-                target.startTag("action");
-                if (a.getCaption() != null) {
-                    target.addAttribute("caption", a.getCaption());
-                }
-                if (a.getIcon() != null) {
-                    target.addAttribute("icon", a.getIcon());
-                }
-                target.addAttribute("key", actionMapper.key(a));
-                target.endTag("action");
-            }
-            target.endTag("actions");
-        }
+        paintActions(target, actionSet);
+
         if (isColumnReorderingAllowed()) {
             final String[] colorder = new String[visibleColumns.size()];
             int i = 0;
@@ -395,10 +381,6 @@ public class GroupTable extends Table implements GroupTableContainer {
 
         if (getDropHandler() != null) {
             getDropHandler().getAcceptCriterion().paint(target);
-        }
-
-        if (actionManager != null) {
-            actionManager.paintActions(null, target);
         }
     }
 
