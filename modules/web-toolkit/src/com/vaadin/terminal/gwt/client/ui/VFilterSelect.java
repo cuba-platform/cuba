@@ -473,8 +473,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             int p = getItems().size();
             if (p > 0) {
                 for (int i = 0; i < p; i++) {
-                    final MenuItem potentialExactMatch = (MenuItem) getItems()
-                            .get(i);
+                    final MenuItem potentialExactMatch = (MenuItem) getItems().get(i);
                     if (potentialExactMatch.getText().equals(enteredItemValue)) {
                         selectItem(potentialExactMatch);
                         doItemAction(potentialExactMatch, true);
@@ -484,14 +483,22 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                 }
             }
             if (allowNewItem) {
-
                 if (!prompting && !enteredItemValue.equals(lastNewItemString)) {
-                    /*
-                     * Store last sent new item string to avoid double sends
-                     */
-                    lastNewItemString = enteredItemValue;
-                    client.updateVariable(paintableId, "newitem",
-                            enteredItemValue, immediate);
+                    // find equality suggestion
+                    boolean find = false;
+                    Iterator<FilterSelectSuggestion> iterator = currentSuggestions.iterator();
+                    while (iterator.hasNext() && !find) {
+                        FilterSelectSuggestion suggestion = iterator.next();
+                        find = suggestion.caption.equals(enteredItemValue);
+                    }
+
+                    if (!find) {
+                        /*
+                         * Store last sent new item string to avoid double sends
+                         */
+                        lastNewItemString = enteredItemValue;
+                        client.updateVariable(paintableId, "newitem", enteredItemValue, immediate);
+                    }
                 }
             } else if (item != null
                     && !"".equals(lastFilter)
@@ -520,8 +527,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             if (event.getTypeInt() == Event.ONLOAD) {
                 if (suggestionPopup.isVisible()) {
                     setWidth("");
-                    DOM.setStyleAttribute(DOM.getFirstChild(getElement()),
-                            "width", "");
+                    DOM.setStyleAttribute(DOM.getFirstChild(getElement()),"width", "");
                     suggestionPopup.setPopupPositionAndShow(suggestionPopup);
                 }
             }
