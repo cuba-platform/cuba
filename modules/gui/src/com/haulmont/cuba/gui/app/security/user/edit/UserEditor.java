@@ -100,9 +100,11 @@ public class UserEditor extends AbstractEditor {
 
         dsContext.addListener(
                 new DsContext.CommitListener() {
+                    @Override
                     public void beforeCommit(CommitContext<Entity> context) {
                     }
 
+                    @Override
                     public void afterCommit(CommitContext<Entity> context, Set<Entity> result) {
                         for (Entity entity : result) {
                             if (entity.equals(userSession.getUser())) {
@@ -119,26 +121,30 @@ public class UserEditor extends AbstractEditor {
 
     @Override
     public void setItem(Entity item) {
-        super.setItem(item);
         if (PersistenceHelper.isNew(item)) {
-            addDefaultRoles();
-
-            languageLookup.setValue(userSession.getLocale().getLanguage());
+            User user = (User) item;
+            addDefaultRoles(user);
+            user.setLanguage(userSession.getLocale().getLanguage());
         }
+
+        super.setItem(item);
     }
 
-    private void addDefaultRoles() {
+    private void addDefaultRoles(User user) {
         LoadContext ctx = new LoadContext(Role.class);
         ctx.setQueryString("select r from sec$Role r where r.defaultRole = true");
         List<Role> defaultRoles = dataService.loadList(ctx);
 
+        LinkedHashSet<UserRole> newRoles = new LinkedHashSet<UserRole>();
         for (Role role : defaultRoles) {
             final MetaClass metaClass = rolesDs.getMetaClass();
             UserRole userRole = dataService.newInstance(metaClass);
             userRole.setRole(role);
-            userRole.setUser(userDs.getItem());
-            rolesDs.addItem(userRole);
+            userRole.setUser(user);
+            newRoles.add(userRole);
         }
+
+        user.setUserRoles(newRoles);
     }
 
     private void initCustomFields() {
@@ -178,6 +184,7 @@ public class UserEditor extends AbstractEditor {
         f = fieldGroup.getField("confirmPassw");
         if (f != null) {
             fieldGroup.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
+                @Override
                 public Component generateField(Datasource datasource, Object propertyId) {
                     confirmPasswField = factory.createComponent(TextField.NAME);
                     confirmPasswField.setSecret(true);
@@ -194,6 +201,7 @@ public class UserEditor extends AbstractEditor {
 
         f = fieldGroup.getField("language");
         fieldGroup.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
+            @Override
             public Component generateField(Datasource datasource, Object propertyId) {
                 languageLookup = factory.createComponent(LookupField.NAME);
 
@@ -329,9 +337,11 @@ public class UserEditor extends AbstractEditor {
             icon = "icons/add.png";
         }
 
+        @Override
         public void actionPerform(Component component) {
             Map<String, Object> lookupParams = Collections.<String, Object>singletonMap("windowOpener", "sec$User.edit");
             openLookup("sec$Role.browse", new Lookup.Handler() {
+                @Override
                 public void handleLookup(Collection items) {
                     Collection<String> existingRoleNames = getExistingRoleNames();
                     for (Object item : items) {
@@ -371,11 +381,13 @@ public class UserEditor extends AbstractEditor {
             icon = "icons/edit.png";
         }
 
+        @Override
         public void actionPerform(Component component) {
             if (rolesDs.getItem() == null)
                 return;
             Window window = openEditor("sec$Role.edit", rolesDs.getItem().getRole(), WindowManager.OpenType.THIS_TAB);
             window.addListener(new CloseListener() {
+                @Override
                 public void windowClosed(String actionId) {
                     if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                         rolesDs.refresh();
@@ -429,6 +441,7 @@ public class UserEditor extends AbstractEditor {
             icon = "icons/add.png";
         }
 
+        @Override
         public void actionPerform(Component component) {
             final UserSubstitution substitution = MetadataProvider.create(UserSubstitution.class);
             substitution.setUser(userDs.getItem());
@@ -457,6 +470,7 @@ public class UserEditor extends AbstractEditor {
             icon = "icons/edit.png";
         }
 
+        @Override
         public void actionPerform(Component component) {
             getDialogParams().setWidth(500);
 
@@ -466,7 +480,7 @@ public class UserEditor extends AbstractEditor {
         }
     }
 
-    private class PermissionLookupAction extends AbstractAction{
+/*    private class PermissionLookupAction extends AbstractAction{
 
         private String caption;
         private String screen;
@@ -477,6 +491,7 @@ public class UserEditor extends AbstractEditor {
             this.screen = screen;
         }
 
+        @Override
         public void actionPerform(Component component) {
             rolesTable.getAction(screen).actionPerform(rolesTable);
         }
@@ -485,5 +500,5 @@ public class UserEditor extends AbstractEditor {
         public String getCaption() {
             return caption;
         }
-    }
+    }*/
 }
