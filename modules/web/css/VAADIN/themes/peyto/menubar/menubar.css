@@ -186,3 +186,15 @@
 .v-menubar .v-menubar-menuitem .v-menubar-menuitem-caption {
 	white-space: nowrap;
 }
+
+.v-menubar-menuitem.v-menubar-more-menuitem {
+    background: url(img/more-item.png) no-repeat center center;
+}
+
+.v-menubar-menuitem.v-menubar-more-menuitem.v-menubar-menuitem-selected {
+    background: url(img/more-item-selected.png) #fff no-repeat center center;
+}
+
+.v-menubar-menuitem.v-menubar-more-menuitem img {
+    display: none;
+}

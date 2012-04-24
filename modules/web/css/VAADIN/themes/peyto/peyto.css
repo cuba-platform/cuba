@@ -26,8 +26,16 @@
 
 .v-horizontallayout-menubar {
     border-bottom: 1px solid #83888c;
-    background: url('images/menu-bg.png') repeat-x top left;
+    background: #517fb6;
     padding-bottom: 0;
+}
+
+.v-horizontallayout-menubar .v-label-select-label {
+    color: #fff;
+    font-size: 12px;
+    font-weight: normal;
+    font-family: Verdana, Arial, sans-serif;
+    /*text-shadow: black 1px 1px;*/
 }
 
 .v-tableColumnSelector .gwt-MenuItem div {
@@ -119,23 +127,32 @@
 
 /* Logout & View-log buttons */
 .v-button-white-border {
-    background: transparent none;
-    border: none;
-    height: 26px;
-    padding: 0 0 0 4px;
+    background: none;
+    border: 2px solid transparent;
 }
 
-.v-button-white-border .v-button-wrap,
-.v-button-white-border:hover .v-button-wrap {
+.v-button-white-border:hover{
+    background: none;
+    /*padding: 0;*/
+    border: solid 2px #506D8D;
+}
+
+.v-button-white-border .v-button-wrap {
+    padding-top: 0;
+    padding-right: 0;
     height: 23px;
-    padding-top: 2px;
-    background: transparent none;
+}
+
+.v-button-white-border .v-button-wrap .v-icon {
+    margin-right: 0;
 }
 
 .v-button-white-border .v-button-caption {
     /* looks not very pretty
     text-decoration: underline;
     */
+    margin-left: 2px;
+    margin-right: 2px;
     color: #fff;
 }
 

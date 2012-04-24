@@ -376,6 +376,8 @@
 
 .popupmenu .v-button .v-button-caption {
     /*margin-left: 10px;*/
+    color: #000;
+    text-decoration: none;
 }
 
 .popupmenu .v-button:hover .v-button-caption {
@@ -419,6 +421,11 @@
 .v-button.v-popupbutton .v-popup-indicator {
 	background: transparent url(common/img/sprites.png) no-repeat -5px -10px;
 }
+
+.v-popupbutton-popup {
+	background: #f5f5f5;
+}
+
 
 .v-panel.dummy-split .v-panel-content {
     background: transparent url(splitpanel/img/split-hor-bg.png) repeat-y top left;

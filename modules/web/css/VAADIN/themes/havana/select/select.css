@@ -160,7 +160,7 @@
 .v-filterselect.v-readonly,
 .v-filterselect.v-readonly .v-filterselect-wrap,
 .v-filterselect.v-readonly .v-filterselect-input {
-    background-color: transparent;
+    background-color: #fff;
 }
 
 .v-filterselect.v-readonly .v-filterselect-wrap {

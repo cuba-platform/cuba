@@ -120,14 +120,19 @@
 
 .v-tabsheet-tabs .v-tabsheet-tabitemcell {
     padding-left: 4px;
-    background: transparent url(img/first-unsel-left-bg.png) top left no-repeat;
+    background: transparent url(img/unsel-left-bg.png) top left no-repeat;
     border-bottom: 0;
     margin: 10px;
 }
 
 .v-tabsheet-tabs .v-tabsheet-tabitemcell-first {
-    padding-left: 4px;
-    background: transparent url(img/first-unsel-left-bg.png) top left no-repeat;
+    padding-left: 9px;
+    background: transparent url(img/first-unsel-left.png) top left no-repeat;
+}
+
+.v-tabsheet-tabs .v-tabsheet-tabitemcell-first.v-tabsheet-tabitemcell-selected-first {
+    background: transparent url(img/first-sel-left.png) top left no-repeat;
+    padding-left: 9px;
 }
 
 .v-tabsheet-tabitem {
@@ -147,7 +152,7 @@
     border-bottom: 0;
     height: 26px;
 	cursor: default;
-    padding: 3px 6px 0 0;
+    padding-top: 3px;
 }
 
 .v-tabsheet-tabs .v-tabsheet-tabitemcell-first .v-tabsheet-tabitem {

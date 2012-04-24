@@ -3,17 +3,38 @@
 }
 
 .v-splitpanel-horizontal .v-splitpanel-hsplitter {
-	width: 6px;
+	width: 4px;
 	font-size: 1px; /* for IE6 */
 }
 
 .v-splitpanel-hookButton {
-    display: none;
-    visibility: hidden;
+    cursor: pointer;
+    width: 11px;
+    height: 40px;
+    background: #EBF0F5;
 }
 
+.v-splitpanel-with-hookButton-left > div > .v-splitpanel-hsplitter {
+	width: 5px;
+    background: url(img/hook-split-left.png) center repeat-y;
+}
+
+.v-splitpanel-with-hookButton-right > div > .v-splitpanel-hsplitter {
+	width: 5px;
+    background: url(img/hook-split-right.png) center repeat-y;
+}
+
+.v-splitpanel-hookButton-left {
+    background: url(img/hook-btn-left.png);
+}
+
+.v-splitpanel-hookButton-right {
+    background: url(img/hook-btn-right.png);
+}
+
+
 .v-splitpanel-horizontal .v-splitpanel-hsplitter div {
-	width: 6px;
+	width: 4px;
 	font-size: 1px; /* for IE6 */
 	position: absolute;
 	top: 0;
@@ -22,6 +43,14 @@
 	/*border: 0 solid #d7dddb;*/
 	cursor: e-resize;
 	margin: 0 1px;
+}
+
+.v-splitpanel-with-hookButton-left > div > .v-splitpanel-hsplitter > div {
+    background: transparent none;
+}
+
+.v-splitpanel-with-hookButton-right > div > .v-splitpanel-hsplitter > div {
+    background: transparent none;
 }
 
 .v-splitpanel-vertical .v-splitpanel-vsplitter {

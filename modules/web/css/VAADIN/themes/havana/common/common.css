@@ -183,7 +183,7 @@ input.v-modified,
 	padding: 2px 0;
 	cursor: pointer;
 	vertical-align: middle;
-    color: #5280b7;	
+    color: #000;
 }
 
 .v-contextmenu .gwt-MenuItem div { /*border: 1px solid #f6f7f7;*/
@@ -191,7 +191,7 @@ input.v-modified,
 	cursor: pointer;
 	vertical-align: middle;
 	white-space: nowrap;
-	color: #5280b7;
+	color: #000;
 }
 
 .v-contextmenu .gwt-MenuItem-selected div {

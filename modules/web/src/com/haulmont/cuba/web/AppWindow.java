@@ -372,11 +372,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     protected void unInitStartupLayout() {
         genericStartupLayout();
-        if (webConfig.getUseLightHeader()){
-            mainLayout.setMargin(new Layout.MarginInfo(true,false,false,false));
-        } else {
-            mainLayout.setMargin(true);
-        }
+        mainLayout.setMargin(new Layout.MarginInfo(true,false,false,false));
         mainLayout.setSpacing(true);
     }
 
