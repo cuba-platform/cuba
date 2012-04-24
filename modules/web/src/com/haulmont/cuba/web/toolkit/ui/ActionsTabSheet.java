@@ -31,10 +31,12 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
         return actionManager;
     }
 
+    @Override
     public void addActionHandler(Action.Handler actionHandler) {
         getActionManager().addActionHandler(actionHandler);
     }
 
+    @Override
     public void removeActionHandler(Action.Handler actionHandler) {
         if (actionManager != null) {
             getActionManager().removeActionHandler(actionHandler);
@@ -52,8 +54,7 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
     @Override
     public void changeVariables(Object source, Map variables) {
         if (variables.containsKey("close")) {
-            final Component tab = (Component) keyMapper.get((String) variables
-                    .get("close"));
+            final Component tab = (Component) keyMapper.get((String) variables.get("close"));
             if (tab != null) {
                 closeTabAndSelectPrevious(tab);
             }
@@ -77,6 +78,17 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
         closeHandler.onTabClose(this, tab);
     }
 
+    public void silentCloseTabAndSelectPrevious(Component tab) {
+        while (openedComponents.removeElement(tab))
+            openedComponents.removeElement(tab);
+        if ((!openedComponents.empty()) && (selected.equals(tab))) {
+            Component c = openedComponents.pop();
+            while (!components.contains(c) && !openedComponents.isEmpty())
+                c = openedComponents.pop();
+            setSelectedTab(c);
+        }
+    }
+
     @Override
     public void setSelectedTab(Component c) {
         if (c != null && components.contains(c) && !c.equals(selected)) {
@@ -88,6 +100,7 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
     }
 
     protected void closeTab(Component tab) {
+        System.out.print("!");
         while (openedComponents.removeElement(tab))
                     openedComponents.removeElement(tab);
         if (closeHandler != null) {

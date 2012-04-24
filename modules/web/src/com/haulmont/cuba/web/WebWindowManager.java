@@ -20,6 +20,7 @@ import com.haulmont.cuba.gui.config.WindowInfo;
 import com.haulmont.cuba.web.gui.WebWindow;
 import com.haulmont.cuba.web.gui.components.WebButton;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.toolkit.ui.ActionsTabSheet;
 import com.haulmont.cuba.web.ui.WindowBreadCrumbs;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.terminal.Sizeable;
@@ -71,6 +72,7 @@ public class WebWindowManager extends WindowManager {
     public WebWindowManager(final App app) {
         this.app = app;
         app.getConnection().addListener(new UserSubstitutionListener() {
+            @Override
             public void userSubstituted(Connection connection) {
                 closeStartupScreen(app.getAppWindow());
                 showStartupScreen(app.getAppWindow());
@@ -210,10 +212,12 @@ public class WebWindowManager extends WindowManager {
         return false;
     }
 
+    @Override
     protected void showWindow(final Window window, final String caption, OpenType type, boolean multipleOpen) {
         showWindow(window, caption, null, type, multipleOpen);
     }
 
+    @Override
     protected void showWindow(final Window window, final String caption, final String description, OpenType type, final boolean multipleOpen) {
         AppWindow appWindow = app.getAppWindow();
         boolean forciblyDialog = false;
@@ -240,6 +244,7 @@ public class WebWindowManager extends WindowManager {
                         if (oldBreadCrumbs != null) {
                             Window oldWindow = oldBreadCrumbs.getCurrentWindow();
                             oldWindow.closeAndRun("mainMenu", new Runnable() {
+                                @Override
                                 public void run() {
                                     showWindow(window, caption, OpenType.NEW_TAB, false);
                                 }
@@ -262,6 +267,7 @@ public class WebWindowManager extends WindowManager {
                         appWindow.getTabSheet().replaceComponent(tab, l);
                         getCurrentWindowData().fakeTabs.put(l, oldBreadCrumbs);
                         oldWindow.closeAndRun("mainMenu", new Runnable() {
+                            @Override
                             public void run() {
                                 putToWindowMap(oldWindow, hashCode);
                                 oldBreadCrumbs.addWindow(oldWindow);
@@ -365,8 +371,10 @@ public class WebWindowManager extends WindowManager {
         final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs();
         breadCrumbs.addListener(
                 new WindowBreadCrumbs.Listener() {
+                    @Override
                     public void windowClick(final Window window) {
                         Runnable op = new Runnable() {
+                            @Override
                             public void run() {
                                 Window currentWindow = breadCrumbs.getCurrentWindow();
 
@@ -427,6 +435,7 @@ public class WebWindowManager extends WindowManager {
                 ((AppWindow.AppTabSheet) tabSheet).setTabCloseHandler(
                         layout,
                         new AppWindow.AppTabSheet.TabCloseHandler() {
+                            @Override
                             public void onClose(TabSheet tabSheet, Component tabContent) {
                                 WindowBreadCrumbs breadCrumbs = getTabs().get(tabContent);
                                 Runnable closeTask = new TabCloseTask(breadCrumbs);
@@ -456,6 +465,7 @@ public class WebWindowManager extends WindowManager {
             this.breadCrumbs = breadCrumbs;
         }
 
+        @Override
         public void run() {
             Window windowToClose = breadCrumbs.getCurrentWindow();
             if (windowToClose != null) {
@@ -569,6 +579,7 @@ public class WebWindowManager extends WindowManager {
         win.setContent(outerLayout);
 
         win.addListener(new com.vaadin.ui.Window.CloseListener() {
+            @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                 window.close("close", true);
             }
@@ -673,6 +684,7 @@ public class WebWindowManager extends WindowManager {
                     IFrame.MessageType.WARNING,
                     new Action[]{
                             new AbstractAction(MessageProvider.getMessage(WebWindow.class, "actions.Yes")) {
+                                @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                     if (runIfOk != null)
                                         runIfOk.run();
@@ -683,6 +695,7 @@ public class WebWindowManager extends WindowManager {
                                 }
                             },
                             new AbstractAction(MessageProvider.getMessage(WebWindow.class, "actions.No")) {
+                                @Override
                                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                                     if (runIfCancel != null)
                                         runIfCancel.run();
@@ -739,8 +752,11 @@ public class WebWindowManager extends WindowManager {
                 final Layout layout = (Layout) openMode.getData();
                 layout.removeComponent(WebComponentsHelper.getComposition(window));
 
+                ActionsTabSheet webTabsheet = (ActionsTabSheet) appWindow.getTabSheet();
+
                 if (AppWindow.Mode.TABBED.equals(appWindow.getMode())) {
-                    appWindow.getTabSheet().removeComponent(layout);
+                    webTabsheet.silentCloseTabAndSelectPrevious(layout);
+                    webTabsheet.removeComponent(layout);
                 } else {
                     appWindow.getMainLayout().removeComponent(layout);
                 }
@@ -792,6 +808,7 @@ public class WebWindowManager extends WindowManager {
         }
     }
 
+    @Override
     public void showFrame(com.haulmont.cuba.gui.components.Component parent, IFrame frame) {
         if (parent instanceof com.haulmont.cuba.gui.components.Component.Container) {
             com.haulmont.cuba.gui.components.Component.Container container =
@@ -876,6 +893,7 @@ public class WebWindowManager extends WindowManager {
         setDebugId(window, "cuba-message-dialog");
 
         window.addListener(new com.vaadin.ui.Window.CloseListener() {
+            @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                 App.getInstance().getAppWindow().removeWindow(window);
             }
@@ -919,6 +937,7 @@ public class WebWindowManager extends WindowManager {
         window.setClosable(false);
 
         window.addListener(new com.vaadin.ui.Window.CloseListener() {
+            @Override
             public void windowClose(com.vaadin.ui.Window.CloseEvent e) {
                 app.getAppWindow().removeWindow(window);
             }
@@ -953,6 +972,7 @@ public class WebWindowManager extends WindowManager {
             final Button button = WebComponentsHelper.createButton();
             button.setCaption(action.getCaption());
             button.addListener(new Button.ClickListener() {
+                @Override
                 public void buttonClick(Button.ClickEvent event) {
                     action.actionPerform(null);
                     AppWindow appWindow = app.getAppWindow();
@@ -1045,6 +1065,7 @@ public class WebWindowManager extends WindowManager {
     protected void initDebugIds(final Window window) {
         if (app.isTestModeRequest()) {
             com.haulmont.cuba.gui.ComponentsHelper.walkComponents(window, new ComponentVisitor() {
+                @Override
                 public void visit(com.haulmont.cuba.gui.components.Component component, String name) {
                     final String id = window.getId() + "." + name;
                     if (ConfigProvider.getConfig(WebConfig.class).getAllowIdSuffix()) {
