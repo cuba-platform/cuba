@@ -367,6 +367,7 @@ public abstract class Table
 
         bodyContainer.sinkEvents(Event.TOUCHEVENTS);
         bodyContainer.addDomHandler(new TouchStartHandler() {
+            @Override
             public void onTouchStart(TouchStartEvent event) {
                 getTouchScrollDelegate().onTouchStart(event);
             }
@@ -375,6 +376,7 @@ public abstract class Table
         bodyContainer.sinkEvents(Event.ONCONTEXTMENU);
 
         bodyContainer.addDomHandler(new ContextMenuHandler() {
+            @Override
             public void onContextMenu(ContextMenuEvent event) {
                 //handleBodyContextMenu(event); //todo [6.6]
             }
@@ -1920,6 +1922,7 @@ public abstract class Table
             visibleCells.insertElementAt(hCell, newIndex);
         }
 
+        @Override
         public Iterator<Widget> iterator() {
             return visibleCells.iterator();
         }
@@ -2487,8 +2490,6 @@ public abstract class Table
             }
 
             public void removeCells() {
-                VConsole.log("REMOVE");
-
                 for (Element td : tableCells)
                     Tools.removeElementWithEvents(td);
 
@@ -2852,11 +2853,6 @@ public abstract class Table
                 if (selectMode > com.vaadin.terminal.gwt.client.ui.Table.SELECT_MODE_NONE) {
                     if (!nullSelectionDisallowed || !isSelected()) {
                         toggleSelection();
-                        // Note: changing the immediateness of this might
-                        // require changes to "clickEvent" immediateness
-                        // also.
-                        client.updateVariable(paintableId, "selected",
-                                selectedRowKeys.toArray(new String[selectedRowKeys.size()]), immediate);
                     }
                 }
             }
@@ -3862,6 +3858,7 @@ public abstract class Table
             if (focusedRow == null) {
                 focusRowFromBody();
                 selectFocusedRow(false,false);
+                sendSelectedRows();
             } else {
                 setRowFocus(focusedRow);
             }
