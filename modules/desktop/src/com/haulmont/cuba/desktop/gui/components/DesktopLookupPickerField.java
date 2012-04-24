@@ -127,7 +127,8 @@ public class DesktopLookupPickerField
     private class Picker extends com.haulmont.cuba.desktop.sys.vcl.Picker {
         @Override
         protected void initEditor() {
-            editor = impl;
+            // put LookupField into PickerField composition
+            editor = DesktopLookupPickerField.super.getComposition();
         }
 
         @Override
