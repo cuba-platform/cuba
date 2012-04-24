@@ -146,6 +146,22 @@ public abstract class DesktopAbstractTable<C extends JTable>
             }
         });
 
+        impl.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if ((e.getKeyCode() == KeyEvent.VK_DOWN) || (e.getKeyCode() == KeyEvent.VK_UP)) {
+                    impl.getSelectionModel().setValueIsAdjusting(false);
+                }
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if ((e.getKeyCode() == KeyEvent.VK_DOWN) || (e.getKeyCode() == KeyEvent.VK_UP)) {
+                    impl.getSelectionModel().setValueIsAdjusting(true);
+                }
+            }
+        });
+
         ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
         addShortcutActionBridge(INSERT_SHORTCUT_ID, clientConfig.getTableInsertShortcut(), ListActionType.CREATE);
         addShortcutActionBridge(REMOVE_SHORTCUT_ID, clientConfig.getTableRemoveShortcut(), ListActionType.REMOVE);
