@@ -100,7 +100,6 @@ public class ActionsTabSheet extends com.vaadin.ui.TabSheet implements Action.Co
     }
 
     protected void closeTab(Component tab) {
-        System.out.print("!");
         while (openedComponents.removeElement(tab))
                     openedComponents.removeElement(tab);
         if (closeHandler != null) {
