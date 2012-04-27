@@ -7,21 +7,22 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.gui.data.TableModelAdapter;
+import com.haulmont.cuba.desktop.sys.vcl.FocusableTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import org.jdesktop.swingx.JXTable;
 
 /**
  * <p>$Id$</p>
  *
  * @author krivopustov
  */
-public class DesktopTable extends DesktopAbstractTable<JXTable> {
+public class DesktopTable extends DesktopAbstractTable<FocusableTable> {
 
     public DesktopTable() {
-        impl = new JXTable();
+        impl = new FocusableTable();
+
         initComponent();
         impl.setColumnControlVisible(true);
-        DesktopComponentsHelper.correctTableFocusTraversal(impl);
+//        DesktopComponentsHelper.correctTableFocusTraversal(impl);
 
         tableSettings = new SwingXTableSettings(impl, columnsOrder);
     }

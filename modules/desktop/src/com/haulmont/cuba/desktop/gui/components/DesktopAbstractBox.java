@@ -35,10 +35,12 @@ public abstract class DesktopAbstractBox
 
     public DesktopAbstractBox() {
         impl = new JPanel();
+        impl.setFocusable(false);
         assignClassDebugProperty(impl);
         layoutAdapter = BoxLayoutAdapter.create(impl);
     }
 
+    @Override
     public void add(Component component) {
         // add caption first
         ComponentCaption caption = null;
@@ -81,6 +83,7 @@ public abstract class DesktopAbstractBox
         DesktopContainerHelper.assignContainer(component, this);
     }
 
+    @Override
     public void remove(Component component) {
         JComponent composition = DesktopComponentsHelper.getComposition(component);
         if (wrappers.containsKey(component)) {
@@ -122,22 +125,27 @@ public abstract class DesktopAbstractBox
         }
     }
 
+    @Override
     public <T extends Component> T getOwnComponent(String id) {
         return (T) componentByIds.get(id);
     }
 
+    @Override
     public <T extends Component> T getComponent(String id) {
         return DesktopComponentsHelper.<T>getComponent(this, id);
     }
 
+    @Override
     public Collection<Component> getOwnComponents() {
         return Collections.unmodifiableCollection(ownComponents);
     }
 
+    @Override
     public Collection<Component> getComponents() {
         return ComponentsHelper.getComponents(this);
     }
 
+    @Override
     public void expand(Component component, String height, String width) {
         if (expandedComponent != null
                 && expandedComponent instanceof DesktopComponent) {
@@ -154,18 +162,22 @@ public abstract class DesktopAbstractBox
         expandedComponent = component;
     }
 
+    @Override
     public void expand(Component component) {
         expand(component, "", "");
     }
 
+    @Override
     public void setMargin(boolean enable) {
         layoutAdapter.setMargin(enable);
     }
 
+    @Override
     public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
         layoutAdapter.setMargin(topEnable, rightEnable, bottomEnable, leftEnable);
     }
 
+    @Override
     public void setSpacing(boolean enabled) {
         layoutAdapter.setSpacing(enabled);
     }

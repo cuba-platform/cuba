@@ -66,7 +66,7 @@ public class DesktopLookupField
     public DesktopLookupField() {
         composition = new JPanel();
         composition.setLayout(new BoxLayout(composition, BoxLayout.Y_AXIS));
-        composition.setFocusable(true);
+        composition.setFocusable(false);
         composition.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -403,6 +403,10 @@ public class DesktopLookupField
         this.enabled = enabled;
         comboBox.setEnabled(enabled);
         textField.setEnabled(enabled);
+        comboBox.setFocusable(enabled);
+        textField.setFocusable(enabled);
+        getComposition().setFocusable(enabled);
+
         updateMissingValueState();
     }
 

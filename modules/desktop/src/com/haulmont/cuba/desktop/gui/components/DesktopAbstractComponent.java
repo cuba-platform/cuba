@@ -114,6 +114,8 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     @Override
     public void setEnabled(boolean enabled) {
         getComposition().setEnabled(enabled);
+        getComposition().setFocusable(enabled);
+
         requestContainerUpdate();
     }
 

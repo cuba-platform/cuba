@@ -46,6 +46,7 @@ public class DesktopLabel extends DesktopAbstractComponent<JLabel> implements La
 
     public DesktopLabel() {
         impl = new JLabel();
+        impl.setFocusable(false);
         setAlignment(Alignment.MIDDLE_LEFT);
 
         Locale locale = UserSessionProvider.getLocale();
