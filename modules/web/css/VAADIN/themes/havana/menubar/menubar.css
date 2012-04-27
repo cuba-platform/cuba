@@ -1,6 +1,7 @@
 .v-menubar {
     height: 23px;
     padding: 0 8px;
+    margin-top: -2px;
 }
 
 .v-menubar .v-menubar-menuitem {

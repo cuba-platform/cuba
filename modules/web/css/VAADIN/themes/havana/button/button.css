@@ -35,7 +35,7 @@
 }
 
 .v-button-icon .v-button-wrap {
-   padding: 3px 5px 1px 0px;
+   padding: 4px 5px 1px 0px;
 }
 
 .v-popupbutton .v-button-wrap {
@@ -45,7 +45,7 @@
 .v-button-wrap {
     height: 19px;
     /*background: transparent url(../peyto/button/img/button.png) no-repeat right top;*/
-    padding: 5px 5px 1px 0px;
+    padding: 4px 5px 1px 0px;
     display: block;
 }
 
