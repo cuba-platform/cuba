@@ -97,8 +97,8 @@ public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
             changed.put(name, value);
             CategoryAttributeValue categoryValue = categoryValues.get(name);
             if (value != null) {
-                if (StandardEntity.class.isAssignableFrom(value.getClass())) {
-                    categoryValue.setEntityValue(((StandardEntity) value).getUuid());
+                if (Entity.class.isAssignableFrom(value.getClass())) {
+                    categoryValue.setEntityValue(((Entity) value).getUuid());
                 } else {
                     setValue(categoryValue, value);
                 }
@@ -124,7 +124,7 @@ public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
             CategoryAttributeValue attrValue = categoryValues.get(propertyPath);
             if (value != null) {
                 if (Entity.class.isAssignableFrom(value.getClass())) {
-                    attrValue.setEntityValue(((StandardEntity) value).getUuid());
+                    attrValue.setEntityValue(((Entity) value).getUuid());
                 } else {
                     setValue(attrValue, value);
                 }
