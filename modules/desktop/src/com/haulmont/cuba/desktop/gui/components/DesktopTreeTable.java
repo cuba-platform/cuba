@@ -51,6 +51,16 @@ public class DesktopTreeTable
             }
 
             @Override
+            public TableCellEditor getCellEditor(int row, int column) {
+                TableCellRenderer cellRenderer = cellRenderers.get(column);
+                if (cellRenderer instanceof TableCellEditor) {
+                    return (TableCellEditor) cellRenderer;
+                } else {
+                    return super.getCellEditor(row, column);
+                }
+            }
+
+            @Override
             public TreeCellRenderer getTreeCellRenderer() {
                 return super.getTreeCellRenderer();
             }

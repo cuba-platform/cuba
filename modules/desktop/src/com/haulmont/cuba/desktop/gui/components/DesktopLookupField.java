@@ -67,19 +67,6 @@ public class DesktopLookupField
         composition = new JPanel();
         composition.setLayout(new BoxLayout(composition, BoxLayout.Y_AXIS));
         composition.setFocusable(false);
-        composition.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (editable)
-                    comboBox.requestFocus();
-                else
-                    textField.requestFocus();
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-            }
-        });
 
         comboBox = new ExtendedComboBox();
         comboBox.setEditable(true);
@@ -405,7 +392,6 @@ public class DesktopLookupField
         textField.setEnabled(enabled);
         comboBox.setFocusable(enabled);
         textField.setFocusable(enabled);
-        getComposition().setFocusable(enabled);
 
         updateMissingValueState();
     }

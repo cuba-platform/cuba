@@ -174,6 +174,7 @@ public class DesktopGroupBox
         return collapsiblePanel;
     }
 
+    @Override
     public void applySettings(Element element) {
         Element groupBoxElement = element.element("groupBox");
         if (groupBoxElement != null) {
@@ -184,6 +185,7 @@ public class DesktopGroupBox
         }
     }
 
+    @Override
     public boolean saveSettings(Element element) {
         Element groupBoxElement = element.element("groupBox");
         if (groupBoxElement != null) {

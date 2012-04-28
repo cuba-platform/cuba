@@ -132,7 +132,9 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
     public Object getCellEditorValue() {
         if (activeComponent != null) {
             // normally handle focus lost
-            activeComponent.dispatchEvent(new FocusEvent(activeComponent, FocusEvent.FOCUS_LOST));
+            // todo fix it for normal change focus with mouse
+            FocusEvent focusEvent = new FocusEvent(activeComponent, FocusEvent.FOCUS_LOST, false, desktopAbstractTable.impl);
+            activeComponent.dispatchEvent(focusEvent);
         }
         return "";
     }
@@ -265,5 +267,4 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         Border border = UIManager.getDefaults().getBorder("Table.cellNoFocusBorder");
         return border;
     }
-
 }
