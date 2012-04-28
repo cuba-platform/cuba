@@ -328,4 +328,8 @@ public class RuntimePropertiesFrame extends AbstractWindow {
             }
         }
     }
+
+    public void setCategoryFieldEditable(boolean editable) {
+        categoryFieldGroup.setEditable(editable);
+    }
 }
