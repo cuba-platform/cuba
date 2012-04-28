@@ -54,7 +54,7 @@ def validationApi = [group: 'javax.validation', name: 'validation-api', version:
 def groovyArtifact = [group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.10']
 def asm = [group: 'asm', name: 'asm', version: '3.2']
 def poi = [group: 'com.haulmont.thirdparty', name: 'poi', version: '3.7.20110830']
-def postgres = [group: 'postgresql', name: 'postgresql', version: '8.3-603.jdbc4']
+def postgres = [group: 'postgresql', name: 'postgresql', version: '9.1-901.jdbc4']
 def hsqldb = [group: 'hsqldb', name: 'hsqldb', version: '1.8.0.10']
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webToolkitModule,
