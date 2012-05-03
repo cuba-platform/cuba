@@ -6,7 +6,7 @@
 
 allprojects {
     artifactGroup = 'com.haulmont.cuba'
-    artifactVersion = '3.2.0'
+    artifactVersion = '3.3.0'
     isSnapshot = true
     //tomcatDir = rootDir.absolutePath + '/../tomcat'
 }
