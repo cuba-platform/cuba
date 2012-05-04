@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><glossary id="glossary_id">
+  <title>Основные определения и понятия</title>
+  <glossdiv>
+    <title>А</title>
+    <glossentry id="glossary_alias_id">
+      <glossterm>
+        <emphasis role="bold">Алиас</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Псевдоним, который используется для переименования таблиц и колонок.</para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
+    <title>Б</title>
+    <glossentry id="glossary_browser_id">
+      <glossterm>
+        <emphasis role="bold">Браузер</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Экранная форма, на которой размещается таблица со списком сущностей, а также кнопки создания, редактирования, удаления сущности.</para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
+    <title>К</title>
+    <glossentry id="glossary_controller_id">
+      <glossterm>
+        <emphasis role="bold">Контроллер экрана</emphasis>
+      </glossterm>
+      <glossdef>
+        <para><classname>Java</classname> или <classname>Groovy</classname> класс,  в котором можно реализовывать бизнес-логику и управлять поведением компонентов, описанных в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm>, с помощью различных событий. Контроллер должен быть унаследован от одного из следующих базовых классов:</para>
+        <itemizedlist>
+          <listitem>
+            <para><classname>AbstractFrame</classname> − реализует интерфейс <interfacename>IFrame</interfacename> и предназначен для реализации фреймов − многократно используемых компонентов экранов.</para>
+          </listitem>
+          <listitem>
+            <para><classname>AbstractWindow</classname> − реализует интерфейc <interfacename>Window</interfacename> и предназначен для реализации любых экранов.</para>
+          </listitem>
+          <listitem>
+            <para><classname>AbstractLookup</classname> − реализует интерфейс <interfacename>Lookup</interfacename> и предназначен для реализации <glossterm linkend="glossary_browser_id">браузеров</glossterm> с возможностью выбора элемента списка для использования его в вызывающем экране.</para>
+          </listitem>
+          <listitem>
+            <para><classname>AbstractEditor</classname> − реализует интерфейс <interfacename>Editor</interfacename> и предназначен для реализации экранов редактирования экземпляра сущности.</para>
+          </listitem>
+        </itemizedlist>
+        <para>Основной метод контроллера − <methodname>init()</methodname>. Этот метод вызывается после создания класса окна и всего дерева компонентов, описанного XML-дескриптором. Контроллер может в этом методе произвести инициализацию экрана перед его открытием (например, создать обработчики нажатий на кнопки и пр.).</para>
+        <para>В метод <methodname>init()</methodname> из вызывающего кода передается коллекция параметров, состоящая из пар «ключ − значение». Вызывающим кодом может быть как контроллер другого экрана, так и пункт главного меню, либо прямая ссылка на экран извне приложения. Каждый параметр передается в коллекции в двух экземплярах − с простым именем и с тем же именем с префиксом param$.</para>
+        <para>Класс контроллера должен быть зарегистрирован в XML-дескрипторе экрана в атрибуте <parameter>class</parameter> корневого элемента.</para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
+    <title>Р</title>
+    <glossentry id="glossary_work_folder_id">
+      <glossterm>
+        <emphasis role="bold">Рабочий каталог</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Каталог файловой системы, в котором содержится Ваш проект. Рабочий каталог, если он был создан, должен содержать скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>Intellij IDEA</application>. </para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
+    <title>J</title>
+    <glossentry id="glossary_jpql_id">
+      <glossterm>
+        <emphasis role="bold">JPQL</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Платформо-независимый объектно-ориентированный язык запросов, определенный как часть спецификации Java Persistence API. Подробнее о JPQL можно прочитать на сайте <ulink url="http://openjpa.apache.org/">http://openjpa.apache.org/</ulink></para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv lang="ru">
+    <title>X</title>
+    <glossentry id="glossary_xml_descriptor_id">
+      <glossterm>
+        <emphasis role="bold">XML-дескриптор</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Описывает <glossterm linkend="glossary_datasource_id">источники данных</glossterm> и расположение визуальных компонентов экрана.</para>
+        <para>XML-дескриптор содержит следующие элементы:</para>
+        <itemizedlist>
+          <listitem>
+            <para><parameter>window</parameter> − корневой элемент. Атрибуты:</para>
+            <orderedlist>
+              <listitem>
+                <para><property>xmlns</property>=&quot;http://www.haulmont.com/schema/cuba/gui/window.xsd&quot; − схема XML</para>
+              </listitem>
+              <listitem>
+                <para><property>class</property> − имя класса <glossterm linkend="glossary_controller_id">контроллера</glossterm></para>
+              </listitem>
+              <listitem>
+                <para><property>messagesPack</property> − имя <glossterm linkend="glossary_localized_folders_id">пакета сообщений</glossterm>. Фактически это имя Java-пакета, содержащего файл  <filename>messages.properties</filename></para>
+              </listitem>
+              <listitem>
+                <para><property>caption</property> − заголовок экрана, должен содержать ссылку на сообщение из вышеуказанного пакета, например <programlisting>caption=&quot;msg://caption&quot;</programlisting></para>
+              </listitem>
+              <listitem>
+                <para><property>focusComponent</property> − идентификатор компонента, который получит фокус ввода при открытии экрана (необязательно).</para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+          <listitem>
+            <para><parameter>metadataContext</parameter> − опциональный элемент для инициализации <glossterm linkend="glossary_view_ru_id">представлений</glossterm> (views). Предпочтительным является определение всех представлений в одном общем файле <filename>ext-views.xml</filename>  модуля <structname>core</structname>. </para>
+          </listitem>
+          <listitem>
+            <para><parameter>dsContext</parameter> − элемент, определяющий <glossterm linkend="glossary_datasource_id">источники данных</glossterm> данного экрана. Источники данных предназначены для реализации связанных с данными  компонентов.</para>
+          </listitem>
+          <listitem>
+            <para><parameter>layout</parameter> − элемент, определяющий компоновку экрана.</para>
+          </listitem>
+        </itemizedlist>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+</glossary>
