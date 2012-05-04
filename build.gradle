@@ -473,6 +473,13 @@ task transformReporting(type: TransformDocbook) {
     classpath = configurations.buildDoc
 }
 
+task transformReportingEng(type: TransformDocbook) {
+	sourceDir = new File(docSrcDir, 'reporting/eng')
+    sourceFile = new File(sourceDir, 'reporting.xml')
+    destFile = new File(docTmpDir, 'reporting/eng/reporting.xml')
+    classpath = configurations.buildDoc
+}
+
 task buildManualHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     source transformManual.destFile
     destDir = new File(docDstDir, 'manual/ru/html')
@@ -488,6 +495,50 @@ task buildManualHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     }
 }
 
+task buildReportingXhtml(type: Docbook2Xhtml, dependsOn: transformReporting) {
+    source transformReporting.destFile
+    destFile = new File(docTmpDir, 'reporting-pdf/reporting-pdf.html')
+    stylesheetName = 'pdf.xsl'
+    resources = fileTree {
+        from new File(docSrcDir, 'reporting/ru')
+        include 'img/*.png'
+        include 'img/*.jpg'
+    }
+    resources += fileTree {
+        from docCssDir
+        include '*.css'
+    }
+}
+
+task buildReportingXhtmlEng(type: Docbook2Xhtml, dependsOn: transformReportingEng) {
+    source transformReportingEng.destFile
+    destFile = new File(docTmpDir, 'reporting-pdf/reporting-pdf.html')
+    stylesheetName = 'pdf.xsl'
+    resources = fileTree {
+        from new File(docSrcDir, 'reporting/eng')
+        include 'img/*.png'
+        include 'img/*.jpg'
+    }
+    resources += fileTree {
+        from docCssDir
+        include '*.css'
+    }
+}
+task buildReportingPdf(type: Xhtml2Pdf, dependsOn: buildReportingXhtml) {
+    inputs.dir docCssDir
+    sourceFile = buildReportingXhtml.destFile
+    destFile = new File(docDstDir, 'reporting/ru/pdf/reporting.pdf')
+    classpath = configurations.buildDoc
+    fonts = zipTree(configurations.docFonts.singleFile)
+}
+
+task buildReportingPdfEng(type: Xhtml2Pdf, dependsOn: buildReportingXhtmlEng) {
+    inputs.dir docCssDir
+    sourceFile = buildReportingXhtmlEng.destFile
+    destFile = new File(docDstDir, 'reporting/eng/pdf/reporting.pdf')
+    classpath = configurations.buildDoc
+    fonts = zipTree(configurations.docFonts.singleFile)
+}
 task buildManualSingleHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     source transformManual.destFile
     destFile = new File(docDstDir, 'manual/ru/html-single/manual.html')
@@ -518,8 +569,23 @@ task buildReportingSingleHtml(type: Docbook2Xhtml, dependsOn: transformReporting
     }
 }
 
+task buildReportingSingleHtmlEng(type: Docbook2Xhtml, dependsOn: transformReportingEng) {
+    source transformReportingEng.destFile
+    destFile = new File(docDstDir, 'reporting/eng/html-single/reporting.html')
+    stylesheetName = 'html-single.xsl'
+    resources = fileTree {
+        from new File(docSrcDir, 'reporting/eng')
+        include 'img/**/*.png'
+        include 'img/**/*.jpg'
+    }
+    resources += fileTree {
+        from docCssDir
+        include '*.css'
+    }
+}
+
 task buildDoc(type: Zip, description: 'Build documentation',
-        dependsOn: [buildManualSingleHtml, buildReportingSingleHtml]) {
+        dependsOn: [buildManualSingleHtml, buildReportingSingleHtml,buildReportingSingleHtmlEng, buildReportingPdf,buildReportingPdfEng]) {
     from 'build/doc'
     destinationDir = file('build/distributions')
     baseName = 'cuba-doc'
