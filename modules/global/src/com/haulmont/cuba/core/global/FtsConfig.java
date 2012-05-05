@@ -32,10 +32,6 @@ public interface FtsConfig extends Config {
     @Property("cuba.fts.indexDir")
     String getIndexDir();
 
-    @Property("cuba.fts.optimizationPeriod")
-    @DefaultInt(20)
-    int getOptimizationPeriod();
-
     @Property("cuba.fts.maxSearchResults")
     @DefaultInt(100)
     int getMaxSearchResults();
