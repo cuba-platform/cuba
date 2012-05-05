@@ -12,7 +12,7 @@
     white-space: nowrap;
     margin: 0;
     height: 25px;
-    padding: 0 0 0 5px;
+    padding: 0 5px;
     color: inherit;
     line-height: normal;
     -khtml-user-select: none;
@@ -35,17 +35,14 @@
 }
 
 .v-button-icon .v-button-wrap {
-   padding: 4px 5px 1px 0px;
+   padding: 0;
 }
 
+.v-button-wrap,
 .v-popupbutton .v-button-wrap {
-   padding: 4px 5px 1px 0px;
-}
-
-.v-button-wrap {
-    height: 19px;
+    height: 100%;
     /*background: transparent url(../peyto/button/img/button.png) no-repeat right top;*/
-    padding: 4px 5px 1px 0px;
+    padding: 4px 5px 0 5px;
     display: block;
 }
 
@@ -102,14 +99,18 @@
 }
 
 .v-button-icon .v-button-caption {
-    padding-bottom: 2px;
+    padding-left: 3px;
+}
+
+.v-button .v-button-caption:empty,
+.v-popupbutton .v-button-caption:empty {
+    padding: 0;
 }
 
 .v-button .v-icon,
 .v-nativebutton .v-icon {
-vertical-align: middle;
-margin-right: 3px;
-border: none;
+    vertical-align: middle;
+    border: none;
 }
 
 .v-button .v-errorindicator,
@@ -177,11 +178,6 @@ vertical-align: middle;
 white-space: nowrap;
 font: inherit;
 color: inherit;
-}
-
-.v-nativebutton .v-icon {
-vertical-align: middle;
-margin-right: 3px;
 }
 
 .v-nativebutton .v-errorindicator {
