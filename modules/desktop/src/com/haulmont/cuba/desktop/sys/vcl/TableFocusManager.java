@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.desktop.sys.vcl;
 
-import org.jdesktop.swingx.JXTable;
 import sun.awt.CausedFocusEvent;
 
 import javax.swing.*;
@@ -17,16 +16,20 @@ import java.awt.event.KeyEvent;
 import java.util.Set;
 
 /**
+ * Handle focus traversing in table
+ *
  * @author artamonov
  * @version $Id$
  */
-public class FocusableTable extends JXTable {
+public class TableFocusManager {
 
-    public FocusableTable() {
+    private JTable impl;
+
+    public TableFocusManager(JTable impl) {
+        this.impl = impl;
     }
 
-    @Override
-    protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
+    public boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
 
         Set<AWTKeyStroke> forwardKeys = KeyboardFocusManager.getCurrentKeyboardFocusManager().getDefaultFocusTraversalKeys(
                 KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS);
@@ -42,7 +45,7 @@ public class FocusableTable extends JXTable {
             return processExtraKeyBinding(ks, e, condition, pressed);
         }
 
-        return super.processKeyBinding(ks, e, condition, pressed);
+        return false;
     }
 
     protected boolean processExtraKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
@@ -59,34 +62,31 @@ public class FocusableTable extends JXTable {
             nextFocusElement();
             return true;
         } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE && pressed) {
-            requestFocus();
-            editingCanceled(new ChangeEvent(this));
+            impl.requestFocus();
+            impl.editingCanceled(new ChangeEvent(this));
             return true;
         } else {
-            return super.processKeyBinding(ks, e, condition, pressed);
+            return false;
         }
     }
 
-    @Override
-    protected void processFocusEvent(FocusEvent e) {
+    public void processFocusEvent(FocusEvent e) {
         if (e.getID() == FocusEvent.FOCUS_GAINED) {
             if (e instanceof CausedFocusEvent) {
                 if (((CausedFocusEvent) e).getCause() == CausedFocusEvent.Cause.TRAVERSAL_FORWARD) {
-                    if (getModel().getRowCount() > 0) {
+                    if (impl.getModel().getRowCount() > 0) {
                         moveToStart(0, 0);
                     } else
-                        transferFocus();
+                        impl.transferFocus();
 
                 } else if (((CausedFocusEvent) e).getCause() == CausedFocusEvent.Cause.TRAVERSAL_BACKWARD) {
-                    if (getModel().getRowCount() > 0) {
-                        moveToEnd(getRowCount() - 1, getColumnCount() - 1);
+                    if (impl.getModel().getRowCount() > 0) {
+                        moveToEnd(impl.getRowCount() - 1, impl.getColumnCount() - 1);
                     } else
-                        transferFocusBackward();
+                        impl.transferFocusBackward();
                 }
             }
         }
-
-        super.processFocusEvent(e);
     }
 
     protected void nextDownElement() {
@@ -96,7 +96,7 @@ public class FocusableTable extends JXTable {
         if (editingColumn == -1 || editingRow == -1) {
             return;
         }
-        if (nextRow > getRowCount() - 1) {
+        if (nextRow > impl.getRowCount() - 1) {
             nextRow = 0;
         }
         moveToStart(nextRow, editingColumn);
@@ -110,7 +110,7 @@ public class FocusableTable extends JXTable {
             return;
         }
         if (nextRow == -1) {
-            nextRow = getRowCount() - 1;
+            nextRow = impl.getRowCount() - 1;
         }
         moveToStart(nextRow, editingColumn);
     }
@@ -122,15 +122,15 @@ public class FocusableTable extends JXTable {
         int prevRow = selectedRow;
 
         if (selectedColumn == -1 || selectedRow == -1) {
-            if (getModel().getRowCount() > 0) {
-                moveToEnd(getRowCount() - 1, getColumnCount() - 1);
+            if (impl.getModel().getRowCount() > 0) {
+                moveToEnd(impl.getRowCount() - 1, impl.getColumnCount() - 1);
             } else
                 moveFocusToPrevControl();
             return;
         }
 
         if (selectedColumn == 0) {
-            prevColumn = getColumnCount() - 1;
+            prevColumn = impl.getColumnCount() - 1;
             prevRow = selectedRow - 1;
         }
 
@@ -142,7 +142,7 @@ public class FocusableTable extends JXTable {
 
         if (!wasMoved) {
             if (prevRow < 0)
-                transferFocusBackward();
+                impl.transferFocusBackward();
             else
                 moveToEnd(prevRow, prevColumn);
         }
@@ -154,14 +154,14 @@ public class FocusableTable extends JXTable {
         int nextColumn = selectedColumn + 1;
         int nextRow = selectedRow;
         if (selectedColumn == -1 || selectedRow == -1) {
-            if (getModel().getRowCount() > 0) {
+            if (impl.getModel().getRowCount() > 0) {
                 moveToStart(0, 0);
             } else
                 moveFocusToNextControl();
 
             return;
         }
-        if (selectedColumn == getColumnCount() - 1) {
+        if (selectedColumn == impl.getColumnCount() - 1) {
             nextColumn = 0;
             nextRow = selectedRow + 1;
         }
@@ -173,33 +173,35 @@ public class FocusableTable extends JXTable {
         }
 
         if (!wasMoved) {
-            if (nextRow > getRowCount() - 1)
-                transferFocus();
+            if (nextRow > impl.getRowCount() - 1)
+                impl.transferFocus();
             else
                 moveToStart(nextRow, nextColumn);
         }
     }
 
-    private void moveTo(int row, int col) {
+    protected void moveTo(int row, int col) {
+        Component editorComp = impl.getEditorComponent();
+
         if (editorComp != null) {
-            editorComp.dispatchEvent(new FocusEvent(editorComp, FocusEvent.FOCUS_LOST, false, this));
+            editorComp.dispatchEvent(new FocusEvent(editorComp, FocusEvent.FOCUS_LOST, false, impl));
         }
-        scrollRectToVisible(getCellRect(row, col, true));
+        impl.scrollRectToVisible(impl.getCellRect(row, col, true));
 
         if (row >= 0 && col >= 0)
-            requestFocus();
+            impl.requestFocus();
 
-        getSelectionModel().setSelectionInterval(row, row);
-        getColumnModel().getSelectionModel().setSelectionInterval(col, col);
-        editCellAt(
-                getSelectedRow(),
-                getSelectedColumn()
+        impl.getSelectionModel().setSelectionInterval(row, row);
+        impl.getColumnModel().getSelectionModel().setSelectionInterval(col, col);
+        impl.editCellAt(
+                impl.getSelectedRow(),
+                impl.getSelectedColumn()
         );
     }
 
     protected void moveToStart(int row, int col) {
         moveTo(row, col);
-        JComponent newEditorComp = (JComponent) getEditorComponent();
+        JComponent newEditorComp = (JComponent) impl.getEditorComponent();
 
         if (newEditorComp != null) {
             newEditorComp.requestFocusInWindow();
@@ -214,7 +216,7 @@ public class FocusableTable extends JXTable {
 
     protected void moveToEnd(int row, int col) {
         moveTo(row, col);
-        JComponent newEditorComp = (JComponent) getEditorComponent();
+        JComponent newEditorComp = (JComponent) impl.getEditorComponent();
 
         if (newEditorComp != null) {
             newEditorComp.requestFocusInWindow();
@@ -228,12 +230,12 @@ public class FocusableTable extends JXTable {
     }
 
     protected JComponent getActiveComponent() {
-        return (JComponent) getEditorComponent();
+        return (JComponent) impl.getEditorComponent();
     }
 
     protected int getActiveColumn() {
-        int editingColumn = getEditingColumn();
-        int selectedColumn = getSelectedColumn();
+        int editingColumn = impl.getEditingColumn();
+        int selectedColumn = impl.getSelectedColumn();
         if (editingColumn < 0)
             return selectedColumn;
         else
@@ -241,8 +243,8 @@ public class FocusableTable extends JXTable {
     }
 
     protected int getActiveRow() {
-        int editingRow = getEditingRow();
-        int selectedRow = getSelectedRow();
+        int editingRow = impl.getEditingColumn() == -1 ? -1 : impl.getEditingRow();
+        int selectedRow = impl.getSelectedRow();
         if (editingRow < 0)
             return selectedRow;
         else
@@ -257,7 +259,7 @@ public class FocusableTable extends JXTable {
         if (focusOwner != null &&
                 lastComponent != null &&
                 lastComponent != focusOwner) {
-            if (focusOwner == this) {
+            if (focusOwner == impl) {
                 Component component = defaultFocusTraversalPolicy.getFirstComponent(activeComponent);
                 if (component != null)
                     component.requestFocus();
@@ -281,7 +283,7 @@ public class FocusableTable extends JXTable {
         if (focusOwner != null &&
                 firstComponent != null &&
                 firstComponent != focusOwner) {
-            if (focusOwner == this) {
+            if (focusOwner == impl) {
                 Component component = defaultFocusTraversalPolicy.getLastComponent(activeComponent);
                 if (component != null)
                     component.requestFocus();
