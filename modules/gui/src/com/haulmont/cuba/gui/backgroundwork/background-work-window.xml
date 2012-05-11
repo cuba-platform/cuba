@@ -6,8 +6,8 @@
 
 <window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         caption="msg://backgroundWork.caption"
-        class="com.haulmont.ccpayments.gui.screen.background_work.BackgroundWorkWindow"
-        messagesPack="com.haulmont.ccpayments.gui.screen.background_work">
+        class="com.haulmont.cuba.gui.backgroundwork.BackgroundWorkWindow"
+        messagesPack="com.haulmont.cuba.gui.backgroundwork">
     <dsContext>
 
     </dsContext>
