@@ -15,6 +15,8 @@ import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import org.jdesktop.swingx.JXTreeTable;
 
 import javax.swing.*;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.TableCellEditor;
@@ -86,7 +88,21 @@ public class DesktopTreeTable
                 return (treeTable.isEditable() && editColumn.isEditable())
                         || tableModel.isGeneratedColumn(editColumn);
             }
+
         };
+        impl.addTreeExpansionListener(new TreeExpansionListener() {
+            @Override
+            public void treeExpanded(TreeExpansionEvent event) {
+                if (!cellRenderers.isEmpty())
+                    repaint();
+            }
+
+            @Override
+            public void treeCollapsed(TreeExpansionEvent event) {
+                if (!cellRenderers.isEmpty())
+                    repaint();
+            }
+        });
         impl.setRootVisible(false);
         impl.setColumnControlVisible(true);
         impl.setEditable(false);
