@@ -78,7 +78,7 @@
     height: 25px;
     white-space: nowrap;
     text-align: left; /* Force default alignment */
-    background: #fff url(img/bg-left-filter-readonly.png) no-repeat;
+    background: transparent url(img/bg-left-filter-readonly.png) no-repeat;
     overflow: hidden;
 }
 
@@ -160,7 +160,7 @@
 .v-filterselect.v-readonly,
 .v-filterselect.v-readonly .v-filterselect-wrap,
 .v-filterselect.v-readonly .v-filterselect-input {
-    background-color: #fff;
+    background-color: transparent;
 }
 
 .v-filterselect.v-readonly .v-filterselect-wrap {
