@@ -301,20 +301,23 @@ public class FieldGroupLoader extends AbstractFieldLoader {
                 MetaClass metaClass = metaClass(component, field);
                 MetaProperty metaProperty = metaClass.getPropertyPath(field.getId()).getMetaProperty();
 
-                UserSession userSession = UserSessionProvider.getUserSession(); // UserSessionClient.getUserSession();
-                boolean b = (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
+                UserSession userSession = UserSessionProvider.getUserSession();
+                boolean editableFromPermissions = (userSession.isEntityOpPermitted(metaClass, EntityOp.CREATE)
                         || userSession.isEntityOpPermitted(metaClass, EntityOp.UPDATE))
                         && userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.MODIFY);
 
-                if (!b) {
+                if (!editableFromPermissions) {
                     component.setEditable(field, false);
-                    return;
-                }
+                    boolean visible = userSession.isEntityAttrPermitted(metaClass,
+                            metaProperty.getName(), EntityAttrAccess.VIEW);
 
-                Element element = field.getXmlDescriptor();
-                final String editable = element.attributeValue("editable");
-                if (!StringUtils.isEmpty(editable)) {
-                    component.setEditable(field, BooleanUtils.toBoolean(editable));
+                    component.setVisible(field, visible);
+                } else {
+                    Element element = field.getXmlDescriptor();
+                    final String editable = element.attributeValue("editable");
+                    if (!StringUtils.isEmpty(editable)) {
+                        component.setEditable(field, BooleanUtils.toBoolean(editable));
+                    }
                 }
             }
         }
