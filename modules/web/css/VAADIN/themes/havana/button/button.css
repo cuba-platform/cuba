@@ -42,7 +42,7 @@
 .v-popupbutton .v-button-wrap {
     height: 100%;
     /*background: transparent url(../peyto/button/img/button.png) no-repeat right top;*/
-    padding: 4px 5px 0 5px;
+    padding: 4px 0 0 0;
     display: block;
 }
 
