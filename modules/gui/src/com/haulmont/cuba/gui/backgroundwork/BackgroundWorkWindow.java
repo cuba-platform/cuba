@@ -64,7 +64,7 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
         params.put("message", message);
         params.put("cancelAllowed", cancelAllowed);
         params.put("timeoutSec", timeoutSec);
-        task.getOwnerWindow().openWindow("cc$BackgroundWorkWindow", WindowManager.OpenType.DIALOG, params);
+        task.getOwnerWindow().openWindow("core$BackgroundWorkWindow", WindowManager.OpenType.DIALOG, params);
     }
 
     /**
@@ -130,7 +130,7 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
 
     private class CancelAction extends AbstractAction {
         private CancelAction() {
-            super("actions.Cancel");
+            super("cancel");
         }
 
         @Override
