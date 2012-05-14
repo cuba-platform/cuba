@@ -27,8 +27,6 @@ import com.haulmont.cuba.web.toolkit.ui.DateFieldWrapper;
 import com.haulmont.cuba.web.toolkit.ui.MaskedTextField;
 import com.vaadin.data.Property;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.sql.Time;
 import java.util.ArrayList;
@@ -38,11 +36,9 @@ import java.util.List;
 
 public class WebDateField
         extends
-        WebAbstractComponent<DateFieldWrapper>
+            WebAbstractComponent<DateFieldWrapper>
         implements
-        DateField, Component.Wrapper {
-
-    private Log log = LogFactory.getLog(WebDateField.class);
+            DateField, Component.Wrapper {
 
     private Resolution resolution;
 
@@ -267,11 +263,14 @@ public class WebDateField
 
         updatingInstance = true;
         try {
+            Date value = constructDate();
             if (datasource != null && metaPropertyPath != null) {
-                Date value = constructDate();
                 if (datasource.getItem() != null) {
                     InstanceUtils.setValueEx(datasource.getItem(), metaPropertyPath.getPath(), value);
                 }
+            } else if (component.getPropertyDataSource() != null) {
+                // support dateField in editable table
+                component.getPropertyDataSource().setValue(value);
             }
             valid = true;
         } catch (RuntimeException e) {
@@ -330,7 +329,7 @@ public class WebDateField
         dsManager = new DsManager(datasource, this);
 
         final MetaClass metaClass = datasource.getMetaClass();
-        metaPropertyPath = metaClass.getPropertyEx(property);
+        metaPropertyPath = metaClass.getPropertyPath(property);
         try {
             metaProperty = metaPropertyPath.getMetaProperty();
         } catch (ArrayIndexOutOfBoundsException e) {

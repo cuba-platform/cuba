@@ -6,14 +6,10 @@
 
 package com.haulmont.cuba.web.toolkit.ui;
 
-import com.haulmont.cuba.gui.components.ValidationException;
 import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
+import com.vaadin.ui.Layout;
 
-import com.vaadin.ui.*;
-
-import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -38,11 +34,15 @@ public class DateFieldWrapper extends CustomField {
 
     @Override
     public Object getValue() {
+        if (getPropertyDataSource() != null)
+            return getPropertyDataSource().getValue();
         return dateField.getValue();
     }
 
     @Override
     public void setValue(Object newValue) throws ReadOnlyException, ConversionException {
+        if (getPropertyDataSource() != null)
+            getPropertyDataSource().setValue(newValue);
         dateField.setValue(newValue);
     }
 
@@ -57,7 +57,7 @@ public class DateFieldWrapper extends CustomField {
 
     public void setReadOnly(boolean readOnly) {
         dateField.setEditable(!readOnly);
-    }                                    
+    }
 
     public boolean isReadOnly() {
         return !dateField.isEditable();
@@ -70,5 +70,22 @@ public class DateFieldWrapper extends CustomField {
     public void setRequired(boolean required) {
         dateField.setRequired(required);
         super.setRequired(required);
+    }
+
+    @Override
+    public void valueChange(Property.ValueChangeEvent event) {
+        super.valueChange(event);
+        // support dateField in editable table
+        Property property = event.getProperty();
+        if (property != null)
+            dateField.setValue(property.getValue());
+    }
+
+    @Override
+    public void setPropertyDataSource(Property newDataSource) {
+        super.setPropertyDataSource(newDataSource);
+        // support dateField in editable table
+        if (newDataSource != null)
+            dateField.setValue(newDataSource.getValue());
     }
 }
