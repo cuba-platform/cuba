@@ -98,6 +98,9 @@ public class WebLookupField
             return value;
         } else {
             if (optionsDatasource != null) {
+                if (Datasource.State.INVALID.equals(optionsDatasource.getState())) {
+                    optionsDatasource.refresh();
+                }
                 return optionsDatasource.getItemId((Entity) value);
             } else {
                 if ((optionsList != null) || (optionsMap != null))
