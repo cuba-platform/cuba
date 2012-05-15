@@ -157,8 +157,11 @@ public class WebDateField
         composition.setColumnExpandRatio(0, 1.0f);
         composition.setComponentAlignment(dateField, com.vaadin.ui.Alignment.MIDDLE_LEFT);
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
+            composition.setSpacing(true);
             composition.addComponent(timeField.<com.vaadin.ui.Component>getComponent());
             composition.setComponentAlignment(timeField.<com.vaadin.ui.Component>getComponent(), com.vaadin.ui.Alignment.MIDDLE_RIGHT);
+        } else {
+            composition.setSpacing(false);
         }
     }
 
