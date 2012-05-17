@@ -15,11 +15,11 @@
         <timer id="timer" delay="5000" repeating="true"/>
     </timers>
 
-    <layout expand="logsBox">
-        <hbox spacing="true" margin="true">
+    <layout expand="logsBox" spacing="true">
+        <hbox spacing="true" width="100%">
             <groupBox id="logOptionsBox">
                 <caption label="msg://logOptions"/>
-                <hbox margin="true" spacing="true" expandable="false">
+                <hbox spacing="true" expandable="false">
                     <label id="labelLogFile" value="msg://logFile"/>
                     <lookupField id="logFileNamesField" width="210px"/>
                     <button id="downloadButton" caption="msg://downloadButton" invoke="download"/>
@@ -28,10 +28,9 @@
                 </hbox>
             </groupBox>
 
-
             <groupBox id="logLevelBox">
                 <caption label="msg://logLevel"/>
-                <hbox spacing="true" margin="true" expandable="false">
+                <hbox spacing="true" expandable="false">
                     <label id="labelLogName" value="msg://loggerName"/>
                     <lookupField id="logNameField" width="300px"/>
                     <label id="labelLevel" value="msg://level"/>
