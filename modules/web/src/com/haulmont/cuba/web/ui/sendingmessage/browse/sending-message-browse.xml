@@ -14,12 +14,14 @@
         </collectionDatasource>
     </dsContext>
     <layout expand="table">
-        <split id="split" orientation="horizontal" pos="70" >
-            <vbox expand="table">
-                <iframe id="filter" src="/com/haulmont/cuba/web/ui/sendingmessage/browse/sending-message-browse-filter.xml"/>
+        <split id="split" orientation="horizontal" pos="70">
+            <vbox expand="table" spacing="true">
+                <filter id="genericFilter" datasource="sendingMessageDs">
+                    <properties include=".*"/>
+                </filter>
                 <table id="table">
                     <columns>
-                        <column id="address" />
+                        <column id="address"/>
                         <column id="from"/>
                         <column id="caption"/>
                         <column id="status"/>

@@ -5,16 +5,14 @@
  */
 package com.haulmont.cuba.web.ui.sendingmessage.browse;
 
-import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.IFrame;
 
 /**
- * <p>$Id$</p>
- *
  * @author ovchinnikov
+ * @version $Id$
  */
-
-public class SendingMessageBrowser extends AbstractLookup {
+public class SendingMessageBrowser extends AbstractWindow {
 
     public SendingMessageBrowser(IFrame frame) {
         super(frame);
