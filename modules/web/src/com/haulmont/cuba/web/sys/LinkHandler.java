@@ -26,6 +26,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
 import com.haulmont.cuba.web.exception.AccessDeniedHandler;
+import com.haulmont.cuba.web.exception.EntityAccessExceptionHandler;
 import com.haulmont.cuba.web.exception.NoSuchScreenHandler;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -141,6 +142,8 @@ public class LinkHandler implements Serializable {
             new AccessDeniedHandler().handle(e, app);
         } catch (NoSuchScreenException e) {
             new NoSuchScreenHandler().handle(e, app);
+        }  catch (EntityAccessException e) {
+            new EntityAccessExceptionHandler().handle(e, app);
         }
     }
 

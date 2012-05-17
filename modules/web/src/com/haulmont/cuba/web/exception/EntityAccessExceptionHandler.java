@@ -31,4 +31,8 @@ public class EntityAccessExceptionHandler extends AbstractExceptionHandler {
         String msg = MessageProvider.formatMessage(getClass(), "entityAccessException.message");
         app.getAppWindow().showNotification(msg, Window.Notification.TYPE_WARNING_MESSAGE);
     }
+
+    public void handle(EntityAccessException e, App app) {
+        doHandle(app, EntityAccessException.class.getName(), e.getMessage(), e);
+    }
 }
