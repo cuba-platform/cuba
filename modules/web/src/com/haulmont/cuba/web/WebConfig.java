@@ -262,7 +262,7 @@ public interface WebConfig extends Config
      * @return Timeout in ms
      */
     @Property("cuba.backgroundWorker.uiCheckInterval")
-    @DefaultInteger(1000)
+    @DefaultInteger(2000)
     Integer getUiCheckInterval();
 
     /**
