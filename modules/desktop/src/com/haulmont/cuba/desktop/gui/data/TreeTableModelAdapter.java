@@ -45,6 +45,8 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
                     @Override
                     public void collectionChanged(CollectionDatasource ds, Operation operation) {
                         Object root = getRoot();
+                        // Fixes #1160
+                        TreeTableModelAdapter.this.treeTable.setAutoCreateColumnsFromModel(false);
                         modelSupport.fireTreeStructureChanged(root == null ? null : new TreePath(root));
                     }
                 }
