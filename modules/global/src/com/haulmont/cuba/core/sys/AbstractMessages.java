@@ -9,6 +9,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.Messages;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
@@ -21,9 +22,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * <p>$Id$</p>
+ * Messages loader implementation
  *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class AbstractMessages implements Messages {
 
@@ -127,6 +129,7 @@ public abstract class AbstractMessages implements Messages {
             return notFoundValue;
 
         StrTokenizer tokenizer = new StrTokenizer(packs);
+        //noinspection unchecked
         List<String> list = tokenizer.getTokenList();
         Collections.reverse(list);
         for (String pack : list) {
@@ -179,36 +182,17 @@ public abstract class AbstractMessages implements Messages {
         if (confDir == null)
             confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir().replaceAll("\\\\", "/");
 
-        String s = confDir + "/" + pack.replaceAll("\\.", "/");
-        while (s != null && !s.equals(confDir)) {
-            file = new File(s + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT);
+        String packPath = confDir + "/" + pack.replaceAll("\\.", "/");
+        while (packPath != null && !packPath.equals(confDir)) {
+            file = new File(packPath + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT);
             if (!file.exists()) {
-                file = new File(s + "/" + BUNDLE_NAME + EXT);
+                file = new File(packPath + "/" + BUNDLE_NAME + EXT);
             }
             if (file.exists()) {
                 try {
                     FileInputStream stream = new FileInputStream(file);
-                    try {
-                        InputStreamReader reader = new InputStreamReader(stream, ENCODING);
-                        Properties properties = new Properties();
-                        properties.load(reader);
-                        // process includes
-                        for (String k : properties.stringPropertyNames()) {
-                            if (k.equals("@include"))
-                                include(pack, properties.getProperty(k), locale);
-                        }
-                        // load all found strings into cache
-                        for (String k : properties.stringPropertyNames()) {
-                            if (!k.equals("@include"))
-                                strCache.put(makeCacheKey(pack, k, locale), properties.getProperty(k));
-                        }
-                    } finally {
-                        try {
-                            stream.close();
-                        } catch (IOException e) {
-                            //
-                        }
-                    }
+
+                    cachePropertiesFromStream(pack, locale, stream, packPath);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -217,11 +201,11 @@ public abstract class AbstractMessages implements Messages {
                     return msg;
             }
             // not found, keep searching
-            int pos = s.lastIndexOf("/");
+            int pos = packPath.lastIndexOf("/");
             if (pos < 0)
-                s = null;
+                packPath = null;
             else
-                s = s.substring(0, pos);
+                packPath = packPath.substring(0, pos);
         }
         return null;
     }
@@ -233,51 +217,28 @@ public abstract class AbstractMessages implements Messages {
         if (msg != null)
             return msg;
 
-        String s = "/" + pack.replaceAll("\\.", "/");
-        while (s != null) {
-            String name = s + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT;
+        String packPath = "/" + pack.replaceAll("\\.", "/");
+        while (packPath != null) {
+            String name = packPath + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT;
             InputStream stream;
             stream = getClass().getResourceAsStream(name);
             if (stream == null) {
-                name = s + "/" + BUNDLE_NAME + EXT;
+                name = packPath + "/" + BUNDLE_NAME + EXT;
                 stream = getClass().getResourceAsStream(name);
             }
             if (stream != null) {
-                try {
-                    InputStreamReader reader = new InputStreamReader(stream, ENCODING);
-                    Properties properties = new Properties();
-                    properties.load(reader);
-                    // process includes
-                    for (String k : properties.stringPropertyNames()) {
-                        if (k.equals("@include"))
-                            include(pack, properties.getProperty(k), locale);
-                    }
-                    // load all found strings into cache
-                    for (String k : properties.stringPropertyNames()) {
-                        if (!k.equals("@include"))
-                            strCache.put(makeCacheKey(pack, k, locale), properties.getProperty(k));
-                    }
-                } catch (UnsupportedEncodingException e) {
-                    log.warn("Unable to read " + s, e);
-                } catch (IOException e) {
-                    log.warn("Unable to read " + s, e);
-                } finally {
-                    try {
-                        stream.close();
-                    } catch (IOException e) {
-                        //
-                    }
-                }
+                cachePropertiesFromStream(pack, locale, stream, packPath);
+
                 msg = strCache.get(cacheKey);
                 if (msg != null)
                     return msg;
             }
             // not found, keep searching
-            int pos = s.lastIndexOf("/");
+            int pos = packPath.lastIndexOf("/");
             if (pos < 0)
-                s = null;
+                packPath = null;
             else
-                s = s.substring(0, pos);
+                packPath = packPath.substring(0, pos);
         }
         return null;
     }
@@ -287,21 +248,21 @@ public abstract class AbstractMessages implements Messages {
         if (confDir == null)
             confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir().replaceAll("\\\\", "/");
 
-        String s = confDir + "/" + pack.replaceAll("\\.", "/");
-        file = new File(s + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT);
+        String packPath = confDir + "/" + pack.replaceAll("\\.", "/");
+        file = new File(packPath + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT);
         if (!file.exists()) {
-            file = new File(s + "/" + BUNDLE_NAME + EXT);
+            file = new File(packPath + "/" + BUNDLE_NAME + EXT);
         }
         InputStream stream;
         try {
             if (file.exists()) {
                 stream = new FileInputStream(file);
             } else {
-                s = "/" + pack.replaceAll("\\.", "/");
-                String name = s + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT;
+                packPath = "/" + pack.replaceAll("\\.", "/");
+                String name = packPath + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT;
                 stream = getClass().getResourceAsStream(name);
                 if (stream == null) {
-                    name = s + "/" + BUNDLE_NAME + EXT;
+                    name = packPath + "/" + BUNDLE_NAME + EXT;
                     stream = getClass().getResourceAsStream(name);
                 }
                 if (stream == null) {
@@ -309,33 +270,39 @@ public abstract class AbstractMessages implements Messages {
                     return;
                 }
             }
-            try {
-                InputStreamReader reader = new InputStreamReader(stream, ENCODING);
-                Properties properties = new Properties();
-                properties.load(reader);
-                // load all found strings into cache
-                for (String k : properties.stringPropertyNames()) {
-                    if (k.equals("@include")) {
-                        include(targetPack, properties.getProperty(k), locale);
-                    } else {
-                        strCache.put(makeCacheKey(targetPack, k, locale), properties.getProperty(k));
-                    }
-                }
-            } finally {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    //
-                }
-            }
+
+            cachePropertiesFromStream(targetPack, locale, stream, packPath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    private void cachePropertiesFromStream(String pack, Locale locale, InputStream stream, String packPath) {
+        try {
+            InputStreamReader reader = new InputStreamReader(stream, ENCODING);
+            Properties properties = new Properties();
+            properties.load(reader);
+            // process includes
+            for (String k : properties.stringPropertyNames()) {
+                if (k.equals("@include"))
+                    include(pack, properties.getProperty(k), locale);
+            }
+            // load all found strings into cache
+            for (String k : properties.stringPropertyNames()) {
+                if (!k.equals("@include"))
+                    strCache.put(makeCacheKey(pack, k, locale), properties.getProperty(k));
+            }
+        } catch (UnsupportedEncodingException e) {
+            log.warn("Unable to read " + packPath, e);
+        } catch (IOException e) {
+            log.warn("Unable to read " + packPath, e);
+        } finally {
+            IOUtils.closeQuietly(stream);
+        }
+    }
+
     private String makeCacheKey(String pack, String key, Locale locale) {
-        String cacheKey = pack + "/" + locale + "/" + key;
-        return cacheKey;
+        return pack + "/" + locale + "/" + key;
     }
 
     private String getPackName(Class c) {
