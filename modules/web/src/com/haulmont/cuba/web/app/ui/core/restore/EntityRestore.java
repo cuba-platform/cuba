@@ -45,7 +45,6 @@ public class EntityRestore extends AbstractWindow {
     public void init(Map<String, Object> params) {
         super.init(params);
         entities = getComponent("entities");
-        //entitiesDs = getDsContext().get("entitiesDs");
         primaryFilter = getComponent("genericFilter");
         refreshButton = getComponent("refresh");
         refreshButton.setAction(new AbstractAction("refresh"){
@@ -57,16 +56,23 @@ public class EntityRestore extends AbstractWindow {
                     if (metaProperty != null) {
                         if (entitiesTable != null)
                             tablePanel.remove(entitiesTable);
-                        if (restore != null)
-                            tablePanel.remove(restore);
                         if (filter != null)
                             tablePanel.remove(filter);
                         entitiesTable = new WebTable();
                         entitiesTable.setFrame(frame);
+
+                        restore = new WebButton();
+                        restore.setId("restore");
+                        restore.setCaption(getMessage("entityRestore.restore"));
+
+                        entitiesTable.setButtonsPanel(new WebButtonsPanel());
+                        entitiesTable.getButtonsPanel().addButton(restore);
+
                         entitiesTable.setRowsCount(new WebRowsCount());
+
                         for (MetaProperty mp : metaClass.getProperties()) {
-                            if (MetaProperty.Type.DATATYPE == mp.getType() /*&& !Arrays.asList(removeFields).contains(mp.getName())*/) {
-                                Table.Column column = new Table.Column(metaClass.getPropertyEx(mp.getName()));
+                            if (MetaProperty.Type.DATATYPE == mp.getType()) {
+                                Table.Column column = new Table.Column(metaClass.getPropertyPath(mp.getName()));
                                 Class classJava = metaClass.getJavaClass();
                                 column.setCaption(MessageProvider.getMessage(classJava, classJava.getSimpleName() + "." + mp.getName()));
                                 entitiesTable.addColumn(column);
@@ -77,6 +83,7 @@ public class EntityRestore extends AbstractWindow {
                         entitiesDs.setSoftDeletion(false);
                         entitiesDs.refresh();
                         entitiesTable.setDatasource(entitiesDs);
+
                         filter = new WebFilter();
                         filter.setId("genericFilter");
                         filter.setFrame(getFrame());
@@ -84,6 +91,7 @@ public class EntityRestore extends AbstractWindow {
                         filter.setXmlDescriptor(primaryFilter.getXmlDescriptor());
                         filter.setUseMaxResults(true);
                         filter.setDatasource(entitiesDs);
+
                         entitiesTable.setWidth("100%");
                         entitiesTable.setHeight("100%");
                         entitiesTable.setMultiSelect(true);
@@ -124,12 +132,10 @@ public class EntityRestore extends AbstractWindow {
                                 return getMessage("entityRestore.restore");
                             }
                         });
-                        restore = new WebButton();
-                        restore.setId("restore");
-                        restore.setCaption(getMessage("entityRestore.restore"));
+
                         restore.setAction(entitiesTable.getAction("restore"));
+
                         tablePanel.add(filter);
-                        tablePanel.add(restore);
                         tablePanel.add(entitiesTable);
                         tablePanel.expand(entitiesTable, "100%", "100%");
                         entitiesTable.refresh();

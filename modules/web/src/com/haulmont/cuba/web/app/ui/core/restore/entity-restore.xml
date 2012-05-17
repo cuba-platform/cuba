@@ -7,14 +7,14 @@
         >
 
     <dsContext/>
-        <!--<groupDatasource id="entitiesDs"/>-->
-    <!--</dsContext>-->
+
     <layout>
         <vbox expand="table-panel" spacing="true">
-            <hbox margin="true;true;true;false" spacing="true">
+            <hbox spacing="true">
                 <lookupField id="entities" width="250px"/>
                 <button id="refresh" icon="icons/refresh.png"/>
             </hbox>
+
             <filter id="genericFilter">
                 <properties include=".*" exclude=""/>
             </filter>
