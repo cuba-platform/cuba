@@ -8,19 +8,17 @@
 
     <dsContext/>
 
-    <layout>
-        <vbox expand="table-panel" spacing="true">
-            <hbox spacing="true">
-                <lookupField id="entities" width="250px"/>
-                <button id="refresh" icon="icons/refresh.png"/>
-            </hbox>
+    <layout expand="tablePanel" spacing="true">
+        <hbox spacing="true">
+            <lookupField id="entities" width="250px"/>
+            <button id="refreshButton" icon="icons/refresh.png"/>
+        </hbox>
 
-            <filter id="genericFilter">
-                <properties include=".*" exclude=""/>
-            </filter>
+        <filter id="primaryFilter">
+            <properties include=".*" exclude=""/>
+        </filter>
 
-            <vbox id="table-panel" spacing="true">
-            </vbox>
+        <vbox id="tablePanel" spacing="true">
         </vbox>
     </layout>
 </window>
