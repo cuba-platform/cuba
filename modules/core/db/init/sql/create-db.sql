@@ -234,6 +234,7 @@ create table SEC_USER (
     GROUP_ID varchar(36),
     DEFAULT_SUBSTITUTED_USER_ID varchar(36),
     IP_MASK varchar(200),
+    TYPE varchar(1),
 
     primary key (ID),
     constraint SEC_USER_UNIQ_LOGIN unique (LOGIN_LC, DELETE_TS),
@@ -599,8 +600,8 @@ create table SYS_FTS_QUEUE (
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', current_timestamp, 0, 'Company', null);
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
-values ('60885987-1b61-4247-94c7-dff348347f93', current_timestamp, 0, 'admin', 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true);
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
+values ('60885987-1b61-4247-94c7-dff348347f93', current_timestamp, 0, 'admin', 'admin', '21232f297a57a5a743894a0e4a801fc3', 'Administrator', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true, 'C');
 
 insert into SEC_ROLE (ID, CREATE_TS, VERSION, NAME, TYPE)
 values ('0c018061-b26f-4de2-a5be-dff348347f93', current_timestamp, 0, 'Administrators', 10);
@@ -874,8 +875,8 @@ alter table SYS_SENDING_ATTACHMENT add constraint FK_SYS_SENDING_ATTACHMENT_SEND
 CREATE INDEX SYS_SENDING_ATTACHMENT_MESSAGE_IDX
   ON SYS_SENDING_ATTACHMENT(MESSAGE_ID );
 
-insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE)
-  values ('60885987-1b61-4247-94c7-dff348347f94', now(), 0, 'emailer', 'emailer', '2f22cf032e4be87de59e4e8bfd066ed1', 'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true);
+insert into SEC_USER (ID, CREATE_TS, VERSION, LOGIN, LOGIN_LC, PASSWORD, NAME, GROUP_ID, ACTIVE, TYPE)
+  values ('60885987-1b61-4247-94c7-dff348347f94', now(), 0, 'emailer', 'emailer', '2f22cf032e4be87de59e4e8bfd066ed1', 'User for Email sending', '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', true, 'C');
 
 ------------------------------------------------------------------------------------------------------------
 
