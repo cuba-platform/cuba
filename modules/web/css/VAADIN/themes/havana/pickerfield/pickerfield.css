@@ -28,6 +28,10 @@
     overflow: hidden;
 }
 
+.pickerfield.v-readonly {
+    background-color: transparent;
+}
+
 .pickerfield {
     background-color: #fff;
 }

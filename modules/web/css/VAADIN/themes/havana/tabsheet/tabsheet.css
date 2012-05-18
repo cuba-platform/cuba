@@ -526,9 +526,7 @@
 }
 
 .v-tabsheet-tabitem .v-disabled {
-/*    font-weight: bold;*/
     color: #fff;
-    background: #ccc url(img/tab-bg.gif);
 }
 
 /*
