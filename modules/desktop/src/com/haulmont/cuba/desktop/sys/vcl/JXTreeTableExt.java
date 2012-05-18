@@ -1,0 +1,48 @@
+/*
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+package com.haulmont.cuba.desktop.sys.vcl;
+
+import org.jdesktop.swingx.JXTreeTable;
+import org.jdesktop.swingx.treetable.TreeTableModel;
+
+import javax.swing.tree.TreePath;
+import java.util.Enumeration;
+import java.util.HashSet;
+
+/**
+ * @author artamonov
+ * @version $Id$
+ */
+public class JXTreeTableExt extends JXTreeTable {
+    protected HashSet<TreePath> expandedPaths;
+
+    public void backupExpandedNodes() {
+        expandedPaths = new HashSet<TreePath>();
+
+        TreeTableModel treeTableModel = getTreeTableModel();
+        TreePath rootPath = new TreePath(treeTableModel.getRoot());
+        Enumeration<?> expandedDescendants = getExpandedDescendants(rootPath);
+
+        if (expandedDescendants != null) {
+            while (expandedDescendants.hasMoreElements()) {
+                expandedPaths.add((TreePath) expandedDescendants.nextElement());
+            }
+        }
+    }
+
+    public void restoreExpandedNodes() {
+        if ((expandedPaths != null) && (!expandedPaths.isEmpty())) {
+            for (TreePath expandedPath : expandedPaths) {
+                int pathRow = getRowForPath(expandedPath);
+                if (pathRow >= 0) {
+                    expandPath(expandedPath);
+                }
+            }
+        }
+        expandedPaths = null;
+    }
+}

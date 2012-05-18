@@ -8,11 +8,11 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.desktop.gui.data.TreeTableModelAdapter;
+import com.haulmont.cuba.desktop.sys.vcl.JXTreeTableExt;
 import com.haulmont.cuba.desktop.sys.vcl.TableFocusManager;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import org.jdesktop.swingx.JXTreeTable;
 
 import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
@@ -33,15 +33,14 @@ import java.util.*;
  * @author krivopustov
  */
 public class DesktopTreeTable
-        extends DesktopAbstractTable<JXTreeTable>
+        extends DesktopAbstractTable<JXTreeTableExt>
         implements TreeTable {
     private String hierarchyProperty;
 
     protected Map<Integer, TableCellRenderer> cellRenderers = new HashMap<Integer, TableCellRenderer>();
 
     public DesktopTreeTable() {
-        impl = new JXTreeTable() {
-
+        impl = new JXTreeTableExt() {
             protected TableFocusManager focusManager = new TableFocusManager(this);
 
             @Override
@@ -88,8 +87,8 @@ public class DesktopTreeTable
                 return (treeTable.isEditable() && editColumn.isEditable())
                         || tableModel.isGeneratedColumn(editColumn);
             }
-
         };
+
         impl.addTreeExpansionListener(new TreeExpansionListener() {
             @Override
             public void treeExpanded(TreeExpansionEvent event) {
@@ -135,6 +134,9 @@ public class DesktopTreeTable
                 new TreeSelectionListener() {
                     @Override
                     public void valueChanged(TreeSelectionEvent e) {
+                        if (isRowsAjusting)
+                            return;
+
                         Entity entity = getSingleSelected();
                         datasource.setItem(entity);
                     }
@@ -252,11 +254,21 @@ public class DesktopTreeTable
     }
 
     @Override
-    public void setSelected(Collection<Entity> items) {
-        for (Entity item : items) {
-            TreePath treePath = ((TreeTableModelAdapter) tableModel).getTreePath(item);
-            impl.getTreeSelectionModel().addSelectionPath(treePath);
-        }
+    public void setSelected(final Collection<Entity> items) {
+        // JXTreeTable deferres some work after tree structural changes, so it won't work if we select immediately
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                if ((items != null) && (items.size() > 0)) {
+                    for (Entity item : items) {
+                        TreePath treePath = ((TreeTableModelAdapter) tableModel).getTreePath(item);
+                        impl.getTreeSelectionModel().addSelectionPath(treePath);
+                    }
+                } else {
+                    impl.getTreeSelectionModel().setSelectionPath(null);
+                }
+            }
+        });
     }
 
     @Override

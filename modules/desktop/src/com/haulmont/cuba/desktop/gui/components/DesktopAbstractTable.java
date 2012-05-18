@@ -74,16 +74,16 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
     protected boolean sortable = true;
     protected TableSettings tableSettings;
-    private boolean editable;
+    protected boolean editable;
     protected StyleProvider styleProvider;
 
-    private Action itemClickAction;
-    private Action enterPressAction;
+    protected Action itemClickAction;
+    protected Action enterPressAction;
 
-    private boolean columnsInitialized = false;
-    private int generatedColumnsCount = 0;
+    protected boolean columnsInitialized = false;
+    protected int generatedColumnsCount = 0;
 
-    private boolean isRowsAjusting = false;
+    protected boolean isRowsAjusting = false;
 
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
@@ -180,8 +180,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
                                            final ListActionType defaultAction) {
         ShortcutAction.KeyCombination actionKeyCombination = ShortcutAction.KeyCombination.create(keyCombination);
         impl.getInputMap().put(DesktopComponentsHelper.convertKeyCombination(actionKeyCombination), shortcutActionId);
-        impl.getActionMap().put(shortcutActionId, new AbstractAction(){
-
+        impl.getActionMap().put(shortcutActionId, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Action listAction = getAction(defaultAction.getId());
@@ -480,11 +479,12 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
     protected void initChangeListener() {
         tableModel.addChangeListener(new AnyTableModelAdapter.DataChangeListener() {
-            private Set selection;
+
+            private Set selectionBackup;
 
             @Override
             public void beforeChange() {
-                selection = getSelected();
+                selectionBackup = getSelected();
                 // ignore selection change while data changing
                 isRowsAjusting = true;
             }
@@ -492,16 +492,16 @@ public abstract class DesktopAbstractTable<C extends JTable>
             @Override
             public void afterChange() {
                 Set<Entity> newSelection = null;
-                if (selection != null) {
+                if (selectionBackup != null) {
                     newSelection = new HashSet<Entity>();
                     // filter selection
-                    for (Object item : selection)
+                    for (Object item : selectionBackup)
                         if (tableModel.getRowIndex((Entity) item) >= 0)
                             newSelection.add((Entity) item);
                 }
                 // apply selection
                 setSelected(newSelection);
-                selection = null;
+                selectionBackup = null;
                 // enable selection change listener
                 isRowsAjusting = false;
             }
@@ -516,7 +516,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
     protected void clearGeneratedColumnsCache() {
         TableColumnModel columnModel = impl.getColumnModel();
-        for (Column column: columnsOrder) {
+        for (Column column : columnsOrder) {
             if (tableModel.isGeneratedColumn(column)) {
                 int columnIndex = columnModel.getColumnIndex(column);
                 TableColumn tableColumn = columnModel.getColumn(columnIndex);
@@ -982,7 +982,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
             return true;
         }
         TableColumnModel columnModel = impl.getColumnModel();
-        for (Column column: columnsOrder) {
+        for (Column column : columnsOrder) {
             if (!tableModel.isGeneratedColumn(column)) {
                 continue;
             }

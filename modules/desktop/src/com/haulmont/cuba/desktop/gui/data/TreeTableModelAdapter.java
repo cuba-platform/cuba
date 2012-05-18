@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.gui.data;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.desktop.sys.vcl.JXTreeTableExt;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -18,6 +19,7 @@ import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.tree.TreePath;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,14 +33,17 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
     protected TreeModelAdapter treeDelegate;
     private TableModelAdapter tableDelegate;
 
+    protected List<DataChangeListener> changeListeners = new ArrayList<DataChangeListener>();
+
     public TreeTableModelAdapter(
             JXTreeTable treeTable,
             HierarchicalDatasource datasource,
             List<Table.Column> columns,
             boolean autoRefresh) {
+
         this.treeTable = treeTable;
-        treeDelegate = createTreeModelAdapter(datasource, autoRefresh);
-        tableDelegate = new TableModelAdapter(datasource, columns, autoRefresh);
+        this.treeDelegate = createTreeModelAdapter(datasource, autoRefresh);
+        this.tableDelegate = new TableModelAdapter(datasource, columns, autoRefresh);
 
         datasource.addListener(
                 new CollectionDsListenerAdapter() {
@@ -46,8 +51,20 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
                     public void collectionChanged(CollectionDatasource ds, Operation operation) {
                         Object root = getRoot();
                         // Fixes #1160
-                        TreeTableModelAdapter.this.treeTable.setAutoCreateColumnsFromModel(false);
+                        JXTreeTableExt impl = (JXTreeTableExt) TreeTableModelAdapter.this.treeTable;
+                        impl.setAutoCreateColumnsFromModel(false);
+
+                        for (DataChangeListener changeListener : changeListeners)
+                            changeListener.beforeChange();
+
+                        impl.backupExpandedNodes();
+
                         modelSupport.fireTreeStructureChanged(root == null ? null : new TreePath(root));
+
+                        impl.restoreExpandedNodes();
+
+                        for (DataChangeListener changeListener : changeListeners)
+                            changeListener.afterChange();
                     }
                 }
         );
@@ -115,7 +132,8 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
 
     @Override
     public int getRowIndex(Entity entity) {
-        throw new UnsupportedOperationException();
+        TreePath treePath = getTreePath(entity);
+        return treeTable.getRowForPath(treePath);
     }
 
     @Override
@@ -143,10 +161,12 @@ public class TreeTableModelAdapter extends AbstractTreeTableModel implements Any
 
     @Override
     public void addChangeListener(DataChangeListener changeListener) {
+        changeListeners.add(changeListener);
     }
 
     @Override
     public void removeChangeListener(DataChangeListener changeListener) {
+        changeListeners.remove(changeListener);
     }
 
     @Override
