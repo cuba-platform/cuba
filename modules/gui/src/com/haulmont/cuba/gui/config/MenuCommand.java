@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import org.apache.commons.lang.BooleanUtils;
@@ -40,24 +41,9 @@ public class MenuCommand {
     }
 
     public void execute() {
-        String caption = MenuConfig.getMenuItemCaption(item.getId());
 
-        Map<String, Object> params = new HashMap<String, Object>();
         Element descriptor = item.getDescriptor();
-        for (Element element : Dom4j.elements(descriptor, "param")) {
-            String value = element.attributeValue("value");
-            EntityLoadInfo info = EntityLoadInfo.parse(value);
-            if (info == null) {
-                if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
-                    Boolean booleanValue = Boolean.valueOf(value);
-                    params.put(element.attributeValue("name"), booleanValue);
-                } else {
-                    params.put(element.attributeValue("name"), value);
-                }
-            } else
-                params.put(element.attributeValue("name"), loadEntityInstance(info));
-        }
-        params.put("caption", caption);
+        Map<String, Object> params = loadParams(descriptor);
 
         WindowManager.OpenType openType = WindowManager.OpenType.NEW_TAB;
         String openTypeStr = descriptor.attributeValue("openType");
@@ -110,6 +96,34 @@ public class MenuCommand {
                     params
             );
         }
+    }
+
+    private Map<String, Object> loadParams(Element descriptor) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        for (Element element : Dom4j.elements(descriptor, "param")) {
+            String value = element.attributeValue("value");
+            EntityLoadInfo info = EntityLoadInfo.parse(value);
+            if (info == null) {
+                if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+                    Boolean booleanValue = Boolean.valueOf(value);
+                    params.put(element.attributeValue("name"), booleanValue);
+                } else {
+                    if (value.startsWith("${") && value.endsWith("}")) {
+                        String property = AppContext.getProperty(value.substring(2, value.length() - 1));
+                        if (!StringUtils.isEmpty(property))
+                            value = property;
+                    }
+                    params.put(element.attributeValue("name"), value);
+                }
+            } else {
+                params.put(element.attributeValue("name"), loadEntityInstance(info));
+            }
+        }
+
+        String caption = MenuConfig.getMenuItemCaption(item.getId());
+        params.put("caption", caption);
+
+        return params;
     }
 
     private Entity loadEntityInstance(EntityLoadInfo info) {
