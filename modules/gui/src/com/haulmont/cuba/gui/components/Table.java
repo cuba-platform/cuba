@@ -244,11 +244,13 @@ public interface Table
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    @Deprecated
     enum PagingMode {
         PAGE,
         SCROLLING
     }
 
+    @Deprecated
     void setPagingMode(PagingMode mode);
 
     interface PagingProvider {
@@ -262,6 +264,7 @@ public interface Table
         int[] pageLengths();
     }
 
+    @Deprecated
     void setPagingProvider(PagingProvider pagingProvider);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
