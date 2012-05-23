@@ -18,7 +18,6 @@ import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Component;
 
-import java.rmi.activation.UnknownObjectException;
 import java.util.Collection;
 
 /**
@@ -67,14 +66,14 @@ public class WebLookupPickerField
 
     @Override
     public LookupAction addLookupAction() {
-        LookupAction action = new LookupAction(pickerField);
+        LookupAction action = new LookupAction(this);
         addAction(action);
         return action;
     }
 
     @Override
     public ClearAction addClearAction() {
-        ClearAction action = new ClearAction(pickerField);
+        ClearAction action = new ClearAction(this);
         addAction(action);
         return action;
     }
