@@ -52,7 +52,7 @@ import java.util.regex.Pattern;
  * Main class of the web application. Each client connection has its own App.
  * Use {@link #getInstance()} static method to obtain the reference to the current App instance
  * throughout the application code.
- * <p>
+ * <p/>
  * Specific application should inherit from this class and set derived class name
  * in <code>application</code> servlet parameter of <code>web.xml</code>
  */
@@ -64,7 +64,7 @@ public abstract class App extends Application
 
     private static Log log = LogFactory.getLog(App.class);
 
-    public static final String THEME_NAME = "peyto";
+    public static final String THEME_NAME = "havana";
 
     public static final String LAST_REQUEST_PARAMS_ATTR = "lastRequestParams";
 
@@ -74,7 +74,7 @@ public abstract class App extends Application
 
     public static final String USER_SESSION_ATTR = "userSessionId";
 
-    public static final String APP_THEME_COOKIE_KEY = "APP_THEME_NAME";
+    public static final String APP_THEME_COOKIE_PREFIX = "APP_THEME_NAME_";
 
     protected Connection connection;
     private WebWindowManager windowManager;
@@ -148,7 +148,8 @@ public abstract class App extends Application
         cookies.updateCookies(request);
 
         if (!themeInitialized) {
-            String userAppTheme = cookies.getCookieValue(APP_THEME_COOKIE_KEY);
+            GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
+            String userAppTheme = cookies.getCookieValue(APP_THEME_COOKIE_PREFIX + globalConfig.getWebContextName());
             if (userAppTheme != null) {
                 if (!StringUtils.equals(userAppTheme, getTheme())) {
                     // check theme support
@@ -264,7 +265,8 @@ public abstract class App extends Application
     /**
      * Initializes exception handlers immediately after login and logout.
      * Can be overridden in descendants to manipulate exception handlers programmatically.
-     * @param isConnected   true after login, false after logout
+     *
+     * @param isConnected true after login, false after logout
      */
     protected void initExceptionHandlers(boolean isConnected) {
         if (isConnected) {
@@ -439,7 +441,7 @@ public abstract class App extends Application
         String xForwardedFor = request.getHeader("X_FORWARDED_FOR");
         if (!StringUtils.isBlank(xForwardedFor)) {
             String[] strings = xForwardedFor.split(",");
-            clientAddress = strings[strings.length-1].trim();
+            clientAddress = strings[strings.length - 1].trim();
         } else {
             clientAddress = request.getRemoteAddr();
         }
@@ -513,7 +515,7 @@ public abstract class App extends Application
             long t = System.currentTimeMillis() - start;
             if (t > (webConfig.getLogLongRequestsThresholdSec() * 1000)) {
                 log.warn(String.format("Too long request processing [%d ms]: ip=%s, url=%s",
-                        t, ((HttpServletRequest)transactionData).getRemoteAddr(), ((HttpServletRequest)transactionData).getRequestURI()));
+                        t, ((HttpServletRequest) transactionData).getRemoteAddr(), ((HttpServletRequest) transactionData).getRequestURI()));
             }
         }
 
@@ -560,6 +562,7 @@ public abstract class App extends Application
 
     /**
      * Adds a timer on the application level
+     *
      * @param timer new timer
      */
     public void addTimer(Timer timer) {
@@ -568,6 +571,7 @@ public abstract class App extends Application
 
     /**
      * Adds a timer for the defined window
+     *
      * @param timer new timer
      * @param owner component that owns a timer
      */
@@ -590,7 +594,8 @@ public abstract class App extends Application
     }
 
     public void setUserAppTheme(String themeName) {
-        addCookie(APP_THEME_COOKIE_KEY, themeName);
+        GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
+        addCookie(APP_THEME_COOKIE_PREFIX + globalConfig.getWebContextName(), themeName);
         super.setTheme(themeName);
     }
 
