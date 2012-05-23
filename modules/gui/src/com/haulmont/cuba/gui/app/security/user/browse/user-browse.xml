@@ -7,14 +7,14 @@
 <window
         xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
         class="com.haulmont.cuba.gui.app.security.user.browse.UserBrowser"
-        lookupComponent="users"
+        lookupComponent="usersTable"
         caption="msg://caption"
         messagesPack="com.haulmont.cuba.gui.app.security.user.browse"
         focusComponent="genericFilter"
         >
     <dsContext>
         <groupDatasource
-                id="users"
+                id="usersDs"
                 class="com.haulmont.cuba.security.entity.User"
                 view="user.browse"
                 >
@@ -25,55 +25,49 @@
         </groupDatasource>
     </dsContext>
 
-    <layout >
-        <vbox expand="table-panel" spacing="true">
-            <vbox id="genericFilterBox" expand="genericFilter" stylename="edit-area" margin="true">
-                <filter id="genericFilter" datasource="users" applyTo="users">
-                    <properties include=".*" exclude="(password)|(loginLowerCase)"/>
-                    <custom name="customByGroup" caption="msg://genericFilter.customByGroup"
-                            join="left join u.group.hierarchyList h" paramClass="com.haulmont.cuba.security.entity.Group">
-                        (h.parent.id = ? or h.group.id = ?) or (u.group.id = ? and h.parent is null)
-                    </custom>
-                    <custom name="customByRole" caption="msg://genericFilter.customByRole"
-                            join="left join u.userRoles ur" paramClass="com.haulmont.cuba.security.entity.Role">
-                        (ur.role.id = ?)
-                    </custom>
-                </filter>
-            </vbox>
-            <vbox id="table-panel" expand="users" spacing="true">
-                <groupTable id="users" editable="false" presentations="true" multiselect="true">
-                    <actions>
-                        <action id="create"/>
-                        <action id="edit"/>
-                        <action id="copy" caption="msg://copy" icon="icons/copy.png" invoke="copy"/>
-                        <action id="remove"/>
-                        <action id="copySettings" caption="msg://copySettings" icon="icons/copy.png"
-                                invoke="copySettings"/>
-                        <action id="changePassw" caption="msg://changePassw" icon="icons/change-pass.png"
-                                invoke="changePassword"/>
-                        <action id="excel"/>
-                    </actions>
-                    <buttonsPanel align="MIDDLE_LEFT">
-                        <button action="users.create"/>
-                        <button action="users.edit"/>
-                        <button action="users.copy"/>
-                        <button action="users.remove"/>
-                        <button action="users.copySettings"/>
-                        <button action="users.changePassw"/>
-                        <button action="users.excel"/>
-                    </buttonsPanel>
-                    <rowsCount/>
-                    <columns>
-                        <column id="login"/>
-                        <column id="name"/>
-                        <column id="position"/>
-                        <column id="group"/>
-                        <column id="email"/>
-                        <column id="active"/>
-                    </columns>
-                    <rows datasource="users"/>
-                </groupTable>
-            </vbox>
-        </vbox>
+    <layout expand="usersTable" spacing="true">
+        <filter id="genericFilter" datasource="usersDs" applyTo="usersTable">
+            <properties include=".*" exclude="(password)|(loginLowerCase)"/>
+            <custom name="customByGroup" caption="msg://genericFilter.customByGroup"
+                    join="left join u.group.hierarchyList h" paramClass="com.haulmont.cuba.security.entity.Group">
+                (h.parent.id = ? or h.group.id = ?) or (u.group.id = ? and h.parent is null)
+            </custom>
+            <custom name="customByRole" caption="msg://genericFilter.customByRole"
+                    join="left join u.userRoles ur" paramClass="com.haulmont.cuba.security.entity.Role">
+                (ur.role.id = ?)
+            </custom>
+        </filter>
+        <groupTable id="usersTable" presentations="true" multiselect="true">
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="copy" caption="msg://copy" icon="icons/copy.png" invoke="copy"/>
+                <action id="remove"/>
+                <action id="copySettings" caption="msg://copySettings" icon="icons/copy.png"
+                        invoke="copySettings"/>
+                <action id="changePassw" caption="msg://changePassw" icon="icons/change-pass.png"
+                        invoke="changePassword"/>
+                <action id="excel"/>
+            </actions>
+            <buttonsPanel>
+                <button action="usersTable.create"/>
+                <button action="usersTable.edit"/>
+                <button action="usersTable.copy"/>
+                <button action="usersTable.remove"/>
+                <button action="usersTable.copySettings"/>
+                <button action="usersTable.changePassw"/>
+                <button action="usersTable.excel"/>
+            </buttonsPanel>
+            <rowsCount/>
+            <columns>
+                <column id="login"/>
+                <column id="name"/>
+                <column id="position"/>
+                <column id="group"/>
+                <column id="email"/>
+                <column id="active"/>
+            </columns>
+            <rows datasource="usersDs"/>
+        </groupTable>
     </layout>
 </window>

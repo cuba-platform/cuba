@@ -14,6 +14,7 @@ import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -28,13 +29,21 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.UUID;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class UserBrowser extends AbstractLookup {
 
-    @Named("users")
-    protected Table table;
+    @Inject
+    protected Table usersTable;
 
-    @Named("users.remove")
+    @Inject
+    protected CollectionDatasource<User, UUID> usersDs;
+
+    @Named("usersTable.remove")
     protected RemoveAction removeAction;
 
     @Inject
@@ -50,27 +59,25 @@ public class UserBrowser extends AbstractLookup {
         super(frame);
     }
 
+    @Override
     public void init(Map<String, Object> params) {
-        table.getDatasource().addListener(new DsListenerAdapter() {
+        usersDs.addListener(new DsListenerAdapter<User>() {
             @Override
-            public void itemChanged(Datasource ds, Entity prevItem, Entity item) {
-                super.itemChanged(ds, prevItem, item);
-                User user = (User) item;
+            public void itemChanged(Datasource<User> ds, User prevItem, User item) {
                 if (removeAction != null)
-                    removeAction.setEnabled(!(userSession.getUser().equals(user) ||
-                            userSession.getCurrentOrSubstitutedUser().equals(user)));
+                    removeAction.setEnabled(!(userSession.getUser().equals(item) ||
+                            userSession.getCurrentOrSubstitutedUser().equals(item)));
             }
         });
 
-        String multiSelect = (String) params.get("multiselect");
-        if ("true".equals(multiSelect)) {
-            table.setMultiSelect(true);
-        }
+        Boolean multiSelect = BooleanUtils.toBooleanObject((String) params.get("multiselect"));
+        if (multiSelect != null)
+            usersTable.setMultiSelect(multiSelect);
     }
 
     public void copy() {
-        if (!table.getSelected().isEmpty()) {
-            User selectedUser = (User) table.getSelected().iterator().next();
+        if (!usersTable.getSelected().isEmpty()) {
+            User selectedUser = (User) usersTable.getSelected().iterator().next();
             selectedUser = dataService.reload(selectedUser, "user.edit");
             User newUser = metadata.create(User.class);
             if (selectedUser.getUserRoles() != null) {
@@ -90,28 +97,31 @@ public class UserBrowser extends AbstractLookup {
             UserEditor editor = openEditor("sec$User.edit", newUser, WindowManager.OpenType.THIS_TAB);
             editor.initCopy();
             editor.addListener(new CloseListener() {
+                @Override
                 public void windowClosed(String actionId) {
-                    getDsContext().get("users").refresh();
+                    usersDs.refresh();
                 }
             });
         }
     }
 
+    @SuppressWarnings("unused")
     public void copySettings() {
-        if (!table.getSelected().isEmpty()) {
+        if (!usersTable.getSelected().isEmpty()) {
             openWindow(
                     "sec$User.copySettings",
                     WindowManager.OpenType.DIALOG,
-                    new SingletonMap("users", table.getSelected())
+                    new SingletonMap("users", usersTable.getSelected())
             );
         }
     }
 
+    @SuppressWarnings("unused")
     public void changePassword() {
-        if (!table.getSelected().isEmpty()) {
+        if (!usersTable.getSelected().isEmpty()) {
             openEditor(
                     "sec$User.changePassw",
-                    (Entity) table.getSelected().iterator().next(),
+                    (Entity) usersTable.getSelected().iterator().next(),
                     WindowManager.OpenType.DIALOG
             );
         }
