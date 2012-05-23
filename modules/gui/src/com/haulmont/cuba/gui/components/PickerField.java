@@ -158,6 +158,8 @@ public interface PickerField extends Field, Component.ActionsHolder {
                 String windowAlias = lookupScreen;
                 if (windowAlias == null) {
                     final MetaClass metaClass = pickerField.getMetaClass();
+                    if (metaClass == null)
+                        throw new IllegalStateException("Please specify metaclass or property for PickerField");
                     windowAlias = metaClass.getName() + ".lookup";
                 }
                 pickerField.getFrame().openLookup(
