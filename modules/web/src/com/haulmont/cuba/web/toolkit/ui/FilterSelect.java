@@ -11,6 +11,7 @@
 package com.haulmont.cuba.web.toolkit.ui;
 
 import com.vaadin.data.Property;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
@@ -116,7 +117,7 @@ public class FilterSelect extends Select {
                 || filteringMode == FILTERINGMODE_OFF) {
             prevfilterstring = null;
 
-            log.trace("getFilteredOptions (container: " + items +  "): no filterstring");
+            log.trace("getFilteredOptions (container: " + items + "): no filterstring");
 
             Object value = getValue();
             boolean valueFound = true;
@@ -124,7 +125,7 @@ public class FilterSelect extends Select {
             if (!isFirstChange) {
                 if (items instanceof Ordered) {
                     log.trace("getFilteredOptions (container: " + items + "): ordered collection, iterating through items for current page");
-                    filteredOptions = new LinkedList();
+                    filteredOptions = new LinkedList<Object>();
                     valueFound = false;
 
                     int count = (currentPage + 1) * getPageLength();
@@ -151,11 +152,11 @@ public class FilterSelect extends Select {
                     }
                 } else {
                     log.trace("getFilteredOptions (container: " + items + "): loading all itemIds");
-                    filteredOptions = new LinkedList(getItemIds());
+                    filteredOptions = new LinkedList<Object>(getItemIds());
                     fetched = filteredOptions.size();
                 }
             } else {
-                filteredOptions = new LinkedList();
+                filteredOptions = new LinkedList<Object>();
                 if (this.getNullSelectionItemId() != null)
                     filteredOptions.add(this.getNullSelectionItemId());
                 valueFound = false;
@@ -167,22 +168,21 @@ public class FilterSelect extends Select {
                     ((LinkedList) filteredOptions).removeLast();
                 filteredOptions.add(value);
             }
-            
+
             return filteredOptions;
         }
 
         if (filterstring.equals(prevfilterstring)) {
-            log.trace("getFilteredOptions (container: " + items +  "): same filterstring, returning previous filteredOptions");
+            log.trace("getFilteredOptions (container: " + items + "): same filterstring, returning previous filteredOptions");
             return filteredOptions;
         }
 
-        log.trace("getFilteredOptions (container: " + items +  "): loading all itemIds and filtering");
+        log.trace("getFilteredOptions (container: " + items + "): loading all itemIds and filtering");
         Collection items = getItemIds();
         prevfilterstring = filterstring;
 
-        filteredOptions = new LinkedList();
-        for (final Iterator it = items.iterator(); it.hasNext();) {
-            final Object itemId = it.next();
+        filteredOptions = new LinkedList<Object>();
+        for (final Object itemId : items) {
             String caption = getItemCaption(itemId);
             if (caption == null || caption.equals("")) {
                 continue;
@@ -190,17 +190,17 @@ public class FilterSelect extends Select {
                 caption = caption.toLowerCase();
             }
             switch (filteringMode) {
-            case FILTERINGMODE_CONTAINS:
-                if (caption.indexOf(filterstring) > -1) {
-                    filteredOptions.add(itemId);
-                }
-                break;
-            case FILTERINGMODE_STARTSWITH:
-            default:
-                if (caption.startsWith(filterstring)) {
-                    filteredOptions.add(itemId);
-                }
-                break;
+                case FILTERINGMODE_CONTAINS:
+                    if (caption.contains(filterstring)) {
+                        filteredOptions.add(itemId);
+                    }
+                    break;
+                case FILTERINGMODE_STARTSWITH:
+                default:
+                    if (caption.startsWith(filterstring)) {
+                        filteredOptions.add(itemId);
+                    }
+                    break;
             }
         }
 
@@ -212,7 +212,7 @@ public class FilterSelect extends Select {
     public Collection getVisibleItemIds() {
         if (isVisible()) {
             if (items instanceof Ordered) {
-                List list = new ArrayList();
+                List<Object> list = new ArrayList<Object>();
                 Object itemId = ((Ordered) items).firstItemId();
                 if (itemId != null) {
                     Object prevItemId = itemId;
@@ -268,7 +268,59 @@ public class FilterSelect extends Select {
 
     @Override
     public void changeVariables(Object source, Map variables) {
-        super.changeVariables(source, variables);
+        // Selection change
+        if (variables.containsKey("selected")) {
+            final String[] ka = (String[]) variables.get("selected");
+
+            // Single select mode only
+            if (ka.length == 0) {
+
+                // Allows deselection only if the deselected item is visible
+                final Object current = getValue();
+                final Collection<?> visible = getVisibleItemIds();
+                if (visible != null && visible.contains(current)) {
+                    setValue(null, true);
+                }
+            } else {
+                final Object id = itemIdMapper.get(ka[0]);
+                if (id != null && id.equals(getNullSelectionItemId())) {
+                    setValue(null, true);
+                } else {
+                    setValue(id, true);
+                }
+            }
+        }
+
+        String newFilter;
+        if ((newFilter = (String) variables.get("filter")) != null) {
+            // this is a filter request
+            currentPage = (Integer) variables.get("page");
+            filterstring = newFilter.toLowerCase();
+            optionRepaint();
+        } else if (isNewItemsAllowed()) {
+            // New option entered (and it is allowed)
+            final String newitem = (String) variables.get("newitem");
+            if (newitem != null && newitem.length() > 0) {
+                getNewItemHandler().addNewItem(newitem);
+                // rebuild list
+                filterstring = null;
+                prevfilterstring = null;
+            } else {
+                // revert value
+                if (isNullSelectionAllowed())
+                    setValue(getNullSelectionItemId(), true);
+                else
+                    optionRepaint();
+                return;
+            }
+        }
+
+        if (variables.containsKey(FieldEvents.FocusEvent.EVENT_ID)) {
+            fireEvent(new FieldEvents.FocusEvent(this));
+        }
+        if (variables.containsKey(FieldEvents.BlurEvent.EVENT_ID)) {
+            fireEvent(new FieldEvents.BlurEvent(this));
+        }
 
         Object value = getValue();
         if (items instanceof Ordered && isFirstChange && variables.containsKey("page") && value != null) {

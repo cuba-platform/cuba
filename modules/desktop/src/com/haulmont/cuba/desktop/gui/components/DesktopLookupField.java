@@ -150,8 +150,11 @@ public class DesktopLookupField
             Object selectedItem = comboBox.getSelectedItem();
             if (selectedItem instanceof ValueWrapper) {
             } else if (selectedItem instanceof String && newOptionAllowed && newOptionHandler != null) {
-            } else if (!newOptionAllowed) {
-                updateComponent(prevValue);
+            } else if (selectedItem == null || !newOptionAllowed) {
+                if (isRequired())
+                    updateComponent(prevValue);
+                else
+                    updateComponent(nullOption);
             }
             resetValueState = false;
         }
