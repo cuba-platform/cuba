@@ -164,6 +164,15 @@ public class MenuConfig implements Serializable
                     menuItem.setDescriptor(element);
                     loadShortcut(menuItem, element);
                 }
+            } else if ("separator".equals(element.getName())) {
+                String id = element.attributeValue("id");
+                if (StringUtils.isBlank(id))
+                    id = "-";
+                menuItem = new MenuItem(parentItem, id);
+                menuItem.setSeparator(true);
+                if (!StringUtils.isBlank(id)) {
+                    menuItem.setDescriptor(element);
+                }
             } else {
                 log.warn(String.format("Unknown tag '%s' in menu-config", element.getName()));
             }

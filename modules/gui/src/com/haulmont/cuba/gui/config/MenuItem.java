@@ -35,6 +35,7 @@ public class MenuItem implements Serializable
 
     private String id;
     private Element descriptor;
+    private boolean separator = false;
 
     private ShortcutAction.KeyCombination shortcut;
 
@@ -99,6 +100,10 @@ public class MenuItem implements Serializable
     }
 
     public boolean isSeparator() {
-        return "-".equals(id); //todo: This is a temp solution. Need o use <separator> element in menu-config.xml to define separator in menu
+        return separator || "-".equals(id);
+    }
+
+    public void setSeparator(boolean separator) {
+        this.separator = separator;
     }
 }
