@@ -18,7 +18,7 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 
-public class NameBuilderListener extends DsListenerAdapter {
+public class NameBuilderListener<T extends Entity> extends DsListenerAdapter<T> {
 
     private static final List<String> PROPERTY_NAMES = Arrays.asList("firstName", "lastName", "middleName");
 

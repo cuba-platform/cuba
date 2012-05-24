@@ -76,12 +76,13 @@ public class UserEditor extends AbstractEditor {
 
     public interface Companion {
         void initPasswordField(TextField passwordField);
+
         void initLanguageLook(LookupField languageLook);
     }
 
     @Override
     public void init(Map<String, Object> params) {
-        userDs.addListener(new NameBuilderListener(fieldGroup));
+        userDs.addListener(new NameBuilderListener<User>(fieldGroup));
 
         rolesTable.addAction(new AddRoleAction());
         rolesTable.addAction(new EditRoleAction());
@@ -90,11 +91,6 @@ public class UserEditor extends AbstractEditor {
         substTable.addAction(new AddSubstitutedAction());
         substTable.addAction(new EditSubstitutedAction());
         substTable.addAction(new RemoveAction(substTable, false));
-
-//        setPermissionsShowAction(rolesTable, "show-screens", "sec$Target.screenPermissions.lookup", PermissionType.SCREEN);
-//        setPermissionsShowAction(rolesTable, "show-entities", "sec$Target.entityPermissions.lookup", PermissionType.ENTITY_OP);
-//        setPermissionsShowAction(rolesTable, "show-properties", "sec$Target.propertyPermissions.lookup", PermissionType.ENTITY_ATTR);
-//        setPermissionsShowAction(rolesTable, "show-specific", "sec$Target.specificPermissions.lookup", PermissionType.SPECIFIC);
 
         initCustomFields();
 
@@ -136,6 +132,9 @@ public class UserEditor extends AbstractEditor {
         List<Role> defaultRoles = dataService.loadList(ctx);
 
         LinkedHashSet<UserRole> newRoles = new LinkedHashSet<UserRole>();
+        if (user.getUserRoles() != null)
+            newRoles.addAll(user.getUserRoles());
+
         for (Role role : defaultRoles) {
             final MetaClass metaClass = rolesDs.getMetaClass();
             UserRole userRole = dataService.newInstance(metaClass);
@@ -149,24 +148,10 @@ public class UserEditor extends AbstractEditor {
 
     private void initCustomFields() {
         FieldGroup.Field f;
-        /* todo rewrite broken permission lookups
-        f = fieldGroup.getField("permissionsLookupField");
-        fieldGroup.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
-            public Component generateField(Datasource datasource, Object propertyId) {
-                popupButton = factory.createComponent(PopupButton.NAME);
-                popupButton.setCaption(getMessage("permissions"));
-                popupButton.addAction(new PermissionLookupAction("screens", getMessage("screens"), "show-screens"));
-                popupButton.addAction(new PermissionLookupAction("entities", getMessage("entities"), "show-entities"));
-                popupButton.addAction(new PermissionLookupAction("properties", getMessage("properties"), "show-properties"));
-                popupButton.addAction(new PermissionLookupAction("specific", getMessage("specific"), "show-specific"));
-
-                return popupButton;
-            }
-        });*/
-
         f = fieldGroup.getField("passw");
         if (f != null) {
             fieldGroup.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
+                @Override
                 public Component generateField(Datasource datasource, Object propertyId) {
                     passwField = factory.createComponent(TextField.NAME);
                     passwField.setRequiredMessage(getMessage("passwMsg"));
@@ -219,50 +204,6 @@ public class UserEditor extends AbstractEditor {
             }
         });
     }
-
-/*  todo rewrite broken permission lookups
-    private void setPermissionsShowAction(ActionsHolder actionsHolder, String actionName,
-                                          final String lookupAlias, final PermissionType permissionType) {
-        actionsHolder.addAction(new AbstractAction(actionName) {
-            public void actionPerform(Component component) {
-                Map<String, Object> params = new HashMap<String, Object>();
-                params.put("showAccessOptions", false);
-                final PermissionsLookup permissionsLookup = openLookup(lookupAlias, null, WindowManager.OpenType.THIS_TAB, params);
-                permissionsLookup.setLookupHandler(new Lookup.Handler() {
-                    public void handleLookup(Collection items) {
-                        if(items.size()==0)
-                            return;
-                        StringBuilder sb = new StringBuilder();
-                        UserSessionService uss = ServiceLocator.lookup(UserSessionService.NAME);
-                        for (Object item : items) {
-                            if (item == null) continue;
-                            BasicPermissionTarget target = (BasicPermissionTarget)item;
-                            Integer permissionValue =  uss.getPermissionValue(userDs.getItem(), permissionType, target.getPermissionValue());
-                            String permissionStringValue = "";
-                            if (permissionType == PermissionType.ENTITY_ATTR) {
-                                if (permissionValue == null) permissionValue = 2;
-                                permissionStringValue = EntityAttrAccess.fromId(permissionValue).toString();
-                            } else {
-                                if (permissionValue == null) permissionValue = 1;
-                                permissionStringValue = (permissionValue == 1) ? "ALLOW" : "DENY";
-                            }
-                            sb.append(getMessage("permissionOn") +" "+ target.getPermissionValue()+" ("+target.getCaption()+")"+ " - ")
-                                    .append(getMessage(permissionStringValue)).append("\n");
-                        }
-                        if (sb.length() == 0) {
-                            showNotification("Please, ensure you've selected target attributes", NotificationType.WARNING);
-                        } else
-                            openWindow("sec$Permission.show", WindowManager.OpenType.DIALOG,
-                                    Collections.<String,Object>singletonMap("message",sb.toString()));
-                            //showNotification(sb.toString(), NotificationType.HUMANIZED);
-                        if(popupButton != null)
-                            popupButton.setPopupVisible(false);
-                    }
-                });
-            }
-        });
-    }
-*/
 
     private boolean _commit() {
         if (rolesDs.isModified()) {
@@ -345,7 +286,7 @@ public class UserEditor extends AbstractEditor {
                 public void handleLookup(Collection items) {
                     Collection<String> existingRoleNames = getExistingRoleNames();
                     for (Object item : items) {
-                        Role role = (Role)item;
+                        Role role = (Role) item;
                         if (existingRoleNames.contains(role.getName())) continue;
 
                         final MetaClass metaClass = rolesDs.getMetaClass();
@@ -479,26 +420,4 @@ public class UserEditor extends AbstractEditor {
                         WindowManager.OpenType.DIALOG, substitutionsDs);
         }
     }
-
-/*    private class PermissionLookupAction extends AbstractAction{
-
-        private String caption;
-        private String screen;
-
-        private PermissionLookupAction(String id, String caption, String screen) {
-            super(id);
-            this.caption = caption;
-            this.screen = screen;
-        }
-
-        @Override
-        public void actionPerform(Component component) {
-            rolesTable.getAction(screen).actionPerform(rolesTable);
-        }
-
-        @Override
-        public String getCaption() {
-            return caption;
-        }
-    }*/
 }
