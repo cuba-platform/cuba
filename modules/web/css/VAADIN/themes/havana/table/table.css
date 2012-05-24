@@ -174,7 +174,7 @@
 }
 
 .v-table-cell-content .v-button {
-    height: 17px; 
+    height: 17px;
 	background: transparent url(img/table-button-left.png) no-repeat left center;
     padding: 0 0 0 3px;
     color: inherit;
@@ -274,6 +274,10 @@
     height: 24px;
     width: 24px;
     background: #FFF none;
+}
+
+.v-table-cell-content .v-button.v-button-link {
+    background: transparent none;
 }
 
 .v-table-cell-content .v-button-icon-autosize .v-icon {
