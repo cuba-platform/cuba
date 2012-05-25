@@ -268,6 +268,8 @@ public class FilterSelect extends Select {
 
     @Override
     public void changeVariables(Object source, Map variables) {
+        boolean valueAssigned = false;
+
         // Selection change
         if (variables.containsKey("selected")) {
             final String[] ka = (String[]) variables.get("selected");
@@ -280,13 +282,16 @@ public class FilterSelect extends Select {
                 final Collection<?> visible = getVisibleItemIds();
                 if (visible != null && visible.contains(current)) {
                     setValue(null, true);
+                    valueAssigned = true;
                 }
             } else {
                 final Object id = itemIdMapper.get(ka[0]);
                 if (id != null && id.equals(getNullSelectionItemId())) {
                     setValue(null, true);
+                    valueAssigned = true;
                 } else {
                     setValue(id, true);
+                    valueAssigned = true;
                 }
             }
         }
@@ -306,12 +311,14 @@ public class FilterSelect extends Select {
                 filterstring = null;
                 prevfilterstring = null;
             } else {
-                // revert value
-                if (isNullSelectionAllowed())
-                    setValue(getNullSelectionItemId(), true);
-                else
-                    optionRepaint();
-                return;
+                if (!valueAssigned && !isReadOnly()) {
+                    // revert value
+                    if (isNullSelectionAllowed())
+                        setValue(null, true);
+                    else
+                        optionRepaint();
+                    return;
+                }
             }
         }
 
