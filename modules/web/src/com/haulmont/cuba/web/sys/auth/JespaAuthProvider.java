@@ -88,9 +88,9 @@ public class JespaAuthProvider extends HttpSecurityService implements CubaAuthPr
 
         int atSignPos = login.indexOf("@");
         if (atSignPos >= 0) {
-            String domainAlias = login.substring(0, atSignPos);
+            String domainAlias = login.substring(atSignPos + 1);
             domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
-            userName = login.substring(atSignPos + 1);
+            userName = login.substring(0, atSignPos);
         } else {
             int slashPos = login.indexOf('\\');
             if (slashPos <= 0) {

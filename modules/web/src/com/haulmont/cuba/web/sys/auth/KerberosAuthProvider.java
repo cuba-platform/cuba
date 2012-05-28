@@ -222,9 +222,9 @@ public class KerberosAuthProvider implements CubaAuthProvider {
                 );
             }
 
-            String domainAlias = login.substring(0, atSignPos);
+            String domainAlias = login.substring(atSignPos + 1);
             String domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
-            String userName = login.substring(atSignPos + 1);
+            String userName = login.substring(0, atSignPos);
             login = userName + "@" + domain;
         }
 
