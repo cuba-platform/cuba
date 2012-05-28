@@ -20,7 +20,9 @@
 
     <bean id="cuba_AuthProvider" class="${cuba.web.activeDirectoryAuthClass}"/>
 
-    <bean id="cuba_DomainResolver" class="com.haulmont.cuba.web.sys.auth.DefaultDomainAliasesResolver" init-method="init"/>
+    <bean id="cuba_DomainResolver" class="com.haulmont.cuba.web.sys.auth.DefaultDomainAliasesResolver">
+        <constructor-arg index="0" ref="cuba_Configuration"/>
+    </bean>
 
     <!-- MBeans registration -->
 
