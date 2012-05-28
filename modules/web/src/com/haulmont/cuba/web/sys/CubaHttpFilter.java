@@ -83,6 +83,14 @@ public class CubaHttpFilter implements Filter {
                     log.debug("AD authentification");
                     activeDirectoryFilter.doFilter(request, response, chain);
                     filtered = true;
+                } else {
+                    // ie sends additional auth requests
+                    if (request.getContentLength() == 0 &&
+                            StringUtils.isNotBlank(request.getHeader("authorization"))) {
+                        log.debug("Additional auth request");
+                        activeDirectoryFilter.doFilter(request, response, chain);
+                        filtered = true;
+                    }
                 }
             }
         }
