@@ -46,8 +46,9 @@ public class DefaultDomainAliasesResolver implements DomainAliasesResolver {
 
     @Override
     public String getDomainName(String alias) {
-        if (aliases.containsKey(alias.toLowerCase())) {
-            String domain = aliases.get(alias);
+        String alias_lc = alias.toLowerCase();
+        if (aliases.containsKey(alias_lc)) {
+            String domain = aliases.get(alias_lc);
             log.debug(String.format("Resolved domain \"%s\" from alias \"%s\"", domain, alias));
             return domain;
         } else

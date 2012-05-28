@@ -79,7 +79,7 @@ public class CubaHttpFilter implements Filter {
                 }
             }
             if (!bypass) {
-                if (!checkApplicationSession(request) || activeDirectoryFilter.needAuth(request)) {
+                if (activeDirectoryFilter.needAuth(request) || !checkApplicationSession(request)) {
                     log.debug("AD authentification");
                     activeDirectoryFilter.doFilter(request, response, chain);
                     filtered = true;
