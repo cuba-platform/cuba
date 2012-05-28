@@ -13,9 +13,11 @@ package com.haulmont.cuba.web;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
+import com.haulmont.cuba.web.sys.auth.DomainAliasesResolver;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
@@ -311,10 +313,28 @@ public class LoginWindow extends Window implements Action.Handler {
         String login = (String) loginField.getValue();
         try {
             // Login with AD if domain specified
-            if (StringUtils.containsAny(login, DOMAIN_SEPARATORS) && ActiveDirectoryHelper.useActiveDirectory()) {
+            if (ActiveDirectoryHelper.useActiveDirectory() && StringUtils.containsAny(login, DOMAIN_SEPARATORS)) {
+                DomainAliasesResolver aliasesResolver = AppContext.getBean(DomainAliasesResolver.NAME);
+
                 Locale locale = getUserLocale();
                 App.getInstance().setLocale(locale);
                 ActiveDirectoryHelper.getAuthProvider().authenticate(login, (String) passwordField.getValue(), loc);
+
+                // Convert login to DOMAIN\userName form
+                int slashPos = login.indexOf("\\");
+                if (slashPos >= 0) {
+                    String domainAlias = login.substring(0, slashPos);
+                    String domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
+                    String userName = login.substring(slashPos + 1);
+                    login = domain + "\\" + userName;
+                } else {
+                    int atSignPos = login.indexOf("@");
+                    String domainAlias = login.substring(atSignPos + 1);
+                    String domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
+                    String userName = login.substring(0, atSignPos);
+                    login = domain + "\\" + userName;
+                }
+                // in database users stores in form DOMAIN\userName
                 ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
             } else {
                 String value = passwordField.getValue() != null ? (String) passwordField.getValue() : "";
