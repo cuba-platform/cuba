@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -128,6 +129,11 @@ public class JespaAuthProvider extends HttpSecurityService implements CubaAuthPr
                     e.getMessage()
             );
         }
+    }
+
+    @Override
+    public boolean needAuth(ServletRequest request) {
+        return true;
     }
 
     private void initDomains() {

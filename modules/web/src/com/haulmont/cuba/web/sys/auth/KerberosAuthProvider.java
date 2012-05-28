@@ -252,6 +252,11 @@ public class KerberosAuthProvider implements CubaAuthProvider {
         }
     }
 
+    @Override
+    public boolean needAuth(ServletRequest request) {
+        return false;
+    }
+
     /**
      * Replace principal in request with Kerberos auth principal
      */

@@ -32,7 +32,7 @@ public class CubaHttpFilter implements Filter {
     private static Log log = LogFactory.getLog(CubaHttpFilter.class);
 
     private List<String> bypassUrls = new ArrayList<String>();
-    private Filter activeDirectoryFilter;
+    private CubaAuthProvider activeDirectoryFilter;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -79,18 +79,10 @@ public class CubaHttpFilter implements Filter {
                 }
             }
             if (!bypass) {
-                if (!checkApplicationSession(request)) {
+                if (!checkApplicationSession(request) || activeDirectoryFilter.needAuth(request)) {
                     log.debug("AD authentification");
                     activeDirectoryFilter.doFilter(request, response, chain);
                     filtered = true;
-                } else {
-                    // ie sends additional auth requests
-                    if (request.getContentLength() == 0 &&
-                            StringUtils.isNotBlank(request.getHeader("authorization"))) {
-                        log.debug("Additional auth request");
-                        activeDirectoryFilter.doFilter(request, response, chain);
-                        filtered = true;
-                    }
                 }
             }
         }
