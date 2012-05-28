@@ -314,27 +314,12 @@ public class LoginWindow extends Window implements Action.Handler {
         try {
             // Login with AD if domain specified
             if (ActiveDirectoryHelper.useActiveDirectory() && StringUtils.containsAny(login, DOMAIN_SEPARATORS)) {
-                DomainAliasesResolver aliasesResolver = AppContext.getBean(DomainAliasesResolver.NAME);
-
                 Locale locale = getUserLocale();
                 App.getInstance().setLocale(locale);
                 ActiveDirectoryHelper.getAuthProvider().authenticate(login, (String) passwordField.getValue(), loc);
 
-                // Convert login to DOMAIN\userName form
-                int slashPos = login.indexOf("\\");
-                if (slashPos >= 0) {
-                    String domainAlias = login.substring(0, slashPos);
-                    String domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
-                    String userName = login.substring(slashPos + 1);
-                    login = domain + "\\" + userName;
-                } else {
-                    int atSignPos = login.indexOf("@");
-                    String domainAlias = login.substring(atSignPos + 1);
-                    String domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
-                    String userName = login.substring(0, atSignPos);
-                    login = domain + "\\" + userName;
-                }
-                // in database users stores in form DOMAIN\userName
+                login = convertLoginString(login);
+
                 ((ActiveDirectoryConnection) connection).loginActiveDirectory(login, locale);
             } else {
                 String value = passwordField.getValue() != null ? (String) passwordField.getValue() : "";
@@ -358,6 +343,31 @@ public class LoginWindow extends Window implements Action.Handler {
         } catch (Exception e) {
             handleException(e);
         }
+    }
+
+    /**
+     * Convert userName to db form
+     * In database users stores in form DOMAIN&#92;userName
+     *
+     * @param login Login string
+     * @return login in form DOMAIN&#92;userName
+     */
+    private String convertLoginString(String login) {
+        DomainAliasesResolver aliasesResolver = AppContext.getBean(DomainAliasesResolver.NAME);
+        int slashPos = login.indexOf("\\");
+        if (slashPos >= 0) {
+            String domainAlias = login.substring(0, slashPos);
+            String domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
+            String userName = login.substring(slashPos + 1);
+            login = domain + "\\" + userName;
+        } else {
+            int atSignPos = login.indexOf("@");
+            String domainAlias = login.substring(atSignPos + 1);
+            String domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
+            String userName = login.substring(0, atSignPos);
+            login = domain + "\\" + userName;
+        }
+        return login;
     }
 
     protected void login(String login, String passwd, Locale locale) throws LoginException {
