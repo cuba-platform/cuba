@@ -20,6 +20,8 @@
 
     <bean id="cuba_AuthProvider" class="${cuba.web.activeDirectoryAuthClass}"/>
 
+    <bean id="cuba_DomainResolver" class="com.haulmont.cuba.web.sys.auth.DefaultDomainAliasesResolver" init-method="init"/>
+
     <!-- MBeans registration -->
 
     <bean id="cuba_web_MBeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">

@@ -66,9 +66,20 @@ public interface WebConfig extends Config
     boolean getUseActiveDirectory();
 
     /**
+     * @return Whether to use the ActiveDirectory authentication
+     */
+    @DefaultBoolean(false)
+    boolean getActiveDirectoryDebug();
+
+    /**
      * @return ActiveDirectory domains configuration info
      */
     String getActiveDirectoryDomains();
+
+    /**
+     * @return Short/User-friendly domain aliases for login window form
+     */
+    String getActiveDirectoryAliases();
 
     /**
      * @return ActiveDirectory authentification provider

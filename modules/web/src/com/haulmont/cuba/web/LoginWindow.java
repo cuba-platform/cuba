@@ -48,6 +48,8 @@ public class LoginWindow extends Window implements Action.Handler {
     public static final String COOKIE_PASSWORD = "rememberMe.Password";
     public static final String COOKIE_REMEMBER_ME = "rememberMe";
 
+    private static final char[] DOMAIN_SEPARATORS = new char[]{'\\', '@'};
+
     protected Connection connection;
 
     protected TextField loginField;
@@ -306,11 +308,10 @@ public class LoginWindow extends Window implements Action.Handler {
     }
 
     protected void login() {
-
         String login = (String) loginField.getValue();
         try {
             // Login with AD if domain specified
-            if (StringUtils.contains(login, "\\") && ActiveDirectoryHelper.useActiveDirectory()) {
+            if (StringUtils.containsAny(login, DOMAIN_SEPARATORS) && ActiveDirectoryHelper.useActiveDirectory()) {
                 Locale locale = getUserLocale();
                 App.getInstance().setLocale(locale);
                 ActiveDirectoryHelper.getAuthProvider().authenticate(login, (String) passwordField.getValue(), loc);

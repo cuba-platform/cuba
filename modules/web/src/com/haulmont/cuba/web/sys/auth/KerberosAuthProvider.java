@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.sys.auth;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import org.apache.commons.codec.binary.Base64;
@@ -44,7 +45,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
     public void init(FilterConfig filterConfig) throws ServletException {
         WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
         // Setup system properties
-        System.setProperty("sun.security.krb5.debug", "false");
+        System.setProperty("sun.security.krb5.debug", Boolean.toString(webConfig.getActiveDirectoryDebug()));
         System.setProperty("java.security.krb5.conf", StringUtils.trim(webConfig.getKerberosConf()));
         System.setProperty("java.security.auth.login.config", StringUtils.trim(webConfig.getKerberosJaasConf()));
         System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
@@ -88,6 +89,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
      * @param request Request
      */
     private void markUnsupportedSession(HttpServletRequest request) {
+        log.debug("Mark unsupported session: " + request.getSession().getId());
         request.getSession().setAttribute(AD_INTEGRATION_SUPPORT, Boolean.FALSE);
     }
 
@@ -114,7 +116,8 @@ public class KerberosAuthProvider implements CubaAuthProvider {
      * @param response    HttpResponse
      * @param auth        Auth header
      */
-    private void kerberosAuth(FilterChain filterChain, final HttpServletRequest request, HttpServletResponse response, String auth) {
+    private void kerberosAuth(FilterChain filterChain,
+                              final HttpServletRequest request, HttpServletResponse response, String auth) {
         try {
             LoginContext loginContext = loginAsServicePrincipal();
             try {
@@ -200,13 +203,28 @@ public class KerberosAuthProvider implements CubaAuthProvider {
     public void authenticate(String login, String password, Locale loc)
             throws com.haulmont.cuba.security.global.LoginException {
         WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+        DomainAliasesResolver aliasesResolver = AppContext.getBean(DomainAliasesResolver.NAME);
 
         // Convert domain name to kerberos form "user@DOMAIN"
+        // Specify realms in krb5.ini in UPPER_CASE only
         int slashPos = login.indexOf("\\");
         if (slashPos >= 0) {
-            // Specify realms in krb5.ini in UPPER_CASE only
-            String domain = login.substring(0, slashPos).toUpperCase();
+            String domainAlias = login.substring(0, slashPos);
+            String domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
             String userName = login.substring(slashPos + 1);
+            login = userName + "@" + domain;
+        } else {
+            int atSignPos = login.indexOf("@");
+            if (atSignPos <= 0) {
+                throw new com.haulmont.cuba.security.global.LoginException(
+                        MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.invalidName", loc),
+                        login
+                );
+            }
+
+            String domainAlias = login.substring(0, atSignPos);
+            String domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
+            String userName = login.substring(atSignPos + 1);
             login = userName + "@" + domain;
         }
 

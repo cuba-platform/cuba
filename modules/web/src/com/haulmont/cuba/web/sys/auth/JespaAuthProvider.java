@@ -80,12 +80,28 @@ public class JespaAuthProvider extends HttpSecurityService implements CubaAuthPr
 
     @Override
     public void authenticate(String login, String password, Locale loc) throws LoginException {
-        int p = login.indexOf('\\');
-        if (p <= 0)
-            throw new LoginException(MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.invalidName", loc),
-                    login);
-        String domain = login.substring(0, p);
-        String user = login.substring(p + 1);
+        DomainAliasesResolver aliasesResolver = AppContext.getBean(DomainAliasesResolver.NAME);
+
+        String domain;
+        String userName;
+
+        int atSignPos = login.indexOf("@");
+        if (atSignPos >= 0) {
+            String domainAlias = login.substring(0, atSignPos);
+            domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
+            userName = login.substring(atSignPos + 1);
+        } else {
+            int slashPos = login.indexOf('\\');
+            if (slashPos <= 0) {
+                throw new LoginException(
+                        MessageProvider.getMessage(ActiveDirectoryHelper.class, "activeDirectory.invalidName", loc),
+                        login
+                );
+            }
+            String domainAlias = login.substring(0, slashPos);
+            domain = aliasesResolver.getDomainName(domainAlias).toUpperCase();
+            userName = login.substring(slashPos + 1);
+        }
 
         DomainInfo domainInfo = domains.get(domain);
         if (domainInfo == null) {
@@ -104,7 +120,7 @@ public class JespaAuthProvider extends HttpSecurityService implements CubaAuthPr
 
         NtlmSecurityProvider provider = new NtlmSecurityProvider(params);
         try {
-            PasswordCredential credential = new PasswordCredential(user, password.toCharArray());
+            PasswordCredential credential = new PasswordCredential(userName, password.toCharArray());
             provider.authenticate(credential);
         } catch (SecurityProviderException e) {
             throw new LoginException(
