@@ -9,6 +9,7 @@ package com.haulmont.cuba.web.sys.auth;
 import com.haulmont.cuba.security.global.LoginException;
 
 import javax.servlet.Filter;
+import javax.servlet.ServletRequest;
 import java.util.Locale;
 
 /**
@@ -28,4 +29,10 @@ public interface CubaAuthProvider extends Filter {
      * @throws LoginException Login exception
      */
     void authenticate(String login, String password, Locale loc) throws LoginException;
+
+    /**
+     * @param request Http request
+     * @return True if auth needed
+     */
+    boolean needAuth(ServletRequest request);
 }
