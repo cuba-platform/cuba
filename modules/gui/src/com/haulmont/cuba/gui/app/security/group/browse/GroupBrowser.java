@@ -71,6 +71,7 @@ public class GroupBrowser extends AbstractWindow {
         if (!itemIds.isEmpty()) {
             tree.setSelected(treeDs.getItem(itemIds.iterator().next()));
         }
+        groupCreateAction.setCaption(getMessage("action.create"));
 
         groupCreateAction.setOpenType(WindowManager.OpenType.DIALOG);
         groupEditAction.setOpenType(WindowManager.OpenType.DIALOG);
@@ -168,6 +169,7 @@ public class GroupBrowser extends AbstractWindow {
             getDialogParams().setResizable(false);
             getDialogParams().setHeight(400);
             openLookup("sec$Group.lookup", new Lookup.Handler() {
+                @Override
                 public void handleLookup(Collection items) {
                     if (items.size() == 1) {
                         Group group = (Group) items.iterator().next();
@@ -202,6 +204,7 @@ public class GroupBrowser extends AbstractWindow {
                         return "icons/create.png";
                     }
 
+                    @Override
                     public void actionPerform(Component component) {
                         Set<Group> selected = tree.getSelected();
                         if (selected.size() != 1)
@@ -248,6 +251,7 @@ public class GroupBrowser extends AbstractWindow {
                         return "icons/create.png";
                     }
 
+                    @Override
                     public void actionPerform(Component component) {
                         Set<Group> selected = tree.getSelected();
                         if (selected.size() != 1)
@@ -262,6 +266,7 @@ public class GroupBrowser extends AbstractWindow {
                         );
                         window.addListener(
                                 new CloseListener() {
+                                    @Override
                                     public void windowClosed(String actionId) {
                                         if (Window.COMMIT_ACTION_ID.equals(actionId)) {
                                             attributes.getDatasource().refresh();
