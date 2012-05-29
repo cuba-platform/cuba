@@ -23,6 +23,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.util.*;
@@ -78,6 +79,12 @@ public class DesktopTreeTable
                 } else {
                     return super.getCellEditor(row, column);
                 }
+            }
+
+            @Override
+            public void setFont(Font font) {
+                super.setFont(font);
+                applyFont(this, font);
             }
 
             @Override
@@ -273,7 +280,7 @@ public class DesktopTreeTable
 
     @Override
     public void packRows() {
-        impl.setRowHeight(DEFAULT_ROW_HEIGHT);
+        impl.setRowHeight(defaultRowHeight);
     }
 
     @Override

@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 
@@ -39,6 +40,12 @@ public class DesktopTable extends DesktopAbstractTable<JXTable> {
                 focusManager.processFocusEvent(e);
 
                 super.processFocusEvent(e);
+            }
+
+            @Override
+            public void setFont(Font font) {
+                super.setFont(font);
+                applyFont(this, font);
             }
         };
 

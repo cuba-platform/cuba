@@ -12,6 +12,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.GroupInfo;
 import org.jdesktop.swingx.JXTable;
 
+import java.awt.*;
+
 /**
  * <p>$Id$</p>
  *
@@ -20,7 +22,13 @@ import org.jdesktop.swingx.JXTable;
 public class DesktopGroupTable extends DesktopAbstractTable<JXTable> implements GroupTable {
 
     public DesktopGroupTable() {
-        impl = new JXTable();
+        impl = new JXTable() {
+            @Override
+            public void setFont(Font font) {
+                super.setFont(font);
+                applyFont(this, font);
+            }
+        };
         initComponent();
         impl.setColumnControlVisible(true);
         DesktopComponentsHelper.correctTableFocusTraversal(impl);

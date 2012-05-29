@@ -13,6 +13,10 @@ import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultInt;
+import com.haulmont.cuba.core.config.type.Factory;
+import com.haulmont.cuba.core.config.type.IntegerListTypeFactory;
+
+import java.util.List;
 
 /**
  * Desktop UI configuration parameters.
@@ -49,4 +53,8 @@ public interface DesktopConfig extends Config {
 
     @DefaultBoolean(false)
     boolean isDialogNotificationsEnabled();
+
+    @Factory(factory = IntegerListTypeFactory.class)
+    @Default("6 8 10 12 14 16 18 20 22 24 28 32 36 48 54 60 72")
+    List<Integer> getAvailableFontSizes();
 }

@@ -11,13 +11,11 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.AnyTableModelAdapter;
 import com.haulmont.cuba.desktop.gui.data.RowSorterImpl;
+import com.haulmont.cuba.desktop.sys.FontDialog;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Action;
@@ -36,6 +34,8 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.table.ColumnControlButton;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
 
@@ -54,14 +54,13 @@ import java.util.*;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public abstract class DesktopAbstractTable<C extends JTable>
         extends DesktopAbstractActionsHolderComponent<C>
         implements Table {
-    protected static final int DEFAULT_ROW_HEIGHT = 24;
+    protected static final int DEFAULT_ROW_MARGIN = 4;
 
     protected MigLayout layout;
     protected JPanel panel;
@@ -84,6 +83,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected int generatedColumnsCount = 0;
 
     protected boolean isRowsAjusting = false;
+    protected int defaultRowHeight = 24;
 
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
@@ -161,6 +161,30 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 }
             }
         });
+
+        // Ability to configure fonts in table
+        // Add action to column control
+        String configureFontsLabel = MessageProvider.getMessage(
+                DesktopTable.class, "DesktopTable.configureFontsLabel");
+        impl.getActionMap().put(ColumnControlButton.COLUMN_CONTROL_MARKER + "fonts",
+                new AbstractAction(configureFontsLabel) {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        Component rootComponent = SwingUtilities.getRoot(impl);
+                        final FontDialog fontDialog = FontDialog.show(rootComponent, impl.getFont());
+                        fontDialog.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosed(WindowEvent e) {
+                                Font result = fontDialog.getResult();
+                                if (result != null) {
+                                    impl.setFont(result);
+                                    packRows();
+                                }
+                            }
+                        });
+                        fontDialog.open();
+                    }
+                });
 
         ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
         addShortcutActionBridge(INSERT_SHORTCUT_ID, clientConfig.getTableInsertShortcut(), ListActionType.CREATE);
@@ -955,12 +979,24 @@ public abstract class DesktopAbstractTable<C extends JTable>
         return height;
     }
 
+    protected void applyFont(JXTable table, Font font) {
+        Graphics graphics = table.getGraphics();
+        if (graphics != null) {
+            FontMetrics metrics = graphics.getFontMetrics(font);
+            defaultRowHeight = metrics.getHeight() + DEFAULT_ROW_MARGIN;
+            if (impl != null)
+                packRows();
+        }
+    }
+
     /**
      * Sets the height of each row into the preferred height of the
      * tallest cell in that row.
      */
     public void packRows() {
-        impl.setRowHeight(DEFAULT_ROW_HEIGHT);
+        FontMetrics metrics = impl.getGraphics().getFontMetrics(impl.getFont());
+        defaultRowHeight = metrics.getHeight() + DEFAULT_ROW_MARGIN;
+        impl.setRowHeight(defaultRowHeight);
 
         if (allColumnsAreInline()) {
             return;

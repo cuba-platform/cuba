@@ -7,17 +7,22 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.gui.components.Table;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.table.TableColumnExt;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.awt.*;
+import java.awt.font.TextAttribute;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -30,6 +35,8 @@ public class SwingXTableSettings implements TableSettings {
     private JXTable table;
     private List<Table.Column> columns;
 
+    private Log log = LogFactory.getLog(getClass());
+
     public SwingXTableSettings(JXTable table, List<Table.Column> columns) {
         this.table = table;
         this.columns = columns;
@@ -38,6 +45,8 @@ public class SwingXTableSettings implements TableSettings {
     @Override
     public boolean saveSettings(Element element) {
         element.addAttribute("horizontalScroll", String.valueOf(table.isHorizontalScrollEnabled()));
+
+        saveFontPreferences(element);
 
         Element columnsElem = element.element("columns");
         if (columnsElem != null)
@@ -92,6 +101,8 @@ public class SwingXTableSettings implements TableSettings {
         if (!StringUtils.isBlank(horizontalScroll))
             table.setHorizontalScrollEnabled(Boolean.valueOf(horizontalScroll));
 
+        loadFontPreferences(element);
+
         final Element columnsElem = element.element("columns");
         if (columnsElem == null)
             return;
@@ -126,6 +137,68 @@ public class SwingXTableSettings implements TableSettings {
             if (sortColumn != null) {
                 SortOrder sortOrder = SortOrder.valueOf(columnsElem.attributeValue("sortOrder"));
                 table.getRowSorter().setSortKeys(Collections.singletonList(new RowSorter.SortKey(Integer.valueOf(sortColumn), sortOrder)));
+            }
+        }
+    }
+
+    private void saveFontPreferences(Element element) {
+        if (table.getFont() != null) {
+            Font font = table.getFont();
+            Map<TextAttribute, ?> attributes = font.getAttributes();
+            // save content font
+            element.addAttribute("fontFamily", font.getFamily());
+            element.addAttribute("fontSize", Integer.toString(font.getSize()));
+            element.addAttribute("fontStyle", Integer.toString(font.getStyle()));
+            element.addAttribute("fontUnderline",
+                    Boolean.toString(attributes.get(TextAttribute.UNDERLINE) == TextAttribute.UNDERLINE_ON));
+        }
+    }
+
+    private void loadFontPreferences(Element element) {
+        // load font preferences
+        String fontFamily = element.attributeValue("fontFamily");
+        String fontSize = element.attributeValue("fontSize");
+        String fontStyle = element.attributeValue("fontStyle");
+        String fontUnderline = element.attributeValue("fontUnderline");
+        if (!StringUtils.isBlank(fontFamily) &&
+                !StringUtils.isBlank(fontSize) &&
+                !StringUtils.isBlank(fontUnderline) &&
+                !StringUtils.isBlank(fontStyle)) {
+
+            try {
+                int size = Integer.parseInt(fontSize);
+                int style = Integer.parseInt(fontStyle);
+
+                String[] availableFonts = GraphicsEnvironment.getLocalGraphicsEnvironment()
+                        .getAvailableFontFamilyNames();
+                int fontIndex = Arrays.asList(availableFonts).indexOf(fontFamily);
+                if (fontIndex < 0) {
+                    log.debug("Unsupported font family, font settings not loaded");
+                    return;
+                }
+
+                DesktopConfig desktopConfig = ConfigProvider.getConfig(DesktopConfig.class);
+                int sizeIndex = desktopConfig.getAvailableFontSizes().indexOf(size);
+
+                if (sizeIndex < 0) {
+                    log.debug("Unsupported font size, font settings not loaded");
+                    return;
+                }
+
+                Boolean underline = BooleanUtils.toBooleanObject(fontUnderline);
+                if (sizeIndex < 0) {
+                    log.debug("Broken underline property in font definition, skip");
+                }
+
+                Font font = new Font(fontFamily, style, size);
+                if (underline != null && Boolean.TRUE.equals(underline)) {
+                    Map<TextAttribute, Integer> attributes = new HashMap<TextAttribute, Integer>();
+                    attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+                    font = font.deriveFont(attributes);
+                }
+                table.setFont(font);
+            } catch (NumberFormatException ex) {
+                log.debug("Broken font definition in user setting");
             }
         }
     }

@@ -131,7 +131,7 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
     @Override
     public Object getCellEditorValue() {
         if (activeComponent != null) {
-            // normally handle focus lost
+            // post specific event for handle focus lost
             // todo fix it for normal change focus with mouse
             FocusEvent focusEvent = new FocusEvent(activeComponent, FocusEvent.FOCUS_LOST, false, desktopAbstractTable.impl);
             activeComponent.dispatchEvent(focusEvent);
@@ -140,7 +140,8 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
     }
 
     @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                   boolean hasFocus, int row, int column) {
         activeComponent = cache.get(row);
         if (activeComponent == null) {
             activeComponent = getCellComponent(row);
@@ -264,7 +265,6 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
     }
 
     private Border getNoFocusBorder(JComponent jcomponent, JTable table) {
-        Border border = UIManager.getDefaults().getBorder("Table.cellNoFocusBorder");
-        return border;
+        return UIManager.getDefaults().getBorder("Table.cellNoFocusBorder");
     }
 }
