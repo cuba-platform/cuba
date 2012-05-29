@@ -11,9 +11,9 @@ import java.util.Map;
 
 /**
  * Report parameter for lazy data loading in core module
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 public class ParameterPrototype implements Serializable {
 
@@ -28,6 +28,8 @@ public class ParameterPrototype implements Serializable {
     private String metaClassName;
 
     private Map<String, Object> queryParams;
+
+    private boolean useSecurityConstraints = true;
 
     public ParameterPrototype(String paramName) {
         this.paramName = paramName;
@@ -71,5 +73,13 @@ public class ParameterPrototype implements Serializable {
 
     public void setQueryParams(Map<String, Object> queryParams) {
         this.queryParams = queryParams;
+    }
+
+    public boolean isUseSecurityConstraints() {
+        return useSecurityConstraints;
+    }
+
+    public void setUseSecurityConstraints(boolean useSecurityConstraints) {
+        this.useSecurityConstraints = useSecurityConstraints;
     }
 }

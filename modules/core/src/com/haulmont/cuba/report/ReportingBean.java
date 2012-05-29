@@ -29,9 +29,8 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 @ManagedBean(ReportingApi.NAME)
 public class ReportingBean implements ReportingApi {
@@ -42,6 +41,8 @@ public class ReportingBean implements ReportingApi {
     // todo remove thread locals
     private ThreadLocal<Map<String, Object>> params = new ThreadLocal<Map<String, Object>>();
     private ThreadLocal<Set<String>> bandDefinitionNames = new ThreadLocal<Set<String>>();
+
+    private PrototypesLoader prototypesLoader = new PrototypesLoader();
 
     @Override
     public ReportOutputDocument createReport(Report report, Map<String, Object> params) throws IOException {
@@ -78,7 +79,7 @@ public class ReportingBean implements ReportingApi {
 
             for (String paramName : prototypes) {
                 ParameterPrototype prototype = (ParameterPrototype) params.get(paramName);
-                List data = PrototypesLoader.loadData(prototype);
+                List data = prototypesLoader.loadData(prototype);
                 paramsMap.put(paramName, data);
             }
 

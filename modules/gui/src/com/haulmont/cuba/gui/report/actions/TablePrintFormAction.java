@@ -20,9 +20,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class TablePrintFormAction extends AbstractPrintFormAction {
     private final Window window;
@@ -103,7 +102,7 @@ public class TablePrintFormAction extends AbstractPrintFormAction {
                         IFrame.MessageType.CONFIRMATION, new Action[]{yesAction, cancelAction});
             } else {
                 window.showNotification(MessageProvider.getMessage(ReportHelper.class, "notifications.noSelectedEntity"),
-                    IFrame.NotificationType.HUMANIZED);
+                        IFrame.NotificationType.HUMANIZED);
             }
         }
     }
@@ -165,6 +164,7 @@ public class TablePrintFormAction extends AbstractPrintFormAction {
         parameterPrototype.setQueryString(loadContext.getQuery().getQueryString());
         parameterPrototype.setQueryParams(loadContext.getQuery().getParameters());
         parameterPrototype.setViewName(loadContext.getView().getName());
+        parameterPrototype.setUseSecurityConstraints(loadContext.isUseSecurityConstraints());
 
         openRunReportScreen(window, paramKey, parameterPrototype, javaClassName, reportType);
     }
