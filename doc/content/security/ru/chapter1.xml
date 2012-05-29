@@ -1,0 +1,446 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter1_tool_description">
+  <title>Описание инструментария</title>
+  <section>
+    <title>Вход в систему</title>
+    <para>Начало работы с системой, написанной на платформе <application>CUBA</application>, начинается с окна аутентификации пользователя.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/loginWindow.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Пользователю для осуществления входа в систему необходимо ввести логин и пароль. В случае если пароль или логин были введены неверно, система выдаст сообщение об ошибке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/loginWindowerror.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Для автоматического входа в систему
+существует возможность установки опции <guilabel>Запомнить меня</guilabel>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/loginWindowRememberMe.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Также в стартовом окне предоставляется возможность выбрать язык локализации системы. По умолчанию в списке выбора языка локализации установлен русский язык.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/loginWindowLocal.png"/>
+      </imageobject>
+    </mediaobject>
+  </section>
+  <section>
+    <title>Управление пользователями</title>
+    <para>Для того чтобы перейти к экрану администрирования пользователей, необходимо в главном меню приложения перейти к пункту меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Пользователи</guimenu>. Перед Вами откроется окно, представленное на рисунке ниже. </para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/roles_1.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Экран администрирования пользователей позволяет создавать новых пользователей,
+редактировать и удалять уже существующих.</para>
+    <para>В верхней области закладки расположена панель с кнопками</para>
+    <itemizedlist>
+      <listitem>
+        <para><guibutton>Создать</guibutton> − возможность создания нового пользователя системы.</para>
+      </listitem>
+      <listitem>
+        <para><guibutton>Изменить</guibutton> − предоставляет возможность редактировать уже существующего в системе пользователя.</para>
+      </listitem>
+      <listitem>
+        <para><guibutton>Копировать</guibutton> − позволяет скопировать выбранного пользователя. При этом копируются только роли пользователя и его группа доступа.</para>
+      </listitem>
+      <listitem>
+        <para><guibutton>Удалить</guibutton> − по нажатию на эту кнопку происходит вызов окна подтверждения операции удаления пользователя.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/roles_2.png"/>
+          </imageobject>
+        </mediaobject>
+      </listitem>
+      <listitem>
+        <para><guibutton>Копировать настройки</guibutton> − позволяет копировать настройки интерфейса одного пользователя другому пользователю. При этом копируются следующие настройки: настройки отображения таблиц, фильтры, папки поиска и папки приложения. Следует иметь ввиду, что текущие пользовательские настройки удаляются.</para>
+        <para>Для того чтобы скопировать пользовательские настройки одного пользователя другому или другим, необходимо выделить этих пользователей в списке  и нажать на кнопку <guibutton>Копировать настройки</guibutton>. После этого появится диалоговое окно, представленное на рисунке ниже.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/roles_3.png"/>
+          </imageobject>
+        </mediaobject>
+        <para>В выпадающем списке  выберите того пользователя, чьи настройки необходимо  скопировать и нажмите на кнопку <guibutton>Копировать</guibutton>.</para>
+        <para>Далее появится диалоговое окно, запрашивающее подтверждение копирования настроек, представленное на рисунке ниже.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/roles_4.png"/>
+          </imageobject>
+        </mediaobject>
+        <para>После того как подтверждение будет получено, пользовательские настройки будут скопированы.</para>
+      </listitem>
+      <listitem>
+        <para><guibutton>Сменить пароль</guibutton> − позволяет сменить пароль существующего пользователя. Для того чтобы сменить пароль, необходимо выделить нужного пользователя в списке и нажать на кнопку <guibutton>Сменить пароль</guibutton>. После этого появится диалоговое окно, представленное на рисунке.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/roles_5.png"/>
+          </imageobject>
+        </mediaobject>
+      </listitem>
+      <listitem>
+        <para><guibutton>Excel</guibutton> − предоставляет возможность выгрузки списка пользователей в файл Excel.</para>
+      </listitem>
+      <listitem>
+        <para><guibutton>Добавить в набор</guibutton> − позволяет добавлять выбранных пользователей в набор. Для добавления пользователей в набор необходимо выделить пользователей и нажать на кнопку <guibutton>Добавить в набор</guibutton>. После этого появится диалоговое окно, представленное на рисунке.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/roles_6.png"/>
+          </imageobject>
+        </mediaobject>
+        <para>В окне предоставляется возможность выбрать существующий набор из выпадающего списка наборов или создать новый набор с помощью кнопки <guibutton>Создать новый</guibutton>. При создании нового набора появится следующее окно:</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/roles_7.png"/>
+          </imageobject>
+        </mediaobject>
+        <para>В этом окне необходимо заполнить наименование папки, указать родительскую папку.</para>
+        <para>После добавления пользователей в набор в папке, указанной в качестве родительской, появится новая папка.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/roles_8.png"/>
+          </imageobject>
+        </mediaobject>
+      </listitem>
+    </itemizedlist>
+    <para>Для того чтобы просмотреть или изменить информацию о пользователе, необходимо
+дважды кликнуть по соответствующей строке таблицы пользователей или нажать кнопку <guibutton>Изменить</guibutton> для выбранного в таблице пользователя. Откроется карточка
+выбранного пользователя.</para>
+    <para>Карточка пользователя визуально разделена на три области:<itemizedlist>
+        <listitem>
+          <para>Панель, содержащая основные свойства пользователя</para>
+        </listitem>
+        <listitem>
+          <para>Панель, содержащая список ролей пользователя и предоставляющая функционал по изменению этого списка.</para>
+        </listitem>
+        <listitem>
+          <para>Панель, содержащая список замещаемых пользователей и предоставляющая функционал по изменению этого списка.</para>
+        </listitem>
+      </itemizedlist></para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/roles_10.png"/>
+      </imageobject>
+    </mediaobject>
+    <para><emphasis role="bold">Панель Основные свойства</emphasis></para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/roles_12.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Содержит следующие поля:<itemizedlist>
+        <listitem>
+          <para><emphasis role="bold">Логин</emphasis>. Это поле является обязательным для заполнения. Здесь необходимо ввести имя пользователя в системе. В дальнейшем это имя будет использователя в стартовом окне при входе пользователя в систему.</para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Новый пароль</emphasis>. Данное поле доступно только при создании нового пользователя. Поле является обязательным для заполнения. Здесь необходимо ввести пароль пользователя в системе. В дальнейшем этот пароль будет вводиться пользователем в стартовом окне при входе в систему.</para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Подтверждение пароля</emphasis>. Данное поле доступно только при создании нового пользователя. Поле является обязательным для заполнения.</para>
+        </listitem>
+        <listitem>
+          <para>Поля <emphasis role="bold">Фамилия</emphasis>, <emphasis role="bold">Имя</emphasis>, <emphasis role="bold">Отчество</emphasis> необходимы для ввода персональных данных пользователя.</para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Полное имя</emphasis>. Значение данного поля формируется автоматически после заполнения полей <emphasis role="bold">Фамилия</emphasis>, <emphasis role="bold">Имя</emphasis>, <emphasis role="bold">Отчество</emphasis>. При желании значение поля <emphasis role="bold">Полное имя</emphasis> можно изменить.</para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Должность</emphasis>. Служит для ввода должности, в которой находится пользователь.</para>
+        </listitem>
+        <listitem>
+          <para>Группа. Данное поле является обязательным для заполнения. После нажатия на кнопку <inlinemediaobject>
+              <imageobject>
+                <imagedata fileref="img/dots.png"/>
+              </imageobject>
+            </inlinemediaobject> открывается окно выбора группы доступа из групп доступа, существующих в системе.</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/roles_13.png"/>
+            </imageobject>
+          </mediaobject>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Язык</emphasis>. Позволяет выбрать язык интерфейса по умолчанию для заданного пользователя. Значение данного поля используется в том случае, если в стартовом окне системы отсутствует поле для задания языка.</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/roles_14.png"/>
+            </imageobject>
+          </mediaobject>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Email</emphasis>. В этом поле задается адрес электронной почты пользователя. На этот адрес будут высылаться уведомления для данного пользователя. Для данного поля предусмотрен контроль правильности ввода значения. Адрес должн быть вида <email>имя_пользователя@имя_домена</email> (например, <email>somebody@example.com</email>). При этом в имени пользователя допускаются  латинские символы и цифры, знак нижнего подчеркивания, знак минуса и точка, а в домене верхнего уровня − только латинские символы и цифры.</para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Маска разрешенных IP</emphasis>. В этом поле задется маска допустимых IP-адресов, с которых возможен вход в систему. Маска представляет собой список адресов через запятую. Каждый адрес должен обязательно состоять из четырех чисел, разделенных точками (обычный формат IPv4). При этом любая часть вместо числа может содержать знак &quot;*&quot;, что означает &quot;любое число&quot;.</para>
+          <warning>
+            <title>Внимание</title>
+            <para>Следует иметь ввиду, что ограничение по IP-адресу возможно в том случае, если у пользователя, для которого задано данное ограничение, сеть с версией протокола IPv4.</para>
+          </warning>
+        </listitem>
+        <listitem>
+          <para>Опция <emphasis role="bold">Активен</emphasis> означает, что пользователь может заходить в систему и работать в ней. Для
+неактивных пользователей вход в систему невозможен.</para>
+        </listitem>
+      </itemizedlist></para>
+    <para><emphasis role="bold">Панель Роли</emphasis></para>
+    <para>Предоставляет возможность добавлять или удалять роли пользователя. Если при создании пользователю не была назначена ни одна роль, он получает полные права доступа.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/roles_15.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Для того чтобы добавить роль, необходимо нажать на кнопку <guibutton>Добавить</guibutton>. После этого в окне отобразится список всех существующих в системе ролей. </para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/roles_16.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Для выбора роли из списка необходимо выбрать соответствующую строку таблицы и нажать
+на кнопку <guibutton>Выбрать</guibutton>.</para>
+    <para>С ролями, которые уже определены для пользователя, можно совершить следующие действия (если на это есть права):<itemizedlist>
+        <listitem>
+          <para><guibutton>Изменить</guibutton> − предоставляет возможность редактирования выбранной роли.</para>
+        </listitem>
+        <listitem>
+          <para><guibutton>Удалить</guibutton> − возможность удалить выбранную роль.</para>
+        </listitem>
+      </itemizedlist></para>
+    <para><emphasis role="bold">Панель Замещаемые пользователи</emphasis></para>
+    <para>На данной панели можно назначить пользователей, чьи права будут делегированы данному пользователю. Если у данного пользователя нет замещаемых пользователей, его имя отображается обычным текстом. </para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/roles_18.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Если пользователь замещает одного или нескольких пользователей, вместо имени пользователя отображается выпадающий список, в котором можно выбрать имя пользователя, от лица которого будет вестись работа в системе.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/roles_19.png"/>
+      </imageobject>
+    </mediaobject>
+    <warning>
+      <title>Внимание</title>
+      <para>Обратите внимание, что при выборе нового пользователя все текущие окна
+предыдущего пользователя будут закрыты, а несохраненные данные  утеряны.</para>
+    </warning>
+    <para>С замещаемыми пользователями возможны следующие действия:<itemizedlist>
+        <listitem>
+          <para>Добавить. По нажатию на кнопку <guibutton>Добавить</guibutton> появляется диалоговое окно, в котором необходимо выбрать замещаемого пользователя из списка существующих в системе пользователей. Также есть возможность задать временной промежуток, в течение которого действует данное замещение. В случае если даты не проставлены, полномочия остаются
+до тех пор, пока их не снимет администратор.</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/roles_17.png"/>
+            </imageobject>
+          </mediaobject>
+          <caution>
+            <title>Подсказка</title>
+            <para>Следует иметь ввиду, что для того, чтобы изменения по делегированию полномочий вступили в силу, необходимо выйти из системы и вновь залогиниться в нее.</para>
+          </caution>
+        </listitem>
+        <listitem>
+          <para>Редактировать. После выделения замещаемого пользователя в списке и нажатия кнопки <guibutton>Редактировать</guibutton> появляется диалоговое окно, в котором доступны для редактирования только поля <guilabel>Действует с</guilabel> и <guilabel>Действует до</guilabel>.</para>
+        </listitem>
+        <listitem>
+          <para>Удалить. Для того чтобы удалить замещаемого пользователя, необходимо выделить его в списке и нажать на кнопку <guibutton>Удалить</guibutton>. После этого появится стандартное окно, запрашивающее подтверждение операции удаления.</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/roles_2.png"/>
+            </imageobject>
+          </mediaobject>
+        </listitem>
+      </itemizedlist></para>
+  </section>
+  <section>
+    <title>Управление ролями</title>
+    <para>Для того чтобы перейти к экрану управления ролями, необходимо в главном меню приложения перейти к пункту меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Роли</guimenu>. Перед Вами откроется окно, представленное на рисунке ниже. </para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/roles_0.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Изначально в системе существует роль <authorinitials>Administrators</authorinitials>. Это роль, предоставляющая права администрирования системы.</para>
+    <para>В верхней области закладки расположена панель с кнопками</para>
+    <itemizedlist>
+      <listitem>
+        <para><guibutton>Создать</guibutton> − возможность создания новй роли системы.</para>
+      </listitem>
+      <listitem>
+        <para><guibutton>Изменить</guibutton> − предоставляет возможность редактировать уже существующую в системе роль.</para>
+      </listitem>
+      <listitem>
+        <para><guibutton>Удалить</guibutton> − по нажатию на эту кнопку происходит вызов окна подтверждения операции удаления роли.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/roles_2.png"/>
+          </imageobject>
+        </mediaobject>
+      </listitem>
+      <listitem>
+        <para><guibutton>Обновить</guibutton> − позволяет обновить список ролей.</para>
+      </listitem>
+      <listitem>
+        <para><guibutton>Excel</guibutton> − предоставляет возможность выгрузки списка ролей в файл Excel.</para>
+      </listitem>
+      <listitem>
+        <para><guibutton>Назначить пользователям</guibutton> − позволяет назначать выделенную в таблице роль набору пользователей. После выделения нужной роли и нажатия на кнопку <guibutton>Назначить пользователям</guibutton> открывается окно, представленное на рисунке.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/roles_20.png"/>
+          </imageobject>
+        </mediaobject>
+        <para>После нажатия на кнопку <guibutton>Выбрать</guibutton> система вновь открывает окно со списком ролей, на экран выводится сообщение об успешном назначении ролей.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/roles_21.png"/>
+          </imageobject>
+        </mediaobject>
+      </listitem>
+    </itemizedlist>
+    <para>После нажатия на кнопку <guibutton>Создать</guibutton>открывается экран редактирования роли, вид которого представлен на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/roles_22.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Экран редактирования визуально разделен на две области:<itemizedlist>
+        <listitem>
+          <para>Панель, содержащая основные свойства роли</para>
+        </listitem>
+        <listitem>
+          <para>Панель, на которой задаются разрешения различных типов (смотрите раздел <link linkend="permissions_types_id">Roles</link>).</para>
+        </listitem>
+      </itemizedlist></para>
+    <para><emphasis role="bold">Панель Основные свойства</emphasis></para>
+    <para>Содержит следующие поля:<itemizedlist>
+        <listitem>
+          <para><emphasis role="bold">Имя</emphasis>. Это поле является обязательным для заполнения. Здесь необходимо ввести имя роли. </para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Локализованное имя</emphasis>. В данном поле можно ввести локализованное имя роли в системе.</para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Тип</emphasis>. Это поле является обязательным для заполнения. Представляет из себя выпадающий список, содержающий доступные типы ролей.</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/roles_23.png"/>
+            </imageobject>
+          </mediaobject>
+          <itemizedlist>
+            <listitem>
+              <para><emphasis role="bold">Стандартная</emphasis> − в роли данного типа действуют только явно назначенные разрешения.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="bold">Супер</emphasis> − роль данного типа автоматически дает все разрешения. Это удобно для назначения администраторов системы.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="bold">Только чтение</emphasis> − роль данного типа автоматически отнимает разрешения на следующие операции с сущностями: CREATE, UPDATE, DELETE.</para>
+            </listitem>
+            <listitem>
+              <para><emphasis role="bold">Запрещающая</emphasis> − роль данного типа автоматически отнимает разрешения на все объекты, кроме атрибутов сущностей.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Описание</emphasis>. Служит для задания текстового описания роли.</para>
+        </listitem>
+        <listitem>
+          <para>Опция <emphasis role="bold">Роль по умолчанию</emphasis> предоставляет возможность автоматически устанавливать данную роль всем создаваемым пользователям. </para>
+        </listitem>
+      </itemizedlist></para>
+    <para><emphasis role="bold">Панель Разрешения</emphasis></para>
+    <para>Содержит следующие закладки:<itemizedlist>
+        <listitem>
+          <para><guilabel>Экраны</guilabel>. На данной закладке содержится список всех экранов системы, сгруппированный по названиям главных пунктов меню. Можно задать видимость отдельного экрана или всего пункта меню.</para>
+          <para>Запрет видимости пункта меню:</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/roles_24.png"/>
+            </imageobject>
+          </mediaobject>
+          <para>Запрет видимости отдельного экрана:</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/roles_25.png"/>
+            </imageobject>
+          </mediaobject>
+        </listitem>
+        <listitem>
+          <para><guilabel>Сущности</guilabel>. По умолчанию на данной закладке отображаются только те сущности, разрешения\запреты для которых определены для данной роли. Для того чтобы отобразить все сущности, существующие в системе, необходимо снять опцию <guilabel>Только назначенные</guilabel> и нажать на кнопку <guibutton>Применить</guibutton>. </para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/roles_26.png"/>
+            </imageobject>
+          </mediaobject>
+          <para>Если Вы знаете полное или частичное имя сущности, возможно отфильтровать список, введя в поле <guilabel>Сущность</guilabel> полное или частичное имя сущности и нажав после этого на кнопку <guibutton>Применить</guibutton>.</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/roles_27.png"/>
+            </imageobject>
+          </mediaobject>
+          <para>После выбора сущности из списка справа на панели <guilabel>Изменение разрешений</guilabel> отображаются действия, которые можно совершить с данной сущностью, и опции по установке\снятию разрешений и запретов данных действий. В нижней строчке находится опция <guilabel>все</guilabel>, позволяющая устанавливать разрешение\запрет всех доступных действий сразу.</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/roles_28.png"/>
+            </imageobject>
+          </mediaobject>
+        </listitem>
+        <listitem>
+          <para><guilabel>Атрибуты</guilabel>. По умолчанию на данной закладке отображаются только те сущности, разрешения\запреты атрибутов которых определены для данной роли. Для того чтобы отобразить все сущности, существующие в системе, необходимо снять опцию <guilabel>Только назначенные</guilabel> и нажать на кнопку <guibutton>Применить</guibutton>.</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/roles_29.png"/>
+            </imageobject>
+          </mediaobject>
+          <para>Если Вы знаете полное или частичное имя сущности, возможно отфильтровать список, введя в поле <guilabel>Сущность</guilabel> полное или частичное имя сущности и нажав после этого на кнопку <guibutton>Применить</guibutton>.</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/roles_27.png"/>
+            </imageobject>
+          </mediaobject>
+          <para>После выбора сущности из списка справа на панели <guilabel>Изменение разрешений</guilabel> в качестве строк отображаются атрибуты выбранной сущности, а в качестве столбцов − действия, которые можно запретить\разрешить для данного атрибута. В нижней строчке находится опция <guilabel>все</guilabel>, позволяющая устанавливать разрешение\запрет какого-либо действия сразу для всех атрибутов сущности.</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/roles_30.png"/>
+            </imageobject>
+          </mediaobject>
+        </listitem>
+        <listitem>
+          <para><guilabel>Специфичные</guilabel>. На данной закладке содержатся специальные системные разрешения.</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/roles_31.png"/>
+            </imageobject>
+          </mediaobject>
+        </listitem>
+        <listitem>
+          <para><guilabel>Интерфейс</guilabel>. На данной закладке можно управлять доступом к конкретным элементам экрана.</para>
+          <warning>
+            <title>Внимание</title>
+            <para>Для того, чтобы управлять доступом к элементам экрана, необходимо иметь навыки разработки!</para>
+          </warning>
+          <para>В поле <guilabel>Экран</guilabel> необходимо выбрать экран из выпадающего списка, далее в поле <guilabel>Компонент</guilabel> ввести имя компонента и далее нажать на кнопку <guibutton>Добавить</guibutton>. Далее компонент с введенным именем  появится в таблице ниже. Далее с этим компонентом возможны действия по управлению доступом.</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/roles_32.png"/>
+            </imageobject>
+          </mediaobject>
+          <warning>
+            <title>Внимание</title>
+            <para>Действия по изменению разрешений для компонента срабатывают по времени между методами <methodname>init()</methodname> и <methodname>setItem()</methodname> экрана, а также при инициализации lazy-закладок. Доступ к компоненту производится с помощью метода <methodname>getComponent(&quot;componentName&quot;)</methodname>. Далее в зависимости от выбранного разрешения для компонента вызываются методы <methodname>setVisible()</methodname>, <methodname>setEditable()</methodname>, <methodname>setEnabled()</methodname>. В связи с чем разработчику нужно следить за ручной установкой данных свойств в методах контроллера.</para>
+          </warning>
+        </listitem>
+      </itemizedlist></para>
+  </section>
+  <section>
+    <title>Управление группами доступа</title>
+    <para>Для того чтобы перейти к экрану управления группами доступа, необходимо в главном меню приложения перейти к пункту меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Группы доступа</guimenu>. Перед Вами откроется окно, представленное на рисунке ниже. </para>
+  </section>
+  <section>
+    <title>Управление пользовательскими сессиями</title>
+  </section>
+</chapter>
