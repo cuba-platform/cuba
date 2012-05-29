@@ -473,6 +473,13 @@ task transformReporting(type: TransformDocbook) {
     classpath = configurations.buildDoc
 }
 
+task transformSecurity(type: TransformDocbook) {
+    sourceDir = new File(docSrcDir, 'security/ru')
+    sourceFile = new File(sourceDir, 'security.xml')
+    destFile = new File(docTmpDir, 'security/ru/security.xml')
+    classpath = configurations.buildDoc
+}
+
 task transformReportingEng(type: TransformDocbook) {
 	sourceDir = new File(docSrcDir, 'reporting/eng')
     sourceFile = new File(sourceDir, 'reporting.xml')
@@ -486,6 +493,21 @@ task buildManualHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     stylesheetName = 'html.xsl'
     resources = fileTree {
         from new File(docSrcDir, 'manual/ru')
+        include 'img/*.png'
+        include 'img/*.jpg'
+    }
+    resources += fileTree {
+        from docCssDir
+        include '*.css'
+    }
+}
+
+task buildSecurityHtml(type: Docbook2Xhtml, dependsOn: transformSecurity) {
+    source transformSecurity.destFile
+    destDir = new File(docDstDir, 'security/ru/html')
+    stylesheetName = 'html.xsl'
+    resources = fileTree {
+        from new File(docSrcDir, 'security/ru')
         include 'img/*.png'
         include 'img/*.jpg'
     }
@@ -554,6 +576,22 @@ task buildManualSingleHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     }
 }
 
+task buildSecuritySingleHtml(type: Docbook2Xhtml, dependsOn: transformSecurity) {
+    source transformSecurity.destFile
+    destFile = new File(docDstDir, 'security/ru/html-single/security.html')
+    stylesheetName = 'html-single.xsl'
+    resources = fileTree {
+        from new File(docSrcDir, 'security/ru')
+        include 'img/**/*.png'
+        include 'img/**/*.jpg'
+    }
+    resources += fileTree {
+        from docCssDir
+        include '*.css'
+    }
+}
+
+
 task buildReportingSingleHtml(type: Docbook2Xhtml, dependsOn: transformReporting) {
     source transformReporting.destFile
     destFile = new File(docDstDir, 'reporting/ru/html-single/reporting.html')
@@ -585,7 +623,7 @@ task buildReportingSingleHtmlEng(type: Docbook2Xhtml, dependsOn: transformReport
 }
 
 task buildDoc(type: Zip, description: 'Build documentation',
-        dependsOn: [buildManualSingleHtml, buildReportingSingleHtml,buildReportingSingleHtmlEng, buildReportingPdf,buildReportingPdfEng]) {
+        dependsOn: [buildManualSingleHtml,buildSecuritySingleHtml, buildReportingSingleHtml,buildReportingSingleHtmlEng, buildReportingPdf,buildReportingPdfEng]) {
     from 'build/doc'
     destinationDir = file('build/distributions')
     baseName = 'cuba-doc'
