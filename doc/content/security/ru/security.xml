@@ -5,13 +5,14 @@
       <year>2012</year>
       <holder>Haulmont (<ulink url="www.haulmont.ru">www.haulmont.ru</ulink>)</holder>
     </copyright>
-    <title>Руководство по безопасности платформы CUBA</title>
+    <title>Руководство по подсистеме безопасности платформы CUBA</title>
   </bookinfo>
   <preface lang="ru">
     <title>Предисловие</title>
     <section id="appointment_id">
       <title>Назначение</title>
-      <para>Документ является руководством по управлению безопасностью в системах, разработанных на платформе <application>CUBA</application>.    Информация, представленная в руководстве, актуальна для платформы  версии 3.2.3.</para>
+      <para>Данный документ является руководством по управлению разграничением прав пользователей в системах, разработанных на платформе <application>CUBA</application>.
+          Информация, представленная в руководстве, актуальна для платформы версии 3.2+.</para>
     </section>
     <section>
       <title>Структура руководства</title>
@@ -23,7 +24,7 @@
       <para><link linkend="chapter1_tool_description">
           <emphasis role="bold">Глава 2. Описание инструментария</emphasis>
         </link></para>
-      <para>В данной главе содержится описание интерфейса подсистемы, с помощью которой происходит управление безопасностью. </para>
+      <para>В данной главе содержится описание интерфейса подсистемы, с помощью которой производится управление безопасностью. </para>
       <para><link linkend="chapter3_examples">
           <emphasis role="bold">Глава 3. Примеры построения отчетов</emphasis>
         </link></para>
