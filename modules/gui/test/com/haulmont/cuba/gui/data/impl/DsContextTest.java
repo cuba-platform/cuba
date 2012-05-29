@@ -148,6 +148,106 @@ public class DsContextTest extends CubaClientTestCase {
     }
 
     @Test
+    public void testAggregationNewEntity() {
+        // Master editor
+        createMasterDsContext();
+
+        final TestMasterEntity master = new TestMasterEntity();
+        master.setMasterName("new_master");
+        masterDs.setItem(master);
+
+        final TestDetailEntity detail = new TestDetailEntity();
+        detail.setMaster(master);
+
+        createDetailDsContext();
+        setupParentDs(detailsDs, detailDs, detail);
+
+        detailDs.getItem().setDetailName("new_detail");
+
+        dataService.commitValidator = null;
+        detailDsContext.commit();
+        assertEquals("Commit Detail DsContext", 0, dataService.commitCount);
+
+        // Commit Master editor
+        dataService.commitValidator = new TestDataService.CommitValidator() {
+            @Override
+            public void validate(CommitContext<Entity> context) {
+                assertTrue(containsEntityInstance(context.getCommitInstances(), detail.getId()));
+                assertTrue(containsEntityInstance(context.getCommitInstances(), master.getId()));
+                for (Entity entity : context.getCommitInstances()) {
+                    if (entity.getId().equals(detail.getId()))
+                        assertEquals("new_detail", ((TestDetailEntity) entity).getDetailName());
+                }
+            }
+        };
+        masterDsContext.commit();
+        assertEquals("Commit Master DsContext", 1, dataService.commitCount);
+    }
+
+    @Test
+    public void testNestedAggregationNewEntity() {
+        new NonStrictExpectations() {
+            @Mocked PersistenceHelper persistenceHelper;
+            {
+                PersistenceHelper.isNew(any); result = true;
+            }
+        };
+
+        // Master editor
+        createMasterDsContext();
+
+        final TestMasterEntity master = new TestMasterEntity();
+        master.setMasterName("new_master");
+        masterDs.setItem(master);
+
+        // Detail editor
+        final TestDetailEntity detail = new TestDetailEntity();
+        detail.setMaster(master);
+
+        createDetailDsContext();
+        setupParentDs(detailsDs, detailDs, detail);
+
+        detailDs.getItem().setDetailName("new_detail");
+
+        // Part editor
+        final TestPartEntity part = new TestPartEntity();
+        part.setDetail(detail);
+
+        createPartDsContext();
+        setupParentDs(partsDs, partDs, part);
+
+        // Edit item in Datasource
+        partDs.getItem().setPartName("new_part");
+
+        // Commit Part editor
+        dataService.commitValidator = null;
+        partDsContext.commit();
+        assertEquals("Commit Part", 0, dataService.commitCount);
+
+        dataService.commitValidator = null;
+        detailDsContext.commit();
+        assertEquals("Commit Detail DsContext", 0, dataService.commitCount);
+
+        // Commit Master editor
+        dataService.commitValidator = new TestDataService.CommitValidator() {
+            @Override
+            public void validate(CommitContext<Entity> context) {
+                assertTrue(containsEntityInstance(context.getCommitInstances(), detail.getId()));
+                assertTrue(containsEntityInstance(context.getCommitInstances(), master.getId()));
+                assertTrue(containsEntityInstance(context.getCommitInstances(), part.getId()));
+                for (Entity entity : context.getCommitInstances()) {
+                    if (entity.getId().equals(detail.getId()))
+                        assertEquals("new_detail", ((TestDetailEntity) entity).getDetailName());
+                    if (entity.getId().equals(part.getId()))
+                        assertEquals("new_part", ((TestPartEntity) entity).getPartName());
+                }
+            }
+        };
+        masterDsContext.commit();
+        assertEquals("Commit Master DsContext", 1, dataService.commitCount);
+    }
+
+    @Test
     public void testAggregationRepeatEdit() {
         createEntities();
 
@@ -355,6 +455,22 @@ public class DsContextTest extends CubaClientTestCase {
         partDsContext.commit();
         assertEquals("Commit Part", 0, dataService.commitCount);
 
+        // Add new part
+        final TestPartEntity newPart = new TestPartEntity();
+        newPart.setDetail(detail1);
+        newPart.setPartName("new_part");
+
+        createPartDsContext();
+        setupParentDs(partsDs, partDs, newPart);
+
+        // Edit item in Datasource
+        partDs.getItem().setPartName("new_part");
+
+        // Commit Part editor 4th time
+        dataService.commitValidator = null;
+        partDsContext.commit();
+        assertEquals("Commit Part", 0, dataService.commitCount);
+
         // Commit Detail editor 2nd
         dataService.commitValidator = null;
         detailDsContext.commit();
@@ -366,13 +482,27 @@ public class DsContextTest extends CubaClientTestCase {
             public void validate(CommitContext<Entity> context) {
                 assertTrue(containsEntityInstance(context.getCommitInstances(), part1.getId()));
                 for (Entity entity : context.getCommitInstances()) {
-                    if (entity.getId().equals(part1.getId()))
+                    if (entity.getId().equals(part1.getId())) {
                         assertEquals("part1_3", ((TestPartEntity) entity).getPartName());
+                        assertTrue(((TestPartEntity) entity).getDetail() == detail1);
+                    }
+                    if (entity.getId().equals(newPart.getId())) {
+                        assertEquals("new_part", ((TestPartEntity) entity).getPartName());
+                        assertTrue(((TestPartEntity) entity).getDetail() == detail1);
+                    }
                 }
             }
         };
         masterDsContext.commit();
         assertEquals("Commits Master", 1, dataService.commitCount);
+    }
+
+    private void setupParentDs(CollectionDatasource parent, Datasource child, Entity<UUID> item) {
+        ((DatasourceImplementation) child).setParent(parent);
+
+        Entity itemCopy = (Entity) InstanceUtils.copy(item);
+        child.setItem(itemCopy);
+        ((DatasourceImplementation) child).setModified(false);
     }
 
     private void setupParentDs(CollectionDatasource parent, Datasource child, UUID itemId) {
@@ -413,9 +543,11 @@ public class DsContextTest extends CubaClientTestCase {
         embeddable1 = new TestEmbeddableEntity();
         embeddable1.setName("embeddable1");
         detail1.setEmbeddable(embeddable1);
+        detail1.setMaster(master);
 
         part1 = new TestPartEntity();
         part1.setPartName("part1");
+        part1.setDetail(detail1);
         detail1.getParts().add(part1);
 
         master.getDetails().add(detail1);

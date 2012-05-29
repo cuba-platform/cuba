@@ -84,6 +84,7 @@ public class DatasourceImpl<T extends Entity>
                     ds.modifyItem(item);
                 } else {
                     ds.addItem(item);
+                    ds.setItem(item); // This is necessary for nested property datasources to work correctly
                 }
             } else {
                 parentDs.setItem(item);

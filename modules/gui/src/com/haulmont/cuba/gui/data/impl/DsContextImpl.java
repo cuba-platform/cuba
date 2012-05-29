@@ -9,6 +9,9 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.chile.core.model.impl.AbstractInstance;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.core.entity.Entity;
@@ -123,17 +126,9 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
 
     public void commit() {
         for (DsContext childDsContext : children) {
-            for (Datasource datasource : childDsContext.getAll()) {
-                if (Datasource.CommitMode.PARENT.equals(datasource.getCommitMode())) {
-                    datasource.commit();
-                }
-            }
+            commitToParent(childDsContext.getAll());
         }
-        for (Datasource datasource : datasourceMap.values()) {
-            if (Datasource.CommitMode.PARENT.equals(datasource.getCommitMode())) {
-                datasource.commit();
-            }
-        }
+        commitToParent(datasourceMap.values());
 
         final Map<DataService, Collection<Datasource<Entity>>> commitData = collectCommitData();
 
@@ -157,6 +152,28 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
             notifyAllDsCommited(dataservice, committedEntities);
         } else {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    private void commitToParent(Collection<Datasource> datasources) {
+        List<Datasource> list = new ArrayList<Datasource>();
+        for (Datasource datasource : datasources) {
+            if (Datasource.CommitMode.PARENT.equals(datasource.getCommitMode())) {
+                list.add(datasource);
+            }
+        }
+        Collections.sort(list, new Comparator<Datasource>() {
+            @Override
+            public int compare(Datasource ds1, Datasource ds2) {
+                if (ds1 instanceof NestedDatasource && ((NestedDatasource) ds1).getMaster() == ds2)
+                    return 1;
+                if (ds2 instanceof NestedDatasource && ((NestedDatasource) ds2).getMaster() == ds1)
+                    return -1;
+                return 0;
+            }
+        });
+        for (Datasource datasource : list) {
+            datasource.commit();
         }
     }
 
@@ -190,28 +207,47 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
         }
     }
 
-    protected CommitContext<Entity> createCommitContext(DataService dataservice, Map<DataService, Collection<Datasource<Entity>>> commitData) {
-
-        final CommitContext<Entity> context =
-                new CommitContext<Entity>();
+    protected CommitContext<Entity> createCommitContext(DataService dataservice,
+                                                        Map<DataService, Collection<Datasource<Entity>>> commitData)
+    {
+        CommitContext<Entity> context = new CommitContext<Entity>();
 
         for (Datasource<Entity> datasource : commitData.get(dataservice)) {
             final DatasourceImplementation<Entity> implementation = (DatasourceImplementation) datasource;
 
             for (Entity entity : implementation.getItemsToCreate()) {
-                context.getCommitInstances().add(entity);
-                context.getViews().put(entity, datasource.getView());
+                addToContext(entity, datasource, context.getCommitInstances(), context.getViews());
             }
             for (Entity entity : implementation.getItemsToUpdate()) {
-                context.getCommitInstances().add(entity);
-                context.getViews().put(entity, datasource.getView());
+                addToContext(entity, datasource, context.getCommitInstances(), context.getViews());
             }
             for (Entity entity : implementation.getItemsToDelete()) {
-                context.getRemoveInstances().add(entity);
-                context.getViews().put(entity, datasource.getView());
+                addToContext(entity, datasource, context.getRemoveInstances(), context.getViews());
             }
         }
         return context;
+    }
+
+    private void addToContext(Entity entity, Datasource<Entity> datasource,
+                              Collection<Entity> entities, Map<Entity, View> views) {
+        if (datasource instanceof NestedDatasource)
+            replaceMasterCopies(entity, ((NestedDatasource) datasource));
+
+        entities.add(entity);
+        views.put(entity, datasource.getView());
+    }
+
+    // Replace the reference to master entity with actual entity containing in the master datasource,
+    // because in case of nested property datasources there may be references to cloned master entities.
+    private void replaceMasterCopies(Entity entity, NestedDatasource datasource) {
+        Datasource masterDs = datasource.getMaster();
+        MetaProperty metaProperty = datasource.getProperty();
+        if (masterDs != null && metaProperty != null) {
+            MetaProperty inverseProp = metaProperty.getInverse();
+            if (inverseProp != null && inverseProp.getDomain().equals(datasource.getMetaClass())) {
+                ((AbstractInstance) entity).setValue(inverseProp.getName(), masterDs.getItem(), false);
+            }
+        }
     }
 
     protected Map<DataService, Collection<Datasource<Entity>>> collectCommitData() {
