@@ -620,9 +620,9 @@ public class FoldersPane extends VerticalLayout {
             Folder folder = (Folder) event.getItemId();
             if (getItemClickable(folder)) {
                 if (event.getButton() == ItemClickEvent.BUTTON_RIGHT) {
-                    if (appFoldersTree.containsId(event.getItemId()))
+                    if (appFoldersTree != null && appFoldersTree.containsId(event.getItemId()))
                         appFoldersTree.select(event.getItemId());
-                    else if (searchFoldersTree.containsId(event.getItemId()))
+                    else if (searchFoldersTree != null && searchFoldersTree.containsId(event.getItemId()))
                         searchFoldersTree.select(event.getItemId());
                 } else {
                     openFolder((AbstractSearchFolder) event.getItemId());
