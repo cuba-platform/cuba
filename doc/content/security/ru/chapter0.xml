@@ -3,17 +3,27 @@
   <title>Общие сведения</title>
   <para>Платформа <application>CUBA</application> включает в себя следующие средства разграничения прав доступа пользователей к информации:
       <itemizedlist>
-          <listitem>Иерархическая структура групп доступа с наследованием ограничений</listitem>
-          <listitem>Система назначения пользователям разрешений, основанная на ролях; при этом набор ролей и разрешений конфигурируется администратором системы на этапе внедрения</listitem>
-          <listitem>Контроль доступа на следующих уровнях:
-              <itemizedlist>
-                  <listitem>Операции над сущностями предметной области (чтение, создание, изменение, удаление): например, пользователь “Иванов” может просматривать документы, но не может создавать, изменять и удалять их</listitem>
-                  <listitem>Атрибуты сущностей (изменение, чтение, запрет): пользователь “Иванов” видит все атрибуты документов кроме суммы</listitem>
-                  <listitem>Доступ к определенным экземплярам сущностей (контроль доступа на уровне строк): пользователь “Иванов” видит только те документы, которые были созданы в его отделе</listitem>
-              </itemizedlist>
+      <listitem>
+        <para>Иерархическая структура групп доступа с наследованием ограничений</para>
+      </listitem>
+      <listitem>
+        <para>Система назначения пользователям разрешений, основанная на ролях; при этом набор ролей и разрешений конфигурируется администратором системы на этапе внедрения</para>
+      </listitem>
+      <listitem>Контроль доступа на следующих уровнях: <itemizedlist>
+          <listitem>
+            <para>Операции над сущностями предметной области (чтение, создание, изменение, удаление): например, пользователь “Иванов” может просматривать документы, но не может создавать, изменять и удалять их</para>
           </listitem>
-          <listitem>Интеграция с ActiveDirectory с возможностью реализации Single-Sign-On для пользователей Windows</listitem>
-      </itemizedlist>
+          <listitem>
+            <para>Атрибуты сущностей (изменение, чтение, запрет): пользователь “Иванов” видит все атрибуты документов, кроме суммы</para>
+          </listitem>
+          <listitem>
+            <para>Доступ к определенным экземплярам сущностей (контроль доступа на уровне строк): пользователь “Иванов” видит только те документы, которые были созданы в его отделе</para>
+          </listitem>
+        </itemizedlist></listitem>
+      <listitem>
+        <para>Интеграция с <application>ActiveDirectory</application> с возможностью реализации Single-Sign-On для пользователей <application>Windows</application></para>
+      </listitem>
+    </itemizedlist>
   </para>
   <para>Основные компоненты подсистемы безопасности <application>CUBA</application>  приведены на
 следующей диаграмме. </para>
@@ -23,12 +33,6 @@
     </imageobject>
   </mediaobject>
   <para>Рассмотрим их более подробно. </para>
-  <section>
-    <title>Platform security dependent code</title>
-  </section>
-  <section>
-    <title>Application security dependent code</title>
-  </section>
   <section>
     <title>Login screen</title>
     <para><classname>Login screen</classname> представляет собой окно входа в систему, посредством которого пользователь получает доступ к системе. В этом окне производится аутентификация пользователя по логину и паролю, а также дальнейшая авторизация. Пароль в целях его безопасности хранится в базе данных в хэшированном виде.</para>
@@ -59,7 +63,7 @@
     <para>Список активных пользовательских сессий можно получить на клиенте через сервис <classname>UserSessionService</classname>,  в JMX интерфейсе через МБин <classname>app.cuba:service=UserSessions</classname>, а также с помощью подпункта меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Пользовательские сессии</guimenu>.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/usesrSession.png"/>
+        <imagedata align="center" fileref="img/userSession.png"/>
       </imageobject>
     </mediaobject>
   </section>
@@ -137,7 +141,7 @@
 доступ на уровне отдельных экземпляров (строк таблицы)  некоторой сущности. 
 Например, пользователь видит только те документы, которые были созданы в его
 отделе.</para>
-    <para><emphasis role="bold">Constraints</emphasis></para>
+    <para id="constraints_id"><emphasis role="bold">Constraints</emphasis></para>
     <para>В параметрах ограничений (constraints) можно использовать следующие предопределенные константы:<itemizedlist>
         <listitem>
           <para><varname>session$userLogin</varname> − логин текущего пользователя (всегда того, кто залогинен, независимо от замещения).</para>

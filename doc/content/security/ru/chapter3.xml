@@ -1,4 +1,168 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter3_examples">
   <title>Примеры управления доступом в системе</title>
+  <section>
+    <title>Создание роли</title>
+    <para>Создадим роль <authorinitials>Продавец</authorinitials>. В главном меню приложения выберите пункт меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Роли</guimenu>. На экране откроется окно, представленное на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example_0.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В открывшейся закладке нажмите на кнопку <guibutton>Создать</guibutton>. После этого откроется окно, представленное на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example_1.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В поле <guilabel>Имя</guilabel> введите имя роли − <userinput>salesPerson</userinput>, а в поле <guilabel>Локализованное имя</guilabel> − название роли на нужном языке. Далее перейдите на закладку <guilabel>Сущности</guilabel>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example_2.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В отобразившейся закладке снимите опцию <guilabel>Только назначенные</guilabel> и затем нажмите на кнопку <guibutton>Применить</guibutton>. После этого в таблице ниже будут отражены все сущности, существующие в системе.</para>
+    <para>Пользователь с ролью <authorinitials>Продавец</authorinitials> может просматривать и изменять все сущности системы, но не имеет права  создавать и удалять экземпляры сущности <classname>Продавец</classname>. Покажем, как создать такое ограничение, на примере сущности <classname>Покупатель</classname>. </para>
+    <para>Для этого в таблице найдите и выделите сущность <classname>shop$Buyer</classname>. После этого на панели <guilabel>Изменение разрешений</guilabel> появятся опции по заданию разрешений на создание, чтение, изменение и удаление данной сущности. Так как требуются разрешающие действия, поставьте опцию <guilabel>все</guilabel> в колонке <guilabel>разрешено</guilabel>.  После этого колонки <guilabel>Создание</guilabel>, <guilabel>Чтение</guilabel>, <guilabel>Изменение</guilabel>, <guilabel>Удаление</guilabel> в таблице слева заполнятся, а сами значения будут выделены цветом.</para>
+    <para>По аналогии задайте  разрешения на создание, чтение, изменение и удаление остальных сущностей. </para>
+    <para>После этого нажмите на кнопку <guibutton>ОК</guibutton>.</para>
+  </section>
+  <section>
+    <title>Создание группы доступа</title>
+    <para>Далее создадим группу доступа <authorinitials>Продавцы</authorinitials>.</para>
+    <para>Для этого перейдите к пункту меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Группы доступа</guimenu>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example_3.png"/>
+      </imageobject>
+    </mediaobject>
+    <para> В открывшемся окне на панели слева выделите мышкой группу доступа <authorinitials>Company</authorinitials> и нажмите на кнопку <guibutton>Создать</guibutton>. В выпадающем списке выберите пункт <guilabel>Создать</guilabel>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example_4.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В открывшемся окне в поле <guilabel>Наименование</guilabel> введите название группы − <userinput>Продавцы</userinput>. Далее нажмите на кнопку <guibutton>ОК</guibutton>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example_5.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>На панели слева выделите созданную группу мышкой, на панели справа перейдите на закладку <guilabel>Ограничения</guilabel> и нажмите на кнопку <guibutton>Создать</guibutton>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example_6.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Далее заполните поля <guilabel>Имя сущности</guilabel>, <guilabel>Оператор Join</guilabel>, <guilabel>Оператор Where</guilabel> и нажмите на кнопку <guibutton>ОК</guibutton>. Значения Вы можете взять из таблицы, расположенной ниже.</para>
+    <informaltable frame="all" align="center" pgwide="0">
+      <tgroup colsep="1" cols="2" rowsep="1" align="center">
+        <colspec colname="c1"/>
+        <colspec colname="c2"/>
+        <thead>
+          <row>
+            <entry colname="Имя атрибута">Название поля</entry>
+            <entry colname="Тип атрибута">Значение</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry align="center" namest="c1" nameend="c2">Ограничения для группы <authorinitials>Продавцы</authorinitials></entry>
+          </row>
+          <row>
+            <entry align="left">Имя сущности</entry>
+            <entry align="left">
+              <classname>shop$Sale</classname>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Оператор Join</entry>
+            <entry align="left">
+              <code>left join {E}.salesPerson a</code>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Оператор Where</entry>
+            <entry align="left">
+              <code>(a.id in (select p.id from shop$SalesPerson p where p.user.id= :session$userId))</code>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Имя сущности</entry>
+            <entry align="left">
+              <classname>shop$SalesPerson</classname>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Оператор Where</entry>
+            <entry align="left">
+              <code>({E}.user.id = :session$userId)</code>
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+  </section>
+  <section>
+    <title>Создание нового пользователя системы</title>
+    <para>Создадим пользователя с ролью <authorinitials>Продавец</authorinitials>. Для этого перейдите к пункту меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Пользователи</guimenu>. Перед Вами откроется экран, представленный на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example_7.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В таблице, расположенной на открывшейся закладке, отображаются системные пользователи, уже созданные в системе. </para>
+    <warning>
+      <para>Удалять системных пользователей не рекомендуется!</para>
+    </warning>
+    <para>Для создания нового пользователя нажмите на кнопку <guibutton>Создать</guibutton>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example_8.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Заполните поля <guilabel>Логин</guilabel>, <guilabel>Новый пароль</guilabel>, <guilabel>Подтверждение пароля</guilabel>, <guilabel>Фамилия</guilabel>, <guilabel>Имя</guilabel>. В поле <guilabel>Группа</guilabel> нажмите на кнопку <inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="img/dots.png"/>
+        </imageobject>
+      </inlinemediaobject>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example_9.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В открывшемся окне выделите группу <authorinitials>Продавцы</authorinitials> и нажмите на кнопку <guibutton>Выбрать</guibutton>. Далее назначим создаваемому пользователю роль <authorinitials>Продавец</authorinitials>. Для этого  в панели <guilabel>Роли</guilabel> нажмите на кнопку <guibutton>Добавить</guibutton>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example_10.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В открывшемся окне выделите роль <authorinitials>Продавец</authorinitials> и нажмите на кнопку <guibutton>Выбрать</guibutton>. После этого в окне редактирования пользователя нажмите на кнопку <guibutton>ОК</guibutton>. Роль создана.</para>
+  </section>
+  <section>
+    <title>Настройка делегирования полномочий</title>
+    <para>Настроим делегирование пользователей. Делегирование − это передача полномочий одного пользователя другому пользователю. Настроим делегирование полномочий пользователя <authorinitials>Иван Иванов</authorinitials> пользователю <authorinitials>Администратор</authorinitials>.</para>
+    <para>Для этого в списке пользователей выберите пользователя <authorinitials>Администратор</authorinitials> и нажмите на кнопку <guibutton>Изменить</guibutton>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example_11.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Перед Вами откроется окно, представленное на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example_12.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>На панели <guilabel>Замещаемые пользователи</guilabel> нажмите на кнопку <guibutton>Добавить</guibutton>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/example_13.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В открывшемся окне необходимо выбрать замещаемого пользователя из списка существующих. В
+полях <guilabel>Действует с</guilabel> и <guilabel>Действует до</guilabel> можно установить временной промежуток, по прошествии которого делегированные
+полномочия автоматически снимаются. В случае если даты не проставлена, полномочия остаются
+до тех пор, пока их снимет администратор.</para>
+  </section>
 </chapter>

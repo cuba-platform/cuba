@@ -29,7 +29,7 @@
       </imageobject>
     </mediaobject>
   </section>
-  <section>
+  <section id="user_manage_id">
     <title>Управление пользователями</title>
     <para>Для того чтобы перейти к экрану администрирования пользователей, необходимо в главном меню приложения перейти к пункту меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Пользователи</guimenu>. Перед Вами откроется окно, представленное на рисунке ниже. </para>
     <mediaobject>
@@ -49,14 +49,6 @@
       </listitem>
       <listitem>
         <para><guibutton>Копировать</guibutton> − позволяет скопировать выбранного пользователя. При этом копируются только роли пользователя и его группа доступа.</para>
-      </listitem>
-      <listitem>
-        <para><guibutton>Удалить</guibutton> − по нажатию на эту кнопку происходит вызов окна подтверждения операции удаления пользователя.</para>
-        <mediaobject>
-          <imageobject>
-            <imagedata align="center" fileref="img/roles_2.png"/>
-          </imageobject>
-        </mediaobject>
       </listitem>
       <listitem>
         <para><guibutton>Копировать настройки</guibutton> − позволяет копировать настройки интерфейса одного пользователя другому пользователю. При этом копируются следующие настройки: настройки отображения таблиц, фильтры, папки поиска и папки приложения. Следует иметь ввиду, что текущие пользовательские настройки удаляются.</para>
@@ -80,30 +72,6 @@
         <mediaobject>
           <imageobject>
             <imagedata align="center" fileref="img/roles_5.png"/>
-          </imageobject>
-        </mediaobject>
-      </listitem>
-      <listitem>
-        <para><guibutton>Excel</guibutton> − предоставляет возможность выгрузки списка пользователей в файл Excel.</para>
-      </listitem>
-      <listitem>
-        <para><guibutton>Добавить в набор</guibutton> − позволяет добавлять выбранных пользователей в набор. Для добавления пользователей в набор необходимо выделить пользователей и нажать на кнопку <guibutton>Добавить в набор</guibutton>. После этого появится диалоговое окно, представленное на рисунке.</para>
-        <mediaobject>
-          <imageobject>
-            <imagedata align="center" fileref="img/roles_6.png"/>
-          </imageobject>
-        </mediaobject>
-        <para>В окне предоставляется возможность выбрать существующий набор из выпадающего списка наборов или создать новый набор с помощью кнопки <guibutton>Создать новый</guibutton>. При создании нового набора появится следующее окно:</para>
-        <mediaobject>
-          <imageobject>
-            <imagedata align="center" fileref="img/roles_7.png"/>
-          </imageobject>
-        </mediaobject>
-        <para>В этом окне необходимо заполнить наименование папки, указать родительскую папку.</para>
-        <para>После добавления пользователей в набор в папке, указанной в качестве родительской, появится новая папка.</para>
-        <mediaobject>
-          <imageobject>
-            <imagedata align="center" fileref="img/roles_8.png"/>
           </imageobject>
         </mediaobject>
       </listitem>
@@ -153,14 +121,14 @@
           <para><emphasis role="bold">Должность</emphasis>. Служит для ввода должности, в которой находится пользователь.</para>
         </listitem>
         <listitem>
-          <para>Группа. Данное поле является обязательным для заполнения. После нажатия на кнопку <inlinemediaobject>
+          <para><guilabel>Группа</guilabel>. Данное поле является обязательным для заполнения. После нажатия на кнопку <inlinemediaobject>
               <imageobject>
                 <imagedata fileref="img/dots.png"/>
               </imageobject>
             </inlinemediaobject> открывается окно выбора группы доступа из групп доступа, существующих в системе.</para>
           <mediaobject>
             <imageobject>
-              <imagedata align="center" fileref="img/roles_13.png"/>
+              <imagedata align="center" fileref="img/example_9.png"/>
             </imageobject>
           </mediaobject>
         </listitem>
@@ -197,7 +165,7 @@
     <para>Для того чтобы добавить роль, необходимо нажать на кнопку <guibutton>Добавить</guibutton>. После этого в окне отобразится список всех существующих в системе ролей. </para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/roles_16.png"/>
+        <imagedata align="center" fileref="img/example_10.png"/>
       </imageobject>
     </mediaobject>
     <para>Для выбора роли из списка необходимо выбрать соответствующую строку таблицы и нажать
@@ -246,12 +214,7 @@
           <para>Редактировать. После выделения замещаемого пользователя в списке и нажатия кнопки <guibutton>Редактировать</guibutton> появляется диалоговое окно, в котором доступны для редактирования только поля <guilabel>Действует с</guilabel> и <guilabel>Действует до</guilabel>.</para>
         </listitem>
         <listitem>
-          <para>Удалить. Для того чтобы удалить замещаемого пользователя, необходимо выделить его в списке и нажать на кнопку <guibutton>Удалить</guibutton>. После этого появится стандартное окно, запрашивающее подтверждение операции удаления.</para>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/roles_2.png"/>
-            </imageobject>
-          </mediaobject>
+          <para>Удалить. Для того чтобы удалить замещаемого пользователя, необходимо выделить его в списке и нажать на кнопку <guibutton>Удалить</guibutton>. </para>
         </listitem>
       </itemizedlist></para>
   </section>
@@ -273,18 +236,13 @@
         <para><guibutton>Изменить</guibutton> − предоставляет возможность редактировать уже существующую в системе роль.</para>
       </listitem>
       <listitem>
-        <para><guibutton>Удалить</guibutton> − по нажатию на эту кнопку происходит вызов окна подтверждения операции удаления роли.</para>
-        <mediaobject>
-          <imageobject>
-            <imagedata align="center" fileref="img/roles_2.png"/>
-          </imageobject>
-        </mediaobject>
+        <para><guibutton>Удалить</guibutton>.</para>
       </listitem>
       <listitem>
-        <para><guibutton>Обновить</guibutton> − позволяет обновить список ролей.</para>
+        <para><guibutton>Обновить</guibutton>.</para>
       </listitem>
       <listitem>
-        <para><guibutton>Excel</guibutton> − предоставляет возможность выгрузки списка ролей в файл Excel.</para>
+        <para><guibutton>Excel</guibutton>.</para>
       </listitem>
       <listitem>
         <para><guibutton>Назначить пользователям</guibutton> − позволяет назначать выделенную в таблице роль набору пользователей. После выделения нужной роли и нажатия на кнопку <guibutton>Назначить пользователям</guibutton> открывается окно, представленное на рисунке.</para>
@@ -439,8 +397,145 @@
   <section>
     <title>Управление группами доступа</title>
     <para>Для того чтобы перейти к экрану управления группами доступа, необходимо в главном меню приложения перейти к пункту меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Группы доступа</guimenu>. Перед Вами откроется окно, представленное на рисунке ниже. </para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/groups_0.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Визуально экран управления группами доступа состоит из двух областей:<itemizedlist>
+        <listitem>
+          <para>Панель, отражающая отношения между группами доступа в виде иерархии</para>
+        </listitem>
+        <listitem>
+          <para>Панель, содержащая подробную информацию о выбранной группе доступа.</para>
+        </listitem>
+      </itemizedlist></para>
+    <para>Изначально в системе существует только группа доступа <authorinitials>Company</authorinitials>. </para>
+    <para>В верхней левой области закладки Группы доступа находится панель с кнопками</para>
+    <itemizedlist>
+      <listitem>
+        <para><guibutton>Создать</guibutton>. Представляет собой кнопку с выпадающим списком действий. Доступны действия <guilabel>Создать</guilabel> и <guilabel>Копировать</guilabel>. По выбору действия <guilabel>Создать</guilabel> создается новая пустая группа доступа. По выбору действия <guilabel>Копировать</guilabel> создается новая группа на основе выбранной для копирования. При этом копируется название группы, а также ограничения и атрибуты сессии, которые имеются у копируемой группы.</para>
+      </listitem>
+      <listitem>
+        <para><guibutton>Изменить</guibutton> − позволяет изменить название группы доступа.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/groups_1.png"/>
+          </imageobject>
+        </mediaobject>
+      </listitem>
+      <listitem>
+        <para><guibutton>Удалить</guibutton>. </para>
+      </listitem>
+      <listitem>
+        <para><guibutton>Обновить</guibutton>.</para>
+      </listitem>
+    </itemizedlist>
+    <para>Для того чтобы создать новую группу доступа, нажмите на кнопку <guibutton>Создать</guibutton> и выберите в выпадающем списке действие <guilabel>Новая</guilabel>. Откроется диалоговое окно, представленное на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/groups_2.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Окно содержит одно поле ввода <guilabel>Наименование</guilabel>, которое является обязательным для заполнения. В это поле необходимо ввести название новой группы доступа и нажать на кнопку <guibutton>ОК</guibutton>.</para>
+    <para><emphasis role="bold">Закладка Пользователи</emphasis></para>
+    <para>В созданной группе доступа существует возможность создать новых пользователей. Для этого нужно перейти на закладку <guilabel>Пользователи</guilabel> и нажать на кнопку <guibutton>Создать</guibutton>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/groups_3.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>После этого откроется окно редактирования пользователя, при этом в поле <guilabel>Группа</guilabel> установится значение группы доступа, для которого создается текущий пользователь. Информация о том, как создать пользователя системы, находится в главе <link linkend="user_manage_id">Управление пользователями</link>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/groups_4.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Существует возможность переместить пользователя из одной группы в другую с помощью кнопки <guibutton>Переместить в группу</guibutton>, находящейся на закладке <guilabel>Пользователи</guilabel>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/groups_6.png"/>
+      </imageobject>
+    </mediaobject>
+    <para><emphasis role="bold">Закладка Ограничения</emphasis></para>
+    <para>На закладке <guilabel>Ограничения</guilabel> можно создавать ограничения для данной группы доступа. Для этого необходимо нажать на кнопку <guibutton>Создать</guibutton>. </para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/groups_7.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>После этого откроется окно, представленное на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/groups_8.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>На экране содержится три поля:<itemizedlist>
+        <listitem>
+          <para><guilabel>Имя сущности</guilabel>. В это поле нужно ввести имя сущности, для которой создается данное ограничение.</para>
+        </listitem>
+        <listitem>
+          <para><guilabel>Оператор Join</guilabel>. Это поле служит для ввода оператора соединения с другими таблицами, если такое соединение используется для формирования ограничения.</para>
+        </listitem>
+        <listitem>
+          <para><guilabel>Оператор Where</guilabel>. В данное поле вводятся условия ограничения. Тут возможно использовать <link linkend="constraints_id">предопределенные константы</link>.</para>
+        </listitem>
+      </itemizedlist></para>
+    <para><emphasis role="bold">Закладка Атрибуты сессии</emphasis></para>
+    <para>На данной закладке предоставляется возможность создавать, изменять и удалять атрибуты сессии.</para>
+    <para>Для того чтобы создать атрибут сессии, необходимо нажать на кнопку <guibutton>Создать</guibutton> на закладке <guilabel>Атрибуты сессии</guilabel>. После этого откроется окно, представленное на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/groups_9.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Поле <guilabel>Имя</guilabel> является обязательным для заполнения. Это имя создаваемого атрибута, которое может использоваться, например, в настройке ограничений.</para>
+    <para>Поле <guilabel>Тип данных</guilabel> также является обязательным. Необходимо выбрать тип данных из существующего списка:<itemizedlist>
+        <listitem>
+          <para>Boolean</para>
+        </listitem>
+        <listitem>
+          <para>Byte Array</para>
+        </listitem>
+        <listitem>
+          <para>Datatype.time</para>
+        </listitem>
+        <listitem>
+          <para>Date</para>
+        </listitem>
+        <listitem>
+          <para>DateTime</para>
+        </listitem>
+        <listitem>
+          <para>Decimal</para>
+        </listitem>
+        <listitem>
+          <para>Double</para>
+        </listitem>
+        <listitem>
+          <para>Integer</para>
+        </listitem>
+        <listitem>
+          <para>Long Integer</para>
+        </listitem>
+        <listitem>
+          <para>String</para>
+        </listitem>
+        <listitem>
+          <para>UUID</para>
+        </listitem>
+      </itemizedlist></para>
   </section>
   <section>
     <title>Управление пользовательскими сессиями</title>
+    <para>Для того чтобы перейти к управлению пользовательскими сессиями, необходимо в главном меню приложения перейти к пункту меню <guimenu>Администрирование</guimenu> -&gt; <guimenu>Пользовательские сессии</guimenu>. Перед Вами откроется окно, представленное на рисунке ниже.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/sessions_0.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Данный экран позволяет управлять сессиями пользователей, в данный момент действующих в
+системе. Сессию можно завершить, тем самым прекратив работу пользователя в системе. Кнопка
+<guibutton>Обновить</guibutton> используется для обновления информации на экране.</para>
   </section>
 </chapter>
