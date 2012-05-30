@@ -213,7 +213,7 @@ public class EntityPermissionsFrame extends AbstractFrame {
             for (Object obj : selected) {
                 OperationPermissionTarget target = (OperationPermissionTarget) obj;
                 for (EntityOperationControl control : operationControls) {
-                    if (control.isControlVisible()) {
+                    if (control.isControlVisible() && control.applicableToEntity(target.getEntityClass())) {
                         PermissionVariant variant;
 
                         if (Boolean.TRUE.equals(control.getAllowChecker().getValue())) {
@@ -229,7 +229,6 @@ public class EntityPermissionsFrame extends AbstractFrame {
                 }
                 entityTargetsDs.updateItem(target);
             }
-//            entityPermissionsTable.repaint();
             showNotification(getMessage("notification.applied"), NotificationType.HUMANIZED);
         }
     }
@@ -389,7 +388,10 @@ public class EntityPermissionsFrame extends AbstractFrame {
 
                 if (isSingleSelection()) {
                     for (EntityOperationControl control : operationControls) {
-                        markItemPermission(control.getMetaProperty(), control.getOperation(), permissionVariant);
+                        OperationPermissionTarget target = entityPermissionsTable.getSingleSelected();
+                        if (control.applicableToEntity(target.getEntityClass())) {
+                            markItemPermission(control.getMetaProperty(), control.getOperation(), permissionVariant);
+                        }
                     }
                 } else {
                     for (EntityOperationControl control : operationControls) {

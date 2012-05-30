@@ -120,7 +120,7 @@
                     </hbox>
                     <hbox id="applyPermissionPane" width="100%" expand="horizontalSpacer" margin="true" visible="false">
                         <label id="horizontalSpacer"/>
-                        <button id="applyPermissionMaskBtn" icon="icons/ok.png" invoke="applyPermissionMask"/>
+                        <button id="applyPermissionMaskBtn" caption="msg://action.apply" icon="icons/ok.png" invoke="applyPermissionMask"/>
                     </hbox>
                 </vbox>
             </groupBox>

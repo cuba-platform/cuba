@@ -52,7 +52,7 @@
             <groupBox id="editPane" width="380" height="100%">
                 <caption label="msg://permissions"/>
 
-                <vbox id="selectedEntityPanel" expand="panelScroll" width="100%" visible="true">
+                <vbox id="selectedEntityPanel" expand="panelScroll" width="100%" visible="false">
                     <label id="selectedTargetCaption" stylename="h2" align="MIDDLE_CENTER"/>
 
                     <scrollbox id="panelScroll">
