@@ -13,6 +13,9 @@ import com.haulmont.cuba.desktop.sys.vcl.TableFocusManager;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.JXTree;
+import org.jdesktop.swingx.JXTreeTable;
 
 import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
@@ -281,6 +284,23 @@ public class DesktopTreeTable
     @Override
     public void packRows() {
         impl.setRowHeight(defaultRowHeight);
+    }
+
+    @Override
+    protected void applyFont(JXTable table, Font font) {
+        super.applyFont(table, font);
+        JXTreeTable treeTable = (JXTreeTable) table;
+        if (treeTable.getModel() != null && impl != null) {
+            int hierarchicalColumn = treeTable.getHierarchicalColumn();
+            TableCellRenderer cellRenderer = treeTable.getCellRenderer(0, hierarchicalColumn);
+            if (cellRenderer instanceof DesktopAbstractTable.StylingCellRenderer) {
+                cellRenderer = ((StylingCellRenderer) cellRenderer).getDelegate();
+            }
+            if (cellRenderer instanceof JXTree) {
+                // default JXTreeTable renderer for hiehrhical column is JXTree
+                ((JXTree) cellRenderer).setFont(font);
+            }
+        }
     }
 
     @Override

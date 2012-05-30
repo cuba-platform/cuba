@@ -60,6 +60,7 @@ import java.util.List;
 public abstract class DesktopAbstractTable<C extends JTable>
         extends DesktopAbstractActionsHolderComponent<C>
         implements Table {
+
     protected static final int DEFAULT_ROW_MARGIN = 4;
 
     protected MigLayout layout;
@@ -994,8 +995,6 @@ public abstract class DesktopAbstractTable<C extends JTable>
      * tallest cell in that row.
      */
     public void packRows() {
-        FontMetrics metrics = impl.getGraphics().getFontMetrics(impl.getFont());
-        defaultRowHeight = metrics.getHeight() + DEFAULT_ROW_MARGIN;
         impl.setRowHeight(defaultRowHeight);
 
         if (allColumnsAreInline()) {
@@ -1109,6 +1108,10 @@ public abstract class DesktopAbstractTable<C extends JTable>
         }
 
         public StylingCellRenderer() {
+        }
+
+        public TableCellRenderer getDelegate() {
+            return delegate;
         }
 
         @Override
