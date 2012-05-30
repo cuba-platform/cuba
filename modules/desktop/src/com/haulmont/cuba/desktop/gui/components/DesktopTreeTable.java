@@ -288,19 +288,19 @@ public class DesktopTreeTable
 
     @Override
     protected void applyFont(JXTable table, Font font) {
-        super.applyFont(table, font);
         JXTreeTable treeTable = (JXTreeTable) table;
         if (treeTable.getModel() != null && impl != null) {
             int hierarchicalColumn = treeTable.getHierarchicalColumn();
             TableCellRenderer cellRenderer = treeTable.getCellRenderer(0, hierarchicalColumn);
             if (cellRenderer instanceof DesktopAbstractTable.StylingCellRenderer) {
-                cellRenderer = ((StylingCellRenderer) cellRenderer).getDelegate();
+                cellRenderer = ((DesktopAbstractTable.StylingCellRenderer) cellRenderer).getDelegate();
             }
             if (cellRenderer instanceof JXTree) {
                 // default JXTreeTable renderer for hiehrhical column is JXTree
                 ((JXTree) cellRenderer).setFont(font);
             }
         }
+        super.applyFont(table, font);
     }
 
     @Override
