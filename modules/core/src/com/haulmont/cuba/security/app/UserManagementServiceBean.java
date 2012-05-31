@@ -119,7 +119,7 @@ public class UserManagementServiceBean implements UserManagementService {
         // turn hierarchy listeners
         em.flush();
 
-        if (groupClone.getConstraints() != null) {
+        if (group.getConstraints() != null) {
             for (Constraint constraint : group.getConstraints()) {
                 Constraint constraintClone = cloneConstraint(constraint, groupClone);
                 em.persist(constraintClone);
