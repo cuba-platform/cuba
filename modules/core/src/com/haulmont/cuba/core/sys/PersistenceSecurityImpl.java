@@ -41,9 +41,10 @@ public class PersistenceSecurityImpl extends SecurityImpl implements Persistence
         for (String[] constraint : constraints) {
             String join = constraint[0];
             String where = constraint[1];
-            if (StringUtils.isBlank(join))
-                transformer.addWhere(where);
-            else
+            if (StringUtils.isBlank(join)) {
+                if (!StringUtils.isBlank(where))
+                    transformer.addWhere(where);
+            } else
                 transformer.addJoinAndWhere(join, where);
         }
         query.setQueryString(transformer.getResult());
