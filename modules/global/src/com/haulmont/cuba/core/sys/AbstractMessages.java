@@ -128,6 +128,7 @@ public abstract class AbstractMessages implements Messages {
         if (notFoundValue != null)
             return notFoundValue;
 
+        List<String> processedPacks = new ArrayList<String>();
         StrTokenizer tokenizer = new StrTokenizer(packs);
         //noinspection unchecked
         List<String> list = tokenizer.getTokenList();
@@ -144,8 +145,18 @@ public abstract class AbstractMessages implements Messages {
                     strCache.put(cacheKey, msg);
                 }
             }
+
+            if (msg != null && !processedPacks.isEmpty()) {
+                for (String p : processedPacks) {
+                    String cacheKey = makeCacheKey(p, key, locale);
+                    strCache.put(cacheKey, msg);
+                }
+            }
+
             if (msg != null)
                 return msg;
+
+            processedPacks.add(pack);
         }
 
         if (log.isTraceEnabled()) {
