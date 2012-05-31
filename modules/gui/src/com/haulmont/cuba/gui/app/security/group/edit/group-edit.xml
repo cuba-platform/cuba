@@ -16,11 +16,11 @@
     </dsContext>
 
     <layout expand="windowActions">
-        <hbox spacing="true" margin="true" expand="name;width=300px" stylename="edit-area" width="100%">
-            <label value="msg://group.name"/>
-            <textField id="name" datasource="group" property="name"
-                       required="true" requiredMessage="msg://nameMsg"/>
-        </hbox>
+        <fieldGroup datasource="group">
+            <column>
+                <field id="name" required="true" requiredMessage="msg://nameMsg" width="300px"/>
+            </column>
+        </fieldGroup>
 
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>

@@ -22,30 +22,34 @@ import org.apache.openjpa.enhance.PersistenceCapable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupEntityListener implements 
-            BeforeInsertEntityListener<Group>,
-            BeforeUpdateEntityListener<Group>
-{
+public class GroupEntityListener implements
+        BeforeInsertEntityListener<Group>,
+        BeforeUpdateEntityListener<Group> {
+    @Override
     public void onBeforeInsert(Group entity) {
         createNewHierarchy(entity, entity.getParent());
     }
 
     private void createNewHierarchy(Group entity, Group parent) {
-        if (parent == null)
+        if (parent == null) {
+            entity.setHierarchyList(new ArrayList<GroupHierarchy>());
             return;
-        if (((PersistenceCapable) parent).pcIsNew())
+        }
+
+        PersistenceCapable parentPc = (PersistenceCapable) parent;
+        if (parentPc.pcIsNew() && !parentPc.pcIsPersistent())
             throw new IllegalStateException("Unable to create GroupHierarchy. Commit parent group first.");
 
         EntityManager em = PersistenceProvider.getEntityManager();
 
         if (entity.getHierarchyList() == null) {
             entity.setHierarchyList(new ArrayList<GroupHierarchy>());
-        }
-        else {
+        } else {
             entity.getHierarchyList().clear();
         }
 
-        parent = em.find(Group.class, parent.getId()); // refresh parent in case of detached
+        if (parentPc.pcIsDetached())
+            parent = em.find(Group.class, parent.getId()); // refresh parent in case of detached
 
         int level = 0;
         for (GroupHierarchy hierarchy : parent.getHierarchyList()) {
@@ -64,6 +68,7 @@ public class GroupEntityListener implements
         entity.getHierarchyList().add(h);
     }
 
+    @Override
     public void onBeforeUpdate(Group entity) {
         if (!PersistenceProvider.getDirtyFields(entity).contains("parent"))
             return;
@@ -77,7 +82,7 @@ public class GroupEntityListener implements
 
         Query q = em.createQuery(
                 "select h from sec$GroupHierarchy h join fetch h.group " +
-                "where h.parent.id = ?1");
+                        "where h.parent.id = ?1");
         q.setParameter(1, entity);
         List<GroupHierarchy> list = q.getResultList();
         for (GroupHierarchy hierarchy : list) {

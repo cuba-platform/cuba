@@ -33,6 +33,7 @@
                 <entry key="cuba_LoginService" value="com.haulmont.cuba.security.app.LoginService"/>
                 <entry key="cuba_ServerInfoService" value="com.haulmont.cuba.core.app.ServerInfoService"/>
                 <entry key="cuba_UserSettingService" value="com.haulmont.cuba.security.app.UserSettingService"/>
+                <entry key="cuba_UserManagementService" value="com.haulmont.cuba.security.app.UserManagementService"/>
                 <entry key="cuba_DataService" value="com.haulmont.cuba.core.app.DataService"/>
                 <entry key="cuba_ConfigStorageService" value="com.haulmont.cuba.core.app.ConfigStorageService"/>
                 <entry key="cuba_PersistenceManagerService" value="com.haulmont.cuba.core.app.PersistenceManagerService"/>

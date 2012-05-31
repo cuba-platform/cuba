@@ -40,8 +40,8 @@
     </view>
 
     <view entity="sec$User" name="user.copySettings" extends="_minimal">
-        <property name="login" />
-        <property name="name" />
+        <property name="login"/>
+        <property name="name"/>
     </view>
 
     <view class="com.haulmont.cuba.security.entity.User" name="user.changepassw">
@@ -71,9 +71,20 @@
         <property name="sessionAttributes" view="_local"/>
     </view>
 
+    <view entity="sec$Group" name="group.copy">
+        <property name="name"/>
+        <property name="parent"/>
+        <property name="constraints" view="_local"/>
+        <property name="sessionAttributes" view="_local"/>
+    </view>
+
     <view entity="sec$User" name="group.browse">
         <property name="name"/>
         <property name="login"/>
+        <property name="group"/>
+    </view>
+
+    <view entity="sec$User" name="user.moveToGroup">
         <property name="group"/>
     </view>
 
