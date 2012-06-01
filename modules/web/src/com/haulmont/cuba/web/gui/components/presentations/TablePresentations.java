@@ -11,9 +11,10 @@
 package com.haulmont.cuba.web.gui.components.presentations;
 
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.UserSessionClient;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractAction;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.gui.presentations.PresentationsChangeListener;
@@ -24,12 +25,11 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebPopupButton;
 import com.haulmont.cuba.web.toolkit.ui.MenuBar;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 @ClientWidget(TablePresentationsPopup.class)
@@ -38,8 +38,10 @@ public class TablePresentations extends CustomComponent {
     private WebPopupButton button;
 
     private Table table;
-    
+
     private static final long serialVersionUID = -8633565024508836913L;
+
+    private Map<Object, com.vaadin.ui.MenuBar.MenuItem> presentationsMenuMap;
 
     public TablePresentations(Table component) {
         this.table = component;
@@ -50,17 +52,44 @@ public class TablePresentations extends CustomComponent {
         setParent(WebComponentsHelper.unwrap(component));
 
         table.getPresentations().addListener(new PresentationsChangeListener() {
+            @Override
             public void currentPresentationChanged(Presentations presentations, Object oldPresentationId) {
                 table.getPresentations().commit();
-                build();
+                if (presentationsMenuMap != null) {
+                    // simple change current item
+                    if (oldPresentationId != null) {
+                        if (oldPresentationId instanceof Presentation)
+                            oldPresentationId = ((Presentation) oldPresentationId).getId();
+
+                        com.vaadin.ui.MenuBar.MenuItem lastMenuItem = presentationsMenuMap.get(oldPresentationId);
+                        if (lastMenuItem != null)
+                            removeCurrentItemStyle(lastMenuItem);
+                    }
+
+                    Presentation current = presentations.getCurrent();
+                    if (current != null) {
+                        com.vaadin.ui.MenuBar.MenuItem menuItem = presentationsMenuMap.get(current.getId());
+                        if (menuItem != null)
+                            setCurrentItemStyle(menuItem);
+                    }
+                }
             }
 
+            @Override
             public void presentationsSetChanged(Presentations presentations) {
                 build();
             }
         });
 
         build();
+    }
+
+    private void removeCurrentItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {
+        item.setStyleName("");
+    }
+
+    private void setCurrentItemStyle(com.vaadin.ui.MenuBar.MenuItem item) {
+        item.setStyleName("current");
     }
 
     @Override
@@ -103,6 +132,7 @@ public class TablePresentations extends CustomComponent {
 
     private void buildPresentationsList() {
         menuBar.removeItems();
+        presentationsMenuMap = new HashMap<Object, com.vaadin.ui.MenuBar.MenuItem>();
 
         final Presentations p = table.getPresentations();
 
@@ -110,6 +140,7 @@ public class TablePresentations extends CustomComponent {
             final MenuBar.MenuItem item = menuBar.addItem(
                     buildItemCaption(p.getCaption(presId)),
                     new com.vaadin.ui.MenuBar.Command() {
+                        @Override
                         public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
                             table.applyPresentation(presId);
                         }
@@ -117,8 +148,9 @@ public class TablePresentations extends CustomComponent {
             );
             final Presentation current = p.getCurrent();
             if (current != null && presId.equals(current.getId())) {
-                item.setStyleName("current");
+                setCurrentItemStyle(item);
             }
+            presentationsMenuMap.put(presId, item);
         }
     }
 
@@ -132,6 +164,7 @@ public class TablePresentations extends CustomComponent {
         final Presentation current = p.getCurrent();
 
         button.addAction(new AbstractAction(getMessage("PresentationsPopup.saveAs")) {
+            @Override
             public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                 Presentation presentation = new Presentation();
                 presentation.setComponentId(ComponentsHelper.getComponentPath(table));
@@ -139,10 +172,11 @@ public class TablePresentations extends CustomComponent {
                 openEditor(presentation);
             }
         });
-        final boolean allowGlobalPresentations = UserSessionClient.getUserSession()
+        final boolean allowGlobalPresentations = UserSessionProvider.getUserSession()
                 .isSpecificPermitted("cuba.gui.presentations.global");
         if (current != null && (!p.isGlobal(current) || allowGlobalPresentations)) {
             button.addAction(new AbstractAction(getMessage("PresentationsPopup.save")) {
+                @Override
                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                     Element e = p.getSettings(current);
                     table.saveSettings(e);
@@ -151,11 +185,13 @@ public class TablePresentations extends CustomComponent {
                 }
             });
             button.addAction(new AbstractAction(getMessage("PresentationsPopup.edit")) {
+                @Override
                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                     openEditor(current);
                 }
             });
             button.addAction(new AbstractAction(getMessage("PresentationsPopup.delete")) {
+                @Override
                 public void actionPerform(com.haulmont.cuba.gui.components.Component component) {
                     p.remove(current);
                     p.commit();

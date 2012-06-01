@@ -198,3 +198,75 @@
 .v-menubar-menuitem.v-menubar-more-menuitem img {
     display: none;
 }
+
+/* Presentations list */
+
+.v-customcomponent-table-presentations .v-menubar {
+    overflow: hidden;
+    padding: 4px 0;
+}
+
+.v-customcomponent-table-presentations .v-menubar {
+    line-height: 16px;
+    padding: 1px 26px 1px 10px;
+}
+
+.v-customcomponent-table-presentations .v-menubar .v-icon {
+    vertical-align: middle;
+}
+
+.v-customcomponent-table-presentations .v-menubar .v-menubar-submenu-indicator {
+    background: url(img/submenu-icon.png) no-repeat scroll right center transparent;
+    height: 16px;
+    text-indent: -9999px;
+    width: 16px;
+}
+
+.v-customcomponent-table-presentations .v-menubar .v-menubar-menuitem-selected .v-menubar-submenu-indicator {
+    background-image: url(img/submenu-icon-hover.png);
+}
+
+.v-customcomponent-table-presentations .v-menubar .v-menubar-menuitem {
+    display: block;
+    padding-right: 1.5em;
+    position: relative;
+}
+
+.v-customcomponent-table-presentations .v-menubar .v-menubar-menuitem *, .v-menubar-submenu .v-menubar-menuitem-caption * {
+    white-space: nowrap;
+}
+
+.v-customcomponent-table-presentations .v-menubar .v-menubar-submenu-indicator {
+    display: none;
+}
+
+.v-customcomponent-table-presentations .v-menubar .v-menubar-menuitem {
+    cursor: pointer;
+    padding-left: 6px;
+    padding-right: 6px;
+    background: transparent;
+}
+
+.v-customcomponent-table-presentations .v-menubar .v-menubar-menuitem .v-menubar-menuitem-caption {
+    text-shadow: none;
+    padding-right: 4px;
+}
+
+.popup-container .v-customcomponent-table-presentations .v-menubar .v-menubar-menuitem {
+    padding-left: 7px;
+}
+
+.v-customcomponent-table-presentations .v-menubar .v-menubar-menuitem .v-menubar-menuitem-caption {
+    color: #000;
+}
+
+.v-customcomponent-table-presentations .v-menubar .v-menubar-menuitem:hover .v-menubar-menuitem-caption {
+    color: #fff;
+}
+
+.v-customcomponent-table-presentations .v-menubar {
+    white-space: nowrap;
+    padding: 5px;
+    font-family: verdana, tahoma, arial, geneva, helvetica, sans-serif;
+    font-size: 12px;
+}

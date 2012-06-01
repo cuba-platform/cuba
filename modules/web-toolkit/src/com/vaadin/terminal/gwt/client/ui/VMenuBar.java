@@ -78,6 +78,8 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
     protected VMenuBar parentMenu;
     protected CustomMenuItem selected;
 
+    protected boolean vertical = false;
+
     private boolean enabled = true;
 
     private String width = "notinited";
@@ -214,7 +216,9 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             submenuIcon = null;
         }
 
-        if (uidl.hasAttribute("width")) {
+        vertical = uidl.hasAttribute("vertical");
+
+        if (uidl.hasAttribute("width") && !vertical) {
             UIDL moreItemUIDL = options.getChildUIDL(0);
             StringBuffer itemHTML = new StringBuffer();
 
@@ -1208,6 +1212,13 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             }
         }
 
+        if (vertical) {
+            List<CustomMenuItem> menuItems = getItems();
+            if (menuItems != null && menuItems.size() > 0) {
+                setHeight(menuItems.size() * menuItems.get(0).getOffsetHeight() + "px");
+            }
+        }
+
         // If a popup is open we might need to adjust the shadow as well if an
         // icon shown in that popup was loaded
         if (popup != null) {
@@ -1609,6 +1620,7 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
     /**
      * Force a new onload event for all images. Used only for IE6 to deal with
      * PNG transparency.
+     *
      * @param root Root
      */
     private void reloadImages(Element root) {
