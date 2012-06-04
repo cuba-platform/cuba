@@ -34,7 +34,7 @@
             <checkBox id="assignedOnlyCheckBox" caption="msg://assignedOnly" align="MIDDLE_LEFT"/>
             <label width="20"/>
             <label value="msg://entityFilter"/>
-            <textField id="entityFilter" width="120"/>
+            <textField id="entityFilter" width="300"/>
             <button id="applyFilterBtn" caption="msg://action.apply" invoke="applyFilter"/>
             <label id="spacer"/>
         </hbox>

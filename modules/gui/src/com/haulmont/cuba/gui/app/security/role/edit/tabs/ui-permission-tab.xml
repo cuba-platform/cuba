@@ -32,7 +32,7 @@
         <!-- Filter -->
         <hbox expand="spacer" width="100%" spacing="true" margin="true">
             <label value="msg://screen"/>
-            <lookupField id="screenFilter" width="250"/>
+            <lookupField id="screenFilter" width="300"/>
             <label width="20"/>
             <label value="msg://component"/>
             <textField id="componentTextField" width="250"/>
