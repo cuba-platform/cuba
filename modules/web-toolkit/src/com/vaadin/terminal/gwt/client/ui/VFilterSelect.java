@@ -948,11 +948,14 @@ public class VFilterSelect extends Composite implements Paintable, Field,
                 filterOptions(currentPage, tb.getText());
             }
             break;
-            case KeyCodes.KEY_ENTER:
-            case KeyCodes.KEY_ESCAPE:
-                if (!event.isAnyModifierKeyDown())
-                    event.stopPropagation();
-                break;
+        case KeyCodes.KEY_ENTER:
+        //case KeyCodes.KEY_ESCAPE:
+        //refs platform #1197
+        //ESC shortcut used by window
+            if (!event.isAnyModifierKeyDown()) {
+                event.stopPropagation();
+            }
+            break;
         }
     }
 
@@ -991,7 +994,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             if (!event.isAnyModifierKeyDown())
                 event.stopPropagation();
             break;
-            case KeyCodes.KEY_ESCAPE:
+        case KeyCodes.KEY_ESCAPE:
             event.stopPropagation();
             break;
         }
