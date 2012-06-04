@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.entity.Constraint;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.SessionAttribute;
@@ -39,6 +39,9 @@ public class UserManagementServiceBean implements UserManagementService {
     @Inject
     private Persistence persistence;
 
+    @Inject
+    private Metadata metadata;
+
     @Override
     public Group copyAccessGroup(UUID accessGroupId) {
         checkNotNull(accessGroupId, "Null access group id");
@@ -48,7 +51,7 @@ public class UserManagementServiceBean implements UserManagementService {
         Transaction tx = persistence.getTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            em.setView(MetadataProvider.getViewRepository().getView(Group.class, GROUP_COPY_VIEW));
+            em.setView(metadata.getViewRepository().getView(Group.class, GROUP_COPY_VIEW));
 
             Group accessGroup = em.find(Group.class, accessGroupId);
             if (accessGroup == null)
@@ -84,17 +87,16 @@ public class UserManagementServiceBean implements UserManagementService {
                     throw new IllegalStateException("Could not found target access group with id: " + targetAccessGroupId);
             }
 
-            em.setView(MetadataProvider.getViewRepository().getView(User.class, MOVE_USER_TO_GROUP_VIEW));
+            em.setView(metadata.getViewRepository().getView(User.class, MOVE_USER_TO_GROUP_VIEW));
 
             Query query = em.createQuery("select u from sec$User u where u.id in (:userIds)");
             query.setParameter("userIds", userIds);
 
-            List users = query.getResultList();
+            List<User> users = query.getResultList();
             if (users == null || users.size() != userIds.size())
                 throw new IllegalStateException("Not all users found in database");
 
-            for (Object userObject : users) {
-                User user = (User) userObject;
+            for (User user : users) {
                 if (!ObjectUtils.equals(user.getGroup(), targetAccessGroup)) {
                     user.setGroup(targetAccessGroup);
                     em.merge(user);
@@ -116,7 +118,7 @@ public class UserManagementServiceBean implements UserManagementService {
         groupClone.setParent(parent);
 
         em.persist(groupClone);
-        // turn hierarchy listeners
+        // fire hierarchy listeners
         em.flush();
 
         if (group.getConstraints() != null) {

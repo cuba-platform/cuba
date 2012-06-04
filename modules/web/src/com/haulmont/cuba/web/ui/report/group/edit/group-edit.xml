@@ -14,10 +14,8 @@
     <layout expand="windowActions">
         <label value="msg://groupProperties" stylename="h2"/>
         <fieldGroup id="groupProps" datasource="groupDs">
-            <column>
-                <field id="title" required="true"/>
-                <field id="code"/>
-            </column>
+            <field id="title" required="true"/>
+            <field id="code"/>
         </fieldGroup>
         <label value="msg://groupLocaleCaption" stylename="h2"/>
         <textField id="localeTextField" datasource="groupDs" property="localeNames"
