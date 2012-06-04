@@ -17,9 +17,7 @@
 
     <layout expand="windowActions">
         <fieldGroup datasource="group">
-            <column>
-                <field id="name" required="true" requiredMessage="msg://nameMsg" width="300px"/>
-            </column>
+            <field id="name" required="true" requiredMessage="msg://nameMsg" width="300px"/>
         </fieldGroup>
 
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
