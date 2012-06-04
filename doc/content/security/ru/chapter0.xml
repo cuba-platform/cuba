@@ -142,7 +142,8 @@
 Например, пользователь видит только те документы, которые были созданы в его
 отделе.</para>
     <para id="constraints_id"><emphasis role="bold">Constraints</emphasis></para>
-    <para>В параметрах ограничений (constraints) можно использовать следующие предопределенные константы:<itemizedlist>
+    <para>Ограничение создается на языке JPQL (Подробнее о JPQL можно прочитать на сайте <ulink url="http://openjpa.apache.org/">http://openjpa.apache.org/</ulink>).</para>
+    <para>В параметрах ограничений  можно использовать следующие предопределенные константы:<itemizedlist>
         <listitem>
           <para><varname>session$userLogin</varname> − логин текущего пользователя (всегда того, кто залогинен, независимо от замещения).</para>
         </listitem>
@@ -184,5 +185,62 @@
       </imageobject>
     </mediaobject>
     <para>Если маска задана неправильно, либо для данного соединения не может быть определен адрес в формате IPv4, в лог выводится сообщение от логгера <classname>IpMatcher</classname>, и вход при этом разрешается.</para>
+  </section>
+  <section>
+    <title>Интеграция с Active Directory</title>
+    <para><firstterm>Active Directory</firstterm> −  это реализация службы каталогов <application>Microsoft</application> для операционных систем семейства <application>Windows NT</application>, которая позволяет администраторам реализовать наборы правил, в соответствии с которыми обеспечивается единообразие настройки пользовательской среды, развертывать программное обеспечение на большом количестве компьютеров, устанавливать обновления на всех компьютерах сети. <application>Active Directory</application> хранит данные и настройки среды в централизованной базе данных. Сети <application>Active Directory</application> могут быть различного размера: от нескольких сотен до нескольких миллионов объектов. Более подробно об <application>Active Directory</application> Вы сможете прочитать, перейдя по следующей ссылке:  <ulink url="http://ru.wikipedia.org/wiki/Active_Directory">http://ru.wikipedia.org/wiki/Active_Directory</ulink></para>
+    <para>В качестве протокола для аутентификации может использоваться протокол  <application>NTLM</application>.</para>
+    <para><application>Jespa</application> − платная библиотека, написанная на <application>Java</application>, обеспечивающая расширенную интеграцию между службой каталогов <application>Active Directory</application> и Java-приложениями. <application>Jespa</application> содержит  интуитивно понятные классы, обеспечивающие выполнение самых разнообразных функций, связанных с безопасностью: аутентификацию, создание учетных записей, настройку паролей и многое другое. <application>Jespa</application> включает в себя несколько готовых к использованию компонентов для выполнения различных функций, например, для Enterprise Single Sign-On (SSO) аутентификации для HTTP-приложений. Более подробно о данной библиотеке Вы можете прочитать на сайте <ulink url="http://www.ioplex.com/">http://www.ioplex.com/</ulink>.</para>
+    <para><emphasis role="bold">Настройка NTLM аутентификации с использованием Jespa</emphasis></para>
+    <itemizedlist>
+      <listitem>
+        <para>Создать в <application>ActiveDirectory</application> компьютер, например, с именем <userinput>JESPA</userinput></para>
+      </listitem>
+      <listitem>
+        <para>Создать и запустить скрипт <filename>SetComputerPass.vbs</filename> и задать пароль</para>
+        <para><programlisting>Option Explicit
+
+Dim strDn, objPassword, strPassword, objComputer
+
+If WScript.arguments.count &lt;&gt; 1 Then
+WScript.Echo &quot;Usage: SetComputerPass.vbs &lt;ComputerDN&gt;&quot;
+WScript.Quit
+End If
+
+strDn = WScript.arguments.item(0)
+
+Set objPassword = CreateObject(&quot;ScriptPW.Password&quot;)
+WScript.StdOut.Write &quot;Password:&quot;
+strPassword = objPassword.GetPassword()
+
+Set objComputer = GetObject(&quot;LDAP://&quot; &amp; strDn)
+objComputer.SetPassword strPassword
+
+WScript.Quit
+</programlisting></para>
+        <para>либо отредактировать <filename>SetComputerPassSimple.vbs</filename> и запустить.</para>
+        <para><programlisting>Set objComputer = GetObject(&quot;LDAP://CN=JESPA,CN=Computers,DC=haulmont,DC=com&quot;)
+objComputer.SetPassword &quot;put_your_passsword_here&quot;
+
+WScript.Quit</programlisting></para>
+        <para>Если скрипт не работает на сервере, залогиниться админом на <application>XP-workstation</application> и запустить скрипт там.</para>
+        <para><prompt>cscript SetComputerPass.vbs CN=JESPA,CN=Computers,DC=haulmont,DC=com</prompt></para>
+      </listitem>
+      <listitem>
+        <para>Задать параметры доменов в <filename>system.properties</filename> в переменной <prompt>cuba.web.activeDirectoryDomains</prompt>. Каждый описатель домена имеет формат <prompt>domain_name|full_domain_name|service_account_name|service_account_password</prompt>. Описатели доменов отделяются друг от друга точкой с запятой. Например:</para>
+        <para><prompt>cuba.web.activeDirectoryDomains=HAULMONT|haulmont.com|JESPA$@HAULMONT.COM|password1; TEST|test.com|JESPA$@TEST.COM|password2</prompt></para>
+      </listitem>
+      <listitem>
+        <para>Задать в <filename>system.properties</filename> дополнительные свойства для библиотеки <application>Jespa</application> (<ulink url="http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161">http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161</ulink>).  Например:</para>
+        <para><prompt>jespa.log.level=3</prompt></para>
+      </listitem>
+      <listitem>
+        <para>Установить в <filename>system.properties</filename> переменную <prompt>cuba.web.useActiveDirectory=true</prompt></para>
+      </listitem>
+      <listitem>
+        <para>Добавить адрес сервера в местную интрасеть в настройках браузера:</para>
+        <para><prompt>Для IE и Chrome: Свойства обозревателя-Безопасность-Местная интрасеть-Узлы-Дополнительно </prompt><prompt>Для FF: url=about:config, filter=ntlm, network.automatic-ntlm-auth.trusted-uris=vm30,http://tezis.haulmont.com (пример)</prompt></para>
+      </listitem>
+    </itemizedlist>
   </section>
 </chapter>

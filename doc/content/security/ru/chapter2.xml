@@ -1,40 +1,58 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter2_working_in_nix">
-  <title>Установка и настройка OpenOffice.org</title>
-  <para>Подсистема отчетов использует <application>OpenOffice</application> для создания doc и pdf отчетов. Для работы в серверном режиме необходима установка <application>OpenOffice</application>. Установка и настройка OpenOffice различается в системах <application>Microsoft Windows</application> и в системах  класса <application>UNIX</application>.</para>
-  <para><emphasis role="bold">Установка и настройка OpenOffice.org в системах Microsoft Windows</emphasis></para>
+  <title>Интеграция с Active Directory</title>
+  <para><firstterm>Active Directory</firstterm> −  это реализация службы каталогов <application>Microsoft</application> для операционных систем семейства <application>Windows NT</application>, которая позволяет администраторам реализовать наборы правил, в соответствии с которыми обеспечивается единообразие настройки пользовательской среды, развертывать программное обеспечение на большом количестве компьютеров, устанавливать обновления на всех компьютерах сети. <application>Active Directory</application> хранит данные и настройки среды в централизованной базе данных. Сети <application>Active Directory</application> могут быть различного размера: от нескольких сотен до нескольких миллионов объектов. Более подробно об <application>Active Directory</application> Вы сможете прочитать, перейдя по следующей ссылке:  <ulink url="http://ru.wikipedia.org/wiki/Active_Directory">http://ru.wikipedia.org/wiki/Active_Directory</ulink></para>
+  <para>В качестве протокола для аутентификации может использоваться протокол  <application>NTLM</application>.</para>
+  <para><application>Jespa</application> − платная библиотека, написанная на <application>Java</application>, обеспечивающая расширенную интеграцию между службой каталогов <application>Active Directory</application> и Java-приложениями. <application>Jespa</application> содержит  интуитивно понятные классы, обеспечивающие выполнение самых разнообразных функций, связанных с безопасностью: аутентификацию, создание учетных записей, настройку паролей и многое другое. <application>Jespa</application> включает в себя несколько готовых к использованию компонентов для выполнения различных функций, например, для Enterprise Single Sign-On (SSO) аутентификации для HTTP-приложений. Более подробно о данной библиотеке Вы можете прочитать на сайте <ulink url="http://www.ioplex.com/">http://www.ioplex.com/</ulink>.</para>
+  <para><emphasis role="bold">Настройка NTLM аутентификации с использованием Jespa</emphasis></para>
   <itemizedlist>
     <listitem>
-      <para>Скачайте дистрибутив программы по ссылке <ulink url="http://openoffice.org/">http://openoffice.org/</ulink>.</para>
+      <para>Создать в <application>ActiveDirectory</application> компьютер, например, с именем <userinput>JESPA</userinput></para>
     </listitem>
     <listitem>
-      <para>Произведите установку программы.</para>
+      <para>Создать и запустить скрипт <filename>SetComputerPass.vbs</filename> и задать пароль</para>
+      <para><programlisting>Option Explicit
+
+Dim strDn, objPassword, strPassword, objComputer
+
+If WScript.arguments.count &lt;&gt; 1 Then
+WScript.Echo &quot;Usage: SetComputerPass.vbs &lt;ComputerDN&gt;&quot;
+WScript.Quit
+End If
+
+strDn = WScript.arguments.item(0)
+
+Set objPassword = CreateObject(&quot;ScriptPW.Password&quot;)
+WScript.StdOut.Write &quot;Password:&quot;
+strPassword = objPassword.GetPassword()
+
+Set objComputer = GetObject(&quot;LDAP://&quot; &amp; strDn)
+objComputer.SetPassword strPassword
+
+WScript.Quit
+</programlisting></para>
+      <para>либо отредактировать <filename>SetComputerPassSimple.vbs</filename> и запустить.</para>
+      <para><programlisting>Set objComputer = GetObject(&quot;LDAP://CN=JESPA,CN=Computers,DC=haulmont,DC=com&quot;)
+objComputer.SetPassword &quot;put_your_passsword_here&quot;
+
+WScript.Quit</programlisting></para>
+      <para>Если скрипт не работает на сервере, залогиниться админом на <application>XP-workstation</application> и запустить скрипт там.</para>
+      <para><prompt>cscript SetComputerPass.vbs CN=JESPA,CN=Computers,DC=haulmont,DC=com</prompt></para>
     </listitem>
     <listitem>
-      <para>Установите свойство в файле <filename>local.app.properties</filename></para>
-      <para><prompt>cuba.reporting.openoffice.path = C:/Program Files (x86)/OpenOffice.org 3/program (путь к установленному openoffice.org)</prompt></para>
-    </listitem>
-  </itemizedlist>
-  <para><emphasis role="bold">Установка и настройка OpenOffice.org в системах класса <application>UNIX</application></emphasis></para>
-  <para>По опыту развертывания отчетов на серверах <application>ubuntu</application>, для корректного запуска  программного ядра <application>openoffice.org</application> необходимо следующее:</para>
-  <itemizedlist>
-    <listitem>
-      <para>Установить пакет <application>openoffice.org</application>, например, командой </para>
-      <para><prompt>sudo aptitude install openoffice.org</prompt></para>
+      <para>Задать параметры доменов в <filename>system.properties</filename> в переменной <prompt>cuba.web.activeDirectoryDomains</prompt>. Каждый описатель домена имеет формат <prompt>domain_name|full_domain_name|service_account_name|service_account_password</prompt>. Описатели доменов отделяются друг от друга точкой с запятой. Например:</para>
+      <para><prompt>cuba.web.activeDirectoryDomains=HAULMONT|haulmont.com|JESPA$@HAULMONT.COM|password1; TEST|test.com|JESPA$@TEST.COM|password2</prompt></para>
     </listitem>
     <listitem>
-      <para>Установить свойство в файле <filename>local.app.properties</filename></para>
-      <para><prompt>cuba.reporting.openoffice.path = /usr/lib/openoffice/program (путь к установленному openoffice.org)</prompt></para>
+      <para>Задать в <filename>system.properties</filename> дополнительные свойства для библиотеки <application>Jespa</application> (<ulink url="http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161">http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161</ulink>).  Например:</para>
+      <para><prompt>jespa.log.level=3</prompt></para>
     </listitem>
     <listitem>
-      <para>Если на сервере не установлена <application>X window system</application> (оконный интерфейс), то программное ядро  <application>openoffice.org</application> при старте будет выдавать ошибку вида <errortext>Caused by: java.awt.HeadlessException: No X11 DISPLAY variable was set, but this program performed an operation which requires it.</errortext>, или же просто завершаться без сообщений об ошибках. Для устранения проблемы установите свойство в <filename>local.app.properties</filename>:</para>
-      <para> <prompt>cuba.reporting.displayDeviceUnavailable = true</prompt>, </para>
-      <para>а также установите пакет <application>openoffice.org-headless</application>: </para>
-      <para><prompt>sudo aptitude install openoffice.org-headless</prompt></para>
+      <para>Установить в <filename>system.properties</filename> переменную <prompt>cuba.web.useActiveDirectory=true</prompt></para>
     </listitem>
     <listitem>
-      <para>Для диагностики ошибок при старте <application>openoffice.org</application> можно выполнить следующую команду:</para>
-      <para><prompt>strace -e trace=signal /usr/lib/openoffice/program/soffice.bin -headless -accept=&quot;socket,host=localhost,port=8100;urp&quot; -nofirststartwizard -nologo -nolockcheck</prompt></para>
+      <para>Добавить адрес сервера в местную интрасеть в настройках браузера:</para>
+      <para><prompt>Для IE и Chrome: Свойства обозревателя-Безопасность-Местная интрасеть-Узлы-Дополнительно </prompt><prompt>Для FF: url=about:config, filter=ntlm, network.automatic-ntlm-auth.trusted-uris=vm30,http://tezis.haulmont.com (пример)</prompt></para>
     </listitem>
   </itemizedlist>
 </chapter>
