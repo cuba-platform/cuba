@@ -72,6 +72,8 @@ public class TablePresentations extends CustomComponent {
                         if (menuItem != null)
                             setCurrentItemStyle(menuItem);
                     }
+
+                    buildActions();
                 }
             }
 

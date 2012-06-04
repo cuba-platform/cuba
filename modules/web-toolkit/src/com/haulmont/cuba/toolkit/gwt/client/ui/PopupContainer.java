@@ -29,6 +29,7 @@ public class PopupContainer extends VOverlay implements Container {
         setStylePrimaryName("popup-container");
     }
 
+    @Override
     public void updateFromUIDL(UIDL uidl, ApplicationConnection client) {
         this.client = client;
 
@@ -43,10 +44,13 @@ public class PopupContainer extends VOverlay implements Container {
         setWidget(component);
 
         this.uidl = paintableUidl;
+
+        updateShadowSizeAndPosition();
     }
 
     public void showAt(final int left, final int top) {
         setPopupPositionAndShow(new PositionCallback() {
+            @Override
             public void setPosition(int offsetWidth, int offsetHeight) {
                 if (uidl != null) {
                     ((Paintable) component).updateFromUIDL(uidl, client);
@@ -76,23 +80,28 @@ public class PopupContainer extends VOverlay implements Container {
         });
     }
 
+    @Override
     public RenderSpace getAllocatedSpace(Widget child) {
         return new RenderSpace(getContainerElement().getOffsetWidth(),
                 getContainerElement().getOffsetHeight());
     }
 
+    @Override
     public void replaceChildComponent(Widget oldComponent, Widget newComponent) {
         //do nothing
     }
 
+    @Override
     public boolean hasChildComponent(Widget component) {
         return component == this.component;
     }
 
+    @Override
     public void updateCaption(Paintable component, UIDL uidl) {
         //do nothing
     }
 
+    @Override
     public boolean requestLayout(Set<Paintable> children) {
         return false;
     }
