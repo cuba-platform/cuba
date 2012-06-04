@@ -12,13 +12,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-
 /**
  * Class that encapsulates displaying of tooltips for all components.
- * <p/>
- * <p>$Id$</p>
  *
  * @author devyatkin
+ * @version $Id$
  */
 public class DesktopToolTipManager extends MouseAdapter {
 
@@ -140,6 +138,9 @@ public class DesktopToolTipManager extends MouseAdapter {
     }
 
     private void showTooltip(JComponent field, String text) {
+        if (!field.isVisible())
+            return;
+
         Point fieldLocation = field.getLocationOnScreen();
         Point location = new Point();
 
