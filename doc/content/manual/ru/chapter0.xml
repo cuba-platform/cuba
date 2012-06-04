@@ -102,6 +102,28 @@
     <para>Настройка  <application>Java</application> завершена.</para>
   </section>
   <section>
+    <title>Установка Gradle 1.0-milestone-6</title>
+    <para>Сайт компании-разработчика: <ulink url="http://www.gradle.org/">http://www.gradle.org/</ulink></para>
+    <para>Дистрибутив: <ulink url="http://services.gradle.org/distributions/gradle-1.0-milestone-6-all.zip">http://services.gradle.org/distributions/gradle-1.0-milestone-6-all.zip</ulink></para>
+    <orderedlist>
+      <listitem>
+        <para>Скачайте архив <filename>gradle-1.0-milestone-6-all.zip</filename> и распакуйте его, например,  в <filename>C:\Program Files (x86)\gradle</filename>.</para>
+      </listitem>
+      <listitem>
+        <para>К значению переменной среды <envar>Path</envar> добавьте значение </para>
+        <para><userinput>C:\Program Files (x86)\gradle\gradle-1.0-milestone-6\bin.</userinput></para>
+      </listitem>
+    </orderedlist>
+    <para>Убедимся в работоспособности <application>gradle</application>. Для этого в командной строке введите команду</para>
+    <para> <prompt>gradle -version</prompt></para>
+    <para>В результате выполнения команды Вы увидите окно командной строки, вид которого представлен на следующем рисунке:</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/ch1_gradle.png" width="100%" format="PNG"/>
+      </imageobject>
+    </mediaobject>
+  </section>
+  <section>
     <title>Настройка IntelliJ IDEA 11 Community Edition</title>
     <para>Сайт компании-разработчика: <ulink url="http://www.jetbrains.com/">http://www.jetbrains.com/</ulink></para>
     <para>Дистрибутив: <ulink url="http://download-ln.jetbrains.com/idea/ideaIC-11.exe">http://download-ln.jetbrains.com/idea/ideaIC-11.exe</ulink></para>
