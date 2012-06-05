@@ -13,7 +13,6 @@ import com.haulmont.cuba.desktop.sys.vcl.TableFocusManager;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.JXTree;
 import org.jdesktop.swingx.JXTreeTable;
 
@@ -287,7 +286,7 @@ public class DesktopTreeTable
     }
 
     @Override
-    protected void applyFont(JXTable table, Font font) {
+    protected void applyFont(JTable table, Font font) {
         JXTreeTable treeTable = (JXTreeTable) table;
         if (treeTable.getModel() != null && impl != null) {
             int hierarchicalColumn = treeTable.getHierarchicalColumn();

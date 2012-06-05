@@ -34,7 +34,6 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.table.ColumnControlButton;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
@@ -84,6 +83,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected int generatedColumnsCount = 0;
 
     protected boolean isRowsAjusting = false;
+
+    protected boolean fontInitialized = false;
     protected int defaultRowHeight = 24;
 
     protected void initComponent() {
@@ -197,6 +198,16 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 if (!columnsInitialized)
                     adjustColumnHeaders();
                 columnsInitialized = true;
+            }
+        });
+
+        // init default row height
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                if (!fontInitialized) {
+                    applyFont(impl, impl.getFont());
+                }
             }
         });
     }
@@ -980,11 +991,12 @@ public abstract class DesktopAbstractTable<C extends JTable>
         return height;
     }
 
-    protected void applyFont(JXTable table, Font font) {
+    protected void applyFont(JTable table, Font font) {
         Graphics graphics = table.getGraphics();
         if (graphics != null) {
             FontMetrics metrics = graphics.getFontMetrics(font);
             defaultRowHeight = metrics.getHeight() + DEFAULT_ROW_MARGIN;
+            fontInitialized = true;
             if (impl != null)
                 packRows();
         }
