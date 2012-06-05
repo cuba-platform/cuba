@@ -11,7 +11,6 @@ import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
-import com.haulmont.cuba.core.config.defaults.DefaultInt;
 import com.haulmont.cuba.core.config.defaults.DefaultBoolean;
 import com.haulmont.cuba.core.config.defaults.DefaultString;
 import com.haulmont.cuba.core.config.type.Factory;
@@ -100,7 +99,7 @@ public interface GlobalConfig extends Config {
      */
     @Property("cuba.availableLocales")
     @Factory(factory = AvailableLocalesFactory.class)
-    @Default("English|en;Russian|ru")
+    @Default("English|en;Russian|ru;French|fr")
     Map<String, Locale> getAvailableLocales();
 
     /**
