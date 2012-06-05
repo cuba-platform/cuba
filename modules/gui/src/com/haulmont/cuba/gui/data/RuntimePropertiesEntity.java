@@ -97,7 +97,7 @@ public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
             changed.put(name, value);
             CategoryAttributeValue categoryValue = categoryValues.get(name);
             if (value != null) {
-                if (Entity.class.isAssignableFrom(value.getClass())) {
+                if (BaseEntity.class.isAssignableFrom(value.getClass())) {
                     categoryValue.setEntityValue(((Entity) value).getUuid());
                 } else {
                     setValue(categoryValue, value);
