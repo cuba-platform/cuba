@@ -90,6 +90,7 @@
 }
 .v-menubar-submenu .v-menubar-submenu-indicator {
     display: inline-block;
+    min-width: 10px;
 }
 
 .v-menubar-separator {

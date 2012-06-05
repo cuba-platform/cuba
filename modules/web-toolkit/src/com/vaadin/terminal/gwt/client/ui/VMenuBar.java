@@ -17,6 +17,7 @@ package com.vaadin.terminal.gwt.client.ui;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.*;
@@ -708,6 +709,8 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         if (!item.isLayoutAplied() || (item == moreItem)) {
             item.setLayoutAplied(true);
 
+            resetMenuWidth(item.getSubMenu());
+
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
                 @Override
                 public void execute() {
@@ -744,14 +747,42 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
     private void layoutShortcutItems(CustomMenuItem item) {
         VMenuBar layoutingMenu = item.getSubMenu();
 
-        int maxCaptionWidth = 0;
+        int maxCaptionWidth = calculateMaxWidth(item, layoutingMenu);
+
+        // apply widths
+        applyWidthToMenu(layoutingMenu, maxCaptionWidth);
+    }
+
+    private void resetMenuWidth(VMenuBar layoutingMenu) {
         for (CustomMenuItem subItem : layoutingMenu.getItems()) {
-            Element captionElement = (Element) subItem.getElement().getChild(0);
+            // clear widths
+            Element itemElement = subItem.getElement();
+            itemElement.setAttribute("style", "");
+            itemElement.getStyle().setProperty("width", "");
+            for (int i = 0; i < itemElement.getChildCount(); i++) {
+                Node child = itemElement.getChild(i);
+                if (child instanceof Element) {
+                    Element childElement = (Element) child;
+                    childElement.setAttribute("style", "");
+                    childElement.getStyle().setProperty("width", "");
+                }
+            }
+        }
+    }
+
+    private int calculateMaxWidth(CustomMenuItem item, VMenuBar layoutingMenu) {
+        int maxCaptionWidth = 0;
+        int maxShortcutWidth = 0;
+        for (CustomMenuItem subItem : layoutingMenu.getItems()) {
+            Element itemElement = subItem.getElement();
+            Element captionElement = (Element) itemElement.getChild(0);
+
             int captionWidth = captionElement.getOffsetWidth();
             if (subItem.getShortcut() != null) {
                 Element sc = subItem.getShortcutElement();
                 int shortcutLabelWidth = sc.getOffsetWidth();
-                captionWidth += shortcutLabelWidth;
+                if (shortcutLabelWidth > maxShortcutWidth)
+                    maxShortcutWidth = shortcutLabelWidth;
             }
             if (subItem.getSubMenu() != null) {
                 Element subMenuIndicator = (Element) subItem.getElement().getChild(1);
@@ -761,19 +792,19 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
             if (captionWidth > maxCaptionWidth)
                 maxCaptionWidth = captionWidth;
         }
-        // apply widths
+        if (item != moreItem)
+            maxCaptionWidth += maxShortcutWidth;
+        return maxCaptionWidth;
+    }
+
+    private void applyWidthToMenu(VMenuBar layoutingMenu, int maxCaptionWidth) {
         for (CustomMenuItem subItem : layoutingMenu.getItems()) {
             Element itemElement = subItem.getElement();
+            Element captionElement = (Element) itemElement.getChild(0);
 
             if (subItem.getShortcut() != null) {
                 Element sc = subItem.getShortcutElement();
                 int shortcutWidth = sc.getOffsetWidth();
-
-                Element captionElement = (Element) itemElement.getChild(0);
-                if (captionElement.getStyle() == null)
-                    captionElement.setAttribute("style", "");
-                if (itemElement.getStyle() == null)
-                    itemElement.setAttribute("style", "");
 
                 captionElement.getStyle().setWidth(maxCaptionWidth - shortcutWidth, Unit.PX);
                 // fix width for items
@@ -782,13 +813,8 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
                 else
                     itemElement.getStyle().setProperty("width", "auto");
             } else if (subItem.getSubMenu() != null) {
-                Element captionElement = (Element) itemElement.getChild(0);
 
                 Element subMenuIndicator = (Element) subItem.getElement().getChild(1);
-
-                if (subMenuIndicator.getStyle() == null)
-                    subMenuIndicator.setAttribute("style", "");
-
                 subMenuIndicator.getStyle().setWidth(maxCaptionWidth - captionElement.getOffsetWidth(), Unit.PX);
                 // fix width for items
                 if (parentMenu != null)
