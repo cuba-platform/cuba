@@ -6,7 +6,192 @@
       <para>Создайте рабочую папку для проекта, например, <filename>c:/work/shop_project</filename>.</para>
     </listitem>
     <listitem>
-      <para>Разархивируйте в эту папку поставляемую заготовку для проекта приложения.</para>
+      <para>Создайте в этой папке файл <filename>build.gradle</filename> следующего содержания:</para>
+      <para><programlisting>allprojects {
+    artifactGroup = &apos;com.haulmont.shop&apos;
+    artifactVersion = &apos;0.1&apos;
+    isSnapshot = true
+    apply(plugin: &apos;maven&apos;)
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+
+        maven {
+            credentials {
+                username System.getenv(&apos;HAULMONT_REPOSITORY_USER&apos;)
+                password System.getenv(&apos;HAULMONT_REPOSITORY_PASSWORD&apos;)
+            }
+            url &quot;http://repository.haulmont.com:8587/nexus/content/groups/work&quot;
+        }
+
+mavenRepo(urls: &apos;http://repository.haulmont.com:8587/nexus/content/groups/work&apos;)
+    }
+    dependencies {
+        classpath group: &apos;com.haulmont.gradle&apos;, name: &apos;cuba-plugin&apos;, version: &apos;1.3.0&apos;
+    }
+}
+
+def cubaVersion = &apos;3.2.3&apos;
+
+def globalModule = project(&apos;:shop-global&apos;)
+def coreModule = project(&apos;:shop-core&apos;)
+def guiModule = project(&apos;:shop-gui&apos;)
+def webModule = project(&apos;:shop-web&apos;)
+
+def postgres = &apos;postgresql:postgresql:8.3-603.jdbc4&apos;
+def servletApi = &apos;org.apache.tomcat:servlet-api:6.0.20&apos;
+
+def cubaWeb = &quot;com.haulmont.cuba:cuba-web:$cubaVersion&quot;
+
+def coreJarNames = [&apos;bali&apos;, &apos;chile-core&apos;, &apos;chile-jpa&apos;, &apos;cuba-global&apos;, &apos;cuba-core&apos;,
+                &apos;shop-global&apos;, &apos;shop-core&apos;]
+
+apply(plugin: &apos;idea&apos;)
+apply(plugin: &apos;cuba&apos;)
+
+configure([globalModule, coreModule, guiModule, webModule]) {
+    apply(plugin: &apos;java&apos;)
+    apply(plugin: &apos;idea&apos;)
+    apply(plugin: &apos;maven&apos;)
+    apply(plugin: &apos;cuba&apos;)
+
+    configurations.each {
+        it.resolutionStrategy.cacheChangingModulesFor 2, &quot;minutes&quot;
+    }
+
+    dependencies {
+        compile(&quot;com.haulmont.cuba:cuba-global:$cubaVersion&quot;)
+        testCompile(&apos;junit:junit:4.5&apos;)
+    }
+
+    task sourceJar(type: Jar) {
+        from file(&apos;src&apos;)
+        classifier = &apos;sources&apos;
+    }
+
+    artifacts {
+        archives sourceJar
+    }
+}
+
+configure(globalModule) {
+dependencies {
+        provided(group: &apos;com.haulmont.gradle&apos;, name: &apos;cuba-plugin&apos;, version: &apos;1.3.0&apos;)
+    }
+    task enhance(type: CubaEnhancing) {
+        persistenceXml = &quot;$globalModule.projectDir/src/shop-persistence.xml&quot;
+        metadataXml = &quot;$globalModule.projectDir/src/shop-metadata.xml&quot;
+    }
+    compileJava &lt;&lt; {
+        enhance.execute()
+    }
+}
+
+configure(coreModule) {
+
+    configurations {
+        jdbc
+        dbscripts
+    }
+
+    dependencies {
+        compile(globalModule)
+        compile(&quot;com.haulmont.cuba:cuba-core:$cubaVersion&quot;)
+        compile(&quot;com.haulmont.cuba:cuba-test-ui:$cubaVersion&quot;)
+        testCompile(&quot;com.haulmont.cuba:cuba-core:$cubaVersion:tests&quot;)
+        testCompile(&apos;junit:junit:4.5&apos;)
+        testCompile(&quot;com.haulmont.cuba:cuba-shared-lib:$cubaVersion&quot;)
+        provided(servletApi)
+        jdbc(postgres)
+        testRuntime(postgres)
+
+        dbscripts(&quot;com.haulmont.cuba:cuba-core:$cubaVersion:db@zip&quot;)
+    }
+
+    test {
+        scanForTestClasses = false
+        includes = [&apos;**/*Test.class&apos;]
+    }
+
+    task deploy(dependsOn: assemble, type: CubaDeployment) {
+        appName = &apos;app-core&apos;
+        jarNames = coreJarNames
+    }
+
+    task createDb(dependsOn: assemble, description: &apos;Creates local Postgres database&apos;, type: CubaDbCreation) {
+        dbms = &apos;postgres&apos;
+        dbName = &apos;shop&apos;
+        dbUser = &apos;root&apos;
+        dbPassword = &apos;root&apos;
+    }
+
+    task createTestDb(dependsOn: assemble, description: &apos;Creates local Postgres database for tests&apos;, type: CubaDbCreation) {
+        dbms = &apos;postgres&apos;
+        dbName = &apos;shop_test&apos;
+        dbUser = &apos;root&apos;
+        dbPassword = &apos;root&apos;
+    }
+}
+
+configure(guiModule) {
+    dependencies {
+        compile(globalModule)
+        compile(group: &apos;com.haulmont.cuba&apos;, name: &apos;cuba-gui&apos;, version: cubaVersion)
+    }
+}
+
+configure(webModule) {
+    configurations {
+        webcontent
+    }
+
+    dependencies {
+        compile(globalModule)
+        compile(guiModule)
+        compile(cubaWeb)
+
+        webcontent(group: &apos;com.haulmont.cuba&apos;, name: &apos;cuba-web&apos;, version: cubaVersion, classifier: &apos;web&apos;, ext: &apos;zip&apos;)
+    }
+
+    task webArchive(type: Zip) {
+        from file(&apos;web&apos;)
+        classifier = &apos;web&apos;
+    }
+
+    artifacts {
+        archives webArchive
+    }
+
+    task deploy(dependsOn: assemble, type: CubaDeployment) {
+        appName = &apos;app&apos;
+        appJars(&apos;bali&apos;, &apos;chile-core&apos;, &apos;chile-jpa&apos;, &apos;cuba-global&apos;, &apos;cuba-client&apos;, &apos;cuba-gui&apos;, &apos;cuba-web&apos;,
+                &apos;shop-global&apos;, &apos;shop-gui&apos;, &apos;shop-web&apos;)
+    }
+}
+
+
+task restart(dependsOn: [&apos;stop&apos;, &apos;:shop-core:deploy&apos;, &apos;:shop-web:deploy&apos;], description: &apos;Redeploys applications and restarts local Tomcat&apos;) &lt;&lt; {
+    ant.waitfor(maxwait: 6, maxwaitunit: &apos;second&apos;, checkevery: 2, checkeveryunit: &apos;second&apos;) {
+        not {
+            socket(server: &apos;localhost&apos;, port: &apos;8787&apos;)
+        }
+    }
+    start.execute()
+}</programlisting></para>
+    </listitem>
+    <listitem>
+      <para>Создайте в этой папке файл <filename>settings.gradle</filename> следующего содержания:</para>
+      <para><programlisting>rootProject.name = &apos;shop&apos;
+include(&apos;:shop-global&apos;, &apos;:shop-core&apos;, &apos;:shop-gui&apos;, &apos;:shop-web&apos;)
+project(&apos;:shop-global&apos;).projectDir = new File(settingsDir, &apos;modules/global&apos;)
+project(&apos;:shop-core&apos;).projectDir = new File(settingsDir, &apos;modules/core&apos;)
+project(&apos;:shop-gui&apos;).projectDir = new File(settingsDir, &apos;modules/gui&apos;)
+project(&apos;:shop-web&apos;).projectDir = new File(settingsDir, &apos;modules/web&apos;)</programlisting></para>
+    </listitem>
+    <listitem>
+      <para>Затем создайте структуру проекта, описанную в разделе <link linkend="project_structure_id">Структура и назначение каталогов и файлов проекта</link>.</para>
     </listitem>
     <listitem>
       <para>Далее создайте пустую базу данных с названием <database>shop</database>. Для этого откройте <application>pgAdmin</application>: зайдите в меню <guimenu>Пуск</guimenu>, далее − <application>PostgreSQL 8.3</application>, далее выберите <application>pgAdmin III</application>. В отобразившемся окне нажмите правой клавишей мыши на <guilabel>PostgreSQL Database Server 8.3 (localhost:5432)</guilabel> и в открывшемся контекстном меню выберите <guilabel>Подсоединение</guilabel>. Далее нажмите правой клавишей мыши на <guilabel>Базы</guilabel> и в открывшемся контекстном меню выберите <guilabel>Новая база данных</guilabel>. На экране отобразится окно, представленное на рисунке:</para>
@@ -50,10 +235,10 @@
       <para>Логин и пароль пользователя − admin/admin.</para>
     </listitem>
   </orderedlist>
-  <simplesect>
+  <simplesect id="project_structure_id">
     <title>Структура и назначение каталогов и файлов проекта</title>
     <para>Рассмотрим структуру классов и других файлов в проекте.</para>
-    <para>В корне проекта расположены скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>Intellij IDEA</application>.</para>
+    <para>В корне проекта расположены скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>IntelliJ IDEA</application>.</para>
     <para>В каталоге <filename>modules</filename> расположены подкаталоги модулей проекта − <structname>global</structname>, <structname>core</structname>, <structname>gui</structname>, <structname>web</structname>. </para>
     <para>Модуль <structname>global</structname> определяет компоненты, доступные как среднему слою, так и клиентскому коду.</para>
     <itemizedlist>
