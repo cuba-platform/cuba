@@ -20,20 +20,20 @@ public class PostgresDbDialect extends DbDialect implements SequenceSupport {
     }
 
     public String createSequenceSql(String sequenceName, long startValue, long increment) {
-        return "create sequence " + sequenceName
+        return "create sequence " + sequenceName.toLowerCase()
                 + " increment by " + increment + " start with " + startValue;
     }
 
     public String modifySequenceSql(String sequenceName, long startWith) {
-        return "select setval('" + sequenceName + "', " + startWith + ")";
+        return "select setval('" + sequenceName.toLowerCase() + "', " + startWith + ")";
     }
 
     public String getNextValueSql(String sequenceName) {
-        return "select nextval('" + sequenceName + "')";
+        return "select nextval('" + sequenceName.toLowerCase() + "')";
     }
 
     public String getCurrentValueSql(String sequenceName) {
-        return "select currval('" + sequenceName + "')";
+        return "select currval('" + sequenceName.toLowerCase() + "')";
     }
 
     @Override
