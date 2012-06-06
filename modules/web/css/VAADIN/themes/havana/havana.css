@@ -813,6 +813,10 @@
     height: 13px;
 }
 
+.generic-filter .remove-applied-filter {
+    height: 13px;
+}
+
 .v-webkit textarea {
     resize: none;
 }

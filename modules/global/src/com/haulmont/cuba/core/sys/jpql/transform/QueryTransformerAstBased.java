@@ -162,6 +162,10 @@ public class QueryTransformerAstBased implements QueryTransformer {
     }
 
     @Override
+    public void replaceWithSelectId() {
+    }
+
+    @Override
     public boolean removeDistinct() {
         // TODO
         return false;

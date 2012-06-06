@@ -141,4 +141,9 @@ public interface Query {
      * @return the same query instance
      */
     Query addView(View view);
+
+    /**
+     * @return  underlying implementation provided by ORM
+     */
+    javax.persistence.Query getDelegate();
 }

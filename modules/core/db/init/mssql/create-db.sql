@@ -939,6 +939,20 @@ create clustered index IDX_SYS_ATTR_VALUE_ENTITY on SYS_ATTR_VALUE (ENTITY_ID)^
 
 --------------------------------------------------------------------------------------------------------------
 
+create table SYS_QUERY_RESULT (
+    ID bigint identity not null,
+	SESSION_ID uniqueidentifier not null,
+	QUERY_KEY integer not null,
+	ENTITY_ID uniqueidentifier,
+	primary key (ID)
+)^
+
+create index IDX_SYS_QUERY_RESULT_ENTITY_SESSION_KEY on SYS_QUERY_RESULT (ENTITY_ID, SESSION_ID, QUERY_KEY)^
+
+create index IDX_SYS_QUERY_RESULT_SESSION_KEY on SYS_QUERY_RESULT (SESSION_ID, QUERY_KEY)^
+
+------------------------------------------------------------------------------------------------------------------
+
 insert into SEC_GROUP (ID, CREATE_TS, VERSION, NAME, PARENT_ID)
 values ('0fa2b1a5-1d68-4d69-9fbd-dff348347f93', current_timestamp, 0, 'Company', null)^
 

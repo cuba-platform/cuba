@@ -13,9 +13,7 @@ package com.haulmont.cuba.core.global;
 import com.haulmont.chile.core.model.MetaClass;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 public class LoadContext implements Serializable {
 
@@ -26,17 +24,17 @@ public class LoadContext implements Serializable {
     protected View view;
     protected Object id;
     protected Collection<Object> ids;
-    protected boolean softDeletion;
+    protected boolean softDeletion = true;
     protected boolean useSecurityConstraints = true;
+    protected List<Query> prevQueries = new ArrayList<Query>();
+    protected int queryKey;
 
     public LoadContext(MetaClass metaClass) {
         this.metaClass = metaClass.getName();
-        this.softDeletion = true;
     }
 
     public LoadContext(Class javaClass) {
         this.metaClass = MetadataProvider.getSession().getClass(javaClass).getName();
-        this.softDeletion = true;
     }
 
     public String getMetaClass() {
@@ -103,6 +101,18 @@ public class LoadContext implements Serializable {
 
     public void setUseSecurityConstraints(boolean useSecurityConstraints) {
         this.useSecurityConstraints = useSecurityConstraints;
+    }
+
+    public List<Query> getPrevQueries() {
+        return prevQueries;
+    }
+
+    public int getQueryKey() {
+        return queryKey;
+    }
+
+    public void setQueryKey(int queryKey) {
+        this.queryKey = queryKey;
     }
 
     @Override

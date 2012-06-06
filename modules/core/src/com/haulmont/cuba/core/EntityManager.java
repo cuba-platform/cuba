@@ -188,4 +188,9 @@ public interface EntityManager {
      * @return connection
      */
     Connection getConnection();
+
+    /**
+     * @return  underlying implementation provided by ORM
+     */
+    javax.persistence.EntityManager getDelegate();
 }

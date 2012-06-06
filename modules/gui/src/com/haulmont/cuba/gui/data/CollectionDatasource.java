@@ -263,4 +263,10 @@ public interface CollectionDatasource<T extends Entity<K>, K> extends Datasource
 
         void refreshIfNotSuspended();
     }
+
+    interface SupportsApplyToSelected<T extends Entity<K>, K> extends CollectionDatasource<T, K> {
+
+        void pinQuery();
+        void unpinLastQuery();
+    }
 }

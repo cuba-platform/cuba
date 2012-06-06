@@ -124,5 +124,12 @@ public interface GlobalConfig extends Config {
      */
     @Property("cuba.web.appFolderEditWindow")
     String getAppFolderEditWindowClassName();
+
+    /**
+     * @return Allows to aplly a filter to previously selected rows
+     */
+    @Property("cuba.allowQueryFromSelected")
+    @DefaultBoolean(true)
+    boolean getAllowQueryFromSelected();
 }
 

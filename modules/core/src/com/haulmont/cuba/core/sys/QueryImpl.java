@@ -211,6 +211,11 @@ public class QueryImpl<T> implements TypedQuery<T> {
         return this;
     }
 
+    @Override
+    public javax.persistence.Query getDelegate() {
+        return getQuery();
+    }
+
     public String getQueryString() {
         return queryString;
     }

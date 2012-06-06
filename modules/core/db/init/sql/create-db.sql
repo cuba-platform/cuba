@@ -962,3 +962,13 @@ create table SYS_ATTR_VALUE(
 );
 
 alter table SYS_ATTR_VALUE add constraint SYS_ATTR_VALUE_CATEGORY_ATTR_ID foreign key (CATEGORY_ATTR_ID) references SYS_CATEGORY_ATTR(ID);
+
+-------------------------------------------------------------------------------------------------------------
+
+create table SYS_QUERY_RESULT (
+    ID identity not null,
+	SESSION_ID varchar(36) not null,
+	QUERY_KEY integer not null,
+	ENTITY_ID varchar(36) not null,
+	primary key (ID)
+);

@@ -38,7 +38,8 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         CollectionDatasource.Sortable<T, K>,
         CollectionDatasource.Aggregatable<T, K>,
         CollectionDatasource.Suspendable<T, K>,
-        CollectionDatasource.SupportsPaging<T, K> {
+        CollectionDatasource.SupportsPaging<T, K>,
+        CollectionDatasource.SupportsApplyToSelected<T, K> {
 
     protected LinkedMap data = new LinkedMap();
 
@@ -63,6 +64,9 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
     protected int firstResult;
 
     protected boolean sortOnDb = ConfigProvider.getConfig(ClientConfig.class).getCollectionDatasourceDbSortEnabled();
+
+    protected LoadContext.Query lastQuery;
+    protected LinkedList<LoadContext.Query> prevQueries = new LinkedList<LoadContext.Query>();
 
     /**
      * This constructor is invoked by DsContextLoader, so inheritors must contain a constructor
@@ -451,6 +455,9 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             context.setView(view);
             context.setSoftDeletion(isSoftDeletion());
 
+            context.setQueryKey(getCurrentQueryKey());
+            context.getPrevQueries().addAll(prevQueries);
+
             dataLoadError = null;
             try {
                 final Collection<T> entities = dataservice.loadList(context);
@@ -462,6 +469,9 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
                     data.put(entity.getId(), entity);
                     attachListener(entity);
                 }
+
+                lastQuery = context.getQuery();
+
             } catch (Throwable e) {
                 dataLoadError = e;
             }
@@ -521,5 +531,35 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     public void setFirstResult(int startPosition) {
         this.firstResult = startPosition;
+    }
+
+    protected int getCurrentQueryKey() {
+        Integer attribute = UserSessionProvider.getUserSession().getAttribute("_queryKey");
+        return attribute == null ? 0 : attribute;
+    }
+
+    protected void incrementQueryKey() {
+        Integer attribute = UserSessionProvider.getUserSession().getAttribute("_queryKey");
+        if (attribute == null)
+            attribute = 1;
+        else
+            attribute++;
+        UserSessionProvider.getUserSession().setAttribute("_queryKey", attribute);
+    }
+
+    @Override
+    public void pinQuery() {
+        if (prevQueries.isEmpty())
+            incrementQueryKey();
+
+        if (lastQuery != null)
+            prevQueries.add(lastQuery);
+    }
+
+    @Override
+    public void unpinLastQuery() {
+        if (!prevQueries.isEmpty()) {
+            prevQueries.removeLast();
+        }
     }
 }

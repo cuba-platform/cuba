@@ -8,9 +8,11 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DbDialect;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.EntityManagerContext;
 
 import javax.annotation.Nonnull;
+import javax.sql.DataSource;
 import java.util.Set;
 import java.util.UUID;
 
@@ -108,6 +110,11 @@ public interface Persistence {
      * @param value true if soft deletion is on
      */
     void setSoftDeletion(boolean value);
+
+    /**
+     * @return main JDBC DataSource
+     */
+    DataSource getDataSource();
 
     /**
      * Returns context of the current EntityManager.<br/>

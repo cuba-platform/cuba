@@ -265,6 +265,29 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     @Override
+    public void replaceWithSelectId() {
+        String alias = null;
+        Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
+        while (entityMatcher.find()) {
+            if (targetEntity.equals(entityMatcher.group(1))) {
+                alias = entityMatcher.group(3);
+                break;
+            }
+        }
+        if (StringUtils.isBlank(alias))
+            error("No alias for target entity " + targetEntity + " found");
+
+        Matcher distinctMatcher = DISTINCT_PATTERN.matcher(buffer);
+
+        buffer.replace(0, entityMatcher.start(), "select "+ (distinctMatcher.find() ? "distinct " : "") + alias + ".id from ");
+
+        Matcher orderMatcher = ORDER_BY_PATTERN.matcher(buffer);
+        if (orderMatcher.find()) {
+            buffer.delete(orderMatcher.start(), buffer.length());
+        }
+    }
+
+    @Override
     public boolean removeDistinct() {
         Matcher matcher = SELECT_DISTINCT_PATTERN.matcher(buffer);
         if (matcher.find()) {

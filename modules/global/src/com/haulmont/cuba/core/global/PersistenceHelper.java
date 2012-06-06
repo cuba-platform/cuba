@@ -19,6 +19,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.ClassUtils;
 
+import javax.persistence.Table;
 import java.util.BitSet;
 import java.util.List;
 import java.lang.annotation.Annotation;
@@ -42,7 +43,7 @@ public class PersistenceHelper {
                 || BooleanUtils.isTrue(((PersistenceCapable) entity).pcIsDetached());
     }
 
-    public static String getEntityName(Class entityClass) {
+    public static String getEntityName(Class<?> entityClass) {
         Annotation annotation = entityClass.getAnnotation(javax.persistence.Entity.class);
         if (annotation == null)
             throw new IllegalArgumentException("Class " + entityClass + " is not an entity");
@@ -66,5 +67,10 @@ public class PersistenceHelper {
             }
         }
         return softDelete;
+    }
+
+    public static String getTableName(Class<?> entityClass) {
+        Table annotation = entityClass.getAnnotation(Table.class);
+        return annotation == null ? null : annotation.name();
     }
 }

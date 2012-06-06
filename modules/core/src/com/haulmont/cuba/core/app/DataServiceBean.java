@@ -10,11 +10,10 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.bali.util.StringHelper;
-import com.haulmont.chile.core.datatypes.impl.EnumClass;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
+import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ViewHelper;
@@ -47,6 +46,12 @@ public class DataServiceBean implements DataService {
 
     @Inject
     private DataCacheAPI dataCacheAPI;
+
+    @Inject
+    private UserSessionSource userSessionSource;
+
+    @Inject
+    private QueryResultsManagerAPI queryResultsManager;
 
     private Log log = LogFactory.getLog(DataServiceBean.class);
 
@@ -203,7 +208,8 @@ public class DataServiceBean implements DataService {
     public <A extends Entity> List<A> loadList(LoadContext context) {
         if (log.isDebugEnabled())
             log.debug("loadList: metaClass=" + context.getMetaClass() + ", view=" + context.getView()
-                    + ", query=" + (context.getQuery() == null ? null : printQuery(context.getQuery().getQueryString()))
+                    + (context.getPrevQueries().isEmpty() ? "" : ", to selected")
+                    + ", query=" + (context.getQuery() == null ? null : DataServiceQueryBuilder.printQuery(context.getQuery().getQueryString()))
                     + (context.getQuery() == null || context.getQuery().getFirstResult() == 0 ? "" : ", first=" + context.getQuery().getFirstResult())
                     + (context.getQuery() == null || context.getQuery().getMaxResults() == 0 ? "" : ", max=" + context.getQuery().getMaxResults()));
 
@@ -213,6 +219,8 @@ public class DataServiceBean implements DataService {
             log.debug("reading of " + metaClass + " not permitted, returning empty list");
             return Collections.emptyList();
         }
+
+        queryResultsManager.savePreviousQueryResults(context);
 
         List resultList;
 
@@ -304,82 +312,28 @@ public class DataServiceBean implements DataService {
         return result;
     }
 
-    private String printQuery(String query) {
-        if (query == null)
-            return null;
-
-        String str = StringHelper.removeExtraSpaces(query.replace("\n", " "));
-
-        if (configuration.getConfig(ServerConfig.class).getCutLoadListQueries()) {
-            str = StringUtils.abbreviate(str.replaceAll("[\\n\\r]", " "), 50);
-        }
-
-        return str;
-    }
-
-    protected <A extends Entity> com.haulmont.cuba.core.Query createQuery(EntityManager em, LoadContext context) {
-        if ((context.getQuery() == null || StringUtils.isBlank(context.getQuery().getQueryString()))
+    protected <A extends Entity> Query createQuery(EntityManager em, LoadContext context) {
+        LoadContext.Query contextQuery = context.getQuery();
+        if ((contextQuery == null || StringUtils.isBlank(contextQuery.getQueryString()))
                 && context.getId() == null)
-            throw new IllegalArgumentException("QueryString is empty");
+            throw new IllegalArgumentException("Query string or ID needed");
 
-        final MetaClass metaClass = metadata.getSession().getClass(context.getMetaClass());
+        DataServiceQueryBuilder queryBuilder = new DataServiceQueryBuilder(
+                contextQuery == null ? null : contextQuery.getQueryString(),
+                contextQuery == null ? null : contextQuery.getParameters(),
+                context.getId(), context.getMetaClass(), context.isUseSecurityConstraints(), security);
 
-        String queryString;
-        Map<String, Object> queryParams;
-        if (context.getQuery() != null && !StringUtils.isBlank(context.getQuery().getQueryString())) {
-            queryString = context.getQuery().getQueryString();
-            queryParams = context.getQuery().getParameters();
-        } else {
-            queryString = "select e from " + metaClass.getName() + " e where e.id = :entityId";
-            queryParams = new HashMap<String, Object>();
-            queryParams.put("entityId", context.getId());
+        if (!context.getPrevQueries().isEmpty()) {
+            log.info("Restrict query by previous results"); // TODO change to debug
+            queryBuilder.restrictByPreviousResults(userSessionSource.getUserSession().getId(), context.getQueryKey());
         }
+        Query query = queryBuilder.getQuery(em);
 
-        com.haulmont.cuba.core.Query query = em.createQuery(queryString);
-
-        if (context.isUseSecurityConstraints()) {
-            boolean constraintsApplied = security.applyConstraints(query, metaClass.getName());
-            if (constraintsApplied)
-                log.debug("Constraints applyed: " + printQuery(query.getQueryString()));
-        }
-
-        if (context.getQuery() != null) {
-            if (context.getQuery().getFirstResult() != 0)
-                query.setFirstResult(context.getQuery().getFirstResult());
-            if (context.getQuery().getMaxResults() != 0)
-                query.setMaxResults(context.getQuery().getMaxResults());
-        }
-
-        QueryParser parser = QueryTransformerFactory.createParser(queryString);
-        Set<String> paramNames = parser.getParamNames();
-
-        for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
-            final String name = entry.getKey();
-            if (paramNames.contains(name)) {
-                final Object value = entry.getValue();
-
-                if (value instanceof Entity) {
-                    query.setParameter(entry.getKey(), ((Entity) value).getId());
-
-                } else if (value instanceof EnumClass) {
-                    query.setParameter(entry.getKey(), ((EnumClass) value).getId());
-
-                } else if (value instanceof Collection) {
-                    List list = new ArrayList(((Collection) value).size());
-                    for (Object item : (Collection) value) {
-                        if (item instanceof Entity)
-                            list.add(((Entity) item).getId());
-                        else if (item instanceof EnumClass)
-                            list.add(((EnumClass) item).getId());
-                        else
-                            list.add(item);
-                    }
-                    query.setParameter(entry.getKey(), list);
-
-                } else {
-                    query.setParameter(entry.getKey(), value);
-                }
-            }
+        if (contextQuery != null) {
+            if (contextQuery.getFirstResult() != 0)
+                query.setFirstResult(contextQuery.getFirstResult());
+            if (contextQuery.getMaxResults() != 0)
+                query.setMaxResults(contextQuery.getMaxResults());
         }
 
         if (context.getView() != null) {

@@ -58,4 +58,8 @@ public class ParamEditor extends CustomComponent implements AbstractCondition.Li
     public void setFocused() {
         ((Focusable) field).focus();
     }
+
+    public AbstractCondition<Param> getCondition() {
+        return condition;
+    }
 }

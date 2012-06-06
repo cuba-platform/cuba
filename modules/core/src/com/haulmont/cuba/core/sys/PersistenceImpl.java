@@ -37,6 +37,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import javax.annotation.ManagedBean;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import javax.sql.DataSource;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -213,6 +214,11 @@ public class PersistenceImpl implements Persistence {
     @Override
     public void setSoftDeletion(boolean value) {
         softDeletion = value;
+    }
+
+    @Override
+    public DataSource getDataSource() {
+        return (DataSource) AppContext.getBean("dataSource");
     }
 
     @Override

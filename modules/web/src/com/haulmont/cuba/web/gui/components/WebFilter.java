@@ -26,10 +26,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.filter.*;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.data.ValueChangingListener;
-import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.filter.DenyingClause;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.presentations.Presentations;
@@ -50,11 +47,13 @@ import com.vaadin.data.Property;
 import com.vaadin.data.validator.IntegerValidator;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.terminal.Sizeable;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.*;
 import org.dom4j.*;
 import org.vaadin.hene.popupbutton.PopupButton;
@@ -88,6 +87,7 @@ public class WebFilter
     private FilterSelect select;
     private WebPopupButton actions;
 
+    private Button pinAppliedFilterBtn;
     private Button applyBtn;
 
     private boolean defaultFilterEmpty = true;
@@ -114,6 +114,10 @@ public class WebFilter
     private String mainMessagesPack = AppConfig.getMessagesPack();
 
     private FilterEntity noFilter;
+
+    private LinkedList<AppliedFilterHolder> appliedFilters = new LinkedList<AppliedFilterHolder>();
+    private VerticalLayout appliedFiltersLayout;
+
 
     private GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
     private ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
@@ -184,6 +188,23 @@ public class WebFilter
         App.getInstance().getWindowManager().setDebugId(applyBtn, "genericFilterApplyBtn");
         topLayout.addComponent(applyBtn);
 
+        if (globalConfig.getAllowQueryFromSelected()) {
+            pinAppliedFilterBtn = WebComponentsHelper.createButton();
+            pinAppliedFilterBtn.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "pinAppliedFilterBtn.caption"));
+            pinAppliedFilterBtn.setDescription(MessageProvider.getMessage(MESSAGES_PACK, "pinAppliedFilterBtn.description"));
+            pinAppliedFilterBtn.setEnabled(false);
+            pinAppliedFilterBtn.addListener(new Button.ClickListener() {
+                @Override
+                public void buttonClick(Button.ClickEvent event) {
+                    if (datasource instanceof CollectionDatasource.SupportsApplyToSelected) {
+                        ((CollectionDatasource.SupportsApplyToSelected) datasource).pinQuery();
+                        addApplied();
+                    }
+                }
+            });
+            topLayout.addComponent(pinAppliedFilterBtn);
+        }
+
         actions = new WebPopupButton();
         actions.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "actionsCaption"));
         topLayout.addComponent((com.vaadin.ui.Component) actions.getComponent());
@@ -197,6 +218,65 @@ public class WebFilter
         createParamsLayout(false);
         component.addComponent(paramsLayout);
         updateControls();
+    }
+
+    private boolean addApplied() {
+        AppliedFilter appliedFilter = new AppliedFilter(filterEntity, (ComponentContainer) paramsLayout);
+
+        if (!appliedFilters.isEmpty() && appliedFilters.getLast().filter.equals(appliedFilter))
+            return false;
+
+        if (appliedFiltersLayout == null) {
+            appliedFiltersLayout = new VerticalLayout();
+            appliedFiltersLayout.setMargin(true, false, false, false);
+            appliedFiltersLayout.setSpacing(true);
+
+            component.addComponent(appliedFiltersLayout, component.getComponentIndex(paramsLayout));
+        }
+
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.setSpacing(true);
+
+        if (!appliedFilters.isEmpty()) {
+            AppliedFilterHolder holder = appliedFilters.getLast();
+            holder.layout.removeComponent(holder.button);
+        }
+
+        Label label = new Label(appliedFilter.getText());
+        layout.addComponent(label);
+
+        Button button = new Button();
+        button.setStyleName(BaseTheme.BUTTON_LINK);
+        button.addStyleName("remove-applied-filter");
+        button.setIcon(new ThemeResource("icons/close.png"));
+        button.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                removeLastApplied();
+            }
+        });
+        layout.addComponent(button);
+        layout.setComponentAlignment(button, com.vaadin.ui.Alignment.MIDDLE_LEFT);
+
+        appliedFiltersLayout.addComponent(layout);
+
+        appliedFilters.add(new AppliedFilterHolder(appliedFilter, layout, button));
+
+        return true;
+    }
+
+    private void removeLastApplied() {
+        if (!appliedFilters.isEmpty()) {
+            AppliedFilterHolder holder = appliedFilters.removeLast();
+            appliedFiltersLayout.removeComponent(holder.layout);
+
+            if (!appliedFilters.isEmpty()) {
+                holder = appliedFilters.getLast();
+                holder.layout.addComponent(holder.button);
+                holder.layout.setComponentAlignment(holder.button, com.vaadin.ui.Alignment.MIDDLE_LEFT);
+            }
+        }
+        ((CollectionDatasource.SupportsApplyToSelected) datasource).unpinLastQuery();
     }
 
     @Override
@@ -341,6 +421,11 @@ public class WebFilter
             ((CollectionDatasource.SupportsPaging) datasource).setFirstResult(0);
 
         refreshDatasource();
+
+        if (pinAppliedFilterBtn != null) {
+            pinAppliedFilterBtn.setEnabled(filterEntity != null && filterEntity.getXml() != null);
+        }
+
         return true;
     }
 
@@ -1432,6 +1517,9 @@ public class WebFilter
 
             if (useMaxResults)
                 maxResultsCb.setValue(true);
+
+            if (pinAppliedFilterBtn != null)
+                pinAppliedFilterBtn.setEnabled(false);
         }
     }
 
@@ -1949,6 +2037,18 @@ public class WebFilter
             String listOfIds = createIdsString(set, ids);
             param.setText(listOfIds);
             return document.asXML();
+        }
+    }
+
+    private static class AppliedFilterHolder {
+        public final AppliedFilter filter;
+        public final HorizontalLayout layout;
+        public final Button button;
+
+        private AppliedFilterHolder(AppliedFilter filter, HorizontalLayout layout, Button button) {
+            this.filter = filter;
+            this.layout = layout;
+            this.button = button;
         }
     }
 }

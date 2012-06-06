@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.EntityManagerContext;
 
 import javax.annotation.Nonnull;
+import javax.sql.DataSource;
 import java.util.Set;
 import java.util.UUID;
 
@@ -134,6 +135,13 @@ public abstract class PersistenceProvider {
      */
     public static void setSoftDeletion(boolean value) {
         getPersistence().setSoftDeletion(value);
+    }
+
+    /**
+     * @return main JDBC DataSource
+     */
+    public static DataSource getDataSource() {
+        return getPersistence().getDataSource();
     }
 
     /**

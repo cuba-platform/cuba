@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 
 /**
  * Locator to find beans and other objects in static context.
- * <p>Consider use of injection instead.</p>
+ * <p>Consider use of injection instead, or direct lookup through {@link AppContext#getBean(String)}.</p>
  */
 public abstract class Locator {
 
@@ -34,9 +34,13 @@ public abstract class Locator {
     }
 
     /**
+     * This is obsolete method.<br/>
+     * Use injected {@link Persistence} interface or {@link PersistenceProvider} class instead.
+     * <p/>
      * Lookup JDBC DataSource.
      * @return      datasource
      */
+    @Deprecated
     public static DataSource getDataSource() {
         return (DataSource) AppContext.getBean("dataSource");
     }
