@@ -60,7 +60,7 @@
         <properties>
             <property name="openjpa.Log" value="log4j"/>
 
-            <property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true, PrettyPrintLineLength=72"/>
+            <property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true"/>
 
             <property name="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)"/>
 
