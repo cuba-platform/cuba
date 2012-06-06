@@ -16,11 +16,6 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.user.client.DOM;
@@ -28,17 +23,13 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
-import com.vaadin.terminal.gwt.client.Container;
-import com.vaadin.terminal.gwt.client.ContainerResizedListener;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.RenderSpace;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.Util;
-import com.vaadin.terminal.gwt.client.VCaption;
-import com.vaadin.terminal.gwt.client.VCaptionWrapper;
+import com.vaadin.terminal.gwt.client.*;
 import com.vaadin.terminal.gwt.client.RenderInformation.FloatSize;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Custom Layout implements complex layout defined with HTML template.
@@ -215,9 +206,9 @@ public class VCustomLayout extends ComplexPanel implements Paintable,
             // Get the HTML-template from client
             template = client.getResource(newTemplate);
             if (template == null) {
-                template = "<em>Layout file layouts/"
+                template = "<em>Layout file "
                         + newTemplate
-                        + ".html is missing. Components will be drawn for debug purposes.</em>";
+                        + " is missing. Components will be drawn for debug purposes.</em>";
             } else {
                 currentTemplateName = newTemplate;
             }

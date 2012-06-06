@@ -992,46 +992,6 @@ public class ApplicationConnection {
         ApplicationConfiguration.runWhenWidgetsLoaded(c);
     }
 
-    private void handleJSONMessageEx(final ValueMap resources, final Date start, final String jsonText,
-                                     final ValueMap json, final int resourceKeyIndex) {
-        final JsArrayString keyArray = resources.getKeyArray();
-        final String key = keyArray.get(resourceKeyIndex);
-
-        final String templateName = resources.getAsString(key);
-
-        final String templateUri = getThemeUri() + "/layouts/" + templateName + ".html?" + System.currentTimeMillis();
-
-        final RequestBuilder rb = new RequestBuilder(RequestBuilder.GET, templateUri);
-        rb.setHeader("Content-Type", "text/plain;charset=utf-8");
-        try {
-            rb.sendRequest(null, new RequestCallback() {
-                public void onResponseReceived(Request request, Response response) {
-                    if (response.getStatusCode() == Response.SC_OK) {
-                        resourcesMap.put(templateName, response.getText());
-
-                        if (resourceKeyIndex < keyArray.length() - 1) {
-                            handleJSONMessageEx(resources, start, jsonText, json,
-                                    resourceKeyIndex + 1);
-                        }
-
-                    } else {
-                        VConsole.error("Resource loading error. Status code: "
-                                + response.getStatusCode());
-                    }
-                }
-
-                public void onError(Request request, Throwable exception) {
-                    VConsole.error("Resource loading error");
-                    if (exception != null) {
-                        ClientExceptionHandler.displayError(exception);
-                    }
-                }
-            });
-        } catch (RequestException e) {
-            ClientExceptionHandler.displayError(e);
-        }
-    }
-
     private class LoadingCommand implements Command{
         private ValueMap json;
         private Date start;
