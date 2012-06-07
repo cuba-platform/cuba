@@ -20,7 +20,6 @@ import java.util.UUID;
  */
 @Entity(name = "sys$QueryResult")
 @Table(name = "SYS_QUERY_RESULT")
-//@IdClass(QueryResult.Id.class)
 @SystemLevel
 public class QueryResult implements CubaEnhanced { // Marker interface added here to avoid CUBA-specific enhancing
 
@@ -29,12 +28,10 @@ public class QueryResult implements CubaEnhanced { // Marker interface added her
     @Column(name = "ID")
     private Long id;
 
-//    @javax.persistence.Id
     @Persistent
     @Column(name = "SESSION_ID")
     private UUID sessionId;
 
-//    @javax.persistence.Id
     @Column(name = "QUERY_KEY")
     private Integer queryKey;
 
@@ -73,29 +70,4 @@ public class QueryResult implements CubaEnhanced { // Marker interface added her
     public void setEntityId(UUID entityId) {
         this.entityId = entityId;
     }
-
-//    public static class Id {
-//        public UUID sessionId;
-//        public Integer queryKey;
-//
-//        @Override
-//        public boolean equals(Object o) {
-//            if (this == o) return true;
-//            if (o == null || getClass() != o.getClass()) return false;
-//
-//            Id id = (Id) o;
-//
-//            if (queryKey != null ? !queryKey.equals(id.queryKey) : id.queryKey != null) return false;
-//            if (sessionId != null ? !sessionId.equals(id.sessionId) : id.sessionId != null) return false;
-//
-//            return true;
-//        }
-//
-//        @Override
-//        public int hashCode() {
-//            int result = sessionId != null ? sessionId.hashCode() : 0;
-//            result = 31 * result + (queryKey != null ? queryKey.hashCode() : 0);
-//            return result;
-//        }
-//    }
 }
