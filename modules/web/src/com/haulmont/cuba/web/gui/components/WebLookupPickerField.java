@@ -149,11 +149,6 @@ public class WebLookupPickerField
     }
 
     @Override
-    public void validate() throws ValidationException {
-        pickerField.validate();
-    }
-
-    @Override
     public void setWidth(String width) {
         pickerField.setWidth(width);
     }
