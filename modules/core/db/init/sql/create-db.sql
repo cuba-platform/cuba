@@ -316,7 +316,7 @@ create table SEC_CONSTRAINT (
 
     ENTITY_NAME varchar(50),
     JOIN_CLAUSE varchar(500),
-    WHERE_CLAUSE varchar(500),
+    WHERE_CLAUSE varchar(1000),
     GROUP_ID varchar(36),
 
     primary key (ID),
