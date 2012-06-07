@@ -8,10 +8,7 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.IFrame;
-import com.haulmont.cuba.gui.components.LookupPickerField;
-import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.toolkit.ui.FilterSelect;
@@ -26,9 +23,8 @@ import java.util.Collection;
  * @author krivopustov
  */
 public class WebLookupPickerField
-    extends WebLookupField
-    implements LookupPickerField
-{
+        extends WebLookupField
+        implements LookupPickerField {
     private WebPickerField pickerField;
 
     public WebLookupPickerField() {
@@ -38,7 +34,7 @@ public class WebLookupPickerField
             @Override
             public void setRequired(boolean required) {
                 super.setRequired(required);
-                ((FilterSelect)selectComponent).setNullSelectionAllowed(!required);
+                ((FilterSelect) selectComponent).setNullSelectionAllowed(!required);
             }
         };
         pickerField = new WebPickerField(picker);
@@ -51,7 +47,7 @@ public class WebLookupPickerField
 
     @Override
     public Component getComponent() {
-        return pickerField.getComponent();  
+        return pickerField.getComponent();
     }
 
     @Override
@@ -140,11 +136,21 @@ public class WebLookupPickerField
         super.setEditable(editable);
         pickerField.setEditable(editable);
     }
-    
+
     @Override
     public void setRequired(boolean required) {
-        component.setRequired(required);
+        component.setNullSelectionAllowed(!required);
         pickerField.setRequired(required);
+    }
+
+    @Override
+    public boolean isRequired() {
+        return pickerField.isRequired();
+    }
+
+    @Override
+    public void validate() throws ValidationException {
+        pickerField.validate();
     }
 
     @Override
