@@ -568,6 +568,7 @@
     <xs:complexType name="uploadComponent">
         <xs:attributeGroup ref="requiresId"/>
         <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasCaption"/>
     </xs:complexType>
 
     <!-- FileMultiUploadField -->
