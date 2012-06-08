@@ -77,4 +77,12 @@ public class QueryParserRegex implements QueryParser {
 
         return alias;
     }
+
+    @Override
+    public boolean isEntitySelect(String targetEntity) {
+        String alias = getEntityAlias(targetEntity);
+        Pattern pattern = Pattern.compile("\\bselect\\s+(distinct\\s+)*" + alias + "\\s+");
+        Matcher matcher = pattern.matcher(source);
+        return matcher.find();
+    }
 }

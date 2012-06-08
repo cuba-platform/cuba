@@ -324,7 +324,7 @@ public class DataServiceBean implements DataService {
                 context.getId(), context.getMetaClass(), context.isUseSecurityConstraints(), security);
 
         if (!context.getPrevQueries().isEmpty()) {
-            log.info("Restrict query by previous results"); // TODO change to debug
+            log.debug("Restrict query by previous results");
             queryBuilder.restrictByPreviousResults(userSessionSource.getUserSession().getId(), context.getQueryKey());
         }
         Query query = queryBuilder.getQuery(em);

@@ -50,6 +50,9 @@ public interface QueryTransformer
     /** Adds or replaces 'order by' clause */
     void replaceOrderBy(String property, boolean asc);
 
+    /** Removes 'order by' clause */
+    void removeOrderBy();
+
     /** Reset internal buffer */
     void reset();
 

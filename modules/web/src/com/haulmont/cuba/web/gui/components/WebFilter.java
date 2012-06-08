@@ -115,6 +115,7 @@ public class WebFilter
 
     private FilterEntity noFilter;
 
+    private AppliedFilter lastAppliedFilter;
     private LinkedList<AppliedFilterHolder> appliedFilters = new LinkedList<AppliedFilterHolder>();
     private VerticalLayout appliedFiltersLayout;
 
@@ -220,11 +221,12 @@ public class WebFilter
         updateControls();
     }
 
-    private boolean addApplied() {
-        AppliedFilter appliedFilter = new AppliedFilter(filterEntity, (ComponentContainer) paramsLayout);
+    private void addApplied() {
+        if (lastAppliedFilter == null)
+            return;
 
-        if (!appliedFilters.isEmpty() && appliedFilters.getLast().filter.equals(appliedFilter))
-            return false;
+        if (!appliedFilters.isEmpty() && appliedFilters.getLast().filter.equals(lastAppliedFilter))
+            return;
 
         if (appliedFiltersLayout == null) {
             appliedFiltersLayout = new VerticalLayout();
@@ -242,7 +244,7 @@ public class WebFilter
             holder.layout.removeComponent(holder.button);
         }
 
-        Label label = new Label(appliedFilter.getText());
+        Label label = new Label(lastAppliedFilter.getText());
         layout.addComponent(label);
 
         Button button = new Button();
@@ -260,9 +262,7 @@ public class WebFilter
 
         appliedFiltersLayout.addComponent(layout);
 
-        appliedFilters.add(new AppliedFilterHolder(appliedFilter, layout, button));
-
-        return true;
+        appliedFilters.add(new AppliedFilterHolder(lastAppliedFilter, layout, button));
     }
 
     private void removeLastApplied() {
@@ -425,6 +425,7 @@ public class WebFilter
         if (pinAppliedFilterBtn != null) {
             pinAppliedFilterBtn.setEnabled(filterEntity != null && filterEntity.getXml() != null);
         }
+        lastAppliedFilter = new AppliedFilter(filterEntity, (ComponentContainer) paramsLayout);
 
         return true;
     }

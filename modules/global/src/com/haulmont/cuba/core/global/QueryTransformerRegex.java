@@ -34,16 +34,8 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     public void addWhere(String where) {
-        String alias = null;
         Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
-        while (entityMatcher.find()) {
-            if (targetEntity.equals(entityMatcher.group(1))) {
-                alias = entityMatcher.group(3);
-                break;
-            }
-        }
-        if (StringUtils.isBlank(alias))
-            error("No alias for target entity " + targetEntity + " found");
+        String alias = findAlias(entityMatcher);
 
         int insertPos = buffer.length();
         Matcher lastClauseMatcher = LAST_CLAUSE_PATTERN.matcher(buffer);
@@ -84,16 +76,8 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     public void addWhereAsIs(String where) {
-        boolean entityFound = false;
         Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
-        while (entityMatcher.find()) {
-            if (targetEntity.equals(entityMatcher.group(1))) {
-                entityFound = true;
-                break;
-            }
-        }
-        if (!entityFound)
-            error("No target entity " + targetEntity + " specified");
+        findAlias(entityMatcher);
 
         int insertPos = buffer.length();
         Matcher lastClauseMatcher = LAST_CLAUSE_PATTERN.matcher(buffer);
@@ -118,16 +102,8 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     public void addJoinAsIs(String join) {
-        boolean entityFound = false;
         Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
-        while (entityMatcher.find()) {
-            if (targetEntity.equals(entityMatcher.group(1))) {
-                entityFound = true;
-                break;
-            }
-        }
-        if (!entityFound)
-            error("No target entity " + targetEntity + " specified");
+        findAlias(entityMatcher);
 
         int insertPos = buffer.length();
 
@@ -152,16 +128,8 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     public void addJoinAndWhere(String join, String where) {
-        String alias = null;
         Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
-        while (entityMatcher.find()) {
-            if (targetEntity.equals(entityMatcher.group(1))) {
-                alias = entityMatcher.group(3);
-                break;
-            }
-        }
-        if (StringUtils.isBlank(alias))
-            error("No alias for target entity " + targetEntity + " found");
+        String alias = findAlias(entityMatcher);
 
         int insertPos = buffer.length();
 
@@ -243,16 +211,8 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     public void replaceWithCount() {
-        String alias = null;
         Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
-        while (entityMatcher.find()) {
-            if (targetEntity.equals(entityMatcher.group(1))) {
-                alias = entityMatcher.group(3);
-                break;
-            }
-        }
-        if (StringUtils.isBlank(alias))
-            error("No alias for target entity " + targetEntity + " found");
+        String alias = findAlias(entityMatcher);
 
         Matcher distinctMatcher = DISTINCT_PATTERN.matcher(buffer);
 
@@ -266,16 +226,8 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
 
     @Override
     public void replaceWithSelectId() {
-        String alias = null;
         Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
-        while (entityMatcher.find()) {
-            if (targetEntity.equals(entityMatcher.group(1))) {
-                alias = entityMatcher.group(3);
-                break;
-            }
-        }
-        if (StringUtils.isBlank(alias))
-            error("No alias for target entity " + targetEntity + " found");
+        String alias = findAlias(entityMatcher);
 
         Matcher distinctMatcher = DISTINCT_PATTERN.matcher(buffer);
 
@@ -298,16 +250,8 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
     }
 
     public void replaceOrderBy(String property, boolean desc) {
-        String alias = null;
         Matcher entityMatcher = ENTITY_PATTERN.matcher(buffer);
-        while (entityMatcher.find()) {
-            if (targetEntity.equals(entityMatcher.group(1))) {
-                alias = entityMatcher.group(3);
-                break;
-            }
-        }
-        if (StringUtils.isBlank(alias))
-            error("No alias for target entity " + targetEntity + " found");
+        String alias = findAlias(entityMatcher);
 
         int dotPos = property.lastIndexOf(".");
         if (dotPos > -1) {
@@ -336,6 +280,14 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         }
     }
 
+    @Override
+    public void removeOrderBy() {
+        Matcher matcher = ORDER_BY_PATTERN.matcher(buffer);
+        if (matcher.find()) {
+            buffer.delete(matcher.start(), buffer.length());
+        }
+    }
+
     public void reset() {
         buffer = new StringBuffer(source);
         addedParams.clear();
@@ -347,6 +299,19 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
 
     public Set<String> getAddedParams() {
         return Collections.unmodifiableSet(addedParams);
+    }
+
+    private String findAlias(Matcher entityMatcher) {
+        String alias = null;
+        while (entityMatcher.find()) {
+            if (targetEntity.equals(entityMatcher.group(1))) {
+                alias = entityMatcher.group(3);
+                break;
+            }
+        }
+        if (StringUtils.isBlank(alias))
+            error("No alias for target entity " + targetEntity + " found");
+        return alias;
     }
 
     private void error(String message) {

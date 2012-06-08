@@ -67,6 +67,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
 
     protected LoadContext.Query lastQuery;
     protected LinkedList<LoadContext.Query> prevQueries = new LinkedList<LoadContext.Query>();
+    protected Integer queryKey;
 
     /**
      * This constructor is invoked by DsContextLoader, so inheritors must contain a constructor
@@ -455,8 +456,7 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
             context.setView(view);
             context.setSoftDeletion(isSoftDeletion());
 
-            context.setQueryKey(getCurrentQueryKey());
-            context.getPrevQueries().addAll(prevQueries);
+            prepareLoadContext(context);
 
             dataLoadError = null;
             try {
@@ -478,6 +478,12 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         }
 
         sw.stop();
+    }
+
+    @Override
+    protected void prepareLoadContext(LoadContext context) {
+        context.setQueryKey(queryKey == null ? 0 : queryKey);
+        context.getPrevQueries().addAll(prevQueries);
     }
 
     protected void detachListener(Collection instances) {
@@ -533,18 +539,14 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
         this.firstResult = startPosition;
     }
 
-    protected int getCurrentQueryKey() {
-        Integer attribute = UserSessionProvider.getUserSession().getAttribute("_queryKey");
-        return attribute == null ? 0 : attribute;
-    }
 
     protected void incrementQueryKey() {
-        Integer attribute = UserSessionProvider.getUserSession().getAttribute("_queryKey");
-        if (attribute == null)
-            attribute = 1;
+        queryKey = UserSessionProvider.getUserSession().getAttribute("_queryKey");
+        if (queryKey == null)
+            queryKey = 1;
         else
-            attribute++;
-        UserSessionProvider.getUserSession().setAttribute("_queryKey", attribute);
+            queryKey++;
+        UserSessionProvider.getUserSession().setAttribute("_queryKey", queryKey);
     }
 
     @Override

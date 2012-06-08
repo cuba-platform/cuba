@@ -177,6 +177,10 @@ public class QueryTransformerAstBased implements QueryTransformer {
         queryAnalyzer.replaceOrderBy(ref.addFieldPath(newOrderingFieldPath), desc);
     }
 
+    @Override
+    public void removeOrderBy() {
+    }
+
     public void reset() {
         try {
             initQueryAnalyzer(model, query);

@@ -458,6 +458,8 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         String jpqlQuery = transformer.getResult();
         q.setQueryString(jpqlQuery);
 
+        prepareLoadContext(context);
+
         dataLoadError = null;
         try {
             List res = dataservice.loadList(context);
@@ -466,6 +468,9 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
             dataLoadError = e;
         }
         return 0;
+    }
+
+    protected void prepareLoadContext(LoadContext context) {
     }
 
     protected void checkDataLoadError() {

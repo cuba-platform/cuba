@@ -14,12 +14,15 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.app.UserSessionsAPI;
 import com.haulmont.cuba.security.entity.UserSessionEntity;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.io.Serializable;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.*;
 
 /**
@@ -62,10 +65,19 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
         if (prevQueries.isEmpty())
             return;
 
-        List<UUID> idList;
-
         LoadContext.Query contextQuery = prevQueries.get(prevQueries.size() - 1);
         String entityName = loadContext.getMetaClass();
+
+        QueryParser parser = QueryTransformerFactory.createParser(contextQuery.getQueryString());
+        if (!parser.isEntitySelect(entityName))
+            return;
+
+        int queryKey = loadContext.getQueryKey();
+
+        if (resultsAlreadySaved(queryKey, contextQuery))
+            return;
+
+        List<UUID> idList;
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
@@ -74,6 +86,7 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(
                     contextQuery.getQueryString(), entityName);
             transformer.replaceWithSelectId();
+            transformer.removeOrderBy();
             String queryString = transformer.getResult();
 
             DataServiceQueryBuilder queryBuilder = new DataServiceQueryBuilder(queryString, contextQuery.getParameters(),
@@ -83,40 +96,83 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
             }
             Query query = queryBuilder.getQuery(em);
 
+            String logMsg = "Load previous query results: " + DataServiceQueryBuilder.printQuery(query.getQueryString());
+            log.debug(logMsg);
+            long start = System.currentTimeMillis();
+
             idList = query.getResultList();
             tx.commit();
+
+            log.debug("Done in " + (System.currentTimeMillis() - start) + "ms : " + logMsg);
         } finally {
             tx.end();
         }
 
-        delete(loadContext.getQueryKey());
-        insert(loadContext.getQueryKey(), idList);
+        delete(queryKey);
+        insert(queryKey, idList);
+    }
+
+    private boolean resultsAlreadySaved(Integer queryKey, LoadContext.Query query) {
+        LinkedHashMap<Integer, QueryHolder> recentQueries =
+                userSessionSource.getUserSession().getAttribute("_recentQueries");
+        if (recentQueries == null) {
+            recentQueries = new LinkedHashMap<Integer, QueryHolder>() {
+                private static final long serialVersionUID = -901296839279897248L;
+
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<Integer, QueryHolder> eldest) {
+                    return size() > 10;
+                }
+            };
+        }
+
+        QueryHolder queryHolder = new QueryHolder(query);
+        QueryHolder oldQueryHolder = recentQueries.put(queryKey, queryHolder);
+
+        userSessionSource.getUserSession().setAttribute("_recentQueries", recentQueries);
+
+        return queryHolder.equals(oldQueryHolder);
     }
 
     private void insert(int queryKey, List<UUID> idList) {
         UUID userSessionId = userSessionSource.getUserSession().getId();
-        log.debug("Insert query results for " + userSessionId + " / " + queryKey);
+        long start = System.currentTimeMillis();
+        String logMsg = "Insert " + idList.size() + " query results for " + userSessionId + " / " + queryKey;
+        log.debug(logMsg);
 
-        String sql = "insert into SYS_QUERY_RESULT (SESSION_ID, QUERY_KEY, ENTITY_ID) values ('"
-                + userSessionId + "', " + queryKey + ", ?)";
-        QueryRunner runner = new QueryRunner(persistence.getDataSource());
+        Transaction tx = persistence.createTransaction();
         try {
-            for (int i = 0; i < idList.size(); i += BATCH_SIZE) {
-                List<UUID> sublist = idList.subList(i, Math.min(i + BATCH_SIZE, idList.size()));
-                Object[][] params = new Object[sublist.size()][1];
-                for (int j = 0; j < sublist.size(); j++) {
-                    params[j][0] = sublist.get(j);
+            EntityManager em = persistence.getEntityManager();
+
+            String sql = "insert into SYS_QUERY_RESULT (SESSION_ID, QUERY_KEY, ENTITY_ID) values ('"
+                    + userSessionId + "', " + queryKey + ", ?)";
+            QueryRunner runner = new QueryRunner();
+            try {
+                int[] paramTypes = new int[] { Types.OTHER };
+                for (int i = 0; i < idList.size(); i += BATCH_SIZE) {
+                    List<UUID> sublist = idList.subList(i, Math.min(i + BATCH_SIZE, idList.size()));
+                    Object[][] params = new Object[sublist.size()][1];
+                    for (int j = 0; j < sublist.size(); j++) {
+                        params[j][0] = sublist.get(j);
+                    }
+                    runner.batch(em.getConnection(), sql, params, paramTypes);
                 }
-                runner.batch(sql, params);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            log.debug("Done in " + (System.currentTimeMillis() - start) + "ms: " + logMsg);
+
+            tx.commit();
+        } finally {
+            tx.end();
         }
     }
 
     private void delete(int queryKey) {
         UUID userSessionId = userSessionSource.getUserSession().getId();
-        log.debug("Delete query results for " + userSessionId + " / " + queryKey);
+        long start = System.currentTimeMillis();
+        String logMsg = "Delete query results for " + userSessionId + " / " + queryKey;
+        log.debug(logMsg);
 
         String sql = "delete from SYS_QUERY_RESULT where SESSION_ID = '"
                 + userSessionId + "' and QUERY_KEY = " + queryKey;
@@ -127,6 +183,7 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        log.debug("Done in " + (System.currentTimeMillis() - start) + "ms : " + logMsg);
     }
 
     @Override
@@ -165,6 +222,31 @@ public class QueryResultsManager implements QueryResultsManagerAPI {
             runner.update(sb.toString());
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static class QueryHolder implements Serializable {
+
+        private static final long serialVersionUID = -6055610488135337366L;
+
+        public final LoadContext.Query query;
+
+        public QueryHolder(LoadContext.Query query) {
+            this.query = query;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            QueryHolder that = (QueryHolder) o;
+
+            if (query == null || that.query == null) return false;
+            if (!ObjectUtils.equals(query.getQueryString(), that.query.getQueryString())) return false;
+            if (!ObjectUtils.equals(query.getParameters(), that.query.getParameters())) return false;
+
+            return true;
         }
     }
 }
