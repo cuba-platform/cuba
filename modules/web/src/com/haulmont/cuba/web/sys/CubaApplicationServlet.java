@@ -22,8 +22,11 @@ import com.vaadin.terminal.gwt.server.*;
 import com.vaadin.ui.Window;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -39,6 +42,8 @@ public class CubaApplicationServlet extends ApplicationServlet {
     private static final long serialVersionUID = -8701539520754293569L;
 
     private static String releaseTimestamp = null;
+
+    private Log log = LogFactory.getLog(CubaApplicationServlet.class);
 
     @Override
     protected boolean isTestingMode() {
@@ -101,8 +106,10 @@ public class CubaApplicationServlet extends ApplicationServlet {
             if (i < uriParts.length - 1)
                 sb.append("/");
         }
+
+        HttpSession httpSession = request.getSession();
         if (action != null) {
-            request.getSession().setAttribute(App.LAST_REQUEST_ACTION_ATTR, action);
+            httpSession.setAttribute(App.LAST_REQUEST_ACTION_ATTR, action);
         }
         if (request.getParameterNames().hasMoreElements()) {
             Map<String, String> params = new HashMap<String, String>();
@@ -111,8 +118,11 @@ public class CubaApplicationServlet extends ApplicationServlet {
                 String name = (String) parameterNames.nextElement();
                 params.put(name, request.getParameter(name));
             }
-            request.getSession().setAttribute(App.LAST_REQUEST_PARAMS_ATTR, params);
+            httpSession.setAttribute(App.LAST_REQUEST_PARAMS_ATTR, params);
         }
+
+        log.debug("Redirect to application " + httpSession.getId());
+        response.addCookie(new Cookie("JSESSIONID", httpSession.getId()));
         response.sendRedirect(sb.toString());
     }
 

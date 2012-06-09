@@ -22,9 +22,7 @@ import javax.security.auth.callback.*;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.security.Principal;
 import java.security.PrivilegedAction;
@@ -38,6 +36,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
 
     private static final String AD_INTEGRATION_SUPPORT = "ADIntegrationSupport";
     private static final String WINDOWS_USER_AGENT = "Windows";
+    private static final String KERBEROS_PRINCIPAL_KEY = "KerberosPrincipal";
 
     private Log log = LogFactory.getLog(KerberosAuthProvider.class);
 
@@ -46,6 +45,8 @@ public class KerberosAuthProvider implements CubaAuthProvider {
         WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
         // Setup system properties
         System.setProperty("sun.security.krb5.debug", Boolean.toString(webConfig.getActiveDirectoryDebug()));
+        System.setProperty("sun.security.jgss.debug", Boolean.toString(webConfig.getActiveDirectoryDebug()));
+        System.setProperty("sun.security.krb5.msinterop.kstring", "true");
         System.setProperty("java.security.krb5.conf", StringUtils.trim(webConfig.getKerberosConf()));
         System.setProperty("java.security.auth.login.config", StringUtils.trim(webConfig.getKerberosJaasConf()));
         System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
@@ -59,7 +60,8 @@ public class KerberosAuthProvider implements CubaAuthProvider {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         // Filter unsupported sessions
-        if (Boolean.FALSE.equals(request.getSession().getAttribute(AD_INTEGRATION_SUPPORT))) {
+        HttpSession httpSession = request.getSession();
+        if (Boolean.FALSE.equals(httpSession.getAttribute(AD_INTEGRATION_SUPPORT))) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -73,10 +75,32 @@ public class KerberosAuthProvider implements CubaAuthProvider {
             return;
         }
 
+        // Filter localhost
+        if (StringUtils.equals(request.getRemoteAddr(), request.getLocalAddr())) {
+            log.debug("Skip local connection");
+            markUnsupportedSession(request);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // Filter redirect
+        final Object principal = httpSession.getAttribute(KERBEROS_PRINCIPAL_KEY);
+        if (principal instanceof KerberosPrincipal) {
+            log.debug("Skip redirect to application for " + httpSession.getId());
+            HttpServletRequestWrapper securedRequest = new HttpServletRequestWrapper(request) {
+                @Override
+                public Principal getUserPrincipal() {
+                    return (Principal) principal;
+                }
+            };
+            filterChain.doFilter(securedRequest, response);
+            return;
+        }
+
         // Need auth
         String auth = request.getHeader("Authorization");
         if (auth == null) {
-            requestCredentials(response);
+            requestCredentials(request, response);
         } else {
             kerberosAuth(filterChain, request, response, auth);
         }
@@ -89,23 +113,29 @@ public class KerberosAuthProvider implements CubaAuthProvider {
      * @param request Request
      */
     private void markUnsupportedSession(HttpServletRequest request) {
-        log.debug("Mark unsupported session: " + request.getSession().getId());
+        log.debug("Mark unsupported session: " + request.getSession().getId() + " for " + getRemoteComputerPlace(request));
         request.getSession().setAttribute(AD_INTEGRATION_SUPPORT, Boolean.FALSE);
     }
 
     /**
      * Send negotiation to client
      *
+     * @param request  Request
      * @param response Response
      * @throws IOException IO exception
      */
-    private void requestCredentials(HttpServletResponse response) throws IOException {
+    private void requestCredentials(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // Request auth credentials
         response.reset();
+        // save session id on next request
+        response.addCookie(new Cookie("JSESSIONID", request.getSession().getId()));
         response.setHeader("WWW-Authenticate", "Negotiate");
         response.setContentLength(0);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.flushBuffer();
+
+        log.debug("Request Kerberos ticket for " + request.getSession().getId()
+                + " " + getRemoteComputerPlace(request));
     }
 
     /**
@@ -115,26 +145,21 @@ public class KerberosAuthProvider implements CubaAuthProvider {
      * @param request     HttpRequest
      * @param response    HttpResponse
      * @param auth        Auth header
+     * @throws ServletException Exception in filter chain
      */
-    private void kerberosAuth(FilterChain filterChain,
-                              final HttpServletRequest request, HttpServletResponse response, String auth) {
+    private synchronized void kerberosAuth(FilterChain filterChain,
+                                           final HttpServletRequest request, HttpServletResponse response, String auth)
+            throws ServletException {
+
         try {
             LoginContext loginContext = loginAsServicePrincipal();
             try {
                 Subject serviceSubject = loginContext.getSubject();
                 if (serviceSubject != null) {
                     final String authString = auth.substring("Negotiate ".length());
-                    final GSSName clientName = acquireClientInfo(serviceSubject, authString);
+                    final GSSName clientName = acquireClientInfo(serviceSubject, request, authString);
                     if (clientName != null) {
-                        // New User Principal for request
-                        HttpServletRequestWrapper securedRequest = new HttpServletRequestWrapper(request) {
-                            @Override
-                            public Principal getUserPrincipal() {
-                                return new KerberosPrincipal(clientName);
-                            }
-                        };
-                        log.debug("Success auth: " + securedRequest.getUserPrincipal().getName());
-
+                        HttpServletRequestWrapper securedRequest = initPrincipal(request, clientName);
                         // Proceed filter with new User Principal with auth name
                         filterChain.doFilter(securedRequest, response);
                     } else {
@@ -148,9 +173,36 @@ public class KerberosAuthProvider implements CubaAuthProvider {
             }
         } catch (LoginException le) {
             log.error("Unabled to login service subject: ", le);
+        } catch (ServletException se) {
+            throw se;
         } catch (Exception e) {
             log.debug("Exception while authetification", e);
         }
+    }
+
+    /**
+     * Init user principal for Active directory user
+     *
+     * @param request    Http request
+     * @param clientName Active directory user name
+     * @return Enhanced request
+     */
+    private HttpServletRequestWrapper initPrincipal(final HttpServletRequest request, final GSSName clientName) {
+        // New User Principal for request
+        HttpServletRequestWrapper securedRequest = new HttpServletRequestWrapper(request) {
+            @Override
+            public Principal getUserPrincipal() {
+                return new KerberosPrincipal(clientName);
+            }
+        };
+        HttpSession httpSession = request.getSession();
+
+        log.debug("Success auth " + httpSession.getId() +
+                " " + securedRequest.getUserPrincipal().getName() +
+                " from " + getRemoteComputerPlace(request));
+
+        httpSession.setAttribute(KERBEROS_PRINCIPAL_KEY, securedRequest.getUserPrincipal());
+        return securedRequest;
     }
 
     /**
@@ -166,7 +218,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
                     @Override
                     public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
                         // Do nothing,
-                        // We are use keytab file, no password needed
+                        // We are using keytab file, no password needed
                         // Principal specified in jaas.conf
                     }
                 });
@@ -178,10 +230,12 @@ public class KerberosAuthProvider implements CubaAuthProvider {
      * Acquire client context in priveleged action with Seprvice Principal permissions
      *
      * @param serviceSubject Service Principal subject
+     * @param request        Http request
      * @param authString     Client auth string
      * @return Client name
      */
-    private GSSName acquireClientInfo(Subject serviceSubject, final String authString) {
+    private GSSName acquireClientInfo(Subject serviceSubject,
+                                      final ServletRequest request, final String authString) {
         final byte[] kerberosToken = Base64.decodeBase64(authString.getBytes());
         return Subject.doAs(serviceSubject, new PrivilegedAction<GSSName>() {
             @Override
@@ -192,7 +246,9 @@ public class KerberosAuthProvider implements CubaAuthProvider {
                     context.acceptSecContext(kerberosToken, 0, kerberosToken.length);
                     return context.getSrcName();
                 } catch (GSSException e) {
-                    log.debug("Unable to login user with token: " + authString, e);
+                    log.warn("Unable to login user with token from " +
+                            getRemoteComputerPlace(request) +
+                            "\n" + authString, e);
                     return null;
                 }
             }
@@ -255,6 +311,10 @@ public class KerberosAuthProvider implements CubaAuthProvider {
     @Override
     public boolean needAuth(ServletRequest request) {
         return false;
+    }
+
+    private String getRemoteComputerPlace(ServletRequest request) {
+        return request.getRemoteAddr();
     }
 
     /**

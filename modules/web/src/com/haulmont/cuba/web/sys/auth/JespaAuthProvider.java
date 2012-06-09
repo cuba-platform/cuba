@@ -21,9 +21,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
+import javax.servlet.*;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -77,6 +76,13 @@ public class JespaAuthProvider extends HttpSecurityService implements CubaAuthPr
 
     @Override
     public void destroy() {
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        log.debug("NTLM auth");
+        super.doFilter(request, response, chain);
     }
 
     @Override

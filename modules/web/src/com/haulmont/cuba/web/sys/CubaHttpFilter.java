@@ -74,13 +74,13 @@ public class CubaHttpFilter implements Filter {
             boolean bypass = false;
             for (String bypassUrl : bypassUrls) {
                 if (requestURI.contains(bypassUrl)) {
+                    log.debug("Skip AD auth for by pass url: " + bypassUrl);
                     bypass = true;
                     break;
                 }
             }
             if (!bypass) {
                 if (activeDirectoryFilter.needAuth(request) || !checkApplicationSession(request)) {
-                    log.debug("AD authentification");
                     activeDirectoryFilter.doFilter(request, response, chain);
                     filtered = true;
                 }
