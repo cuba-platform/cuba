@@ -128,43 +128,54 @@ public abstract class AbstractMessages implements Messages {
         if (notFoundValue != null)
             return notFoundValue;
 
+        String msg = searchMessage(packs, key, locale, false);
+        if (msg != null)
+            return msg;
+
+        notFoundCache.put(notFoundKey, key);
+        return key;
+    }
+
+    private String searchMessage(String packs, String key, Locale locale, boolean tryDefaultLocale) {
         List<String> processedPacks = new ArrayList<String>();
         StrTokenizer tokenizer = new StrTokenizer(packs);
         //noinspection unchecked
         List<String> list = tokenizer.getTokenList();
         Collections.reverse(list);
         for (String pack : list) {
-            String msg = searchFiles(pack, key, locale);
+            String msg = searchFiles(pack, key, tryDefaultLocale ? null : locale);
             if (msg == null) {
-                msg = searchClasspath(pack, key, locale);
+                msg = searchClasspath(pack, key, tryDefaultLocale ? null : locale);
             }
             if (msg == null) {
-                msg = searchRemotely(pack, key, locale);
+                msg = searchRemotely(pack, key, tryDefaultLocale ? null : locale);
                 if (msg != null) {
                     String cacheKey = makeCacheKey(pack, key, locale);
                     strCache.put(cacheKey, msg);
                 }
             }
 
-            if (msg != null && !processedPacks.isEmpty()) {
-                for (String p : processedPacks) {
-                    String cacheKey = makeCacheKey(p, key, locale);
-                    strCache.put(cacheKey, msg);
+            if (msg != null) {
+                if (!processedPacks.isEmpty()) {
+                    for (String p : processedPacks) {
+                        String cacheKey = makeCacheKey(p, key, locale);
+                        strCache.put(cacheKey, msg);
+                    }
                 }
-            }
-
-            if (msg != null)
                 return msg;
+            }
 
             processedPacks.add(pack);
         }
-
-        if (log.isTraceEnabled()) {
-            String packName = new StrBuilder().appendWithSeparators(list, ",").toString();
-            log.trace("Resource '" + makeCacheKey(packName, key, locale) + "' not found");
+        if (!tryDefaultLocale)
+            return searchMessage(packs, key, locale, true);
+        else {
+            if (log.isTraceEnabled()) {
+                String packName = new StrBuilder().appendWithSeparators(list, ",").toString();
+                log.trace("Resource '" + makeCacheKey(packName, key, locale) + "' not found");
+            }
+            return null;
         }
-        notFoundCache.put(notFoundKey, key);
-        return key;
     }
 
     @Override
@@ -195,10 +206,7 @@ public abstract class AbstractMessages implements Messages {
 
         String packPath = confDir + "/" + pack.replaceAll("\\.", "/");
         while (packPath != null && !packPath.equals(confDir)) {
-            file = new File(packPath + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT);
-            if (!file.exists()) {
-                file = new File(packPath + "/" + BUNDLE_NAME + EXT);
-            }
+            file = new File(packPath + "/" + BUNDLE_NAME + getLocaleSuffix(locale) + EXT);
             if (file.exists()) {
                 try {
                     FileInputStream stream = new FileInputStream(file);
@@ -230,13 +238,9 @@ public abstract class AbstractMessages implements Messages {
 
         String packPath = "/" + pack.replaceAll("\\.", "/");
         while (packPath != null) {
-            String name = packPath + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT;
+            String name = packPath + "/" + BUNDLE_NAME + getLocaleSuffix(locale) + EXT;
             InputStream stream;
             stream = getClass().getResourceAsStream(name);
-            if (stream == null) {
-                name = packPath + "/" + BUNDLE_NAME + EXT;
-                stream = getClass().getResourceAsStream(name);
-            }
             if (stream != null) {
                 cachePropertiesFromStream(pack, locale, stream, packPath);
 
@@ -260,22 +264,15 @@ public abstract class AbstractMessages implements Messages {
             confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir().replaceAll("\\\\", "/");
 
         String packPath = confDir + "/" + pack.replaceAll("\\.", "/");
-        file = new File(packPath + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT);
-        if (!file.exists()) {
-            file = new File(packPath + "/" + BUNDLE_NAME + EXT);
-        }
+        file = new File(packPath + "/" + BUNDLE_NAME + getLocaleSuffix(locale) + EXT);
         InputStream stream;
         try {
             if (file.exists()) {
                 stream = new FileInputStream(file);
             } else {
                 packPath = "/" + pack.replaceAll("\\.", "/");
-                String name = packPath + "/" + BUNDLE_NAME + "_" + locale.getLanguage() + EXT;
+                String name = packPath + "/" + BUNDLE_NAME + getLocaleSuffix(locale) + EXT;
                 stream = getClass().getResourceAsStream(name);
-                if (stream == null) {
-                    name = packPath + "/" + BUNDLE_NAME + EXT;
-                    stream = getClass().getResourceAsStream(name);
-                }
                 if (stream == null) {
                     log.warn("Included messages pack not found: " + pack);
                     return;
@@ -286,6 +283,10 @@ public abstract class AbstractMessages implements Messages {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String getLocaleSuffix(Locale locale) {
+        return (locale != null ? "_" + locale.getLanguage() : "");
     }
 
     private void cachePropertiesFromStream(String pack, Locale locale, InputStream stream, String packPath) {
@@ -313,7 +314,7 @@ public abstract class AbstractMessages implements Messages {
     }
 
     private String makeCacheKey(String pack, String key, Locale locale) {
-        return pack + "/" + locale + "/" + key;
+        return pack + "/" + (locale == null ? "en" : locale) + "/" + key;
     }
 
     private String getPackName(Class c) {
