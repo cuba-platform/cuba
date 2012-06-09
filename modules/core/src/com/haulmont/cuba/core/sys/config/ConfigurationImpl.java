@@ -4,11 +4,12 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.core.sys;
+package com.haulmont.cuba.core.sys.config;
 
 import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.ConfigHandler;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.sys.ConfigPersisterImpl;
 
 import javax.annotation.ManagedBean;
 import java.lang.reflect.Proxy;

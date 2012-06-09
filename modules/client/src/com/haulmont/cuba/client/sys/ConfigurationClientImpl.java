@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.client.sys;
 
+import com.haulmont.cuba.client.sys.config.ConfigPersisterClientImpl;
 import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.ConfigHandler;
 import com.haulmont.cuba.core.global.Configuration;

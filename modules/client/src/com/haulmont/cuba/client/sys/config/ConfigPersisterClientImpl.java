@@ -3,7 +3,7 @@
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
  */
-package com.haulmont.cuba.client.sys;
+package com.haulmont.cuba.client.sys.config;
 
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.config.ConfigPersister;

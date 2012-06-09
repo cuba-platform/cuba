@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.ConfigUtil;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.ClassUtils;
 
 import java.lang.reflect.Constructor;
@@ -25,6 +26,8 @@ import java.lang.reflect.Modifier;
  */
 public abstract class TypeFactory
 {
+    public static final String ENTITY_FACTORY_BEAN_NAME = "cuba_ConfigEntityFactory";
+
     /**
      * Build an instance of the configuration type from a string.
      *
@@ -80,7 +83,7 @@ public abstract class TypeFactory
         } else {
 
             if (Entity.class.isAssignableFrom(returnType)){
-                return new EntityFactory();
+                return AppContext.getBean(ENTITY_FACTORY_BEAN_NAME, TypeFactory.class);
             } else {
                 for (String methodName : FACTORY_METHOD_NAMES) {
                     try {
