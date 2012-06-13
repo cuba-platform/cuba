@@ -34,10 +34,7 @@ import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.AbstractParam;
 import com.haulmont.cuba.gui.components.filter.ConditionsTree;
 import com.haulmont.cuba.gui.components.filter.Op;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.HierarchicalDatasource;
-import com.haulmont.cuba.gui.data.ValueChangingListener;
-import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.filter.DenyingClause;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
@@ -741,8 +738,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             for (ItemWrapper<FilterEntity> filterWrapper : filters) {
                 if (ObjectUtils.equals(defaultFilter, filterWrapper.getItem())) {
                     filterWrapper.setCaption(getFilterCaption(filterWrapper.getItem()) + " " + defaultFilterCaption);
-                    Map<String, Object> params = window.getContext().getParams();
-                    if (!BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
+
+                    if (!WindowParams.DISABLE_AUTO_REFRESH.getBool(window.getContext())) {
                         applyingDefault = true;
                         try {
                             select.setValue(filterWrapper);

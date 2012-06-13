@@ -15,11 +15,10 @@ import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import org.apache.commons.lang.BooleanUtils;
+import com.haulmont.cuba.gui.data.WindowParams;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>$Id$</p>
@@ -65,11 +64,7 @@ public class CollectionDsHelper {
     public static void autoRefreshInvalid(CollectionDatasource datasource, boolean autoRefresh) {
         if (autoRefresh && Datasource.State.INVALID.equals(datasource.getState())) {
             DsContext dsContext = datasource.getDsContext();
-            Map<String, Object> params = null;
-            if (dsContext != null && dsContext.getWindowContext() != null) {
-                params = dsContext.getWindowContext().getParams();
-            }
-            if (params == null || !BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
+            if (dsContext == null || !WindowParams.DISABLE_AUTO_REFRESH.getBool(dsContext.getWindowContext())) {
                 if (datasource instanceof CollectionDatasource.Suspendable)
                     ((CollectionDatasource.Suspendable) datasource).refreshIfNotSuspended();
                 else

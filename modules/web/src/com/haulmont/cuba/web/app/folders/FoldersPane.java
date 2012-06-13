@@ -24,6 +24,8 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
+import com.haulmont.cuba.gui.data.WindowParams;
+import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
@@ -491,14 +493,17 @@ public class FoldersPane extends VerticalLayout {
         WindowInfo windowInfo = AppContext.getBean(WindowConfig.class).getWindowInfo(screenId);
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("disableAutoRefresh", true);
+
+        WindowParams.DISABLE_AUTO_REFRESH.set(params, true);
+        WindowParams.DISABLE_APPLY_SETTINGS.set(params, true);
+        WindowParams.DISABLE_RESUME_SUSPENDED.set(params, true);
+
         if (!StringUtils.isBlank(folder.getTabName())) {
             params.put("description", MessageProvider.getMessage(messagesPack, folder.getTabName()));
         } else {
             params.put("description", MessageProvider.getMessage(messagesPack, folder.getName()));
         }
 
-        params.put("disableApplySettings", true);
         params.put("folderId", folder.getId());
 
         Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
@@ -537,6 +542,8 @@ public class FoldersPane extends VerticalLayout {
                         .applyPresentation(searchFolder.getPresentation().getId());
             }
         }
+
+        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
     }
 
     protected boolean isNeedRootAppFolder() {

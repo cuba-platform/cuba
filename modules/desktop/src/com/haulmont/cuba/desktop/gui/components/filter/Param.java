@@ -23,10 +23,7 @@ import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.AbstractParam;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DsBuilder;
-import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import org.apache.commons.lang.BooleanUtils;
@@ -356,8 +353,7 @@ public class Param extends AbstractParam<JComponent> {
             ds.setRefreshOnComponentValueChange(true);
             ((DatasourceImplementation) ds).initialized();
 
-            Map<String, Object> params = datasource.getDsContext().getWindowContext().getParams();
-            if (BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
+            if (WindowParams.DISABLE_AUTO_REFRESH.getBool(datasource.getDsContext().getWindowContext())) {
                 if (ds instanceof CollectionDatasource.Suspendable)
                     ((CollectionDatasource.Suspendable) ds).refreshIfNotSuspended();
                 else

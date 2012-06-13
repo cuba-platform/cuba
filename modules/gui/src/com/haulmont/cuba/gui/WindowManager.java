@@ -15,9 +15,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.DataService;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DsContext;
+import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
@@ -599,12 +597,12 @@ public abstract class WindowManager implements Serializable {
     protected abstract void showFrame(Component parent, IFrame frame);
 
     protected void afterShowWindow(Window window) {
-        if (window.getContext() != null &&
-                !BooleanUtils.isTrue((Boolean) window.getContext().getParams().get("disableApplySettings"))) {
+        if (!WindowParams.DISABLE_APPLY_SETTINGS.getBool(window.getContext())) {
             window.applySettings(new SettingsImpl(window.getId()));
         }
-
-        ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+        if (!WindowParams.DISABLE_RESUME_SUSPENDED.getBool(window.getContext())) {
+            ((DsContextImplementation) window.getDsContext()).resumeSuspended();
+        }
     }
 
     public abstract void close(Window window);

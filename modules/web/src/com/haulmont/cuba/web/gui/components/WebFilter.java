@@ -458,7 +458,10 @@ public class WebFilter
      * before it will be refreshed
      */
     protected void refreshDatasource() {
-        datasource.refresh();
+        if (datasource instanceof CollectionDatasource.Suspendable)
+            ((CollectionDatasource.Suspendable) datasource).refreshIfNotSuspended();
+        else
+            datasource.refresh();
     }
 
     private void applyDatasourceFilter() {
@@ -736,8 +739,7 @@ public class WebFilter
         FilterEntity defaultFilter = getDefaultFilter(filters, window);
         if (defaultFilter != null) {
             defaultFilterEmpty = false;
-            Map<String, Object> params = window.getContext().getParams();
-            if (!BooleanUtils.isTrue((Boolean) params.get("disableAutoRefresh"))) {
+            if (!WindowParams.DISABLE_AUTO_REFRESH.getBool(window.getContext())) {
                 applyingDefault = true;
                 try {
                     select.setValue(defaultFilter);
