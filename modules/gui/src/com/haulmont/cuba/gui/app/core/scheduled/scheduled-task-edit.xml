@@ -24,11 +24,11 @@
             <rows>
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.beanName"/>
-                    <lookupField id="beanNameField" datasource="taskDs" property="beanName" width="300px"/>
+                    <lookupField id="beanNameField" datasource="taskDs" property="beanName" width="300px" required="true"/>
                 </row>
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.methodName"/>
-                    <lookupField id="methodNameField" datasource="taskDs" property="methodName" width="300px"/>
+                    <lookupField id="methodNameField" datasource="taskDs" property="methodName" width="300px" required="true"/>
                 </row>
                 <row>
                     <label value="msg://com.haulmont.cuba.core.entity/ScheduledTask.userName"/>
