@@ -86,7 +86,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
         // Filter redirect
         final Object principal = httpSession.getAttribute(KERBEROS_PRINCIPAL_KEY);
         if (principal instanceof KerberosPrincipal) {
-            log.debug("Skip redirect to application for " + httpSession.getId());
+            log.trace("Skip redirect to application for " + httpSession.getId());
             HttpServletRequestWrapper securedRequest = new HttpServletRequestWrapper(request) {
                 @Override
                 public Principal getUserPrincipal() {
@@ -134,7 +134,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.flushBuffer();
 
-        log.debug("Request Kerberos ticket for " + request.getSession().getId()
+        log.trace("Request Kerberos ticket for " + request.getSession().getId()
                 + " " + getRemoteComputerPlace(request));
     }
 
@@ -157,6 +157,10 @@ public class KerberosAuthProvider implements CubaAuthProvider {
                 Subject serviceSubject = loginContext.getSubject();
                 if (serviceSubject != null) {
                     final String authString = auth.substring("Negotiate ".length());
+
+                    if (authString != null)
+                        log.trace("Ticket size: " + authString.length());
+
                     final GSSName clientName = acquireClientInfo(serviceSubject, request, authString);
                     if (clientName != null) {
                         HttpServletRequestWrapper securedRequest = initPrincipal(request, clientName);
