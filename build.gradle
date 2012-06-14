@@ -176,6 +176,7 @@ configure(coreModule) {
     test {
         scanForTestClasses = false
         includes = ['**/*Test.class']
+        jvmArgs '-XX:-UseSplitVerifier'
     }
 
     task testsJar(dependsOn: testClasses, type: Jar) {
@@ -242,6 +243,7 @@ configure(guiModule) {
     test {
         scanForTestClasses = false
         includes = ['**/*Test.class']
+        jvmArgs '-XX:-UseSplitVerifier'
     }
 }
 
