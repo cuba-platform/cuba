@@ -26,7 +26,7 @@ public abstract class AbstractNotPersistentEntity extends AbstractInstance imple
 
     private static final long serialVersionUID = -2846020822531467401L;
 
-    private UUID uuid;
+    protected UUID uuid;
 
     protected AbstractNotPersistentEntity() {
         uuid = UuidProvider.createUuid();

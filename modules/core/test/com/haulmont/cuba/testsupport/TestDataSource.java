@@ -15,6 +15,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.DriverManager;
 import java.io.PrintWriter;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
 public class TestDataSource implements DataSource {
 
@@ -48,6 +50,11 @@ public class TestDataSource implements DataSource {
 
     public int getLoginTimeout() throws SQLException {
         return 0;
+    }
+
+    @Override
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return null;
     }
 
     public <T> T unwrap(Class<T> iface) throws SQLException {

@@ -5,10 +5,10 @@
 */
 
 allprojects {
-    artifactGroup = 'com.haulmont.cuba'
-    artifactVersion = '3.3.0'
-    isSnapshot = true
-    //tomcatDir = rootDir.absolutePath + '/../tomcat'
+    ext.artifactGroup = 'com.haulmont.cuba'
+    ext.artifactVersion = '3.3.0'
+    ext.isSnapshot = true
+    //ext.tomcatDir = rootDir.absolutePath + '/../tomcat'
 }
 
 buildscript {
@@ -23,8 +23,8 @@ buildscript {
         }
     }
     dependencies {
-        classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.3.0'
-        classpath group: 'com.haulmont.gradle', name: 'doc-plugin', version: '1.0.0'
+        classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.4.0'
+        classpath group: 'com.haulmont.gradle', name: 'doc-plugin', version: '1.1.0'
     }
 }
 
@@ -81,9 +81,9 @@ configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, w
         compile(group: 'org.antlr', name: 'antlr-runtime', version: '3.2')
         compile(group: 'org.freemarker', name: 'freemarker', version: '2.3.16')
         compile(group: 'org.perf4j', name: 'perf4j', version: '0.9.10')
-        compile(group: 'org.springframework', name: 'spring-beans', version: '3.0.7.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-context', version: '3.0.7.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-web', version: '3.0.7.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-beans', version: '3.1.1.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-context', version: '3.1.1.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-web', version: '3.1.1.RELEASE')
 
         testCompile(group: 'com.haulmont.thirdparty', name: 'jmockit', version: '0.999.10')
         testCompile(group: 'junit', name: 'junit', version: '4.5')
@@ -151,18 +151,18 @@ configure(coreModule) {
         compile(group: 'org.jgroups', name: 'jgroups', version: '2.12.1.Final')
         compile(group: 'org.apache.commons', name: 'commons-compress', version: '1.1')
         compile(poi)
-        compile(group: 'org.aspectj', name: 'aspectjrt', version: '1.6.6')
-        compile(group: 'org.aspectj', name: 'aspectjweaver', version: '1.6.6')
+        compile(group: 'org.aspectj', name: 'aspectjrt', version: '1.6.12')
+        compile(group: 'org.aspectj', name: 'aspectjweaver', version: '1.6.12')
         compile(group: 'org.mybatis', name: 'mybatis', version: '3.0.5')
         compile(group: 'org.mybatis', name: 'mybatis-spring', version: '1.0.1')
         compile(group: 'org.json', name: 'json', version: '20090211')
         compile(group: 'org.openoffice', name: 'juh', version: '3.0.0')
         compile(group: 'org.openoffice', name: 'ridl', version: '3.0.0')
         compile(group: 'org.openoffice', name: 'unoil', version: '3.0.0')
-        compile(group: 'org.springframework', name: 'spring-context-support', version: '3.0.7.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-orm', version: '3.0.7.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-tx', version: '3.0.7.RELEASE')
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.0.7.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-context-support', version: '3.1.1.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-orm', version: '3.1.1.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-tx', version: '3.1.1.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.1.1.RELEASE')
 
         provided(servletApi)
 
@@ -276,7 +276,7 @@ configure(webModule) {
         compile(group: 'com.haulmont.thirdparty', name: 'jespa', version: '1.0.7')
         compile(group: 'commons-fileupload', name: 'commons-fileupload', version: '1.2.2')
         compile(group: 'org.jasig.cas', name: 'cas-client-core', version: '3.1.10')
-        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.0.7.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-webmvc', version: '3.1.1.RELEASE')
         compile(vaadin)
         compile(popupbutton)
 
@@ -453,11 +453,11 @@ task createDb(description: 'Creates local HSQL database') << {
 /***************************** Documentation  *****************************/
 
 // These variables must be the project properties
-docSrcDir = file('doc/content')
-docToolsDir = file('doc/tools')
-docCssDir = new File(docToolsDir, 'css')
-docDstDir = new File("$buildDir/doc")
-docTmpDir = new File("$buildDir/tmp/doc")
+ext.docSrcDir = file('doc/content')
+ext.docToolsDir = file('doc/tools')
+ext.docCssDir = new File(docToolsDir, 'css')
+ext.docDstDir = new File("$buildDir/doc")
+ext.docTmpDir = new File("$buildDir/tmp/doc")
 
 task transformManual(type: TransformDocbook) {
     sourceDir = new File(docSrcDir, 'manual/ru')
@@ -491,13 +491,11 @@ task buildManualHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     source transformManual.destFile
     destDir = new File(docDstDir, 'manual/ru/html')
     stylesheetName = 'html.xsl'
-    resources = fileTree {
-        from new File(docSrcDir, 'manual/ru')
+    resources = fileTree(new File(docSrcDir, 'manual/ru')) {
         include 'img/*.png'
         include 'img/*.jpg'
     }
-    resources += fileTree {
-        from docCssDir
+    resources += fileTree(docCssDir) {
         include '*.css'
     }
 }
@@ -506,13 +504,11 @@ task buildSecurityHtml(type: Docbook2Xhtml, dependsOn: transformSecurity) {
     source transformSecurity.destFile
     destDir = new File(docDstDir, 'security/ru/html')
     stylesheetName = 'html.xsl'
-    resources = fileTree {
-        from new File(docSrcDir, 'security/ru')
+    resources = fileTree(new File(docSrcDir, 'security/ru')) {
         include 'img/*.png'
         include 'img/*.jpg'
     }
-    resources += fileTree {
-        from docCssDir
+    resources += fileTree(docCssDir) {
         include '*.css'
     }
 }
@@ -521,13 +517,11 @@ task buildReportingXhtml(type: Docbook2Xhtml, dependsOn: transformReporting) {
     source transformReporting.destFile
     destFile = new File(docTmpDir, 'reporting-pdf/reporting-pdf.html')
     stylesheetName = 'pdf.xsl'
-    resources = fileTree {
-        from new File(docSrcDir, 'reporting/ru')
+    resources = fileTree(new File(docSrcDir, 'reporting/ru')) {
         include 'img/*.png'
         include 'img/*.jpg'
     }
-    resources += fileTree {
-        from docCssDir
+    resources += fileTree(docCssDir) {
         include '*.css'
     }
 }
@@ -536,13 +530,11 @@ task buildReportingXhtmlEng(type: Docbook2Xhtml, dependsOn: transformReportingEn
     source transformReportingEng.destFile
     destFile = new File(docTmpDir, 'reporting-pdf/reporting-pdf.html')
     stylesheetName = 'pdf.xsl'
-    resources = fileTree {
-        from new File(docSrcDir, 'reporting/eng')
+    resources = fileTree(new File(docSrcDir, 'reporting/eng')) {
         include 'img/*.png'
         include 'img/*.jpg'
     }
-    resources += fileTree {
-        from docCssDir
+    resources += fileTree(docCssDir) {
         include '*.css'
     }
 }
@@ -561,17 +553,16 @@ task buildReportingPdfEng(type: Xhtml2Pdf, dependsOn: buildReportingXhtmlEng) {
     classpath = configurations.buildDoc
     fonts = zipTree(configurations.docFonts.singleFile)
 }
+
 task buildManualSingleHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     source transformManual.destFile
     destFile = new File(docDstDir, 'manual/ru/html-single/manual.html')
     stylesheetName = 'html-single.xsl'
-    resources = fileTree {
-        from new File(docSrcDir, 'manual/ru')
+    resources = fileTree(new File(docSrcDir, 'manual/ru')) {
         include 'img/**/*.png'
         include 'img/**/*.jpg'
     }
-    resources += fileTree {
-        from docCssDir
+    resources += fileTree(docCssDir) {
         include '*.css'
     }
 }
@@ -580,29 +571,24 @@ task buildSecuritySingleHtml(type: Docbook2Xhtml, dependsOn: transformSecurity) 
     source transformSecurity.destFile
     destFile = new File(docDstDir, 'security/ru/html-single/security.html')
     stylesheetName = 'html-single.xsl'
-    resources = fileTree {
-        from new File(docSrcDir, 'security/ru')
+    resources = fileTree(new File(docSrcDir, 'security/ru')) {
         include 'img/**/*.png'
         include 'img/**/*.jpg'
     }
-    resources += fileTree {
-        from docCssDir
+    resources += fileTree(docCssDir) {
         include '*.css'
     }
 }
-
 
 task buildReportingSingleHtml(type: Docbook2Xhtml, dependsOn: transformReporting) {
     source transformReporting.destFile
     destFile = new File(docDstDir, 'reporting/ru/html-single/reporting.html')
     stylesheetName = 'html-single.xsl'
-    resources = fileTree {
-        from new File(docSrcDir, 'reporting/ru')
+    resources = fileTree(new File(docSrcDir, 'reporting/ru')) {
         include 'img/**/*.png'
         include 'img/**/*.jpg'
     }
-    resources += fileTree {
-        from docCssDir
+    resources += fileTree(docCssDir) {
         include '*.css'
     }
 }
@@ -611,13 +597,11 @@ task buildReportingSingleHtmlEng(type: Docbook2Xhtml, dependsOn: transformReport
     source transformReportingEng.destFile
     destFile = new File(docDstDir, 'reporting/eng/html-single/reporting.html')
     stylesheetName = 'html-single.xsl'
-    resources = fileTree {
-        from new File(docSrcDir, 'reporting/eng')
+    resources = fileTree(new File(docSrcDir, 'reporting/eng')) {
         include 'img/**/*.png'
         include 'img/**/*.jpg'
     }
-    resources += fileTree {
-        from docCssDir
+    resources += fileTree(docCssDir) {
         include '*.css'
     }
 }
@@ -629,7 +613,6 @@ task buildDoc(type: Zip, description: 'Build documentation',
     baseName = 'cuba-doc'
     version = artifactVersion + (isSnapshot ? '-SNAPSHOT' : '')
 }
-
 
 artifacts {
     archives buildDoc

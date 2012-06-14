@@ -6,8 +6,7 @@
 
 package com.haulmont.cuba.desktop.plaf.nimbus;
 
-import com.sun.java.swing.plaf.nimbus.AbstractRegionPainter;
-
+import javax.swing.plaf.nimbus.AbstractRegionPainter;
 import java.awt.*;
 
 /**

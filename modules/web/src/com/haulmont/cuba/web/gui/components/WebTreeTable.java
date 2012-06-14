@@ -136,13 +136,12 @@ public class WebTreeTable
         }
 
         public boolean isCaption(Object itemId) {
-            return treeTableDatasource && ((TreeTableDatasource<Entity, Object>) datasource)
-                    .isCaption(itemId);
+            return treeTableDatasource && ((TreeTableDatasource) datasource).isCaption(itemId);
         }
 
         public String getCaption(Object itemId) {
             if (treeTableDatasource) {
-                return ((TreeTableDatasource<Entity, Object>) datasource).getCaption(itemId);
+                return ((TreeTableDatasource) datasource).getCaption(itemId);
             }
             return null;
         }
@@ -175,7 +174,7 @@ public class WebTreeTable
 
                 infos.add(info);
             }
-            ((CollectionDatasource.Sortable<Entity, Object>) datasource).sort(infos.toArray(new CollectionDatasource.Sortable.SortInfo[infos.size()]));
+            ((CollectionDatasource.Sortable) datasource).sort(infos.toArray(new CollectionDatasource.Sortable.SortInfo[infos.size()]));
         }
 
         public Collection getSortableContainerPropertyIds() {
@@ -183,27 +182,27 @@ public class WebTreeTable
         }
 
         public Object nextItemId(Object itemId) {
-            return ((CollectionDatasource.Sortable<Entity, Object>) datasource).nextItemId(itemId);
+            return ((CollectionDatasource.Sortable) datasource).nextItemId(itemId);
         }
 
         public Object prevItemId(Object itemId) {
-            return ((CollectionDatasource.Sortable<Entity, Object>) datasource).prevItemId(itemId);
+            return ((CollectionDatasource.Sortable) datasource).prevItemId(itemId);
         }
 
         public Object firstItemId() {
-            return ((CollectionDatasource.Sortable<Entity, Object>) datasource).firstItemId();
+            return ((CollectionDatasource.Sortable) datasource).firstItemId();
         }
 
         public Object lastItemId() {
-            return ((CollectionDatasource.Sortable<Entity, Object>) datasource).lastItemId();
+            return ((CollectionDatasource.Sortable) datasource).lastItemId();
         }
 
         public boolean isFirstId(Object itemId) {
-            return ((CollectionDatasource.Sortable<Entity, Object>) datasource).isFirstId(itemId);
+            return ((CollectionDatasource.Sortable) datasource).isFirstId(itemId);
         }
 
         public boolean isLastId(Object itemId) {
-            return ((CollectionDatasource.Sortable<Entity, Object>) datasource).isLastId(itemId);
+            return ((CollectionDatasource.Sortable) datasource).isLastId(itemId);
         }
 
         public Object addItemAfter(Object previousItemId) throws UnsupportedOperationException {

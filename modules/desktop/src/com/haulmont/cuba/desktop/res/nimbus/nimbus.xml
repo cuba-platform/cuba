@@ -4,7 +4,7 @@
   ~ Use is subject to license terms.
   -->
 <theme xmlns="http://www.haulmont.com/schema/cuba/desktop/theme-config.xsd">
-    <lookAndFeel>com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel</lookAndFeel>
+    <lookAndFeel>javax.swing.plaf.nimbus.NimbusLookAndFeel</lookAndFeel>
     <class>com.haulmont.cuba.desktop.theme.impl.NimbusTheme</class>
 
     <ui-defaults>

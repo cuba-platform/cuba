@@ -12,7 +12,6 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.sys.SetValueEntity;
 import org.apache.openjpa.persistence.Persistent;
-import org.springframework.core.convert.support.PropertyTypeDescriptor;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
