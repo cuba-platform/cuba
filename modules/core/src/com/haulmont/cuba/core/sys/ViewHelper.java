@@ -244,6 +244,10 @@ public class ViewHelper
         return false;
     }
 
+    public static void clearCache() {
+        fetchPlans.clear();
+    }
+
     private static class FetchPlanField {
         private final Class entityClass;
         private final String property;
