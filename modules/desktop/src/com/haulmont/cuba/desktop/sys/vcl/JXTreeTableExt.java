@@ -9,7 +9,10 @@ package com.haulmont.cuba.desktop.sys.vcl;
 import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 
+import javax.swing.*;
 import javax.swing.tree.TreePath;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
 import java.util.Enumeration;
 import java.util.HashSet;
 
@@ -17,8 +20,24 @@ import java.util.HashSet;
  * @author artamonov
  * @version $Id$
  */
-public class JXTreeTableExt extends JXTreeTable {
+public class JXTreeTableExt extends JXTreeTable implements FocusableTable {
     protected HashSet<TreePath> expandedPaths;
+
+    protected TableFocusManager focusManager = new TableFocusManager(this);
+
+    @Override
+    protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
+        if (focusManager.processKeyBinding(ks, e, condition, pressed))
+            return true;
+        else
+            return super.processKeyBinding(ks, e, condition, pressed);
+    }
+
+    @Override
+    protected void processFocusEvent(FocusEvent e) {
+        focusManager.processFocusEvent(e);
+        super.processFocusEvent(e);
+    }
 
     public void backupExpandedNodes() {
         expandedPaths = new HashSet<TreePath>();
@@ -44,5 +63,10 @@ public class JXTreeTableExt extends JXTreeTable {
             }
         }
         expandedPaths = null;
+    }
+
+    @Override
+    public TableFocusManager getFocusManager() {
+        return focusManager;
     }
 }

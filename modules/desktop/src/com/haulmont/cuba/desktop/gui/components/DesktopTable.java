@@ -7,14 +7,11 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.gui.data.TableModelAdapter;
-import com.haulmont.cuba.desktop.sys.vcl.TableFocusManager;
+import com.haulmont.cuba.desktop.sys.vcl.JXTableExt;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import org.jdesktop.swingx.JXTable;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
 
 /**
  * <p>$Id$</p>
@@ -24,23 +21,7 @@ import java.awt.event.KeyEvent;
 public class DesktopTable extends DesktopAbstractTable<JXTable> {
 
     public DesktopTable() {
-        impl = new JXTable() {
-            protected TableFocusManager focusManager = new TableFocusManager(this);
-
-            @Override
-            protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
-                if (focusManager.processKeyBinding(ks, e, condition, pressed))
-                    return true;
-                else
-                    return super.processKeyBinding(ks, e, condition, pressed);
-            }
-
-            @Override
-            protected void processFocusEvent(FocusEvent e) {
-                focusManager.processFocusEvent(e);
-
-                super.processFocusEvent(e);
-            }
+        impl = new JXTableExt() {
 
             @Override
             public void setFont(Font font) {

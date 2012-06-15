@@ -9,7 +9,6 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.desktop.gui.data.TreeTableModelAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.JXTreeTableExt;
-import com.haulmont.cuba.desktop.sys.vcl.TableFocusManager;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
@@ -26,8 +25,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
 import java.util.*;
 
 /**
@@ -44,22 +41,6 @@ public class DesktopTreeTable
 
     public DesktopTreeTable() {
         impl = new JXTreeTableExt() {
-            protected TableFocusManager focusManager = new TableFocusManager(this);
-
-            @Override
-            protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
-                if (focusManager.processKeyBinding(ks, e, condition, pressed))
-                    return true;
-                else
-                    return super.processKeyBinding(ks, e, condition, pressed);
-            }
-
-            @Override
-            protected void processFocusEvent(FocusEvent e) {
-                focusManager.processFocusEvent(e);
-                super.processFocusEvent(e);
-            }
-
             @Override
             public TableCellRenderer getCellRenderer(int row, int column) {
                 TableCellRenderer cellRenderer = cellRenderers.get(column);

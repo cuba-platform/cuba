@@ -16,6 +16,8 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.AnyTableModelAdapter;
 import com.haulmont.cuba.desktop.gui.data.RowSorterImpl;
 import com.haulmont.cuba.desktop.sys.FontDialog;
+import com.haulmont.cuba.desktop.sys.vcl.FocusableTable;
+import com.haulmont.cuba.desktop.sys.vcl.TableFocusManager;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Action;
@@ -86,6 +88,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
     protected boolean fontInitialized = false;
     protected int defaultRowHeight = 24;
+
+    protected Set selectionBackup;
 
     protected void initComponent() {
         layout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
@@ -516,13 +520,13 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected void initChangeListener() {
         tableModel.addChangeListener(new AnyTableModelAdapter.DataChangeListener() {
 
-            private Set selectionBackup;
+            private boolean focused = false;
 
             @Override
             public void beforeChange() {
-                selectionBackup = getSelected();
                 // ignore selection change while data changing
                 isRowsAjusting = true;
+                focused = impl.isFocusOwner();
             }
 
             @Override
@@ -531,15 +535,29 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 if (selectionBackup != null) {
                     newSelection = new HashSet<Entity>();
                     // filter selection
-                    for (Object item : selectionBackup)
-                        if (tableModel.getRowIndex((Entity) item) >= 0)
-                            newSelection.add((Entity) item);
+                    for (Object item : selectionBackup) {
+                        int rowIndex = tableModel.getRowIndex((Entity) item);
+
+                        if (rowIndex >= 0)
+                            newSelection.add(tableModel.getItem(rowIndex));
+                    }
                 }
-                // apply selection
-                setSelected(newSelection);
-                selectionBackup = null;
                 // enable selection change listener
                 isRowsAjusting = false;
+                // apply selection
+                setSelected(newSelection);
+                if (focused && newSelection != null) {
+                    int minimalSelectionRowIndex = Integer.MAX_VALUE;
+                    for (Entity entity : newSelection) {
+                        int rowIndex = tableModel.getRowIndex(entity);
+                        if (rowIndex < minimalSelectionRowIndex && rowIndex >= 0)
+                            minimalSelectionRowIndex = rowIndex;
+                    }
+
+                    TableFocusManager focusManager = ((FocusableTable) impl).getFocusManager();
+                    if (focusManager != null)
+                        focusManager.focusSelectedRow(minimalSelectionRowIndex);
+                }
             }
 
             @Override
@@ -568,8 +586,11 @@ public abstract class DesktopAbstractTable<C extends JTable>
                     @Override
                     @SuppressWarnings("unchecked")
                     public void valueChanged(ListSelectionEvent e) {
+                        // ignore selection change while data changing
                         if (e.getValueIsAdjusting() || isRowsAjusting)
                             return;
+
+                        selectionBackup = getSelected();
 
                         final Set selected = getSelected();
                         if (selected.isEmpty()) {
@@ -927,6 +948,9 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
     @Override
     public void setSelected(Collection<Entity> items) {
+        if (items == null)
+            items = Collections.emptyList();
+        impl.getSelectionModel().clearSelection();
         for (Entity item : items) {
             int rowIndex = impl.convertRowIndexToView(tableModel.getRowIndex(item));
             impl.getSelectionModel().addSelectionInterval(rowIndex, rowIndex);

@@ -16,7 +16,8 @@ import java.awt.event.KeyEvent;
 import java.util.Set;
 
 /**
- * Handle focus traversing in table
+ * <p>Handle focus traversing in table</p>
+ * <p>Supports focus forward, backward, up and down navigation</p>
  *
  * @author artamonov
  * @version $Id$
@@ -89,6 +90,9 @@ public class TableFocusManager {
         }
     }
 
+    /**
+     * Navigate down throw Table rows
+     */
     protected void nextDownElement() {
         int editingColumn = getActiveColumn();
         int editingRow = getActiveRow();
@@ -102,6 +106,9 @@ public class TableFocusManager {
         moveToStart(nextRow, editingColumn);
     }
 
+    /**
+     * Navigate up throw Table rows
+     */
     protected void nextUpElement() {
         int editingColumn = getActiveColumn();
         int editingRow = getActiveRow();
@@ -115,7 +122,10 @@ public class TableFocusManager {
         moveToStart(nextRow, editingColumn);
     }
 
-    protected void prevFocusElement() {
+    /**
+     * Navigate to next active control or cell in table
+     */
+    public void prevFocusElement() {
         int selectedColumn = getActiveColumn();
         int selectedRow = getActiveRow();
         int prevColumn = selectedColumn - 1;
@@ -148,7 +158,10 @@ public class TableFocusManager {
         }
     }
 
-    protected void nextFocusElement() {
+    /**
+     * Navigate to previous active control or cell in table
+     */
+    public void nextFocusElement() {
         int selectedColumn = getActiveColumn();
         int selectedRow = getActiveRow();
         int nextColumn = selectedColumn + 1;
@@ -178,6 +191,18 @@ public class TableFocusManager {
             else
                 moveToStart(nextRow, nextColumn);
         }
+    }
+
+    /**
+     * Focus first cell in specified row
+     *
+     * @param selectedRow Focused row
+     */
+    public void focusSelectedRow(int selectedRow) {
+        if (impl.getModel().getRowCount() > 0) {
+            moveToStart(selectedRow, 0);
+        } else
+            moveFocusToNextControl();
     }
 
     protected void moveTo(int row, int col) {
