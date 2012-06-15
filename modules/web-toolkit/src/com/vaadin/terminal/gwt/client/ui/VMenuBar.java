@@ -774,6 +774,10 @@ public class VMenuBar extends SimpleFocusablePanel implements Paintable,
         int maxCaptionWidth = 0;
         int maxShortcutWidth = 0;
         for (CustomMenuItem subItem : layoutingMenu.getItems()) {
+
+            if (subItem.isSeparator())
+                continue;
+
             Element itemElement = subItem.getElement();
             Element captionElement = (Element) itemElement.getChild(0);
 
