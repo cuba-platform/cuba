@@ -67,6 +67,8 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
 
         final Element columnsElement = element.element("columns");
         final Element rowsElement = element.element("rows");
+        if (rowsElement == null)
+            throw new IllegalStateException("Table doesn't have 'rows' element");
 
         final String rowHeaderMode = rowsElement.attributeValue("headerMode");
         if (!StringUtils.isEmpty(rowHeaderMode)) {
@@ -78,30 +80,28 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         loadRowsCount(component, element); // must be before datasource setting
 
         final String datasource = rowsElement.attributeValue("datasource");
+        if (StringUtils.isBlank(datasource))
+            throw new IllegalStateException("Table.rows element doesn't have 'datasource' attribute");
 
-        if (!StringUtils.isBlank(datasource)) {
-            final CollectionDatasource ds = context.getDsContext().get(datasource);
-            if (ds == null) {
-                throw new IllegalStateException("Cannot find data source by name: " + datasource);
-            }
-            List<Table.Column> availableColumns;
-
-            if (columnsElement != null) {
-                availableColumns = loadColumns(component, columnsElement, ds);
-            } else {
-                availableColumns = new ArrayList<Table.Column>();
-            }
-
-            for (Table.Column column : availableColumns) {
-                component.addColumn(column);
-                loadValidators(component, column);
-                loadRequired(component, column);
-            }
-
-            component.setDatasource(ds);
-        } else {
-            throw new UnsupportedOperationException();
+        final CollectionDatasource ds = context.getDsContext().get(datasource);
+        if (ds == null) {
+            throw new IllegalStateException("Cannot find data source by name: " + datasource);
         }
+        List<Table.Column> availableColumns;
+
+        if (columnsElement != null) {
+            availableColumns = loadColumns(component, columnsElement, ds);
+        } else {
+            availableColumns = new ArrayList<Table.Column>();
+        }
+
+        for (Table.Column column : availableColumns) {
+            component.addColumn(column);
+            loadValidators(component, column);
+            loadRequired(component, column);
+        }
+
+        component.setDatasource(ds);
 
         final String multiselect = element.attributeValue("multiselect");
         component.setMultiSelect(BooleanUtils.toBoolean(multiselect));
