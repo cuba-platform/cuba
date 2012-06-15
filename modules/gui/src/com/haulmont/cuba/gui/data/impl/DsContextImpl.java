@@ -244,7 +244,9 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
         MetaProperty metaProperty = datasource.getProperty();
         if (masterDs != null && metaProperty != null) {
             MetaProperty inverseProp = metaProperty.getInverse();
-            if (inverseProp != null && inverseProp.getDomain().equals(datasource.getMetaClass())) {
+            if (inverseProp != null && inverseProp.getDomain().equals(datasource.getMetaClass())
+                    && entity.getValue(inverseProp.getName()) != null) // replace master only if it's already set
+            {
                 ((AbstractInstance) entity).setValue(inverseProp.getName(), masterDs.getItem(), false);
             }
         }
