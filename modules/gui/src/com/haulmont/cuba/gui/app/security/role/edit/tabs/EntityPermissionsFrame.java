@@ -204,6 +204,15 @@ public class EntityPermissionsFrame extends AbstractFrame {
     @SuppressWarnings("unused")
     public void applyFilter() {
         entityTargetsDs.refresh();
+        if (entityTargetsDs.getItemIds().isEmpty()) {
+            String message;
+            Object value = entityFilter.getValue();
+            if (Boolean.TRUE.equals(assignedOnlyCheckBox.getValue()))
+                message = String.format(getMessage("noAssignedItemsForFilter"), value != null ? value : " ");
+            else
+                message = String.format(getMessage("noItemsForFilter"), value != null ? value : " ");
+            showNotification(message, NotificationType.HUMANIZED);
+        }
     }
 
     @SuppressWarnings("unused")
