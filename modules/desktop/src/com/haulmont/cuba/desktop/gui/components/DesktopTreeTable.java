@@ -298,6 +298,16 @@ public class DesktopTreeTable
     }
 
     @Override
+    protected void onDataChange() {
+        for (TableCellRenderer renderer : cellRenderers.values()) {
+            if (renderer instanceof DesktopTableCellEditor) {
+                ((DesktopTableCellEditor) renderer).clearCache();
+            }
+        }
+        super.onDataChange();
+    }
+
+    @Override
     public void setSortable(boolean sortable) {
         super.setSortable(sortable);
         impl.setSortable(sortable);
