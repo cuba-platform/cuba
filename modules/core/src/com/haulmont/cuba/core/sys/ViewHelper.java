@@ -13,10 +13,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
-import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.entity.Updatable;
+import com.haulmont.cuba.core.entity.*;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
@@ -124,7 +121,7 @@ public class ViewHelper
     }
 
     private static void includeSystemProperties(View view, Set<FetchPlanField> fetchPlanFields) {
-        Class<? extends BaseEntity> entityClass = view.getEntityClass();
+        Class<? extends Entity> entityClass = view.getEntityClass();
         if (BaseEntity.class.isAssignableFrom(entityClass)) {
             for (String property : BaseEntity.PROPERTIES) {
                 fetchPlanFields.add(new FetchPlanField(getRealClass(entityClass, property), property));
@@ -154,7 +151,7 @@ public class ViewHelper
      * @return              a class in the hierarchy (see conditions above)
      */
     @SuppressWarnings("unchecked")
-    private static Class getRealClass(Class<? extends BaseEntity> entityClass, String property) {
+    private static Class getRealClass(Class<? extends Entity> entityClass, String property) {
         if (hasDeclaredField(entityClass, property))
             return entityClass;
 
@@ -176,7 +173,7 @@ public class ViewHelper
         return entityClass;
     }
 
-    private static boolean hasDeclaredField(Class<? extends BaseEntity> entityClass, String name) {
+    private static boolean hasDeclaredField(Class<? extends Entity> entityClass, String name) {
         Field[] fields = entityClass.getDeclaredFields();
         for (Field field : fields) {
             if (field.getName().equals(name))
@@ -215,7 +212,7 @@ public class ViewHelper
                             __fetchInstance((Instance) item, propertyView, visited);
                     }
                 } else if (value instanceof Instance) {
-                    if (PersistenceHelper.isDetached(value)) {
+                    if (PersistenceHelper.isDetached(value) && !(value instanceof EmbeddableEntity)) {
                         log.trace("Object " + value + " is detached, loading it");
                         EntityManager em = PersistenceProvider.getEntityManager();
                         Entity entity = (Entity) value;

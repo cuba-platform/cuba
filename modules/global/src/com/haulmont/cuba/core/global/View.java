@@ -5,7 +5,7 @@
  */
 package com.haulmont.cuba.core.global;
 
-import com.haulmont.cuba.core.entity.BaseEntity;
+import com.haulmont.cuba.core.entity.Entity;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -42,7 +42,7 @@ public class View implements Serializable {
 
     private static final long serialVersionUID = 4313784222934349594L;
 
-    private Class<? extends BaseEntity> entityClass;
+    private Class<? extends Entity> entityClass;
 
     private String name;
 
@@ -50,15 +50,15 @@ public class View implements Serializable {
 
     private boolean includeSystemProperties;
 
-    public View(Class<? extends BaseEntity> entityClass) {
+    public View(Class<? extends Entity> entityClass) {
         this(entityClass, "", true);
     }
 
-    public View(Class<? extends BaseEntity> entityClass, boolean includeSystemProperties) {
+    public View(Class<? extends Entity> entityClass, boolean includeSystemProperties) {
         this(entityClass, "", includeSystemProperties);
     }
 
-    public View(Class<? extends BaseEntity> entityClass, String name) {
+    public View(Class<? extends Entity> entityClass, String name) {
         this(entityClass, name, true);
     }
 
@@ -69,13 +69,13 @@ public class View implements Serializable {
         this.properties.putAll(src.properties);
     }
 
-    public View(Class<? extends BaseEntity> entityClass, String name, boolean includeSystemProperties) {
+    public View(Class<? extends Entity> entityClass, String name, boolean includeSystemProperties) {
         this.entityClass = entityClass;
         this.name = name;
         this.includeSystemProperties = includeSystemProperties;
     }
 
-    public Class<? extends BaseEntity> getEntityClass() {
+    public Class<? extends Entity> getEntityClass() {
         return entityClass;
     }
 
