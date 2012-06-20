@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.ViewHelper;
 import com.haulmont.cuba.security.app.EntityLogAPI;
@@ -33,12 +33,20 @@ public class CachingFacade implements CachingFacadeMBean {
     @Inject
     private Scripting scripting;
 
+    @Inject
+    private Messages messages;
+
+    @Override
+    public int getMessagesCacheSize() {
+        return messages.getCacheSize();
+    }
+
     public void clearGroovyCache() {
         scripting.clearCache();
     }
 
     public void clearMessagesCache() {
-        MessageProvider.clearCache();
+        messages.clearCache();
     }
 
     public void clearResourceRepositoryCache() {

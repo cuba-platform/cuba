@@ -35,6 +35,11 @@ public class Caching implements CachingMBean {
     private PersistenceManagerClient persistenceManagerClient;
 
     @Override
+    public int getMessagesCacheSize() {
+        return messages.getCacheSize();
+    }
+
+    @Override
     public void clearGroovyCache() {
         scripting.clearCache();
         log.info("Scripting provider cache has been cleared");

@@ -12,6 +12,8 @@ package com.haulmont.cuba.core.app;
 
 public interface CachingFacadeMBean {
 
+    int getMessagesCacheSize();
+
     void clearGroovyCache();
 
     void clearMessagesCache();

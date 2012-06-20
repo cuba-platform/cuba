@@ -35,7 +35,7 @@ public abstract class AbstractMessages implements Messages {
 
     private Pattern enumSubclassPattern = Pattern.compile("\\$[1-9]");
 
-    private Log log = LogFactory.getLog(getClass());
+    protected Log log = LogFactory.getLog(getClass());
 
     private String confDir;
 
@@ -136,22 +136,22 @@ public abstract class AbstractMessages implements Messages {
         return key;
     }
 
-    private String searchMessage(String packs, String key, Locale locale, boolean tryDefaultLocale) {
+    private String searchMessage(String packs, String key, Locale locale, boolean defaultLocale) {
         List<String> processedPacks = new ArrayList<String>();
         StrTokenizer tokenizer = new StrTokenizer(packs);
         //noinspection unchecked
         List<String> list = tokenizer.getTokenList();
         Collections.reverse(list);
         for (String pack : list) {
-            String msg = searchFiles(pack, key, tryDefaultLocale ? null : locale);
+            String msg = searchFiles(pack, key, locale, defaultLocale);
             if (msg == null) {
-                msg = searchClasspath(pack, key, tryDefaultLocale ? null : locale);
+                msg = searchClasspath(pack, key, locale, defaultLocale);
             }
-            if (msg == null) {
-                msg = searchRemotely(pack, key, tryDefaultLocale ? null : locale);
+            if (msg == null && !defaultLocale) {
+                msg = searchRemotely(pack, key, locale);
                 if (msg != null) {
                     String cacheKey = makeCacheKey(pack, key, locale);
-                    strCache.put(cacheKey, msg);
+                    cache(cacheKey, msg);
                 }
             }
 
@@ -159,7 +159,7 @@ public abstract class AbstractMessages implements Messages {
                 if (!processedPacks.isEmpty()) {
                     for (String p : processedPacks) {
                         String cacheKey = makeCacheKey(p, key, locale);
-                        strCache.put(cacheKey, msg);
+                        cache(cacheKey, msg);
                     }
                 }
                 return msg;
@@ -167,7 +167,7 @@ public abstract class AbstractMessages implements Messages {
 
             processedPacks.add(pack);
         }
-        if (!tryDefaultLocale)
+        if (!defaultLocale)
             return searchMessage(packs, key, locale, true);
         else {
             if (log.isTraceEnabled()) {
@@ -176,6 +176,11 @@ public abstract class AbstractMessages implements Messages {
             }
             return null;
         }
+    }
+
+    protected void cache(String key, String msg) {
+        if (!strCache.containsKey(key))
+            strCache.put(key, msg);
     }
 
     @Override
@@ -188,17 +193,24 @@ public abstract class AbstractMessages implements Messages {
     }
 
     @Override
+    public int getCacheSize() {
+        return strCache.size();
+    }
+
+    @Override
     public void clearCache() {
         strCache.clear();
         notFoundCache.clear();
     }
 
-    private String searchFiles(String pack, String key, Locale locale) {
+    private String searchFiles(String pack, String key, Locale locale, boolean defaultLocale) {
         String cacheKey = makeCacheKey(pack, key, locale);
 
         String msg = strCache.get(cacheKey);
         if (msg != null)
             return msg;
+
+        log.trace("searchFiles: " + cacheKey);
 
         File file;
         if (confDir == null)
@@ -206,12 +218,12 @@ public abstract class AbstractMessages implements Messages {
 
         String packPath = confDir + "/" + pack.replaceAll("\\.", "/");
         while (packPath != null && !packPath.equals(confDir)) {
-            file = new File(packPath + "/" + BUNDLE_NAME + getLocaleSuffix(locale) + EXT);
+            file = new File(packPath + "/" + BUNDLE_NAME + getLocaleSuffix(defaultLocale ? null : locale) + EXT);
             if (file.exists()) {
                 try {
                     FileInputStream stream = new FileInputStream(file);
 
-                    cachePropertiesFromStream(pack, locale, stream, packPath);
+                    cachePropertiesFromStream(pack, locale, defaultLocale, stream, packPath);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -229,20 +241,22 @@ public abstract class AbstractMessages implements Messages {
         return null;
     }
 
-    private String searchClasspath(String pack, String key, Locale locale) {
+    private String searchClasspath(String pack, String key, Locale locale, boolean defaultLocale) {
         String cacheKey = makeCacheKey(pack, key, locale);
 
         String msg = strCache.get(cacheKey);
         if (msg != null)
             return msg;
 
+        log.trace("searchClasspath: " + cacheKey);
+
         String packPath = "/" + pack.replaceAll("\\.", "/");
         while (packPath != null) {
-            String name = packPath + "/" + BUNDLE_NAME + getLocaleSuffix(locale) + EXT;
+            String name = packPath + "/" + BUNDLE_NAME + getLocaleSuffix(defaultLocale ? null : locale) + EXT;
             InputStream stream;
             stream = getClass().getResourceAsStream(name);
             if (stream != null) {
-                cachePropertiesFromStream(pack, locale, stream, packPath);
+                cachePropertiesFromStream(pack, locale, defaultLocale, stream, packPath);
 
                 msg = strCache.get(cacheKey);
                 if (msg != null)
@@ -258,20 +272,22 @@ public abstract class AbstractMessages implements Messages {
         return null;
     }
 
-    private void include(String targetPack, String pack, Locale locale) {
+    private void include(String targetPack, String pack, Locale locale, boolean defaultLocale) {
         File file;
         if (confDir == null)
             confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir().replaceAll("\\\\", "/");
 
+        log.trace("include: " + pack);
+
         String packPath = confDir + "/" + pack.replaceAll("\\.", "/");
-        file = new File(packPath + "/" + BUNDLE_NAME + getLocaleSuffix(locale) + EXT);
+        file = new File(packPath + "/" + BUNDLE_NAME + getLocaleSuffix(defaultLocale ? null : locale) + EXT);
         InputStream stream;
         try {
             if (file.exists()) {
                 stream = new FileInputStream(file);
             } else {
                 packPath = "/" + pack.replaceAll("\\.", "/");
-                String name = packPath + "/" + BUNDLE_NAME + getLocaleSuffix(locale) + EXT;
+                String name = packPath + "/" + BUNDLE_NAME + getLocaleSuffix(defaultLocale ? null : locale) + EXT;
                 stream = getClass().getResourceAsStream(name);
                 if (stream == null) {
                     log.warn("Included messages pack not found: " + pack);
@@ -279,7 +295,7 @@ public abstract class AbstractMessages implements Messages {
                 }
             }
 
-            cachePropertiesFromStream(targetPack, locale, stream, packPath);
+            cachePropertiesFromStream(targetPack, locale, defaultLocale, stream, packPath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -289,7 +305,9 @@ public abstract class AbstractMessages implements Messages {
         return (locale != null ? "_" + locale.getLanguage() : "");
     }
 
-    private void cachePropertiesFromStream(String pack, Locale locale, InputStream stream, String packPath) {
+    private void cachePropertiesFromStream(String pack, Locale locale, boolean tryDefaultLocale,
+                                           InputStream stream, String packPath)
+    {
         try {
             InputStreamReader reader = new InputStreamReader(stream, ENCODING);
             Properties properties = new Properties();
@@ -297,12 +315,12 @@ public abstract class AbstractMessages implements Messages {
             // process includes
             for (String k : properties.stringPropertyNames()) {
                 if (k.equals("@include"))
-                    include(pack, properties.getProperty(k), locale);
+                    include(pack, properties.getProperty(k), locale, tryDefaultLocale);
             }
             // load all found strings into cache
             for (String k : properties.stringPropertyNames()) {
                 if (!k.equals("@include"))
-                    strCache.put(makeCacheKey(pack, k, locale), properties.getProperty(k));
+                    cache(makeCacheKey(pack, k, locale), properties.getProperty(k));
             }
         } catch (UnsupportedEncodingException e) {
             log.warn("Unable to read " + packPath, e);
@@ -314,7 +332,7 @@ public abstract class AbstractMessages implements Messages {
     }
 
     private String makeCacheKey(String pack, String key, Locale locale) {
-        return pack + "/" + (locale == null ? "en" : locale) + "/" + key;
+        return pack + "/" + (locale == null ? "default" : locale) + "/" + key;
     }
 
     private String getPackName(Class c) {

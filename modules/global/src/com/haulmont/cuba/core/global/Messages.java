@@ -124,5 +124,7 @@ public interface Messages {
      */
     String formatMessage(String pack, String key, Locale locale, Object... params);
 
+    int getCacheSize();
+
     void clearCache();
 }

@@ -42,6 +42,9 @@ public class MessagesClientImpl extends AbstractMessages {
         if (!AppContext.isStarted())
             return null;
 
+        if (log.isTraceEnabled())
+            log.trace("searchRemotely: " + pack + "/" + locale + "/" + key);
+
         try {
             String message = localizedMessageService.getMessage(pack, key, locale);
             if (key.equals(message))

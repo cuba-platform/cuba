@@ -13,6 +13,8 @@ package com.haulmont.cuba.web.jmx;
  */
 public interface CachingMBean {
 
+    int getMessagesCacheSize();
+
     void clearGroovyCache();
 
     void clearMessagesCache();
