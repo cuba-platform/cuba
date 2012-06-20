@@ -1365,8 +1365,9 @@ public class WebFilter
         while (it.hasNext()) {
             AbstractCondition current = it.next();
             AbstractCondition defCondition = defaultIt.next();
-            if (current.getParam().getValue() != null) {
-                defCondition.setParam(current.getParam());
+            AbstractParam param = current.getParam();
+            if (param != null && param.getValue() != null) {
+                defCondition.setParam(param);
             }
         }
         return parser.toXml().getXml();
