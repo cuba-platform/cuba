@@ -272,7 +272,7 @@ public abstract class AbstractMessages implements Messages {
         return null;
     }
 
-    private void include(String targetPack, String pack, Locale locale, boolean defaultLocale) {
+    private void getAllIncludes(List<Properties> list, String pack, Locale locale, boolean defaultLocale) {
         File file;
         if (confDir == null)
             confDir = ConfigProvider.getConfig(GlobalConfig.class).getConfDir().replaceAll("\\\\", "/");
@@ -291,11 +291,19 @@ public abstract class AbstractMessages implements Messages {
                 stream = getClass().getResourceAsStream(name);
                 if (stream == null) {
                     log.warn("Included messages pack not found: " + pack);
-                    return;
+
                 }
             }
+            InputStreamReader reader = new InputStreamReader(stream, ENCODING);
+            Properties properties = new Properties();
+            properties.load(reader);
+            list.add(properties);
 
-            cachePropertiesFromStream(targetPack, locale, defaultLocale, stream, packPath);
+            for (String k : properties.stringPropertyNames()) {
+                if (k.equals("@include"))
+                    getAllIncludes(list, properties.getProperty(k), locale, defaultLocale);
+            }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -305,23 +313,31 @@ public abstract class AbstractMessages implements Messages {
         return (locale != null ? "_" + locale.getLanguage() : "");
     }
 
-    private void cachePropertiesFromStream(String pack, Locale locale, boolean tryDefaultLocale,
+    private void cachePropertiesFromStream(String pack, Locale locale, boolean defaultLocale,
                                            InputStream stream, String packPath)
     {
         try {
             InputStreamReader reader = new InputStreamReader(stream, ENCODING);
             Properties properties = new Properties();
             properties.load(reader);
-            // process includes
-            for (String k : properties.stringPropertyNames()) {
-                if (k.equals("@include"))
-                    include(pack, properties.getProperty(k), locale, tryDefaultLocale);
-            }
-            // load all found strings into cache
             for (String k : properties.stringPropertyNames()) {
                 if (!k.equals("@include"))
                     cache(makeCacheKey(pack, k, locale), properties.getProperty(k));
             }
+
+            // process includes after to support overriding
+            List<Properties> includes = new ArrayList<>();
+            for (String k : properties.stringPropertyNames()) {
+                if (k.equals("@include"))
+                    getAllIncludes(includes, properties.getProperty(k), locale, defaultLocale);
+            }
+            for (Properties includedProperties : includes) {
+                for (String k : includedProperties.stringPropertyNames()) {
+                    if (!k.equals("@include"))
+                        cache(makeCacheKey(pack, k, locale), includedProperties.getProperty(k));
+                }
+            }
+
         } catch (UnsupportedEncodingException e) {
             log.warn("Unable to read " + packPath, e);
         } catch (IOException e) {
