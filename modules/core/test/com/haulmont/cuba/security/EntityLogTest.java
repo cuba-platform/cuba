@@ -34,7 +34,10 @@ public class EntityLogTest extends CubaTestCase
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
 
-            Query q = em.createNativeQuery("delete from SEC_ENTITY_LOG");
+            Query q = em.createNativeQuery("delete from SEC_ENTITY_LOG_ATTR");
+            q.executeUpdate();
+
+            q = em.createNativeQuery("delete from SEC_ENTITY_LOG");
             q.executeUpdate();
 
             LoggedEntity le = new LoggedEntity();
