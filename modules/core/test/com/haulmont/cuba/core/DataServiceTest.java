@@ -79,4 +79,22 @@ public class DataServiceTest extends CubaTestCase
         List<Server> list = bs.loadList(loadContext);
         assertTrue(list.size() > 0);
     }
+
+    public void testLoadListById() {
+        DataService bs = Locator.lookup(DataService.NAME);
+
+        Server server = new Server();
+        UUID id = server.getId();
+        server.setName("localhost");
+        server.setAddress("127.0.0.1");
+        server.setRunning(true);
+
+        bs.commit(new CommitContext<Entity>(Collections.<Entity>singleton(server)));
+
+        LoadContext loadContext = new LoadContext(Server.class);
+        loadContext.setId(id);
+
+        List<Server> list = bs.loadList(loadContext);
+        assertTrue(list.size() == 1);
+    }
 }

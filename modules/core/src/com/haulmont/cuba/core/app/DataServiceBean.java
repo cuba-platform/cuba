@@ -230,7 +230,7 @@ public class DataServiceBean implements DataService {
             em.setSoftDeletion(context.isSoftDeletion());
 
             boolean ensureDistinct = false;
-            if (configuration.getConfig(ServerConfig.class).getInMemoryDistinct()) {
+            if (configuration.getConfig(ServerConfig.class).getInMemoryDistinct() && context.getQuery() != null) {
                 QueryTransformer transformer = QueryTransformerFactory.createTransformer(
                         context.getQuery().getQueryString(), context.getMetaClass());
                 ensureDistinct = transformer.removeDistinct();
