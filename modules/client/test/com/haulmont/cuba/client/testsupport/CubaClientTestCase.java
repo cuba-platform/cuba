@@ -9,7 +9,9 @@ package com.haulmont.cuba.client.testsupport;
 import com.haulmont.cuba.core.app.PersistenceManagerService;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.sys.TestUserSessionSource;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
@@ -40,6 +42,8 @@ public class CubaClientTestCase {
 
     protected TestMetadataClient metadata;
 
+    protected TestUserSessionSource userSessionSource;
+
     /**
      * Add entities package to build metadata from. Should be invoked by concrete test classes in their @Before method.
      * @param pack  package FQN, e.g. <code>com.haulmont.cuba.core.entity</code>
@@ -63,6 +67,7 @@ public class CubaClientTestCase {
      */
     protected void setupInfrastructure() {
         metadata = new TestMetadataClient(entityPackages, viewConfig);
+        userSessionSource = new TestUserSessionSource();
 
         new NonStrictExpectations() {
             {
@@ -76,6 +81,9 @@ public class CubaClientTestCase {
 
                 AppContext.getBean(PersistenceManagerService.NAME); result = persistenceManager;
                 AppContext.getBean(PersistenceManagerService.NAME, PersistenceManagerService.class); result = persistenceManager;
+
+                AppContext.getBean(UserSessionSource.NAME); result = userSessionSource;
+                AppContext.getBean(UserSessionSource.NAME, UserSessionSource.class); result = userSessionSource;
             }
         };
 
