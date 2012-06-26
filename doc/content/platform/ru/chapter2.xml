@@ -1,0 +1,235 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter2_architecture">
+  <title>Архитектура</title>
+  <para>В данном разделе описываются различные аспекты архитектуры платформы <trademark>CUBA</trademark> и приложений на ее основе.</para>
+  <section>
+    <title>Структура проекта</title>
+    <para>Функционально проект приложения содержит зависимости от модулей, входящих в состав платформы. Диаграмма зависимостей изображена на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/projectStructure.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Сплошными линиями изображены обязательные зависимости, пунктирными − опциональные.</para>
+    <para>Рассмотрим модули платформы более подробно.</para>
+    <para><emphasis role="bold">Модуль bali</emphasis></para>
+    <para>Содержит набор общеупотребительных вспомогательных классов, структур данных, а также класс <classname>QueryRunner</classname> − микро-фреймворк для работы с <application>JDBC</application>. Список основных вспомогательных классов:</para>
+    <itemizedlist>
+      <listitem>
+        <para><classname>DbUtils</classname> − содержит методы работы с JDBC</para>
+      </listitem>
+      <listitem>
+        <para><classname>ReflectionHelper</classname></para>
+      </listitem>
+      <listitem>
+        <para><classname>StringHelper</classname> − содержит методы работы со строками.</para>
+      </listitem>
+    </itemizedlist>
+    <para><emphasis role="bold">Модуль chile</emphasis></para>
+    <para>Содержит Metadata Framework − фреймворк для работы с метаданными.</para>
+    <para><emphasis role="bold">Модуль cuba</emphasis></para>
+    <para>Это базовый модуль, обязательная часть любого приложения.  Содержит функциональность для работы с базой данных, набор сервисов среднего слоя приложения, Generic User Interface Framework, функциональность управления пользователями и их доступом к данным. Данный проект может быть собран как полноценное независимое приложение.</para>
+    <para><emphasis role="bold">Модуль workflow</emphasis></para>
+    <para>Опциональный модуль для работы с бизнес-процессами</para>
+    <para><emphasis role="bold">Модуль fts</emphasis></para>
+    <para>Опциональный модуль полнотекстового поиска</para>
+  </section>
+  <section>
+    <title>Структура CUBA-приложения</title>
+    <para>На диаграмме ниже приведена структура развернутого приложения, созданного на базе платформы. </para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/DeploymentStructure.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>В приведенном варианте приложение обеспечивает отсутствие единой точки отказа, балансировку нагрузки и подключение различных типов клиентов. В простейшем случае приложение может быть развернуто на одном сервере, в том числе содержащем и базу данных.</para>
+    <para>Физически CUBA-приложение всегда состоит как минимум из 2-х частей:</para>
+    <itemizedlist>
+      <listitem>
+        <para>веб-приложения среднего слоя (называемого <firstterm>core</firstterm> или <firstterm>middleware</firstterm>)</para>
+      </listitem>
+      <listitem>
+        <para>веб-приложения веб-клиента</para>
+      </listitem>
+    </itemizedlist>
+    <para>Оба этих веб-приложения являются стандартными приложениями <application>JavaEE Web Profile</application> и могут быть развернуты на любом веб-сервере <application>Java</application>. По умолчанию используется <application>Apache Tomcat</application>. </para>
+    <para>Веб и десктоп клиенты взаимодействуют со средним слоем одинаковым образом посредством протокола <application>HTTP</application>, что позволяет размещать middleware произвольным образом, в том числе за сетевым брандмауэром. Следует отметить, что при развертывании в простейшем случае среднего слоя и веб-клиента на одном сервере между ними организуется локальное взаимодействие в обход сетевого стека для снижения накладных расходов.</para>
+  </section>
+  <section>
+    <title>Архитектура среднего слоя</title>
+    <para>На следующем рисунке приведены основные компоненты среднего слоя CUBA-приложения.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/Middleware.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Компоненты сгруппированы по двум модулям: <structname>core</structname> и <structname>global</structname>. В <structname>global</structname> расположены компоненты, доступные как коду middleware, так и клиентскому коду (web-client, web-services, remote client). В <structname>core</structname> расположены компоненты ядра middleware.</para>
+    <para>Рассмотрим элементы диаграммы более подробно.</para>
+    <para><emphasis role="bold">Services</emphasis> – управляемые контейнером компоненты, формирующие границу приложения и предоставляющие интерфейс клиентам среднего слоя. Сервисы могут содержать бизнес-логику сами, либо делегировать выполнение Managed Beans.</para>
+    <para><emphasis role="bold">Managed beans</emphasis> – управляемые контейнером компоненты, содержащие бизнес-логику приложения. Вызываются сервисами, другими бинами или через опциональный JMX интерфейс.</para>
+    <para><emphasis role="bold">Entity Classes</emphasis> – классы, моделирующие предметную область приложения.  Представляют собой аннотированные POJO. Аннотации используются для маппинга на таблицы базы данных с помощью OpenJPA, а также для формирования метаданных в Metadata Framework.</para>
+    <para><emphasis role="bold">Persistence</emphasis> −  центральный интерфейс для доступа к функциональности хранения данных. Позволяет получать ссылки на интерфейсы <classname>EntityManager</classname> и <classname>Transaction</classname>.</para>
+    <para><emphasis role="bold">Transaction</emphasis> − интерфейс управления транзакциями middleware.</para>
+    <para><emphasis role="bold">Entity Manager</emphasis> − интерфейс для работы с данными на уровне middleware. Позволяет извлекать сущности из базы данных по идентификатору и по запросу, а также сохранять и удалять их.</para>
+    <para><emphasis role="bold">Metadata Framework</emphasis> позволяет создавать описание предметной области в терминах классов, атрибутов и отношений между классами. Метаданные (модель данных) существенно упрощают создание универсальных механизмов работы с данными. Исходной информацией для построения модели являются аннотированные классы сущностей.</para>
+    <para><emphasis role="bold">Global Infrastructure Interfaces</emphasis> предоставляют доступ к общей часто используемой функциональности. Реализованы в платформе аналогично Managed Beans.
+
+Все Infrastructure Interfaces имеют соответствующие &quot;статические фасады&quot; − классы со статическими методами, позволяющие иметь доступ к нужной функциональности из статического контекста (при невозможности использовать dependency injection). Статические фасады имеют имена, заканчивающиеся на <classname>*Provider</classname>.</para>
+    <para><link linkend="additionally_spring">
+        <emphasis role="bold">Spring Framework</emphasis>
+      </link> − основа среднего слоя. Используются следующие возможности Spring Framework: </para>
+    <itemizedlist>
+      <listitem>
+        <para>Инверсия управления (IoC container)</para>
+      </listitem>
+      <listitem>
+        <para>Аспектно-ориентированное программирование (AOP)</para>
+      </listitem>
+      <listitem>
+        <para>Управление транзакциями</para>
+      </listitem>
+      <listitem>
+        <para>Remoting − доступ к сервисам среднего слоя по протоколу HTTP</para>
+      </listitem>
+      <listitem>
+        <para>Реализация веб-сервисов и REST API</para>
+      </listitem>
+    </itemizedlist>
+    <para><link linkend="additionally_ORM">
+        <emphasis role="bold">OpenJPA Framework</emphasis>
+      </link> − реализация ORM по стандарту JPA. Позволяет работать с таблицами базы данных как с объектами Java и создавать запросы на языке JPQL.</para>
+    <section>
+      <title>Сервисы</title>
+      <para><emphasis role="bold">Назначение</emphasis></para>
+      <para>Сервисы представляют собой слой компонентов, формирующих &quot;границу приложения&quot;. Все клиенты должны обращаться к среднему слою только посредством вызова методов сервисов.</para>
+      <para>Основные задачи сервисов:</para>
+      <itemizedlist>
+        <listitem>
+          <para>обеспечить выполнение каждого метода в отдельной транзакции. Это необходимо для одинаковой логики работы локальных и удаленных клиентов</para>
+        </listitem>
+        <listitem>
+          <para>логгировать исключения</para>
+        </listitem>
+        <listitem>
+          <para>обеспечивать failover  (отказоустойчивость) в кластере для удаленных клиентов</para>
+        </listitem>
+        <listitem>
+          <para>в бизнес-методах сервисов могут проверяться права пользователя</para>
+        </listitem>
+      </itemizedlist>
+      <para><emphasis role="bold">Реализация</emphasis></para>
+      <para>Диаграмма классов, входящих в состав сервиса:</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/MiddlewareServices.png"/>
+        </imageobject>
+      </mediaobject>
+      <para>Имена интерфейсов сервисов должны заканчиваться на <classname>...Service</classname>, имена имплементаций на <classname>...ServiceBean</classname>.</para>
+      <para>При создании сервиса необходимо выполнить следующее:</para>
+      <itemizedlist>
+        <listitem>
+          <para>создать интерфейс в модуле <structname>global</structname> в пакете <package>app</package> и задать в нем имя сервиса. Имя должно начинаться с имени проекта, затем через подчеркивание имя сервиса.</para>
+          <para><programlisting language="java">String NAME = &quot;cuba_DataService&quot;;</programlisting></para>
+        </listitem>
+        <listitem>
+          <para>создать класс сервиса и добавить ему аннотацию <literal>@Service</literal> с именем, заданным в интерфейсе</para>
+          <para><programlisting>@Service(DataService.NAME)</programlisting></para>
+        </listitem>
+        <listitem>
+          <para>При необходимости обращения к базе данных стартовать и завершать транзакцию</para>
+          <para><programlisting>@Inject
+private Persistence persistence;
+...
+Transaction tx = persistence.createTransaction();
+try {
+    ...
+    tx.commit();
+} finally {
+    tx.end();
+}</programlisting></para>
+        </listitem>
+      </itemizedlist>
+      <para>Каждый вызов сервиса перехватывается с помощью Spring AOP и обрамляется вызовом ServiceInterceptor.aroundInvoke().</para>
+      <warning>
+        <para>Сервисы не должны вызывать методы других сервисов, ни напрямую, ни через другие объекты, так как это может нарушить логику работы с транзакциями и другие механизмы. В случае вызова сервиса сервисом в логе приложения появятся соответствующие сообщения об ошибке.</para>
+      </warning>
+      <tip>
+        <title>Совет</title>
+        <para>Если некую бизнес-логику требуется вызывать из разных сервисов либо других компонентов среднего слоя, ее необходимо инкапсулировать внутри соответствующего бина либо POJO.</para>
+      </tip>
+      <para><emphasis role="bold">Использование на клиенте</emphasis></para>
+      <para>Чтобы вызывать сервис с клиента, для него должен быть создан соответствующий прокси-объект. Делается это путем объявления имени и интерфейса сервиса в параметрах объекта <parameter>WebRemoteProxyBeanCreator</parameter> для веб-клиента или <parameter>RemoteProxyBeanCreator</parameter> для десктопного клиента.</para>
+      <para>Например, чтобы в приложении <application>RefApp</application><classname>refapp_MyService</classname>, необходимо добавить в файл <filename>refapp-web-spring.xml</filename> написать следующее:</para>
+      <para><programlisting language="xml">&lt;bean id=&quot;refapp_proxyCreator&quot; class=&quot;com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator&quot;&gt;
+    &lt;property name=&quot;clusterInvocationSupport&quot; ref=&quot;cuba_clusterInvocationSupport&quot;/&gt;
+    &lt;property name=&quot;remoteServices&quot;&gt;
+        &lt;map&gt;
+            &lt;entry key=&quot;refapp_MyService&quot; value=&quot;com.haulmont.refapp.core.app.MyService&quot;/&gt;
+        &lt;/map&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;</programlisting></para>
+      <para>Все импортируемые сервисы должны быть объявлены в одном словаре (map) бина <classname>refapp_proxyCreator</classname>.</para>
+      <para>Получить ссылку на сервис с клиента можно двумя способами:</para>
+      <itemizedlist>
+        <listitem>
+          <para><classname>ServiceLocator</classname> </para>
+          <programlisting>BookingService service = ServiceLocator.lookup(BookingService.NAME);</programlisting>
+        </listitem>
+        <listitem>
+          <para>Для контроллера экранов предпочтительный способ − внедрение зависимости.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+    <section>
+      <title>Управляемые бины</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/MBeans.png"/>
+        </imageobject>
+      </mediaobject>
+    </section>
+    <section>
+      <title>Интерфейсы инфраструктуры</title>
+    </section>
+    <section>
+      <title>ORM</title>
+    </section>
+    <section>
+      <title>Metadata Framework</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/Metadata Framework.png"/>
+        </imageobject>
+      </mediaobject>
+    </section>
+    <section>
+      <title>Представления</title>
+    </section>
+    <section>
+      <title>Управление транзакциями</title>
+    </section>
+  </section>
+  <section>
+    <title>Архитектура клиента</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/ClientStructure.png"/>
+      </imageobject>
+    </mediaobject>
+  </section>
+  <section>
+    <title>Графический интерфейс пользователя</title>
+    <section>
+      <title>Библиотека визуальных компонентов</title>
+    </section>
+    <section>
+      <title>Источники данных</title>
+    </section>
+    <section>
+      <title>Создание экранов</title>
+    </section>
+  </section>
+  <section>
+    <title>Интеграция со сторонними приложениями</title>
+  </section>
+</chapter>
