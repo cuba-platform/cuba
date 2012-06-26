@@ -501,10 +501,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     @Override
     public void setDatasource(CollectionDatasource datasource) {
         UserSession userSession = UserSessionProvider.getUserSession();
-        if (!userSession.isEntityOpPermitted(datasource.getMetaClass(), EntityOp.READ)) {
-            component.setVisible(false);
-            return;
-        }
 
         final Collection<Object> columns;
         if (this.columns.isEmpty()) {

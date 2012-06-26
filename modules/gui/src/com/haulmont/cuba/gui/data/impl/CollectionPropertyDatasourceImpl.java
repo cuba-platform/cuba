@@ -15,12 +15,16 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.filter.QueryFilter;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -198,8 +202,14 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     }
 
     protected Collection<T> __getCollection() {
-        final Instance master = masterDs.getItem();
-        return master == null ? null : (Collection<T>) master.getValue(metaProperty.getName());
+        UserSession userSession = UserSessionProvider.getUserSession();
+        if (!userSession.isEntityOpPermitted(metaProperty.getRange().asClass(), EntityOp.READ)
+                || !userSession.isEntityAttrPermitted(metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.VIEW))
+            return Collections.emptyList();
+        else {
+            final Instance master = masterDs.getItem();
+            return master == null ? null : (Collection<T>) master.getValue(metaProperty.getName());
+        }
     }
 
     private void checkState() {

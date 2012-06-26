@@ -93,6 +93,12 @@ public class EditAction extends ItemTrackingAction {
             return MessageProvider.getMessage(messagesPackage, "actions.View");
     }
 
+    @Override
+    public boolean isEnabled() {
+        return super.isEnabled() &&
+                UserSessionProvider.getUserSession().isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.READ);
+    }
+
     /**
      * This method is invoked by action owner component. Don't override it, there are special methods to
      * customize behaviour below.

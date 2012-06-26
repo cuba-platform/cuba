@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.filter.Condition;
 import com.haulmont.cuba.gui.filter.DenyingClause;
 import com.haulmont.cuba.gui.filter.LogicalCondition;
 import com.haulmont.cuba.gui.filter.LogicalOp;
+import com.haulmont.cuba.security.entity.EntityOp;
 import org.apache.commons.collections.map.LinkedMap;
 import org.perf4j.StopWatch;
 import org.perf4j.log4j.Log4JStopWatch;
@@ -430,6 +431,9 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
      * @param params    datasource parameters, as described in {@link CollectionDatasource#refresh(java.util.Map)}
      */
     protected void loadData(Map<String, Object> params) {
+        if (!UserSessionProvider.getUserSession().isEntityOpPermitted(metaClass, EntityOp.READ))
+            return;
+
         StopWatch sw = new Log4JStopWatch("CDS " + id);
 
         if (needLoading()) {
