@@ -11,7 +11,6 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.TestUserSessionSource;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
