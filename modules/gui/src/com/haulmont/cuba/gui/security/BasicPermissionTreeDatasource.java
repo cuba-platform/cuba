@@ -54,7 +54,7 @@ public abstract class BasicPermissionTreeDatasource extends AbstractTreeDatasour
         if (permissionsTree == null) {
             Tree<BasicPermissionTarget> permissions = getPermissions();
 
-            List<Node<BasicPermissionTarget>> nodes = permissions.getRootNode().getChildren();
+            List<Node<BasicPermissionTarget>> nodes = permissions.getRootNodes();
 
             List<Node<BasicPermissionTarget>> clonedNodes = new ArrayList<Node<BasicPermissionTarget>>();
             for (Node<BasicPermissionTarget> node : nodes)

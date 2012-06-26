@@ -109,6 +109,10 @@ public class ScreenPermissionsFrame extends AbstractFrame {
             private void updateCheckBoxes(BasicPermissionTarget item) {
                 itemChanging = true;
                 if (item != null) {
+                    boolean visible = !item.getId().startsWith("root:");
+                    allowCheckBox.setVisible(visible);
+                    disallowCheckBox.setVisible(visible);
+
                     if (item.getPermissionVariant() == PermissionVariant.ALLOWED) {
                         allowCheckBox.setValue(true);
                         disallowCheckBox.setValue(false);
@@ -159,6 +163,7 @@ public class ScreenPermissionsFrame extends AbstractFrame {
         screenPermissionsTreeDs.setPermissionDs(screenPermissionsDs);
         screenPermissionsTree.refresh();
         screenPermissionsTree.expandAll();
+        screenPermissionsTree.collapse("root:others");
     }
 
     private void markItemPermission(PermissionVariant permissionVariant) {

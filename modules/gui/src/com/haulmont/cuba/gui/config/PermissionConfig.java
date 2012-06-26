@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.ui.AttributeTarget;
 import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
 import com.haulmont.cuba.security.entity.ui.MultiplePermissionTarget;
@@ -72,12 +73,17 @@ public class PermissionConfig {
         }
 
         private void compileScreens() {
-            Node<BasicPermissionTarget> root = new Node<BasicPermissionTarget>(
-                    new BasicPermissionTarget("menu", getMessage("permissionConfig.screenRoot"), null)
+            Node<BasicPermissionTarget> menuRoot = new Node<BasicPermissionTarget>(
+                    new BasicPermissionTarget("root:menu", getMessage("permissionConfig.mainMenu"), null)
             );
-            screens = new Tree<BasicPermissionTarget>(root);
+            walkMenu(menuRoot);
 
-            walkMenu(root);
+            Node<BasicPermissionTarget> othersRoot = new Node<BasicPermissionTarget>(
+                    new BasicPermissionTarget("root:others", getMessage("permissionConfig.otherScreens"), null)
+            );
+            walkOtherScreens(othersRoot, menuRoot);
+
+            screens = new Tree<BasicPermissionTarget>(Arrays.asList(menuRoot, othersRoot));
         }
 
         private void walkMenu(Node<BasicPermissionTarget> node) {
@@ -104,6 +110,28 @@ public class PermissionConfig {
                     node.addChild(n);
                 }
             }
+        }
+
+        private void walkOtherScreens(Node<BasicPermissionTarget> othersRoot, Node<BasicPermissionTarget> menuRoot) {
+            Set<String> menuItems = new HashSet<>();
+            for (Node<BasicPermissionTarget> node : new Tree<BasicPermissionTarget>(menuRoot).toList()) {
+                menuItems.add(node.getData().getId());
+            }
+
+            for (WindowInfo info : windowConfig.getWindows()) {
+                String id = info.getId();
+                if (!menuItems.contains("item:" + id)) {
+                    Node<BasicPermissionTarget> n = new Node<BasicPermissionTarget>(
+                               new BasicPermissionTarget("item:" + id, id, UserSession.getScreenPermissionTarget(clientType, id)));
+                    othersRoot.addChild(n);
+                }
+            }
+            Collections.sort(othersRoot.getChildren(), new Comparator<Node<BasicPermissionTarget>>() {
+                @Override
+                public int compare(Node<BasicPermissionTarget> n1, Node<BasicPermissionTarget> n2) {
+                    return n1.getData().getId().compareTo(n2.getData().getId());
+                }
+            });
         }
 
         private void compileEntitiesAndAttributes() {
@@ -212,6 +240,9 @@ public class PermissionConfig {
 
     @Inject
     private MenuConfig menuConfig;
+
+    @Inject
+    private WindowConfig windowConfig;
 
     private ClientType clientType;
     private String messagePack;
