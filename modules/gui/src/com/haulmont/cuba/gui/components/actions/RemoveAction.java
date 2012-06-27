@@ -11,7 +11,6 @@
 package com.haulmont.cuba.gui.components.actions;
 
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
@@ -19,7 +18,9 @@ import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.PropertyDatasource;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.Set;
 
@@ -42,7 +43,6 @@ public class RemoveAction extends ItemTrackingAction {
 
     protected final ListComponent owner;
     protected boolean autocommit;
-    protected MetaProperty metaProperty;
 
     protected String confirmationMessage;
     protected String confirmationTitle;
@@ -78,30 +78,24 @@ public class RemoveAction extends ItemTrackingAction {
         this.icon = "icons/remove.png";
     }
 
-    protected MetaProperty getMetaProperty() {
-        if (owner.getDatasource() instanceof PropertyDatasource)
-            return ((PropertyDatasource) owner.getDatasource()).getProperty();
-        else
-            return null;
-    }
-
-    /**
-     * @return  true if this list is connected to PropertyDatasource and this datasource contains ManyToMany property
-     */
-    public boolean isManyToMany() {
-        return metaProperty != null && metaProperty.getRange() != null
-                && metaProperty.getRange().getCardinality() != null
-                && metaProperty.getRange().getCardinality() == Range.Cardinality.MANY_TO_MANY;
-    }
-
     /**
      * Whether the action is currently enabled. Override to provide specific behaviour.
      * @return  true if enabled
      */
     public boolean isEnabled() {
-        return super.isEnabled() &&
-                (isManyToMany() || UserSessionProvider.getUserSession().isEntityOpPermitted(
-                                                                owner.getDatasource().getMetaClass(), EntityOp.DELETE));
+        if (!super.isEnabled())
+            return false;
+
+        UserSession userSession = UserSessionProvider.getUserSession();
+        if (!userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.DELETE))
+            return false;
+
+        if (owner.getDatasource() instanceof PropertyDatasource) {
+            MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
+            return userSession.isEntityAttrPermitted(
+                    metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
+        }
+        return true;
     }
 
     /**

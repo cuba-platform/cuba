@@ -12,10 +12,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.AggregationInfo;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
@@ -24,6 +21,7 @@ import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
@@ -205,7 +203,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         UserSession userSession = UserSessionProvider.getUserSession();
         if (!userSession.isEntityOpPermitted(metaProperty.getRange().asClass(), EntityOp.READ)
                 || !userSession.isEntityAttrPermitted(metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.VIEW))
-            return Collections.emptyList();
+            return new ArrayList<T>(); // Don't use Collections.emptyList() to avoid confusing UnsupportedOperationExceptions
         else {
             final Instance master = masterDs.getItem();
             return master == null ? null : (Collection<T>) master.getValue(metaProperty.getName());
@@ -217,8 +215,15 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             throw new IllegalStateException("Invalid datasource state: " + getState());
     }
 
+    private void checkPermission() {
+        UserSession userSession = UserSessionProvider.getUserSession();
+        if (!userSession.isEntityAttrPermitted(metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY))
+            throw new AccessDeniedException(PermissionType.ENTITY_ATTR, metaProperty.getDomain() + "." + metaProperty.getName());
+    }
+
     public synchronized void addItem(T item) throws UnsupportedOperationException {
         checkState();
+        checkPermission();
 
         if (__getCollection() == null) {
             initCollection();
@@ -269,6 +274,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     public synchronized void removeItem(T item) throws UnsupportedOperationException {
         checkState();
+        checkPermission();
+
         __getCollection().remove(item);
         detachListener(item);
 
@@ -285,6 +292,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     public synchronized void excludeItem(T item) throws UnsupportedOperationException {
         checkState();
+        checkPermission();
+
         __getCollection().remove(item);
 
         MetaProperty inverseProperty = metaProperty.getInverse();
@@ -301,6 +310,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     public synchronized void includeItem(T item) throws UnsupportedOperationException {
         checkState();
+        checkPermission();
+
         __getCollection().add(item);
 
         MetaProperty inverseProperty = metaProperty.getInverse();

@@ -19,7 +19,9 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -85,8 +87,19 @@ public class CreateAction extends AbstractAction {
      * @return  true if enabled
      */
     public boolean isEnabled() {
-        return super.isEnabled() &&
-                UserSessionProvider.getUserSession().isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.CREATE);
+        if (!super.isEnabled())
+            return false;
+
+        UserSession userSession = UserSessionProvider.getUserSession();
+        if (!userSession.isEntityOpPermitted(owner.getDatasource().getMetaClass(), EntityOp.CREATE))
+            return false;
+
+        if (owner.getDatasource() instanceof PropertyDatasource) {
+            MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
+            return userSession.isEntityAttrPermitted(
+                    metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
+        }
+        return true;
     }
 
     /**

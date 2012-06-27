@@ -10,14 +10,18 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Window;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.PropertyDatasource;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -87,6 +91,23 @@ public class AddAction extends AbstractAction {
         this.openType = openType;
         this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Add");
         this.icon = "icons/add.png";
+    }
+
+    /**
+     * Whether the action is currently enabled. Override to provide specific behaviour.
+     * @return  true if enabled
+     */
+    public boolean isEnabled() {
+        if (!super.isEnabled())
+            return false;
+
+        UserSession userSession = UserSessionProvider.getUserSession();
+        if (owner.getDatasource() instanceof PropertyDatasource) {
+            MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
+            return userSession.isEntityAttrPermitted(
+                    metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
+        }
+        return true;
     }
 
     /**

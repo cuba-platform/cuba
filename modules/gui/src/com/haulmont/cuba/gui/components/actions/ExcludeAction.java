@@ -10,12 +10,17 @@
  */
 package com.haulmont.cuba.gui.components.actions;
 
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.PropertyDatasource;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.global.UserSession;
 
 import java.util.Set;
 
@@ -64,6 +69,23 @@ public class ExcludeAction extends RemoveAction {
         super(owner, autocommit, id);
         this.confirm = confirm;
         this.caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "actions.Exclude");
+    }
+
+    /**
+     * Whether the action is currently enabled. Override to provide specific behaviour.
+     * @return  true if enabled
+     */
+    public boolean isEnabled() {
+        if (!enabled)
+            return false;
+
+        UserSession userSession = UserSessionProvider.getUserSession();
+        if (owner.getDatasource() instanceof PropertyDatasource) {
+            MetaProperty metaProperty = ((PropertyDatasource) owner.getDatasource()).getProperty();
+            return userSession.isEntityAttrPermitted(
+                    metaProperty.getDomain(), metaProperty.getName(), EntityAttrAccess.MODIFY);
+        }
+        return true;
     }
 
     @Override
