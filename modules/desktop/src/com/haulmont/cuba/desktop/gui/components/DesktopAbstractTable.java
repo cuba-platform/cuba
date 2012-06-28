@@ -546,7 +546,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 isRowsAjusting = false;
                 // apply selection
                 setSelected(newSelection);
-                if (focused && newSelection != null) {
+                if (focused && newSelection != null && !newSelection.isEmpty()) {
                     int minimalSelectionRowIndex = Integer.MAX_VALUE;
                     for (Entity entity : newSelection) {
                         int rowIndex = tableModel.getRowIndex(entity);
