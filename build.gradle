@@ -23,7 +23,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.4.0' // see also cuba-plugin in global module dependencies
+        classpath group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.4.1' // see also cuba-plugin in global module dependencies
         classpath group: 'com.haulmont.gradle', name: 'doc-plugin', version: '1.1.0'
     }
 }
@@ -117,7 +117,7 @@ configure(sharedLibModule) {
 configure(globalModule) {
     dependencies {
         // This dependency is required by CubaEnhancing task
-        provided(group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.4.0')
+        provided(group: 'com.haulmont.gradle', name: 'cuba-plugin', version: '1.4.1')
     }
 
     task enhance(type: CubaEnhancing) {
