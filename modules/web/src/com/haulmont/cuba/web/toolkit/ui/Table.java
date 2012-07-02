@@ -184,7 +184,7 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
 
         Set<Object> renderedItemIds = getCurrentlyRenderedItemIds();
 
-        HashSet<Object> newValue = new HashSet<Object>(
+        HashSet<Object> newValue = new LinkedHashSet<Object>(
                 (Collection<Object>) getValue());
 
         if (variables.containsKey("clearSelections")) {
