@@ -9,16 +9,16 @@
  */
 package com.haulmont.cuba.web.gui;
 
-import com.vaadin.ui.Button;
 import com.haulmont.cuba.gui.components.*;
+import com.vaadin.ui.Button;
 
 import java.util.Collection;
 import java.util.Collections;
 
 class SelectAction implements Button.ClickListener {
-    private com.haulmont.cuba.gui.components.Window.Lookup window;
+    private Window.Lookup window;
 
-    SelectAction(com.haulmont.cuba.gui.components.Window.Lookup window) {
+    SelectAction(Window.Lookup window) {
         this.window = window;
     }
 
@@ -26,13 +26,15 @@ class SelectAction implements Button.ClickListener {
         Window.Lookup.Validator validator = window.getLookupValidator();
         if (validator != null && !validator.validate()) return;
         
-        final com.haulmont.cuba.gui.components.Component lookupComponent = window.getLookupComponent();
+        final Component lookupComponent = window.getLookupComponent();
+        if (lookupComponent == null)
+            throw new IllegalStateException("lookupComponent is not set");
 
         Collection selected;
-        if (lookupComponent instanceof com.haulmont.cuba.gui.components.Table ) {
-            selected = ((com.haulmont.cuba.gui.components.Table) lookupComponent).getSelected();
-        } else if (lookupComponent instanceof com.haulmont.cuba.gui.components.Tree) {
-            selected = ((com.haulmont.cuba.gui.components.Tree) lookupComponent).getSelected();
+        if (lookupComponent instanceof Table ) {
+            selected = ((Table) lookupComponent).getSelected();
+        } else if (lookupComponent instanceof Tree) {
+            selected = ((Tree) lookupComponent).getSelected();
         } else if (lookupComponent instanceof LookupField) {
             selected = Collections.singleton(((LookupField) lookupComponent).getValue());
         } else if (lookupComponent instanceof PickerField) {
@@ -41,10 +43,10 @@ class SelectAction implements Button.ClickListener {
             final OptionsGroup optionsGroup = (OptionsGroup) lookupComponent;
             selected = optionsGroup.getValue();
         } else {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Unsupported lookupComponent type: " + lookupComponent.getClass());
         }
 
-        final com.haulmont.cuba.gui.components.Window.Lookup.Handler lookupHandler = window.getLookupHandler();
+        final Window.Lookup.Handler lookupHandler = window.getLookupHandler();
 
         window.close("select");
         lookupHandler.handleLookup(selected);

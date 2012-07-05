@@ -93,10 +93,16 @@ public interface Component {
         void add(Component component);
         void remove(Component component);
 
-        /** Get component directly owned by this container */
+        /**
+         * Get component directly owned by this container.
+         * @return component or null if not found
+         */
         <T extends Component> T getOwnComponent(String id);
 
-        /** Get component belonging to the whole components tree below this container */
+        /**
+         * Get component belonging to the whole components tree below this container.
+         * @return component or null if not found
+         */
         <T extends Component> T getComponent(String id);
 
         /** Get all components directly owned by this container */

@@ -120,6 +120,9 @@ public class AddAction extends AbstractAction {
         if (params == null)
             params = new HashMap<String, Object>();
 
+        if (handler == null)
+            throw new IllegalStateException("Lookup handler is not set");
+
         owner.getFrame().openLookup(getWindowId(), handler, openType, params);
     }
 
