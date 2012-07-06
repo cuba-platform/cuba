@@ -329,6 +329,10 @@ public class Param extends AbstractParam<JComponent> {
             } else {
                 DesktopPickerField picker = new DesktopPickerField();
                 picker.setMetaClass(metaClass);
+                picker.setFrame(datasource.getDsContext().getWindowContext().getFrame());
+                picker.addLookupAction();
+                picker.addClearAction();
+
                 picker.addListener(
                         new ValueListener() {
                             @Override
