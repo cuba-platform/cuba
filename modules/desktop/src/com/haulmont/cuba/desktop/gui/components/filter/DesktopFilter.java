@@ -507,7 +507,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     private void internalSetFilterEntity() {
         List<ItemWrapper<FilterEntity>> list = select.getOptionsList();
         for (ItemWrapper<FilterEntity> wrapper : list) {
-            if (wrapper.getItem() == filterEntity) {
+            if (wrapper.getItem().equals(filterEntity)) {
                 list.remove(wrapper);
                 break;
             }
