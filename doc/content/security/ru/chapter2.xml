@@ -1,58 +1,191 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter2_working_in_nix">
-  <title>Интеграция с Active Directory</title>
-  <para><firstterm>Active Directory</firstterm> −  это реализация службы каталогов <application>Microsoft</application> для операционных систем семейства <application>Windows NT</application>, которая позволяет администраторам реализовать наборы правил, в соответствии с которыми обеспечивается единообразие настройки пользовательской среды, развертывать программное обеспечение на большом количестве компьютеров, устанавливать обновления на всех компьютерах сети. <application>Active Directory</application> хранит данные и настройки среды в централизованной базе данных. Сети <application>Active Directory</application> могут быть различного размера: от нескольких сотен до нескольких миллионов объектов. Более подробно об <application>Active Directory</application> Вы сможете прочитать, перейдя по следующей ссылке:  <ulink url="http://ru.wikipedia.org/wiki/Active_Directory">http://ru.wikipedia.org/wiki/Active_Directory</ulink></para>
-  <para>В качестве протокола для аутентификации может использоваться протокол  <application>NTLM</application>.</para>
-  <para><application>Jespa</application> − платная библиотека, написанная на <application>Java</application>, обеспечивающая расширенную интеграцию между службой каталогов <application>Active Directory</application> и Java-приложениями. <application>Jespa</application> содержит  интуитивно понятные классы, обеспечивающие выполнение самых разнообразных функций, связанных с безопасностью: аутентификацию, создание учетных записей, настройку паролей и многое другое. <application>Jespa</application> включает в себя несколько готовых к использованию компонентов для выполнения различных функций, например, для Enterprise Single Sign-On (SSO) аутентификации для HTTP-приложений. Более подробно о данной библиотеке Вы можете прочитать на сайте <ulink url="http://www.ioplex.com/">http://www.ioplex.com/</ulink>.</para>
-  <para><emphasis role="bold">Настройка NTLM аутентификации с использованием Jespa</emphasis></para>
-  <itemizedlist>
-    <listitem>
-      <para>Создать в <application>ActiveDirectory</application> компьютер, например, с именем <userinput>JESPA</userinput></para>
-    </listitem>
-    <listitem>
-      <para>Создать и запустить скрипт <filename>SetComputerPass.vbs</filename> и задать пароль</para>
-      <para><programlisting>Option Explicit
+<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter3_detail_info">
+  <title>Расширенные сведения</title>
+  <mediaobject>
+    <imageobject>
+      <imagedata align="center" fileref="img/dbStructure.png"/>
+    </imageobject>
+  </mediaobject>
+  <section>
+    <title>Login screen</title>
+    <para><classname>Login screen</classname> представляет собой окно входа в систему, посредством которого пользователь получает доступ к системе. В этом окне производится аутентификация пользователя по имени учетной записи и паролю, а также дальнейшая авторизация. Пароль в целях его безопасности хранится в базе данных в хэшированном виде.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/loginWindow.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Класс окна входа в систему − <classname>LoginWindow</classname>. </para>
+  </section>
+  <section>
+    <title>User Session</title>
+    <para>Пользовательская сессия (User Session) –  центральный элемент обеспечения безопасности, 
+объект,  ассоциированный с аутентифицированным в данный момент в системе 
+пользователем,  и содержащий информацию о правах доступа пользователя к
+данным.</para>
+    <para>Для контроля прав доступа пользователей к данным код системы всегда должен иметь возможность узнать, какой пользователь в данный момент работает и каковы его права. Например, перед сохранением сущности в БД в специальных полях сущности проставляется имя пользователя, выполняющего сохранение. Кроме того, <glossterm linkend="glossary_dataService_id">Data Service</glossterm> всегда проверяет права пользователя на извлечение или сохранение определенных сущностей.</para>
+    <para>Информация о текущем пользователе и его правах хранится в объекте <classname>UserSession</classname>, который создается после входа  пользователя и кэшируется на стороне <glossterm linkend="glossary_middleware_id">middleware</glossterm>, а также передается клиенту в результате метода <methodname>LoginService.login()</methodname>. Уничтожается пользовательская сессия после выхода пользователя из системы, либо после истечения времени бездействия, определяемого параметром среднего слоя приложения <parameter>cuba.userSessionExpirationTimeoutSec</parameter> (смотрите класс конфигурации <classname>ServerConfig.getUserSessionExpirationTimeoutSec</classname>).</para>
+    <para>Текущая пользовательская сессия всегда привязывается к потоку выполнения и может быть получена следующими способами:<itemizedlist>
+        <listitem>
+          <para>через интерфейс инфраструктуры <classname>UserSessionSource</classname></para>
+        </listitem>
+        <listitem>
+          <para>через статический фасад <classname>UserSessionProvider</classname></para>
+        </listitem>
+      </itemizedlist></para>
+    <para>Кроме получения информации о пользователе объект сессии позволяет проверить наличие прав на некоторый объект системы. Делается это вызовом методов <methodname>isScreenPermitted()</methodname>, <methodname>isEntityOpPermitted()</methodname> и другими.</para>
+    <para>Список активных пользовательских сессий можно получить на клиенте через сервис <classname>UserSessionService</classname>,  в JMX интерфейсе через МБин <classname>app.cuba:service=UserSessions</classname>, а также с помощью подпункта меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Пользовательские сессии</guimenu>.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/userSession.png"/>
+      </imageobject>
+    </mediaobject>
+  </section>
+  <section>
+    <title>Roles</title>
+    <para>Роль − это объект системы, которому с одной стороны сопоставляется набор полномочий, необходимых для выполнения конкретных функций, а с другой стороны − подмножество пользователей, которые должны иметь эти полномочия.</para>
+    <para>Пользователь получает логическую сумму прав на некоторый объект от всех ролей, которые у него есть. При этом если ни одна роль не определяет явно право на объект, то пользователь получает право на этот объект. Таким образом,  пользователь имеет права на все объекты, на которые либо ни одна роль явно не определяет право, либо хотя бы одна роль определяет, что право есть. Отсюда следует, что если пользователю дать единственную роль без явно установленных прав, то у него будут все права на все объекты.</para>
+    <para>Для роли возможно указание одного из следующих типов:<itemizedlist>
+        <listitem>
+          <para><emphasis role="bold">STANDARD</emphasis> − в роли данного типа действуют только явно назначенные разрешения.</para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">SUPER</emphasis> − роль данного типа автоматически дает все разрешения. Это удобно для назначения администраторов системы.</para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">READONLY</emphasis> − роль данного типа автоматически отнимает разрешения на следующие операции с сущностями: CREATE, UPDATE, DELETE.</para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">DENYING</emphasis> − роль данного типа автоматически отнимает разрешения на все объекты, кроме атрибутов сущностей.</para>
+        </listitem>
+      </itemizedlist></para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/permissions.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Путем задания для пользователя набора ролей в экранах управления подсистемой безопасности осуществляется настройка прав доступа. Набор ролей определяет эффективный набор разрешений следующих типов: <itemizedlist id="permissions_types_id">
+        <listitem>
+          <para>Возможность открытия некоторого экрана (Screen Permissions)</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/screenPermissions.png"/>
+            </imageobject>
+          </mediaobject>
+        </listitem>
+        <listitem>
+          <para>Возможность операции над некоторой сущностью:  чтение,  создание, 
+модификация, удаление (Entity Operation Permissions)</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/entityoperationPermissions.png"/>
+            </imageobject>
+          </mediaobject>
+        </listitem>
+        <listitem>
+          <para>Доступ к произвольному атрибуту некоторой сущности:  модификация, 
+только чтение, нет доступа (Entity Attribute Permissions)</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/entityattributePermissions.png"/>
+            </imageobject>
+          </mediaobject>
+        </listitem>
+        <listitem>
+          <para>Разрешение на некоторую именованную функциональность (Specific Permissions). Эти разрешения задаются в файлах, которые указаны в свойстве <parameter>cuba.permissionConfig</parameter> файла <filename>*-web-app.properties</filename> клиента. Пример файла <filename>cuba-web-permissions.xml</filename>:</para>
+          <para><programlisting>&lt;permission-config&gt;
 
-Dim strDn, objPassword, strPassword, objComputer
+    &lt;specific&gt;
 
-If WScript.arguments.count &lt;&gt; 1 Then
-WScript.Echo &quot;Usage: SetComputerPass.vbs &lt;ComputerDN&gt;&quot;
-WScript.Quit
-End If
+        &lt;category id=&quot;cuba&quot;&gt;
+            &lt;category id=&quot;cuba.gui&quot;&gt;
+                &lt;permission id=&quot;cuba.gui.showInfo&quot;/&gt;
+                &lt;category id=&quot;cuba.gui.filter&quot;&gt;
+                    &lt;permission id=&quot;cuba.gui.filter.global&quot;/&gt;
+                    &lt;permission id=&quot;cuba.gui.filter.customConditions&quot;/&gt;
+                    &lt;permission id=&quot;cuba.gui.filter.maxResults&quot;/&gt;
+                &lt;/category&gt;
+                &lt;permission id=&quot;cuba.gui.searchFolder.global&quot;/&gt;
+                &lt;permission id=&quot;cuba.gui.presentations.global&quot;/&gt;
+                &lt;permission id=&quot;cuba.gui.appFolder.global&quot;/&gt;
+            &lt;/category&gt;
+        &lt;/category&gt;
+        
+    &lt;/specific&gt;
 
-strDn = WScript.arguments.item(0)
-
-Set objPassword = CreateObject(&quot;ScriptPW.Password&quot;)
-WScript.StdOut.Write &quot;Password:&quot;
-strPassword = objPassword.GetPassword()
-
-Set objComputer = GetObject(&quot;LDAP://&quot; &amp; strDn)
-objComputer.SetPassword strPassword
-
-WScript.Quit
+&lt;/permission-config&gt;</programlisting></para>
+          <para>Названия свойств задаются в файлах локализации. Например, для указанного выше файла локализация названий на русский язык задается в файле <filename>messages_ru.properties</filename> пакета <package>com.haulmont.cuba.gui</package></para>
+          <para><programlisting>permission-config.cuba=CUBA
+permission-config.cuba.gui=Generic UI
+permission-config.cuba.gui.showInfo=Системная информация
+permission-config.cuba.gui.filter=Фильтр
+permission-config.cuba.gui.filter.global=Создание/изменение глобальных фильтров
+permission-config.cuba.gui.filter.customConditions=Создание/изменение настраиваемых условий
+permission-config.cuba.gui.filter.maxResults=Неограниченное число строк
+permission-config.cuba.gui.searchFolder.global=Создание/изменение глобальных папок поиска
+permission-config.cuba.gui.presentations.global=Создание/изменение глобальных представлений
+permission-config.cuba.gui.appFolder.global=Создание/изменение папок приложения
 </programlisting></para>
-      <para>либо отредактировать <filename>SetComputerPassSimple.vbs</filename> и запустить.</para>
-      <para><programlisting>Set objComputer = GetObject(&quot;LDAP://CN=JESPA,CN=Computers,DC=haulmont,DC=com&quot;)
-objComputer.SetPassword &quot;put_your_passsword_here&quot;
-
-WScript.Quit</programlisting></para>
-      <para>Если скрипт не работает на сервере, залогиниться админом на <application>XP-workstation</application> и запустить скрипт там.</para>
-      <para><prompt>cscript SetComputerPass.vbs CN=JESPA,CN=Computers,DC=haulmont,DC=com</prompt></para>
-    </listitem>
-    <listitem>
-      <para>Задать параметры доменов в <filename>system.properties</filename> в переменной <prompt>cuba.web.activeDirectoryDomains</prompt>. Каждый описатель домена имеет формат <prompt>domain_name|full_domain_name|service_account_name|service_account_password</prompt>. Описатели доменов отделяются друг от друга точкой с запятой. Например:</para>
-      <para><prompt>cuba.web.activeDirectoryDomains=HAULMONT|haulmont.com|JESPA$@HAULMONT.COM|password1; TEST|test.com|JESPA$@TEST.COM|password2</prompt></para>
-    </listitem>
-    <listitem>
-      <para>Задать в <filename>system.properties</filename> дополнительные свойства для библиотеки <application>Jespa</application> (<ulink url="http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161">http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161</ulink>).  Например:</para>
-      <para><prompt>jespa.log.level=3</prompt></para>
-    </listitem>
-    <listitem>
-      <para>Установить в <filename>system.properties</filename> переменную <prompt>cuba.web.useActiveDirectory=true</prompt></para>
-    </listitem>
-    <listitem>
-      <para>Добавить адрес сервера в местную интрасеть в настройках браузера:</para>
-      <para><prompt>Для IE и Chrome: Свойства обозревателя-Безопасность-Местная интрасеть-Узлы-Дополнительно </prompt><prompt>Для FF: url=about:config, filter=ntlm, network.automatic-ntlm-auth.trusted-uris=vm30,http://tezis.haulmont.com (пример)</prompt></para>
-    </listitem>
-  </itemizedlist>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/specificpermissions.png"/>
+            </imageobject>
+          </mediaobject>
+        </listitem>
+        <listitem>
+          <para>Управление доступом к конкретным элементам экрана (Interface Permissions)</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/interfacePermissions.png"/>
+            </imageobject>
+          </mediaobject>
+        </listitem>
+      </itemizedlist></para>
+  </section>
+  <section>
+    <title>Access Groups</title>
+    <para id="constraints_id"><emphasis role="bold">Constraints</emphasis></para>
+    <para>Ограничение создается на языке <link linkend="glossary_jpql_id">JPQL</link> (Подробнее о JPQL можно прочитать на сайте <ulink url="http://openjpa.apache.org/">http://openjpa.apache.org/</ulink>).</para>
+    <para>В параметрах ограничений  можно использовать следующие предопределенные константы:<itemizedlist>
+        <listitem>
+          <para><varname>session$userLogin</varname> − имя учетной записи текущего пользователя (всегда того, кто аутентифицирован в системе, независимо от замещения).</para>
+        </listitem>
+        <listitem>
+          <para><varname>session$userId</varname> − ID текущего пользователя (всегда того, кто аутентифицирован в системе, независимо от замещения).</para>
+        </listitem>
+        <listitem>
+          <para><varname>session$userGroupId</varname> − ID группы текущего пользователя (того, кто аутентифицирован в системе, либо замещаемого, если таковой выбран).</para>
+        </listitem>
+        <listitem>
+          <para><varname>session$XXX</varname> − атрибут текущей пользовательской сессии, где XXX - имя атрибута</para>
+        </listitem>
+      </itemizedlist></para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/accessGroups.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Следует иметь в виду следующие моменты:<itemizedlist>
+        <listitem>
+          <para>при задании только оператора Where в нем заменяется алиас основной сущности;</para>
+        </listitem>
+        <listitem>
+          <para>при задании и оператора Join, и оператора Where, в операторе Join алиас заменяется, а в операторе Where нет.</para>
+        </listitem>
+      </itemizedlist></para>
+    <para>В обоих случаях в текст оператора Join и оператора Where можно помещать метку {E}, которая будет заменена на алиас основной сущности запроса. Если в тексте встречается метка {E}, то никаких других алиасов, кроме указанных меткой, заменяться не будет.</para>
+    <para><emphasis role="bold">Session Attributes</emphasis></para>
+    <para>Атрибуты пользовательской сессии могут быть заданы при настройке системы. Это может понадобиться при настройке constraints, а также для любой другой прикладной функциональности.</para>
+    <para>В пользовательскую сессию при входе в систему будут помещены все атрибуты, заданные для группы, в которой находится пользователь, и для всех родительских групп вверх по иерархии. При этом если атрибут встречается в иерархии групп несколько раз, значение он получит от самой верхней группы, то есть переопределение значений атрибутов на нижнем уровне невозможно. При попытке переопределения в лог сервера будет выведено сообщение с уровнем WARN.</para>
+  </section>
+  <section>
+    <title>Ограничение входа по IP</title>
+    <para>Для пользователя может быть задана маска допустимых IP-адресов, с которых возможен вход в систему.</para>
+    <para>Маска представляет собой список адресов через запятую. Каждый адрес должен обязательно состоять из 4-х чисел разделенных точками (обычный формат IPv4). При этом любая часть вместо числа может содержать знак &quot;*&quot;, что означает &quot;любое число&quot;. </para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/IPpermissions.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Если маска задана неправильно, либо для данного соединения не может быть определен адрес в формате IPv4, в лог выводится сообщение от логгера <classname>IpMatcher</classname>, и вход при этом разрешается.</para>
+  </section>
 </chapter>

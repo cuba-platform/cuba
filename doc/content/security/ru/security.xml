@@ -5,14 +5,18 @@
       <year>2012</year>
       <holder>Haulmont (<ulink url="www.haulmont.ru">www.haulmont.ru</ulink>)</holder>
     </copyright>
-    <title>Руководство по подсистеме безопасности платформы CUBA</title>
+    <title>Руководство по подсистеме безо пасности платформы <trademark>CUBA</trademark></title>
   </bookinfo>
   <preface lang="ru">
     <title>Предисловие</title>
     <section id="appointment_id">
       <title>Назначение</title>
-      <para>Данный документ является руководством по управлению разграничением прав пользователей в системах, разработанных на платформе <application>CUBA</application>.
-          Информация, представленная в руководстве, актуальна для платформы версии 3.2+.</para>
+      <para>Данный документ является Руководством по управлению разграничением прав пользователей в системах, разработанных на платформе <trademark>CUBA</trademark>.
+          Информация, представленная в Руководстве, актуальна для платформы версии 3.1.</para>
+    </section>
+    <section>
+      <title>Целевая аудитория</title>
+      <para>Данное Руководство предназначено для программистов и опытных администраторов. Для успешной работы требуется хорошее знание <application>SQL</application>.</para>
     </section>
     <section>
       <title>Структура руководства</title>
@@ -31,9 +35,50 @@
       <para>В главе 3 приводится подробное описание основных действий по управлению безопасностью системы.</para>
     </section>
     <section>
-      <title>Соглашения</title>
-      <para>Для того чтобы текст руководства был более понятен, в дальнейшем будут использоваться следующие соглашения.</para>
-      <formalpara>
+      <title>Соглашения, принятые в документе</title>
+      <para>В данном Руководстве используются определенные слова, выделенные в тексте различными шрифтами, стилями, размерами. Сделано это для того, чтобы привлечь внимание к определенной информации.</para>
+      <section>
+        <title>Типографские соглашения</title>
+        <para>Далее приводятся примеры выделенных слов и пояснения, в каких случаях используется то или иное оформление.</para>
+        <formalpara>
+          <title>Переменные среды, команды, имена классов, интерфейсов, объектов, методов, переменных, тексты ошибок</title>
+          <para>Обозначены в руководстве <classname>специальным моноширинным шрифтом</classname>.</para>
+        </formalpara>
+        <formalpara>
+          <title>Элементы интерфейса</title>
+          <para>Пункты меню, названия окон, папок, закладок выделяются в тексте <guimenu>полужирным текстом</guimenu>. Кнопки выглядят следующим образом: <guibutton>Кнопка</guibutton></para>
+        </formalpara>
+        <formalpara>
+          <title>Имена приложений, объекты базы данных, названия внешних документов</title>
+          <para>Обозначаются в тексте руководства <emphasis role="bold">полужирным текстом</emphasis>.</para>
+        </formalpara>
+        <formalpara>
+          <title>Имена файлов, каталогов, папок и расширений</title>
+          <para>Обозначены в руководстве следующим образом: <filename>C:\Program Files (x86)</filename>.</para>
+        </formalpara>
+        <formalpara>
+          <title>Имя пакета</title>
+          <para>Для имени пакета используется следующее обозначение: <package>com.haulmont.fts.core.app</package>.</para>
+        </formalpara>
+        <formalpara>
+          <title>Имя модуля</title>
+          <para>Имя модуля обозначается в тексте следующим образом: <structname>модуль</structname>.</para>
+        </formalpara>
+        <formalpara>
+          <title>Параметры и свойства</title>
+          <para><parameter>Параметры</parameter> и <property>свойства</property> также выделяются в тексте руководства.</para>
+        </formalpara>
+      </section>
+      <section>
+        <title>Врезки</title>
+        <para>Листинг исходного кода, а также содержимое файлов визуально отделяются от окружающего текста следующим образом:</para>
+        <para><programlisting>[appdefaults]
+autologin = true
+forward = true
+forwardable = true
+encrypt = true </programlisting></para>
+      </section>
+      <section>
         <title>Замечания и предупреждения</title>
         <para>В тексте руководства будут встречаться сообщения,  используемые для привлечения внимания к информации. <tip>
             <title>Совет</title>
@@ -45,39 +90,13 @@
             <title>Внимание</title>
             <para>Данные сообщения  акцентируют внимание на вещах, которые легко упустить из виду.</para>
           </warning></para>
-      </formalpara>
-      <formalpara>
-        <title>Переменные среды, команды, имена классов, интерфейсов, объектов, методов, переменных, тексты ошибок</title>
-        <para>Обозначены в руководстве <classname>специальным моноширинным шрифтом</classname>.</para>
-      </formalpara>
-      <formalpara>
-        <title>Элементы интерфейса</title>
-        <para>Пункты меню, названия окон, папок, закладок выделяются в тексте <guimenu>полужирным текстом</guimenu>. Кнопки выглядят следующим образом: <guibutton>Кнопка</guibutton></para>
-      </formalpara>
-      <formalpara>
-        <title>Имена приложений, объекты базы данных, названия внешних документов</title>
-        <para>Обозначаются в тексте руководства <emphasis role="bold">полужирным текстом</emphasis>.</para>
-      </formalpara>
-      <formalpara>
-        <title>Имена файлов, каталогов, папок и расширений</title>
-        <para>Обозначены в руководстве следующим образом: <filename>C:\Program Files (x86)</filename>.</para>
-      </formalpara>
-      <formalpara>
-        <title>Имя пакета</title>
-        <para>Для имени пакета используется следующее обозначение: <package>com.haulmont.fts.core.app</package>.</para>
-      </formalpara>
-      <formalpara>
-        <title>Имя модуля</title>
-        <para>Имя модуля обозначается в тексте следующим образом: <structname>модуль</structname>.</para>
-      </formalpara>
-      <formalpara>
-        <title>Параметры и свойства</title>
-        <para><parameter>Параметры</parameter> и <property>свойства</property> также выделяются в тексте руководства.</para>
-      </formalpara>
+      </section>
     </section>
   </preface>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter0.xml" encoding="UTF-8"/>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter1.xml" encoding="UTF-8"/>
+   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter2.xml" encoding="UTF-8"/>
+   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter4.xml" encoding="UTF-8"/>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter3.xml" encoding="UTF-8"/>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="glossary.xml" encoding="UTF-8"/>
 </book>

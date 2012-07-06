@@ -2,17 +2,6 @@
 <!-- This document was created with Syntext Serna Free. --><glossary id="glossary_id">
   <title>Основные определения и понятия</title>
   <glossdiv>
-    <title>А</title>
-    <glossentry id="glossary_alias_id">
-      <glossterm>
-        <emphasis role="bold">Алиас</emphasis>
-      </glossterm>
-      <glossdef>
-        <para>Псевдоним, который используется для переименования таблиц и колонок.</para>
-      </glossdef>
-    </glossentry>
-  </glossdiv>
-  <glossdiv>
     <title>Б</title>
     <glossentry id="glossary_browser_id">
       <glossterm>
@@ -30,29 +19,62 @@
         <emphasis role="bold">Контроллер экрана</emphasis>
       </glossterm>
       <glossdef>
-        <para><classname>Java</classname> или <classname>Groovy</classname> класс,  в котором можно реализовывать бизнес-логику и управлять поведением компонентов, описанных в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm>, с помощью различных событий. Контроллер должен быть унаследован от одного из следующих базовых классов:</para>
-        <itemizedlist>
-          <listitem>
-            <para><classname>AbstractFrame</classname> − реализует интерфейс <interfacename>IFrame</interfacename> и предназначен для реализации фреймов − многократно используемых компонентов экранов.</para>
-          </listitem>
-          <listitem>
-            <para><classname>AbstractWindow</classname> − реализует интерфейc <interfacename>Window</interfacename> и предназначен для реализации любых экранов.</para>
-          </listitem>
-          <listitem>
-            <para><classname>AbstractLookup</classname> − реализует интерфейс <interfacename>Lookup</interfacename> и предназначен для реализации <glossterm linkend="glossary_browser_id">браузеров</glossterm> с возможностью выбора элемента списка для использования его в вызывающем экране.</para>
-          </listitem>
-          <listitem>
-            <para><classname>AbstractEditor</classname> − реализует интерфейс <interfacename>Editor</interfacename> и предназначен для реализации экранов редактирования экземпляра сущности.</para>
-          </listitem>
-        </itemizedlist>
-        <para>Основной метод контроллера − <methodname>init()</methodname>. Этот метод вызывается после создания класса окна и всего дерева компонентов, описанного XML-дескриптором. Контроллер может в этом методе произвести инициализацию экрана перед его открытием (например, создать обработчики нажатий на кнопки и пр.).</para>
-        <para>В метод <methodname>init()</methodname> из вызывающего кода передается коллекция параметров, состоящая из пар «ключ − значение». Вызывающим кодом может быть как контроллер другого экрана, так и пункт главного меню, либо прямая ссылка на экран извне приложения. Каждый параметр передается в коллекции в двух экземплярах − с простым именем и с тем же именем с префиксом param$.</para>
-        <para>Класс контроллера должен быть зарегистрирован в XML-дескрипторе экрана в атрибуте <parameter>class</parameter> корневого элемента.</para>
+        <para><classname>Java</classname> или <classname>Groovy</classname> класс,  в котором можно реализовывать бизнес-логику и управлять поведением компонентов, описанных в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm>, с помощью различных событий. </para>
       </glossdef>
     </glossentry>
   </glossdiv>
   <glossdiv>
     <title>П</title>
+    <glossentry id="glossary_search_folders_id">
+      <glossterm>
+        <emphasis role="bold">Папки поиска</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Папки данной категории могут быть созданы и настроены пользователем (за
+исключением подкатегории &quot;Системные&quot;). Подкатегория &quot;Системные&quot; содержит
+предустановленные папки поиска, которые доступны всем
+пользователям системы.</para>
+        <para>Папки поиска обладают следующими особенностями:</para>
+        <itemizedlist>
+          <listitem>
+            <para>открывают экраны с <glossterm linkend="glossary_filter_id">generic-фильтром</glossterm>;</para>
+          </listitem>
+          <listitem>
+            <para>создаются пользователем из любого открытого экрана с generic-фильтром;</para>
+          </listitem>
+          <listitem>
+            <para>пользователь может изменить иерархию, название, либо переопределить фильтр поиска. </para>
+          </listitem>
+        </itemizedlist>
+      </glossdef>
+    </glossentry>
+    <glossentry id="glossary_app_folders_id">
+      <glossterm>
+        <emphasis role="bold">Папки приложения</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Папки данной категории содержат задачи, по которым требуются
+действия пользователя.</para>
+        <para>Обладают следующими особенностями:</para>
+        <itemizedlist>
+          <listitem>
+            <para>открывают предопределенные экраны с <glossterm linkend="glossary_filter_id">фильтром</glossterm> или без;</para>
+          </listitem>
+          <listitem>
+            <para>набор папок зависит от ролей пользователя; </para>
+          </listitem>
+          <listitem>
+            <para>пользователь не может изменить настройки папок;</para>
+          </listitem>
+          <listitem>
+            <para>в заголовке папки может отображаться текущее количество входящих в нее записей;</para>
+          </listitem>
+          <listitem>
+            <para>периодически обновляются по таймеру.</para>
+          </listitem>
+        </itemizedlist>
+      </glossdef>
+    </glossentry>
     <glossentry id="glossary_user_id">
       <glossterm>
         <emphasis role="bold">Пользователь</emphasis>
@@ -61,110 +83,23 @@
         <para>Человек, для которого возможен доступ с определенным и регламентируемым уровнем прав.</para>
       </glossdef>
     </glossentry>
-    <glossentry id="glossary_view_ru_id">
-      <glossterm>
-        <emphasis role="bold">Представление</emphasis>
-      </glossterm>
-      <glossdef>
-        <para>Механизм представлений обеспечивает извлечение из БД и передачу клиенту графов сущностей, ограниченных в глубину и/или по атрибутам.</para>
-        <para>Представление всегда должно быть задано при запросе данных у <glossterm linkend="glossary_middleware_id">middleware</glossterm>. Получив выборку данных по представлению, клиентский код может быть уверен, что все запрошенные атрибуты и связанные сущности получены, и их можно использовать без опаски получить <errorname role="italic">NullPointerException</errorname> или исключение типа <errorname role="italic">LazyInitializationException</errorname>. Представление решает и обратную задачу − ненужные атрибуты не извлекаются из БД, что снижает нагрузку в случае &quot;широких&quot; сущностей (содержащих большое число атрибутов).</para>
-        <para>Для каждой сущности по умолчанию доступны два типа представления с именами <filename>_local</filename> и <filename>_minimal</filename></para>
-        <itemizedlist>
-          <listitem>
-            <para><filename>_local</filename> определяет все локальные атрибуты сущности (т.е. все, кроме ссылок на другие сущности);</para>
-          </listitem>
-          <listitem>
-            <para><filename>_minimal</filename> определяет атрибуты, входящие в <varname>InstanceName</varname>. Если <varname>InstanceName</varname> не задано, данное представление определяет только системные атрибуты (<varname>id</varname>, <varname>createTs</varname> и пр.).</para>
-          </listitem>
-        </itemizedlist>
-        <para>Представления нужно определять в файле <filename>ext-views.xml</filename> модуля <structname>core</structname>.</para>
-        <warning>
-          <title>Внимание</title>
-          <para>Имя представления должно быть уникально в пределах сущности. При этом рекомендуется давать более  &quot;описательные&quot; имена. Например, не &quot;browse&quot;, а &quot;nameOfEntityBrowse&quot;. Это упрощает поиск XML-описателей представлений по имени. </para>
-        </warning>
-        <para>Пример представления для сущности <classname>User</classname>, которое должно выбирать все простые поля и ссылку на группу:</para>
-        <programlisting>&lt;view entity=&quot;sec$User&quot; name=&quot;user.browse&quot; extends=&quot;_local&quot;&gt;
-     &lt;property name=&quot;group&quot; view=&quot;_local&quot;/&gt;
-&lt;/view&gt;</programlisting>
-      </glossdef>
-    </glossentry>
   </glossdiv>
   <glossdiv>
-    <title>Р</title>
-    <glossentry id="glossary_work_folder_id">
+    <title>Ф</title>
+    <glossentry id="glossary_filter_id">
+      <glossentry id="glossary_filter_id_1">
+        <glossterm>
+          <emphasis role="bold">Generic Filter</emphasis>
+        </glossterm>
+        <glossdef>
+          <para>Служит для создания и применения в режиме текущего времени произвольных фильтров для <interfacename>CollectionDatasources</interfacename>.</para>
+        </glossdef>
+      </glossentry>
       <glossterm>
-        <emphasis role="bold">Рабочий каталог</emphasis>
+        <emphasis role="bold">Фильтр</emphasis>
       </glossterm>
       <glossdef>
-        <para>Каталог файловой системы, в котором содержится Ваш проект. Рабочий каталог, если он был создан, должен содержать скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>Intellij IDEA</application>. </para>
-      </glossdef>
-    </glossentry>
-  </glossdiv>
-  <glossdiv>
-    <title>D</title>
-    <glossentry id="glossary_dataService_id">
-      <glossterm>
-        <emphasis role="bold">DataService</emphasis>
-      </glossterm>
-      <glossdef>
-        <para><classname>DataService</classname> является универсальным средством для загрузки сущностей из БД и передачи их клиенту, а также для сохранения измененных на клиенте сущностей в БД.</para>
-        <para>В соответствие с <glossterm linkend="glossary_entityLifeStates_id">Entity Lifecycle States</glossterm> сущности на стороне клиента находятся в состояниях <parameter>New</parameter> или <parameter>Detached</parameter>, и должны быть переданы в <glossterm linkend="glossary_entityManager_id">EntityManager</glossterm> для сохранения в БД. Этим и занимается <classname>DataService</classname>, который реализует следующую функциональность:<itemizedlist>
-            <listitem>
-              <para>Загрузка сущностей из БД − методы <methodname>load()</methodname>, <methodname>loadList()</methodname>. Загрузка производится целым графом объектов в соответствии с заданным <glossterm linkend="glossary_view_ru_id">представлением</glossterm>. Клиент получает граф <parameter>detached</parameter> сущностей.</para>
-            </listitem>
-            <listitem>
-              <para>Сохранение <parameter>detached</parameter> сущностей в БД − метод <methodname>commit()</methodname>. Данный метод получает коллекции сущностей для изменения и для удаления, выполняет соответствующие действия и возвращает коллекцию измененных <parameter>detached</parameter> объектов на клиента. Удаление производится в соответсвие с заданным режимом политики удаления связанных сущностей.</para>
-            </listitem>
-            <listitem>
-              <para>Проверка прав пользователей на выполнение операций с сущностью. При загрузке проверяется право на <parameter>read</parameter>, при сохранении − права на <parameter>modify</parameter> и <parameter>delete</parameter>.</para>
-            </listitem>
-          </itemizedlist></para>
-      </glossdef>
-    </glossentry>
-  </glossdiv>
-  <glossdiv>
-    <title>E</title>
-    <glossentry id="glossary_entityLifeStates_id">
-      <glossterm>
-        <emphasis role="bold">Entity Lifecycle States</emphasis>
-      </glossterm>
-      <glossdef>
-        <para>Исходной информацией о жизненном цикле сущностей является документация по JPA: <ulink url="http://openjpa.apache.org/">http://openjpa.apache.org/</ulink></para>
-        <para>Можно выделить следующие состояния сущности: <parameter>new</parameter>, <parameter>managed</parameter>, <parameter>detached</parameter>. Рассмотрим их подробно.</para>
-        <para><emphasis role="bold">Состояние New</emphasis></para>
-        <para>Сущность находится в состоянии <parameter>new</parameter>, когда объект только что создан в памяти. В этот момент сущность уже имеет уникальный идентификатор (в нашем случае это <classname>UUID</classname>), однако в БД соответствующей записи еще нет.</para>
-        <para><emphasis role="bold">Состояние Managed</emphasis></para>
-        <para>Сущность находится в состоянии <parameter>managed</parameter>, когда она под управлением какого-нибудь <glossterm linkend="glossary_entityManager_id">EntityManager</glossterm>&apos;а. Это бывает в следующих случаях:</para>
-        <itemizedlist>
-          <listitem>
-            <para>сущность загружена из БД методами <methodname>EntityManager.find()</methodname>, <methodname>Query.getResultList()</methodname>, <methodname>Query.getSingleResult()</methodname></para>
-          </listitem>
-          <listitem>
-            <para><parameter>new</parameter> сущность передана в метод <methodname>EntityManager.persist()</methodname></para>
-          </listitem>
-          <listitem>
-            <para><parameter>detached</parameter> сущность передана в метод <methodname>EntityManager.merge()</methodname></para>
-          </listitem>
-        </itemizedlist>
-        <para>В состоянии <parameter>managed</parameter> <glossterm linkend="glossary_entityManager_id">EntityManager</glossterm> отслеживает все изменения атрибутов сущности, и отправит эти изменения в БД при коммите транзакции.</para>
-        <para><emphasis role="bold">Состояние Detached</emphasis></para>
-        <para>Сущность переходит в состояние <parameter>detached</parameter> из состояния <parameter>managed</parameter>, когда владевший ей <glossterm linkend="glossary_entityManager_id">EntityManager</glossterm> прекращает свое существование (при коммите или откате транзакции).
-
-Изменения атрибутов сущности фиксируются в самом объекте, однако они попадут в БД только в том случае, если данный экземпляр будет передан в метод <methodname>EntityManager.merge()</methodname> и станет <parameter>managed</parameter>.</para>
-        <para><emphasis role="bold">Соглашения</emphasis></para>
-        <para>В соответствии с архитектурой системы в состоянии <parameter>Managed</parameter> сущности могут находиться только на слое <glossterm linkend="glossary_middleware_id">middleware</glossterm>, внутри открытой транзакции. Следует помнить, что <glossterm linkend="glossary_entityManager_id">EntityManager</glossterm> автоматически сохранит изменения сущностей при коммите транзакции, поэтому вызывать дополнительно <methodname>merge()</methodname> для <parameter>Managed</parameter> сущностей не нужно.
-
-На клиенте происходит работа только с <parameter>New</parameter> и <parameter>Detached</parameter> сущностями. Поэтому для сохранения изменений сущностей в БД они должны быть отправлены на <glossterm linkend="glossary_middleware_id">middleware</glossterm>, как правило в <glossterm linkend="glossary_dataService_id">DataService</glossterm>.</para>
-      </glossdef>
-    </glossentry>
-    <glossentry id="glossary_entityManager_id">
-      <glossterm>
-        <emphasis role="bold">EntityManager</emphasis>
-      </glossterm>
-      <glossdef>
-        <para><classname>EntityManager</classname> служит для извлечения сущностей из БД и сохранения их в БД. Может быть получен только в слое <glossterm linkend="glossary_middleware_id">middleware</glossterm> с помощью <classname>PersistenceProvider</classname>.</para>
-        <para><classname>EntityManager</classname> в платформе повторяет интерфейс <application>JPA</application> <classname>EntityManager</classname> добавляя к нему несколько методов.</para>
-        <para>Как правило, работа с сущностями производится внутри транзакции. При этом экземпляр <classname>EntityManager</classname> привязывается к текущей транзакции, то есть все вызовы <methodname>PersistenceProvider.getEntityManager()</methodname> внутри одной транзакции возвращают один и тот же экземпляр <classname>EntityManager</classname>. Закрытие <classname>EntityManager</classname> производится автоматически при завершении транзакции.</para>
+        <para>Служит для создания и применения  произвольных фильтров  во время работы приложения. Фильтры делятся на две категории: локальные (созданные пользователем и доступные только ему) и глобальные (доступные всем пользователям).</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -179,26 +114,6 @@
       </glossdef>
     </glossentry>
   </glossdiv>
-  <glossdiv>
-    <title>M</title>
-    <glossentry id="glossary_middleware_id">
-      <glossterm>
-        <emphasis role="bold">Middleware</emphasis>
-      </glossterm>
-      <glossdef>
-        <para>Средний слой приложения, содержит бизнес-логику и предоставляет общий интерфейс для верхних слоев приложения.</para>
-      </glossdef>
-    </glossentry>
-  </glossdiv>
-  <glossdiv lang="ru">
-    <title>V</title>
-    <glossentry id="glossary_view_eng_id">
-      <glossterm>
-        <emphasis role="bold">View</emphasis>
-      </glossterm>
-      <glosssee otherterm="glossary_view_ru_id">Представление</glosssee>
-    </glossentry>
-  </glossdiv>
   <glossdiv lang="ru">
     <title>X</title>
     <glossentry id="glossary_xml_descriptor_id">
@@ -207,38 +122,6 @@
       </glossterm>
       <glossdef>
         <para>Описывает <glossterm linkend="glossary_datasource_id">источники данных</glossterm> и расположение визуальных компонентов экрана.</para>
-        <para>XML-дескриптор содержит следующие элементы:</para>
-        <itemizedlist>
-          <listitem>
-            <para><parameter>window</parameter> − корневой элемент. Атрибуты:</para>
-            <orderedlist>
-              <listitem>
-                <para><property>xmlns</property>=&quot;http://www.haulmont.com/schema/cuba/gui/window.xsd&quot; − схема XML</para>
-              </listitem>
-              <listitem>
-                <para><property>class</property> − имя класса <glossterm linkend="glossary_controller_id">контроллера</glossterm></para>
-              </listitem>
-              <listitem>
-                <para><property>messagesPack</property> − имя <glossterm linkend="glossary_localized_folders_id">пакета сообщений</glossterm>. Фактически это имя Java-пакета, содержащего файл  <filename>messages.properties</filename></para>
-              </listitem>
-              <listitem>
-                <para><property>caption</property> − заголовок экрана, должен содержать ссылку на сообщение из вышеуказанного пакета, например <programlisting>caption=&quot;msg://caption&quot;</programlisting></para>
-              </listitem>
-              <listitem>
-                <para><property>focusComponent</property> − идентификатор компонента, который получит фокус ввода при открытии экрана (необязательно).</para>
-              </listitem>
-            </orderedlist>
-          </listitem>
-          <listitem>
-            <para><parameter>metadataContext</parameter> − опциональный элемент для инициализации <glossterm linkend="glossary_view_ru_id">представлений</glossterm> (views). Предпочтительным является определение всех представлений в одном общем файле <filename>ext-views.xml</filename>  модуля <structname>core</structname>. </para>
-          </listitem>
-          <listitem>
-            <para><parameter>dsContext</parameter> − элемент, определяющий <glossterm linkend="glossary_datasource_id">источники данных</glossterm> данного экрана. Источники данных предназначены для реализации связанных с данными  компонентов.</para>
-          </listitem>
-          <listitem>
-            <para><parameter>layout</parameter> − элемент, определяющий компоновку экрана.</para>
-          </listitem>
-        </itemizedlist>
       </glossdef>
     </glossentry>
   </glossdiv>

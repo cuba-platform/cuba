@@ -18,7 +18,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="36.0" width="328.0" x="442.0" y="275.0"/>
-          <y:Fill color="#CCFFFF" transparent="false"/>
+          <y:Fill color="#DFBFFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="166.076171875" x="80.9619140625" y="8.6494140625">Security management screens<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -35,7 +35,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="261.0" width="103.0" x="323.0" y="327.0"/>
-          <y:Fill color="#99CCFF" transparent="false"/>
+          <y:Fill color="#BCD9F6" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="75.361328125" x="13.8193359375" y="121.1494140625">User Session<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -171,7 +171,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="36.0" width="103.0" x="323.0" y="275.0"/>
-          <y:Fill color="#CCFFFF" transparent="false"/>
+          <y:Fill color="#DFBFFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="72.712890625" x="15.1435546875" y="8.6494140625">Login screen<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
