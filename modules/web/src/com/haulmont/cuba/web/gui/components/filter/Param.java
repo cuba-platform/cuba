@@ -337,6 +337,9 @@ public class Param extends AbstractParam<Component> {
                 WebPickerField picker = new WebPickerField();
                 picker.setMetaClass(metaClass);
                 picker.setWidth(TEXT_COMPONENT_WIDTH);
+                picker.setFrame(datasource.getDsContext().getWindowContext().getFrame());
+                picker.addLookupAction();
+                picker.addClearAction();
 
                 picker.addListener(
                         new ValueListener() {
