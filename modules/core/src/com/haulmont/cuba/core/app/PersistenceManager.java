@@ -216,7 +216,9 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
     }
 
     @Override
-    public String updateDatabase() {
+    public String updateDatabase(String token) {
+        if (!"update".equals(token))
+            return "Pass 'update' in the method parameter if you really want to update database.";
         try {
             dbUpdater.updateDatabase();
             return "Updated";
@@ -325,10 +327,14 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
 
     @Override
     public String refreshStatistics(String entityName) {
+        if (StringUtils.isBlank(entityName))
+            return "Pass an entity name or 'all' to refresh statistics for all entities.\n" +
+                    "Be careful, it can take very long time.";
+
         try {
-            log.info("Refreshing statistics");
+            log.info("Refreshing statistics for " + entityName);
             login();
-            if (StringUtils.isBlank(entityName)) {
+            if ("all".equals(entityName)) {
                 for (MetaClass metaClass : metadata.getSession().getClasses()) {
                     Class javaClass = metaClass.getJavaClass();
                     Table annotation = (Table) javaClass.getAnnotation(Table.class);
@@ -359,10 +365,13 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
     public String showStatistics(String entityName) {
         try {
             if (StringUtils.isBlank(entityName)) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Displaying statistics for all entities.\n");
+                sb.append("To show a particular entity only, pass its name in the method parameter.\n\n");
+
                 List<String> names = new ArrayList(getStatisticsCache().keySet());
                 Collections.sort(names);
 
-                StringBuilder sb = new StringBuilder();
                 for (String name : names) {
                     sb.append(getStatisticsCache().get(name)).append("\n");
                 }

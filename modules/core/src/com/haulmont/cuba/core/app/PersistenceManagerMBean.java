@@ -41,9 +41,10 @@ public interface PersistenceManagerMBean
 
     /**
      * Start the database update.
+     * @param token 'update' string must be passed to avoid accidental invocation
      * @return  operation result
      */
-    String updateDatabase();
+    String updateDatabase(String token);
 
     /**
      * Show database update scripts that will be executed on next update.
@@ -72,14 +73,14 @@ public interface PersistenceManagerMBean
     /**
      * Calculate and refresh statistics for the specified entity. This method updates statistics in the database table
      * and in cache.
-     * @param entityName    entity name
+     * @param entityName    entity name or 'all' to refresh for all entities
      * @return              operation result
      */
     String refreshStatistics(String entityName);
 
     /**
      * Show current statistics for the specified entity.
-     * @param entityName    entity name
+     * @param entityName    entity name or blank to show all entities
      * @return              operation result
      */
     String showStatistics(String entityName);
