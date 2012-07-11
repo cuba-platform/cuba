@@ -297,10 +297,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         __getCollection().remove(item);
 
         MetaProperty inverseProperty = metaProperty.getInverse();
-        if (inverseProperty == null)
-            throw new UnsupportedOperationException("No inverse property for " + metaProperty);
-
-        item.setValue(inverseProperty.getName(), null);
+        if (inverseProperty != null)
+            item.setValue(inverseProperty.getName(), null);
 
         // detach listener only after setting value to the link property
         detachListener(item);
@@ -315,10 +313,8 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         __getCollection().add(item);
 
         MetaProperty inverseProperty = metaProperty.getInverse();
-        if (inverseProperty == null)
-            throw new UnsupportedOperationException("No inverse property for " + metaProperty);
-
-        item.setValue(inverseProperty.getName(), parentDs.getItem());
+        if (inverseProperty != null)
+            item.setValue(inverseProperty.getName(), parentDs.getItem());
 
         // attach listener only after setting value to the link property
         attachListener(item);
