@@ -17,6 +17,9 @@
     <xsl:param name="css.decoration">0</xsl:param>
     <xsl:param name="highlight.source" select="1"/>
 	<xsl:param name="preface.autolabel">0</xsl:param>
+	<xsl:param name="generate.index" select="1"/>
+	<xsl:param name="index.on.type" select="1"/>
+	
 
 	<xsl:param name="chunker.output.encoding" select="'windows-1251'"/>
 	<xsl:param name="highlight.xslthl.config" select="'file:///highlighting/xslthl-config.xml'"/>

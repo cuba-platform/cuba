@@ -266,6 +266,7 @@ pre {
 .note {
     background: #ebf4f7;
     border: solid #c3d9e6 1px;
+	background-image:url(../img/note.png);
 }
 
 .note .title {
@@ -275,6 +276,7 @@ pre {
 
 .tip {
     background: #FAF7F5;
+	background-image:url(../img/note.png);
     border: solid #e2d2c9 1px;
     margin-left: 2em;
     margin-top: 1em;
@@ -509,7 +511,6 @@ pre {
 
 .authorinitials {
 	font-style: italic;
-	border-bottom: 1px dotted
 }
 
 .classname,.methodname,.interfacename,.errortext,.type {

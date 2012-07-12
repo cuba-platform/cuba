@@ -26,7 +26,7 @@
   <section id="example_new_role">
     <title>Создание роли</title>
     <para>Создадим роль <authorinitials>Продавец</authorinitials>. В главном меню приложения выберите пункт меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Роли</guimenu>.</para>
-    <para>В открывшейся окне нажмите на кнопку <guibutton>Создать</guibutton>. После этого откроется окно, представленное на рисунке.</para>
+    <para>В открывшемся окне нажмите на кнопку <guibutton>Создать</guibutton>. После этого откроется окно, представленное на рисунке.</para>
     <mediaobject>
       <imageobject>
         <imagedata align="center" fileref="img/example_1.png"/>
@@ -63,7 +63,7 @@
       </imageobject>
     </mediaobject>
   </section>
-  <section>
+  <section id="example_access_group">
     <title>Создание группы доступа</title>
     <para>Далее создадим группу доступа <authorinitials>Продавцы</authorinitials>.</para>
     <para>Для этого перейдите к пункту меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Группы доступа</guimenu>.</para>
@@ -82,48 +82,52 @@
     </mediaobject>
     <para>Далее заполните поля <guilabel>Имя сущности</guilabel>, <guilabel>Оператор Join</guilabel>, <guilabel>Оператор Where</guilabel> и нажмите на кнопку <guibutton>ОК</guibutton>. Значения Вы можете взять из таблицы, расположенной ниже.</para>
     <informaltable frame="all" align="center" pgwide="0">
-      <tgroup colsep="1" cols="2" rowsep="1" align="center">
+      <tgroup colsep="1" cols="3" rowsep="1" align="center">
         <colspec colname="c1"/>
         <colspec colname="c2"/>
+        <colspec colname="c3"/>
         <thead>
           <row>
             <entry colname="Имя атрибута">Название поля</entry>
             <entry colname="Тип атрибута">Значение</entry>
+            <entry colname="Тип атрибута">Комментарии</entry>
           </row>
         </thead>
         <tbody>
-          <row>
-            <entry align="center" namest="c1" nameend="c2">Ограничения для группы <authorinitials>Продавцы</authorinitials></entry>
-          </row>
           <row>
             <entry align="left">Имя сущности</entry>
             <entry align="left">
               <classname>shop$Sale</classname>
             </entry>
+            <entry align="left">Сущность <classname>Продажа</classname></entry>
           </row>
           <row>
             <entry align="left">Оператор Join</entry>
             <entry align="left">
               <code>left join {E}.salesPerson a</code>
             </entry>
+            <entry align="left">Внешнее соединение с экземплярами сущностями <classname>Продавец</classname>. Используется метка <code>{E}</code>. Она заменяется на имя основной сущности запроса − <classname>shop$Sale</classname>. При этом в объявление <code>{E}.salesPerson</code>, имеющее алиас <code>a</code>, выгружаются все экземпляры сущности <code>SalesPerson</code>, напрямую связанные с экземплярами сущности <code>Sale</code>. Ассоциативное поле <code>salesPerson</code> является коллекцией экземпляров сущности <code>SalesPerson</code>.</entry>
           </row>
           <row>
             <entry align="left">Оператор Where</entry>
             <entry align="left">
               <code>(a.id in (select p.id from shop$SalesPerson p where p.user.id= :session$userId))</code>
             </entry>
+            <entry align="left">Происходит выборка экземпляров алиаса <code>a</code>, идентификаторы которых входят в список идентификаторов тех продавцов, которые в данный момент аутентифицированы в системе (условие <code>p.user.id= :session$userId</code>). </entry>
           </row>
           <row>
             <entry align="left">Имя сущности</entry>
             <entry align="left">
               <classname>shop$SalesPerson</classname>
             </entry>
+            <entry align="left">Сущность <classname>Продавец</classname></entry>
           </row>
           <row>
             <entry align="left">Оператор Where</entry>
             <entry align="left">
               <code>({E}.user.id = :session$userId)</code>
             </entry>
+            <entry align="left">Происходит выборка тех экземпляров главной сущности <classname>SalesPerson</classname> (обозначена меткой <code>{E}</code>), у которых соотнесенные им пользователи аутентифицированы в системе (условие <code>{E}.user.id = :session$userId</code>).</entry>
           </row>
         </tbody>
       </tgroup>

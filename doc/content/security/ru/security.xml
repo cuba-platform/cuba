@@ -5,7 +5,7 @@
       <year>2012</year>
       <holder>Haulmont (<ulink url="www.haulmont.ru">www.haulmont.ru</ulink>)</holder>
     </copyright>
-    <title>Руководство по подсистеме безо пасности платформы <trademark>CUBA</trademark></title>
+    <title>Руководство по подсистеме безопасности платформы <trademark>CUBA</trademark></title>
   </bookinfo>
   <preface lang="ru">
     <title>Предисловие</title>
@@ -22,17 +22,21 @@
       <title>Структура руководства</title>
       <para>Данное руководство состоит из следующих разделов:</para>
       <para><link linkend="chapter0_theoretical_info">
-          <emphasis role="bold">Глава 1. Общие сведения</emphasis>
+          <emphasis role="bold">Глава 1. Обзор подсистемы безопасности</emphasis>
         </link></para>
-      <para>Данная глава содержит описание механизмов безопасности платформы.</para>
+      <para>Данная глава содержит краткое описание подсистемы безопасности платформы.</para>
       <para><link linkend="chapter1_tool_description">
-          <emphasis role="bold">Глава 2. Описание инструментария</emphasis>
+          <emphasis role="bold">Глава 2. Инструменты настройки подсистемы безопасности</emphasis>
         </link></para>
       <para>В данной главе содержится описание интерфейса подсистемы, с помощью которой производится управление безопасностью. </para>
-      <para><link linkend="chapter3_examples">
-          <emphasis role="bold">Глава 3. Примеры построения отчетов</emphasis>
+      <para><link linkend="chapter3_detail_info">
+          <emphasis role="bold">Глава 3. Механизмы управления подсистемой безопасности</emphasis>
         </link></para>
-      <para>В главе 3 приводится подробное описание основных действий по управлению безопасностью системы.</para>
+      <para>В главе 3 приводится подробное описание подсистемы безопасности.</para>
+      <para><link linkend="chapter3_examples">
+          <emphasis role="bold">Глава 4. Примеры управления доступом в системе</emphasis>
+        </link></para>
+      <para>В главе 4 приводится подробное описание основных действий по управлению безопасностью системы на примере приложения <application>Магазин</application>.</para>
     </section>
     <section>
       <title>Соглашения, принятые в документе</title>
@@ -96,7 +100,6 @@ encrypt = true </programlisting></para>
   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter0.xml" encoding="UTF-8"/>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter1.xml" encoding="UTF-8"/>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter2.xml" encoding="UTF-8"/>
-   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter4.xml" encoding="UTF-8"/>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter3.xml" encoding="UTF-8"/>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="glossary.xml" encoding="UTF-8"/>
 </book>
