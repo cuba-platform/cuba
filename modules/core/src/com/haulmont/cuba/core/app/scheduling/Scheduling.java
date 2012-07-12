@@ -277,7 +277,7 @@ public class Scheduling extends ManagementBean implements SchedulingAPI, Schedul
 
     private boolean checkFirst(ScheduledTask task, Integer serverPriority, long now) {
         if (serverPriority == null) {
-            log.trace(task + ": not in permitted hosts");
+            log.trace(task + ": not in permitted hosts or not a master");
             return false;
         }
         if (task.getStartDelay() != null) {
@@ -296,8 +296,12 @@ public class Scheduling extends ManagementBean implements SchedulingAPI, Schedul
     private Integer getServerPriority(ScheduledTask task, String serverId) {
         String permittedServers = task.getPermittedServers();
 
-        if (StringUtils.isBlank(permittedServers))
-            return 0;
+        if (StringUtils.isBlank(permittedServers)) {
+            if (BooleanUtils.isTrue(task.getSingleton()) && !clusterManager.isMaster())
+                return null;
+            else
+                return 0;
+        }
 
         String[] parts = permittedServers.trim().split("[,;]");
         for (int i = 0; i < parts.length; i++) {
