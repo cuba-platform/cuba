@@ -416,7 +416,7 @@ public class App implements ConnectionListener {
         }
     }
 
-    public WindowManager getWindowManager() {
+    public DesktopWindowManager getWindowManager() {
         if (windowManager == null)
             windowManager = new DesktopWindowManager();
 

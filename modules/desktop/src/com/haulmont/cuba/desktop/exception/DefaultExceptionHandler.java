@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.exception;
 
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
+import com.haulmont.cuba.desktop.sys.DialogWindow;
 import com.haulmont.cuba.gui.AppConfig;
 import org.jdesktop.swingx.JXErrorPane;
 import org.jdesktop.swingx.error.ErrorInfo;
@@ -26,6 +27,8 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 
     @Override
     public boolean handle(Thread thread, Throwable exception) {
+        final DialogWindow lastDialogWindow = App.getInstance().getWindowManager().getLastDialogWindow();
+
         ErrorInfo ei = new ErrorInfo(
                 getMessage("errorPane.title"), getMessage("errorPane.message"),
                 null, null, exception, null, null);
@@ -36,12 +39,20 @@ public class DefaultExceptionHandler implements ExceptionHandler {
                 new WindowAdapter() {
                     @Override
                     public void windowClosed(WindowEvent e) {
-                        App.getInstance().enable();
+                        if (lastDialogWindow != null)
+                            lastDialogWindow.enableWindow();
+                        else
+                            App.getInstance().enable();
                     }
                 }
         );
         dialog.setModal(false);
-        App.getInstance().disable(null);
+
+        if (lastDialogWindow != null)
+            lastDialogWindow.disableWindow(null);
+        else
+            App.getInstance().disable(null);
+
         dialog.setVisible(true);
         return true;
     }

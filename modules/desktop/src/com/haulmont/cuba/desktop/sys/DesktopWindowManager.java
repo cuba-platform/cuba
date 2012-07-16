@@ -33,6 +33,7 @@ import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
+import java.util.List;
 
 /**
  * <p>$Id$</p>
@@ -81,6 +82,19 @@ public class DesktopWindowManager extends WindowManager {
     @Override
     public Collection<Window> getOpenWindows() {
         return new ArrayList<Window>(windowOpenMode.keySet());
+    }
+
+    @Nullable
+    public DialogWindow getLastDialogWindow() {
+        List<Window> openedWindows = new ArrayList<>(windowOpenMode.keySet());
+        if (openedWindows.size() > 0) {
+            Window w = openedWindows.get(openedWindows.size() - 1);
+            WindowOpenMode mode = windowOpenMode.get(w);
+            if (mode.getOpenType().equals(OpenType.DIALOG) && mode.getData() instanceof DialogWindow) {
+                return (DialogWindow) mode.getData();
+            }
+        }
+        return null;
     }
 
     @Override
@@ -189,7 +203,7 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     private JDialog showWindowDialog(final Window window, String caption, String description, boolean forciblyDialog) {
-        JDialog dialog = new JDialog(App.getInstance().getMainFrame(), caption);
+        JDialog dialog = new DialogWindow(App.getInstance().getMainFrame(), caption);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         JComponent jComponent = DesktopComponentsHelper.getComposition(window);
@@ -227,7 +241,12 @@ public class DesktopWindowManager extends WindowManager {
         dialog.pack();
         dialog.setLocationRelativeTo(App.getInstance().getMainFrame());
 
-        App.getInstance().disable(null);
+        DialogWindow lastDialogWindow = getLastDialogWindow();
+        if (lastDialogWindow == null)
+            App.getInstance().disable(null);
+        else
+            lastDialogWindow.disableWindow(null);
+
         dialog.setVisible(true);
 
         return dialog;
@@ -490,10 +509,13 @@ public class DesktopWindowManager extends WindowManager {
                 break;
             }
         }
-        if (previous == null)
+        if (previous == null) {
             App.getInstance().enable();
-        else if (previous.getData() instanceof JDialog)
+        } else if (previous.getData() instanceof DialogWindow) {
+            ((DialogWindow) previous.getData()).enableWindow();
+        } else if (previous.getData() instanceof JDialog) {
             ((JDialog) previous.getData()).requestFocus();
+        }
     }
 
     @Override
