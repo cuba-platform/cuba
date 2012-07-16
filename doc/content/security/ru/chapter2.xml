@@ -10,11 +10,6 @@
   <section>
     <title>Окно входа в систему</title>
     <para><classname>Login screen</classname> представляет собой окно входа в систему, посредством которого пользователь получает доступ к системе. В этом окне производится аутентификация пользователя по имени учетной записи и паролю, а также дальнейшая авторизация. Пароль в целях его безопасности хранится в базе данных в хэшированном виде.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/loginWindow.png"/>
-      </imageobject>
-    </mediaobject>
     <para>Класс окна входа в систему − <classname>LoginWindow</classname>. </para>
   </section>
   <section>
@@ -24,7 +19,7 @@
 пользователем,  и содержащий информацию о правах доступа пользователя к
 данным.</para>
     <para>Для контроля прав доступа пользователей к данным код системы всегда должен иметь возможность узнать, какой пользователь в данный момент работает и каковы его права. Например, перед сохранением сущности в БД в специальных полях сущности проставляется имя пользователя, выполняющего сохранение. Кроме того, <glossterm linkend="glossary_dataService_id">Data Service</glossterm> всегда проверяет права пользователя на извлечение или сохранение определенных сущностей.</para>
-    <para>Информация о текущем пользователе и его правах хранится в объекте <classname>UserSession</classname>, который создается после входа  пользователя и кэшируется на стороне <glossterm linkend="glossary_middleware_id">middleware</glossterm>, а также передается клиенту в результате метода <methodname>LoginService.login()</methodname>. Уничтожается пользовательская сессия после выхода пользователя из системы, либо после истечения времени бездействия, определяемого параметром среднего слоя приложения <parameter>cuba.userSessionExpirationTimeoutSec</parameter> (смотрите класс конфигурации <classname>ServerConfig.getUserSessionExpirationTimeoutSec</classname>).</para>
+    <para>Информация о текущем пользователе и его правах хранится в объекте <classname>UserSession</classname>, который создается после входа  пользователя и кэшируется на стороне <glossterm linkend="glossary_middleware_id">middleware</glossterm>, а также передается клиенту в результате метода <methodname>LoginService.login()</methodname>. Уничтожается пользовательская сессия после выхода пользователя из системы, либо после истечения времени бездействия, определяемого параметром среднего слоя приложения <link linkend="property_sessionExpirTime">cuba.userSessionExpirationTimeoutSec</link>.</para>
     <para>Текущая пользовательская сессия всегда привязывается к потоку выполнения и может быть получена следующими способами:<itemizedlist>
         <listitem>
           <para>через интерфейс инфраструктуры <classname>UserSessionSource</classname></para>
@@ -144,20 +139,17 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
   </section>
   <section id="section_access_groups">
     <title>Группы доступа</title>
-    <para>Группы доступа предоставляют удобный инструмент для быстрого задания ограничений
-большому числу пользователей. Для этого достаточно создать группу с необходимыми
-ограничениями и определять туда новых пользователей при создании или добавлять
-существующих пользователей в список группы при ее редактировании.</para>
-    <para id="constraints_id">Ограничения создаются на языке <link linkend="glossary_jpql_id">JPQL</link>. Ограничения наследуются от всех групп выше по иерархии.</para>
+    <para>Группы доступа предоставляют инструмент назначения ограничений доступа к определенным экземплярам сущностей (записям). Пользователь может быть причислен только к одной группе, однако он получит список ограничений от всех групп вверх по иерархии.</para>
+    <para id="constraints_id">Ограничения задаются с помощью фрагментов выражений на языке <link linkend="glossary_jpql_id">JPQL</link>. </para>
     <para>В параметрах ограничений  можно использовать следующие предопределенные константы:<itemizedlist>
         <listitem>
-          <para><varname>session$userLogin</varname> − имя учетной записи текущего пользователя (всегда того, кто аутентифицирован в системе, независимо от замещения).</para>
+          <para><varname>session$userLogin</varname> − имя учетной записи текущего пользователя (в случае замещения − имя учетной записи замещаемого пользователя).</para>
         </listitem>
         <listitem>
-          <para><varname>session$userId</varname> − ID текущего пользователя (всегда того, кто аутентифицирован в системе, независимо от замещения).</para>
+          <para><varname>session$userId</varname> − ID текущего пользователя (в случае замещения − ID замещаемого пользователя).</para>
         </listitem>
         <listitem>
-          <para><varname>session$userGroupId</varname> − ID группы текущего пользователя (того, кто аутентифицирован в системе, либо замещаемого, если таковой выбран).</para>
+          <para><varname>session$userGroupId</varname> − ID группы текущего пользователя (в случае замещения − ID группы замещаемого пользователя).</para>
         </listitem>
         <listitem>
           <para><varname>session$XXX</varname> − атрибут текущей пользовательской сессии, где XXX - имя атрибута</para>
@@ -195,7 +187,7 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
   </section>
   <section id="section_AD">
     <title>Интеграция с Active Directory</title>
-    <para><firstterm>Active Directory</firstterm> −  это LDAP-совместимая реализация службы каталогов <application>Microsoft</application> для операционных систем семейства <application>Windows NT</application>, которая позволяет администраторам реализовать наборы правил, в соответствии с которыми обеспечивается единообразие настройки пользовательской среды, развертывать программное обеспечение на большом количестве компьютеров, устанавливать обновления на всех компьютерах сети. <application>Active Directory</application> хранит данные и настройки среды в централизованной базе данных.  Более подробно об <application>Active Directory</application> Вы сможете прочитать, перейдя по следующей ссылке:  <ulink url="http://ru.wikipedia.org/wiki/Active_Directory">http://ru.wikipedia.org/wiki/Active_Directory</ulink></para>
+    <para><firstterm>Active Directory</firstterm> −  это LDAP-совместимая реализация службы каталогов <application>Microsoft</application> для операционных систем семейства <application>Windows</application>, которая позволяет администраторам реализовать наборы правил, в соответствии с которыми обеспечивается единообразие настройки пользовательской среды, развертывать программное обеспечение на большом количестве компьютеров, устанавливать обновления на всех компьютерах сети. <application>Active Directory</application> хранит данные и настройки среды в централизованной базе данных.  Более подробно об <application>Active Directory</application> Вы сможете прочитать, перейдя по следующей ссылке:  <ulink url="http://ru.wikipedia.org/wiki/Active_Directory">http://ru.wikipedia.org/wiki/Active_Directory</ulink></para>
     <para id="domainController"><firstterm>Domain Controller</firstterm> − сервер, контролирующий область компьютерной сети (домен). В сетях <application>Microsoft</application> это центральный сервер для <application>Active Directory</application>.</para>
     <para><firstterm>Kerberos</firstterm> − сетевой протокол аутентификации, позволяющий передавать данные через незащищенные сети для безопасной идентификации. Вместо передачи паролей в открытом виде в нем используется шифрование с ключами. <application>Kerberos</application> предоставляет дополнительный уровень безопасности системы и сильно усложняет перехват паролей пользователей злоумышленниками.</para>
     <para><firstterm>NTLM</firstterm> − протокол сетевой аутентификации, разработанный фирмой <application>Microsoft</application> для <application>Windows NT</application>.</para>
@@ -343,7 +335,7 @@ useTicketCache=false;};</programlisting></para>
             <para>Файл ключа нужно разместить по адресу, указанному в <filename>jaas.conf</filename> (желательно в той же папке, что и файл ключа).</para>
           </listitem>
           <listitem>
-            <para>Настройки приложения <filename>local.app.properties</filename> в каталоге <filename>conf</filename> приложения.  По умолчанию для <application>Active Directory</application> используются следующие настройки:</para>
+            <para>Настройки приложения <glossterm linkend="glossary_local_app_properties">local.app.properties</glossterm> в каталоге <filename>conf</filename> приложения клиента.  По умолчанию для <application>Active Directory</application> используются следующие настройки:</para>
             <para><programlisting># Использовать Kerberos
 cuba.web.activeDirectoryAuthClass=com.haulmont.cuba.web.sys.auth.KerberosAuthProvider
 # Файлы конфигурации расположены в каталоге conf приложения
@@ -445,7 +437,7 @@ reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Polic
         <para><emphasis role="bold">Включение полной отладочной информации на сервере</emphasis></para>
         <itemizedlist>
           <listitem>
-            <para>Для включения отладочной информации <application>Kerberos</application> на сервере в <filename>local.app.properties</filename> задать параметр </para>
+            <para>Для включения отладочной информации <application>Kerberos</application> на сервере в <glossterm linkend="glossary_local_app_properties">local.app.properties</glossterm> задать параметр </para>
             <para><programlisting>cuba.web.activeDirectoryDebug = true</programlisting></para>
           </listitem>
           <listitem>
@@ -482,7 +474,7 @@ reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Polic
           </listitem>
           <listitem>
             <para>Также <parameter>SPN</parameter> можно редактировать напрямую в <application>Active Directory</application> через <application>LDAP</application> интерфейс, например <application>LDAP Browser</application>.  
-Множество параметров <parameter>servicePrincipalName</parameter> задают записи <application>SPN</application> для аккаунта пользователя 
+Множество параметров <parameter>servicePrincipalName</parameter> задают записи <application>SPN</application> для аккаунта пользователя. 
 Параметр <parameter>userPrincipalName</parameter> задает имя пользователя как службы. </para>
           </listitem>
         </itemizedlist>
@@ -583,23 +575,24 @@ WScript.Quit
 objComputer.SetPassword &quot;put_your_passsword_here&quot;
 
 WScript.Quit</programlisting></para>
-          <para>Если скрипт не работает на сервере, войдите через учетную запись администратора на <application>XP-workstation</application> и запустите скрипт там.</para>
+          <para>Если скрипт не работает на сервере, войдите через учетную запись администратора на  компьютер под управлением операционной системы <application>Windows XP</application> и запустите скрипт там.</para>
           <para><prompt>cscript SetComputerPass.vbs CN=JESPA,CN=Computers,DC=haulmont,DC=com</prompt></para>
         </listitem>
         <listitem>
-          <para>Задать параметры доменов в <filename>local.app.properties</filename> в переменной <prompt>cuba.web.activeDirectoryDomains</prompt>. Каждый описатель домена имеет формат <prompt>domain_name|full_domain_name|service_account_name|service_account_password</prompt>. Описатели доменов отделяются друг от друга точкой с запятой. Например:</para>
+          <para>Задать параметры доменов в <glossterm linkend="glossary_local_app_properties">local.app.properties</glossterm> в переменной <prompt>cuba.web.activeDirectoryDomains</prompt>. Каждый описатель домена имеет формат <prompt>domain_name|full_domain_name|service_account_name|service_account_password</prompt>. Описатели доменов отделяются друг от друга точкой с запятой. Например:</para>
           <para><prompt>cuba.web.activeDirectoryDomains=HAULMONT|haulmont.com|JESPA$@HAULMONT.COM|password1; TEST|test.com|JESPA$@TEST.COM|password2</prompt></para>
         </listitem>
         <listitem>
-          <para>Задать в <filename>local.app.properties</filename> дополнительные свойства для библиотеки <application>Jespa</application> (<ulink url="http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161">http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161</ulink>).  Например:</para>
+          <para>Задать в <glossterm linkend="glossary_local_app_properties">local.app.properties</glossterm> клиента дополнительные свойства для библиотеки <application>Jespa</application> (<ulink url="http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161">http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161</ulink>).  Например:</para>
           <para><prompt>jespa.log.level=3</prompt></para>
         </listitem>
         <listitem>
-          <para>Установить в <filename>local.app.properties</filename> переменную <prompt>cuba.web.useActiveDirectory=true</prompt></para>
+          <para>Установить в <glossterm linkend="glossary_local_app_properties">local.app.properties</glossterm> клиента переменную <prompt>cuba.web.useActiveDirectory=true</prompt></para>
         </listitem>
         <listitem>
           <para>Добавить адрес сервера в местную интрасеть в настройках браузера:</para>
-          <para><prompt>Для IE и Chrome: Свойства обозревателя-Безопасность-Местная интрасеть-Узлы-Дополнительно </prompt><prompt>Для FF: url=about:config, filter=ntlm, network.automatic-ntlm-auth.trusted-uris=vm30,http://tezis.haulmont.com (пример)</prompt></para>
+          <para><prompt>Для IE и Chrome: Свойства обозревателя-Безопасность-Местная интрасеть-Узлы-Дополнительно</prompt></para>
+          <para><prompt>Для FF: url=about:config, filter=ntlm, network.automatic-ntlm-auth.trusted-uris=vm30,http://tezis.haulmont.com (пример)</prompt></para>
         </listitem>
       </itemizedlist>
     </section>

@@ -8,6 +8,50 @@
       <imagedata align="center" fileref="img/er_dia.png"/>
     </imageobject>
   </mediaobject>
+  <informaltable frame="all" align="center" pgwide="0">
+    <tgroup colsep="1" cols="2" rowsep="1" align="center">
+      <colspec colname="c1"/>
+      <colspec colname="c2"/>
+      <thead>
+        <row>
+          <entry colname="Имя атрибута">Название сущности предметной области</entry>
+          <entry colname="Тип атрибута">Название сущности в системе</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry align="left">Скидка</entry>
+          <entry align="left">
+            <classname>shop$Discount</classname>
+          </entry>
+        </row>
+        <row>
+          <entry align="left">Товар</entry>
+          <entry align="left">
+            <classname>shop$Product</classname>
+          </entry>
+        </row>
+        <row>
+          <entry align="left">Продажа</entry>
+          <entry align="left">
+            <classname>shop$Sale</classname>
+          </entry>
+        </row>
+        <row>
+          <entry align="left">Покупатель</entry>
+          <entry align="left">
+            <classname>shop$Buyer</classname>
+          </entry>
+        </row>
+        <row>
+          <entry align="left">Продавец</entry>
+          <entry align="left">
+            <classname>shop$SalesPerson</classname>
+          </entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </informaltable>
   <para>Требования к системе:</para>
   <itemizedlist>
     <listitem>
@@ -106,14 +150,14 @@
             <entry align="left">
               <code>left join {E}.salesPerson a</code>
             </entry>
-            <entry align="left">Внешнее соединение с экземплярами сущностями <classname>Продавец</classname>. Используется метка <code>{E}</code>. Она заменяется на имя основной сущности запроса − <classname>shop$Sale</classname>. При этом в объявление <code>{E}.salesPerson</code>, имеющее алиас <code>a</code>, выгружаются все экземпляры сущности <code>SalesPerson</code>, напрямую связанные с экземплярами сущности <code>Sale</code>. Ассоциативное поле <code>salesPerson</code> является коллекцией экземпляров сущности <code>SalesPerson</code>.</entry>
+            <entry align="left">Внешнее соединение со связанными экземплярами сущности <classname>Продавец (shop$SalesPerson)</classname>. Используется метка <code>{E}</code>, она будет заменена на алиас основной сущности запроса − <classname>shop$Sale</classname>. Ассоциативное поле <code>salesPerson</code> является ссылкой на экземпляр сущности <code>shop$SalesPerson</code>.</entry>
           </row>
           <row>
             <entry align="left">Оператор Where</entry>
             <entry align="left">
               <code>(a.id in (select p.id from shop$SalesPerson p where p.user.id= :session$userId))</code>
             </entry>
-            <entry align="left">Происходит выборка экземпляров алиаса <code>a</code>, идентификаторы которых входят в список идентификаторов тех продавцов, которые в данный момент аутентифицированы в системе (условие <code>p.user.id= :session$userId</code>). </entry>
+            <entry align="left">Ограничение выборки экземпляров <classname>shop$Sale</classname> только теми, у которых в качестве <code>salesPerson</code> установлен продавец, являющийся текущим пользователем системы. </entry>
           </row>
           <row>
             <entry align="left">Имя сущности</entry>
@@ -127,7 +171,7 @@
             <entry align="left">
               <code>({E}.user.id = :session$userId)</code>
             </entry>
-            <entry align="left">Происходит выборка тех экземпляров главной сущности <classname>SalesPerson</classname> (обозначена меткой <code>{E}</code>), у которых соотнесенные им пользователи аутентифицированы в системе (условие <code>{E}.user.id = :session$userId</code>).</entry>
+            <entry align="left">Происходит выборка тех экземпляров главной сущности <classname>shop$SalesPerson</classname> (обозначена меткой <code>{E}</code>), у которых соотнесенный им пользователь − текущий аутентифицированный в системе пользователь.</entry>
           </row>
         </tbody>
       </tgroup>
