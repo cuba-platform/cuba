@@ -1,12 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
-        targetNamespace="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        targetNamespace="http://schemas.haulmont.com/cuba/4.0/window.xsd"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
         elementFormDefault="qualified"
         attributeFormDefault="unqualified"
         >
-    <xs:include schemaLocation="http://www.haulmont.com/schema/cuba/view.xsd"/>
+
+    <xs:include schemaLocation="http://schemas.haulmont.com/cuba/4.0/view.xsd"/>
 
     <!-- Enums -->
 

@@ -4,7 +4,7 @@
   ~ Use is subject to license terms.
   -->
 
-<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
         class="com.haulmont.cuba.gui.app.core.server.edit.ServerEditor"
         messagesPack="com.haulmont.cuba.gui.app.core.server"
         datasource="serverDs"

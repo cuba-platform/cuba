@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
-  ~ Haulmont Technology proprietary and confidential.
-  ~ Use is subject to license terms.
-  -->
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
-           xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           targetNamespace="http://www.haulmont.com/schema/cuba/desktop/theme-config.xsd">
+<xs:schema
+        targetNamespace="http://schemas.haulmont.com/cuba/4.0/desktop-theme.xsd"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns="http://schemas.haulmont.com/cuba/4.0/desktop-theme.xsd"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"
+        >
 
     <xs:element name="theme" type="themeType"/>
 

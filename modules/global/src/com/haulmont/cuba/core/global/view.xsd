@@ -1,11 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
-        targetNamespace="http://www.haulmont.com/schema/cuba/view.xsd"
+        targetNamespace="http://schemas.haulmont.com/cuba/4.0/view.xsd"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
-        xmlns="http://www.haulmont.com/schema/cuba/view.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.0/view.xsd"
         elementFormDefault="qualified"
         attributeFormDefault="unqualified"
         >
+
     <xs:element name="views">
         <xs:complexType>
             <xs:sequence>

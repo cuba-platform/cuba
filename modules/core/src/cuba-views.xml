@@ -1,4 +1,4 @@
-<views xmlns="http://www.haulmont.com/schema/cuba/view.xsd">
+<views xmlns="http://schemas.haulmont.com/cuba/4.0/view.xsd">
 
     <include file="com/haulmont/cuba/report/report.views.xml"/>
 

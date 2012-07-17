@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
-  ~ Haulmont Technology proprietary and confidential.
-  ~ Use is subject to license terms.
-  -->
-
 <xs:schema
-        targetNamespace="http://www.haulmont.com/schema/cuba/metadata.xsd"
+        targetNamespace="http://schemas.haulmont.com/cuba/4.0/metadata.xsd"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns="http://schemas.haulmont.com/cuba/4.0/metadata.xsd"
+        elementFormDefault="qualified"
         attributeFormDefault="unqualified"
-        elementFormDefault="qualified">
+        >
 
     <xs:element name="metadata">
         <xs:complexType mixed="true">

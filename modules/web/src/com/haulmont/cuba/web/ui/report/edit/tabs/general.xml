@@ -1,4 +1,4 @@
-<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd">
+<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd">
     <#assign width = 200>
     <#assign treeHeight = 400>
     <#assign treeWidth = 650>

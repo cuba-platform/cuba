@@ -1,4 +1,4 @@
-<screen-config xmlns="http://www.haulmont.com/schema/cuba/gui/screen-config.xsd">
+<screen-config xmlns="http://schemas.haulmont.com/cuba/4.0/screens.xsd">
 
     <include file="/com/haulmont/cuba/gui/screen-config.xml"/>
 

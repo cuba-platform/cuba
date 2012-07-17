@@ -1,4 +1,4 @@
-<window xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd">
+<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd">
     <layout>
         <vbox id="filter-pane" stylename="edit-area" margin="true" spacing="true">
             <label value="msg://com.haulmont.cuba.web/label.SearchParameters" stylename="h2"/>

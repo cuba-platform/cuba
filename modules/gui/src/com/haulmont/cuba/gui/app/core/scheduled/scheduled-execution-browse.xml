@@ -5,7 +5,7 @@
   -->
 
 <window
-        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
         class="com.haulmont.cuba.gui.app.core.scheduled.ScheduledExecutionBrowser"
         messagesPack="com.haulmont.cuba.gui.app.core.scheduled"
         caption="msg://executionBrowseCaption"

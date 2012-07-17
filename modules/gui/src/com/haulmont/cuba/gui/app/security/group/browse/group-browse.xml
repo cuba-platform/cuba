@@ -5,7 +5,7 @@
   -->
 
 <window
-        xmlns="http://www.haulmont.com/schema/cuba/gui/window.xsd"
+        xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
         messagesPack="com.haulmont.cuba.gui.app.security.group"
         class="com.haulmont.cuba.gui.app.security.group.browse.GroupBrowser"
         caption="msg://browser.caption"

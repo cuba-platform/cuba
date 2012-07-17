@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<metadata xmlns="http://www.haulmont.com/schema/cuba/metadata.xsd">
+<metadata xmlns="http://schemas.haulmont.com/cuba/4.0/metadata.xsd">
 
     <metadata-model>
         <class>com.haulmont.cuba.security.entity.ui.AbstractPermissionTarget</class>
