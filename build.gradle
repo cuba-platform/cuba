@@ -6,7 +6,7 @@
 
 allprojects {
     ext.artifactGroup = 'com.haulmont.cuba'
-    ext.artifactVersion = '3.4.0'
+    ext.artifactVersion = '4.0.0'
     ext.isSnapshot = true
     //ext.tomcatDir = rootDir.absolutePath + '/../tomcat'
 }
