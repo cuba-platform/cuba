@@ -1,0 +1,32 @@
+<datatypes>
+
+    <datatype class="com.haulmont.chile.core.datatypes.impl.BooleanDatatype"/>
+
+    <datatype class="com.haulmont.chile.core.datatypes.impl.IntegerDatatype"
+              format="0" groupingSeparator=""/>
+
+    <datatype class="com.haulmont.chile.core.datatypes.impl.LongDatatype"
+              format="0" groupingSeparator=""/>
+
+    <datatype class="com.haulmont.chile.core.datatypes.impl.DoubleDatatype"
+              format="0.###" decimalSeparator="." groupingSeparator=""/>
+
+    <datatype class="com.haulmont.chile.core.datatypes.impl.BigDecimalDatatype"
+              format="0.####" decimalSeparator="." groupingSeparator=""/>
+
+    <datatype class="com.haulmont.chile.core.datatypes.impl.StringDatatype"/>
+
+    <datatype class="com.haulmont.chile.core.datatypes.impl.DateTimeDatatype"
+              format="yyyy-MM-dd'T'HH:mm:ss.SSS"/>
+
+    <datatype class="com.haulmont.chile.core.datatypes.impl.DateDatatype"
+              format="yyyy-MM-dd"/>
+
+    <datatype class="com.haulmont.chile.core.datatypes.impl.TimeDatatype"
+              format="HH:mm:ss"/>
+
+    <datatype class="com.haulmont.chile.core.datatypes.impl.UUIDDatatype"/>
+
+    <datatype class="com.haulmont.chile.core.datatypes.impl.ByteArrayDatatype"/>
+
+</datatypes>
