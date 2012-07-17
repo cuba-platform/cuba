@@ -169,6 +169,10 @@ public class FieldGroupLoader extends AbstractFieldLoader {
             customField = BooleanUtils.toBoolean(custom);
         }
 
+        if (!customField && ds == null)
+            throw new IllegalStateException("Datasource is not defined for FieldGroup field " + id
+                    + ". Only custom fields can have no datasource.");
+
         MetaPropertyPath metaPropertyPath = null;
 
         final MetaClass metaClass = ds.getMetaClass();

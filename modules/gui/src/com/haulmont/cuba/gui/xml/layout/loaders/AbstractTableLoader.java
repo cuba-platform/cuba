@@ -83,14 +83,17 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
         if (StringUtils.isBlank(datasource))
             throw new IllegalStateException("Table.rows element doesn't have 'datasource' attribute");
 
-        final CollectionDatasource ds = context.getDsContext().get(datasource);
-        if (ds == null) {
+        Datasource ds = context.getDsContext().get(datasource);
+        if (ds == null)
             throw new IllegalStateException("Cannot find data source by name: " + datasource);
-        }
+        if (!(ds instanceof CollectionDatasource))
+            throw new IllegalStateException("Not a CollectionDatasource: " + datasource);
+
+        CollectionDatasource cds = (CollectionDatasource) ds;
         List<Table.Column> availableColumns;
 
         if (columnsElement != null) {
-            availableColumns = loadColumns(component, columnsElement, ds);
+            availableColumns = loadColumns(component, columnsElement, cds);
         } else {
             availableColumns = new ArrayList<Table.Column>();
         }
@@ -101,7 +104,7 @@ public abstract class AbstractTableLoader<T extends Table> extends ComponentLoad
             loadRequired(component, column);
         }
 
-        component.setDatasource(ds);
+        component.setDatasource(cds);
 
         final String multiselect = element.attributeValue("multiselect");
         component.setMultiSelect(BooleanUtils.toBoolean(multiselect));
