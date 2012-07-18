@@ -19,6 +19,7 @@
 
 package com.haulmont.cuba.core.sys.restapi;
 
+import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
@@ -174,7 +175,12 @@ public class JSONConvertor implements Convertor {
 
             switch (property.getType()) {
                 case DATATYPE:
-                    setField(bean, key, property.getRange().<Object>asDatatype().parse(json.getString(key)));
+                    String value = json.getString(key);
+                    String typeName = property.getRange().asDatatype().getName();
+                    if (!StringDatatype.NAME.equals(typeName))
+                        if ("null".equals(value))
+                            value = null;
+                    setField(bean, key, property.getRange().<Object>asDatatype().parse(value));
                     break;
                 case ENUM:
                     setField(bean, key, property.getRange().asEnumeration().parse(json.getString(key)));
