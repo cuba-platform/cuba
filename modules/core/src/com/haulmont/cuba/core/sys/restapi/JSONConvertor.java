@@ -187,6 +187,10 @@ public class JSONConvertor implements Convertor {
                     break;
                 case AGGREGATION:
                 case ASSOCIATION:
+                    if ("null".equals(json.getString(key))) {
+                        setField(bean, key, null);
+                        break;
+                    }
                     MetaClass propertyMetaClass = propertyMetaClass(property);
                     //checks if the user permitted to read and update a property
                     if (!updatePermitted(propertyMetaClass) && !readPermitted(propertyMetaClass))
