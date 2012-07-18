@@ -158,6 +158,11 @@ public class JSONConvertor implements Convertor {
         Iterator iter = json.keys();
         while (iter.hasNext()) {
             String key = (String) iter.next();
+
+            //version is readonly property
+            if ("version".equals(key))
+                continue;
+
             MetaProperty property = metaClass.getProperty(key);
 
             if (!attrModifyPermitted(metaClass, property.getName()))
@@ -176,9 +181,8 @@ public class JSONConvertor implements Convertor {
             switch (property.getType()) {
                 case DATATYPE:
                     String value = json.getString(key);
-                    String typeName = property.getRange().asDatatype().getName();
-                    if (!StringDatatype.NAME.equals(typeName))
-                        if ("null".equals(value))
+                    String typeName = property.getRange().<Object>asDatatype().getName();
+                    if (!StringDatatype.NAME.equals(typeName) && "null".equals(value))
                             value = null;
                     setField(bean, key, property.getRange().<Object>asDatatype().parse(value));
                     break;
