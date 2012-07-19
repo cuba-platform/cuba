@@ -132,22 +132,23 @@ public class DataServiceBean implements DataService {
             for (Entity entity : context.getCommitInstances()) {
                 MetaClass metaClass = metadata.getSession().getClass(entity.getClass());
                 for (MetaProperty property : metaClass.getProperties()) {
-                    if (property.getRange().isClass() && !property.getJavaType().isAnnotationPresent(Embeddable.class)) {
-                        if (!property.getRange().getCardinality().isMany()) {
-                            Entity propertyEntity = entity.getValue(property.getName());
-                            if (propertyEntity == null)
-                                continue;
+                    if (property.getRange().isClass()
+                            && !property.getJavaType().isAnnotationPresent(Embeddable.class)
+                            && !property.getRange().getCardinality().isMany()) {
+                        Entity propertyEntity = entity.getValue(property.getName());
+                        if (propertyEntity == null)
+                            continue;
 
-                            if (propertyEntity.getId() != null) {
-                                //managed reference
-                                propertyEntity = em.getReference(propertyEntity.getMetaClass().getJavaClass(),
-                                        propertyEntity.getId());
-                                entity.setValue(property.getName(), null);
-                                entity.setValue(property.getName(), propertyEntity);
-                            }
+                        if (propertyEntity.getId() != null) {
+                            //managed reference
+                            propertyEntity = em.getReference(propertyEntity.getMetaClass().getJavaClass(),
+                                    propertyEntity.getId());
+                            entity.setValue(property.getName(), null);
+                            entity.setValue(property.getName(), propertyEntity);
                         }
                     }
                 }
+
                 if (newInstanceIdSet.contains(metaClass.getName() + "-" + entity.getId().toString())) {
                     em.persist(entity);
                     res.put(entity, entity);
