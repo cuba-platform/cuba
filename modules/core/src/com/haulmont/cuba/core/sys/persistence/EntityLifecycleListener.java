@@ -43,6 +43,9 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
     private Persistence persistence;
 
     @Inject
+    private EntityListenerManager manager;
+
+    @Inject
     private EntityLogAPI entityLog;
 
     @Inject
@@ -64,7 +67,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
 
         if (((PersistenceCapable) entity).pcIsNew()) {
             entityLog.registerCreate(entity, true);
-            EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_INSERT);
+            manager.fireListener(entity, EntityListenerType.BEFORE_INSERT);
             enqueueForFts(entity, FtsChangeType.INSERT);
         } else {
             if (entity instanceof Updatable) {
@@ -72,16 +75,16 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
                 if ((entity instanceof SoftDelete) && justDeleted((SoftDelete) entity)) {
                     entityLog.registerDelete(entity, true);
                     processDeletePolicy(entity);
-                    EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_DELETE);
+                    manager.fireListener(entity, EntityListenerType.BEFORE_DELETE);
                     enqueueForFts(entity, FtsChangeType.DELETE);
                 } else {
                     entityLog.registerModify(entity, true);
-                    EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_UPDATE);
+                    manager.fireListener(entity, EntityListenerType.BEFORE_UPDATE);
                     enqueueForFts(entity, FtsChangeType.UPDATE);
                 }
             } else {
                 entityLog.registerModify(entity, true);
-                EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_UPDATE);
+                manager.fireListener(entity, EntityListenerType.BEFORE_UPDATE);
                 enqueueForFts(entity, FtsChangeType.UPDATE);
             }
         }
@@ -95,17 +98,17 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
         BaseEntity entity = (BaseEntity) event.getSource();
 
         if (((PersistenceCapable) entity).pcIsNew()) {
-            EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.AFTER_INSERT);
+            manager.fireListener(entity, EntityListenerType.AFTER_INSERT);
         } else {
             if (entity instanceof Updatable) {
                 __beforeUpdate((Updatable) event.getSource());
                 if ((entity instanceof SoftDelete) && justDeleted((SoftDelete) entity)) {
-                    EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.AFTER_DELETE);
+                    manager.fireListener(entity, EntityListenerType.AFTER_DELETE);
                 } else {
-                    EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.AFTER_UPDATE);
+                    manager.fireListener(entity, EntityListenerType.AFTER_UPDATE);
                 }
             } else {
-                EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.AFTER_UPDATE);
+                manager.fireListener(entity, EntityListenerType.AFTER_UPDATE);
             }
         }
     }
@@ -116,7 +119,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
 
         BaseEntity entity = (BaseEntity) event.getSource();
         entityLog.registerDelete(entity, true);
-        EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.BEFORE_DELETE);
+        manager.fireListener(entity, EntityListenerType.BEFORE_DELETE);
         enqueueForFts(entity, FtsChangeType.DELETE);
     }
 
@@ -126,7 +129,7 @@ public class EntityLifecycleListener extends AbstractLifecycleListener
             return;
 
         BaseEntity entity = (BaseEntity) event.getSource();
-        EntityListenerManager.getInstance().fireListener(entity, EntityListenerType.AFTER_DELETE);
+        manager.fireListener(entity, EntityListenerType.AFTER_DELETE);
     }
 
     private boolean justDeleted(SoftDelete dd) {

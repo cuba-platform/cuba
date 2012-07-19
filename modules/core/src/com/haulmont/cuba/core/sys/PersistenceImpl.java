@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.EntityLifecycleListener;
+import com.haulmont.cuba.core.sys.persistence.EntityTransactionListener;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -70,9 +71,13 @@ public class PersistenceImpl implements Persistence {
     private EntityLifecycleListener entityLifecycleListener;
 
     @Inject
-    public void setFactory(OpenJPAEntityManagerFactory jpaEmf, EntityLifecycleListener entityLifecycleListener) {
+    public void setFactory(OpenJPAEntityManagerFactory jpaEmf,
+                           EntityLifecycleListener entityLifecycleListener,
+                           EntityTransactionListener entityTransactionListener)
+    {
         this.jpaEmf = jpaEmf;
         ((OpenJPAEntityManagerFactorySPI) jpaEmf).addLifecycleListener(entityLifecycleListener, null);
+        ((OpenJPAEntityManagerFactorySPI) jpaEmf).addTransactionListener(entityTransactionListener);
     }
 
     @Override

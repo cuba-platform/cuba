@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.core.sys.listener;
 
+import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
@@ -18,9 +19,12 @@ import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@ManagedBean("cuba_EntityListenerManager")
 public class EntityListenerManager
 {
     private static class Key
@@ -53,9 +57,10 @@ public class EntityListenerManager
         }
     }
 
-    private static EntityListenerManager instance;
-
     private Log log = LogFactory.getLog(EntityListenerManager.class);
+
+    @Inject
+    private Persistence persistence;
 
     private Map<Key, List> cache = new ConcurrentHashMap<Key, List>();
 
@@ -63,13 +68,6 @@ public class EntityListenerManager
             new ConcurrentHashMap<Class<? extends BaseEntity>, Set<String>>();
 
     private volatile boolean enabled = true;
-
-    public static EntityListenerManager getInstance() {
-        if (instance == null) {
-            instance = new EntityListenerManager();
-        }
-        return instance;
-    }
 
     public void addListener(Class<? extends BaseEntity> entityClass, Class<?> listenerClass) {
         Set<String> set = dynamicListeners.get(entityClass);
@@ -87,6 +85,10 @@ public class EntityListenerManager
         List listeners = getListener(entity.getClass(), type);
         for (Object listener : listeners) {
             switch (type) {
+                case BEFORE_DETACH:
+                    logExecution(type, entity);
+                    ((BeforeDetachEntityListener) listener).onBeforeDetach(entity, persistence.getEntityManager());
+                    break;
                 case BEFORE_INSERT:
                     logExecution(type, entity);
                     ((BeforeInsertEntityListener) listener).onBeforeInsert(entity);
@@ -126,14 +128,16 @@ public class EntityListenerManager
             StringBuilder sb = new StringBuilder();
             sb.append("Executing ").append(type).append(" entity listener for ")
                     .append(entity.getClass().getName()).append(" id=").append(entity.getId());
-            Set<String> dirty = PersistenceProvider.getDirtyFields(entity);
-            if (!dirty.isEmpty()) {
-                sb.append(", changedProperties: ");
-                for (Iterator<String> it = dirty.iterator(); it.hasNext();) {
-                    String field = it.next();
-                    sb.append(field);
-                    if (it.hasNext())
-                        sb.append(",");
+            if (type != EntityListenerType.BEFORE_DETACH) {
+                Set<String> dirty = PersistenceProvider.getDirtyFields(entity);
+                if (!dirty.isEmpty()) {
+                    sb.append(", changedProperties: ");
+                    for (Iterator<String> it = dirty.iterator(); it.hasNext();) {
+                        String field = it.next();
+                        sb.append(field);
+                        if (it.hasNext())
+                            sb.append(",");
+                    }
                 }
             }
             log.debug(sb.toString());

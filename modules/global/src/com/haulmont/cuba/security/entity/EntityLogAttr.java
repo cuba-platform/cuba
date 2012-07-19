@@ -10,12 +10,12 @@
  */
 package com.haulmont.cuba.security.entity;
 
+import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.chile.core.model.MetaClass;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -30,26 +30,36 @@ import org.apache.openjpa.persistence.Persistent;
 @Entity(name = "sec$EntityLogAttr")
 @Table(name = "SEC_ENTITY_LOG_ATTR")
 @SystemLevel
+// TODO Make this entity transient when #1358 is fixed
+//@MetaClass(name = "sec$EntityLogAttr")
 public class EntityLogAttr extends BaseUuidEntity {
     private static final long serialVersionUID = 4258700403293876630L;
+
+    public static final String VALUE_ID_SUFFIX = "-id";
+    public static final String MP_SUFFIX = "-mp";
 
     public static final int VALUE_LEN = 1500;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ITEM_ID")
+//    @MetaProperty
     private EntityLogItem logItem;
 
     @Column(name = "NAME", length = 50)
+//    @MetaProperty
     private String name;
 
     @Column(name = "VALUE", length = VALUE_LEN)
+//    @MetaProperty
     private String value;
 
     @Column(name = "VALUE_ID")
     @Persistent
+//    @MetaProperty
     private UUID valueId;
 
     @Column(name = "MESSAGES_PACK", length = 200)
+//    @MetaProperty
     private String messagesPack;
 
     public EntityLogItem getLogItem() {
@@ -84,7 +94,7 @@ public class EntityLogAttr extends BaseUuidEntity {
         final String entityName = getLogItem().getEntity();
         try {
             Class<?> aClass = Class.forName(entityName);
-            MetaClass metaClass = MetadataProvider.getSession().getClass(aClass);
+            com.haulmont.chile.core.model.MetaClass metaClass = MetadataProvider.getSession().getClass(aClass);
             com.haulmont.chile.core.model.MetaProperty property = metaClass.getProperty(getName());
             if (property != null) {
                 if (property.getRange().isDatatype()) {

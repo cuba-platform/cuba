@@ -444,6 +444,7 @@ create table SEC_ENTITY_LOG (
     TYPE char(1),
     ENTITY varchar(100),
     ENTITY_ID varchar(36),
+    CHANGES longvarchar,
 
     primary key (ID),
     constraint FK_SEC_ENTITY_LOG_USER foreign key (USER_ID) references SEC_USER(ID)

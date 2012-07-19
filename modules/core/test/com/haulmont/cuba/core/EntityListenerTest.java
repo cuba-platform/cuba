@@ -15,6 +15,7 @@ import com.haulmont.cuba.core.entity.Server;
 import com.haulmont.cuba.core.listener.AfterDeleteEntityListener;
 import com.haulmont.cuba.core.listener.AfterInsertEntityListener;
 import com.haulmont.cuba.core.listener.AfterUpdateEntityListener;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 
 import java.sql.SQLException;
@@ -66,7 +67,7 @@ public class EntityListenerTest extends CubaTestCase
     }
 
     public void test() {
-        EntityListenerManager.getInstance().addListener(Server.class, TestListener.class);
+        AppContext.getBean(EntityListenerManager.class).addListener(Server.class, TestListener.class);
 
         UUID id, id1;
         Transaction tx = Locator.createTransaction();

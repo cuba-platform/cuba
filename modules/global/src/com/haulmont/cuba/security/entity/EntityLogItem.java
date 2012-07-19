@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.security.entity;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.Set;
 
+import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import org.apache.openjpa.persistence.Persistent;
 
@@ -27,6 +29,7 @@ import org.apache.openjpa.persistence.Persistent;
  */
 @Entity(name = "sec$EntityLog")
 @Table(name = "SEC_ENTITY_LOG")
+@Listeners("com.haulmont.cuba.security.listener.EntityLogItemDetachListener")
 @SystemLevel
 public class EntityLogItem extends BaseUuidEntity
 {
@@ -79,8 +82,13 @@ public class EntityLogItem extends BaseUuidEntity
     @Persistent
     private UUID entityId;
 
-    @OneToMany(mappedBy = "logItem", fetch = FetchType.LAZY)
+//    @OneToMany(mappedBy = "logItem", fetch = FetchType.LAZY)
+    @Transient
+    @MetaProperty
     private Set<EntityLogAttr> attributes;
+
+    @Column(name = "CHANGES")
+    private String changes;
 
     public String getEntity() {
         return entity;
@@ -128,5 +136,13 @@ public class EntityLogItem extends BaseUuidEntity
 
     public void setAttributes(Set<EntityLogAttr> attributes) {
         this.attributes = attributes;
+    }
+
+    public String getChanges() {
+        return changes;
+    }
+
+    public void setChanges(String changes) {
+        this.changes = changes;
     }
 }

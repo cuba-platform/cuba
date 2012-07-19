@@ -161,10 +161,10 @@ public class DatasourceImpl<T extends Entity>
     }
 
     public void invalidate() {
-        if (State.NOT_INITIALIZED != this.state) {
-            final State prevStatus = this.state;
-            this.state = State.INVALID;
-            fireStateChanged(prevStatus);
+        if (State.NOT_INITIALIZED != state && State.INVALID != state) {
+            State prevState = state;
+            state = State.INVALID;
+            fireStateChanged(prevState);
         }
         modified = false;
         clearCommitLists();

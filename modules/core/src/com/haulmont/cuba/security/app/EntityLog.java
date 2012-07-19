@@ -25,6 +25,8 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -171,18 +173,15 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             item.setType(EntityLogItem.Type.CREATE);
             item.setEntity(entityName);
             item.setEntityId((UUID) entity.getId());
+
+            Properties properties = new Properties();
+            for (String attr : attributes) {
+                writeAttribute(properties, entity, attr);
+            }
+            item.setChanges(getChanges(properties));
+
             em.persist(item);
 
-            for (String attr : attributes) {
-                EntityLogAttr attribute = new EntityLogAttr();
-                attribute.setName(attr);
-                Object value = entity.getValue(attr);
-                attribute.setValue(stringify(value));
-                attribute.setValueId(getValueId(value));
-                attribute.setMessagesPack(MessageUtils.inferMessagePack(attr, entity));
-                attribute.setLogItem(item);
-                em.persist(attribute);
-            }
         } catch (Exception e) {
             log.warn("Unable to log entity " + entity + ", id=" + entity.getId(), e);
         }
@@ -210,31 +209,48 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             User user = em.getReference(User.class, userSessionSource.getUserSession().getUser().getId());
             Set<String> dirty = PersistenceProvider.getDirtyFields(entity);
 
-            EntityLogItem item = null;
+            Properties properties = new Properties();
             for (String attr : attributes) {
                 if (dirty.contains(attr)) {
-                    if (item == null) {
-                        item = new EntityLogItem();
-                        item.setEventTs(ts);
-                        item.setUser(user);
-                        item.setType(EntityLogItem.Type.MODIFY);
-                        item.setEntity(entityName);
-                        item.setEntityId((UUID) entity.getId());
-                        em.persist(item);
-                    }
-                    EntityLogAttr attribute = new EntityLogAttr();
-                    attribute.setName(attr);
-                    Object value = entity.getValue(attr);
-                    attribute.setValue(stringify(value));
-                    attribute.setValueId(getValueId(value));
-                    attribute.setMessagesPack(MessageUtils.inferMessagePack(attr, entity));
-                    attribute.setLogItem(item);
-                    em.persist(attribute);
+                    writeAttribute(properties, entity, attr);
                 }
             }
+            if (!properties.isEmpty()) {
+                EntityLogItem item = new EntityLogItem();
+                item.setEventTs(ts);
+                item.setUser(user);
+                item.setType(EntityLogItem.Type.MODIFY);
+                item.setEntity(entityName);
+                item.setEntityId((UUID) entity.getId());
+                item.setChanges(getChanges(properties));
+                em.persist(item);
+            }
+
         } catch (Exception e) {
             log.warn("Unable to log entity " + entity + ", id=" + entity.getId(), e);
         }
+    }
+
+    private String getChanges(Properties properties) throws IOException {
+        StringWriter writer = new StringWriter();
+        properties.store(writer, null);
+        String changes = writer.toString();
+        if (changes.startsWith("#"))
+            changes = changes.substring(changes.indexOf("\n") + 1); // cut off comments line
+        return changes;
+    }
+
+    private void writeAttribute(Properties properties, BaseEntity entity, String attr) {
+        Object value = entity.getValue(attr);
+        properties.setProperty(attr, stringify(value));
+
+        UUID valueId = getValueId(value);
+        if (valueId != null)
+            properties.setProperty(attr + EntityLogAttr.VALUE_ID_SUFFIX, valueId.toString());
+
+        String mp = MessageUtils.inferMessagePack(attr, entity);
+        if (mp != null)
+            properties.setProperty(attr + EntityLogAttr.MP_SUFFIX, mp);
     }
 
     public void registerDelete(BaseEntity entity) {
@@ -265,18 +281,14 @@ public class EntityLog implements EntityLogMBean, EntityLogAPI {
             item.setEntity(entityName);
             item.setEntityId((UUID) entity.getId());
 
+            Properties properties = new Properties();
+            for (String attr : attributes) {
+                writeAttribute(properties, entity, attr);
+            }
+            item.setChanges(getChanges(properties));
+
             em.persist(item);
 
-            for (String attr : attributes) {
-                EntityLogAttr attribute = new EntityLogAttr();
-                attribute.setName(attr);
-                Object value = entity.getValue(attr);
-                attribute.setValue(stringify(value));
-                attribute.setValueId(getValueId(value));
-                attribute.setMessagesPack(MessageUtils.inferMessagePack(attr, entity));
-                attribute.setLogItem(item);
-                em.persist(attribute);
-            }
         } catch (Exception e) {
             log.warn("Unable to log entity " + entity + ", id=" + entity.getId(), e);
         }
