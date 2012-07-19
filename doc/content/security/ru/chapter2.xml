@@ -19,7 +19,9 @@
 пользователем,  и содержащий информацию о правах доступа пользователя к
 данным.</para>
     <para>Для контроля прав доступа пользователей к данным код системы всегда должен иметь возможность узнать, какой пользователь в данный момент работает и каковы его права. Например, перед сохранением сущности в БД в специальных полях сущности проставляется имя пользователя, выполняющего сохранение. Кроме того, <glossterm linkend="glossary_dataService_id">Data Service</glossterm> всегда проверяет права пользователя на извлечение или сохранение определенных сущностей.</para>
-    <para>Информация о текущем пользователе и его правах хранится в объекте <classname>UserSession</classname>, который создается после входа  пользователя и кэшируется на стороне <glossterm linkend="glossary_middleware_id">middleware</glossterm>, а также передается клиенту в результате метода <methodname>LoginService.login()</methodname>. Уничтожается пользовательская сессия после выхода пользователя из системы, либо после истечения времени бездействия, определяемого параметром среднего слоя приложения <link linkend="property_sessionExpirTime">cuba.userSessionExpirationTimeoutSec</link>.</para>
+    <para>Информация о текущем пользователе и его правах хранится в объекте <classname>UserSession</classname>, который создается после входа  пользователя и кэшируется на стороне <glossterm linkend="glossary_middleware_id">
+        <structfield>Middleware</structfield>
+      </glossterm>, а также передается клиенту в результате метода <methodname>LoginService.login()</methodname>. Уничтожается пользовательская сессия после выхода пользователя из системы, либо после истечения времени бездействия, определяемого параметром среднего слоя приложения <link linkend="property_sessionExpirTime">cuba.userSessionExpirationTimeoutSec</link>.</para>
     <para>Текущая пользовательская сессия всегда привязывается к потоку выполнения и может быть получена следующими способами:<itemizedlist>
         <listitem>
           <para>через интерфейс инфраструктуры <classname>UserSessionSource</classname></para>

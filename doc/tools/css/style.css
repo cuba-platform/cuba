@@ -224,7 +224,7 @@ pre {
 }
 
 .table table td {
-    text-align: left;
+    text-align: center;
     vertical-align: text-top;
     padding-left: 0.8em;
     padding-right: 0.8em;
@@ -356,6 +356,10 @@ pre {
 
 .structname {
 	color: #9f32ba;
+}
+
+.structfield {
+	color: #31ba9f;
 }
 
 .package {
