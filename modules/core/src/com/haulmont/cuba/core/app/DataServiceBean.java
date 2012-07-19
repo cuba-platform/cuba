@@ -12,6 +12,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
 import com.haulmont.cuba.core.entity.Entity;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.persistence.Embeddable;
 import java.util.*;
 
 @Service(DataService.NAME)
@@ -129,6 +131,23 @@ public class DataServiceBean implements DataService {
             Set newInstanceIdSet = new HashSet(context.getNewInstanceIds());
             for (Entity entity : context.getCommitInstances()) {
                 MetaClass metaClass = metadata.getSession().getClass(entity.getClass());
+                for (MetaProperty property : metaClass.getProperties()) {
+                    if (property.getRange().isClass() && !property.getJavaType().isAnnotationPresent(Embeddable.class)) {
+                        if (!property.getRange().getCardinality().isMany()) {
+                            Entity propertyEntity = entity.getValue(property.getName());
+                            if (propertyEntity == null)
+                                continue;
+
+                            if (propertyEntity.getId() != null) {
+                                //managed reference
+                                propertyEntity = em.getReference(propertyEntity.getMetaClass().getJavaClass(),
+                                        propertyEntity.getId());
+                                entity.setValue(property.getName(), null);
+                                entity.setValue(property.getName(), propertyEntity);
+                            }
+                        }
+                    }
+                }
                 if (newInstanceIdSet.contains(metaClass.getName() + "-" + entity.getId().toString())) {
                     em.persist(entity);
                     res.put(entity, entity);
