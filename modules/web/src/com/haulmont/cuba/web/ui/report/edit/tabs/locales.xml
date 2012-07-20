@@ -1,9 +1,0 @@
-<window xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd">
-    <layout>
-        <vbox expand="spacer" id="localesVBox" margin="true">
-            <label value="msg://localeCaption" stylename="h2"/>
-            <textField id="localeTextField" datasource="reportDs" property="localeNames" rows="20" cols="30"/>
-            <hbox id="spacer"/>
-        </vbox>
-    </layout>
-</window>
