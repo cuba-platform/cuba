@@ -75,7 +75,6 @@
                 <entry key="cuba_EntitySnapshotService" value="com.haulmont.cuba.core.app.EntitySnapshotService"/>
                 <entry key="cuba_UniqueNumbersService" value="com.haulmont.cuba.core.app.UniqueNumbersService"/>
                 <entry key="cuba_LocalizedMessageService" value="com.haulmont.cuba.core.app.LocalizedMessageService"/>
-                <entry key="report_ReportService" value="com.haulmont.cuba.report.app.ReportService"/>
                 <entry key="cuba_ResourceService" value="com.haulmont.cuba.core.app.ResourceService"/>
                 <entry key="cuba_ScheduledTasksService" value="com.haulmont.cuba.core.app.SchedulingService"/>
                 <entry key="cuba_TestingService" value="com.haulmont.cuba.core.app.TestingService"/>
@@ -97,7 +96,6 @@
                 <value>com.haulmont.cuba.web.exception.DeletePolicyHandler</value>
                 <value>com.haulmont.cuba.web.exception.NumericOverflowExceptionHandler</value>
                 <value>com.haulmont.cuba.web.exception.OptimisticExceptionHandler</value>
-                <value>com.haulmont.cuba.web.exception.ReportExceptionHandler</value>
                 <value>com.haulmont.cuba.web.exception.FileStorageExceptionHandler</value>
                 <value>com.haulmont.cuba.web.exception.InvalidValueExceptionHandler</value>
                 <value>com.haulmont.cuba.web.exception.EntityAccessExceptionHandler</value>

@@ -39,7 +39,6 @@ import com.haulmont.cuba.web.app.UserSettingHelper;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.toolkit.Timer;
-import com.haulmont.cuba.web.ui.report.fileuploaddialog.ReportImportDialog;
 import com.vaadin.event.Action;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.terminal.Resource;
@@ -896,29 +895,30 @@ public class FoldersPane extends VerticalLayout {
 
         @Override
         public void perform(final Folder folder) {
-            WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
-            final ReportImportDialog importDialog = App.getInstance().getWindowManager().
-                    openWindow(windowConfig.getWindowInfo("report$Report.fileUploadDialog"),
-                            WindowManager.OpenType.DIALOG);
-
-            importDialog.addListener(new Window.CloseListener() {
-                @Override
-                public void windowClosed(String actionId) {
-                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
-                        try {
-                            FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
-                            service.importFolder(folder, importDialog.getBytes());
-                        } catch (Exception ex) {
-                            importDialog.showNotification(
-                                    importDialog.getMessage("notification.importFailed"),
-                                    ex.getMessage(),
-                                    IFrame.NotificationType.ERROR
-                            );
-                        }
-                        refreshFolders();
-                    }
-                }
-            });
+            // TODO Get rid of ReportImportDialog here
+//            WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
+//            final ReportImportDialog importDialog = App.getInstance().getWindowManager().
+//                    openWindow(windowConfig.getWindowInfo("report$Report.fileUploadDialog"),
+//                            WindowManager.OpenType.DIALOG);
+//
+//            importDialog.addListener(new Window.CloseListener() {
+//                @Override
+//                public void windowClosed(String actionId) {
+//                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
+//                        try {
+//                            FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
+//                            service.importFolder(folder, importDialog.getBytes());
+//                        } catch (Exception ex) {
+//                            importDialog.showNotification(
+//                                    importDialog.getMessage("notification.importFailed"),
+//                                    ex.getMessage(),
+//                                    IFrame.NotificationType.ERROR
+//                            );
+//                        }
+//                        refreshFolders();
+//                    }
+//                }
+//            });
         }
     }
 

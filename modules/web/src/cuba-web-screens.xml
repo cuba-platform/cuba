@@ -23,37 +23,6 @@
     <screen id="fts$SearchResults"
             template="/com/haulmont/fts/web/ui/results/search-results.xml"/>
 
-    <!-- report screens-->
-    <screen id="report$Report.browse"
-            template="/com/haulmont/cuba/web/ui/report/browse/report-browse.xml"/>
-
-    <screen id="report$Report.edit"
-            template="/com/haulmont/cuba/web/ui/report/edit/report-edit.xml"/>
-
-    <screen id="report$Report.fileUploadDialog"
-            template="/com/haulmont/cuba/web/ui/report/fileuploaddialog/file-upload-dialog.xml"/>
-
-    <screen id="report$BandDefinition.edit"
-            template="/com/haulmont/cuba/web/ui/report/definition/edit/definition-edit.xml"/>
-
-    <screen id="report$ReportInputParameter.edit"
-            template="/com/haulmont/cuba/web/ui/report/parameter/edit/parameter-edit.xml"/>
-
-    <screen id="report$ReportValueFormat.edit"
-            template="/com/haulmont/cuba/web/ui/report/valueformat/edit/format-edit.xml"/>
-
-    <screen id="report$ReportScreen.edit"
-            template="/com/haulmont/cuba/web/ui/report/screen/edit/report-screen-edit.xml"/>
-
-    <screen id="report$ReportTemplate.edit"
-            template="/com/haulmont/cuba/web/ui/report/template/edit/template-edit.xml"/>
-
-    <screen id="report$ReportGroup.browse"
-            template="/com/haulmont/cuba/web/ui/report/group/browse/group-browse.xml"/>
-
-    <screen id="report$ReportGroup.edit"
-            template="/com/haulmont/cuba/web/ui/report/group/edit/group-edit.xml"/>
-
     <screen id="core$Entity.restore"
             template="/com/haulmont/cuba/web/app/ui/core/restore/entity-restore.xml"/>
 

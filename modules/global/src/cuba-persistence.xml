@@ -48,16 +48,6 @@
         <class>com.haulmont.cuba.core.entity.CategoryAttribute</class>
         <class>com.haulmont.cuba.core.entity.CategoryAttributeValue</class>
 
-        <class>com.haulmont.cuba.report.HardDeleteEntity</class>
-        <class>com.haulmont.cuba.report.DataSet</class>
-        <class>com.haulmont.cuba.report.BandDefinition</class>
-        <class>com.haulmont.cuba.report.ReportTemplate</class>
-        <class>com.haulmont.cuba.report.ReportInputParameter</class>
-        <class>com.haulmont.cuba.report.ReportScreen</class>
-        <class>com.haulmont.cuba.report.ReportValueFormat</class>
-        <class>com.haulmont.cuba.report.Report</class>
-        <class>com.haulmont.cuba.report.ReportGroup</class>
-
         <properties>
             <property name="openjpa.Log" value="log4j"/>
 

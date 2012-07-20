@@ -19,12 +19,6 @@
         <item id="serverLog"/>
     </menu>
 
-    <menu id="reports">
-        <item id="report$Report.browse"/>
-        <item id="report$ReportGroup.browse"/>
-        <item id="report$Report.run"/>
-    </menu>
-
     <menu id="help">
         <item id="settings"/>
         <item id="feedback"/>

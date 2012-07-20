@@ -66,33 +66,6 @@ public interface ServerConfig extends Config {
     boolean getAutomaticDatabaseUpdate();
 
     /**
-     * @return Path to the installed OpenOffice
-     */
-    @Property("cuba.reporting.openoffice.path")
-    String getOpenOfficePath();
-
-    /**
-     * @return The list of ports to start OpenOffice on.
-     */
-    @Property("cuba.reporting.openoffice.ports")
-    @DefaultString("8100|8101|8102|8103")
-    String getOpenOfficePorts();
-
-    /**
-     * @return Request to OpenOffice timeout in seconds.
-     */
-    @Property("cuba.reporting.openoffice.docFormatterTimeout")
-    @DefaultInteger(20)
-    Integer getDocFormatterTimeout();
-
-    /**
-     * @return Has to be true if using OpenOffice reporting formatter on a *nix server without X server running
-     */
-    @Property("cuba.reporting.displayDeviceUnavailable")
-    @DefaultBoolean(false)
-    boolean getDisplayDeviceUnavailable();
-
-    /**
      * @return {@link FileStorageAPI} storage directory. If not set, <code>cuba.dataDir/filestorage</code> will be used.
      */
     @Property("cuba.fileStorageDir")
