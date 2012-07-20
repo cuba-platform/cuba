@@ -21,7 +21,7 @@ import javax.inject.Inject;
  * @author krivopustov
  * @version $Id$
  */
-@ManagedBean("cuba_TransactionListener")
+@ManagedBean("cuba_EntityTransactionListener")
 public class EntityTransactionListener extends AbstractTransactionListener {
 
     @Inject
