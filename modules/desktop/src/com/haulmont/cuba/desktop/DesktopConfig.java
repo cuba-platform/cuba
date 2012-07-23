@@ -57,4 +57,10 @@ public interface DesktopConfig extends Config {
     @Factory(factory = IntegerListTypeFactory.class)
     @Default("6 8 10 12 14 16 18 20 22 24 28 32 36 48 54 60 72")
     List<Integer> getAvailableFontSizes();
+
+    /**
+     * @return true if application should change time zone to that which is used by server
+     */
+    @DefaultBoolean(true)
+    boolean isUseServerTimeZone();
 }

@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop;
 
+import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -16,6 +17,7 @@ import com.haulmont.cuba.desktop.sys.*;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
+import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.global.LoginException;
@@ -40,6 +42,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * <p>$Id$</p>
@@ -405,6 +408,7 @@ public class App implements ConnectionListener {
             frame.repaint();
             windowManager.setTabsPane(tabsPane);
             initExceptionHandlers(true);
+            initTimeZone();
         } else {
             if (windowManager != null)
                 windowManager.dispose();
@@ -413,6 +417,16 @@ public class App implements ConnectionListener {
             frame.repaint();
             initExceptionHandlers(false);
             showLoginDialog();
+        }
+    }
+
+    protected void initTimeZone() {
+        DesktopConfig desktopConfig = ConfigProvider.getConfig(DesktopConfig.class);
+        if (desktopConfig.isUseServerTimeZone()) {
+            ServerInfoService serverInfoService = ServiceLocator.lookup(ServerInfoService.NAME);
+            TimeZone serverTimeZone = serverInfoService.getTimeZone();
+            TimeZone.setDefault(serverTimeZone);
+            log.info("Time zone set to " + serverTimeZone);
         }
     }
 

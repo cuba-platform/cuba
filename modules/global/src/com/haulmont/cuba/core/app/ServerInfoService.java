@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.View;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * Service interface to provide initial information for clients. Can be invoked before login when user session
@@ -30,4 +31,12 @@ public interface ServerInfoService {
     MetadataBuildInfo getMetadataBuildInfo();
 
     List<View> getViews();
+
+    /**
+     * Return time zone used by server application.
+     * Useful for remote clients which may run on machines with another default time zone (like desktop client).
+     *
+     * @return server time zone
+     */
+    TimeZone getTimeZone();
 }

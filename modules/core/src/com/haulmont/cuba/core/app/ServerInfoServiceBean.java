@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * Standard implementation of {@link ServerInfoService} interface.
@@ -76,5 +77,10 @@ public class ServerInfoServiceBean implements ServerInfoService {
 
     public List<View> getViews() {
         return metadata.getViewRepository().getAll();
+    }
+
+    @Override
+    public TimeZone getTimeZone() {
+        return TimeZone.getDefault();
     }
 }
