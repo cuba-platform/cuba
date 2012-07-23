@@ -46,7 +46,11 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         int columnCount;
         final List<Element> columnElements = columnsElement.elements("column");
         if (columnElements.size() == 0) {
-            columnCount = Integer.valueOf(columnsElement.attributeValue("count"));
+            try {
+                columnCount = Integer.valueOf(columnsElement.attributeValue("count"));
+            } catch (NumberFormatException e) {
+                throw new IllegalStateException("grid must contain either a set of 'column' elements or a 'count' attribute", e);
+            }
             component.setColumns(columnCount);
             for (int i = 0; i < columnCount; i++) {
                 component.setColumnExpandRatio(i, 1);
