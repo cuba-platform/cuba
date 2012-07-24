@@ -50,7 +50,7 @@ public class UserSessionManager
 
     private static Log log = LogFactory.getLog(UserSessionManager.class);
 
-    private UserSessionManager() {
+    protected UserSessionManager() {
         User noUser = new User();
         noUser.setLogin("server");
         NO_USER_SESSION = new UserSession(noUser, Collections.<Role>emptyList(), Locale.getDefault(), true) {
@@ -103,7 +103,7 @@ public class UserSessionManager
         return session;
     }
 
-    private void compilePermissions(UserSession session, List<Role> roles) {
+    protected void compilePermissions(UserSession session, List<Role> roles) {
         for (Role role : roles) {
             if (RoleType.SUPER.equals(role.getType())) {
                 // Don't waste memory, as the user with SUPER role has all permissions.
