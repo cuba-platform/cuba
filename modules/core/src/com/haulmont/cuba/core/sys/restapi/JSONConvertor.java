@@ -121,6 +121,16 @@ public class JSONConvertor implements Convertor {
 
             if (jsonContent.has("commitInstances")) {
                 JSONArray entitiesNodeList = jsonContent.getJSONArray("commitInstances");
+
+                Set<String> commitIds = new HashSet<>(entitiesNodeList.length());
+                for (int i = 0; i < entitiesNodeList.length(); i++) {
+                    String id = entitiesNodeList.getJSONObject(i).getString("id");
+                    if (id.startsWith("NEW-"))
+                        id = id.substring(id.indexOf('-') + 1);
+                    commitIds.add(id);
+                }
+
+                result.setCommitIds(commitIds);
                 result.setCommitInstances(parseIntoList(result, entitiesNodeList));
             }
 
@@ -206,7 +216,19 @@ public class JSONConvertor implements Convertor {
                         MetaClass childMetaClass;
 
                         if (jsonChild.has("id")) {
-                            InstanceRef ref = commitRequest.parseInstanceRefAndRegister(jsonChild.getString("id"));
+                            String id = jsonChild.getString("id");
+
+                            //reference to an entity that also a commit instance
+                            //will be registered later
+                            if (commitRequest.getCommitIds().contains(id)) {
+                                EntityLoadInfo loadInfo = EntityLoadInfo.parse(id);
+                                BaseUuidEntity ref = loadInfo.getMetaClass().createInstance();
+                                ref.setValue("id", loadInfo.getId());
+                                setField(bean, key, ref);
+                                break;
+                            }
+
+                            InstanceRef ref = commitRequest.parseInstanceRefAndRegister(id);
                             childMetaClass = ref.getMetaClass();
                             child = ref.getInstance();
                         } else {

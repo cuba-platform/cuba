@@ -6,8 +6,10 @@
 
 package com.haulmont.cuba.core.sys.restapi;
 
+import com.haulmont.chile.core.datatypes.impl.StringDatatype;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
 import com.haulmont.cuba.core.global.MetadataHelper;
@@ -196,8 +198,20 @@ public class XMLConvertor implements Convertor {
                 if ("commitInstances".equals(childNodeName)) {
                     NodeList entitiesNodeList = child.getChildNodes();
 
-                    List commitEntities = parseNodeList(result, entitiesNodeList);
-                    result.setCommitInstances(commitEntities);
+                    Set<String> commitIds = new HashSet<>(entitiesNodeList.getLength());
+                    for (int j = 0; j < entitiesNodeList.getLength(); j++) {
+                        Node idNode = entitiesNodeList.item(j).getAttributes().getNamedItem("id");
+                        if (idNode == null)
+                            continue;
+
+                        String id = idNode.getTextContent();
+                        if (id.startsWith("NEW-"))
+                            id = id.substring(id.indexOf('-') + 1);
+                        commitIds.add(id);
+                    }
+
+                    result.setCommitIds(commitIds);
+                    result.setCommitInstances(parseNodeList(result, entitiesNodeList));
                 } else if ("removeInstances".equals(childNodeName)) {
                     NodeList entitiesNodeList = child.getChildNodes();
 
@@ -265,13 +279,24 @@ public class XMLConvertor implements Convertor {
                         continue;
                     }
 
-                    value = property.getType() == MetaProperty.Type.DATATYPE ?
-                            property.getRange().<Object>asDatatype().parse(xmlValue) :
-                            property.getRange().asEnumeration().parse(xmlValue);
+                    String typeName = property.getRange().<Object>asDatatype().getName();
+
+                    if (property.getType() == MetaProperty.Type.DATATYPE)
+                        if (!StringDatatype.NAME.equals(typeName) && "null".equals(xmlValue))
+                            value = null;
+                        else
+                            value = property.getRange().<Object>asDatatype().parse(xmlValue);
+                    else
+                        value = property.getRange().asEnumeration().parse(xmlValue);
+
                     setField(bean, fieldName, value);
                     break;
                 case AGGREGATION:
                 case ASSOCIATION: {
+                    if ("null".equals(xmlValue)) {
+                        setField(bean, fieldName, null);
+                        break;
+                    }
                     MetaClass propertyMetaClass = propertyMetaClass(property);
                     //checks if the user permitted to read and update a property
                     if (!updatePermitted(propertyMetaClass) && !readPermitted(propertyMetaClass))
@@ -283,6 +308,18 @@ public class XMLConvertor implements Convertor {
                             value = embeddedMetaClass.createInstance();
                             parseEntity(commitRequest, value, embeddedMetaClass, fieldNode);
                         } else {
+                            String id = getRefId(fieldNode);
+
+                            //reference to an entity that also a commit instance
+                            //will be registered later
+                            if (commitRequest.getCommitIds().contains(id)) {
+                                EntityLoadInfo loadInfo = EntityLoadInfo.parse(id);
+                                BaseUuidEntity ref = loadInfo.getMetaClass().createInstance();
+                                ref.setValue("id", loadInfo.getId());
+                                setField(bean, fieldName, ref);
+                                break;
+                            }
+
                             value = parseEntityReference(fieldNode, commitRequest);
                         }
                         setField(bean, fieldName, value);
@@ -301,6 +338,18 @@ public class XMLConvertor implements Convertor {
                     throw new IllegalStateException("Unknown property type");
             }
         }
+    }
+
+    private String getRefId(Node refNode) {
+        Node childNode = refNode.getFirstChild();
+        do {
+            if (ELEMENT_REF.equals(childNode.getNodeName())) {
+                Node idNode = childNode.getAttributes().getNamedItem(ATTR_ID);
+                return idNode != null ? idNode.getTextContent() : null;
+            }
+            childNode = childNode.getNextSibling();
+        } while (childNode != null);
+        return null;
     }
 
     private Object parseEntityReference(Node node, CommitRequest commitRequest)

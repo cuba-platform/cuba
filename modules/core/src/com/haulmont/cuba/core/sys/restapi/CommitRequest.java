@@ -23,6 +23,7 @@ public class CommitRequest {
     private boolean softDeletion = true;
     private HashSet<String> newInstanceIds = new HashSet<String>();
     private Map<String, InstanceRef> instanceRefs = new HashMap<String, InstanceRef>();
+    private Set<String> commitIds = new HashSet<>();
 
     public Collection getCommitInstances() {
         return commitInstances == null ? Collections.emptyList() : commitInstances;
@@ -50,6 +51,14 @@ public class CommitRequest {
 
     public Collection getNewInstanceIds() {
         return Collections.unmodifiableSet(newInstanceIds);
+    }
+
+    public Set<String> getCommitIds() {
+        return commitIds;
+    }
+
+    public void setCommitIds(Set<String> commitIds) {
+        this.commitIds = commitIds;
     }
 
     public InstanceRef parseInstanceRefAndRegister(String id) throws InstantiationException, IllegalAccessException {

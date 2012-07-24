@@ -15,6 +15,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ViewHelper;
@@ -139,12 +140,19 @@ public class DataServiceBean implements DataService {
                         if (propertyEntity == null)
                             continue;
 
+                        MetaClass propertyMeta = property.getRange().asClass();
                         if (propertyEntity.getId() != null) {
-                            //managed reference
-                            propertyEntity = em.getReference(propertyEntity.getMetaClass().getJavaClass(),
-                                    propertyEntity.getId());
-                            entity.setValue(property.getName(), null);
-                            entity.setValue(property.getName(), propertyEntity);
+                            if (newInstanceIdSet.contains(propertyMeta.getName() + "-" + propertyEntity.getId())) {
+                                BaseUuidEntity e = (BaseUuidEntity) getEntityById(context.getCommitInstances(), propertyEntity.getId());
+                                entity.setValue(property.getName(), null);
+                                entity.setValue(property.getName(), e);
+                            } else {
+                                //managed reference
+                                propertyEntity = em.getReference(propertyEntity.getMetaClass().getJavaClass(),
+                                        propertyEntity.getId());
+                                entity.setValue(property.getName(), null);
+                                entity.setValue(property.getName(), propertyEntity);
+                            }
                         }
                     }
                 }
@@ -177,6 +185,17 @@ public class DataServiceBean implements DataService {
         }
 
         return res;
+    }
+
+    private Entity getEntityById(Collection<Entity> entities, Object id) {
+        if (id == null)
+            return null;
+
+        for (Entity entity : entities)
+            if (id.equals(entity.getId()))
+                return entity;
+
+        return null;
     }
 
     @Nullable
