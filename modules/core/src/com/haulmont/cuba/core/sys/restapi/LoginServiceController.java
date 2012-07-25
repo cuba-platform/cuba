@@ -52,7 +52,7 @@ public class LoginServiceController {
     public void loginByPost(@RequestBody String requestBody,
                       @RequestHeader(value = "Content-Type") MimeType contentType,
                       HttpServletResponse response) throws JSONException, IOException, JSONException {
-
+        response.addHeader("Access-Control-Allow-Origin", "*");
         String username;
         String password;
         Locale locale;
@@ -94,7 +94,7 @@ public class LoginServiceController {
                            @RequestParam(value = "p") String passwordHash,
                            @RequestParam(value = "l") String localeStr,
                            HttpServletResponse response) throws IOException, JSONException {
-
+        response.addHeader("Access-Control-Allow-Origin", "*");
         Locale locale = StringUtils.isBlank(localeStr) ? new Locale("en") : new Locale(localeStr);
         try {
             LoginService svc = Locator.lookup(LoginService.NAME);
