@@ -78,6 +78,7 @@ public class DataServiceController {
             return;
         }
 
+        response.addHeader("Access-Control-Allow-Origin", "*");
         UUID idObject = loadInfo.getId();
 
         try {
@@ -117,6 +118,7 @@ public class DataServiceController {
             return;
         }
 
+        response.addHeader("Access-Control-Allow-Origin", "*");
         MetaClass metaClass = getMetaClass(entityName);
         if (metaClass == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Unknown entity name " + entityName);
@@ -183,6 +185,7 @@ public class DataServiceController {
             return;
         }
 
+        response.addHeader("Access-Control-Allow-Origin", "*");
 
         Convertor convertor = conversionFactory.getConvertor(contentType);
         try {
@@ -229,6 +232,7 @@ public class DataServiceController {
             return;
         }
 
+        response.addHeader("Access-Control-Allow-Origin", "*");
         ViewRepository viewRepository = MetadataProvider.getViewRepository();
         try {
             viewRepository.deployViews(new StringReader(requestContent));
@@ -248,6 +252,7 @@ public class DataServiceController {
             return;
         }
 
+        response.addHeader("Access-Control-Allow-Origin", "*");
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
         response.setLocale(UserSessionProvider.getLocale());

@@ -15,7 +15,6 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.app.queryresults.QueryResultsManagerAPI;
-import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.ViewHelper;
@@ -142,14 +141,19 @@ public class DataServiceBean implements DataService {
 
                         MetaClass propertyMeta = property.getRange().asClass();
                         if (propertyEntity.getId() != null) {
+                            //entity has a field referring one of the commit instances
                             if (newInstanceIdSet.contains(propertyMeta.getName() + "-" + propertyEntity.getId())) {
-                                BaseUuidEntity e = (BaseUuidEntity) getEntityById(context.getCommitInstances(), propertyEntity.getId());
+                                Entity e = getEntityById(context.getCommitInstances(), propertyEntity.getId());
+                                //setValue will not set given value to the field if oldValue.equals(newValue) is true
+                                //but to be persisted properly, commit instance and this field instance
+                                //must refer exactly the same object (not just equal objects)
                                 entity.setValue(property.getName(), null);
                                 entity.setValue(property.getName(), e);
                             } else {
                                 //managed reference
                                 propertyEntity = em.getReference(propertyEntity.getMetaClass().getJavaClass(),
                                         propertyEntity.getId());
+                                //must refer the same object
                                 entity.setValue(property.getName(), null);
                                 entity.setValue(property.getName(), propertyEntity);
                             }
