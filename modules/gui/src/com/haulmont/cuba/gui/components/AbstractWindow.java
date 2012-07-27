@@ -21,6 +21,10 @@ public class AbstractWindow extends AbstractFrame
     public AbstractWindow() {
     }
 
+    /**
+     * DEPRECATED - use default constructor!
+     */
+    @Deprecated
     public AbstractWindow(IFrame frame) {
         super(frame);
     }

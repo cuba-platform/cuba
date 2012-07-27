@@ -20,6 +20,10 @@ public class AbstractEditor extends AbstractWindow implements Window.Editor {
     public AbstractEditor() {
     }
 
+    /**
+     * DEPRECATED - use default constructor!
+     */
+    @Deprecated
     public AbstractEditor(IFrame frame) {
         super(frame);
     }

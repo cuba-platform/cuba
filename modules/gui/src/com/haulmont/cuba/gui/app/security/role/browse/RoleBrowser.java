@@ -25,10 +25,6 @@ public class RoleBrowser extends AbstractLookup {
 
     private Table table;
 
-    public RoleBrowser(IFrame frame) {
-        super(frame);
-    }
-
     public void init(Map<String, Object> params) {
         table = getComponent("roles");
 

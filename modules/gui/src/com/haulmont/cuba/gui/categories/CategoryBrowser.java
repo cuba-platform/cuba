@@ -28,10 +28,6 @@ public class CategoryBrowser extends AbstractLookup{
     private Table table;
     private CollectionDatasource categoriesDs;
 
-    public CategoryBrowser(IFrame frame) {
-        super(frame);
-    }
-
     @Override
     public void init(Map<String, Object> params) {
         categoriesDs=getDsContext().get("categoriesDs");

@@ -28,6 +28,10 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
     private String styleName;
     private Object _companion;
 
+    /**
+     * DEPRECATED - use default constructor!
+     */
+    @Deprecated
     public AbstractFrame(IFrame frame) {
         this.frame = frame;
     }

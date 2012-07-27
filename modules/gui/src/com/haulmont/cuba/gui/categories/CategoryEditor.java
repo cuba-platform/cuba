@@ -28,10 +28,6 @@ public class CategoryEditor extends AbstractEditor {
     private CheckBox cb;
     private DataService dataService;
 
-    public CategoryEditor(IFrame frame) {
-        super(frame);
-    }
-
     public void init(Map<String, Object> params) {
         dataService = getDsContext().getDataService();
         cb = getComponent("isDefault");

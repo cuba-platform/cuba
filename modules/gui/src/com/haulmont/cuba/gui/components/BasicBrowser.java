@@ -19,6 +19,13 @@ import java.util.Map;
 
 public class BasicBrowser extends AbstractLookup{
 
+    public BasicBrowser() {
+    }
+
+    /**
+     * DEPRECATED - use default constructor!
+     */
+    @Deprecated
     public BasicBrowser(IFrame frame) {
         super(frame);
     }

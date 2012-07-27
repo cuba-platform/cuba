@@ -20,10 +20,6 @@ public class SessionAttributeEditor extends AbstractEditor {
 
     protected Datasource<SessionAttribute> datasource;
 
-    public SessionAttributeEditor(IFrame frame) {
-        super(frame);
-    }
-
     @Override
     public void init(Map<String, Object> params) {
         datasource = getDsContext().get("attribute");

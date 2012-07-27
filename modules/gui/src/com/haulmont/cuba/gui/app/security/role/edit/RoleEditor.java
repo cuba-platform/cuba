@@ -24,10 +24,6 @@ public class RoleEditor extends AbstractEditor {
     @Inject
     private ScreenPermissionsFrame screensTabFrame;
 
-    public RoleEditor(IFrame frame) {
-        super(frame);
-    }
-
     @Override
     public void setItem(Entity item) {
         super.setItem(item);

@@ -67,10 +67,6 @@ public class AttributeEditor extends AbstractEditor {
 
     private static final String FIELD_WIDTH = "200px";
 
-    public AttributeEditor(IFrame frame) {
-        super(frame);
-    }
-
     public void init(Map<String, Object> params) {
         dataService = getDsContext().getDataService();
         fieldsContainer = getComponent("attributeProperties");

@@ -32,10 +32,6 @@ public class ConstraintEditor extends AbstractEditor {
 
     private static volatile Collection<MetaClass> metaClasses;
 
-    public ConstraintEditor(IFrame frame) {
-        super(frame);
-    }
-
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);

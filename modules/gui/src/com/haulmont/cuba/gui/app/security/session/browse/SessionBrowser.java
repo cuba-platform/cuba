@@ -27,10 +27,6 @@ public class SessionBrowser extends AbstractLookup {
     @Resource(name = "sessions_table")
     private Table table;
 
-    public SessionBrowser(IFrame frame) {
-        super(frame);
-    }
-
     public void init(Map<String, Object> params) {
         super.init(params);
 

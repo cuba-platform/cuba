@@ -12,9 +12,14 @@ package com.haulmont.cuba.gui.components;
 
 public class BasicEditor extends AbstractEditor {
 
+    public BasicEditor() {
+    }
+
+    /**
+     * DEPRECATED - use default constructor!
+     */
+    @Deprecated
     public BasicEditor(IFrame frame) {
         super(frame);
     }
-
-    
 }

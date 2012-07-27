@@ -65,10 +65,6 @@ public class GroupBrowser extends AbstractWindow {
     private GroupPropertyCreateAction constraintCreateAction;
     private GroupPropertyCreateAction userCreateAction;
 
-    public GroupBrowser(Window frame) {
-        super(frame);
-    }
-
     public void init(final Map<String, Object> params) {
         groupCreateAction.setCaption(getMessage("action.create"));
 

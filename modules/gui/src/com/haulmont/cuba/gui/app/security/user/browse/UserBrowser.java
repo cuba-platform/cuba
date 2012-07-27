@@ -12,7 +12,6 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
@@ -54,10 +53,6 @@ public class UserBrowser extends AbstractLookup {
 
     @Inject
     protected DataService dataService;
-
-    public UserBrowser(Window frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {
