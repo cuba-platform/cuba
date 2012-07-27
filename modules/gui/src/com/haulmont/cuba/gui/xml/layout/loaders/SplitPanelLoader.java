@@ -37,10 +37,6 @@ public class SplitPanelLoader extends ContainerLoader{
         if (components.size() == 1) {
             component.add(factory.createComponent(BoxLayout.VBOX));
         }
-        for (Component c : components) {
-            c.setWidth("100%");
-            c.setHeight("100%");
-        }
 
         final String orientation = element.attributeValue("orientation");
         if (StringUtils.isEmpty(orientation)) {
@@ -57,6 +53,8 @@ public class SplitPanelLoader extends ContainerLoader{
         }
 
         loadExpandable(component, element);
+        loadHeight(component, element, "-1px");
+        loadWidth(component, element, "-1px");
 
         assignFrame(component);
 

@@ -15,15 +15,13 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout>
-        <vbox id="histotyPane" expand="historyTable" margin="true" spacing="true">
-            <table id="historyTable" editable="false" sortable="true" multiselect="true">
-                <columns>
-                    <column id="caption" caption="msg://cardHistoryBrowse.name"/>
-                    <column id="createTs" caption="msg://cardHistoryBrowse.createTs"/>
-                </columns>
-                <rows datasource="historyDs"/>
-            </table>
-        </vbox>
+    <layout margin="true" >
+        <table id="historyTable" width="100%" height="100%">
+            <columns>
+                <column id="caption" caption="msg://cardHistoryBrowse.name"/>
+                <column id="createTs" caption="msg://cardHistoryBrowse.createTs"/>
+            </columns>
+            <rows datasource="historyDs"/>
+        </table>
     </layout>
 </window>

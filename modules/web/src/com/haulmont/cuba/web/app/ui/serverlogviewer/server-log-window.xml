@@ -42,9 +42,9 @@
             </groupBox>
         </hbox>
 
-        <groupBox id="logsBox">
+        <groupBox id="logsBox" width="100%">
             <caption label="msg://logs"/>
-            <hbox id="logFieldBox" margin="true" spacing="true">
+            <hbox id="logFieldBox" height="100%" width="100%">
             </hbox>
         </groupBox>
     </layout>

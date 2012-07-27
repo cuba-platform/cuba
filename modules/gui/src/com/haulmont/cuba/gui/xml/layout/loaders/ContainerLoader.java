@@ -85,38 +85,20 @@ public abstract class ContainerLoader extends ComponentLoader {
     }
 
     protected void loadSubComponentsAndExpand(ExpandingLayout layout, Element element, String ...exceptTags) {
-        final Collection<Component> components = loadSubComponents(layout, element, exceptTags);
-        if (components.size() == 1) {
-            final Component component = components.iterator().next();
-            if (!(component instanceof Component.Expandable)
-                    || ((Component.Expandable) component).isExpandable())
-            {
-                if (component instanceof Component.HasXmlDescriptor) {
-                    final Element xmlDescriptor = ((Component.HasXmlDescriptor) component).getXmlDescriptor();
-                    if (xmlDescriptor != null) {
-                        layout.expand(component,
-                                xmlDescriptor.attributeValue("height"),
-                                xmlDescriptor.attributeValue("width")
-                        );
-                        return;
-                    }
-                }
-                layout.expand(component, null, null);
-            }
-        } else {
-            final String expand = element.attributeValue("expand");
-            if (!StringUtils.isEmpty(expand)) {
-                final String[] parts = expand.split(";");
-                final Component componentToExpand = ((Component.Container) layout).getComponent(parts[0]);
+        loadSubComponents(layout, element, exceptTags);
 
-                if (componentToExpand != null) {
-                    String height = find(parts, "height");
-                    String width = find(parts, "width");
-                    layout.expand(
-                            componentToExpand,
-                            height == null && width == null ? "100%" : height,
-                            height == null && width == null ? "100%" : width);
-                }
+        final String expand = element.attributeValue("expand");
+        if (!StringUtils.isEmpty(expand)) {
+            final String[] parts = expand.split(";");
+            final Component componentToExpand = layout.getComponent(parts[0]);
+
+            if (componentToExpand != null) {
+                String height = find(parts, "height");
+                String width = find(parts, "width");
+                layout.expand(
+                        componentToExpand,
+                        height,
+                        width);
             }
         }
     }

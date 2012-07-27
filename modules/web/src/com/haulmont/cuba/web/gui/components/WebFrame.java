@@ -253,15 +253,6 @@ public class WebFrame extends WebVBoxLayout
         getWindow().showNotification(caption, WebComponentsHelper.convertNotificationType(type));
     }
 
-    public void expandLayout(boolean expandLayout) {
-        if (expandLayout) {
-            setSizeFull();
-        } else {
-            setWidth("100%");
-            setHeight("-1px");
-        }
-    }
-
     public Element getXmlDescriptor() {
         return element;
     }

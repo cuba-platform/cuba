@@ -10,6 +10,7 @@ import net.miginfocom.layout.AC;
 import net.miginfocom.layout.CC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,6 +44,7 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
     protected void update() {
         LC lc = new LC();
         lc.hideMode(2); // The size of an invisible component will be set to 0, 0 and the gaps will also be set to 0 around it.
+        lc.fill(); // always give all space to components, otherwise align doesn't work
         AC rowConstr = new AC();
         AC colConstr = new AC();
 
@@ -51,21 +53,11 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
             lc.flowX();
             if (expandedComponent != null) {
                 adjustExpanding(lc, colConstr);
-            } else {
-                lc.fillY();
-                if (!expandLayout) {
-                    colConstr.size("min!");
-                }
             }
         } else {
             lc.flowY();
             if (expandedComponent != null) {
                 adjustExpanding(lc, rowConstr);
-            } else {
-                lc.fillX();
-                if (!expandLayout) {
-                    rowConstr.size("min!");
-                }
             }
         }
 
@@ -110,8 +102,20 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
     public void expand(Component component, String height, String width) {
         super.expand(component, height, width);
 
-        CC constraints = MigLayoutHelper.getExpandConstraints(width, height);
-        layout.setComponentConstraints(component, constraints);
+        Object cc = layout.getComponentConstraints(component);
+        if (cc instanceof CC) {
+            if (direction == null || direction == BoxLayoutAdapter.FlowDirection.X
+                    && (StringUtils.isEmpty(height) || "-1px".equals(height) || height.endsWith("%"))) {
+                MigLayoutHelper.applyWidth((CC) cc, 100, com.haulmont.cuba.gui.components.Component.UNITS_PERCENTAGE, true);
+            }
+            if (direction == null || direction == BoxLayoutAdapter.FlowDirection.Y
+                    && (StringUtils.isEmpty(width) || "-1px".equals(width) || width.endsWith("%"))) {
+                MigLayoutHelper.applyHeight((CC) cc, 100, com.haulmont.cuba.gui.components.Component.UNITS_PERCENTAGE, true);
+            }
+
+        } else
+            cc = MigLayoutHelper.getExpandConstraints(width, height, direction);
+        layout.setComponentConstraints(component, cc);
     }
 
     @Override
@@ -121,6 +125,7 @@ public class MigBoxLayoutAdapter extends BoxLayoutAdapter {
         }
         else {
             layout.setComponentConstraints(component, constraints);
+            update();
         }
     }
 

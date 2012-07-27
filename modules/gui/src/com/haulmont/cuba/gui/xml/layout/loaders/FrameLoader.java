@@ -85,7 +85,6 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         if (layoutElement == null)
             throw new IllegalStateException("Required element not found: layout");
 
-        loadExpandLayout(component, layoutElement);
         loadSubComponentsAndExpand(component, layoutElement);
         loadSpacing(component, layoutElement);
         loadMargin(component, layoutElement);
@@ -195,15 +194,6 @@ public class FrameLoader extends ContainerLoader implements ComponentLoader {
         method.setAccessible(true);
         //noinspection unchecked
         return (T) method.invoke(frame, params);
-    }
-
-    protected void loadExpandLayout(Component.HasLayout component, Element element) {
-        final String expandLayout = element.attributeValue("expandLayout");
-        if (!StringUtils.isEmpty(expandLayout)) {
-            if (isBoolean(expandLayout)) {
-                component.expandLayout(Boolean.valueOf(expandLayout));
-            }
-        }
     }
 
     protected void loadMessagesPack(IFrame frame, Element element) {

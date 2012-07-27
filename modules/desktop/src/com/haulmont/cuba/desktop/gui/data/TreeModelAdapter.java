@@ -163,13 +163,15 @@ public class TreeModelAdapter implements TreeModel {
         if (object instanceof Entity) {
             TreeModelAdapter.Node node = createNode((Entity) object);
             list.add(node);
-            Entity entity = (Entity) object;
-            while (entity.getValue(datasource.getHierarchyPropertyName()) != null) {
-                entity = entity.getValue(datasource.getHierarchyPropertyName());
-                TreeModelAdapter.Node parentNode = createNode(entity);
-                list.add(0, parentNode);
-                node.setParent(parentNode);
-                node = parentNode;
+            if (datasource.getHierarchyPropertyName() != null) {
+                Entity entity = (Entity) object;
+                while (entity.getValue(datasource.getHierarchyPropertyName()) != null) {
+                    entity = entity.getValue(datasource.getHierarchyPropertyName());
+                    TreeModelAdapter.Node parentNode = createNode(entity);
+                    list.add(0, parentNode);
+                    node.setParent(parentNode);
+                    node = parentNode;
+                }
             }
             list.add(0, rootNode);
             node.setParent(rootNode);

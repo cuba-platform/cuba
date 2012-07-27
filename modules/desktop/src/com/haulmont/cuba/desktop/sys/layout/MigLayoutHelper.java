@@ -38,28 +38,17 @@ public class MigLayoutHelper {
         return margin ? null : new UnitValue(0);
     }
 
-    public static CC getExpandConstraints(String width, String height) {
-        // if not specified, it means that full expand
-        // while for other components it means own size
-        if (StringUtils.isEmpty(width)) {
-            width = "100%";
-        }
-        if (StringUtils.isEmpty(height)) {
-            height = "100%";
-        }
-
-        ComponentSize w = ComponentSize.parse(width);
-        ComponentSize h = ComponentSize.parse(height);
-
-        int widthValue = (int) w.value;
-        int widthUnits = w.unit;
-
-        int heightValue = (int) h.value;
-        int heightUnits = h.unit;
-
+    public static CC getExpandConstraints(String width, String height, BoxLayoutAdapter.FlowDirection direction) {
         CC cc = new CC();
-        applyWidth(cc, widthValue, widthUnits, true);
-        applyHeight(cc, heightValue, heightUnits, true);
+
+        if (direction == null || direction == BoxLayoutAdapter.FlowDirection.X
+                && (StringUtils.isEmpty(height) || "-1px".equals(height) || height.endsWith("%"))) {
+            applyWidth(cc, 100, Component.UNITS_PERCENTAGE, true);
+        }
+        if (direction == null || direction == BoxLayoutAdapter.FlowDirection.Y
+                && (StringUtils.isEmpty(width) || "-1px".equals(width) || width.endsWith("%"))) {
+            applyHeight(cc, 100, Component.UNITS_PERCENTAGE, true);
+        }
 
         return cc;
     }
@@ -99,7 +88,7 @@ public class MigLayoutHelper {
 
     private static void applyAlignment(CC cc, Component.Alignment align) {
         if (align == null) {
-            return;
+            align = Component.Alignment.TOP_LEFT; // same as for web
         }
 
         switch (align) {

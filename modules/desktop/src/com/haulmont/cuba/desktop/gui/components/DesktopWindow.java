@@ -530,10 +530,6 @@ public class DesktopWindow implements Window, Component.Disposable,
     }
 
     @Override
-    public void expandLayout(boolean expandLayout) {
-    }
-
-    @Override
     public <T> T getComponent() {
         return (T) panel;
     }

@@ -25,7 +25,7 @@ public class LicenseWindow extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidth(700).setResizable(true);
+        getDialogParams().setWidth(700).setHeight(500).setResizable(false);
         String licenseText = (String) params.get("licenseText");
         if (licenseText != null) {
             TextField textField = getComponent("text");

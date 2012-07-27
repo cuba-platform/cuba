@@ -22,24 +22,22 @@
     </dsContext>
 
     <layout>
-        <vbox expand="sessions_table" width="100%" height="100%">
-            <table id="sessions_table" editable="false">
-                <buttonsPanel>
-                    <button action="sessions_table.refresh" caption="msg://refresh"/>
-                    <button action="sessions_table.kill" caption="msg://kill"/>
-                </buttonsPanel>
-                <rowsCount/>
-                <columns>
-                    <column id="id" caption="msg://id"/>
-                    <column id="login" caption="msg://login"/>
-                    <column id="userName" caption="msg://userName"/>
-                    <column id="address" caption="msg://address"/>
-                    <column id="clientInfo" caption="msg://clientInfo"/>
-                    <column id="since" caption="msg://since"/>
-                    <column id="lastUsedTs" caption="msg://lastUsedTs"/>
-                </columns>
-                <rows datasource="sessions"/>
-            </table>
-        </vbox>
+        <table id="sessions_table" editable="false" width="100%" height="100%">
+            <buttonsPanel>
+                <button action="sessions_table.refresh" caption="msg://refresh"/>
+                <button action="sessions_table.kill" caption="msg://kill"/>
+            </buttonsPanel>
+            <rowsCount/>
+            <columns>
+                <column id="id" caption="msg://id"/>
+                <column id="login" caption="msg://login"/>
+                <column id="userName" caption="msg://userName"/>
+                <column id="address" caption="msg://address"/>
+                <column id="clientInfo" caption="msg://clientInfo"/>
+                <column id="since" caption="msg://since"/>
+                <column id="lastUsedTs" caption="msg://lastUsedTs"/>
+            </columns>
+            <rows datasource="sessions"/>
+        </table>
     </layout>
 </window>

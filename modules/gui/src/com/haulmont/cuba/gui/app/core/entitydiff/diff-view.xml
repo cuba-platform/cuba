@@ -26,14 +26,14 @@
     </dsContext>
 
     <layout>
-        <split id="diffSplit" orientation="horizontal" pos="20">
-            <vbox expand="snapshotsTable" spacing="true" margin="true">
+        <split id="diffSplit" orientation="horizontal" pos="20" width="100%" height="100%">
+            <vbox expand="snapshotsTable" spacing="true" margin="true" width="100%" height="100%">
                 <label value="msg://versions" stylename="h2"/>
                 <buttonsPanel>
                     <button id="compareBtn" invoke="compareSnapshots"
                             icon="icons/copy.png" caption="msg://actions.Compare"/>
                 </buttonsPanel>
-                <table id="snapshotsTable" height="250px" multiselect="true">
+                <table id="snapshotsTable" multiselect="true" width="100%">
                     <columns>
                         <column id="changeDate"/>
                         <column id="author"/>
@@ -42,11 +42,11 @@
                 </table>
             </vbox>
 
-            <split orientation="vertical">
-                <vbox id="diffVBox" expand="diffTable" spacing="true" margin="true" width="100%">
+            <split orientation="vertical" width="100%" height="100%">
+                <vbox id="diffVBox" expand="diffTable" spacing="true" margin="true" width="100%" height="100%">
                     <label value="msg://difference" stylename="h2"/>
                     <label property="label" datasource="entityDiffDs"/>
-                    <treeTable id="diffTable">
+                    <treeTable id="diffTable" width="100%">
                         <columns>
                             <column id="name"/>
                             <column id="beforeCaption"/>
@@ -56,13 +56,13 @@
                     </treeTable>
                 </vbox>
 
-                <vbox id="valuesVBox" spacing="true" margin="true" expand="diffValuesField">
+                <vbox id="valuesVBox" spacing="true" margin="true" expand="diffValuesField" width="100%" height="100%">
                     <label id="valuesHeader" visible="false" value="msg://changes" stylename="h2"/>
                     <hbox id="itemStateField" visible="false" spacing="true">
                         <label value="msg://itemState"/>
                         <label id="itemStateLabel"/>
                     </hbox>
-                    <fieldGroup id="diffValuesField" datasource="diffDs" expandable="true" visible="false">
+                    <fieldGroup id="diffValuesField" datasource="diffDs" visible="false" width="100%">
                         <column>
                             <field id="afterString" rows="4" editable="false" cols="40"/>
                             <field id="beforeString" rows="4" editable="false" cols="40"/>

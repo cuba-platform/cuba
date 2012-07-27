@@ -180,18 +180,25 @@ public class WebComponentsHelper {
     }
 
     public static void expand(AbstractOrderedLayout layout, Component component, String height, String width) {
-        if (StringUtils.isEmpty(height) && StringUtils.isEmpty(width)) {
-            component.setSizeFull();
-        } else {
-            if (!StringUtils.isEmpty(height)) {
-                component.setHeight(height);
-            }
-
-            if (!StringUtils.isEmpty(width)) {
-                component.setWidth(width);
-            }
+        if (!isHorizontalLayout(layout)
+                && (StringUtils.isEmpty(height) || "-1px".equals(height) || height.endsWith("%"))) {
+            component.setHeight("100%");
         }
+
+        if (!isVerticalLayout(layout)
+                && (StringUtils.isEmpty(width) || "-1px".equals(width) || width.endsWith("%"))) {
+            component.setWidth("100%");
+        }
+
         layout.setExpandRatio(component, 1);
+    }
+
+    public static boolean isVerticalLayout(AbstractOrderedLayout layout) {
+        return (layout instanceof VerticalLayout) || (layout instanceof WebVBoxLayout);
+    }
+
+    public static boolean isHorizontalLayout(AbstractOrderedLayout layout) {
+        return (layout instanceof HorizontalLayout) || (layout instanceof WebHBoxLayout);
     }
 
     public static Alignment convertAlignment(com.haulmont.cuba.gui.components.Component.Alignment alignment) {

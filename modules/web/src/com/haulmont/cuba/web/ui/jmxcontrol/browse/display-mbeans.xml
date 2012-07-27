@@ -17,26 +17,24 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expand="table-panel" spacing="true">
+    <layout expand="mbeans" spacing="true">
         <groupBox width="100%">
             <hbox width="-1" expandable="false" spacing="true">
                 <label value="msg://searchByObjectName" width="-1"/>
                 <textField id="objectNameField" width="400px"/>
             </hbox>
         </groupBox>
-        <vbox id="table-panel" expand="table" spacing="true">
-            <treeTable id="mbeans" editable="false">
-                <buttonsPanel>
-                    <button action="mbeans.refresh" icon="icons/refresh.png"/>
-                    <button action="mbeans.inspect" icon="icons/edit.png"/>
-                </buttonsPanel>
-                <columns>
-                    <column id="domain" caption="msg://mbean.domain"/>
-                    <column id="objectName" caption="msg://mbean.name"/>
-                    <column id="description" caption="msg://mbean.description"/>
-                </columns>
-                <rows datasource="mbeanDs"/>
-            </treeTable>
-        </vbox>
+        <treeTable id="mbeans" editable="false" width="100%">
+            <buttonsPanel>
+                <button action="mbeans.refresh" icon="icons/refresh.png"/>
+                <button action="mbeans.inspect" icon="icons/edit.png"/>
+            </buttonsPanel>
+            <columns>
+                <column id="domain" caption="msg://mbean.domain"/>
+                <column id="objectName" caption="msg://mbean.name"/>
+                <column id="description" caption="msg://mbean.description"/>
+            </columns>
+            <rows datasource="mbeanDs"/>
+        </treeTable>
     </layout>
 </window>

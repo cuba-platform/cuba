@@ -29,7 +29,7 @@
             </filter>
         </groupBox>
 
-        <table id="categoryTable">
+        <table id="categoryTable" width="100%">
             <buttonsPanel>
                 <button action="categoryTable.create" icon="icons/create.png" caption="msg://categoryTable.create"/>
                 <button action="categoryTable.edit" icon="icons/edit.png" caption="msg://categoryTable.edit"/>

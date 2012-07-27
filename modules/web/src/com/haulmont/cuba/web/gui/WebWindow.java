@@ -647,16 +647,6 @@ public class WebWindow
     }
 
     @Override
-    public void expandLayout(boolean expandLayout) {
-        if (expandLayout) {
-            getContainer().setSizeFull();
-        } else {
-            getContainer().setWidth("100%");
-            getContainer().setHeight("-1px");
-        }
-    }
-
-    @Override
     public Window wrapBy(Class<Window> wrapperClass) {
         return delegate.wrapBy(wrapperClass);
     }
@@ -917,16 +907,6 @@ public class WebWindow
         @Override
         public Validator getLookupValidator() {
             return validator;
-        }
-
-        @Override
-        public void expandLayout(boolean expandLayout) {
-            if (expandLayout) {
-                component.setSizeFull();
-            } else {
-                component.setWidth("100%");
-                component.setHeight("-1px");
-            }
         }
 
         protected void fireSelectAction() {

@@ -22,25 +22,23 @@
     </dsContext>
 
     <layout>
-        <vbox id="table-panel" expand="roles" spacing="true">
-            <table id="roles" editable="false">
-                <buttonsPanel>
-                    <button action="roles.create" icon="icons/create.png"/>
-                    <button action="roles.edit" icon="icons/edit.png"/>
-                    <button action="roles.remove" icon="icons/remove.png"/>
-                    <button action="roles.refresh" icon="icons/refresh.png"/>
-                    <button action="roles.excel" icon="icons/excel.png"/>
-                    <button action="roles.assignToUsers"/>
-                </buttonsPanel>
-                <columns>
-                    <column id="name" caption="msg://role.name"/>
-                    <column id="locName" caption="msg://role.locName"/>
-                    <column id="description" caption="msg://role.description"/>
-                    <column id="defaultRole" caption="msg://role.defaultRole"/>
-                    <column id="type" caption="msg://role.type"/>
-                </columns>
-                <rows datasource="roles"/>
-            </table>
-        </vbox>
+        <table id="roles" height="100%" width="100%">
+            <buttonsPanel>
+                <button action="roles.create" icon="icons/create.png"/>
+                <button action="roles.edit" icon="icons/edit.png"/>
+                <button action="roles.remove" icon="icons/remove.png"/>
+                <button action="roles.refresh" icon="icons/refresh.png"/>
+                <button action="roles.excel" icon="icons/excel.png"/>
+                <button action="roles.assignToUsers"/>
+            </buttonsPanel>
+            <columns>
+                <column id="name" caption="msg://role.name"/>
+                <column id="locName" caption="msg://role.locName"/>
+                <column id="description" caption="msg://role.description"/>
+                <column id="defaultRole" caption="msg://role.defaultRole"/>
+                <column id="type" caption="msg://role.type"/>
+            </columns>
+            <rows datasource="roles"/>
+        </table>
     </layout>
 </window>

@@ -28,7 +28,7 @@
         </groupDatasource>
     </dsContext>
 
-    <layout expandLayout="true" expand="contentPane">
+    <layout expand="contentPane">
         <!-- Filter -->
         <hbox expand="spacer" width="100%" spacing="true" margin="true">
             <label value="msg://screen"/>
@@ -39,25 +39,23 @@
             <button id="addPermissionBtn" caption="msg://action.add" invoke="addUiPermission"/>
             <label id="spacer"/>
         </hbox>
-        <hbox id="contentPane" expand="tablePane" spacing="true" margin="true">
+        <hbox id="contentPane" expand="uiPermissionsTable" spacing="true" margin="true" width="100%">
             <!-- Table -->
-            <vbox id="tablePane" expand="entityPermissionsTable">
-                <groupTable id="uiPermissionsTable">
-                    <columns>
-                        <group>
-                            <column id="screen" width="200"/>
-                        </group>
-                        <column id="component"/>
-                        <column id="permissionVariant"/>
-                    </columns>
-                    <rows datasource="uiPermissionTargetsDs"/>
-                </groupTable>
-            </vbox>
+            <groupTable id="uiPermissionsTable" height="100%">
+                <columns>
+                    <group>
+                        <column id="screen" width="200"/>
+                    </group>
+                    <column id="component"/>
+                    <column id="permissionVariant"/>
+                </columns>
+                <rows datasource="uiPermissionTargetsDs"/>
+            </groupTable>
             <!-- Edit pane -->
             <groupBox id="editPane" width="250" height="100%">
                 <caption label="msg://permissions"/>
 
-                <vbox id="selectedComponentPanel" expand="panelSpacer" spacing="true" width="100%" visible="false">
+                <vbox id="selectedComponentPanel" expand="panelSpacer" spacing="true" width="100%" height="100%" visible="false">
                     <label id="selectedTargetCaption" stylename="h2" align="MIDDLE_CENTER"
                             property="component" datasource="uiPermissionTargetsDs"/>
 

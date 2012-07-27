@@ -44,7 +44,6 @@ public class WindowLoader extends FrameLoader implements ComponentLoader {
         if (layoutElement == null)
             throw new IllegalStateException("Required element not found: layout");
 
-        loadExpandLayout(window, layoutElement);
         loadSubComponentsAndExpand(window, layoutElement);
         loadSpacing(window, layoutElement);
         loadMargin(window, layoutElement);

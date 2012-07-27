@@ -642,6 +642,7 @@ public class EntityInspectorEditor extends AbstractEditor {
         RowsCount rowsCount = componentsFactory.createComponent(RowsCount.NAME);
         rowsCount.setDatasource(propertyDs);
         table.setRowsCount(rowsCount);
+        table.setWidth("100%");
         vbox.setHeight(TABLE_MAX_HEIGHT);
         vbox.add(label);
         vbox.add(table);

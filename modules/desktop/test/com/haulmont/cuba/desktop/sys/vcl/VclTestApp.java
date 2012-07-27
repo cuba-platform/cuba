@@ -6,10 +6,14 @@
 
 package com.haulmont.cuba.desktop.sys.vcl;
 
+import net.miginfocom.layout.AC;
+import net.miginfocom.layout.CC;
+import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
+import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -58,7 +62,7 @@ public class VclTestApp extends JFrame {
         setLayout(new BorderLayout());
         setTitle("VCL Test");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(300, 200, 800, 300);
+        setBounds(500, 300, 600, 300);
     }
 
     private void initLookAndFeel() {
@@ -86,10 +90,124 @@ public class VclTestApp extends JFrame {
         JTabbedPane tabbedPane = new JTabbedPane();
         add(tabbedPane, BorderLayout.CENTER);
 
+        tabbedPane.add("Align", createAlignTab());
+        tabbedPane.add("Table", createTableTab());
         tabbedPane.add("TextArea", createTextAreaTab());
         tabbedPane.add("Popup", createPopupTab());
         tabbedPane.add("Picker", createPickersTab());
 //        tabbedPane.add("Autocomplete", createAutocompleteTab());
+    }
+
+    private Component createAlignTab() {
+        JPanel box = new JPanel();
+        box.setFocusable(false);
+        MigLayout boxLayout = new MigLayout("debug 1000, fill");
+        box.setLayout(boxLayout);
+
+        JPanel panel = new JPanel();
+        MigLayout layout = new MigLayout("debug 1000, fill");
+        panel.setLayout(layout);
+
+        JLabel label = new JLabel("Label");
+        CC cc = new CC();
+        cc.alignX("right").alignY("50%");
+
+        panel.add(label);
+
+        layout.setComponentConstraints(label, cc);
+
+        LC lc = new LC();
+        lc.hideMode(2); // The size of an invisible component will be set to 0, 0 and the gaps will also be set to 0 around it.
+        lc.debug(1000);
+
+        AC rowConstr = new AC();
+        AC colConstr = new AC();
+
+        lc.fillX();
+        lc.flowY();
+        lc.gridGapY("0");
+
+        layout.setLayoutConstraints(lc);
+        layout.setRowConstraints(rowConstr);
+        layout.setColumnConstraints(colConstr);
+
+        box.add(panel, "height 100px, width 100px");
+        layout.setComponentConstraints(label, cc);
+        return box;
+    }
+
+    private Component createTableTab() {
+        JPanel box = new JPanel();
+        box.setFocusable(false);
+        MigLayout boxLayout = new MigLayout("debug 1000");
+        box.setLayout(boxLayout);
+
+        JPanel panel = new JPanel();
+        MigLayout layout = new MigLayout("debug 1000, flowy, fill, insets 0", "", "[min!][fill]");
+        panel.setLayout(layout);
+
+        JPanel topPanel = new JPanel(new FlowLayout());
+        topPanel.setVisible(true);
+        panel.add(topPanel, "growx");
+
+        topPanel.add(new JButton("Button1"));
+        topPanel.add(new JButton("Button2"));
+        topPanel.add(new JButton("Button3"));
+        topPanel.add(new JButton("Button4"));
+        topPanel.add(new JButton("Button5"));
+
+        JXTableExt impl = new JXTableExt();
+
+//        JPanel tablePanel = new JPanel(new BorderLayout());
+
+        JScrollPane scrollPane = new JScrollPane(impl);
+        impl.setFillsViewportHeight(true);
+//        tablePanel.add(scrollPane, BorderLayout.CENTER);
+
+        panel.add(scrollPane, "grow");
+
+        impl.setShowGrid(true);
+        impl.setGridColor(Color.lightGray);
+
+        impl.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        impl.setColumnControlVisible(true);
+
+        impl.setModel(new AbstractTableModel() {
+            @Override
+            public int getRowCount() {
+                return 20;
+            }
+
+            @Override
+            public int getColumnCount() {
+                return 20;
+            }
+
+            @Override
+            public Object getValueAt(int rowIndex, int columnIndex) {
+                return rowIndex + "-" + columnIndex;
+            }
+        });
+
+        CC cc = new CC();
+        cc.growX(0);
+        cc.width("300!");
+//        cc.width("100%");
+        cc.growY(0.0f);
+        cc.height("200!");
+//        cc.height("100%");
+
+        box.add(panel);
+
+        boxLayout.setComponentConstraints(panel, cc);
+
+        cc = new CC();
+        cc.growX(0);
+        cc.width("300!");
+//        cc.width("100%");
+        layout.setComponentConstraints(scrollPane, cc);
+
+        return box;
     }
 
     private Component createTextAreaTab() {

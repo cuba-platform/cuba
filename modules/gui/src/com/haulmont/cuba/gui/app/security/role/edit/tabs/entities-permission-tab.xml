@@ -28,7 +28,7 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expandLayout="true" expand="contentPane">
+    <layout expand="contentPane">
         <!-- Filter -->
         <hbox expand="spacer" width="100%" spacing="true" margin="true">
             <checkBox id="assignedOnlyCheckBox" caption="msg://assignedOnly" align="MIDDLE_LEFT"/>
@@ -38,10 +38,10 @@
             <button id="applyFilterBtn" caption="msg://action.apply" invoke="applyFilter"/>
             <label id="spacer"/>
         </hbox>
-        <hbox id="contentPane" expand="tablePane" spacing="true" margin="true">
+        <hbox id="contentPane" expand="tablePane" spacing="true" margin="true" width="100%">
             <!-- Table -->
-            <vbox id="tablePane" expand="entityPermissionsTable">
-                <table id="entityPermissionsTable" multiselect="true">
+            <vbox id="tablePane" expand="entityPermissionsTable" height="100%">
+                <table id="entityPermissionsTable" multiselect="true" width="100%">
                     <columns>
                         <column id="caption" caption="msg://entities"/>
                         <column id="createPermissionVariant"/>
@@ -56,68 +56,56 @@
             <groupBox id="editPane" width="280" height="100%">
                 <caption label="msg://permissions"/>
 
-                <vbox id="selectedEntityPanel" expand="panelSpacer" width="100%" visible="false">
+                <vbox id="selectedEntityPanel" expand="panelSpacer" width="100%" height="100%" visible="false">
                     <label id="selectedTargetCaption" stylename="h2" align="MIDDLE_CENTER"/>
 
                     <hbox width="100%">
                         <grid margin="true" width="100%">
-                            <columns>
-                                <column flex="0.3"/>
-                                <column flex="0.3"/>
-                                <column flex="0.3"/>
-                            </columns>
+                            <columns count="3"/>
                             <rows>
                                 <row>
-                                    <label/>
-                                    <label value="msg://checkbox.allow" align="MIDDLE_CENTER"/>
-                                    <label value="msg://checkbox.deny" align="MIDDLE_CENTER"/>
+                                    <label width="80px"/>
+                                    <label value="msg://checkbox.allow" align="MIDDLE_LEFT" width="60px"/>
+                                    <label value="msg://checkbox.deny" align="MIDDLE_LEFT" width="60px"/>
                                 </row>
                                 <row>
-                                    <label id="createOpLabel" value="msg://EntityOp.CREATE"/>
+                                    <label id="createOpLabel" value="msg://EntityOp.CREATE" width="80px"/>
 
-                                    <checkBox id="createAllowCheck" align="MIDDLE_CENTER"/>
-                                    <checkBox id="createDenyCheck" align="MIDDLE_CENTER"/>
+                                    <checkBox id="createAllowCheck" align="MIDDLE_LEFT" width="60px"/>
+                                    <checkBox id="createDenyCheck" align="MIDDLE_LEFT" width="60px"/>
                                 </row>
                                 <row>
-                                    <label id="readOpLabel" value="msg://EntityOp.READ"/>
+                                    <label id="readOpLabel" value="msg://EntityOp.READ" width="80px"/>
 
-                                    <checkBox id="readAllowCheck" align="MIDDLE_CENTER"/>
-                                    <checkBox id="readDenyCheck" align="MIDDLE_CENTER"/>
+                                    <checkBox id="readAllowCheck" align="MIDDLE_LEFT" width="60px"/>
+                                    <checkBox id="readDenyCheck" align="MIDDLE_LEFT" width="60px"/>
                                 </row>
                                 <row>
-                                    <label id="updateOpLabel" value="msg://EntityOp.UPDATE"/>
+                                    <label id="updateOpLabel" value="msg://EntityOp.UPDATE" width="80px"/>
 
-                                    <checkBox id="updateAllowCheck" align="MIDDLE_CENTER"/>
-                                    <checkBox id="updateDenyCheck" align="MIDDLE_CENTER"/>
+                                    <checkBox id="updateAllowCheck" align="MIDDLE_LEFT" width="60px"/>
+                                    <checkBox id="updateDenyCheck" align="MIDDLE_LEFT" width="60px"/>
                                 </row>
                                 <row>
-                                    <label id="deleteOpLabel" value="msg://EntityOp.DELETE"/>
+                                    <label id="deleteOpLabel" value="msg://EntityOp.DELETE" width="80px"/>
 
-                                    <checkBox id="deleteAllowCheck" align="MIDDLE_CENTER"/>
-                                    <checkBox id="deleteDenyCheck" align="MIDDLE_CENTER"/>
+                                    <checkBox id="deleteAllowCheck" align="MIDDLE_LEFT" width="60px"/>
+                                    <checkBox id="deleteDenyCheck" align="MIDDLE_LEFT" width="60px"/>
+                                </row>
+
+                                <row>
+                                    <vbox width="80px" height="50px">
+                                        <label id="allLabel" value="msg://allEntities" align="MIDDLE_LEFT"/>
+                                    </vbox>
+                                    <checkBox id="allAllowCheck" align="MIDDLE_LEFT" width="60px"/>
+                                    <checkBox id="allDenyCheck" align="MIDDLE_LEFT" width="60px"/>
                                 </row>
                             </rows>
                         </grid>
                     </hbox>
 
-                    <label id="panelSpacer" stylename="border-bottom"/>
+                    <vbox id="panelSpacer"/>
 
-                    <hbox width="100%">
-                        <grid margin="true" width="100%">
-                            <columns>
-                                <column flex="0.3"/>
-                                <column flex="0.3"/>
-                                <column flex="0.3"/>
-                            </columns>
-                            <rows>
-                                <row>
-                                    <label value="msg://allEntities"/>
-                                    <checkBox id="allAllowCheck" align="MIDDLE_CENTER"/>
-                                    <checkBox id="allDenyCheck" align="MIDDLE_CENTER"/>
-                                </row>
-                            </rows>
-                        </grid>
-                    </hbox>
                     <hbox id="applyPermissionPane" width="100%" expand="horizontalSpacer" margin="true" visible="false">
                         <label id="horizontalSpacer"/>
                         <button id="applyPermissionMaskBtn" caption="msg://action.apply" icon="icons/ok.png" invoke="applyPermissionMask"/>

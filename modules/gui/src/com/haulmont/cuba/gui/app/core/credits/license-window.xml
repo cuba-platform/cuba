@@ -13,7 +13,7 @@
         >
     <dsContext/>
 
-    <layout margin="true" expand="text">
-        <textField id="text" rows="20"/>
+    <layout margin="true">
+        <textField id="text" rows="10" height="100%" width="100%"/>
     </layout>
 </window>

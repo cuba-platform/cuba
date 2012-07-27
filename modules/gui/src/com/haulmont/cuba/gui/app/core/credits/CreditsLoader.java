@@ -63,6 +63,9 @@ public class CreditsLoader {
 
     private void loadLicenses(Element rootElement) {
         Element licensesEl = rootElement.element("licenses");
+        if (licensesEl == null)
+            return;
+
         for (Element element : Dom4j.elements(licensesEl)) {
             licenses.put(element.attributeValue("id"), element.getText());
         }

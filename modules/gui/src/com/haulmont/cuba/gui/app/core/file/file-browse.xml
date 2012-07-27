@@ -21,7 +21,7 @@
                 <properties include=".*"/>
             </filter>
         </vbox>
-        <table id="filesTable" editable="false">
+        <table id="filesTable" editable="false" width="100%">
             <actions>
                 <action id="create"/>
                 <action id="edit"/>

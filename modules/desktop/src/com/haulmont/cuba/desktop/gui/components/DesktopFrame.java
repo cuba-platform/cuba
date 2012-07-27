@@ -175,9 +175,6 @@ public class DesktopFrame
         App.getInstance().getWindowManager().showNotification(caption, type);
     }
 
-    public void expandLayout(boolean expandLayout) {
-    }
-
     public IFrame wrapBy(Class<? extends IFrame> aClass) {
         try {
             // First try to find an old-style constructor with IFrame parameter

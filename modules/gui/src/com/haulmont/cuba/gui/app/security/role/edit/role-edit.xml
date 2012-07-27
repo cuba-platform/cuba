@@ -22,77 +22,67 @@
     </dsContext>
 
     <#assign width = 200>
-    <layout expandLayout="true" expand="main">
-        <vbox id="main" spacing="true" expand="permissionsTabsheet">
-            <hbox spacing="true" margin="true" width="100%" expand="descrBox"
-                  stylename="edit-area">
-                <grid spacing="true">
-                    <columns>
-                        <column/>
-                        <column/>
-                        <column/>
-                    </columns>
-                    <rows>
-                        <row>
-                            <label value="msg://name"/>
-                            <textField id="name" datasource="roleDs" property="name" width="${width}" required="true"
-                                       requiredMessage="msg://nameMsg"/>
-                        </row>
-                        <row>
-                            <label value="msg://locName"/>
-                            <textField id="locName" datasource="roleDs" property="locName" width="${width}"/>
-                        </row>
-                    </rows>
-                </grid>
+    <layout expand="permissionsTabsheet" spacing="true">
+        <hbox spacing="true" margin="true" stylename="edit-area">
+            <grid spacing="true">
+                <columns count="3"/>
+                <rows>
+                    <row>
+                        <label value="msg://name"/>
+                        <textField id="name" datasource="roleDs" property="name" width="${width}" required="true"
+                                   requiredMessage="msg://nameMsg"/>
+                    </row>
+                    <row>
+                        <label value="msg://locName"/>
+                        <textField id="locName" datasource="roleDs" property="locName" width="${width}"/>
+                    </row>
+                </rows>
+            </grid>
 
-                <grid spacing="true">
-                    <columns>
-                        <column/>
-                        <column/>
-                        <column/>
-                    </columns>
-                    <rows>
-                        <row>
-                            <label value="msg://roleType"/>
-                            <lookupField id="typeLookup" datasource="roleDs" property="type"
-                                         required="true" width="100"/>
-                        </row>
-                        <row>
-                            <label value="msg://defaultRole"/>
-                            <checkBox id="defaultRole" datasource="roleDs" property="defaultRole"/>
-                        </row>
-                    </rows>
-                </grid>
+            <grid spacing="true">
+                <columns count="3"/>
+                <rows>
+                    <row>
+                        <label value="msg://roleType"/>
+                        <lookupField id="typeLookup" datasource="roleDs" property="type"
+                                     required="true" width="100"/>
+                    </row>
+                    <row>
+                        <label value="msg://defaultRole"/>
+                        <checkBox id="defaultRole" datasource="roleDs" property="defaultRole"/>
+                    </row>
+                </rows>
+            </grid>
 
-                <hbox spacing="true" id="descrBox" expand="description;width=300px;height=100%">
-                    <label value="msg://description"/>
-                    <textField id="description" datasource="roleDs" property="description" rows="4"/>
-                </hbox>
+            <hbox spacing="true" id="descrBox" height="100%">
+                <label value="msg://description"/>
+                <textField id="description" datasource="roleDs" property="description" rows="4"
+                           height="100%" width="300px"/>
             </hbox>
+        </hbox>
 
-            <tabsheet id="permissionsTabsheet">
-                <tab id="screenPermissionsTab" caption="msg://screen-permissions">
-                    <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/screens-permission-tab.xml"
-                            id="screensTabFrame"/>
-                </tab>
-                <tab id="entityPermissionsTab" caption="msg://entity-permissions" lazy="true">
-                    <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/entities-permission-tab.xml"
-                            id="entitiesTabFrame"/>
-                </tab>
-                <tab id="propertyPermissionsTab" caption="msg://property-permissions" lazy="true">
-                    <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/attributes-permission-tab.xml"
-                            id="attributesTabFrame"/>
-                </tab>
-                <tab id="specificPermissionsTab" caption="msg://specific-permissions" lazy="true">
-                    <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/specific-permission-tab.xml"
-                            id="specificTabFrame"/>
-                </tab>
-                <tab id="uiPermissionsTab" caption="msg://ui-permissions" lazy="true">
-                    <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/ui-permission-tab.xml"
-                            id="uiTabFrame"/>
-                </tab>
-            </tabsheet>
-        </vbox>
+        <tabsheet id="permissionsTabsheet">
+            <tab id="screenPermissionsTab" caption="msg://screen-permissions">
+                <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/screens-permission-tab.xml"
+                        id="screensTabFrame" width="100%" height="100%"/>
+            </tab>
+            <tab id="entityPermissionsTab" caption="msg://entity-permissions" lazy="true">
+                <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/entities-permission-tab.xml"
+                        id="entitiesTabFrame" width="100%" height="100%"/>
+            </tab>
+            <tab id="propertyPermissionsTab" caption="msg://property-permissions" lazy="true">
+                <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/attributes-permission-tab.xml"
+                        id="attributesTabFrame" width="100%" height="100%"/>
+            </tab>
+            <tab id="specificPermissionsTab" caption="msg://specific-permissions" lazy="true">
+                <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/specific-permission-tab.xml"
+                        id="specificTabFrame" width="100%" height="100%"/>
+            </tab>
+            <tab id="uiPermissionsTab" caption="msg://ui-permissions" lazy="true">
+                <iframe src="/com/haulmont/cuba/gui/app/security/role/edit/tabs/ui-permission-tab.xml"
+                        id="uiTabFrame" width="100%" height="100%"/>
+            </tab>
+        </tabsheet>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
     </layout>
 </window>

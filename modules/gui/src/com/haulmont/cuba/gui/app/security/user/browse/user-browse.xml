@@ -36,7 +36,7 @@
                 (ur.role.id = ?)
             </custom>
         </filter>
-        <groupTable id="usersTable" presentations="true" multiselect="true">
+        <groupTable id="usersTable" presentations="true" multiselect="true" width="100%">
             <actions>
                 <action id="create"/>
                 <action id="edit"/>

@@ -21,7 +21,7 @@
     </dsContext>
 
     <layout expand="tasksTable" spacing="true">
-        <table id="tasksTable">
+        <table id="tasksTable" width="100%">
             <buttonsPanel>
                 <button action="tasksTable.create" icon="icons/create.png"/>
                 <button id="activateBtn"/>

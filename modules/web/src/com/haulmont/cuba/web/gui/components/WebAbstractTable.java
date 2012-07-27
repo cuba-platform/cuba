@@ -381,8 +381,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         componentComposition = new CompositionLayout(component);
         componentComposition.setSpacing(true);
         componentComposition.setMargin(false);
+        componentComposition.setWidth("-1px");
+        component.setSizeFull();
         componentComposition.setExpandRatio(component, 1);
-        componentComposition.setSizeFull();
 
         component.setEnableCancelSorting(ConfigProvider.getConfig(WebConfig.class).getEnableCancelTableSorting());
 

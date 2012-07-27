@@ -16,6 +16,6 @@
                 <properties include=".*"/>
             </filter>
         </vbox>
-        <vbox id="tableBox"/>
+        <vbox id="tableBox" width="100%"/>
     </layout>
 </window>

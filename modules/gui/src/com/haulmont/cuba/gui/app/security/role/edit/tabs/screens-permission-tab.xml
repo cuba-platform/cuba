@@ -28,9 +28,9 @@
         </collectionDatasource>
     </dsContext>
 
-    <layout expandLayout="true">
-        <hbox expand="screenPermissionsTree" margin="true" spacing="true">
-            <treeTable id="screenPermissionsTree">
+    <layout>
+        <hbox expand="screenPermissionsTree" margin="true" spacing="true" width="100%" height="100%">
+            <treeTable id="screenPermissionsTree" height="100%">
                 <columns>
                     <column id="caption" caption="msg://target"/>
                     <column id="permissionVariant" caption="msg://value"/>
@@ -41,15 +41,12 @@
             <groupBox width="250" height="100%">
                 <caption label="msg://permissions"/>
 
-                <vbox id="selectedScreenPanel" expand="spacer" width="100" visible="false">
-                    <hbox width="100%">
-                        <label property="caption" datasource="screenPermissionsTreeDs" stylename="h2"/>
+                <vbox id="selectedScreenPanel" width="100%" height="100%" visible="false" expand="checkBoxes">
+                    <label property="caption" datasource="screenPermissionsTreeDs" stylename="h2"/>
+                    <hbox id="checkBoxes">
+                        <checkBox id="allowCheckBox" caption="msg://checkbox.allow"/>
+                        <checkBox id="disallowCheckBox" caption="msg://checkbox.deny"/>
                     </hbox>
-                    <hbox height="20" width="100%">
-                        <checkBox id="allowCheckBox" caption="msg://checkbox.allow" height="100%"/>
-                        <checkBox id="disallowCheckBox" caption="msg://checkbox.deny" height="100%"/>
-                    </hbox>
-                    <hbox id="spacer"/>
                 </vbox>
             </groupBox>
         </hbox>

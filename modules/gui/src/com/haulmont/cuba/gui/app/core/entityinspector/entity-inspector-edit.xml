@@ -13,7 +13,7 @@
         <scrollbox id="fieldsScrollBox" height="100%" width="100%" spacing="true">
             <vbox id="buff">
                 <vbox id="contentPane" spacing="true"/>
-                <vbox id="tablesBox" spacing="true"/>
+                <vbox id="tablesBox" spacing="true" width="100%"/>
             </vbox>
         </scrollbox>
         <vbox id="buttonsBox"/>

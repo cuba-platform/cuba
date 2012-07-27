@@ -16,6 +16,7 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.data.AnyTableModelAdapter;
 import com.haulmont.cuba.desktop.gui.data.RowSorterImpl;
 import com.haulmont.cuba.desktop.sys.FontDialog;
+import com.haulmont.cuba.desktop.sys.layout.MigLayoutHelper;
 import com.haulmont.cuba.desktop.sys.vcl.FocusableTable;
 import com.haulmont.cuba.desktop.sys.vcl.TableFocusManager;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
@@ -32,6 +33,7 @@ import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.EntityAttrAccess;
 import com.haulmont.cuba.security.entity.EntityOp;
 import com.haulmont.cuba.security.global.UserSession;
+import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
@@ -67,6 +69,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected MigLayout layout;
     protected JPanel panel;
     protected JPanel topPanel;
+    protected JScrollPane scrollPane;
     protected AnyTableModelAdapter tableModel;
     protected CollectionDatasource datasource;
     protected ButtonsPanel buttonsPanel;
@@ -99,7 +102,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
         topPanel.setVisible(false);
         panel.add(topPanel, "growx");
 
-        JScrollPane scrollPane = new JScrollPane(impl);
+        scrollPane = new JScrollPane(impl);
         impl.setFillsViewportHeight(true);
         panel.add(scrollPane, "grow");
 
@@ -214,6 +217,14 @@ public abstract class DesktopAbstractTable<C extends JTable>
                 }
             }
         });
+    }
+
+    @Override
+    public void setWidth(String width) {
+        super.setWidth(width);
+        CC cc = new CC().grow();
+        MigLayoutHelper.applyWidth(cc, (int) widthSize.value, widthSize.unit, false);
+        layout.setComponentConstraints(scrollPane, cc);
     }
 
     protected void addShortcutActionBridge(String shortcutActionId, String keyCombination,

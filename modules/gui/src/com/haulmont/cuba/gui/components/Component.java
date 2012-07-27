@@ -123,6 +123,7 @@ public interface Component {
     /**
      * Component containing a layout
      */
+    @Deprecated
     interface HasLayout extends Component {
         void expandLayout(boolean expandLayout);
     }
@@ -221,6 +222,7 @@ public interface Component {
      * Expandable means that if the component is alone in a container,
      * it will be automatically expanded - will take all available space inside the container.
      */
+    @Deprecated
     interface Expandable extends Component {
         void setExpandable(boolean expandable);
         boolean isExpandable();

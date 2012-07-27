@@ -26,7 +26,6 @@ import java.util.Map;
 public interface IFrame
         extends ExpandingLayout,
                 Component.BelongToFrame,
-                Component.HasLayout,
                 Component.Spacing,
                 Component.Margin,
                 Component.ActionsHolder
