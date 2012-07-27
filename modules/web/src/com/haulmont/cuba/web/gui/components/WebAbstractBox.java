@@ -29,8 +29,6 @@ class WebAbstractBox extends AbstractOrderedLayout
 
     private Alignment alignment = Alignment.TOP_LEFT;
 
-    private boolean expandable = true;
-
     private IFrame frame;
 
     public void add(Component component) {
@@ -87,14 +85,6 @@ class WebAbstractBox extends AbstractOrderedLayout
 
     public float getHeight() {
         return super.getHeight();
-    }
-
-    public boolean isExpandable() {
-        return expandable;
-    }
-
-    public void setExpandable(boolean expandable) {
-        this.expandable = expandable;
     }
 
     public void requestFocus() {
