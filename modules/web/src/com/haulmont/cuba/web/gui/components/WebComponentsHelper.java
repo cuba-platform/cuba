@@ -79,6 +79,13 @@ public class WebComponentsHelper {
         return res;
     }
 
+    /**
+     * Returns underlying Vaadin component implementation.
+     *
+     * @param component GUI component
+     * @return          Vaadin component
+     * @see #getComposition(com.haulmont.cuba.gui.components.Component)
+     */
     public static Component unwrap(com.haulmont.cuba.gui.components.Component component) {
         Object comp = component;
         while (comp instanceof com.haulmont.cuba.gui.components.Component.Wrapper) {
@@ -92,6 +99,14 @@ public class WebComponentsHelper {
         return (com.haulmont.cuba.web.toolkit.Timer) timer;
     }
 
+    /**
+     * Returns underlying Vaadin component, which serves as the outermost container for the supplied GUI component.
+     * For simple components like {@link com.haulmont.cuba.gui.components.Button} this method returns the same
+     * result as {@link #unwrap(com.haulmont.cuba.gui.components.Component)}.
+     *
+     * @param component GUI component
+     * @return          Vaadin component
+     */
     public static Component getComposition(com.haulmont.cuba.gui.components.Component component) {
         Object comp = component;
         while (comp instanceof com.haulmont.cuba.gui.components.Component.Wrapper) {

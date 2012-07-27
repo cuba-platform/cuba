@@ -1062,27 +1062,17 @@
 
     <!-- GroupBox -->
     <xs:complexType name="groupBoxLayout">
-        <xs:sequence>
-            <xs:element name="caption" minOccurs="0" maxOccurs="1">
-                <xs:complexType>
-                    <xs:attribute name="label" type="xs:string" use="optional"/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="description" minOccurs="0" maxOccurs="1">
-                <xs:complexType>
-                    <xs:attribute name="label" type="xs:string" use="optional"/>
-                </xs:complexType>
-            </xs:element>
-            <xs:group ref="layoutOrComponent" minOccurs="0"/>
-        </xs:sequence>
+        <xs:group ref="layoutOrComponent" minOccurs="0"/>
 
         <xs:attributeGroup ref="hasId"/>
+        <xs:attributeGroup ref="hasCaption"/>
         <xs:attributeGroup ref="hasSize"/>
         <xs:attributeGroup ref="hasStyle"/>
         <xs:attributeGroup ref="hasExpand"/>
 
         <xs:attribute name="collapsable" type="xs:boolean" use="optional"/>
         <xs:attribute name="collapsed" type="xs:boolean" use="optional"/>
+        <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
     </xs:complexType>
 
     <!-- IFrame -->

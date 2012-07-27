@@ -27,21 +27,30 @@ public class GroupBoxLoader extends ContainerLoader implements com.haulmont.cuba
         assignXmlDescriptor(component, element);
         loadId(component, element);
 
-        final Element captionElement = element.element("caption");
-        if (captionElement != null) {
-            String caption = captionElement.attributeValue("label");
-            if (!StringUtils.isEmpty(caption)) {
-                caption = loadResourceString(caption);
-                component.setCaption(caption);
+        loadCaption(component, element);
+        loadDescription(component, element);
+
+        if (StringUtils.isEmpty(component.getCaption())) {
+            // for backward compatibility
+            Element captionElement = element.element("caption");
+            if (captionElement != null) {
+                String caption = captionElement.attributeValue("label");
+                if (!StringUtils.isEmpty(caption)) {
+                    caption = loadResourceString(caption);
+                    component.setCaption(caption);
+                }
             }
         }
 
-        final Element descriptionElement = element.element("description");
-        if (descriptionElement != null) {
-            String description = descriptionElement.attributeValue("label");
-            if (!StringUtils.isEmpty(description)) {
-                description = loadResourceString(description);
-                component.setDescription(description);
+        if (StringUtils.isEmpty(component.getCaption())) {
+            // for backward compatibility
+            Element descriptionElement = element.element("description");
+            if (descriptionElement != null) {
+                String description = descriptionElement.attributeValue("label");
+                if (!StringUtils.isEmpty(description)) {
+                    description = loadResourceString(description);
+                    component.setDescription(description);
+                }
             }
         }
 
@@ -56,6 +65,8 @@ public class GroupBoxLoader extends ContainerLoader implements com.haulmont.cuba
 
         loadHeight(component, element);
         loadWidth(component, element);
+
+        loadSpacing(component, element);
 
         assignFrame(component);
 

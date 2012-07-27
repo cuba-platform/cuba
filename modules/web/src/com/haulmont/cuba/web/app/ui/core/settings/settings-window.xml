@@ -9,7 +9,7 @@
 
     <layout expand="buttons">
         <groupBox stylename="edit-area">
-            <grid spacing="true" expandable="false">
+            <grid spacing="true">
                 <columns>
                     <column flex="1"/>
                     <column flex="1"/>
@@ -31,7 +31,7 @@
             </grid>
         </groupBox>
         <vbox id="buttons" margin="true;false;false;false">
-            <buttonsPanel expandable="false">
+            <buttonsPanel>
                 <button id="ok" icon="icons/ok.png"/>
                 <button id="cancel" icon="icons/cancel.png"/>
             </buttonsPanel>

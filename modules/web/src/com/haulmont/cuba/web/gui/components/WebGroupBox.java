@@ -11,16 +11,14 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.ComponentsHelper;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.GroupBox;
-import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.toolkit.gwt.client.ui.VGroupBox;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
-import com.vaadin.ui.ClientWidget;
-import com.vaadin.ui.Layout;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.dom4j.Element;
@@ -28,12 +26,17 @@ import org.dom4j.Element;
 import java.util.*;
 
 @ClientWidget(VGroupBox.class)
-public class WebGroupBox extends WebAbstractPanel implements GroupBox {
+public class WebGroupBox extends Panel implements GroupBox {
 
     private static final long serialVersionUID = 603031841274663159L;
 
+    private String id;
+    private IFrame frame;
+    protected List<Component> components = new ArrayList<>();
+    private Alignment alignment = Alignment.TOP_LEFT;
+
     private boolean expanded = true;
-    private boolean collapsable;
+    private boolean collapsible;
 
     private List<ExpandListener> expandListeners = null;
     private List<CollapseListener> collapseListeners = null;
@@ -63,51 +66,61 @@ public class WebGroupBox extends WebAbstractPanel implements GroupBox {
 
     @Override
     public void add(Component component) {
-        final com.vaadin.ui.Component comp = WebComponentsHelper.unwrap(component);
-        if (comp instanceof Layout || comp instanceof com.vaadin.ui.Panel) {
-            if (getContent() == null) {
-                setContent((com.vaadin.ui.ComponentContainer) comp);
-            } else {
-                getContent().addComponent(comp);
-            }
-            this.component = component;
-        } else {
-            throw new UnsupportedOperationException("Only layout or panel component is supported inside groupBox");
-        }
+        getContent().addComponent(WebComponentsHelper.getComposition(component));
+        components.add(component);
     }
 
     @Override
     public void remove(Component component) {
-        final com.vaadin.ui.Component comp = WebComponentsHelper.unwrap(component);
-        if (getContent() == comp) {
-            setContent(null);
-            this.component = null;
-        } else {
-            getContent().removeComponent(comp);
+        getContent().removeComponent(WebComponentsHelper.getComposition(component));
+        components.remove(component);
+    }
+
+    @Override
+    public <T extends Component> T getOwnComponent(String id) {
+        for (Component component : components) {
+            if (ObjectUtils.equals(component.getId(), id))
+                return (T) component;
         }
+        return null;
+    }
+
+    @Override
+    public <T extends Component> T getComponent(String id) {
+        for (Component component : getComponents()) {
+            if (ObjectUtils.equals(component.getId(), id))
+                return (T) component;
+        }
+        return null;
+    }
+
+    @Override
+    public Collection<Component> getOwnComponents() {
+        return Collections.unmodifiableCollection(components);
+    }
+
+    @Override
+    public Collection<Component> getComponents() {
+        return ComponentsHelper.getComponents(this);
+    }
+
+    @Override
+    public void expand(Component component) {
+        expand(component, "", "");
     }
 
     @Override
     public void expand(Component component, String height, String width) {
-        final com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(component);
-        expandedComponent.setSizeFull();
-    }
-
-    public void expandLayout(boolean expandLayout) {
-        if (expandLayout) {
-            getContent().setSizeFull();
-        } else {
-            getContent().setWidth("100%");
-            getContent().setHeight("-1px");
-        }
+        com.vaadin.ui.Component expandedComponent = WebComponentsHelper.getComposition(component);
+        WebComponentsHelper.expand((AbstractOrderedLayout) getContent(), expandedComponent, height, width);
     }
 
     public boolean isExpanded() {
-        return !collapsable || expanded;
+        return !collapsible || expanded;
     }
 
     public void setExpanded(boolean expanded) {
-        if (collapsable) {
+        if (collapsible) {
             this.expanded = expanded;
             getContent().setVisible(expanded);
             requestRepaint();
@@ -115,11 +128,11 @@ public class WebGroupBox extends WebAbstractPanel implements GroupBox {
     }
 
     public boolean isCollapsible() {
-        return collapsable;
+        return collapsible;
     }
 
     public void setCollapsible(boolean collapsable) {
-        this.collapsable = collapsable;
+        this.collapsible = collapsable;
         if (collapsable) {
             setExpanded(true);
         }
@@ -201,7 +214,7 @@ public class WebGroupBox extends WebAbstractPanel implements GroupBox {
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
-        target.addAttribute("collapsable", isCollapsible());
+        target.addAttribute("collapsible", isCollapsible());
         if (isCollapsible()) {
             target.addAttribute("expanded", isExpanded());
         }
@@ -253,5 +266,55 @@ public class WebGroupBox extends WebAbstractPanel implements GroupBox {
     @Override
     public void setBorderVisible(boolean borderVisible) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <A extends IFrame> A getFrame() {
+        return (A) frame;
+    }
+
+    @Override
+    public void setFrame(IFrame frame) {
+        this.frame = frame;
+        frame.registerComponent(this);
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public void requestFocus() {
+        if (getComponentIterator().hasNext()) {
+            com.vaadin.ui.Component component = getComponentIterator().next();
+            if (component instanceof Focusable) {
+                ((Focusable) component).focus();
+            }
+        }
+    }
+
+    @Override
+    public Alignment getAlignment() {
+        return alignment;
+    }
+
+    @Override
+    public void setAlignment(Alignment alignment) {
+        this.alignment = alignment;
+        final com.vaadin.ui.Component component = getParent();
+        if (component instanceof Layout.AlignmentHandler) {
+            ((Layout.AlignmentHandler) component).setComponentAlignment(this, WebComponentsHelper.convertAlignment(alignment));
+        }
+    }
+
+    @Override
+    public void setSpacing(boolean enabled) {
+        ((AbstractOrderedLayout) getContent()).setSpacing(enabled);
     }
 }

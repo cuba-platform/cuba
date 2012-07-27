@@ -17,8 +17,7 @@
 
     <layout expand="logsBox" spacing="true">
         <hbox spacing="true" width="100%">
-            <groupBox id="logOptionsBox">
-                <caption label="msg://logOptions"/>
+            <groupBox id="logOptionsBox" caption="msg://logOptions">
                 <hbox spacing="true" expandable="false">
                     <label id="labelLogFile" value="msg://logFile"/>
                     <lookupField id="logFileNamesField" width="210px"/>
@@ -28,8 +27,7 @@
                 </hbox>
             </groupBox>
 
-            <groupBox id="logLevelBox">
-                <caption label="msg://logLevel"/>
+            <groupBox id="logLevelBox" caption="msg://logLevel">
                 <hbox spacing="true" expandable="false">
                     <label id="labelLogName" value="msg://loggerName"/>
                     <lookupField id="logNameField" width="300px"/>
@@ -42,8 +40,7 @@
             </groupBox>
         </hbox>
 
-        <groupBox id="logsBox" width="100%">
-            <caption label="msg://logs"/>
+        <groupBox id="logsBox" width="100%" caption="msg://logs">
             <hbox id="logFieldBox" height="100%" width="100%">
             </hbox>
         </groupBox>

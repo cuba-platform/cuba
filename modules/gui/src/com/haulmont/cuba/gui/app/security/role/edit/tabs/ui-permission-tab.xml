@@ -52,9 +52,7 @@
                 <rows datasource="uiPermissionTargetsDs"/>
             </groupTable>
             <!-- Edit pane -->
-            <groupBox id="editPane" width="250" height="100%">
-                <caption label="msg://permissions"/>
-
+            <groupBox id="editPane" width="250" height="100%" caption="msg://permissions">
                 <vbox id="selectedComponentPanel" expand="panelSpacer" spacing="true" width="100%" height="100%" visible="false">
                     <label id="selectedTargetCaption" stylename="h2" align="MIDDLE_CENTER"
                             property="component" datasource="uiPermissionTargetsDs"/>

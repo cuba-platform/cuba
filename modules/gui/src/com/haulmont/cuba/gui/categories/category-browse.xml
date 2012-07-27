@@ -22,8 +22,7 @@
     </dsContext>
 
     <layout expand="categoryTable" spacing="true">
-        <groupBox id="filterBox" collapsable="true" stylename="edit-area">
-            <caption label="msg://filter"/>
+        <groupBox id="filterBox" collapsable="true" stylename="edit-area" caption="msg://filter">
             <filter id="categoriesFilter" datasource="categoriesDs">
                 <properties include=".*"/>
             </filter>

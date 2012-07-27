@@ -32,8 +32,7 @@
     </dsContext>
 
     <layout expand="executionsTable" spacing="true">
-        <groupBox id="filterBox" width="-1px">
-            <caption label="msg://filter"/>
+        <groupBox id="filterBox" width="-1px" caption="msg://filter">
             <hbox spacing="true">
                 <label value="msg://com.haulmont.cuba.core.entity/ScheduledExecution.server"/>
                 <textField id="serverField"/>
@@ -44,7 +43,7 @@
                 <checkBox id="finishedField" caption="msg://finished"/>
             </hbox>
         </groupBox>
-        <table id="executionsTable">
+        <table id="executionsTable" width="100%">
             <buttonsPanel>
                 <button action="executionsTable.refresh" icon="icons/refresh.png"/>
             </buttonsPanel>

@@ -53,8 +53,7 @@
                 </table>
             </vbox>
             <!-- Edit pane -->
-            <groupBox id="editPane" width="280" height="100%">
-                <caption label="msg://permissions"/>
+            <groupBox id="editPane" width="280" height="100%" caption="msg://permissions">
 
                 <vbox id="selectedEntityPanel" expand="panelSpacer" width="100%" height="100%" visible="false">
                     <label id="selectedTargetCaption" stylename="h2" align="MIDDLE_CENTER"/>
