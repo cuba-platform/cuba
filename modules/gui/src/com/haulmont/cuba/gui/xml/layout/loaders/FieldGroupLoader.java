@@ -94,7 +94,6 @@ public class FieldGroupLoader extends AbstractFieldLoader {
         loadWidth(component, element);
 
         loadCollapsible(component, element);
-        loadExpandable(component, element);
 
         loadBorder(component, element);
 

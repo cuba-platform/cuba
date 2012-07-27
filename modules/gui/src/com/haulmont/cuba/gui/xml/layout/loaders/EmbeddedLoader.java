@@ -53,8 +53,6 @@ public class EmbeddedLoader extends ComponentLoader {
         loadHeight(component, element);
         loadWidth(component, element);
 
-        loadExpandable(component, element);
-
         assignFrame(component);
 
         return component;

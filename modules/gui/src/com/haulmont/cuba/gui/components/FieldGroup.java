@@ -17,7 +17,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 public interface FieldGroup extends Component, Component.BelongToFrame, Component.HasCaption, Component.HasBorder,
-        Component.Editable, Component.Expandable, Component.Collapsible, Component.HasSettings, Component.Validatable {
+        Component.Editable, Component.Collapsible, Component.HasSettings, Component.Validatable {
 
     String NAME = "fieldGroup";
 

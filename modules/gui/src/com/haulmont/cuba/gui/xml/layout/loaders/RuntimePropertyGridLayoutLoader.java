@@ -66,7 +66,6 @@ public class RuntimePropertyGridLayoutLoader extends GridLayoutLoader {
         loadHeight(component, element);
 
         loadEditable(component, element);
-        loadExpandable(component, element);
         loadAttributeProperty(component, element);
         loadAttributePropertyOrder(component, element);
         loadTypeProperty(component, element);

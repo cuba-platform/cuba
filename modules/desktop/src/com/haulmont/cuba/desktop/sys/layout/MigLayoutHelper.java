@@ -63,12 +63,8 @@ public class MigLayoutHelper {
         }
 
         if (component instanceof AutoExpanding) {
-            boolean expandable = component instanceof Component.Expandable
-                    && ((Component.Expandable) component).isExpandable();
-
-            AutoExpanding autoExpanding = (AutoExpanding) component;
-            expandX = expandable && autoExpanding.expandsWidth();
-            expandY = expandable && autoExpanding.expandsHeight();
+            expandX = ((AutoExpanding) component).expandsWidth();
+            expandY = ((AutoExpanding) component).expandsHeight();
         }
 
         int width = (int) component.getWidth();

@@ -12,8 +12,7 @@ package com.haulmont.cuba.gui.components;
 import java.util.UUID;
 
 public interface FileUploadField
-        extends Component, Component.HasCaption, Component.Expandable,
-                Component.BelongToFrame
+        extends Component, Component.HasCaption, Component.BelongToFrame
 {
     String NAME = "upload";
 

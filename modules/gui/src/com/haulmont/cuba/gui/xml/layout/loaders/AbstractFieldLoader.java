@@ -58,8 +58,6 @@ public class AbstractFieldLoader extends AbstractDatasourceComponentLoader {
         loadWidth(component, element);
         loadAlign(component, element);
 
-        loadExpandable(component, element);
-
         assignFrame(component);
 
         return component;

@@ -50,8 +50,6 @@ public class GroupBoxLoader extends ContainerLoader implements com.haulmont.cuba
         loadEnable(component, element);
         loadSubComponentsAndExpand(component, element, "caption", "description", "visible");
 
-        loadExpandable(component, element);
-
         loadCollapsible(component, element);
 
         loadStyleName(component, element);

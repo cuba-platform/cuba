@@ -34,8 +34,6 @@ public class FileUploadFieldLoader extends ComponentLoader{
         loadCaption((Component.HasCaption) component, element);
         loadDescription((Component.HasCaption) component, element);
 
-        loadExpandable((Component.Expandable)component, element);
-
         assignFrame((Component.BelongToFrame)component);
 
         return component;

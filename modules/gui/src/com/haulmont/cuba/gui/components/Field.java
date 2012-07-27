@@ -16,7 +16,7 @@ import java.io.Serializable;
 public interface Field
     extends
         DatasourceComponent, Component.HasCaption, Component.HasValue, Component.Editable,
-        Component.BelongToFrame, Component.Expandable, Component.Validatable
+        Component.BelongToFrame, Component.Validatable
 {
 
     boolean isRequired();

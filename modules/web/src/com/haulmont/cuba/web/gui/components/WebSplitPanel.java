@@ -32,8 +32,6 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
 
     private Alignment alignment = Alignment.TOP_LEFT;
 
-    private boolean expandable = true;
-
     private boolean showHookButton = false;
     private String defaultPosition = null;
 
@@ -129,16 +127,6 @@ public class WebSplitPanel extends com.vaadin.ui.SplitPanel
         if (component instanceof Layout.AlignmentHandler) {
             ((Layout.AlignmentHandler) component).setComponentAlignment(this, WebComponentsHelper.convertAlignment(alignment));
         }
-    }
-
-    @Override
-    public boolean isExpandable() {
-        return expandable;
-    }
-
-    @Override
-    public void setExpandable(boolean expandable) {
-        this.expandable = expandable;
     }
 
     @Override

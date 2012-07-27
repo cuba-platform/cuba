@@ -17,7 +17,7 @@ import java.util.Collection;
 
 public interface Tabsheet 
     extends
-        Component, Component.BelongToFrame, Component.Expandable
+        Component, Component.BelongToFrame
 {
     String NAME = "tabsheet";
 

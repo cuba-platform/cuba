@@ -10,7 +10,7 @@
 package com.haulmont.cuba.gui.components;
 
 public interface BoxLayout
-        extends ExpandingLayout, Component.Spacing, Component.Margin, Component.Expandable, Component.BelongToFrame
+        extends ExpandingLayout, Component.Spacing, Component.Margin, Component.BelongToFrame
 {
     String VBOX = "vbox";
     String HBOX = "hbox";

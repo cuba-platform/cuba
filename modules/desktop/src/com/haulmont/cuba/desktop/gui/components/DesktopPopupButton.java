@@ -210,15 +210,6 @@ public class DesktopPopupButton
         }
 
         @Override
-        public void setExpandable(boolean expandable) {
-        }
-
-        @Override
-        public boolean isExpandable() {
-            return false;
-        }
-
-        @Override
         public String getId() {
             return "__" + action.getId() + "_button";
         }

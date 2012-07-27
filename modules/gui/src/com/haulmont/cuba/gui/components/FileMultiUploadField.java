@@ -13,8 +13,7 @@ package com.haulmont.cuba.gui.components;
 import java.util.Map;
 import java.util.UUID;
 
-public interface FileMultiUploadField extends Component, Component.HasCaption, Component.Expandable,
-        Component.BelongToFrame {
+public interface FileMultiUploadField extends Component, Component.HasCaption, Component.BelongToFrame {
 
     String NAME = "multiupload";
 

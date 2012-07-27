@@ -37,8 +37,6 @@ public class ButtonsPanelLoader <T extends ButtonsPanel> extends ContainerLoader
         loadStyleName(component, element);
         loadAlign(component, element);
 
-        loadExpandable(component, element);
-
         loadWidth(component, element);
         loadHeight(component, element);
 

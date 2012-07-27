@@ -18,7 +18,7 @@ import java.io.Serializable;
 
 public class WebAbstractComponent<T extends com.vaadin.ui.Component>
     implements
-        Serializable, Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.Expandable
+        Serializable, Component, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame
 {
     private String id;
     protected T component;

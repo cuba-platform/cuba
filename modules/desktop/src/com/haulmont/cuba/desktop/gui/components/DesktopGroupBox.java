@@ -156,10 +156,6 @@ public class DesktopGroupBox
     }
 
     @Override
-    public void expandLayout(boolean expandLayout) {
-    }
-
-    @Override
     public boolean isBorderVisible() {
         return true;
     }

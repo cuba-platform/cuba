@@ -121,14 +121,6 @@ public interface Component {
     }
 
     /**
-     * Component containing a layout
-     */
-    @Deprecated
-    interface HasLayout extends Component {
-        void expandLayout(boolean expandLayout);
-    }
-
-    /**
      * Component belonging to a frame
      */
     interface BelongToFrame extends Component {
@@ -215,17 +207,6 @@ public interface Component {
     interface HasSettings {
         void applySettings(Element element);
         boolean saveSettings(Element element);
-    }
-
-    /**
-     * Component supporting "expandable" state.
-     * Expandable means that if the component is alone in a container,
-     * it will be automatically expanded - will take all available space inside the container.
-     */
-    @Deprecated
-    interface Expandable extends Component {
-        void setExpandable(boolean expandable);
-        boolean isExpandable();
     }
 
     /**

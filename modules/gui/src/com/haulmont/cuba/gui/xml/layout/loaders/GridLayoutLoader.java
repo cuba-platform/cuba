@@ -121,8 +121,6 @@ public class GridLayoutLoader extends ContainerLoader implements com.haulmont.cu
         loadWidth(component, element);
         loadHeight(component, element);
 
-        loadExpandable(component, element);
-
         loadAlign(component, element);
 
         assignFrame(component);

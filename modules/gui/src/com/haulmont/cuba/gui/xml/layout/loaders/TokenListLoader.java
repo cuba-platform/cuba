@@ -48,8 +48,6 @@ public class TokenListLoader extends AbstractFieldLoader {
         loadHeight(component, element);
         loadWidth(component, element);
 
-        loadExpandable(component, element);
-
         String captionProperty = element.attributeValue("captionProperty");
         if (!StringUtils.isEmpty(captionProperty)) {
             component.setCaptionMode(CaptionMode.PROPERTY);

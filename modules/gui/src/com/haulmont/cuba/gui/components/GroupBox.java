@@ -12,7 +12,7 @@
 package com.haulmont.cuba.gui.components;
 
 public interface GroupBox extends ExpandingLayout, Component.HasCaption, Component.HasBorder,
-        Component.Expandable, Component.Collapsible, Component.HasLayout, Component.BelongToFrame,
+        Component.Collapsible, Component.BelongToFrame,
         Component.ActionsHolder, Component.HasSettings {
 
     String NAME = "groupBox";

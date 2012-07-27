@@ -21,13 +21,11 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class WebAbstractPanel extends Panel
-        implements ExpandingLayout, Component.Container, Component.Expandable, Component.BelongToFrame
+        implements ExpandingLayout, Component.Container, Component.BelongToFrame
 {
     private String id;
     protected Component component;
     private Alignment alignment = Alignment.TOP_LEFT;
-
-    private boolean expandable = true;
 
     private IFrame frame;
 
@@ -115,21 +113,7 @@ public class WebAbstractPanel extends Panel
         }
     }
 
-    public boolean isExpandable() {
-        return expandable;
-    }
-
-    public void setExpandable(boolean expandable) {
-        this.expandable = expandable;
-    }
-
     public void expand(Component component, String height, String width) {
-//        final com.vaadin.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
-//        if (getLayout() instanceof AbstractOrderedLayout) {
-//            ComponentsHelper.expand((AbstractOrderedLayout) getLayout(), expandedComponent, height, width);
-//        } else {
-//            throw new UnsupportedOperationException();
-//        }
     }
 
     public void expand(Component component) {

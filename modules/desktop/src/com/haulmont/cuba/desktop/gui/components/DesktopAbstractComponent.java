@@ -32,7 +32,7 @@ import java.util.Locale;
  */
 public abstract class DesktopAbstractComponent<C extends JComponent>
         implements
-        DesktopComponent, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame, Component.Expandable {
+        DesktopComponent, Component.Wrapper, Component.HasXmlDescriptor, Component.BelongToFrame {
 
     protected C impl;
 
@@ -41,7 +41,6 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     protected String id;
     protected IFrame frame;
     protected Element xmlDescriptor;
-    protected boolean expandable = true;
 
     protected ComponentSize widthSize, heightSize;
     protected Alignment alignment;
@@ -68,16 +67,6 @@ public abstract class DesktopAbstractComponent<C extends JComponent>
     public void setFrame(IFrame frame) {
         this.frame = frame;
         frame.registerComponent(this);
-    }
-
-    @Override
-    public void setExpandable(boolean expandable) {
-        this.expandable = expandable;
-    }
-
-    @Override
-    public boolean isExpandable() {
-        return expandable;
     }
 
     @Override

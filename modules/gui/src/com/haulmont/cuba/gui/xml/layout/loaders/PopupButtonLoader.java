@@ -44,8 +44,6 @@ public class PopupButtonLoader extends ComponentLoader {
         loadDescription(component, element);
         loadIcon(component, element);
 
-        loadExpandable(component, element);
-
         loadWidth(component, element);
 
         assignFrame(component);
