@@ -100,7 +100,7 @@
           </inlinemediaobject> открывается окно выбора группы доступа.</para>
       </listitem>
       <listitem>
-        <para><emphasis role="bold">Язык</emphasis>. Позволяет выбрать язык интерфейса по умолчанию для заданного пользователя. Список доступных языков берется из свойства <link linkend="property_available_locales">cuba.availableLocales</link>  (подробное описание формата свойства содержится в главе <link linkend="property_available_locales">Основные понятия и определения</link>). Значение данного поля используется в том случае, если в стартовом окне системы отсутствует поле для задания языка, что определяется свойством <link linkend="parameter_locale_visible">cuba.web.localeSelectVisible</link>.</para>
+        <para><emphasis role="bold">Язык</emphasis>. Позволяет выбрать язык интерфейса по умолчанию для заданного пользователя. Список доступных языков берется из свойства <link linkend="property_available_locales">cuba.availableLocales</link>  (подробное описание формата свойства содержится в  <link linkend="property_available_locales">Приложении А</link>). Значение данного поля используется в том случае, если в стартовом окне системы отсутствует поле для задания языка, что определяется свойством <link linkend="parameter_locale_visible">cuba.web.localeSelectVisible</link>.</para>
         <mediaobject>
           <imageobject>
             <imagedata align="center" fileref="img/roles_14.png"/>

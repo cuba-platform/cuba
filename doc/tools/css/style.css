@@ -359,7 +359,11 @@ pre {
 }
 
 .structfield {
-	color: #31ba9f;
+	color: #ba304c;
+}
+
+.productname {
+	font-weight: bold;
 }
 
 .package {
@@ -540,12 +544,17 @@ pre {
 }
 
 .firstterm {
-	font-weight: bold;
 	font-style: italic;
 }
 
 .orgname {
 	font-weight: bold;
+}
+
+.acronym {
+	font-weight: bold;
+	font-size:16px;
+	background: #f70b02;
 }
 
 .mediaobject {

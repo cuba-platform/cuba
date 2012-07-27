@@ -89,7 +89,7 @@
           </mediaobject>
         </listitem>
         <listitem id="specific_permissions">
-          <para>Разрешение на некоторую именованную функциональность (Specific Permissions). Эти разрешения задаются в файлах, которые указаны в свойстве <parameter>cuba.permissionConfig</parameter> файла <filename>*-web-app.properties</filename> клиента. Пример файла <filename>cuba-web-permissions.xml</filename>:</para>
+          <para>Разрешение на некоторую именованную функциональность (Specific Permissions). Эти разрешения задаются в файлах, которые указаны в свойстве <parameter>cuba.permissionConfig</parameter> <glossterm linkend="glossary_app_properties_id">файла свойств</glossterm> приложения. Пример файла <filename>cuba-web-permissions.xml</filename>:</para>
           <para><programlisting>&lt;permission-config&gt;
 
     &lt;specific&gt;
@@ -337,7 +337,7 @@ useTicketCache=false;};</programlisting></para>
             <para>Файл ключа нужно разместить по адресу, указанному в <filename>jaas.conf</filename> (желательно в той же папке, что и файл ключа).</para>
           </listitem>
           <listitem>
-            <para>Настройки приложения <glossterm linkend="glossary_local_app_properties">local.app.properties</glossterm> в каталоге <filename>conf</filename> приложения клиента.  По умолчанию для <application>Active Directory</application> используются следующие настройки:</para>
+            <para>Настройки приложения <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm>.  По умолчанию для <application>Active Directory</application> используются следующие настройки:</para>
             <para><programlisting># Использовать Kerberos
 cuba.web.activeDirectoryAuthClass=com.haulmont.cuba.web.sys.auth.KerberosAuthProvider
 # Файлы конфигурации расположены в каталоге conf приложения
@@ -585,11 +585,11 @@ WScript.Quit</programlisting></para>
           <para><prompt>cuba.web.activeDirectoryDomains=HAULMONT|haulmont.com|JESPA$@HAULMONT.COM|password1; TEST|test.com|JESPA$@TEST.COM|password2</prompt></para>
         </listitem>
         <listitem>
-          <para>Задать в <glossterm linkend="glossary_local_app_properties">local.app.properties</glossterm> клиента дополнительные свойства для библиотеки <application>Jespa</application> (<ulink url="http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161">http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161</ulink>).  Например:</para>
+          <para>Задать в <glossterm linkend="glossary_local_app_properties">local.app.properties</glossterm> дополнительные свойства для библиотеки <application>Jespa</application> (<ulink url="http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161">http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161</ulink>).  Например:</para>
           <para><prompt>jespa.log.level=3</prompt></para>
         </listitem>
         <listitem>
-          <para>Установить в <glossterm linkend="glossary_local_app_properties">local.app.properties</glossterm> клиента переменную <prompt>cuba.web.useActiveDirectory=true</prompt></para>
+          <para>Установить в <glossterm linkend="glossary_local_app_properties">local.app.properties</glossterm> переменную <prompt>cuba.web.useActiveDirectory=true</prompt></para>
         </listitem>
         <listitem>
           <para>Добавить адрес сервера в местную интрасеть в настройках браузера:</para>
