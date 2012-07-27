@@ -157,14 +157,6 @@ public class VGroupBox extends VPanel {
     }
 
     @Override
-    protected int getCaptionContainerOffsetHeight() {
-        if (captionVisible)
-            return captionNode.getOffsetHeight();
-        else
-            return 0;
-    }
-
-    @Override
     protected void detectContainerBorders() {
         if (isAttached()) {
             String oldWidth = DOM.getStyleAttribute(contentNode, "width");
