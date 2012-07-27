@@ -49,6 +49,8 @@ public abstract class WidgetMap {
             return new VerticalMenuBar();
         } else if (VScriptHost.class == classType) {
             return new VScriptHost();
+        } else if (VTextField.class == classType) {
+            return new VTextField();
         } else {
             return instantiateInternal(classType); // let generated type handle this
         }
@@ -58,6 +60,8 @@ public abstract class WidgetMap {
             String fullyqualifiedName);
 
     private Paintable instantiateInternal(Class<? extends Paintable> classType) {
+        VConsole.log(String.valueOf(classType));
+        VConsole.log(String.valueOf(instmap.get(classType)));
         return instmap.get(classType).get();
     }
 

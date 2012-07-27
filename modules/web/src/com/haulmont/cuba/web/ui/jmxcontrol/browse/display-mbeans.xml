@@ -3,7 +3,7 @@
         class="com.haulmont.cuba.web.ui.jmxcontrol.browse.MbeansDisplayWindow"
         messagesPack="com.haulmont.cuba.web.ui.jmxcontrol.browse"
         caption="msg://displayMbeans.title"
-        focusComponent="mbeans">
+        focusComponent="objectNameField">
 
     <metadataContext>
     </metadataContext>
