@@ -1,4 +1,8 @@
-<screen-config xmlns="http://www.haulmont.com/schema/cuba/gui/screen-config.xsd">
+<screen-config xmlns="http://schemas.haulmont.com/cuba/4.0/screens.xsd">
+
+    <screen id="editWindowActions" template="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+
+    <screen id="extendedEditWindowActions" template="/com/haulmont/cuba/gui/extended-edit-window.actions.xml"/>
 
     <screen id="sec$User.browse"
             template="/com/haulmont/cuba/gui/app/security/user/browse/user-browse.xml"/>

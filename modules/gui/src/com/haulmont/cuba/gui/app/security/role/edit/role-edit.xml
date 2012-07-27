@@ -83,6 +83,6 @@
                         id="uiTabFrame" width="100%" height="100%"/>
             </tab>
         </tabsheet>
-        <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
+        <iframe id="windowActions" screen="editWindowActions"/>
     </layout>
 </window>
