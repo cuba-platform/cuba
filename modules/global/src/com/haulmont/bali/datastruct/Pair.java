@@ -10,7 +10,11 @@
  */
 package com.haulmont.bali.datastruct;
 
-public class Pair<F, S> {
+import java.io.Serializable;
+
+public class Pair<F, S> implements Serializable {
+
+    private static final long serialVersionUID = -9055932650752898581L;
 
     private F first;
     private S second;
