@@ -942,9 +942,11 @@
 
         <xs:attributeGroup ref="hasId"/>
         <xs:attributeGroup ref="hasSize"/>
+        <xs:attributeGroup ref="hasAlign"/>
+        <xs:attributeGroup ref="hasStyle"/>
+        <xs:attributeGroup ref="hasSpacingMargin"/>
 
-        <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
-        <xs:attribute name="align" type="align" use="optional"/>
+        <xs:attribute name="orientation" default="vertical" type="orientation"/>
     </xs:complexType>
 
     <!-- SplitPanel -->

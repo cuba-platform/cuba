@@ -63,7 +63,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
     private BoxLayout selectedEntityPanel;
 
     @Inject
-    private BoxLayout editGridContainer;
+    private ScrollBoxLayout panelScroll;
 
     /* Filter */
 
@@ -294,9 +294,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
     }
 
     private void clearEditGrid() {
-        Collection<Component> components = new ArrayList<Component>(editGridContainer.getComponents());
+        Collection<Component> components = new ArrayList<Component>(panelScroll.getComponents());
         for (Component component : components)
-            editGridContainer.remove(component);
+            panelScroll.remove(component);
         permissionControls.clear();
     }
 
@@ -379,6 +379,6 @@ public class AttributePermissionsFrame extends AbstractFrame {
         editGrid.add(allReadOnlyCheckBox, 2, i + 1);
         editGrid.add(allHideCheckBox, 3, i + 1);
 
-        editGridContainer.add(editGrid);
+        panelScroll.add(editGrid);
     }
 }

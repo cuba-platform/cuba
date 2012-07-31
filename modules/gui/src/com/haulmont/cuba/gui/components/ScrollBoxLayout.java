@@ -9,7 +9,16 @@
  */
 package com.haulmont.cuba.gui.components;
 
-public interface ScrollBoxLayout extends ExpandingLayout, Component.BelongToFrame {
+public interface ScrollBoxLayout
+        extends Component.Container, Component.BelongToFrame, Component.Margin, Component.Spacing {
 
     String NAME = "scrollbox";
+
+    enum Orientation {
+        VERTICAL,
+        HORIZONTAL
+    }
+
+    Orientation getOrientation();
+    void setOrientation(Orientation orientation);
 }

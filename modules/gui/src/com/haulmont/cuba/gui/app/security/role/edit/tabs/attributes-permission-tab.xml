@@ -54,8 +54,6 @@
                     <label id="selectedTargetCaption" stylename="h2" align="MIDDLE_CENTER"/>
 
                     <scrollbox id="panelScroll">
-                        <vbox id="editGridContainer" width="340">
-                        </vbox>
                     </scrollbox>
                 </vbox>
             </groupBox>

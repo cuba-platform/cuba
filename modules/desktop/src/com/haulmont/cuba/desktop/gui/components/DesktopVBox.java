@@ -17,6 +17,7 @@ public class DesktopVBox extends DesktopAbstractBox implements AutoExpanding {
 
     public DesktopVBox() {
         layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.Y);
+        setWidth("-1px"); // fix layout inside a scrollbox if the width is not set
     }
 
     @Override

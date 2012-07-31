@@ -17,6 +17,7 @@ public class DesktopHBox extends DesktopAbstractBox implements AutoExpanding {
 
     public DesktopHBox() {
         layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.X);
+        setHeight("-1px"); // fix layout inside a scrollbox if the height is not set
     }
 
     @Override

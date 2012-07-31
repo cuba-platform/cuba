@@ -9,40 +9,52 @@
  */
 package com.haulmont.cuba.web.gui.components;
 
+import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import com.haulmont.cuba.web.toolkit.ui.ScrollablePanel;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.Layout;
+import com.vaadin.ui.*;
 import org.apache.commons.lang.ObjectUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayout {
     
     private String id;
-    private Component component;
+    protected List<Component> components = new ArrayList<>();
     private Alignment alignment = Alignment.TOP_LEFT;
+    private Orientation orientation = Orientation.VERTICAL;
 
     private IFrame frame;
 
-    public void add(Component component) {
-        final com.vaadin.ui.Component comp = WebComponentsHelper.getComposition(component);
-        if (comp instanceof Layout) {
-            setContent(((Layout) comp));
-            this.component = component;
-        } else {
-            throw new UnsupportedOperationException();
-        }
+    public WebScrollBoxLayout() {
+        ((AbstractOrderedLayout) getContent()).setMargin(false);
     }
 
-    public void remove(Component component) {
-        if (getContent() == WebComponentsHelper.getComposition(component)) {
-            setContent(null);
-            this.component = null;
+    public void add(Component component) {
+        AbstractOrderedLayout newContent = null;
+        if (orientation == Orientation.VERTICAL && !(getContent() instanceof VerticalLayout)) {
+            newContent = new VerticalLayout();
+        } else if (orientation == Orientation.HORIZONTAL && !(getContent() instanceof HorizontalLayout))
+            newContent = new HorizontalLayout();
+
+        if (newContent != null) {
+            newContent.setMargin(((AbstractOrderedLayout) getContent()).getMargin());
+            newContent.setSpacing(((AbstractOrderedLayout) getContent()).isSpacing());
+            setContent(newContent);
         }
+
+        getContent().addComponent(WebComponentsHelper.getComposition(component));
+        components.add(component);
+}
+
+    public void remove(Component component) {
+        getContent().removeComponent(WebComponentsHelper.getComposition(component));
+        components.remove(component);
     }
 
     public String getId() {
@@ -55,7 +67,7 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
 
     public void requestFocus() {
         if (getComponentIterator().hasNext()) {
-            com.vaadin.ui.Component component = (com.vaadin.ui.Component) getComponentIterator().next();
+            com.vaadin.ui.Component component = getComponentIterator().next();
             if (component instanceof Focusable) {
                 ((Focusable) component).focus();
             }
@@ -63,30 +75,27 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
     }
 
     public <T extends Component> T getOwnComponent(String id) {
-        return component != null && ObjectUtils.equals(component.getId(), id) ? (T) component : null;
+        for (Component component : components) {
+            if (ObjectUtils.equals(component.getId(), id))
+                return (T) component;
+        }
+        return null;
     }
 
     public <T extends Component> T getComponent(String id) {
-        final ComponentContainer layout = getContent();
-        if (layout instanceof Container) {
-            final com.haulmont.cuba.gui.components.Component component = ((Container) layout).getOwnComponent(id);
-
-            if (component == null) {
-                return WebComponentsHelper.<T>getComponentByIterate(layout, id);
-            } else {
+        for (Component component : getComponents()) {
+            if (ObjectUtils.equals(component.getId(), id))
                 return (T) component;
-            }
-        } else {
-            return WebComponentsHelper.<T>getComponentByIterate(layout, id);
         }
+        return null;
     }
 
     public Collection<Component> getOwnComponents() {
-        return component == null ? Collections.<Component>emptyList() : Collections.singletonList(component);
+        return Collections.unmodifiableCollection(components);
     }
 
     public Collection<Component> getComponents() {
-        return WebComponentsHelper.getComponents(this);
+        return ComponentsHelper.getComponents(this);
     }
 
     public Alignment getAlignment() {
@@ -101,19 +110,6 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
         }
     }
 
-    public void expand(Component component, String height, String width) {
-//        final com.vaadin.ui.Component expandedComponent = ComponentsHelper.unwrap(component);
-//        if (getLayout() instanceof AbstractOrderedLayout) {
-//            ComponentsHelper.expand((AbstractOrderedLayout) getLayout(), expandedComponent, height, width);
-//        } else {
-//            throw new UnsupportedOperationException();
-//        }
-    }
-
-    public void expand(Component component) {
-        expand(component, "", "");
-    }
-
     public <A extends IFrame> A getFrame() {
         return (A) frame;
     }
@@ -123,4 +119,33 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
         frame.registerComponent(this);
     }
 
+    @Override
+    public Orientation getOrientation() {
+        return orientation;
+    }
+
+    @Override
+    public void setOrientation(Orientation orientation) {
+        if (!ObjectUtils.equals(orientation, this.orientation)) {
+            if (!components.isEmpty())
+                throw new IllegalStateException("Unable to change scrollbox orientation after adding components to it");
+
+            this.orientation = orientation;
+        }
+    }
+
+    @Override
+    public void setMargin(boolean enable) {
+        ((AbstractOrderedLayout) getContent()).setMargin(enable);
+    }
+
+    @Override
+    public void setMargin(boolean topEnable, boolean rightEnable, boolean bottomEnable, boolean leftEnable) {
+        ((AbstractOrderedLayout) getContent()).setMargin(topEnable, rightEnable, bottomEnable, leftEnable);
+    }
+
+    @Override
+    public void setSpacing(boolean enabled) {
+        ((AbstractOrderedLayout) getContent()).setSpacing(enabled);
+    }
 }

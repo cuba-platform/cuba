@@ -182,6 +182,14 @@ public abstract class ComponentsHelper {
         return height + UNIT_SYMBOLS[heightUnit];
     }
 
+    public static boolean hasFullWidth(Component c) {
+        return (int) c.getWidth() == 100 && c.getWidthUnits() == Component.UNITS_PERCENTAGE;
+    }
+
+    public static boolean hasFullHeight(Component c) {
+        return (int) c.getHeight() == 100 && c.getHeightUnits() == Component.UNITS_PERCENTAGE;
+    }
+
     /**
      * Creates standard Create, Edit and Remove actions for the component
      * @param owner List, Table or Tree component
