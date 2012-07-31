@@ -768,6 +768,8 @@ public class WebFilter
         }
 
         updateComponentRequired(required);
+
+        setEditable(UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.edit"));
     }
 
     @Override

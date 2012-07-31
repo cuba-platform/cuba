@@ -21,10 +21,7 @@ import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.*;
 import com.haulmont.cuba.desktop.sys.DesktopWindowManager;
 import com.haulmont.cuba.desktop.sys.layout.LayoutAdapter;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ComponentsHelper;
-import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.*;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
@@ -766,6 +763,8 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
             defaultFilterEmpty = true;
             updateControls();
         }
+
+        setEditable(UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.filter.edit"));
     }
 
     public void editorCancelled() {

@@ -99,6 +99,7 @@
                 &lt;permission id=&quot;cuba.gui.showInfo&quot;/&gt;
                 &lt;category id=&quot;cuba.gui.filter&quot;&gt;
                     &lt;permission id=&quot;cuba.gui.filter.global&quot;/&gt;
+                    &lt;permission id=&quot;cuba.gui.filter.edit&quot;/&gt;
                     &lt;permission id=&quot;cuba.gui.filter.customConditions&quot;/&gt;
                     &lt;permission id=&quot;cuba.gui.filter.maxResults&quot;/&gt;
                 &lt;/category&gt;
@@ -117,6 +118,7 @@ permission-config.cuba.gui=Generic UI
 permission-config.cuba.gui.showInfo=Системная информация
 permission-config.cuba.gui.filter=Фильтр
 permission-config.cuba.gui.filter.global=Создание/изменение глобальных фильтров
+permission-config.cuba.gui.filter.edit=Создание/изменение фильтров
 permission-config.cuba.gui.filter.customConditions=Создание/изменение настраиваемых условий
 permission-config.cuba.gui.filter.maxResults=Неограниченное число строк
 permission-config.cuba.gui.searchFolder.global=Создание/изменение глобальных папок поиска

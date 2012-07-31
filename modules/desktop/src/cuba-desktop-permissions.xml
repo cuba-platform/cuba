@@ -13,6 +13,7 @@
                 <permission id="cuba.gui.showInfo"/>
                 <category id="cuba.gui.filter">
                     <permission id="cuba.gui.filter.global"/>
+                    <permission id="cuba.gui.filter.edit"/>
                     <permission id="cuba.gui.filter.customConditions"/>
                     <permission id="cuba.gui.filter.maxResults"/>
                 </category>
