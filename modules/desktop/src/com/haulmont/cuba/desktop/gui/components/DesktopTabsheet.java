@@ -103,6 +103,7 @@ public class DesktopTabsheet
     @Override
     public Tab addLazyTab(String name, Element descriptor, ComponentLoader loader) {
         DesktopVBox tabContent = new DesktopVBox();
+        tabContent.setWidth("100%");
 
         TabImpl tab = new TabImpl(name, tabContent);
 
@@ -232,7 +233,7 @@ public class DesktopTabsheet
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-
+        comp.setWidth("100%");
         lti.tabContent.add(comp);
         lti.tabContent.expand(comp, "", "");
 

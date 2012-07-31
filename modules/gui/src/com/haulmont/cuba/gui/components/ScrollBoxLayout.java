@@ -12,7 +12,7 @@ package com.haulmont.cuba.gui.components;
 public interface ScrollBoxLayout
         extends Component.Container, Component.BelongToFrame, Component.Margin, Component.Spacing {
 
-    String NAME = "scrollbox";
+    String NAME = "scrollBox";
 
     enum Orientation {
         VERTICAL,

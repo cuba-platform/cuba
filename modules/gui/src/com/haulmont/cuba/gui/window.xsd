@@ -1259,7 +1259,7 @@
                 <xs:element name="flowbox" type="boxLayout"/>
 
                 <xs:element name="htmlbox" type="htmlBoxLayout"/>
-                <xs:element name="scrollbox" type="scrollBoxLayout"/>
+                <xs:element name="scrollBox" type="scrollBoxLayout"/>
                 <xs:element name="grid" type="gridLayout"/>
                 <xs:element name="groupBox" type="groupBoxLayout"/>
 

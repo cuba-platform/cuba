@@ -603,6 +603,7 @@ public class EntityInspectorEditor extends AbstractEditor {
 
         //vertical box for the table and its label
         BoxLayout vbox = componentsFactory.createComponent(BoxLayout.VBOX);
+        vbox.setWidth("100%");
         CollectionDatasource propertyDs = (CollectionDatasource) datasources.get(childMeta.getName());
 
         Label label = componentsFactory.createComponent(Label.NAME);

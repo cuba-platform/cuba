@@ -11,19 +11,15 @@
 package com.haulmont.cuba.web.ui.jmxcontrol.inspect.operation;
 
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.gui.components.WebLabel;
-import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 
 public class OperationResultWindow extends AbstractWindow {
     private static final long serialVersionUID = 4459991776700972089L;
-
-    public OperationResultWindow(IFrame frame) {
-        super(frame);
-    }
 
     @Override
     public void init(Map<String, Object> params) {
@@ -36,7 +32,7 @@ public class OperationResultWindow extends AbstractWindow {
         Throwable ex = (Throwable) params.get("param$exception");
         Object result = params.get("param$result");
 
-        BoxLayout container = (BoxLayout) getComponent("container");
+        ScrollBoxLayout container = (ScrollBoxLayout) getComponent("container");
         if (ex != null) {
             Label title = new WebLabel();
             title.setStyleName("h2");

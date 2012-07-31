@@ -12,29 +12,24 @@
         <datasource id="attrDs" class="com.haulmont.cuba.jmxcontrol.entity.ManagedBeanAttribute" view="_local"/>
     </dsContext>
 
-    <layout expand="space">
+    <layout expand="windowActions">
         <vbox spacing="true" id="vbox">
-            <scrollbox id="scrollbox" height="700px">
-                <vbox spacing="true" margin="true" stylename="edit-area">
-                    <grid spacing="true" id="valueContainer">
-                        <columns>
-                            <column flex="1"/>
-                            <column flex="1"/>
-                        </columns>
-                        <rows>
-                            <row>
-                                <label value="msg://editAttribute.value"/>
-                                
-                            </row>
-                        </rows>
-                    </grid>
-                    <hbox></hbox>
-                </vbox>
-            </scrollbox>
+            <scrollBox id="scrollbox" spacing="true" stylename="edit-area">
+                <grid spacing="true" id="valueContainer">
+                    <columns>
+                        <column flex="1"/>
+                        <column flex="1"/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <label value="msg://editAttribute.value"/>
+
+                        </row>
+                    </rows>
+                </grid>
+                <hbox></hbox>
+            </scrollBox>
         </vbox>
         <iframe id="windowActions" src="/com/haulmont/cuba/gui/edit-window.actions.xml"/>
-        <hbox id="space">
-
-        </hbox>
     </layout>
 </window>

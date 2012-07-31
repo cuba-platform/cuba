@@ -18,7 +18,7 @@
     <actions>
         <action id="close" caption="msg://close" icon="icons/ok.png" invoke="commitAndClose"/>
     </actions>
-    <layout expand="scrollbox" expandLayout="true" spacing="true">
+    <layout expand="scrollbox" spacing="true">
         <grid spacing="true" margin="true" stylename="edit-area">
             <columns>
                 <column flex="1"/>
@@ -39,32 +39,30 @@
                 </row>
             </rows>
         </grid>
-        <scrollbox id="scrollbox">
-            <vbox spacing="true" stylename="edit-area" margin="true">
-                <label value="msg://mbean.attributes" stylename="h2"/>
-                <table id="attributes" width="100%" height="300px">
-                    <actions>
-                        <action id="refresh" caption="msg://refresh" icon="icons/refresh.png"
-                                invoke="reloadAttributes"/>
-                        <action id="edit" caption="msg://inspectmbean.attribute.edit" invoke="editAttribute"/>
-                    </actions>
-                    <buttonsPanel>
-                        <button action="attributes.refresh"/>
-                    </buttonsPanel>
-                    <columns>
-                        <column id="name" caption="msg://mbean.attribute.name"/>
-                        <column id="type" caption="msg://mbean.attribute.type"/>
-                        <column id="readableWriteable" caption="msg://mbean.attribute.access"/>
-                        <column id="valueString" caption="msg://mbean.attribute.value"/>
-                    </columns>
-                    <rows datasource="attrDs"/>
-                </table>
-                <label value="msg://mbean.operations" stylename="h2"/>
-                <vbox id="operations" spacing="true">
+        <scrollBox id="scrollbox" spacing="true" margin="true" stylename="edit-area">
+            <label value="msg://mbean.attributes" stylename="h2"/>
+            <table id="attributes" width="100%" height="300px">
+                <actions>
+                    <action id="refresh" caption="msg://refresh" icon="icons/refresh.png"
+                            invoke="reloadAttributes"/>
+                    <action id="edit" caption="msg://inspectmbean.attribute.edit" invoke="editAttribute"/>
+                </actions>
+                <buttonsPanel>
+                    <button action="attributes.refresh"/>
+                </buttonsPanel>
+                <columns>
+                    <column id="name" caption="msg://mbean.attribute.name"/>
+                    <column id="type" caption="msg://mbean.attribute.type"/>
+                    <column id="readableWriteable" caption="msg://mbean.attribute.access"/>
+                    <column id="valueString" caption="msg://mbean.attribute.value"/>
+                </columns>
+                <rows datasource="attrDs"/>
+            </table>
+            <label value="msg://mbean.operations" stylename="h2"/>
+            <vbox id="operations" spacing="true">
 
-                </vbox>
             </vbox>
-        </scrollbox>
+        </scrollBox>
         <button action="close"/>
     </layout>
 </window>

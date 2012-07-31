@@ -10,14 +10,9 @@
 
     </dsContext>
 
-    <layout expand="content">
-        <vbox id="content">
-            <scrollbox id="scrollbox">
-                <vbox spacing="true" id="container">
-
-                </vbox>
-            </scrollbox>
-        </vbox>
+    <layout expand="container" spacing="true">
+        <scrollBox id="container">
+        </scrollBox>
         <button id="close" icon="icons/ok.png"/>
     </layout>
 </window>

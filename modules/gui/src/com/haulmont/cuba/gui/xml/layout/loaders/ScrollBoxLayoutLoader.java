@@ -27,7 +27,7 @@ public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmo
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
-        final ScrollBoxLayout component = factory.createComponent("scrollbox");
+        final ScrollBoxLayout component = factory.createComponent(ScrollBoxLayout.NAME);
 
         assignXmlDescriptor(component, element);
         loadId(component, element);

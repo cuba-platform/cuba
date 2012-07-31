@@ -10,10 +10,10 @@
         caption="msg://editorCaption">
     <dsContext/>
     <layout expand="fieldsScrollBox" spacing="true">
-        <scrollbox id="fieldsScrollBox" height="100%" width="100%" spacing="true">
+        <scrollBox id="fieldsScrollBox" height="100%" width="100%" spacing="true">
             <vbox id="contentPane" spacing="true"/>
             <vbox id="tablesBox" spacing="true" width="100%"/>
-        </scrollbox>
+        </scrollBox>
         <vbox id="buttonsBox"/>
     </layout>
 </window>

@@ -50,7 +50,8 @@ public class LayoutLoaderConfig implements Serializable {
         config.register("vbox", VBoxLoader.class);
         config.register("grid", GridLayoutLoader.class);
         config.register("runtimePropertyGrid", RuntimePropertyGridLayoutLoader.class);
-        config.register("scrollbox", ScrollBoxLayoutLoader.class);
+        config.register("scrollBox", ScrollBoxLayoutLoader.class);
+        config.register("scrollbox", ScrollBoxLayoutLoader.class); // for backward compatibility
         config.register("togglebox", ToggleBoxLoader.class);
         config.register("htmlbox", HtmlBoxLoader.class);
         config.register("flowbox", FlowBoxLoader.class);

@@ -23,7 +23,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayout {
-    
+
+    private static final long serialVersionUID = 2724785666636087457L;
+
     private String id;
     protected List<Component> components = new ArrayList<>();
     private Alignment alignment = Alignment.TOP_LEFT;
@@ -33,6 +35,7 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
 
     public WebScrollBoxLayout() {
         ((AbstractOrderedLayout) getContent()).setMargin(false);
+        setScrollable(true);
     }
 
     public void add(Component component) {
@@ -128,7 +131,7 @@ public class WebScrollBoxLayout extends ScrollablePanel implements ScrollBoxLayo
     public void setOrientation(Orientation orientation) {
         if (!ObjectUtils.equals(orientation, this.orientation)) {
             if (!components.isEmpty())
-                throw new IllegalStateException("Unable to change scrollbox orientation after adding components to it");
+                throw new IllegalStateException("Unable to change scrollBox orientation after adding components to it");
 
             this.orientation = orientation;
         }
