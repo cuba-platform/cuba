@@ -10,19 +10,20 @@
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
 import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.GroupBox;
+import com.haulmont.cuba.gui.components.GroupBoxLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
-import org.dom4j.Element;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
-public class GroupBoxLoader extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
-    public GroupBoxLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
+public class GroupBoxLayoutLoader extends ContainerLoader implements com.haulmont.cuba.gui.xml.layout.ComponentLoader {
+
+    public GroupBoxLayoutLoader(Context context, LayoutLoaderConfig config, ComponentsFactory factory) {
         super(context, config, factory);
     }
 
     public Component loadComponent(ComponentsFactory factory, Element element, Component parent) throws InstantiationException, IllegalAccessException {
-        final GroupBox component = factory.createComponent("groupBox");
+        final GroupBoxLayout component = factory.createComponent("groupBox");
 
         assignXmlDescriptor(component, element);
         loadId(component, element);
@@ -57,6 +58,9 @@ public class GroupBoxLoader extends ContainerLoader implements com.haulmont.cuba
         loadAlign(component, element);
         loadVisible(component, element);
         loadEnable(component, element);
+
+        loadOrientation(component, element);
+
         loadSubComponentsAndExpand(component, element, "caption", "description", "visible");
 
         loadCollapsible(component, element);
@@ -71,5 +75,19 @@ public class GroupBoxLoader extends ContainerLoader implements com.haulmont.cuba
         assignFrame(component);
 
         return component;
+    }
+
+    protected void loadOrientation(GroupBoxLayout component, Element element) {
+        String orientation = element.attributeValue("orientation");
+        if (orientation == null)
+            return;
+
+        if ("horizontal".equalsIgnoreCase(orientation)) {
+            component.setOrientation(GroupBoxLayout.Orientation.HORIZONTAL);
+        } else if ("vertical".equalsIgnoreCase(orientation)) {
+            component.setOrientation(GroupBoxLayout.Orientation.VERTICAL);
+        } else {
+            throw new IllegalStateException("Invalid groupBox orientation value: " + orientation);
+        }
     }
 }

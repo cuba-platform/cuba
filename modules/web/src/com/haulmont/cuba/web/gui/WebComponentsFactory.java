@@ -40,7 +40,7 @@ public class WebComponentsFactory implements ComponentsFactory, Serializable {
         classes.put(LinkButton.NAME, WebLinkButton.class);
         classes.put(Label.NAME, WebLabel.class);
         classes.put(CheckBox.NAME, WebCheckBox.class);
-        classes.put(GroupBox.NAME, WebGroupBox.class);
+        classes.put(GroupBoxLayout.NAME, WebGroupBox.class);
         classes.put(AutoCompleteTextField.NAME, WebAutoCompleteTextField.class);
         //Use resizable text area instead of text field
         classes.put(ResizableTextField.NAME, WebResizableTextField.class);

@@ -49,7 +49,7 @@ public class GenericBrowserWindow extends WebWindow
 
     @Override
     protected Component createLayout() {
-        final VerticalLayout layout = new VerticalActionsLayout();
+        final VerticalActionsLayout layout = new VerticalActionsLayout();
 
         table = createTable();
         actionsToolbar = createActionsToolbar(table);

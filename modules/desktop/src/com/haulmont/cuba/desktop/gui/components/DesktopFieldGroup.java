@@ -102,12 +102,12 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     }
 
     @Override
-    public boolean isCollapsible() {
+    public boolean isCollapsable() {
         return collapsiblePanel.isCollapsable();
     }
 
     @Override
-    public void setCollapsible(boolean collapsable) {
+    public void setCollapsable(boolean collapsable) {
         collapsiblePanel.setCollapsible(collapsable);
     }
 

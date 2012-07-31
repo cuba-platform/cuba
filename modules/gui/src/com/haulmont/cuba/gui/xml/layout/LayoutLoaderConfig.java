@@ -58,7 +58,7 @@ public class LayoutLoaderConfig implements Serializable {
 
         config.register("button", ButtonLoader.class);
         config.register("linkButton", ButtonLoader.class); // the same loader as for button
-        config.register("groupBox", GroupBoxLoader.class);
+        config.register("groupBox", GroupBoxLayoutLoader.class);
         config.register("checkBox", AbstractFieldLoader.class);
         config.register("label", LabelLoader.class);
         config.register("textField", ResizableTextFieldLoader.class);

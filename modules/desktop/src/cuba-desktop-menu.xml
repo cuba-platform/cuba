@@ -1,4 +1,4 @@
-<menu-config xmlns="http://www.haulmont.com/schema/cuba/gui/menu-config.xsd">
+<menu-config xmlns="http://schemas.haulmont.com/cuba/4.0/menu.xsd">
 
     <menu id="administration">
         <item id="sec$User.browse"/>
@@ -9,6 +9,7 @@
         <item id="core$FileDescriptor.browse"/>
         <item id="core$LockInfo.browse"/>
         <item id="entityInspector.browse"/>
+        <item id="core$ScheduledTask.browse"/>
     </menu>
 
     <menu id="reports">

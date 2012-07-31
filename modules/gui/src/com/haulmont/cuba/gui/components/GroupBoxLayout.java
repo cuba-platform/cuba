@@ -11,9 +11,17 @@
 
 package com.haulmont.cuba.gui.components;
 
-public interface GroupBox extends ExpandingLayout, Component.HasCaption, Component.HasBorder, Component.Spacing,
-        Component.Collapsible, Component.BelongToFrame,
+public interface GroupBoxLayout extends ExpandingLayout, Component.HasCaption, Component.HasBorder, Component.Spacing,
+        Component.Collapsable, Component.BelongToFrame,
         Component.ActionsHolder, Component.HasSettings {
 
     String NAME = "groupBox";
+
+    enum Orientation {
+        VERTICAL,
+        HORIZONTAL
+    }
+
+    Orientation getOrientation();
+    void setOrientation(Orientation orientation);
 }

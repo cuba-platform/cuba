@@ -15,7 +15,9 @@ import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
+import com.haulmont.cuba.web.toolkit.ui.HorizontalActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.Table;
+import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.event.Action;
 import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.FileResource;
@@ -209,11 +211,15 @@ public class WebComponentsHelper {
     }
 
     public static boolean isVerticalLayout(AbstractOrderedLayout layout) {
-        return (layout instanceof VerticalLayout) || (layout instanceof WebVBoxLayout);
+        return (layout instanceof VerticalLayout)
+                || (layout instanceof VerticalActionsLayout)
+                || (layout instanceof WebVBoxLayout);
     }
 
     public static boolean isHorizontalLayout(AbstractOrderedLayout layout) {
-        return (layout instanceof HorizontalLayout) || (layout instanceof WebHBoxLayout);
+        return (layout instanceof HorizontalLayout)
+                || (layout instanceof HorizontalActionsLayout)
+                || (layout instanceof WebHBoxLayout);
     }
 
     public static Alignment convertAlignment(com.haulmont.cuba.gui.components.Component.Alignment alignment) {

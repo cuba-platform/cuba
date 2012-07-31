@@ -501,12 +501,12 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     }
 
     @Override
-    public boolean isCollapsible() {
+    public boolean isCollapsable() {
         return component.isCollapsable();
     }
 
     @Override
-    public void setCollapsible(boolean collapsable) {
+    public void setCollapsable(boolean collapsable) {
         component.setCollapsable(collapsable);
     }
 

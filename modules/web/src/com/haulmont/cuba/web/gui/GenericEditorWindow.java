@@ -59,7 +59,7 @@ public class GenericEditorWindow
 
     @Override
     protected Component createLayout() {
-        VerticalLayout layout = new VerticalActionsLayout();
+        VerticalActionsLayout layout = new VerticalActionsLayout();
 
         form = new Form();
 

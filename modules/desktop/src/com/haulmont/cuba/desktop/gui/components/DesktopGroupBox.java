@@ -6,9 +6,10 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.cuba.desktop.sys.layout.BoxLayoutAdapter;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import com.haulmont.cuba.gui.components.Action;
-import com.haulmont.cuba.gui.components.GroupBox;
+import com.haulmont.cuba.gui.components.GroupBoxLayout;
 import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.Element;
 
@@ -16,15 +17,16 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>$Id$</p>
  *
  * @author krivopustov
  */
-public class DesktopGroupBox
-        extends DesktopVBox
-        implements GroupBox {
+public class DesktopGroupBox extends DesktopAbstractBox implements GroupBoxLayout, AutoExpanding {
+
+    private Orientation orientation = Orientation.VERTICAL;
 
     private CollapsiblePanel collapsiblePanel;
 
@@ -57,12 +59,12 @@ public class DesktopGroupBox
     }
 
     @Override
-    public boolean isCollapsible() {
+    public boolean isCollapsable() {
         return collapsiblePanel.isCollapsable();
     }
 
     @Override
-    public void setCollapsible(boolean collapsible) {
+    public void setCollapsable(boolean collapsible) {
         collapsiblePanel.setCollapsible(collapsible);
     }
 
@@ -190,5 +192,31 @@ public class DesktopGroupBox
         groupBoxElement = element.addElement("groupBox");
         groupBoxElement.addAttribute("expanded", BooleanUtils.toStringTrueFalse(isExpanded()));
         return true;
+    }
+
+    @Override
+    public Orientation getOrientation() {
+        return orientation;
+    }
+
+    @Override
+    public void setOrientation(Orientation orientation) {
+        Objects.requireNonNull(orientation);
+        if (orientation == Orientation.VERTICAL) {
+            layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.Y);
+        } else {
+            layoutAdapter.setFlowDirection(BoxLayoutAdapter.FlowDirection.X);
+        }
+        this.orientation = orientation;
+    }
+
+    @Override
+    public boolean expandsWidth() {
+        return orientation == Orientation.VERTICAL;
+    }
+
+    @Override
+    public boolean expandsHeight() {
+        return orientation == Orientation.HORIZONTAL;
     }
 }

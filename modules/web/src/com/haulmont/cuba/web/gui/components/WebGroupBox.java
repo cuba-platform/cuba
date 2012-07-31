@@ -13,8 +13,12 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.ShortcutAction;
 import com.haulmont.cuba.toolkit.gwt.client.ui.VGroupBox;
+import com.haulmont.cuba.web.toolkit.ui.HorizontalActionsLayout;
+import com.haulmont.cuba.web.toolkit.ui.OrderedActionsLayout;
 import com.haulmont.cuba.web.toolkit.ui.VerticalActionsLayout;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
@@ -26,7 +30,7 @@ import org.dom4j.Element;
 import java.util.*;
 
 @ClientWidget(VGroupBox.class)
-public class WebGroupBox extends Panel implements GroupBox {
+public class WebGroupBox extends Panel implements GroupBoxLayout {
 
     private static final long serialVersionUID = 603031841274663159L;
 
@@ -34,9 +38,10 @@ public class WebGroupBox extends Panel implements GroupBox {
     private IFrame frame;
     protected List<Component> components = new ArrayList<>();
     private Alignment alignment = Alignment.TOP_LEFT;
+    private Orientation orientation = Orientation.VERTICAL;
 
     private boolean expanded = true;
-    private boolean collapsible;
+    private boolean collapsable;
 
     private List<ExpandListener> expandListeners = null;
     private List<CollapseListener> collapseListeners = null;
@@ -46,7 +51,10 @@ public class WebGroupBox extends Panel implements GroupBox {
 
     public WebGroupBox() {
         VerticalActionsLayout container = new VerticalActionsLayout();
-        container.setSpacing(true);
+        initContainer(container);
+    }
+
+    private void initContainer(OrderedActionsLayout container) {
         container.setSizeFull();
         setContent(container);
         container.addActionHandler(new com.vaadin.event.Action.Handler() {
@@ -66,6 +74,19 @@ public class WebGroupBox extends Panel implements GroupBox {
 
     @Override
     public void add(Component component) {
+        OrderedActionsLayout newContent = null;
+        if (orientation == Orientation.VERTICAL && !(getContent() instanceof VerticalActionsLayout)) {
+            newContent = new VerticalActionsLayout();
+        } else if (orientation == Orientation.HORIZONTAL && !(getContent() instanceof HorizontalActionsLayout))
+            newContent = new HorizontalActionsLayout();
+
+        if (newContent != null) {
+            initContainer(newContent);
+            newContent.setMargin(((OrderedActionsLayout) getContent()).getMargin());
+            newContent.setSpacing(((OrderedActionsLayout) getContent()).isSpacing());
+            setContent(newContent);
+        }
+
         getContent().addComponent(WebComponentsHelper.getComposition(component));
         components.add(component);
     }
@@ -116,23 +137,23 @@ public class WebGroupBox extends Panel implements GroupBox {
     }
 
     public boolean isExpanded() {
-        return !collapsible || expanded;
+        return !collapsable || expanded;
     }
 
     public void setExpanded(boolean expanded) {
-        if (collapsible) {
+        if (collapsable) {
             this.expanded = expanded;
             getContent().setVisible(expanded);
             requestRepaint();
         }
     }
 
-    public boolean isCollapsible() {
-        return collapsible;
+    public boolean isCollapsable() {
+        return collapsable;
     }
 
-    public void setCollapsible(boolean collapsable) {
-        this.collapsible = collapsable;
+    public void setCollapsable(boolean collapsable) {
+        this.collapsable = collapsable;
         if (collapsable) {
             setExpanded(true);
         }
@@ -214,8 +235,8 @@ public class WebGroupBox extends Panel implements GroupBox {
     @Override
     public void paintContent(PaintTarget target) throws PaintException {
         super.paintContent(target);
-        target.addAttribute("collapsible", isCollapsible());
-        if (isCollapsible()) {
+        target.addAttribute("collapsable", isCollapsable());
+        if (isCollapsable()) {
             target.addAttribute("expanded", isExpanded());
         }
     }
@@ -223,7 +244,7 @@ public class WebGroupBox extends Panel implements GroupBox {
     @Override
     public void changeVariables(Object source, Map variables) {
         super.changeVariables(source, variables);
-        if (isCollapsible()) {
+        if (isCollapsable()) {
             if (variables.containsKey("expand")) {
                 setExpanded(true);
                 getContent().requestRepaintAll();
@@ -316,5 +337,20 @@ public class WebGroupBox extends Panel implements GroupBox {
     @Override
     public void setSpacing(boolean enabled) {
         ((AbstractOrderedLayout) getContent()).setSpacing(enabled);
+    }
+
+    @Override
+    public Orientation getOrientation() {
+        return orientation;
+    }
+
+    @Override
+    public void setOrientation(Orientation orientation) {
+        if (!ObjectUtils.equals(orientation, this.orientation)) {
+            if (!components.isEmpty())
+                throw new IllegalStateException("Unable to change groupBox orientation after adding components to it");
+
+            this.orientation = orientation;
+        }
     }
 }

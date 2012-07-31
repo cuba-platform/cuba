@@ -108,7 +108,7 @@ public class WebWindow
     }
 
     protected com.vaadin.ui.Component createLayout() {
-        VerticalLayout layout = new VerticalActionsLayout();
+        VerticalActionsLayout layout = new VerticalActionsLayout();
         layout.setSizeFull();
         return layout;
     }
@@ -941,7 +941,7 @@ public class WebWindow
 
         @Override
         protected com.vaadin.ui.Component createLayout() {
-            final VerticalLayout form = new VerticalActionsLayout();
+            final VerticalActionsLayout form = new VerticalActionsLayout();
 
             container = new VerticalLayout();
 

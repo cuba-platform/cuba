@@ -64,7 +64,7 @@ public class DesktopComponentsFactory implements ComponentsFactory {
         classes.put(Tabsheet.NAME, DesktopTabsheet.class);
         classes.put(Embedded.NAME, DesktopEmbedded.class);
         classes.put(WidgetsTree.NAME, DesktopWidgetsTree.class);
-        classes.put(GroupBox.NAME, DesktopGroupBox.class);
+        classes.put(GroupBoxLayout.NAME, DesktopGroupBox.class);
         classes.put(ProgressBar.NAME, DesktopProgressBar.class);
         classes.put(TimeField.NAME, DesktopTimeField.class);
         classes.put(TokenList.NAME, DesktopTokenList.class);

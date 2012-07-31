@@ -1075,6 +1075,7 @@
         <xs:attribute name="collapsable" type="xs:boolean" use="optional"/>
         <xs:attribute name="collapsed" type="xs:boolean" use="optional"/>
         <xs:attribute name="spacing" type="xs:boolean" use="optional"/>
+        <xs:attribute name="orientation" default="vertical" type="orientation"/>
     </xs:complexType>
 
     <!-- IFrame -->

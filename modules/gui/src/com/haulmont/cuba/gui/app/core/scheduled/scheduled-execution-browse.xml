@@ -32,16 +32,14 @@
     </dsContext>
 
     <layout expand="executionsTable" spacing="true">
-        <groupBox id="filterBox" width="-1px" caption="msg://filter">
-            <hbox spacing="true">
-                <label value="msg://com.haulmont.cuba.core.entity/ScheduledExecution.server"/>
-                <textField id="serverField"/>
-                <label value="msg://startTimeFrom"/>
-                <dateField id="startTimeField1"/>
-                <label value="msg://startTimeTill"/>
-                <dateField id="startTimeField2"/>
-                <checkBox id="finishedField" caption="msg://finished"/>
-            </hbox>
+        <groupBox id="filterBox" width="-1px" caption="msg://filter" orientation="horizontal" spacing="true">
+            <label value="msg://com.haulmont.cuba.core.entity/ScheduledExecution.server"/>
+            <textField id="serverField"/>
+            <label value="msg://startTimeFrom"/>
+            <dateField id="startTimeField1"/>
+            <label value="msg://startTimeTill"/>
+            <dateField id="startTimeField2"/>
+            <checkBox id="finishedField" caption="msg://finished"/>
         </groupBox>
         <table id="executionsTable" width="100%">
             <buttonsPanel>
