@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.BrowserInfo;
 import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.VConsole;
 import com.vaadin.terminal.gwt.client.ui.VPopupCalendar;
 
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ import java.util.List;
 public class VMaskedPopupCalendar extends VPopupCalendar {
 
     private static final String MASKED_FIELD_CLASS = "v-maskedfield-onlymask";
+
+    private static final boolean isDebug = false;
 
     private char placeholder = '_';
 
@@ -40,7 +43,8 @@ public class VMaskedPopupCalendar extends VPopupCalendar {
     private TextBox textBox;
 
     private void debug(String msg) {
-        ApplicationConnection.getConsole().log(msg);
+        if (isDebug)
+            VConsole.log(msg);
     }
 
     private KeyPressHandler keyPressHandler = new KeyPressHandler() {
@@ -144,7 +148,7 @@ public class VMaskedPopupCalendar extends VPopupCalendar {
         public void onBlur(BlurEvent event) {
             if (isReadonly())
                 return;
-            if (!string.toString().equals(nullRepresentation)){
+            if (!string.toString().equals(nullRepresentation)) {
                 textBox.getElement().removeClassName(MASKED_FIELD_CLASS);
             }
             debug("blurHandler.onBlur");
@@ -186,7 +190,7 @@ public class VMaskedPopupCalendar extends VPopupCalendar {
 
     public void setText(String value) {
         debug("setText: " + value);
-        if (value.equals(nullRepresentation)||value.equals("")) {
+        if (value.equals(nullRepresentation) || value.equals("")) {
             textBox.getElement().addClassName(MASKED_FIELD_CLASS);
         } else {
             textBox.getElement().removeClassName(MASKED_FIELD_CLASS);

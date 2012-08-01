@@ -60,8 +60,6 @@ public abstract class WidgetMap {
             String fullyqualifiedName);
 
     private Paintable instantiateInternal(Class<? extends Paintable> classType) {
-        VConsole.log(String.valueOf(classType));
-        VConsole.log(String.valueOf(instmap.get(classType)));
         return instmap.get(classType).get();
     }
 
