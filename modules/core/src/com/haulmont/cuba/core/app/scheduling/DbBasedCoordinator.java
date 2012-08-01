@@ -90,8 +90,14 @@ public class DbBasedCoordinator implements Coordinator {
             log.trace(task + ": finished=" + result + " because of timeout");
             return result;
         }
-        log.trace(task + ": finished at " + ((Date) list.get(0)).getTime());
-        return list.get(0) != null;
+        Date date = (Date) list.get(0);
+        if (date == null) {
+            log.trace(task + ": not finished yet");
+            return false;
+        } else {
+            log.trace(task + ": finished at " + date.getTime());
+            return true;
+        }
     }
 
     private synchronized List<ScheduledTask> getTasks() {
