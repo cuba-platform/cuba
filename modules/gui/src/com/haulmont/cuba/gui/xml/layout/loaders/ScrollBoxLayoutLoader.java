@@ -44,9 +44,15 @@ public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmo
         loadSubComponents(component, element, "visible");
 
         for (Component child : component.getOwnComponents()) {
-            if (ComponentsHelper.hasFullHeight(child) || ComponentsHelper.hasFullWidth(child)) {
-                log.warn("Full-size (100%) component inside scrollbox may cause layout issues: "
-                        + child.getClass().getSimpleName() + " id=" + child.getId());
+            if (ComponentsHelper.hasFullHeight(child)) {
+                child.setHeight("-1px");
+                log.warn("100% height of " + child.getClass().getSimpleName() + " id=" + child.getId()
+                        + " inside scrollBox replaced with -1px height");
+            }
+            if (ComponentsHelper.hasFullWidth(child)) {
+                child.setWidth("-1px");
+                log.warn("100% width of " + child.getClass().getSimpleName() + " id=" + child.getId()
+                        + " inside scrollBox replaced with -1px width");
             }
         }
 

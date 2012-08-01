@@ -44,7 +44,7 @@ import java.util.*;
 public class EntityInspectorEditor extends AbstractEditor {
 
     public static final String SCREEN_NAME = "entityInspector.edit";
-    public static final String DEFAULT_FIELD_WIDTH = "200";
+    public static final String DEFAULT_FIELD_WIDTH = "300";
     public static final int CAPTION_MAX_LENGTH = 100;
 
 
