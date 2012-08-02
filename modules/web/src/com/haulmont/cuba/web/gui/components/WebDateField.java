@@ -26,6 +26,7 @@ import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.toolkit.ui.DateFieldWrapper;
 import com.haulmont.cuba.web.toolkit.ui.MaskedTextField;
 import com.vaadin.data.Property;
+import com.vaadin.ui.HorizontalLayout;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.Time;
@@ -53,7 +54,7 @@ public class WebDateField
     protected List<ValueListener> listeners = new ArrayList<ValueListener>();
     protected List<Field.Validator> validators = new ArrayList<Field.Validator>();
 
-    protected com.vaadin.ui.GridLayout composition;
+    protected HorizontalLayout composition;
 
     private Datasource datasource;
     private DsManager dsManager;
@@ -71,7 +72,7 @@ public class WebDateField
     private String timeFormat;
 
     public WebDateField() {
-        composition = new com.vaadin.ui.GridLayout(2, 1);
+        composition = new HorizontalLayout();
 
         composition.setSpacing(true);
         dateField = new com.haulmont.cuba.web.toolkit.ui.DateField();
@@ -123,7 +124,6 @@ public class WebDateField
             setCloseWhenDateSelected(true);
         }
         component = new DateFieldWrapper(this, composition);
-        component.setWidth("150px");
     }
 
     public com.haulmont.cuba.web.toolkit.ui.DateField getDateField() {
@@ -154,12 +154,10 @@ public class WebDateField
     public void updateLayout() {
         composition.removeAllComponents();
         composition.addComponent(dateField);
-        composition.setColumnExpandRatio(0, 1.0f);
-        composition.setComponentAlignment(dateField, com.vaadin.ui.Alignment.MIDDLE_LEFT);
+        composition.setExpandRatio(dateField, 1.0f);
         if (resolution.ordinal() < Resolution.DAY.ordinal()) {
             composition.setSpacing(true);
             composition.addComponent(timeField.<com.vaadin.ui.Component>getComponent());
-            composition.setComponentAlignment(timeField.<com.vaadin.ui.Component>getComponent(), com.vaadin.ui.Alignment.MIDDLE_RIGHT);
         } else {
             composition.setSpacing(false);
         }
