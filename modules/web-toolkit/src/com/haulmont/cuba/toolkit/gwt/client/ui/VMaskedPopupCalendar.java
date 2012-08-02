@@ -6,16 +6,18 @@
 
 package com.haulmont.cuba.toolkit.gwt.client.ui;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.ui.TextBox;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
-import com.vaadin.terminal.gwt.client.UIDL;
+import com.vaadin.terminal.gwt.client.*;
+import com.vaadin.terminal.gwt.client.ui.VOrderedLayout;
 import com.vaadin.terminal.gwt.client.VConsole;
 import com.vaadin.terminal.gwt.client.ui.VPopupCalendar;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>$Id$</p>
@@ -176,6 +178,21 @@ public class VMaskedPopupCalendar extends VPopupCalendar {
         textBox.addKeyDownHandler(keyDownHandler);
         textBox.addFocusHandler(focusHandler);
         textBox.addBlurHandler(blurHandler);
+        if (BrowserInfo.get().isIE7()) {
+            Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                @Override
+                public void execute() {
+                    Set<Paintable> childrens = new HashSet<Paintable>();
+                    childrens.add(VMaskedPopupCalendar.this);
+                    VOrderedLayout layout = (VOrderedLayout) Util.getLayout(VMaskedPopupCalendar.this);
+                    for (int i = 0; i < layout.getWidgetCount(); i++)   {
+                        if (layout.getWidget(i) instanceof Paintable)
+                            childrens.add((Paintable) layout.getWidget(i));
+                    }
+                    layout.requestLayout(childrens);
+                }
+            });
+        }
         debug("VMaskedTextField created");
     }
 
