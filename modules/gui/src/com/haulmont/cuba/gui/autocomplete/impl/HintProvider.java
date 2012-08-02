@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
  * User: Alex Chevelev
  * Date: 13.10.2010
  * Time: 20:44:41
+ *
+ * @version $Id$
  */
 public class HintProvider {
     private DomainModel model;
@@ -34,16 +36,23 @@ public class HintProvider {
         this.model = model;
     }
 
+    /**
+     * Returns word in query denoting entity or field parameter user have requested hint for
+     * @param queryString query string
+     * @param caretPosition caret position
+     * @return matched word or empty string
+     */
     public static String getLastWord(String queryString, int caretPosition) {
         if (caretPosition < 0)
             return "";
 
-        // todo только ли пробелы здесь возможны?
-        if (queryString.charAt(caretPosition) == ' ') {
+        if (Character.isSpaceChar(queryString.charAt(caretPosition))) {
             return "";
         }
-        int lastWordStart = queryString.lastIndexOf(' ', caretPosition);
-        String result = queryString.substring(lastWordStart + 1, caretPosition + 1);
+
+        String[] words = queryString.substring(0, caretPosition + 1).split("\\s");
+        String result = words[words.length - 1];
+
         if (result.startsWith("in("))
             result = result.substring(3);
 
@@ -56,7 +65,7 @@ public class HintProvider {
             throw new IllegalStateException("No caret position found");
 
         if (caretPosition == 0)
-            throw new IllegalStateException("Caret at the beginning of the qeury");
+            throw new IllegalStateException("Caret at the beginning of the query");
 
         caretPosition -= 1;
         String queryString = queryStringWithCaret.substring(0, caretPosition + 1) +

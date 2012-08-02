@@ -14,6 +14,8 @@ import java.util.*;
  * User: Alex Chevelev
  * Date: 15.10.2010
  * Time: 23:10:59
+ *
+ * @version $Id$
  */
 public class IdVarSelector implements TreeVisitorAction {
     private QueryVariableContext root;
