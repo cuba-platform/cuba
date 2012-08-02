@@ -27,7 +27,7 @@
       <para><link linkend="chapter1_tool_description">
           <emphasis role="bold">Глава 2. Инструменты настройки подсистемы безопасности</emphasis>
         </link></para>
-      <para>В данной главе содержится описание интерфейса подсистемы, с помощью которой производится управление безопасностью. </para>
+      <para>В данной главе содержится описание графического пользовательского интерфейса подсистемы, с помощью которой производится управление безопасностью. </para>
       <para><link linkend="chapter3_detail_info">
           <emphasis role="bold">Глава 3. Механизмы управления подсистемой безопасности</emphasis>
         </link></para>
@@ -35,29 +35,29 @@
       <para><link linkend="chapter3_examples">
           <emphasis role="bold">Глава 4. Примеры управления доступом в системе</emphasis>
         </link></para>
-      <para>В главе 4 приводится подробное описание основных действий по управлению безопасностью системы на примере приложения <application>Магазин</application>.</para>
+      <para>В главе 4 приводится подробное описание  действий по управлению безопасностью системы на основе  примеров к приложению <application>Магазин</application>.</para>
     </section>
     <section>
       <title>Соглашения, принятые в документе</title>
-      <para>Для привлечения внимания к определенной информации в данном руководстве используется выделение текста различными шрифтами, стилями и размером.</para>
+      <para>Для привлечения внимания к определенной информации в Руководстве используется выделение текста различными шрифтами, стилями и размером.</para>
       <section>
         <title>Типографские соглашения</title>
         <para>Далее приводятся примеры выделенных слов и пояснения, в каких случаях используется то или иное оформление.</para>
         <formalpara>
           <title>Переменные среды, команды, имена классов, интерфейсов, объектов, методов, переменных, тексты ошибок</title>
-          <para>Обозначены в руководстве <classname>специальным моноширинным шрифтом</classname>.</para>
+          <para>Обозначены в Руководстве <classname>специальным моноширинным шрифтом</classname>.</para>
         </formalpara>
         <formalpara>
           <title>Элементы интерфейса</title>
-          <para>Пункты меню, названия окон, папок, закладок выделяются в тексте <guimenu>полужирным текстом</guimenu>. Кнопки выглядят следующим образом: <guibutton>Кнопка</guibutton></para>
+          <para>Пункты меню, названия окон, папок, вкладок выделяются в тексте <guimenu>полужирным текстом</guimenu>. Кнопки выглядят следующим образом: <guibutton>Кнопка</guibutton>.</para>
         </formalpara>
         <formalpara>
           <title>Имена приложений, объекты базы данных, названия внешних документов</title>
-          <para>Обозначаются в тексте руководства <emphasis role="bold">полужирным текстом</emphasis>.</para>
+          <para>Обозначаются в тексте Руководства <emphasis role="bold">полужирным текстом</emphasis>.</para>
         </formalpara>
         <formalpara>
           <title>Имена файлов, каталогов, папок и расширений</title>
-          <para>Обозначены в руководстве следующим образом: <filename>C:\Program Files (x86)</filename>.</para>
+          <para>Обозначены в Руководстве следующим образом: <filename>C:\Program Files (x86)</filename>.</para>
         </formalpara>
         <formalpara>
           <title>Имя пакета</title>
@@ -73,7 +73,7 @@
         </formalpara>
         <formalpara>
           <title>Параметры и свойства</title>
-          <para><parameter>Параметры</parameter> и <property>свойства</property> также выделяются в тексте руководства.</para>
+          <para><parameter>Параметры</parameter> и <property>свойства</property> также выделяются в тексте Руководства.</para>
         </formalpara>
       </section>
       <section>
@@ -87,7 +87,7 @@ encrypt = true </programlisting></para>
       </section>
       <section>
         <title>Замечания и предупреждения</title>
-        <para>В тексте руководства будут встречаться сообщения,  используемые для привлечения внимания к информации. <tip>
+        <para>В тексте Руководства будут встречаться сообщения,  используемые для привлечения внимания к информации. <tip>
             <title>Совет</title>
             <para>Это сообщение, содержащее информацию о способах упрощения работы.</para>
           </tip><caution>
@@ -117,7 +117,7 @@ encrypt = true </programlisting></para>
         <para>Значение по умолчанию:</para>
         <para><parameter>cuba.availableLocales=English|en;Russian|ru</parameter></para>
         <para>Интерфейс: <classname>GlobalConfig</classname></para>
-        <para>Уровень: свойство принадлежит всем уровням.</para>
+        <para>Уровень: свойство принадлежит всем <glossterm linkend="glossary_app_tiers">уровням</glossterm>.</para>
       </listitem>
       <listitem id="parameter_locale_visible">
         <para><parameter>cuba.web.localeSelectVisible</parameter>. Включает или отключает возможность пользователя выбирать язык
@@ -125,14 +125,12 @@ encrypt = true </programlisting></para>
         <para>Значение по умолчанию:</para>
         <para><parameter>cuba.web.localeSelectVisible=true</parameter></para>
         <para>Интерфейс: <classname>GlobalConfig</classname></para>
-        <para>Уровень: свойство принадлежит всем уровням.</para>
-        <para>Задается в файлах <filename>*-app.properties</filename>, <filename>*-web-app.properties</filename></para>
+        <para>Уровень: свойство принадлежит всем <glossterm linkend="glossary_app_tiers">уровням</glossterm>.</para>
       </listitem>
       <listitem>
         <para><parameter>cuba.trustedClientPassword</parameter>. Пароль, используемый методом <methodname>LoginService.loginTrusted()</methodname>. Доверенный клиент может зайти в систему, не вводя пользовательский пароль. Это свойство используется при интеграции с <link linkend="section_AD">Active Directory</link></para>
         <para>Интерфейсы: <classname>GlobalConfig</classname>, <classname>ServerConfig</classname></para>
-        <para>Уровень: свойство принадлежит всем уровням.</para>
-        <para>Задается в файлах <filename>*-web-app.properties</filename>, <filename>*-app.properties</filename>. Значения данного  свойства в указанных  файлах должны совпадать друг с другом.</para>
+        <para>Уровень: свойство принадлежит всем <glossterm linkend="glossary_app_tiers">уровням</glossterm>.</para>
       </listitem>
       <listitem id="property_sessionExpirTime">
         <para><parameter>cuba.userSessionExpirationTimeoutSec</parameter> задает  таймаут неактивности сессии пользователя
@@ -140,8 +138,7 @@ encrypt = true </programlisting></para>
         <para>Значение по умолчанию:</para>
         <para><parameter>cuba.userSessionExpirationTimeoutSec=1800</parameter></para>
         <para>Интерфейс: <classname>ServerConfig</classname></para>
-        <para>Уровень: <structfield>Middleware</structfield>.</para>
-        <para>Задается в файле <filename>*-app.properties</filename>.</para>
+        <para>Уровень: <glossterm linkend="text_middleware_id">Middleware</glossterm>.</para>
         <caution>
           <title>Совет</title>
           <para>В большинстве случаев рекомендуется выставлять параметры <parameter>cuba.userSessionExpirationTimeoutSec</parameter> и  <link linkend="property_httpExpirTime">cuba.httpSessionExpirationTimeoutSec</link>  в одинаковое значение.</para>
@@ -153,8 +150,7 @@ encrypt = true </programlisting></para>
         <para>Значение по умолчанию:</para>
         <para><parameter>cuba.httpSessionExpirationTimeoutSec=1800</parameter></para>
         <para>Интерфейс: <classname>WebConfig</classname></para>
-        <para>Уровень:  <structfield>Web Client</structfield>.</para>
-        <para>Задается в файле <filename>*-web-app.properties</filename>.</para>
+        <para>Уровень:  <glossterm linkend="text_webclient_id">Web Client</glossterm>.</para>
         <caution>
           <title>Совет</title>
           <para>В большинстве случаев рекомендуется выставлять параметры <link linkend="property_sessionExpirTime">cuba.userSessionExpirationTimeoutSec</link> и  <parameter>cuba.httpSessionExpirationTimeoutSec</parameter>  в одинаковое значение.</para>
@@ -165,8 +161,7 @@ encrypt = true </programlisting></para>
         <para>Значение по умолчанию:</para>
         <para><parameter>cuba.passwordPolicyEnabled=false</parameter></para>
         <para>Интерфейс: <classname>ClientConfig</classname></para>
-        <para>Уровни:   <structfield>Web Client</structfield>, <structfield>Web Portal</structfield>, <structfield>Desktop Client</structfield>.</para>
-        <para>Свойство задается в файле <filename>*-web-app.properties</filename></para>
+        <para>Уровни:   <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>, <glossterm linkend="text_desktop_id">Desktop Client</glossterm>.</para>
       </listitem>
       <listitem id="property_passwPolicyRegExp">
         <para><parameter>cuba.passwordPolicyRegExp</parameter>. В данном свойстве задается регулярное выражение, которое используется в политике проверки пароля.</para>
@@ -174,8 +169,7 @@ encrypt = true </programlisting></para>
         <para><parameter>cuba.passwordPolicyRegExp=((?=.*\\d)(?=.*\\p{javaLowerCase})(?=.*\\p{javaUpperCase}).{6,20})</parameter></para>
         <para>Это означает, что в пароль должен содержать от 6 до 20 символов, в нем можно использоваться цифры, символы и буквы латинского алфавита. При этом обязательно в пароле должна  быть хотя бы одна цифра, одна буква в нижнем регистре и одна буква в верхнем регистре. Более подробная информация о синтаксисе регулярных выражений можно найти на сайтах: <ulink url="http://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D0%B3%D1%83%D0%BB%D1%8F%D1%80%D0%BD%D1%8B%D0%B5_%D0%B2%D1%8B%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F">http://ru.wikipedia.org/wiki/Регулярные_выражения</ulink> и <ulink url="http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html">http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html</ulink></para>
         <para>Интерфейс: <classname>ClientConfig</classname></para>
-        <para>Уровни:   <structfield>Web Client</structfield>, <structfield>Web Portal</structfield>, <structfield>Desktop Client</structfield>.</para>
-        <para>Свойство задается в файле <filename>*-web-app.properties</filename></para>
+        <para>Уровни:   <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>, <glossterm linkend="text_desktop_id">Desktop Client</glossterm>.</para>
       </listitem>
       <listitem>
         <para><parameter>cuba.web.loginDialogDefaultUser</parameter> задает имя пользователя по умолчанию. Оно будет автоматически указываться в экране входа в систему. Если в качестве значения свойства указать
@@ -183,8 +177,7 @@ encrypt = true </programlisting></para>
         <para>Значение по умолчанию:</para>
         <para><parameter>cuba.web.loginDialogDefaultUser=admin</parameter></para>
         <para>Интерфейс: <classname>WebConfig</classname></para>
-        <para>Уровень:  <structfield>Web Client</structfield>.</para>
-        <para>Задается в файле <filename>*-web.app.properties</filename></para>
+        <para>Уровень:  <glossterm linkend="text_webclient_id">Web Client</glossterm>.</para>
       </listitem>
       <listitem>
         <para><parameter>cuba.web.loginDialogDefaultPassword</parameter> задает имя пользователя по умолчанию. Оно будет автоматически указываться в экране входа в систему. Если в качестве значения свойства указать
@@ -192,12 +185,10 @@ encrypt = true </programlisting></para>
         <para>Значение по умолчанию:</para>
         <para><parameter>cuba.web.loginDialogDefaultPassword=admin</parameter></para>
         <para>Интерфейс: <classname>WebConfig</classname></para>
-        <para>Уровень:  <structfield>Web Client</structfield>.</para>
-        <para>Задается в файле <filename>*-web.app.properties</filename></para>
+        <para>Уровень:  <glossterm linkend="text_webclient_id">Web Client</glossterm>.</para>
       </listitem>
       <listitem id="property_fullNamePattern">
         <para><parameter>cuba.user.fullNamePattern</parameter> задает шаблон формирования полного имени пользователя. </para>
-        <para>Задается в файле <filename>*-web-app.properties</filename></para>
         <para>Значение по умолчанию</para>
         <para><parameter>cuba.user.fullNamePattern={LL| }{F|. }{M|.}</parameter></para>
         <para>Таким образом, можно сформировать полное имя по  шаблону из имени, отчества и фамилии  пользователя. В шаблоне  используются следующие правила:</para>

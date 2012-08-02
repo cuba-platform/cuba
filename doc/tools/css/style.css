@@ -165,7 +165,7 @@ pre {
 
 .example .title, .figure .title, .table .title {
     white-space: nowrap;
-    /*overflow-x: hidden;*/
+    text-align:center;
     margin-top: 0;
     margin-bottom: 0.6em;
 }

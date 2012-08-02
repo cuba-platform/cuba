@@ -8,4 +8,8 @@
     <xsl:import href="html/docbook.xsl"/>
     <xsl:import href="html-common.xsl"/>
 	<xsl:param name="ignore.image.scaling">1</xsl:param>
+	<!--  Number figures continuosly through the book--> 
+	<xsl:template match="figure" mode="label.markup">
+		<xsl:number format="1" from="book" level="any" /> 
+	</xsl:template>
 </xsl:stylesheet>

@@ -13,6 +13,7 @@
     <xsl:param name="toc.section.depth">8</xsl:param>
     <xsl:param name="section.autolabel">1</xsl:param>
     <xsl:param name="section.label.includes.component.label">8</xsl:param>
+	<xsl:param name="section.autolabel.max.depth">2</xsl:param>
 	<xsl:param name="simplesect.autolabel">0</xsl:param>
     <xsl:param name="css.decoration">0</xsl:param>
     <xsl:param name="highlight.source" select="1"/>
@@ -66,4 +67,8 @@
 		<xsl:apply-templates select="//copyright[1]" mode="titlepage.mode"/>
 	</xsl:template>
 	
+	<!--  Number figures continuosly through the book--> 
+	<xsl:template match="figure" mode="label.markup">
+		<xsl:number format="1" from="book" level="any" /> 
+	</xsl:template>
 </xsl:stylesheet>

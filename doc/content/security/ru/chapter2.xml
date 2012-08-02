@@ -1,27 +1,27 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter3_detail_info">
   <title>Механизмы управления подсистемой безопасности</title>
-  <mediaobject>
-    <imageobject>
-      <imagedata align="center" fileref="img/dbStructure.png"/>
-    </imageobject>
-    <caption>Структура базы данных подсистемы безопасности</caption>
-  </mediaobject>
+  <figure>
+    <title>Структура базы данных подсистемы безопасности</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/dbStructure.png"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
   <section>
     <title>Окно входа в систему</title>
-    <para><classname>Login screen</classname> представляет собой окно входа в систему, посредством которого пользователь получает доступ к системе. В этом окне производится аутентификация пользователя по имени учетной записи и паролю, а также дальнейшая авторизация. Пароль в целях его безопасности хранится в базе данных в хэшированном виде.</para>
+    <para><firstterm>Окно входа в систему (Login screen)</firstterm> представляет собой окно входа в систему, посредством которого пользователь получает доступ к системе. В этом окне производится аутентификация пользователя по имени учетной записи и паролю, а также дальнейшая авторизация. Пароль в целях его безопасности хранится в базе данных в хэшированном виде.</para>
     <para>Класс окна входа в систему − <classname>LoginWindow</classname>. </para>
   </section>
-  <section>
+  <section id="section_session_id">
     <title>Пользовательская сессия</title>
-    <para>Пользовательская сессия (User Session) –  центральный элемент обеспечения безопасности, 
+    <para><firstterm>Пользовательская сессия (User Session)</firstterm> –  центральный элемент обеспечения безопасности, 
 объект,  ассоциированный с аутентифицированным в данный момент в системе 
 пользователем,  и содержащий информацию о правах доступа пользователя к
 данным.</para>
-    <para>Для контроля прав доступа пользователей к данным код системы всегда должен иметь возможность узнать, какой пользователь в данный момент работает и каковы его права. Например, перед сохранением сущности в БД в специальных полях сущности проставляется имя пользователя, выполняющего сохранение. Кроме того, <glossterm linkend="glossary_dataService_id">Data Service</glossterm> всегда проверяет права пользователя на извлечение или сохранение определенных сущностей.</para>
-    <para>Информация о текущем пользователе и его правах хранится в объекте <classname>UserSession</classname>, который создается после входа  пользователя и кэшируется на стороне <glossterm linkend="glossary_middleware_id">
-        <structfield>Middleware</structfield>
-      </glossterm>, а также передается клиенту в результате метода <methodname>LoginService.login()</methodname>. Уничтожается пользовательская сессия после выхода пользователя из системы, либо после истечения времени бездействия, определяемого параметром среднего слоя приложения <link linkend="property_sessionExpirTime">cuba.userSessionExpirationTimeoutSec</link>.</para>
+    <para>Для контроля прав доступа пользователей к данным код системы всегда должен иметь возможность узнать, какой пользователь в данный момент работает и каковы его права. Например, перед сохранением сущности в БД в специальных полях сущности проставляется имя пользователя, выполняющего сохранение. Кроме того, <classname>DataService</classname> (универсальное средство для загрузки сущностей из базы данных и передачи их клиенту) всегда проверяет права пользователя на извлечение или сохранение определенных сущностей.</para>
+    <para>Информация о текущем пользователе и его правах хранится в объекте <classname>UserSession</classname>, который создается после входа  пользователя и кэшируется на стороне <glossterm linkend="text_middleware_id">Middleware</glossterm>, а также передается клиенту в результате метода <methodname>LoginService.login()</methodname>. Уничтожается пользовательская сессия после выхода пользователя из системы, либо после истечения времени бездействия, определяемого параметром среднего слоя приложения <link linkend="property_sessionExpirTime">cuba.userSessionExpirationTimeoutSec</link>.</para>
     <para>Текущая пользовательская сессия всегда привязывается к потоку выполнения и может быть получена следующими способами:<itemizedlist>
         <listitem>
           <para>через интерфейс инфраструктуры <classname>UserSessionSource</classname></para>
@@ -32,15 +32,10 @@
       </itemizedlist></para>
     <para>Кроме получения информации о пользователе объект сессии позволяет проверить наличие прав на некоторый объект системы. Делается это вызовом методов <methodname>isScreenPermitted()</methodname>, <methodname>isEntityOpPermitted()</methodname> и другими.</para>
     <para>Список активных пользовательских сессий можно получить на клиенте через сервис <classname>UserSessionService</classname>,  в JMX интерфейсе через МБин <classname>app.cuba:service=UserSessions</classname>, а также с помощью подпункта меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Пользовательские сессии</guimenu>.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/userSession.png"/>
-      </imageobject>
-    </mediaobject>
   </section>
   <section id="section_roles">
     <title>Роли</title>
-    <para>Роль − это объект системы, которому с одной стороны сопоставляется набор полномочий, необходимых для выполнения конкретных функций, а с другой стороны − подмножество пользователей, которые должны иметь эти полномочия.</para>
+    <para><firstterm>Роль</firstterm> − это объект системы, которому с одной стороны сопоставляется набор полномочий, необходимых для выполнения конкретных функций, а с другой стороны − подмножество пользователей, которые должны иметь эти полномочия.</para>
     <para>Пользователь получает логическую сумму прав на некоторый объект от всех ролей, которые у него есть. При этом если ни одна роль не определяет явно право на объект, то пользователь получает право на этот объект. Таким образом,  пользователь имеет права на все объекты, на которые либо ни одна роль явно не определяет право, либо хотя бы одна роль определяет, что право есть. Отсюда следует, что если пользователю дать единственную роль без явно установленных прав или не давать никаких ролей вообще, то у него будут все права на все объекты.</para>
     <para>Для роли возможно указание одного из следующих типов:<itemizedlist>
         <listitem>
@@ -56,37 +51,48 @@
           <para><emphasis role="bold">DENYING</emphasis> − роль данного типа автоматически отнимает разрешения на все объекты, кроме атрибутов сущностей.</para>
         </listitem>
       </itemizedlist></para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/permissions.png"/>
-      </imageobject>
-    </mediaobject>
+    <figure>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/permissions.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
     <para>Путем задания для пользователя набора ролей в экранах управления подсистемой безопасности осуществляется настройка прав доступа. Набор ролей определяет эффективный набор разрешений следующих типов: <itemizedlist id="permissions_types_id">
         <listitem>
-          <para>Возможность открытия некоторого экрана (Screen Permissions)</para>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/screenPermissions.png"/>
-            </imageobject>
-          </mediaobject>
+          <para>Возможность отображения некоторого экрана (Screen Permissions)</para>
+          <figure>
+            <title>Изменение разрешений для экрана</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/screenPermissions.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
         </listitem>
         <listitem>
           <para>Возможность операции над некоторой сущностью:  чтение,  создание, 
 модификация, удаление (Entity Operation Permissions)</para>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/entityoperationPermissions.png"/>
-            </imageobject>
-          </mediaobject>
+          <figure>
+            <title>Изменение разрешений для сущности</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/entityoperationPermissions.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
         </listitem>
         <listitem>
           <para>Доступ к произвольному атрибуту некоторой сущности:  модификация, 
 только чтение, нет доступа (Entity Attribute Permissions)</para>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/entityattributePermissions.png"/>
-            </imageobject>
-          </mediaobject>
+          <figure>
+            <title>Изменение разрешений для атрибутов сущности</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/entityattributePermissions.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
         </listitem>
         <listitem id="specific_permissions">
           <para>Разрешение на некоторую именованную функциональность (Specific Permissions). Эти разрешения задаются в файлах, которые указаны в свойстве <parameter>cuba.permissionConfig</parameter> <glossterm linkend="glossary_app_properties_id">файла свойств</glossterm> приложения. Пример файла <filename>cuba-web-permissions.xml</filename>:</para>
@@ -125,19 +131,25 @@ permission-config.cuba.gui.searchFolder.global=Создание/изменени
 permission-config.cuba.gui.presentations.global=Создание/изменение глобальных представлений
 permission-config.cuba.gui.appFolder.global=Создание/изменение папок приложения
 </programlisting></para>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/specificpermissions.png"/>
-            </imageobject>
-          </mediaobject>
+          <figure>
+            <title>Изменение специфических разрешений</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/specificpermissions.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
         </listitem>
         <listitem>
           <para>Управление доступом к конкретным элементам экрана (Interface Permissions)</para>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/interfacePermissions.png"/>
-            </imageobject>
-          </mediaobject>
+          <figure>
+            <title>Управление доступом к элементам экрана</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata align="center" fileref="img/interfacePermissions.png"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
         </listitem>
       </itemizedlist></para>
   </section>
@@ -147,23 +159,26 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
     <para id="constraints_id">Ограничения задаются с помощью фрагментов выражений на языке <link linkend="glossary_jpql_id">JPQL</link>. </para>
     <para>В параметрах ограничений  можно использовать следующие предопределенные константы:<itemizedlist>
         <listitem>
-          <para><varname>session$userLogin</varname> − имя учетной записи текущего пользователя (в случае замещения − имя учетной записи замещаемого пользователя).</para>
+          <para><varname>session$userLogin</varname> − имя учетной записи текущего пользователя (в случае <link linkend="text_substituted_user">замещения</link> − имя учетной записи замещаемого пользователя).</para>
         </listitem>
         <listitem>
-          <para><varname>session$userId</varname> − ID текущего пользователя (в случае замещения − ID замещаемого пользователя).</para>
+          <para><varname>session$userId</varname> − ID текущего пользователя (в случае <link linkend="text_substituted_user">замещения</link> − ID замещаемого пользователя).</para>
         </listitem>
         <listitem>
-          <para><varname>session$userGroupId</varname> − ID группы текущего пользователя (в случае замещения − ID группы замещаемого пользователя).</para>
+          <para><varname>session$userGroupId</varname> − ID группы текущего пользователя (в случае <link linkend="text_substituted_user">замещения</link> − ID группы замещаемого пользователя).</para>
         </listitem>
         <listitem>
-          <para><varname>session$XXX</varname> − атрибут текущей пользовательской сессии, где XXX - имя атрибута</para>
+          <para><varname>session$XXX</varname> − атрибут текущей <link linkend="section_session_id">пользовательской сессии</link>, где XXX - имя атрибута</para>
         </listitem>
       </itemizedlist></para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/accessGroups.png"/>
-      </imageobject>
-    </mediaobject>
+    <figure>
+      <title>Экран редактирования ограничения</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/accessGroups.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
     <para>Следует иметь в виду следующие моменты:<itemizedlist>
         <listitem>
           <para>при задании только оператора Where в нем заменяется алиас основной сущности;</para>
@@ -174,77 +189,77 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
       </itemizedlist></para>
     <para>В обоих случаях в текст оператора Join и оператора Where можно помещать метку {E}, которая будет заменена на алиас основной сущности запроса. Если в тексте встречается метка {E}, то никаких других алиасов, кроме указанных меткой, заменяться не будет.</para>
     <para>Пример создания ограничений находится в <link linkend="example_access_group">главе 4</link>.</para>
-    <para id="detail_session_attr"><emphasis role="bold">Session Attributes</emphasis></para>
-    <para>Атрибуты пользовательской сессии могут быть заданы при настройке системы. Это может понадобиться при настройке constraints, а также для любой другой прикладной функциональности.</para>
-    <para>В пользовательскую сессию при входе в систему будут помещены все атрибуты, заданные для группы, в которой находится пользователь, и для всех родительских групп вверх по иерархии. При этом если атрибут встречается в иерархии групп несколько раз, значение он получит от самой верхней группы, то есть переопределение значений атрибутов на нижнем уровне невозможно. При попытке переопределения в лог сервера будет выведено сообщение с уровнем WARN.</para>
+    <para id="detail_session_attr"><firstterm>Атрибуты пользовательской сессии (Session Attributes)</firstterm> могут быть заданы при настройке системы. Это может понадобиться при настройке <link linkend="constraints_id">ограничений</link>, а также для любой другой прикладной функциональности.</para>
+    <para>В <link linkend="section_session_id">пользовательскую сессию</link> при входе в систему будут помещены все атрибуты, заданные для группы, в которой находится пользователь, и для всех родительских групп вверх по иерархии. При этом если атрибут встречается в иерархии групп несколько раз, значение он получит от самой верхней группы, то есть переопределение значений атрибутов на нижнем уровне невозможно. При попытке переопределения в журнал сообщений сервера будет выведено сообщение с уровнем WARN.</para>
   </section>
   <section id="section_IP">
     <title>Ограничение входа по IP</title>
     <para>Для пользователя может быть задана маска допустимых IP-адресов, с которых возможен вход в систему.</para>
-    <para>Маска представляет собой список адресов через запятую. Каждый адрес должен обязательно состоять из 4-х чисел разделенных точками (обычный формат IPv4). При этом любая часть вместо числа может содержать знак &quot;*&quot;, что означает &quot;любое число&quot;. </para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/IPpermissions.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>Если маска задана неправильно, либо для данного соединения не может быть определен адрес в формате IPv4, в лог выводится сообщение от логгера <classname>IpMatcher</classname>, и вход при этом разрешается.</para>
+    <para>Маска представляет собой список адресов через запятую. Каждый адрес должен обязательно состоять из четырех чисел, разделенных точками (обычный формат IPv4). При этом любая часть вместо числа может содержать знак &quot;*&quot;, что означает &quot;любое число&quot;. </para>
+    <figure>
+      <title>Задание маски разрешенных IP в экране редактирования пользователя</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/IPpermissions.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>Если маска задана неправильно или для данного соединения не может быть определен адрес в формате IPv4, в журнал сообщений выводится сообщение от регистратора <classname>IpMatcher</classname>, и вход при этом разрешается.</para>
   </section>
   <section id="section_AD">
     <title>Интеграция с Active Directory</title>
     <para><firstterm>Active Directory</firstterm> −  это LDAP-совместимая реализация службы каталогов <application>Microsoft</application> для операционных систем семейства <application>Windows</application>, которая позволяет администраторам реализовать наборы правил, в соответствии с которыми обеспечивается единообразие настройки пользовательской среды, развертывать программное обеспечение на большом количестве компьютеров, устанавливать обновления на всех компьютерах сети. <application>Active Directory</application> хранит данные и настройки среды в централизованной базе данных.  Более подробно об <application>Active Directory</application> Вы сможете прочитать, перейдя по следующей ссылке:  <ulink url="http://ru.wikipedia.org/wiki/Active_Directory">http://ru.wikipedia.org/wiki/Active_Directory</ulink></para>
     <para id="domainController"><firstterm>Domain Controller</firstterm> − сервер, контролирующий область компьютерной сети (домен). В сетях <application>Microsoft</application> это центральный сервер для <application>Active Directory</application>.</para>
     <para><firstterm>Kerberos</firstterm> − сетевой протокол аутентификации, позволяющий передавать данные через незащищенные сети для безопасной идентификации. Вместо передачи паролей в открытом виде в нем используется шифрование с ключами. <application>Kerberos</application> предоставляет дополнительный уровень безопасности системы и сильно усложняет перехват паролей пользователей злоумышленниками.</para>
+    <para id="text_kerberos_ticket_id"><firstterm>Билет</firstterm> − пакет определенного типа, применяемый в протоколе Kerberos для безопасного обмена сеансовым ключом по сети. В <firstterm>сеансовом ключе</firstterm> содержится основная информация для проведения аутентификации пользователя.</para>
     <para><firstterm>NTLM</firstterm> − протокол сетевой аутентификации, разработанный фирмой <application>Microsoft</application> для <application>Windows NT</application>.</para>
     <para id="para_sso"><firstterm>Технология единого входа (Single Sign-On)</firstterm> − технология, при использовании которой пользователь переходит от одного приложения к другому без повторной аутентификации.</para>
     <para><firstterm>HTTP 401</firstterm> − код протокола <application>HTTP</application>, запрос авторизации.</para>
     <para><firstterm>HTTP 400</firstterm> − код протокола <application>HTTP</application>,  неверный запрос, синтаксическая ошибка <application>HTTP</application> или превышение максимального размера запроса.</para>
-    <para><firstterm>Service Principal Name (SPN)</firstterm> − имя службы, включающее в себя имя протокола, адрес веб-сервера и порт (если он не является стандартным для этого протокола).</para>
+    <para><firstterm>Service Principal Name (SPN)</firstterm> − имя службы, включающее в себя имя протокола, адрес Web-сервера и порт (если он не является стандартным для этого протокола).</para>
     <para><firstterm>Jespa</firstterm> −  библиотека для <application>Java</application>, обеспечивающая расширенную интеграцию между службой каталогов <application>Active Directory</application> и Java-приложениями.</para>
     <section>
       <title>Настройка Kerberos аутентификации</title>
       <section>
         <title>Мотивация</title>
         <para>Настройка <application>Kerberos</application> вызывает определенные проблемы из-за множества параметров и специфики <application>Windows</application>, но, вместе с тем, у этого алгоритма аутентификации есть ряд преимуществ.</para>
-        <para><application>Kerberos</application> является надежным средством контроля доступа и широко применяется как в <application>Windows</application>, так и в <application>Linux</application> средах. На данный момент в нем не найдено уязвимостей уровня протокола, и он позволяет использовать сильное шифрование (<application>RC4</application>, <application>AES</application>). Все продукты <application>Microsoft</application> поддерживают <application>Kerberos</application> аутентификацию и в будущем от него не планируют отказываться.</para>
-        <para>Аутентификация в нашей системе для провайдера <application>Kerberos</application> выполняется всего один раз, в дальнейшем сессия пользователя хранит информацию об удачном входе и не требуется заново опрашивать сервер <application>Active Directory</application>. Это позволяет не терять производительность при аутентификации на каждый запрос и упрощает анализировать  файлы логов.</para>
+        <para><application>Kerberos</application> является надежным средством контроля доступа и широко применяется как в <application>Windows</application>, так и в <application>Linux</application> средах. На данный момент в нем не найдено уязвимостей уровня протокола, и он позволяет использовать сильное шифрование (<application>RC4</application>, <application>AES</application>). Все продукты <application>Microsoft</application> поддерживают <application>Kerberos</application> аутентификацию и в будущем не планируют от него отказываться.</para>
+        <para>Аутентификация в  системе, основанной на платформе <trademark>CUBA</trademark>,  для провайдера <application>Kerberos</application> выполняется всего один раз, в дальнейшем сессия пользователя хранит информацию об удачном входе и не требуется заново опрашивать сервер <application>Active Directory</application>. Это позволяет не терять производительность при аутентификации на каждый запрос и упрощает анализировать  файлы журналов сообщений.</para>
       </section>
       <section>
         <title>Как это работает</title>
         <para><emphasis role="bold">Этапы автоматической аутентификации</emphasis></para>
-        <itemizedlist>
+        <orderedlist>
           <listitem>
-            <para>Запрос страницы с веб-сервера от клиента</para>
+            <para>Запрос страницы с Web-сервера от клиента.</para>
           </listitem>
           <listitem>
-            <para>Веб-сервер возвращает код 401 (требование авторизации), и в содержимом ответа содержится строка <userinput>Negotiate</userinput></para>
+            <para>Web-сервер возвращает код 401 (требование авторизации), и в содержимом ответа содержится строка <userinput>Negotiate</userinput>.</para>
           </listitem>
           <listitem>
-            <para>Клиент по доменному имени веб-сервера выясняет у <link linkend="domainController">Domain Controller</link> имя соответствующей веб-службы</para>
+            <para>Клиент по доменному имени Web-сервера выясняет у <link linkend="domainController">Domain Controller</link> имя соответствующей Web-службы.</para>
           </listitem>
           <listitem>
-            <para>Клиент выполняет процедуру получения тикета для <application>Kerberos</application> аутентификации, для этого обращаясь к сервису <application>Kerberos</application> на <link linkend="domainController">Domain Controller</link>  или отдельному Key Distribution Center серверу</para>
+            <para>Клиент выполняет процедуру получения <link linkend="text_kerberos_ticket_id">билета</link> для <application>Kerberos</application> аутентификации, для этого обращаясь к сервису <application>Kerberos</application> на <link linkend="domainController">Domain Controller</link>  или отдельному центру распределения ключей (Key Distribution Center) − серверу паролей Kerberos.</para>
           </listitem>
           <listitem>
-            <para>Клиент вновь выполняет запрос, помещая в заголовки строку <userinput>Authorization: Negotiate &lt;Тикет Kerberos&gt;</userinput></para>
+            <para>Клиент вновь выполняет запрос, помещая в заголовки строку <userinput>Authorization: Negotiate &lt;Тикет Kerberos&gt;</userinput>.</para>
           </listitem>
           <listitem>
-            <para>Веб-сервер входит в систему от имени службы и пытается получить по тикету клиента его имя у <link linkend="domainController">Domain Controller</link></para>
+            <para>Web-сервер входит в систему от имени службы и пытается получить по билету клиента его имя у <link linkend="domainController">Domain Controller</link>.</para>
           </listitem>
           <listitem>
-            <para>При удачном получении имени клиента ему в сессию добавляется переменная, содержащая имя, полученное от <link linkend="domainController">Domain Controller</link></para>
+            <para>При удачном получении имени клиента ему в сессию добавляется переменная, содержащая имя, полученное от <link linkend="domainController">Domain Controller</link>.</para>
           </listitem>
-          <listitem>
-            <para>Выполняется поиск пользователя в базе данных приложения и, если он найден, выполняется вход в систему.</para>
-          </listitem>
-        </itemizedlist>
+        </orderedlist>
         <warning>
-          <para>В базе данных имена пользователей <application>Active Directory</application> хранятся как <userinput>&lt;domain.zone&gt;\user</userinput></para>
+          <para>В базе данных имена пользователей <application>Active Directory</application> хранятся как <userinput>&lt;domain.zone&gt;\user</userinput>.</para>
         </warning>
-        <para>Попытка автоматического входа в систему для каждого пользователя всего одна. Если она завершается неудачно, то сессия помечается как неподдерживаемая и выводиться обычная форма входа в систему. Если пользователь уже вошел в приложение, то всего его запросы свободно пропускаются (есть живая сессия), и дополнительных обращений к <link linkend="domainController">Domain Controller</link> не требуется.</para>
+        <para>Попытка автоматического входа в систему для каждого пользователя всего одна. Если она завершается неудачно, то сессия помечается как неподдерживаемая и выводится стандартное окно входа в систему. Если пользователь уже вошел в приложение, то всего его запросы свободно пропускаются (есть живая сессия), и дополнительных обращений к <link linkend="domainController">Domain Controller</link> не требуется.</para>
         <para><emphasis role="bold">Этапы аутентификации при входе через стартовую форму приложения</emphasis></para>
-        <itemizedlist>
+        <orderedlist>
           <listitem>
-            <para>Веб-сервер определяет домен, соответствующий псевдониму, введенному пользователем: <userinput>&lt;alias&gt;\&lt;user&gt;</userinput> −&gt; <userinput>&lt;DOMAIN.ZONE&gt;\user</userinput></para>
+            <para>Web-сервер определяет домен, соответствующий псевдониму, введенному пользователем: <userinput>&lt;alias&gt;\&lt;user&gt;</userinput> −&gt; <userinput>&lt;DOMAIN.ZONE&gt;\user</userinput></para>
           </listitem>
           <listitem>
             <para>Выполняется вход в систему от имени пользователя</para>
@@ -255,39 +270,39 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
           <listitem>
             <para>Если пользователь зарегистрирован в системе, выполняется вход в систему</para>
           </listitem>
-        </itemizedlist>
+        </orderedlist>
       </section>
       <section>
         <title>Настройка доменного контроллера для использования аутентификации Kerberos</title>
         <para>В примере используются следующие данные:</para>
         <itemizedlist>
           <listitem>
-            <para>Доменное имя веб-сервера: <userinput>win-web2008-art</userinput></para>
+            <para>Доменное имя Web-сервера: <userinput>win-web2008-art</userinput></para>
           </listitem>
           <listitem>
             <para>Доменный контроллер: <userinput>dc.haulmont.com</userinput></para>
           </listitem>
         </itemizedlist>
         <para>Алгоритм настройки:</para>
-        <itemizedlist>
+        <orderedlist>
           <listitem>
-            <para>Создать доменного пользователя <userinput>winkdc</userinput>, задать пароль и установить опции <guilabel>Срок действия пароля не истекает</guilabel> и <guilabel>Запретить пользователю изменять пароль</guilabel></para>
+            <para>Создать доменного пользователя <userinput>winkdc</userinput>, задать пароль и установить флажки  <guilabel>Срок действия пароля не истекает</guilabel> и <guilabel>Запретить пользователю изменять пароль</guilabel></para>
           </listitem>
           <listitem>
             <para>Задать соответствие имени пользователя и имени сервиса</para>
             <para><prompt>setspn -A http/win-web2008-art.haulmont.com winkdc</prompt></para>
           </listitem>
           <listitem>
-            <para>Для входа в систему от имени пользователя <userinput>winkdc</userinput> на стороне веб-сервера используется файл ключа (не используется парольная аутентификация)</para>
+            <para>Для входа в систему от имени пользователя <userinput>winkdc</userinput> на стороне Web-сервера используется файл ключа (не используется парольная аутентификация)</para>
             <para><prompt>ktpass -princ http/win-web2008-art.haulmont.com@HAULMONT.COM -pass 3edc$RFV5tgb -mapuser winkdc -out winkdc.keytab -ptype KRB5_NT_PRINCIPAL -kvno 0</prompt></para>
           </listitem>
           <listitem>
-            <para>На выходе в текущей папке появится файл <filename>winkdc.keytab</filename>, его нужно сохранить для использования на веб-сервере.</para>
+            <para>На выходе в текущей папке будет создан файл <filename>winkdc.keytab</filename>, его нужно сохранить для использования на Web-сервере.</para>
           </listitem>
-        </itemizedlist>
+        </orderedlist>
       </section>
       <section>
-        <title>Настройка конфигурации веб-сервера</title>
+        <title>Настройка конфигурации Web-сервера</title>
         <itemizedlist>
           <listitem>
             <para>Файл конфигурации домена <filename>krb5.ini</filename>. По умолчанию размещается в <filename>${catalina.home}/conf/${cuba.webContextName}/krb5.ini</filename>. В этом файле указывается имя домена и расположение доменного контроллера.</para>
@@ -356,8 +371,8 @@ cuba.web.kerberosAuthModule=AUTH.HAULMONT.COM</programlisting></para>
         </itemizedlist>
       </section>
       <section>
-        <title>Работа формы входа приложения</title>
-        <para>По умолчанию форма входа используется:</para>
+        <title>Работа окна входа в приложение</title>
+        <para>По умолчанию стандартное окно входа используется:</para>
         <itemizedlist>
           <listitem>
             <para>При входе из внешней сети</para>
@@ -369,69 +384,81 @@ cuba.web.kerberosAuthModule=AUTH.HAULMONT.COM</programlisting></para>
             <para>Для клиентов, не входящих в состав домена</para>
           </listitem>
           <listitem>
-            <para>При неудачной попытке автоматического входа (неверный <application>SPN</application>, кэшированный тикет <application>Kerberos</application>)</para>
+            <para>При неудачной попытке автоматического входа (неверный <application>SPN</application>, кэшированный билет <application>Kerberos</application>)</para>
           </listitem>
         </itemizedlist>
-        <para>Для входа под доменным аккаунтом необходимо ввести имя в одном из форматов: <userinput>&lt;DOMAIN.ZONE&gt;\&lt;USER&gt;</userinput> или <userinput>&lt;USER&gt;@&lt;DOMAIN.ZONE&gt;</userinput>. В поле <guilabel>Пароль</guilabel> − свой доменный пароль, он не хранится в системе, используется только при входе. </para>
+        <para>Для входа под доменной учетной записью необходимо ввести имя в одном из форматов: <userinput>&lt;DOMAIN.ZONE&gt;\&lt;USER&gt;</userinput> или <userinput>&lt;USER&gt;@&lt;DOMAIN.ZONE&gt;</userinput>. В поле <guilabel>Пароль</guilabel> − свой доменный пароль, он не хранится в системе, используется только при входе. </para>
         <para>Для <userinput>&lt;DOMAIN.ZONE&gt;</userinput> могут быть настроены псевдонимы (например, если имя домена длинное или незапоминающееся)</para>
         <para><programlisting>cuba.web.activeDirectoryAliases=haulmont|HAULMONT.COM;dc|SOMEDOMAIN.ZONE</programlisting></para>
         <para>Если для какого-то домена задан псевдоним <userinput>alias</userinput>, то в форме входа достаточно ввести <userinput>alias/&lt;USER&gt;</userinput> или <userinput>&lt;USER&gt;@alias</userinput></para>
       </section>
       <section>
         <title>Настройка клиентских машин</title>
-        <para><emphasis role="bold">Добавление веб-сервера в зону интранет</emphasis></para>
-        <para>Откройте приложение <application>Internet Explorer</application>. Далее перейдите к пункту меню <guimenu>Сервис</guimenu> −&gt; <guimenu>Свойства обозревателя</guimenu>. В открывшемся окне выберите  вкладку <guilabel>Безопасность</guilabel>. Дальнейшие действия приведены на рисунке ниже.</para>
-        <mediaobject>
-          <imageobject>
-            <imagedata align="center" fileref="img/TrustedZoneUrls.png"/>
-          </imageobject>
-        </mediaobject>
+        <para><emphasis role="bold">Добавление Web-сервера в зону интранет</emphasis></para>
+        <para>Откройте приложение <application>Internet Explorer</application>. Далее перейдите к пункту меню <guimenu>Сервис</guimenu> −&gt; <guimenu>Свойства обозревателя</guimenu>. В отобразившемся окне выберите  вкладку <guilabel>Безопасность</guilabel>. Дальнейшие действия приведены на рисунке ниже.</para>
+        <figure>
+          <title>Добавление Web-сервера в зону интранет</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/TrustedZoneUrls.png"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
         <para><emphasis role="bold">Разрешение автоматического входа в зоне интранет</emphasis></para>
-        <para>Откройте приложение <application>Internet Explorer</application>. Далее перейдите к пункту меню <guimenu>Сервис</guimenu> −&gt; <guimenu>Свойства обозревателя</guimenu>. В открывшемся окне выберите  вкладку <guilabel>Безопасность</guilabel>. Дальнейшие действия приведены на рисунке ниже.</para>
-        <mediaobject>
-          <imageobject>
-            <imagedata align="center" fileref="img/AutoLogin.png"/>
-          </imageobject>
-        </mediaobject>
+        <para>Откройте приложение <application>Internet Explorer</application>. Далее перейдите к пункту меню <guimenu>Сервис</guimenu> −&gt; <guimenu>Свойства обозревателя</guimenu>. В отобразившемся окне выберите  вкладку <guilabel>Безопасность</guilabel>. Дальнейшие действия приведены на рисунке ниже.</para>
+        <figure>
+          <title>Разрешение автоматического входа в зоне интранет</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/AutoLogin.png"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
         <para><emphasis role="bold">Разрешение встроенной проверки подлинности Windows</emphasis></para>
-        <para>Откройте приложение <application>Internet Explorer</application>. Далее перейдите к пункту меню <guimenu>Сервис</guimenu> −&gt; <guimenu>Свойства обозревателя</guimenu>. В открывшемся окне выберите  вкладку <guilabel>Дополнительно</guilabel>. Дальнейшие действия приведены на рисунке ниже.</para>
-        <mediaobject>
-          <imageobject>
-            <imagedata align="center" fileref="img/WindowsAuth.png"/>
-          </imageobject>
-        </mediaobject>
+        <para>Откройте приложение <application>Internet Explorer</application>. Далее перейдите к пункту меню <guimenu>Сервис</guimenu> −&gt; <guimenu>Свойства обозревателя</guimenu>. В отобразившемся окне выберите  вкладку <guilabel>Дополнительно</guilabel>. Дальнейшие действия приведены на рисунке ниже.</para>
+        <figure>
+          <title>Разрешение встроенной проверки подлинности Windows</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/WindowsAuth.png"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
         <para>Разрешение типов шифрования для рабочих станций с операционной системой <application>Windows 7</application>.</para>
         <para>Данные действия требуются в том случае, если на рабочей станции заданы требуемые типы шифрования. По умолчанию разрешены все.
 Используется <userinput>logon</userinput> скрипт, добавляющий разрешения на типы шифрования в реестр:</para>
         <para><programlisting>@echo off
 reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters&quot; 
 /v SupportedEncryptionTypes /t REG_DWORD /d 0x7fffffff /f</programlisting></para>
-        <para>Также этот параметр можно настроить в параметрах: 
+        <para>Также этот параметр можно настроить в настройках: 
 <guimenu>Панель управления</guimenu> −&gt;<guimenu>Администрирование</guimenu> −&gt; <guimenu>Локальная политика безопасности</guimenu> −&gt; <guimenu>Локальные политики</guimenu> −&gt; <guimenu>Параметры безопасности</guimenu> −&gt; <guimenu>Сетевая безопасность: настройка типов шифрования, разрешенных Kerberos</guimenu></para>
         <para><emphasis role="bold">Настройка Internet Explorer и Chrome</emphasis></para>
         <para>Отдельных настроек не требуется, используются настройки системы.</para>
         <para><emphasis role="bold">Настройка Firefox</emphasis></para>
         <para>Откройте приложение <application>Mozilla Firefox</application>. В адресной строке введите <userinput>about:config</userinput>. Далее найдите ключи <userinput>network.negotiate-auth.trusted-uris</userinput> и <userinput>network.negotiate-auth.delegation-uris</userinput> и добавьте в список адресов адрес сервера.</para>
-        <mediaobject>
-          <imageobject>
-            <imagedata align="center" fileref="img/FireFoxNego.png"/>
-          </imageobject>
-        </mediaobject>
+        <figure>
+          <title>Настройка Firefox</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/FireFoxNego.png"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
       </section>
       <section>
         <title>Возможные проблемы и их решения</title>
         <itemizedlist>
           <listitem>
-            <para>Невозможность автоматического входа с машины, на которой запущен веб-сервер. Проблема связана с ограничениями <application>Kerberos</application>, вход выполняется через обычную форму входа приложения.</para>
+            <para>Невозможность автоматического входа с рабочей станции, на которой запущен Web-сервер. Проблема связана с ограничениями <application>Kerberos</application>, вход выполняется через стандартное окно входа в приложение.</para>
           </listitem>
           <listitem>
             <para>Необходимость создания пользователя для сервиса.</para>
           </listitem>
           <listitem>
-            <para>Клиентская машина должна быть включена в домен.</para>
+            <para>Клиентская рабочая станция должна быть включена в домен.</para>
           </listitem>
           <listitem>
-            <para>Доступ из внешней сети осуществляется через обычную форму входа приложения.</para>
+            <para>Доступ из внешней сети осуществляется через стандартное окно входа в приложение.</para>
           </listitem>
         </itemizedlist>
         <warning>
@@ -441,11 +468,11 @@ reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Polic
         <para><emphasis role="bold">Включение полной отладочной информации на сервере</emphasis></para>
         <itemizedlist>
           <listitem>
-            <para>Для включения отладочной информации <application>Kerberos</application> на сервере в <glossterm linkend="glossary_local_app_properties">local.app.properties</glossterm> задать параметр </para>
+            <para>Для включения отладочной информации <application>Kerberos</application> на сервере в <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm> задайте параметр </para>
             <para><programlisting>cuba.web.activeDirectoryDebug = true</programlisting></para>
           </listitem>
           <listitem>
-            <para>В параметрах логгирования <emphasis role="bold">log4j</emphasis> выставить группе <emphasis role="bold">com.haulmont.cuba.web.sys</emphasis> уровень <emphasis role="bold">DEBUG</emphasis></para>
+            <para>В параметрах журналирования  <emphasis role="bold">log4j</emphasis> выставите группе <emphasis role="bold">com.haulmont.cuba.web.sys</emphasis> уровень <emphasis role="bold">DEBUG</emphasis></para>
           </listitem>
         </itemizedlist>
         <para><emphasis role="bold">Белый экран в браузере</emphasis></para>
@@ -460,14 +487,14 @@ reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Polic
             <para>Вы используете ненастроенный браузер <application>Firefox</application></para>
           </listitem>
           <listitem>
-            <para>Неверная запись <application>SPN</application> для веб-сервера</para>
+            <para>Неверная запись <application>SPN</application> для Web-сервера</para>
           </listitem>
         </itemizedlist>
         <para><emphasis role="bold">Ошибка 400</emphasis></para>
-        <para>В сервере <application>Tomcat</application> по умолчанию задан максимальный размер заголовков запроса: 8192 байт. Тикет <application>Kerberos</application> для отдельных пользователей может превышать этот размер.</para>
+        <para>В сервере <application>Tomcat</application> по умолчанию задан максимальный размер заголовков запроса: 8192 байт. <link linkend="text_kerberos_ticket_id">Билет</link> <application>Kerberos</application> для отдельных пользователей может превышать этот размер.</para>
         <para>В <filename>server.xml</filename> необходимо установить для <parameter>Connector</parameter> значение <parameter>maxHttpHeaderSize</parameter> в большее значение, 16536 или  32768.</para>
         <warning>
-          <para>Если вы используете <application>NIO Connector</application> и <application>Tomcat 6</application>, то Вы не сможете настроить <parameter>maxHttpHeaderSize</parameter>. 
+          <para>Если Вы используете <application>NIO Connector</application> и <application>Tomcat 6</application>, то Вы не сможете настроить <parameter>maxHttpHeaderSize</parameter>. 
 Решение − перейти на <application>Tomcat 7</application>.</para>
         </warning>
         <para><emphasis role="bold">Неверный SPN</emphasis></para>
@@ -478,30 +505,30 @@ reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Polic
           </listitem>
           <listitem>
             <para>Также <parameter>SPN</parameter> можно редактировать напрямую в <application>Active Directory</application> через <application>LDAP</application> интерфейс, например <application>LDAP Browser</application>.  
-Множество параметров <parameter>servicePrincipalName</parameter> задают записи <application>SPN</application> для аккаунта пользователя. 
+Множество параметров <parameter>servicePrincipalName</parameter> задают записи <application>SPN</application> для учетной записи  пользователя. 
 Параметр <parameter>userPrincipalName</parameter> задает имя пользователя как службы. </para>
           </listitem>
         </itemizedlist>
         <para><emphasis role="bold">Агрессивное кэширование тикетов на клиентских машинах</emphasis></para>
-        <para>Тикеты <application>Kerberos</application> довольно агрессивно кэшируются, это позволяет достигать большей производительности в больших лесах <application>Active Directory</application>. В связи с этим могут возникнуть проблемы при смене <application>SPN</application>, так как все тикеты должны ему соответствовать. </para>
-        <para>В итоге сервер может отвергать тикеты с ошибкой <errorname>Caused by: GSSException: Failure unspecified at GSS-API level (Mechanism level: Checksum failed)</errorname></para>
+        <para><link linkend="text_kerberos_ticket_id">Билеты</link> <application>Kerberos</application> довольно агрессивно кэшируются, это позволяет достигать большей производительности в больших лесах <application>Active Directory</application>. В связи с этим могут возникнуть проблемы при смене <application>SPN</application>, так как все билеты должны ему соответствовать. </para>
+        <para>В итоге сервер может отвергать билеты с ошибкой <errorname>Caused by: GSSException: Failure unspecified at GSS-API level (Mechanism level: Checksum failed)</errorname></para>
         <para>Для сброса кэша <application>Kerberos</application> на клиентской машине следует использовать специальную программу <application>kerbtray.exe</application> из <application>Microsoft Windows Server 2003 Resource Kit Tools</application> (<ulink url="http://www.microsoft.com/en-us/download/details.aspx?id=17657">http://www.microsoft.com/en-us/download/details.aspx?id=17657</ulink>)</para>
-        <para>После запуска программа появляется в трее <application>Windows</application>, для сброса кэша нужно воспользоваться пунктом <guilabel>Purge Tickets</guilabel> в контекстном меню.</para>
+        <para>После запуска программа отображается в трее <application>Windows</application>, для сброса кэша нужно воспользоваться пунктом <guilabel>Purge Tickets</guilabel> в контекстном меню.</para>
         <mediaobject>
           <imageobject>
             <imagedata align="center" fileref="img/KerbTray.png"/>
           </imageobject>
         </mediaobject>
         <para><emphasis role="bold">Клиентская машина высылает тикет, начинающийся с TIRMT</emphasis></para>
-        <para>При ошибке аутентификации в логах остается отметка с уровнем WARN и распечаткой тикета. По нему можно определить тип аутентификации, который использует клиент. </para>
-        <para>Тикеты <application>NTLM</application> начинаются с приставки <emphasis role="bold">TIRMT</emphasis>.</para>
-        <para>Тикеты <application>Kerberos</application> начинаются с приставки <emphasis role="bold">YI</emphasis>.</para>
+        <para>При ошибке аутентификации в журнала сообщений остается отметка с уровнем WARN и распечаткой билета. По нему можно определить тип аутентификации, который использует клиент. </para>
+        <para>Билеты <application>NTLM</application> начинаются с приставки <emphasis role="bold">TIRMT</emphasis>.</para>
+        <para>Билеты <application>Kerberos</application> начинаются с приставки <emphasis role="bold">YI</emphasis>.</para>
         <itemizedlist>
           <listitem>
-            <para>Это значит, что машина не может определить, что для данного доменного имени есть сервис, и высылает тикет <application>NTLM</application> <errorname>Неверно задан SPN</errorname></para>
+            <para>Это значит, что машина не может определить, что для данного доменного имени есть сервис, и высылает билет <application>NTLM</application> <errorname>Неверно задан SPN</errorname></para>
           </listitem>
           <listitem>
-            <para>Машина может быть не введена в домен</para>
+            <para>Рабочая станция может быть не введена в домен</para>
           </listitem>
           <listitem>
             <para>Редакция <application>Windows</application> не позволяет использование корпоративных сетей. Например, <application>Home Premium</application>.</para>
@@ -510,12 +537,12 @@ reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Polic
             <para>Отсутствует соединение с сервером <application>Active Directory</application></para>
           </listitem>
           <listitem>
-            <para>Это нормальное поведение при доступе извне, в таком случае будет выводиться стандартная форма входа в систему.</para>
+            <para>Это нормальное поведение при доступе извне, в таком случае будет выводиться стандартное окно входа в систему.</para>
           </listitem>
         </itemizedlist>
         <para><emphasis role="bold">Используется не Windows клиент</emphasis></para>
-        <para>Для таких клиентских машин автоматический вход не поддерживается. 
-Пользователю будет выведена форма входа приложения, а в переменные сессии будет добавлен параметр <parameter>ADIntegrationSupport</parameter> со значением <parameter>false</parameter>.</para>
+        <para>Для таких клиентских рабочих станций автоматический вход не поддерживается. 
+Пользователю будет выведена стандартное окно входа в приложение, а в переменные сессии будет добавлен параметр <parameter>ADIntegrationSupport</parameter> со значением <parameter>false</parameter>.</para>
       </section>
       <section>
         <title>Дополнительные материалы</title>
@@ -583,15 +610,15 @@ WScript.Quit</programlisting></para>
           <para><prompt>cscript SetComputerPass.vbs CN=JESPA,CN=Computers,DC=haulmont,DC=com</prompt></para>
         </listitem>
         <listitem>
-          <para>Задать параметры доменов в <glossterm linkend="glossary_local_app_properties">local.app.properties</glossterm> в переменной <prompt>cuba.web.activeDirectoryDomains</prompt>. Каждый описатель домена имеет формат <prompt>domain_name|full_domain_name|service_account_name|service_account_password</prompt>. Описатели доменов отделяются друг от друга точкой с запятой. Например:</para>
+          <para>Задать параметры доменов в <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm> в переменной <prompt>cuba.web.activeDirectoryDomains</prompt>. Каждый описатель домена имеет формат <prompt>domain_name|full_domain_name|service_account_name|service_account_password</prompt>. Описатели доменов отделяются друг от друга точкой с запятой. Например:</para>
           <para><prompt>cuba.web.activeDirectoryDomains=HAULMONT|haulmont.com|JESPA$@HAULMONT.COM|password1; TEST|test.com|JESPA$@TEST.COM|password2</prompt></para>
         </listitem>
         <listitem>
-          <para>Задать в <glossterm linkend="glossary_local_app_properties">local.app.properties</glossterm> дополнительные свойства для библиотеки <application>Jespa</application> (<ulink url="http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161">http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161</ulink>).  Например:</para>
+          <para>Задать в <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm> дополнительные свойства для библиотеки <application>Jespa</application> (<ulink url="http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161">http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161</ulink>).  Например:</para>
           <para><prompt>jespa.log.level=3</prompt></para>
         </listitem>
         <listitem>
-          <para>Установить в <glossterm linkend="glossary_local_app_properties">local.app.properties</glossterm> переменную <prompt>cuba.web.useActiveDirectory=true</prompt></para>
+          <para>Установить в <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm> переменную <prompt>cuba.web.useActiveDirectory=true</prompt></para>
         </listitem>
         <listitem>
           <para>Добавить адрес сервера в местную интрасеть в настройках браузера:</para>

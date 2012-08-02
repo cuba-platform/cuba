@@ -19,7 +19,7 @@
         <emphasis role="bold">Главный пакет сообщений</emphasis>
       </glossterm>
       <glossdef>
-        <para><glossterm linkend="glossary_localized_folders_id">Пакет локализованных сообщений</glossterm>, содержащий заголовки пунктов меню, названия кнопок и других элементов интерфейса. Располагается в пакете, определяемым свойством <parameter>cuba.appConfig.messagesPack</parameter> приложения веб-клиента.</para>
+        <para><glossterm linkend="glossary_localized_folders_id">Пакет локализованных сообщений</glossterm>, содержащий заголовки пунктов меню, названия кнопок и других элементов интерфейса. Располагается в пакете, определяемым <glossterm linkend="glossary_app_properties_id">свойством</glossterm> <parameter>cuba.appConfig.messagesPack</parameter> приложения Web-клиента.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -104,6 +104,28 @@ actions.Edit=Edit
   </glossdiv>
   <glossdiv>
     <title>A</title>
+    <glossentry id="glossary_app_tiers">
+      <glossterm>
+        <emphasis role="bold">Application Tiers</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Приложение, основанное на платформе, физически состоит из нескольких уровней (tiers):</para>
+        <itemizedlist>
+          <listitem>
+            <para id="text_middleware_id"><structfield>Middleware</structfield>. Средний слой, содержащий основную бизнес-логику приложения. Представляет собой отдельное Web-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>.</para>
+          </listitem>
+          <listitem>
+            <para id="text_webclient_id"><structfield>Web Client</structfield>. Основной клиентский уровень, как правило, содержащий полнофункциональный интерфейс для Intranet-пользователей. Представляет собой отдельное Web-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Vaadin</application>.</para>
+          </listitem>
+          <listitem>
+            <para id="text_portal_id"><structfield>Web Portal</structfield>. Дополнительный клиентский уровень, содержащий интерфейс для внешних (Internet) пользователей. Может использоваться для интеграции с мобильными устройствами или сторонними приложениями. Представляет собой отдельное Web-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Spring MVC</application>.</para>
+          </listitem>
+          <listitem>
+            <para id="text_desktop_id"><structfield>Desktop Client</structfield>. Дополнительный клиентский уровень, содержащий интерфейс для Intranet-пользователей. Представляет собой десктопное Java-приложение, реализация пользовательского интерфейса основана на фреймворке <application>Java Swing</application>.</para>
+          </listitem>
+        </itemizedlist>
+      </glossdef>
+    </glossentry>
     <glossentry id="glossary_app_properties_id">
       <glossterm>
         <emphasis role="bold">Application Properties</emphasis>
@@ -130,7 +152,7 @@ actions.Edit=Edit
         </formalpara>
         <formalpara>
           <title>Принадлежность уровням</title>
-          <para>Как правило, некоторое свойство принадлежит только одному или нескольким <glossterm linkend="glossary_app_tiers">уровням приложения</glossterm>. Например, <parameter>cuba.persistenceConfig</parameter> имеет смысл только для <glossterm linkend="glossary_app_tiers">Middleware</glossterm>,  <parameter>cuba.web.useLightHeader</parameter> − только для <glossterm linkend="glossary_app_tiers">Web Client</glossterm>, а <parameter>cuba.springContextConfig </parameter>− для всех уровней.</para>
+          <para>Как правило, некоторое свойство принадлежит только одному или нескольким <glossterm linkend="glossary_app_tiers">уровням приложения</glossterm>. Например, <parameter>cuba.persistenceConfig</parameter> имеет смысл только для <glossterm linkend="text_middleware_id">Middleware</glossterm>,  <parameter>cuba.web.useLightHeader</parameter> − только для <glossterm linkend="glossary_app_tiers">Web Client</glossterm>, а <parameter>cuba.springContextConfig </parameter>− для всех уровней.</para>
           <para>Принадлежность к уровню означает, что если Вы хотите задать значение некоторому свойству, это необходимо сделать на всех уровнях, которым данное свойство принадлежит (смотрите <link linkend="glossary_saving_properties">Хранение значений свойств</link>).</para>
           <para>Принадлежность можно выяснить следующими способами:<itemizedlist>
               <listitem>
@@ -140,25 +162,25 @@ actions.Edit=Edit
                 <para>Проследив использование свойства в коде приложения</para>
               </listitem>
               <listitem>
-                <para>Если к свойству есть доступ через Java-интерфейс, то по принадлежности интерфейса модулю проекта. Ниже приведено соответствие модуля объявления интерфейса и принадлежности свойства уровням приложения:</para>
+                <para>Если к свойству есть доступ через Java-интерфейс, то по принадлежности интерфейса модулю проекта. Ниже приведено соответствие модуля объявления интерфейса и принадлежности свойства <glossterm linkend="glossary_app_tiers">уровням приложения</glossterm>:</para>
                 <itemizedlist>
                   <listitem>
-                    <para><structname>global</structname> − свойство принадлежит всем уровням</para>
+                    <para><structname>global</structname> − свойство принадлежит всем <glossterm linkend="glossary_app_tiers">уровням</glossterm></para>
                   </listitem>
                   <listitem>
-                    <para><structname>core</structname> − <structfield>Middleware</structfield></para>
+                    <para><structname>core</structname> − <glossterm>Middleware</glossterm></para>
                   </listitem>
                   <listitem>
-                    <para><structname>client</structname> − <structfield>Web Client</structfield>, <structfield>Web Portal</structfield>, <structfield>Desktop Client</structfield></para>
+                    <para><structname>client</structname> − <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>, <glossterm linkend="text_desktop_id">Desktop Client</glossterm></para>
                   </listitem>
                   <listitem>
-                    <para><structname>web</structname> − <structfield>Web Client</structfield></para>
+                    <para><structname>web</structname> − <glossterm linkend="text_webclient_id">Web Client</glossterm></para>
                   </listitem>
                   <listitem>
-                    <para><structname>web-portal</structname> − <structfield>Web Portal</structfield></para>
+                    <para><structname>web-portal</structname> − <glossterm linkend="text_portal_id">Web Portal</glossterm></para>
                   </listitem>
                   <listitem>
-                    <para><structname>desktop</structname> − <structfield>Desktop Client</structfield></para>
+                    <para><structname>desktop</structname> − <glossterm linkend="text_desktop_id">Desktop Client</glossterm></para>
                   </listitem>
                 </itemizedlist>
               </listitem>
@@ -166,57 +188,35 @@ actions.Edit=Edit
         </formalpara>
         <formalpara>
           <title>JMX-интерфейс</title>
-          <para>Некоторые уровни приложения определяют JMX-интерфейсы для доступа к свойствам приложения. В частности, на уровне <structfield>Middleware</structfield> имеется JMX-интерфейс <classname>ConfigStorageMBean</classname> с именем <classname>app-core.cuba:service=ConfigStorage</classname>, а на уровне <structfield>Web Client</structfield> - <classname>ConfigurationMBean</classname> с именем <classname>app.cuba:service=Configuration</classname>. Методы этих интерфейсов работают по отдельности со свойствами конфигурации и развертывания (<parameter>*AppProperties</parameter>) и со свойствами времени выполнения (<parameter>*DbProperties</parameter>). Это обусловлено различием механизмов <link linkend="glossary_saving_properties">хранения</link> этих категорий свойств.</para>
+          <para>Некоторые <glossterm linkend="glossary_app_tiers">уровни приложения</glossterm> определяют JMX-интерфейсы для доступа к свойствам приложения. В частности, на уровне <glossterm linkend="text_middleware_id">Middleware</glossterm> имеется JMX-интерфейс <classname>ConfigStorageMBean</classname> с именем <classname>app-core.cuba:service=ConfigStorage</classname>, а на уровне <glossterm linkend="text_webclient_id">Web Client</glossterm> − <classname>ConfigurationMBean</classname> с именем <classname>app.cuba:service=Configuration</classname>. Методы этих интерфейсов работают по отдельности со свойствами конфигурации и развертывания (<parameter>*AppProperties</parameter>) и со свойствами времени выполнения (<parameter>*DbProperties</parameter>). Это обусловлено различием механизмов <link linkend="glossary_saving_properties">хранения</link> этих категорий свойств.</para>
         </formalpara>
         <para id="glossary_saving_properties"><emphasis role="bold">Хранение значений свойств</emphasis></para>
         <formalpara id="text_properties_files">
           <title>Файлы свойств</title>
-          <para>Свойства, определяющие конфигурацию и параметры развертывания, задаются в специальных файлах свойств, имеющих имя вида <filename>*-app.properties</filename>. Каждый уровень приложения имеет набор таких файлов, включающий в себя файлы из базовых проектов платформы и файл текущего приложения. Набор файлов свойств различен для разных уровней приложения и определяется следующим образом:</para>
+          <para>Свойства, определяющие конфигурацию и параметры развертывания, задаются в специальных файлах свойств, имеющих имя вида <filename>*-app.properties</filename>. Каждый <glossterm linkend="glossary_app_tiers">уровень приложения</glossterm> имеет набор таких файлов, включающий в себя файлы из базовых проектов платформы и файл текущего приложения. Набор файлов свойств различен для разных уровней приложения и определяется следующим образом:</para>
         </formalpara>
         <itemizedlist>
           <listitem>
-            <para>Для уровней, являющихся веб-приложениями (<structfield>Middleware</structfield>, <structfield>Web Client</structfield>, <structfield>Web Portal</structfield>) набор файлов свойств задается в <filename>web.xml</filename> в параметре <parameter>appPropertiesConfig</parameter>.</para>
+            <para>Для уровней, являющихся Web-приложениями (<glossterm linkend="text_middleware_id">Middleware</glossterm>, <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>) набор файлов свойств задается в <filename>web.xml</filename> в параметре <parameter>appPropertiesConfig</parameter>.</para>
           </listitem>
           <listitem>
-            <para>Для уровня <structfield>Desktop Client</structfield> основной способ задания набора файлов свойств − переопределение в приложении метода <methodname>getDefaultAppPropertiesConfig</methodname> в классе-наследнике <classname>com.haulmont.cuba.desktop.App</classname>).</para>
+            <para>Для уровня <glossterm linkend="text_desktop_id">Desktop Client</glossterm> основной способ задания набора файлов свойств − переопределение в приложении метода <methodname>getDefaultAppPropertiesConfig</methodname> в классе-наследнике <classname>com.haulmont.cuba.desktop.App</classname>.</para>
           </listitem>
         </itemizedlist>
-        <para>Например, набор файлов свойств уровня <structfield>Middleware</structfield> проекта <application>shop</application> выглядит следующим образом:</para>
-        <para><programlisting>classpath:cuba-app.properties
+        <para>Например, набор файлов свойств уровня <glossterm linkend="text_middleware_id">Middleware</glossterm> проекта <application>shop</application> − <filename>web.xml</filename> − выглядит следующим образом:</para>
+        <programlisting>classpath:cuba-app.properties
 classpath:shop-app.properties
-file:${catalina.home}/conf/app-core/local.app.properties</programlisting></para>
+file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
         <para>Здесь префикс <classname>classpath:</classname> означает, что данный файл нужно искать в Java classpath, префикс <classname>file:</classname> − в файловой системе. Возможно использование системных свойств Java, в данном случае это <classname>catalina.home</classname> − путь к корню <application>Tomcat</application>.</para>
         <para>Порядок перечисления файлов важен, так как значения, указанные в каждом последующем файле заменяют значения одноименных свойств, заданные в предыдущих файлах. Этим достигается переопределение свойств платформы в конкретном приложении.</para>
         <para id="glossary_local_properties">Последний файл в приведенном наборе − <filename>local.app.properties</filename>. Подробнее об этом файле можно узнать в определении <link linkend="glossary_local_app_properties_id">Local Application Properies</link>.</para>
         <formalpara>
           <title>Таблица базы данных</title>
-          <para>Параметры времени выполнения хранятся в БД в таблице <database>SYS_CONFIG</database>. Хранящиеся в БД свойства кэшируются на уровне <structfield>Middleware</structfield>. Очистить кэш можно через JMX-интерфейсы <classname>app-core.cuba:service=ConfigStorage</classname> методом <methodname>clearCache</methodname> или <classname>app-core.cuba:service=CachingFacade</classname> методом <methodname>clearConfigStorageCache</methodname>.</para>
+          <para>Параметры времени выполнения хранятся в БД в таблице <database>SYS_CONFIG</database>. Хранящиеся в БД свойства кэшируются на уровне <glossterm linkend="text_middleware_id">Middleware</glossterm>. Очистить кэш можно через JMX-интерфейсы <classname>app-core.cuba:service=ConfigStorage</classname> методом <methodname>clearCache</methodname> или <classname>app-core.cuba:service=CachingFacade</classname> методом <methodname>clearConfigStorageCache</methodname>.</para>
         </formalpara>
         <para><emphasis role="bold">Значения по-умолчанию</emphasis></para>
         <para>Если обращение к свойству производится через Java-интерфейс механизма <glossterm linkend="glossary_conf_parameter_id">Configuration Parameters</glossterm> и если значение свойства не задано в месте его хранения (файлы <filename>*-app.properties</filename> или БД), то будет возвращено значение по умолчанию, если оно задано в аннотации соответствующего метода Java-интерфейса.</para>
         <para>Подробное описание свойств подсистемы безопасности содержится в <link linkend="appendix_security_properties">Приложении А</link>.</para>
-      </glossdef>
-    </glossentry>
-    <glossentry id="glossary_app_tiers">
-      <glossterm>
-        <emphasis role="bold">Application Tiers</emphasis>
-      </glossterm>
-      <glossdef>
-        <para>Приложение, основанное на платформе, физически состоит из нескольких уровней (tiers):</para>
-        <itemizedlist>
-          <listitem>
-            <para><structfield>Middleware</structfield>. Средний слой, содержащий основную бизнес-логику приложения. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>.</para>
-          </listitem>
-          <listitem>
-            <para><structfield>Web Client</structfield>. Основной клиентский уровень, как правило, содержащий полнофункциональный интерфейс для Intranet-пользователей. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Vaadin</application>.</para>
-          </listitem>
-          <listitem>
-            <para><structfield>Web Portal</structfield>. Дополнительный клиентский уровень, содержащий интерфейс для внешних (Internet) пользователей. Может использоваться для интеграции с мобильными устройствами или сторонними приложениями. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Spring MVC</application>.</para>
-          </listitem>
-          <listitem>
-            <para><structfield>Desktop Client</structfield>. Дополнительный клиентский уровень, содержащий интерфейс для Intranet-пользователей. Представляет собой десктопное Java-приложение, реализация пользовательского интерфейса основана на фреймворке <application>Java Swing</application>.</para>
-          </listitem>
-        </itemizedlist>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -249,7 +249,11 @@ file:${catalina.home}/conf/app-core/local.app.properties</programlisting></para>
         <emphasis role="bold">Local Application Properties</emphasis>
       </glossterm>
       <glossdef>
-        <para>Путь к файлу с локальными параметрами приложения  <filename>local.app.properties</filename> задается в <link linkend="text_properties_files">специальном файле</link>. <filename>local.app.properties</filename> служит для переопределения свойств приложения при развертывании. Если этого файла нет, он игнорируется. Если же во время инсталляции системы требуется переопределение некоторых параметров (как правило, различных URL), создайте этот файл и поместите в него переопределяемые свойства. При последующих обновлениях системы такой файл с локальными настройками легко сохранить. </para>
+        <para>Файл, в котором задаются или переопределяются <glossterm linkend="glossary_app_properties_id">свойства приложения</glossterm> при развертывании. Путь к этому файлу    указывается в <filename>web.xml</filename> соответствующего <glossterm linkend="glossary_app_tiers">уровня приложения</glossterm>. </para>
+        <programlisting>classpath:cuba-app.properties
+classpath:shop-app.properties
+file:${catalina.home}/conf/app-core/local.app.properties</programlisting>
+        <para>Если  во время инсталляции системы требуется переопределение некоторых параметров (как правило, различных URL), создайте этот файл и поместите в него переопределяемые свойства. При последующих обновлениях системы такой файл с локальными настройками легко сохранить. </para>
       </glossdef>
     </glossentry>
   </glossdiv>

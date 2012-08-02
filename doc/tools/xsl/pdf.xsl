@@ -11,6 +11,11 @@
 	<xsl:param name="ulink.hyphenate.chars">/&amp;?</xsl:param>
 	<xsl:param name="ulink.hyphenate">&#xAD;</xsl:param>
 	
+	<xsl:param name="section.autolabel">1</xsl:param>
+    <xsl:param name="section.label.includes.component.label">8</xsl:param>
+	<xsl:param name="section.autolabel.max.depth">2</xsl:param> 
+	<xsl:param name="formal.title.placement">figure after</xsl:param>
+	
     <!-- Use custom <head> content, to include stylesheets and bookmarks -->
 	
     <xsl:template name="output.html.stylesheets">
@@ -71,4 +76,9 @@
 		<xsl:attribute name="space-after.optimum">1em</xsl:attribute>
 		<xsl:attribute name="space-after.maximum">2em</xsl:attribute>
 	</xsl:attribute-set>
+	
+	<!--  Number figures continuosly through the book--> 
+	<xsl:template match="figure" mode="label.markup">
+	<xsl:number format="1" from="book" level="any" /> 
+	</xsl:template>
 </xsl:stylesheet>
