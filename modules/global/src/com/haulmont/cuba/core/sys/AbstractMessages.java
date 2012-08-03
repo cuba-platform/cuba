@@ -291,17 +291,18 @@ public abstract class AbstractMessages implements Messages {
                 stream = getClass().getResourceAsStream(name);
                 if (stream == null) {
                     log.warn("Included messages pack not found: " + pack);
-
                 }
             }
-            InputStreamReader reader = new InputStreamReader(stream, ENCODING);
-            Properties properties = new Properties();
-            properties.load(reader);
-            list.add(properties);
+            if (stream != null) {
+                Properties properties = new Properties();
+                InputStreamReader reader = new InputStreamReader(stream, ENCODING);
+                properties.load(reader);
+                list.add(properties);
 
-            for (String k : properties.stringPropertyNames()) {
-                if (k.equals("@include"))
-                    getAllIncludes(list, properties.getProperty(k), locale, defaultLocale);
+                for (String k : properties.stringPropertyNames()) {
+                    if (k.equals("@include"))
+                        getAllIncludes(list, properties.getProperty(k), locale, defaultLocale);
+                }
             }
 
         } catch (IOException e) {
