@@ -1006,6 +1006,13 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         component.requestRepaintAll();
     }
 
+    @Override
+    public void selectAll() {
+        if (isMultiSelect()) {
+            component.setValue(component.getItemIds());
+        }
+    }
+
     protected Map<Object, Object> __aggregate(AggregationContainer container, AggregationContainer.Context context) {
         final List<AggregationInfo> aggregationInfos =
                 new LinkedList<AggregationInfo>();

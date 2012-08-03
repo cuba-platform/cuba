@@ -725,6 +725,14 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     @Override
+    public void selectAll() {
+        if (isMultiSelect()) {
+            if (impl.getRowCount() > 0)
+                impl.setRowSelectionInterval(0, impl.getModel().getRowCount() - 1);
+        }
+    }
+
+    @Override
     public RowsCount getRowsCount() {
         return rowsCount;
     }

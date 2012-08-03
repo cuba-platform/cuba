@@ -58,6 +58,8 @@ public interface Table
 
     void sortBy(Object propertyId, boolean ascending);
 
+    void selectAll();
+
     RowsCount getRowsCount();
     void setRowsCount(RowsCount rowsCount);
 
