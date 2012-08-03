@@ -15,21 +15,21 @@ import java.util.List;
 /**
  * Backround task for execute in {@link BackgroundWorker}
  * <p>
- * <b>It is strongly recommended to be able to interrupt working thread, <br/>
- * don't ignore {@link InterruptedException} or its ancestors</b>
+ * <b>It is strongly recommended to be able to interrupt working thread. <br/>
+ * Don't ignore {@link InterruptedException} or its ancestors.</b>
  * </p>
- * <p>$Id$</p>
  *
  * @param <T> measure unit which shows progress of task
  * @param <V> result type
  * @author artamonov
+ * @version $Id$
  */
 public abstract class BackgroundTask<T, V> {
 
     private ProgressHandler<T> progressHandler;
     private Window ownerWindow;
 
-    private List<ProgressListener<T,V>> progressListeners = new LinkedList<ProgressListener<T,V>>();
+    private List<ProgressListener<T, V>> progressListeners = new LinkedList<ProgressListener<T, V>>();
 
     private volatile boolean isInterrupted = false;
 
@@ -42,12 +42,14 @@ public abstract class BackgroundTask<T, V> {
 
     /**
      * Main tasks method
+     *
      * @return Result
      */
     public abstract V run();
 
     /**
      * Task completed handler
+     *
      * @param result of execution
      */
     public void done(V result) {
@@ -56,19 +58,30 @@ public abstract class BackgroundTask<T, V> {
     /**
      * Task canceled handler
      */
-    public void canceled(){
+    public void canceled() {
+    }
+
+    /**
+     * Handle exception
+     *
+     * @param ex Exception
+     */
+    public void handleException(Exception ex) {
     }
 
     /**
      * Publish changes from working thread
+     *
      * @param changes Changes
      */
-    public final void publish(T ... changes) {
+    @SafeVarargs
+    public final void publish(T... changes) {
         progressHandler.handleProgress(changes);
     }
 
     /**
      * On progress change
+     *
      * @param changes Changes list
      */
     public void progress(List<T> changes) {
@@ -99,7 +112,7 @@ public abstract class BackgroundTask<T, V> {
             progressListeners.add(progressListener);
     }
 
-    public List<ProgressListener<T,V>> getProgressListeners() {
+    public List<ProgressListener<T, V>> getProgressListeners() {
         return Collections.unmodifiableList(progressListeners);
     }
 
@@ -109,18 +122,21 @@ public abstract class BackgroundTask<T, V> {
 
     /**
      * Listener for task life cycle
+     *
      * @param <T> Progress unit
      * @param <V> Result
      */
     public interface ProgressListener<T, V> {
         /**
          * On task progress changed
+         *
          * @param changes Progress units
          */
         void onProgress(List<T> changes);
 
         /**
          * On task completed
+         *
          * @param result Result
          */
         void onDone(V result);

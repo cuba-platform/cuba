@@ -7,9 +7,8 @@
 package com.haulmont.cuba.gui.executors;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public interface WatchDog {
 

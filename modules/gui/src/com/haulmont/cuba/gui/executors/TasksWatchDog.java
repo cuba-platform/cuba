@@ -16,16 +16,16 @@ import java.util.Set;
 
 /**
  * WatchDog for BackgroundWorker
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 public class TasksWatchDog implements WatchDog {
 
     private final Set<BackgroundWorker.TaskHandler> watches;
 
     public TasksWatchDog() {
-        watches = new LinkedHashSet<BackgroundWorker.TaskHandler>();
+        watches = new LinkedHashSet<>();
     }
 
     /**
@@ -39,7 +39,7 @@ public class TasksWatchDog implements WatchDog {
         synchronized (watches) {
             long actual = TimeProvider.currentTimestamp().getTime();
 
-            List<BackgroundWorker.TaskHandler> forRemove = new LinkedList<BackgroundWorker.TaskHandler>();
+            List<BackgroundWorker.TaskHandler> forRemove = new LinkedList<>();
             for (BackgroundWorker.TaskHandler task : watches) {
                 if (task.isCancelled() || task.isDone()) {
                     forRemove.add(task);
@@ -71,6 +71,7 @@ public class TasksWatchDog implements WatchDog {
 
     /**
      * {@inheritDoc}
+     *
      * @param backroundTask Task handler
      */
     @Override

@@ -88,13 +88,13 @@ public class WebBackgroundWorker implements BackgroundWorker {
         final WebTimerListener webTimerListener = new WebTimerListener(pingTimer);
 
         // create task executor
-        final WebTaskExecutor<T, V> taskExecutor = new WebTaskExecutor<T, V>(appInstance, task, webTimerListener);
+        final WebTaskExecutor<T, V> taskExecutor = new WebTaskExecutor<>(appInstance, task, webTimerListener);
 
         // add thread to taskSet
         appInstance.addBackgroundTask(taskExecutor);
 
         // create task handler
-        final TaskHandler<T, V> taskHandler = new TaskHandler<T, V>(taskExecutor, watchDog);
+        final TaskHandler<T, V> taskHandler = new TaskHandler<>(taskExecutor, watchDog);
 
         // add timer to AppWindow for UI ping
         Timer.TimerListener timerListener = new Timer.TimerListener() {
@@ -108,7 +108,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 }
 
                 // handle intents
-                if (!taskHandler.isCancelled()) {
+                if (!taskExecutor.isCancelled()) {
                     long newIntent = taskExecutor.getIntentVersion();
                     if (intentVersion != newIntent) {
                         intentVersion = newIntent;
@@ -117,11 +117,11 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 }
 
                 // if completed
-                if (taskHandler.isDone()) {
+                if (taskExecutor.isDone()) {
                     taskExecutor.handleDone();
                 }
 
-                if (!taskHandler.isAlive()) {
+                if (!taskExecutor.isAlive()) {
                     webTimerListener.stopListen();
                 }
             }
@@ -162,8 +162,10 @@ public class WebBackgroundWorker implements BackgroundWorker {
         private final List<T> intents = Collections.synchronizedList(new LinkedList<T>());
 
         private SecurityContext securityContext;
-        private V result = null;
-        protected UUID userId;
+        private UUID userId;
+
+        private volatile V result = null;
+        private volatile Exception taskException = null;
 
         private WebTaskExecutor(App app, BackgroundTask<T, V> runnableTask,
                                 WebTimerListener webTimerListener) {
@@ -177,7 +179,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
-        public void run() {
+        public final void run() {
             // Set security permissions
             AppContext.setSecurityContext(securityContext);
 
@@ -187,7 +189,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
             try {
                 result = runnableTask.run();
             } catch (Exception ex) {
-                log.error("Internal background task error", ex);
+                this.taskException = ex;
             } finally {
                 this.result = result;
                 // Is done
@@ -200,8 +202,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
             }
         }
 
+        @SafeVarargs
         @Override
-        public void handleProgress(T... changes) {
+        public final void handleProgress(T... changes) {
             synchronized (intents) {
                 intentVersion++;
                 intents.addAll(Arrays.asList(changes));
@@ -209,7 +212,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
-        public boolean cancelExecution(boolean mayInterruptIfRunning) {
+        public final boolean cancelExecution(boolean mayInterruptIfRunning) {
             boolean canceled = super.isAlive();
 
             runnableTask.setInterrupted(true);
@@ -243,7 +246,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
-        public V getResult() {
+        public final V getResult() {
             try {
                 if (this.isAlive()) {
                     this.join();
@@ -259,12 +262,12 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
-        public BackgroundTask<T, V> getTask() {
+        public final BackgroundTask<T, V> getTask() {
             return runnableTask;
         }
 
         @Override
-        public void startExecution() {
+        public final void startExecution() {
             // Run timer listener
             webTimerListener.startListen();
 
@@ -273,35 +276,35 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
-        public boolean isCancelled() {
+        public final boolean isCancelled() {
             return canceled;
         }
 
         @Override
-        public boolean isDone() {
+        public final boolean isDone() {
             return done;
         }
 
         @Override
-        public boolean inProgress() {
+        public final boolean inProgress() {
             return !closed;
         }
 
         @Override
-        public void setFinalizer(Runnable finalizer) {
+        public final void setFinalizer(Runnable finalizer) {
             this.finalizer = finalizer;
         }
 
         @Override
-        public Runnable getFinalizer() {
+        public final Runnable getFinalizer() {
             return finalizer;
         }
 
-        public long getIntentVersion() {
+        public final long getIntentVersion() {
             return intentVersion;
         }
 
-        public void handleIntents() {
+        public final void handleIntents() {
             try {
                 synchronized (intents) {
                     runnableTask.progress(intents);
@@ -311,11 +314,11 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     }
                 }
             } catch (Exception ex) {
-                log.error("Internal background task error", ex);
+                runnableTask.handleException(taskException);
             }
         }
 
-        public void handleDone() {
+        public final void handleDone() {
             if (this.closed)
                 return;
 
@@ -323,13 +326,18 @@ public class WebBackgroundWorker implements BackgroundWorker {
             this.closed = true;
 
             try {
-                runnableTask.done(result);
-                // notify listeners
-                for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
-                    listener.onDone(result);
-                }
-            } catch (Exception ex) {
-                log.error("Internal background task error", ex);
+                if (taskException == null) {
+                    try {
+                        runnableTask.done(result);
+                        // notify listeners
+                        for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
+                            listener.onDone(result);
+                        }
+                    } catch (Exception ex) {
+                        runnableTask.handleException(ex);
+                    }
+                } else
+                    runnableTask.handleException(taskException);
             } finally {
                 if (finalizer != null) {
                     finalizer.run();

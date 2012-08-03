@@ -7,15 +7,16 @@
 package com.haulmont.cuba.gui.executors;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public interface ProgressHandler<T> {
 
     /**
      * Handle changes from working thread
+     *
      * @param changes Changes
      */
-    void handleProgress(T ... changes);
+    @SuppressWarnings({"unchecked"})
+    void handleProgress(T... changes);
 }

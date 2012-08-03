@@ -20,10 +20,10 @@ import java.util.concurrent.TimeUnit;
 import static com.google.common.base.Preconditions.checkState;
 
 /**
- * Task executor service
- * <p>$Id$</p>
+ * Task executor service for GUI layer
  *
  * @author artamonov
+ * @version $Id$
  */
 public interface BackgroundWorker {
     String NAME = "cuba_BackgroundWorker";
@@ -40,6 +40,7 @@ public interface BackgroundWorker {
     /**
      * Task runner
      */
+    @SuppressWarnings("unused")
     interface TaskExecutor<T, V> extends ProgressHandler<T> {
 
         void startExecution();
@@ -77,7 +78,6 @@ public interface BackgroundWorker {
         private WatchDog watchDog;
 
         private volatile boolean started = false;
-        private boolean hangup = false;
 
         private long timeout = 0;
         private TimeUnit timeUnit;
@@ -123,7 +123,7 @@ public interface BackgroundWorker {
         }
 
         @Override
-        public void execute(long timeout, TimeUnit unit) {
+        public final void execute(long timeout, TimeUnit unit) {
             checkState(!started, "Task is already started");
             checkState(timeout >= 0, "Timeout cannot be zero or less than zero");
 
@@ -143,7 +143,7 @@ public interface BackgroundWorker {
         }
 
         @Override
-        public boolean cancel(boolean mayInterruptIfRunning) {
+        public final boolean cancel(boolean mayInterruptIfRunning) {
             checkState(started, "Task is not running");
 
             boolean canceled = false;
@@ -177,10 +177,11 @@ public interface BackgroundWorker {
         /**
          * Join task thread to current <br/>
          * <b>Attention!</b> Call this method only from synchronous gui action
+         *
          * @return Task result
          */
         @Override
-        public V getResult() {
+        public final V getResult() {
             checkState(started, "Task is not running");
 
             return taskExecutor.getResult();
@@ -189,7 +190,7 @@ public interface BackgroundWorker {
         /**
          * Cancel without events for tasks
          */
-        public void close() {
+        public final void close() {
             if (AppContext.isStarted()) {
                 UUID userId = getUserSession().getId();
                 Window ownerWindow = getTask().getOwnerWindow();
@@ -207,25 +208,25 @@ public interface BackgroundWorker {
         }
 
         @Override
-        public boolean isDone() {
+        public final boolean isDone() {
             return taskExecutor.isDone();
         }
 
         @Override
-        public boolean isCancelled() {
+        public final boolean isCancelled() {
             return taskExecutor.isCancelled();
         }
 
         @Override
-        public boolean isAlive() {
+        public final boolean isAlive() {
             return taskExecutor.inProgress() && started;
         }
 
-        public BackgroundTask<T, V> getTask() {
+        public final BackgroundTask<T, V> getTask() {
             return taskExecutor.getTask();
         }
 
-        public UserSession getUserSession() {
+        public final UserSession getUserSession() {
             return userSession;
         }
 
@@ -235,19 +236,10 @@ public interface BackgroundWorker {
          * @param time Actual time
          * @return Hangup flag
          */
-        public boolean checkHangup(long time) {
+        public final boolean checkHangup(long time) {
             if (isDone() || isCancelled())
                 return false;
-            if (timeout <= 0)
-                return false;
-            else {
-                hangup = (time - startTimeStamp) > timeoutMillis;
-                return hangup;
-            }
-        }
-
-        public boolean isHangup() {
-            return hangup;
+            return timeout > 0 && (time - startTimeStamp) > timeoutMillis;
         }
     }
 }

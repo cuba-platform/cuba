@@ -23,9 +23,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Desktop implementation of {@link BackgroundWorker}
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 public class DesktopBackgroundWorker implements BackgroundWorker {
 
@@ -42,9 +42,9 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         checkNotNull(task);
 
         // create task handler
-        TaskExecutor<T, V> taskExecutor = new DesktopTaskExecutor<T, V>(task);
+        TaskExecutor<T, V> taskExecutor = new DesktopTaskExecutor<>(task);
 
-        return new TaskHandler<T, V>(taskExecutor, watchDog);
+        return new TaskHandler<>(taskExecutor, watchDog);
     }
 
     /**
@@ -54,7 +54,9 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         private BackgroundTask<T, V> runnableTask;
         private Runnable finalizer;
-        private V result;
+
+        private volatile V result;
+        private volatile Exception taskException = null;
 
         private UUID userId;
 
@@ -67,18 +69,18 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
-        protected V doInBackground() throws Exception {
+        protected final V doInBackground() throws Exception {
             runnableTask.setInterrupted(false);
             try {
                 result = runnableTask.run();
             } catch (Exception ex) {
-                log.error("Internal background task error", ex);
+                taskException = ex;
             }
             return result;
         }
 
         @Override
-        protected void process(List<T> chunks) {
+        protected final void process(List<T> chunks) {
             try {
                 runnableTask.progress(chunks);
                 // Notify listeners
@@ -86,24 +88,30 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                     listener.onProgress(chunks);
                 }
             } catch (Exception ex) {
-                log.error("Internal background task error", ex);
+                runnableTask.handleException(ex);
             }
         }
 
         @Override
-        protected void done() {
+        protected final void done() {
             if (isClosed)
                 return;
 
             if (!runnableTask.isInterrupted()) {
                 try {
-                    runnableTask.done(result);
-                    // Notify listeners
-                    for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
-                        listener.onDone(result);
+                    if (this.taskException == null) {
+                        try {
+                            runnableTask.done(result);
+                            // Notify listeners
+                            for (BackgroundTask.ProgressListener<T, V> listener : runnableTask.getProgressListeners()) {
+                                listener.onDone(result);
+                            }
+                        } catch (Exception ex) {
+                            runnableTask.handleException(ex);
+                        }
+                    } else {
+                        runnableTask.handleException(taskException);
                     }
-                } catch (Exception ex) {
-                    log.error("Internal background task error", ex);
                 } finally {
                     if (finalizer != null) {
                         finalizer.run();
@@ -116,12 +124,12 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
-        public void startExecution() {
+        public final void startExecution() {
             execute();
         }
 
         @Override
-        public boolean cancelExecution(boolean mayInterruptIfRunning) {
+        public final boolean cancelExecution(boolean mayInterruptIfRunning) {
             if (isClosed)
                 return false;
 
@@ -136,41 +144,40 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
-        public V getResult() {
+        public final V getResult() {
             V result;
             try {
                 result = get();
                 this.done();
-            } catch (InterruptedException e) {
-                return null;
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 return null;
             }
             return result;
         }
 
         @Override
-        public BackgroundTask<T, V> getTask() {
+        public final BackgroundTask<T, V> getTask() {
             return runnableTask;
         }
 
         @Override
-        public boolean inProgress() {
+        public final boolean inProgress() {
             return !isClosed;
         }
 
         @Override
-        public void setFinalizer(Runnable finalizer) {
+        public final void setFinalizer(Runnable finalizer) {
             this.finalizer = finalizer;
         }
 
         @Override
-        public Runnable getFinalizer() {
+        public final Runnable getFinalizer() {
             return finalizer;
         }
 
+        @SafeVarargs
         @Override
-        public void handleProgress(T... changes) {
+        public final void handleProgress(T... changes) {
             publish(changes);
         }
     }

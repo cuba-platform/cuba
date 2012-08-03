@@ -11,10 +11,10 @@ import com.haulmont.cuba.gui.AppConfig;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
+@SuppressWarnings("unused")
 public class BackgroundTaskWrapper<T, V> {
 
     private BackgroundTask<T, V> task;
