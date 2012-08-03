@@ -475,13 +475,6 @@ task transformSecurity(type: TransformDocbook) {
     classpath = configurations.buildDoc
 }
 
-task transformPlatform(type: TransformDocbook) {
-    sourceDir = new File(docSrcDir, 'platform/ru')
-    sourceFile = new File(sourceDir, 'platform.xml')
-    destFile = new File(docTmpDir, 'platform/ru/platform.xml')
-    classpath = configurations.buildDoc
-}
-
 task buildManualHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     source transformManual.destFile
     destDir = new File(docDstDir, 'manual/ru/html')
@@ -508,21 +501,6 @@ task buildSecurityHtml(type: Docbook2Xhtml, dependsOn: transformSecurity) {
     }
 }
 
-task buildPlatformXhtml(type: Docbook2Xhtml, dependsOn: transformPlatform) {
-    source transformPlatform.destFile
-    destFile = new File(docTmpDir, 'platform/ru/html')
-    stylesheetName = 'html.xsl'
-    resources = fileTree {
-        from new File(docSrcDir, 'platform/ru')
-        include 'img/*.png'
-        include 'img/*.jpg'
-    }
-    resources += fileTree {
-        from docCssDir
-        include '*.css'
-    }
-}
-
 task buildManualSingleHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     source transformManual.destFile
     destFile = new File(docDstDir, 'manual/ru/html-single/manual.html')
@@ -532,21 +510,6 @@ task buildManualSingleHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
         include 'img/**/*.jpg'
     }
     resources += fileTree(docCssDir) {
-        include '*.css'
-    }
-}
-
-task buildPlatformSingleHtml(type: Docbook2Xhtml, dependsOn: transformPlatform) {
-    source transformPlatform.destFile
-    destFile = new File(docDstDir, 'platform/ru/html-single/platform.html')
-    stylesheetName = 'html-single.xsl'
-    resources = fileTree {
-        from new File(docSrcDir, 'platform/ru')
-        include 'img/**/*.png'
-        include 'img/**/*.jpg'
-    }
-    resources += fileTree {
-        from docCssDir
         include '*.css'
     }
 }
@@ -566,7 +529,7 @@ task buildSecuritySingleHtml(type: Docbook2Xhtml, dependsOn: transformSecurity) 
 
 task buildDoc(type: Zip, description: 'Build documentation',
         //dependsOn: [buildPlatformSingleHtml]) {
-        dependsOn: [buildManualSingleHtml,buildPlatformSingleHtml,buildSecuritySingleHtml]) {
+        dependsOn: [buildManualSingleHtml,buildSecuritySingleHtml]) {
     from 'build/doc'
     destinationDir = file('build/distributions')
     baseName = 'cuba-doc'
