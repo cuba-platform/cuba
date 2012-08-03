@@ -317,25 +317,9 @@ p {
 }
 
 .literal{
-    color: #303000;
 	font-family: 'Courier New', Courier, monospace;
 }
 
-.filename {
-	color: #1b3914;
-}
-
-.structname {
-	color: #3b1245;
-}
-
-.varname {
-	color: #101b45;
-}
-
-.package {
-	color: #141f4e;
-}
 
 .informaltable {
     page-break-inside: avoid;

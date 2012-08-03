@@ -346,28 +346,11 @@ pre {
 }
 
 .literal{
-    color: #808000;
 	font-family: 'Courier New', Courier, monospace;
-}
-
-.filename {
-	color: #4a9935;
-}
-
-.structname {
-	color: #9f32ba;
-}
-
-.structfield {
-	color: #ba304c;
 }
 
 .productname {
 	font-weight: bold;
-}
-
-.package {
-	color: #3654d1;
 }
 
 .guimenu, .guimenuitem, .guisubmenu,
@@ -527,7 +510,6 @@ pre {
 
 .varname {
 	font-family:  'Courier New', Courier, monospace;
-	color: #640e78;
 }
 
 .database {

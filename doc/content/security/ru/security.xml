@@ -3,9 +3,9 @@
   <bookinfo>
     <copyright>
       <year>2012</year>
-      <holder>Haulmont (<ulink url="www.haulmont.ru">www.haulmont.ru</ulink>)</holder>
+      <holder>Haulmont (<ulink url="http://www.haulmont.ru/">www.haulmont.ru</ulink>)</holder>
     </copyright>
-    <title>Руководство по подсистеме безопасности платформы <trademark>CUBA</trademark></title>
+    <title>Платформа <trademark>CUBA</trademark>. Подсистема безопасности</title>
   </bookinfo>
   <preface lang="ru">
     <title>Предисловие</title>
@@ -44,8 +44,8 @@
         <title>Типографские соглашения</title>
         <para>Далее приводятся примеры выделенных слов и пояснения, в каких случаях используется то или иное оформление.</para>
         <formalpara>
-          <title>Переменные среды, команды, имена классов, интерфейсов, объектов, методов, переменных, тексты ошибок</title>
-          <para>Обозначены в Руководстве <classname>специальным моноширинным шрифтом</classname>.</para>
+          <title>Переменные среды, команды, имена объектов Java, тексты ошибок, имена файлов, пакетов</title>
+          <para>Обозначены в Руководстве <classname>моноширинным шрифтом</classname>.</para>
         </formalpara>
         <formalpara>
           <title>Элементы интерфейса</title>
@@ -54,22 +54,6 @@
         <formalpara>
           <title>Имена приложений, объекты базы данных, названия внешних документов</title>
           <para>Обозначаются в тексте Руководства <emphasis role="bold">полужирным текстом</emphasis>.</para>
-        </formalpara>
-        <formalpara>
-          <title>Имена файлов, каталогов, папок и расширений</title>
-          <para>Обозначены в Руководстве следующим образом: <filename>C:\Program Files (x86)</filename>.</para>
-        </formalpara>
-        <formalpara>
-          <title>Имя пакета</title>
-          <para>Для имени пакета используется следующее обозначение: <package>com.haulmont.fts.core.app</package>.</para>
-        </formalpara>
-        <formalpara>
-          <title>Имя модуля</title>
-          <para>Имя модуля обозначается в тексте следующим образом: <structname>модуль</structname>.</para>
-        </formalpara>
-        <formalpara>
-          <title>Имя уровня</title>
-          <para>Имя уровня обозначается в тексте следующим образом: <structfield>уровень</structfield>.</para>
         </formalpara>
         <formalpara>
           <title>Параметры и свойства</title>

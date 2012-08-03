@@ -475,6 +475,27 @@ task transformSecurity(type: TransformDocbook) {
     classpath = configurations.buildDoc
 }
 
+task buildSecurityXhtml(type: Docbook2Xhtml, dependsOn: transformSecurity) {
+    source transformSecurity.destFile
+    destFile = new File(docTmpDir, 'security-pdf/security-pdf.html')
+    stylesheetName = 'pdf.xsl'
+    resources = fileTree(new File(docSrcDir, 'security/ru')) {
+        include 'img/*.png'
+        include 'img/*.jpg'
+    }
+    resources += fileTree(docCssDir) {
+        include '*.css'
+    }
+}
+
+task buildSecurityPdf(type: Xhtml2Pdf, dependsOn: buildSecurityXhtml) {
+    inputs.dir docCssDir
+    sourceFile = buildSecurityXhtml.destFile
+    destFile = new File(docDstDir, 'security/ru/pdf/security.pdf')
+    classpath = configurations.buildDoc
+    fonts = zipTree(configurations.docFonts.singleFile)
+}
+
 task buildManualHtml(type: Docbook2Xhtml, dependsOn: transformManual) {
     source transformManual.destFile
     destDir = new File(docDstDir, 'manual/ru/html')
@@ -529,7 +550,7 @@ task buildSecuritySingleHtml(type: Docbook2Xhtml, dependsOn: transformSecurity) 
 
 task buildDoc(type: Zip, description: 'Build documentation',
         //dependsOn: [buildPlatformSingleHtml]) {
-        dependsOn: [buildManualSingleHtml,buildSecuritySingleHtml]) {
+        dependsOn: [buildManualSingleHtml,buildSecuritySingleHtml,buildSecurityPdf]) {
     from 'build/doc'
     destinationDir = file('build/distributions')
     baseName = 'cuba-doc'
