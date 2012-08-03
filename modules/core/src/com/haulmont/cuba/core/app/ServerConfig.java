@@ -108,4 +108,11 @@ public interface ServerConfig extends Config {
     @DefaultBoolean(false)
     boolean getInMemoryDistinct();
     void setInMemoryDistinct(boolean value);
+
+    /**
+     * @return Default database query timeout in seconds. If 0, middleware doesn't apply any timeout to queries.
+     */
+    @Property("cuba.defaultQueryTimeoutSec")
+    int getDefaultQueryTimeoutSec();
+    void setDefaultQueryTimeoutSec(int timeout);
 }

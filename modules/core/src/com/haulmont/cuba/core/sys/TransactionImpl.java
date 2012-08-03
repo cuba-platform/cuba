@@ -6,6 +6,7 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.TransactionParams;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -23,7 +24,9 @@ public class TransactionImpl implements Transaction {
     private TransactionStatus ts;
     private boolean committed;
 
-    public TransactionImpl(PlatformTransactionManager transactionManager, PersistenceImpl persistence, boolean join) {
+    public TransactionImpl(PlatformTransactionManager transactionManager, PersistenceImpl persistence, boolean join,
+                           TransactionParams params)
+    {
         this.tm = transactionManager;
 
         DefaultTransactionDefinition td = new DefaultTransactionDefinition();
@@ -31,6 +34,11 @@ public class TransactionImpl implements Transaction {
             td.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
         else
             td.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+
+        if (params != null) {
+            if (params.getTimeout() != 0)
+                td.setTimeout(params.getTimeout());
+        }
 
         ts = tm.getTransaction(td);
 

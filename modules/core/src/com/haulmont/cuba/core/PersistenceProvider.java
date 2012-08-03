@@ -48,6 +48,16 @@ public abstract class PersistenceProvider {
      *
      * @return new transaction
      */
+    public static Transaction createTransaction(TransactionParams parameters) {
+        return getPersistence().createTransaction(parameters);
+    }
+
+    /**
+     * Creates a new transaction.<br>
+     * If there is an active transaction, it will be suspended.
+     *
+     * @return new transaction
+     */
     public static Transaction createTransaction() {
         return getPersistence().createTransaction();
     }

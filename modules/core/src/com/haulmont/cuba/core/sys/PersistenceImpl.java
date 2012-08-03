@@ -10,6 +10,7 @@ import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
+import com.haulmont.cuba.core.TransactionParams;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.EntityLifecycleListener;
@@ -103,13 +104,18 @@ public class PersistenceImpl implements Persistence {
     }
 
     @Override
+    public Transaction createTransaction(TransactionParams params) {
+        return new TransactionImpl(transactionManager, this, false, params);
+    }
+
+    @Override
     public Transaction createTransaction() {
-        return new TransactionImpl(transactionManager, this, false);
+        return new TransactionImpl(transactionManager, this, false, null);
     }
 
     @Override
     public Transaction getTransaction() {
-        return new TransactionImpl(transactionManager, this, true);
+        return new TransactionImpl(transactionManager, this, true, null);
     }
 
     @Override

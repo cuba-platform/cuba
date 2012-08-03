@@ -8,7 +8,6 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DbDialect;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.EntityManagerContext;
 
 import javax.annotation.Nonnull;
@@ -38,13 +37,22 @@ public interface Persistence {
      * Creates a new transaction.<br>
      * If there is an active transaction, it will be suspended.
      *
+     * @param params    new transaction parameters
+     * @return new transaction
+     */
+    Transaction createTransaction(TransactionParams params);
+
+    /**
+     * Creates a new transaction.<br>
+     * If there is an active transaction, it will be suspended.
+     *
      * @return new transaction
      */
     Transaction createTransaction();
 
     /**
-     * Creates a new JTA transaction if there is no one at the moment.<br>
-     * If a JTA transaction exists, does nothing: subsequent invocations
+     * Creates a new transaction if there is no one at the moment.<br>
+     * If a transaction exists, does nothing: subsequent invocations
      * of commit() and end() do not affect the transaction.
      *
      * @return new or existing transaction

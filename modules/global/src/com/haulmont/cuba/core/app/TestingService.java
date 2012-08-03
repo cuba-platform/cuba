@@ -21,6 +21,12 @@ public interface TestingService {
 
     String executeFor(int timeMillis);
 
+    // Works in unit test mode only
+    String executeUpdateSql(String sql);
+
+    // Works in unit test mode only
+    String executeSelectSql(String sql);
+
     String execute();
 
     boolean primitiveParameters(boolean b, int i, long l, double d);

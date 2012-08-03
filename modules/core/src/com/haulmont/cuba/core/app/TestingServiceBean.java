@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.Transaction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 
@@ -40,6 +41,34 @@ public class TestingServiceBean implements TestingService {
             throw new RuntimeException(e);
         }
         log.debug("executeFor " + timeMillis + " finished");
+        return "Done";
+    }
+
+    @Override
+    @Transactional(timeout = 2)
+    public String executeUpdateSql(String sql) {
+        if (!Boolean.valueOf(System.getProperty("cuba.unitTestMode")))
+            return "Not in test mode";
+
+        log.info("started: " + sql);
+        EntityManager em = persistence.getEntityManager();
+        Query query = em.createNativeQuery(sql);
+        query.executeUpdate();
+        log.info("finished: " + sql);
+        return "Done";
+    }
+
+    @Override
+    @Transactional(timeout = 2)
+    public String executeSelectSql(String sql) {
+        if (!Boolean.valueOf(System.getProperty("cuba.unitTestMode")))
+            return "Not in test mode";
+
+        log.info("started: " + sql);
+        EntityManager em = persistence.getEntityManager();
+        Query query = em.createNativeQuery(sql);
+        query.getResultList();
+        log.info("finished: " + sql);
         return "Done";
     }
 
