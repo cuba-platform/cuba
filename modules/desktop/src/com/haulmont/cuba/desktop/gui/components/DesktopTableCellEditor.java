@@ -187,7 +187,7 @@ public class DesktopTableCellEditor extends AbstractCellEditor implements TableC
         } else {
             jcomponent.setForeground(table.getForeground());
             Color background = UIManager.getDefaults().getColor("Table:\"Table.cellRenderer\".background");
-            if (row % 2 == 0) {
+            if (row % 2 == 1) {
                 Color alternateColor = UIManager.getDefaults().getColor("Table.alternateRowColor");
                 if (alternateColor != null) {
                     background = alternateColor;
