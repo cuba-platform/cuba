@@ -3,6 +3,14 @@
   <title>Основные определения и понятия</title>
   <glossdiv>
     <title>Б</title>
+    <glossentry id="glossary_process_id">
+      <glossterm>
+        <emphasis role="bold">Бизнес-процесс</emphasis>
+      </glossterm>
+      <glossdef>
+        <para/>
+      </glossdef>
+    </glossentry>
     <glossentry id="glossary_browser_id">
       <glossterm>
         <emphasis role="bold">Браузер</emphasis>
@@ -32,6 +40,120 @@
       </glossterm>
       <glossdef>
         <para><glossterm linkend="glossary_localized_folders_id">Пакет локализованных сообщений</glossterm>, содержащий заголовки пунктов меню, названия кнопок и других элементов интерфейса. Располагается в пакете <package>com.haulmont.ext.web</package> модуля <structname>web</structname>.</para>
+      </glossdef>
+    </glossentry>
+    <glossentry id="glossary_app_boundary_id">
+      <glossterm>
+        <emphasis role="bold">Границы приложения</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Формируют область определения приложения. Границы приложения определяются посредством <link linkend="section_services_id">сервисов</link>.</para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
+    <title>Д</title>
+    <glossentry id="glossary_descriptor_fts_id">
+      <glossterm>
+        <emphasis role="bold">Дескриптор FTS</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Дескриптор <glossterm linkend="glossary_fts_id">FTS</glossterm> представляет собой XML файл, содержащий настройки механизма полнотекстового поиска. Элементы дескриптора:</para>
+        <itemizedlist>
+          <listitem>
+            <para><parameter>include</parameter>. Включение содержимого другого дескриптора. Атрибут <property>file</property> − путь к включаемому файлу относительно каталога конфигурации.</para>
+          </listitem>
+          <listitem>
+            <para><parameter>entities</parameter>. Список сущностей, подлежащих индексированию и поиску.</para>
+            <itemizedlist>
+              <listitem>
+                <para><parameter>entity</parameter>. Описание индексируемой сущности. 
+Атрибуты:</para>
+                <itemizedlist>
+                  <listitem>
+                    <para><property>class</property> − java класс сущности;</para>
+                  </listitem>
+                  <listitem>
+                    <para><property>show</property> (true/false) − должна ли данная сущность показываться в результатах поиска самостоятельно. False используется для сущностей-связей, которые нужны, например, для связи  файлов и карточек;</para>
+                  </listitem>
+                </itemizedlist>
+              </listitem>
+              <listitem>
+                <para><parameter>include</parameter> − включить атрибут сущности в индекс. 
+Атрибуты:</para>
+                <itemizedlist>
+                  <listitem>
+                    <para><property>re</property> − регулярное выражение для отбора атрибутов по имени. Отбираются только атрибуты следующих типов: строка, число, дата, перечисление;</para>
+                  </listitem>
+                  <listitem>
+                    <para><property>name</property> − имя атрибута, может быть путем по ссылочным атрибутам. Тип не проверяется, однако если имя является путем, то конечный атрибут должен быть сущностью, а не простым типом (атрибут простого типа не имеет здесь смысла, он должен индексироваться в своей сущности);</para>
+                  </listitem>
+                </itemizedlist>
+              </listitem>
+              <listitem>
+                <para><parameter>exclude</parameter> − исключить ранее включенный атрибут. Возможные атрибуты такие же как в элементе <parameter>include</parameter>;</para>
+              </listitem>
+              <listitem>
+                <para><parameter>searchables</parameter> − <classname>Groovy</classname>-скрипт для добавления в очередь на индексирование произвольных сущностей, связанных с измененной. Скрипт оперирует двумя переменными:</para>
+                <para><varname>searchables</varname> − список сущностей;</para>
+                <para><varname>entity</varname> − текущая сущность, помещаемая в очередь автоматически;</para>
+              </listitem>
+              <listitem>
+                <para><parameter>searchableIf</parameter> − <classname>Groovy</classname>-скрипт для ограничения помещения в очередь некоторых экземпляров индексируемой сущности. 
+Скрипт оперирует переменной <varname>entity</varname> (текущая сущность, которую нужно проверить).</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </itemizedlist>
+        <para>Пример дескриптора:</para>
+        <para><programlisting>&lt;fts-config&gt;
+  &lt;include file=&quot;cuba/fts-config.xml&quot;/&gt;
+  &lt;entities&gt;
+    &lt;entity class=&quot;com.haulmont.workflow.core.entity.CardAttachment&quot; show=&quot;false&quot;&gt;
+      &lt;include re=&quot;.*&quot;/&gt;
+      &lt;exclude name=&quot;card&quot;/&gt;
+      &lt;searchables&gt;
+        searchables.add(entity.card)
+      &lt;/searchables&gt;
+    &lt;/entity&gt;
+
+    &lt;entity class=&quot;com.haulmont.workflow.core.entity.AssignmentAttachment&quot; show=&quot;false&quot;&gt;
+      &lt;include re=&quot;.*&quot;/&gt;
+      &lt;exclude name=&quot;assignment&quot;/&gt;
+      &lt;searchables&gt;
+        searchables.add(entity.assignment.card)
+      &lt;/searchables&gt;
+    &lt;/entity&gt;
+
+    &lt;entity class=&quot;com.haulmont.taskman.core.entity.ProjectGroup&quot;&gt;
+      &lt;include name=&quot;name&quot;/&gt;
+    &lt;/entity&gt;
+
+    &lt;entity class=&quot;com.haulmont.taskman.core.entity.Project&quot;&gt;
+      &lt;include re=&quot;.*&quot;/&gt;
+    &lt;/entity&gt;
+
+    &lt;entity class=&quot;com.haulmont.taskman.core.entity.Task&quot;&gt;
+      &lt;include re=&quot;.*&quot;/&gt;
+      &lt;include name=&quot;attachments.file&quot;/&gt;
+      &lt;include name=&quot;assignments.attachments.file&quot;/&gt;
+      &lt;exclude name=&quot;parentCard&quot;/&gt;
+      &lt;exclude name=&quot;subCards&quot;/&gt;
+      &lt;exclude name=&quot;timeUnit&quot;/&gt;
+    &lt;/entity&gt;
+
+    &lt;entity class=&quot;com.haulmont.docflow.core.entity.Contract&quot;&gt;
+      &lt;include re=&quot;.*&quot;/&gt;
+      &lt;include name=&quot;attachments.file&quot;/&gt;
+      &lt;include name=&quot;assignments.attachments.file&quot;/&gt;
+      &lt;exclude name=&quot;parentCard&quot;/&gt;
+      &lt;exclude name=&quot;subCards&quot;/&gt;
+      &lt;searchableIf&gt;
+        entity.versionOf == null
+      &lt;/searchableIf&gt;
+    &lt;/entity&gt;
+  &lt;/entities&gt;
+&lt;/fts-config&gt;</programlisting></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -71,6 +193,14 @@
   </glossdiv>
   <glossdiv>
     <title>К</title>
+    <glossentry id="glossary_conteiner_id">
+      <glossterm>
+        <emphasis role="bold">Контейнер Spring</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Структура, которая содержит в себе и управляет жизненным циклом и конфигурацией программных объектов. В контейнере <application>Spring</application> можно определить порядок создания программных объектов, их конфигурацию, и то, как они взаимодействуют друг с другом. Более подробная информация о контейнере <application>Spring</application> содержится в документации к фреймворку <application>Spring</application> (<ulink url="http://www.springsource.org/">http://www.springsource.org/</ulink>).</para>
+      </glossdef>
+    </glossentry>
     <glossentry id="glossary_controller_id">
       <glossterm>
         <emphasis role="bold">Контроллер экрана</emphasis>
@@ -94,6 +224,19 @@
         <para>Основной метод контроллера − <methodname>init()</methodname>. Этот метод вызывается после создания класса окна и всего дерева компонентов, описанного XML-дескриптором. Контроллер может в этом методе произвести инициализацию экрана перед его открытием (например, создать обработчики нажатий на кнопки и пр.).</para>
         <para>В метод <methodname>init()</methodname> из вызывающего кода передается коллекция параметров, состоящая из пар «ключ − значение». Вызывающим кодом может быть как контроллер другого экрана, так и пункт главного меню, либо прямая ссылка на экран извне приложения. Каждый параметр передается в коллекции в двух экземплярах − с простым именем и с тем же именем с префиксом param$.</para>
         <para>Класс контроллера должен быть зарегистрирован в XML-дескрипторе экрана в атрибуте <parameter>class</parameter> корневого элемента.</para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
+    <title>Н</title>
+    <glossentry id="glossary_numerator_id">
+      <glossterm>
+        <emphasis role="bold">Нумератор</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Системный объект, позволяющий организовать сквозную нумерацию документов разных видов.</para>
+        <para>Скрипты нумераторов пишутся на языке <classname>Groovy</classname>. Для генерации последовательностей рекомендуется использовать интерфейс <interfacename>UniqueNumbers</interfacename>.</para>
+        <para>За уникальность нумерации отвечает метод <methodname>getNextNumber(&quot;numeratorName&quot;)</methodname>. Если название &quot;numeratorName&quot; будет использоваться в другом нумераторе, то получится, что два нумератора будут пользоваться одной последовательностью.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -137,10 +280,10 @@ actions.Edit=Edit
         <para>Папки поиска обладают следующими особенностями:</para>
         <itemizedlist>
           <listitem>
-            <para>открывают экраны с <glossterm linkend="glossary_filter_id">generic-фильтром</glossterm>;</para>
+            <para>отображают экраны с <glossterm linkend="glossary_filter_id">generic-фильтром</glossterm>;</para>
           </listitem>
           <listitem>
-            <para>создаются пользователем из любого открытого экрана с generic-фильтром;</para>
+            <para>создаются пользователем из любого отображенного экрана с generic-фильтром;</para>
           </listitem>
           <listitem>
             <para>пользователь может изменить иерархию, название, либо переопределить фильтр поиска. </para>
@@ -158,7 +301,7 @@ actions.Edit=Edit
         <para>Обладают следующими особенностями:</para>
         <itemizedlist>
           <listitem>
-            <para>открывают предопределенные экраны с <glossterm linkend="glossary_filter_id">фильтром</glossterm> или без;</para>
+            <para>отображают предопределенные экраны с <glossterm linkend="glossary_filter_id">фильтром</glossterm> или без;</para>
           </listitem>
           <listitem>
             <para>набор папок зависит от ролей пользователя; </para>
@@ -188,7 +331,7 @@ actions.Edit=Edit
             <para><filename>_local</filename> определяет все локальные атрибуты сущности (т.е. все, кроме ссылок на другие сущности);</para>
           </listitem>
           <listitem>
-            <para><filename>_minimal</filename> определяет атрибуты, входящие в <varname>InstanceName</varname>. Если <varname>InstanceName</varname> на задано, данное представление определяет только системные атрибуты (<varname>id</varname>, <varname>createTs</varname> и пр.).</para>
+            <para><filename>_minimal</filename> определяет атрибуты, входящие в <varname>InstanceName</varname>. Если <varname>InstanceName</varname> не задано, данное представление определяет только системные атрибуты (<varname>id</varname>, <varname>createTs</varname> и пр.).</para>
           </listitem>
         </itemizedlist>
         <para>Представления нужно определять в файле <filename>ext-views.xml</filename> модуля <structname>core</structname>.</para>
@@ -202,6 +345,14 @@ actions.Edit=Edit
 &lt;/view&gt;</programlisting>
       </glossdef>
     </glossentry>
+    <glossentry id="glossary_process_id">
+      <glossterm>
+        <emphasis role="bold">Процесс</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Под процессом будем понимать последовательность выполнения действий, переходящую от одного человека к другому, а для больших процессов − от одного отдела к другому. Процесс всегда имеет начальную и завершающую стадию, а также алгоритм действий.</para>
+      </glossdef>
+    </glossentry>
   </glossdiv>
   <glossdiv>
     <title>Р</title>
@@ -210,7 +361,7 @@ actions.Edit=Edit
         <emphasis role="bold">Рабочий каталог</emphasis>
       </glossterm>
       <glossdef>
-        <para>Каталог файловой системы, в котором содержится Ваш проект. Рабочий каталог, если он был создан, должен содержать скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>Intellij IDEA</application>. Информация о том, как создать такой каталог, содержится в главе <link linkend="chapter1_create_app_project">Создание и настройка проекта приложения</link>.</para>
+        <para>Каталог файловой системы, в котором содержится Ваш проект. Рабочий каталог, если он был создан, должен содержать скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>Intellij IDEA</application>. Информация о том, как создать такой каталог, содержится в главе <link linkend="chapter2_extension_creation">Создание и запуск проекта расширения для системы <application>&quot;ТЕЗИС&quot;</application></link>.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -332,6 +483,26 @@ actions.Edit=Edit
       </glossterm>
       <glossdef>
         <para>Служит для извлечения сущностей из БД и сохранения их в БД. Может быть получен только в слое <glossterm linkend="glossary_middleware_id">middleware</glossterm> с помощью <classname>PersistenceProvider</classname>.</para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
+    <title>F</title>
+    <glossentry id="glossary_fts_id">
+      <glossterm>
+        <emphasis role="bold">Full Text Search</emphasis>
+      </glossterm>
+      <abbrev>FTS</abbrev>
+      <glossdef>
+        <para>Полнотекстовый поиск предоставляет возможность неструктурированного поиска по всем атрибутам сущностей и по содержимому вложенных файлов.</para>
+        <para>FTS содержит два взаимосвязанных механизма − индексирование и  поиск.</para>
+        <para><emphasis role="bold">Индексирование</emphasis>. Изменения сущностей отслеживаются на уровне <glossterm linkend="glossary_entityManager_id">EntityManager</glossterm>&apos;а. Если изменился атрибут сущности, подлежащий индексированию, информация о сущности записывается в таблицу <database>SYS_FTS_QUEUE</database> с помощью <classname>FtsSenderBean</classname>. Отдельный асинхронный процесс извлекает ссылки на изменившиеся сущности из очереди, загружает сущности и индексирует их. </para>
+        <para>Под индексируемыми атрибутами понимаются атрибуты данной сущности и  ссылающихся на нее сущностей, объявленные в <glossterm linkend="glossary_descriptor_fts_id">дескрипторе FTS</glossterm>.</para>
+        <para><emphasis role="bold">Поиск</emphasis>. Поиск ведется по совпадению искомой строки с началом слов индексированных данных.
+
+При включенном FTS главное окно приложения содержит поле поиска. Поиск производится с помощью <classname>FtsServiceBean</classname> и результаты отображаются в окне <filename>search-results.xml</filename>.
+
+</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -517,41 +688,23 @@ actions.Edit=Edit
   </glossdiv>
   <glossdiv>
     <title>I</title>
-    <glossentry id="glossary_instanceName_id">
+    <glossentry id="glossary_interceptor_id">
       <glossterm>
-        <emphasis role="bold">Instance Name</emphasis>
+        <emphasis role="bold">Interceptor</emphasis>
       </glossterm>
       <glossdef>
-        <para>Для формирования текстового имени объекта и отображении его в графическом интерфейсе пользователя используется <emphasis role="bold">Instance Name</emphasis>, задающееся в аннотации <literal>@NamePattern</literal> на классе сущности.</para>
-        <para>Формат паттерна: {0}|{1}, где</para>
-        <itemizedlist>
-          <listitem>
-            <para>{0} − либо format string, как для String.format(), либо имя метода (предваренное символом #) данного объекта, возвращающее строку.</para>
-          </listitem>
-          <listitem>
-            <para>{1} − разделенный запятыми список полей, соответствующий формату {0}. Данный список полей используется также при формировании <glossterm linkend="glossary_view_ru_id">view</glossterm> _minimal.</para>
-          </listitem>
-        </itemizedlist>
-        <para>Пробелы между частями паттерна и между полями не допускаются.</para>
-        <para>Пример с format string:</para>
-        <para><programlisting>@NamePattern(&quot;%s : %s|name,address&quot;)</programlisting></para>
-        <para>Пример с методом:</para>
-        <para><programlisting>@NamePattern(&quot;#getCaption|login,name&quot;)
-public class User extends StandardEntity
-{
-...
-    public String getCaption() {
-        String pattern = AppContext.getProperty(&quot;cuba.user.namePattern&quot;);
-        if (StringUtils.isBlank(pattern)) {
-            pattern = &quot;{1} [{0}]&quot;;
-        }
-        MessageFormat fmt = new MessageFormat(pattern);
-        return fmt.format(new Object[] {login, name});
-    }
-}</programlisting></para>
-        <para>Для получения имени конкретного экземпляра необходимо привести объект к типу <classname>Instance</classname> и вызвать метод <methodname>getInstanceName()</methodname>. Например:</para>
-        <para><programlisting>String instanceName = ((Instance) server).getInstanceName();</programlisting></para>
-        <para>Если для данного класса сущности аннотация <literal>@NamePattern</literal> не задана, <methodname>getInstanceName()</methodname> эквивалентен методу <methodname>toString()</methodname>.</para>
+        <para>Специальный класс, который может перехватывать вызов методов заданного класса.</para>
+      </glossdef>
+    </glossentry>
+  </glossdiv>
+  <glossdiv>
+    <title>J</title>
+    <glossentry id="glossary_jmx_id">
+      <glossterm>
+        <emphasis role="bold">JMX</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Java Management Extensions (JMX) − это Java-технология, которая предоставляет инструменты для управления  приложениями, объектами системы, устройствами. JMX определяет стандарт для написания JMX-компонентов − <link linkend="section_MBean_id">MBeans</link>. Более подробную информацию о технологии JMX вы сможете найти на сайте Oracle: <ulink url="http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html">http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html</ulink></para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -678,16 +831,15 @@ MBean является расширенным вариантом <glossterm link
     </glossentry>
   </glossdiv>
   <glossdiv lang="ru">
-    <title>N</title>
-    <glossentry id="glossary_namePattern_id">
-      <glossterm>
-        <emphasis role="bold">NamePattern</emphasis>
-      </glossterm>
-      <glosssee otherterm="glossary_instanceName_id"/>
-    </glossentry>
-  </glossdiv>
-  <glossdiv lang="ru">
     <title>P</title>
+    <glossentry id="glossary_pojo_id">
+      <glossterm>
+        <emphasis role="bold">POJO</emphasis>
+      </glossterm>
+      <glossdef>
+        <para>Plain Old Java Object (POJO) − «простой Java-объект в старом стиле», простой Java-объект, не унаследованный от какого-то специфического объекта и не реализующий никаких служебных интерфейсов сверх тех, которые нужны для бизнес-модели. Термин придуман Мартином Фаулером (<ulink url="http://www.martinfowler.com/bliki/POJO.html">http://www.martinfowler.com/bliki/POJO.html</ulink>).</para>
+      </glossdef>
+    </glossentry>
     <glossentry id="glossary_pickerfield_id">
       <glossterm>
         <emphasis role="bold">PickerField</emphasis>
@@ -980,7 +1132,7 @@ MBean является расширенным вариантом <glossterm link
             <para><property>enable</property>. Это состояние закладки. Может иметь значение <property>true</property> (доступна) или <property>false</property> (недоступна). По умолчанию <property>enable = &quot;true&quot;</property>.</para>
           </listitem>
           <listitem>
-            <para><property>lazy</property>. Задает отложенную загрузку содержимого закладки. Может иметь значение <property>true</property> или <property>false</property>. При открытии экрана lazy-закладки не загружают свое содержимого, что приводит к созданию меньшего количества компонентов в памяти и  к меньшему количеству запросов к БД. Компоненты закладки загружаются только в тот момент, когда пользователь выбирает данную закладку.
+            <para><property>lazy</property>. Задает отложенную загрузку содержимого закладки. Может иметь значение <property>true</property> или <property>false</property>. При отображении экрана lazy-закладки не загружают свое содержимого, что приводит к созданию меньшего количества компонентов в памяти и  к меньшему количеству запросов к БД. Компоненты закладки загружаются только в тот момент, когда пользователь выбирает данную закладку.
 Если компоненты lazy-закладки требуют инициализации, проводить ее нужно не напрямую в методе <methodname>init()</methodname> <glossterm linkend="glossary_controller_id">контроллера</glossterm>, а в слушателе на переключение закладок <classname>Tabsheet.TabChangeListener</classname>.</para>
           </listitem>
         </itemizedlist>
@@ -1022,7 +1174,7 @@ MBean является расширенным вариантом <glossterm link
                 <para><property>caption</property> − заголовок экрана, должен содержать ссылку на сообщение из вышеуказанного пакета, например <programlisting>caption=&quot;msg://caption&quot;</programlisting></para>
               </listitem>
               <listitem>
-                <para><property>focusComponent</property> − идентификатор компонента, который получит фокус ввода при открытии экрана (необязательно).</para>
+                <para><property>focusComponent</property> − идентификатор компонента, который получит фокус ввода при отображениее экрана (необязательно).</para>
               </listitem>
             </orderedlist>
           </listitem>

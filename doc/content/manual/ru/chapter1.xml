@@ -1,318 +1,321 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter1_create_app_project">
-  <title>Создание и настройка проекта приложения</title>
-  <orderedlist>
+<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter1_setup">
+  <title>Установка и настройка инструментария</title>
+  <para>Для полноценной разработки приложений Вам потребуется  дополнительное программное обеспечение. При разработке платформы мы стремились сделать так, чтобы все сторонние программы, требуемые для работы, были свободно распространяемыми и кросс-платформенными. Весь набор программного обеспечения, требуемого для разработки,  совместим с операционной системой <application>Windows</application> и <application>Linux</application>. </para>
+  <para>Данная глава дает практические инструкции по установке и настройке рекомендованного программного обеспечения:</para>
+  <itemizedlist>
     <listitem>
-      <para>Создайте рабочую папку для проекта, например, <filename>c:/work/shop_project</filename>.</para>
+      <para><application>Java SE 7 SDK.</application></para>
     </listitem>
     <listitem>
-      <para>Создайте в этой папке файл <filename>build.gradle</filename> следующего содержания:</para>
-      <para><programlisting>allprojects {
-    artifactGroup = &apos;com.haulmont.shop&apos;
-    artifactVersion = &apos;0.1&apos;
-    isSnapshot = true
-    apply(plugin: &apos;maven&apos;)
-}
-
-buildscript {
-    repositories {
-        mavenLocal()
-
-        maven {
-            credentials {
-                username System.getenv(&apos;HAULMONT_REPOSITORY_USER&apos;)
-                password System.getenv(&apos;HAULMONT_REPOSITORY_PASSWORD&apos;)
-            }
-            url &quot;http://repository.haulmont.com:8587/nexus/content/groups/work&quot;
-        }
-
-mavenRepo(urls: &apos;http://repository.haulmont.com:8587/nexus/content/groups/work&apos;)
-    }
-    dependencies {
-        classpath group: &apos;com.haulmont.gradle&apos;, name: &apos;cuba-plugin&apos;, version: &apos;1.3.0&apos;
-    }
-}
-
-def cubaVersion = &apos;3.2.3&apos;
-
-def globalModule = project(&apos;:shop-global&apos;)
-def coreModule = project(&apos;:shop-core&apos;)
-def guiModule = project(&apos;:shop-gui&apos;)
-def webModule = project(&apos;:shop-web&apos;)
-
-def postgres = &apos;postgresql:postgresql:8.3-603.jdbc4&apos;
-def servletApi = &apos;org.apache.tomcat:servlet-api:6.0.20&apos;
-
-def cubaWeb = &quot;com.haulmont.cuba:cuba-web:$cubaVersion&quot;
-
-def coreJarNames = [&apos;bali&apos;, &apos;chile-core&apos;, &apos;chile-jpa&apos;, &apos;cuba-global&apos;, &apos;cuba-core&apos;,
-                &apos;shop-global&apos;, &apos;shop-core&apos;]
-
-apply(plugin: &apos;idea&apos;)
-apply(plugin: &apos;cuba&apos;)
-
-configure([globalModule, coreModule, guiModule, webModule]) {
-    apply(plugin: &apos;java&apos;)
-    apply(plugin: &apos;idea&apos;)
-    apply(plugin: &apos;maven&apos;)
-    apply(plugin: &apos;cuba&apos;)
-
-    configurations.each {
-        it.resolutionStrategy.cacheChangingModulesFor 2, &quot;minutes&quot;
-    }
-
-    dependencies {
-        compile(&quot;com.haulmont.cuba:cuba-global:$cubaVersion&quot;)
-        testCompile(&apos;junit:junit:4.5&apos;)
-    }
-
-    task sourceJar(type: Jar) {
-        from file(&apos;src&apos;)
-        classifier = &apos;sources&apos;
-    }
-
-    artifacts {
-        archives sourceJar
-    }
-}
-
-configure(globalModule) {
-dependencies {
-        provided(group: &apos;com.haulmont.gradle&apos;, name: &apos;cuba-plugin&apos;, version: &apos;1.3.0&apos;)
-    }
-    task enhance(type: CubaEnhancing) {
-        persistenceXml = &quot;$globalModule.projectDir/src/shop-persistence.xml&quot;
-        metadataXml = &quot;$globalModule.projectDir/src/shop-metadata.xml&quot;
-    }
-    compileJava &lt;&lt; {
-        enhance.execute()
-    }
-}
-
-configure(coreModule) {
-
-    configurations {
-        jdbc
-        dbscripts
-    }
-
-    dependencies {
-        compile(globalModule)
-        compile(&quot;com.haulmont.cuba:cuba-core:$cubaVersion&quot;)
-        compile(&quot;com.haulmont.cuba:cuba-test-ui:$cubaVersion&quot;)
-        testCompile(&quot;com.haulmont.cuba:cuba-core:$cubaVersion:tests&quot;)
-        testCompile(&apos;junit:junit:4.5&apos;)
-        testCompile(&quot;com.haulmont.cuba:cuba-shared-lib:$cubaVersion&quot;)
-        provided(servletApi)
-        jdbc(postgres)
-        testRuntime(postgres)
-
-        dbscripts(&quot;com.haulmont.cuba:cuba-core:$cubaVersion:db@zip&quot;)
-    }
-
-    test {
-        scanForTestClasses = false
-        includes = [&apos;**/*Test.class&apos;]
-    }
-
-    task deploy(dependsOn: assemble, type: CubaDeployment) {
-        appName = &apos;app-core&apos;
-        jarNames = coreJarNames
-    }
-
-    task createDb(dependsOn: assemble, description: &apos;Creates local Postgres database&apos;, type: CubaDbCreation) {
-        dbms = &apos;postgres&apos;
-        dbName = &apos;shop&apos;
-        dbUser = &apos;root&apos;
-        dbPassword = &apos;root&apos;
-    }
-
-    task createTestDb(dependsOn: assemble, description: &apos;Creates local Postgres database for tests&apos;, type: CubaDbCreation) {
-        dbms = &apos;postgres&apos;
-        dbName = &apos;shop_test&apos;
-        dbUser = &apos;root&apos;
-        dbPassword = &apos;root&apos;
-    }
-}
-
-configure(guiModule) {
-    dependencies {
-        compile(globalModule)
-        compile(group: &apos;com.haulmont.cuba&apos;, name: &apos;cuba-gui&apos;, version: cubaVersion)
-    }
-}
-
-configure(webModule) {
-    configurations {
-        webcontent
-    }
-
-    dependencies {
-        compile(globalModule)
-        compile(guiModule)
-        compile(cubaWeb)
-
-        webcontent(group: &apos;com.haulmont.cuba&apos;, name: &apos;cuba-web&apos;, version: cubaVersion, classifier: &apos;web&apos;, ext: &apos;zip&apos;)
-    }
-
-    task webArchive(type: Zip) {
-        from file(&apos;web&apos;)
-        classifier = &apos;web&apos;
-    }
-
-    artifacts {
-        archives webArchive
-    }
-
-    task deploy(dependsOn: assemble, type: CubaDeployment) {
-        appName = &apos;app&apos;
-        appJars(&apos;bali&apos;, &apos;chile-core&apos;, &apos;chile-jpa&apos;, &apos;cuba-global&apos;, &apos;cuba-client&apos;, &apos;cuba-gui&apos;, &apos;cuba-web&apos;,
-                &apos;shop-global&apos;, &apos;shop-gui&apos;, &apos;shop-web&apos;)
-    }
-}
-
-
-task restart(dependsOn: [&apos;stop&apos;, &apos;:shop-core:deploy&apos;, &apos;:shop-web:deploy&apos;], description: &apos;Redeploys applications and restarts local Tomcat&apos;) &lt;&lt; {
-    ant.waitfor(maxwait: 6, maxwaitunit: &apos;second&apos;, checkevery: 2, checkeveryunit: &apos;second&apos;) {
-        not {
-            socket(server: &apos;localhost&apos;, port: &apos;8787&apos;)
-        }
-    }
-    start.execute()
-}</programlisting></para>
+      <para><application>PostgreSQL 8.3.9</application>. <ulink url="http://postgresql.ru.net/docs/about_pgsql.html">PostgreSQL</ulink>− реляционная система управления базами данных. PostgreSQL поставляется под лицензией BSD, что обеспечивает максимальную открытость и доступность.</para>
     </listitem>
     <listitem>
-      <para>Создайте в этой папке файл <filename>settings.gradle</filename> следующего содержания:</para>
-      <para><programlisting>rootProject.name = &apos;shop&apos;
-include(&apos;:shop-global&apos;, &apos;:shop-core&apos;, &apos;:shop-gui&apos;, &apos;:shop-web&apos;)
-project(&apos;:shop-global&apos;).projectDir = new File(settingsDir, &apos;modules/global&apos;)
-project(&apos;:shop-core&apos;).projectDir = new File(settingsDir, &apos;modules/core&apos;)
-project(&apos;:shop-gui&apos;).projectDir = new File(settingsDir, &apos;modules/gui&apos;)
-project(&apos;:shop-web&apos;).projectDir = new File(settingsDir, &apos;modules/web&apos;)</programlisting></para>
+      <para><application>Gradle 1.0</application>. <application>Gradle</application> − инструмент автоматизации сборки с открытым исходным кодом.</para>
     </listitem>
     <listitem>
-      <para>Затем создайте структуру проекта, описанную в разделе <link linkend="project_structure_id">Структура и назначение каталогов и файлов проекта</link>.</para>
+      <para><application>IntelliJ IDEA 11 Community Edition</application>. <ulink url="http://ru.wikipedia.org/wiki/IntelliJ_IDEA">IntelliJ IDEA</ulink> − интегрированная среда разработки для Java компании <orgname>JetBrains</orgname>. IntelliJ IDEA Community Edition является свободно распространяемой версией с открытым исходным кодом.</para>
     </listitem>
-    <listitem>
-      <para>Далее создайте пустую базу данных с названием <database>shop</database>. Для этого откройте <application>pgAdmin</application>: зайдите в меню <guimenu>Пуск</guimenu>, далее − <application>PostgreSQL 8.3</application>, далее выберите <application>pgAdmin III</application>. В отобразившемся окне нажмите правой клавишей мыши на <guilabel>PostgreSQL Database Server 8.3 (localhost:5432)</guilabel> и в открывшемся контекстном меню выберите <guilabel>Подсоединение</guilabel>. Далее нажмите правой клавишей мыши на <guilabel>Базы</guilabel> и в открывшемся контекстном меню выберите <guilabel>Новая база данных</guilabel>. На экране отобразится окно, представленное на рисунке:</para>
-      <mediaobject>
-        <imageobject>
-          <imagedata align="center" fileref="img/new_db.png"/>
-        </imageobject>
-      </mediaobject>
-      <para>В качестве имени укажите <database>shop</database>. Далее нажмите кнопку <guibutton>ОК</guibutton>. Новая база данных создана.</para>
-    </listitem>
-    <listitem>
-      <para>Запустите командную строку в каталоге <filename>c:/work/shop_projects/shop</filename>.</para>
-    </listitem>
-    <listitem>
-      <para>Собираем проект. На этом этапе будут загружены все необходимые библиотеки и в каталогах модулей в подкаталогах <filename>build</filename> будут собраны артефакты проекта. В командной строке введите команду</para>
-      <para><prompt>gradle assemble</prompt></para>
-    </listitem>
-    <listitem>
-      <para>Устанавливаем сервер приложений <application>Tomcat</application>:</para>
-      <para><prompt>gradle setupTomcat</prompt></para>
-    </listitem>
-    <listitem>
-      <para>Разворачиваем артефакты и библиотеки проекта в <application>Tomcat</application>:</para>
-      <para><prompt>gradle deploy</prompt></para>
-    </listitem>
-    <listitem>
-      <para>Откройте файл <filename>shop-app.properties</filename> модуля <structname>core</structname> и добавьте туда следующую строку:</para>
-      <para><prompt>cuba.automaticDatabaseUpdate=true</prompt></para>
-      <para>После этого автоматическое обновление будет произведено при старте сервера.</para>
-    </listitem>
-    <listitem>
-      <para>Запускаем сервер:</para>
-      <para><prompt>gradle start</prompt></para>
-    </listitem>
-    <listitem>
-      <para>Чтобы работать с проектом в <application>IntelliJ IDEA</application>, запускаем команду, с помощью которой собираются проектные файлы <filename>*.ipr</filename>, <filename>*.iml</filename>.</para>
-      <para><prompt>gradle idea</prompt></para>
-    </listitem>
-    <listitem>
-      <para>Для просмотра приложения в веб-браузере введите в адресную строку <ulink url="http://localhost:8080/app">http://localhost:8080/app</ulink></para>
-      <para>Логин и пароль пользователя − admin/admin.</para>
-    </listitem>
-  </orderedlist>
-  <simplesect id="project_structure_id">
-    <title>Структура и назначение каталогов и файлов проекта</title>
-    <para>Рассмотрим структуру классов и других файлов в проекте.</para>
-    <para>В корне проекта расположены скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>IntelliJ IDEA</application>.</para>
-    <para>В каталоге <filename>modules</filename> расположены подкаталоги модулей проекта − <structname>global</structname>, <structname>core</structname>, <structname>gui</structname>, <structname>web</structname>. </para>
-    <para>Модуль <structname>global</structname> определяет компоненты, доступные как среднему слою, так и клиентскому коду.</para>
-    <itemizedlist>
-      <listitem>
-        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются интерфейсы <glossterm linkend="glossary_middleware_services_id">сервисов middleware</glossterm>. </para>
-      </listitem>
-      <listitem>
-        <para>В пакете <package>com.haulmont.shop.core.entity</package> создаются классы сущностей и <glossterm linkend="glossary_localized_folders_id">файлы локализованных сообщений</glossterm> <filename>messages.properties</filename> для задания названий сущностей и их атрибутов.</para>
-      </listitem>
-      <listitem>
-        <para><filename>shop-persistence.xml</filename> − в этом файле регистрируются новые классы сущностей.</para>
-      </listitem>
-      <listitem>
-        <para><filename>shop-metadata.xml</filename> − в этом файле может быть задано замещение стандартных сущностей новыми.</para>
-      </listitem>
-    </itemizedlist>
+  </itemizedlist>
+  <para>Также Вам понадобится браузер для запуска приложений. В данном Руководстве описаны примеры приложений, запуск которых проводился с помощью браузера <ulink url="http://www.google.ru/chrome">Google Chrome</ulink>. Платформа поддерживает множество Web-браузеров. Предпочтение отдается <application>Google Chrome</application>, <application>Mozilla Firefox</application>, <application>Internet Explorer</application> версии 7.0 и выше.</para>
+  <warning>
+    <title>Внимание</title>
+    <para>Инструкции по установке приведены для операционной системы <application>Windows 7</application>.</para>
+  </warning>
+  <section>
+    <title>Установка Postgres 8.3.9</title>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/ch2_structure.png" scale="60%"/>
+        <imagedata align="center" fileref="img/elephant.png"/>
       </imageobject>
     </mediaobject>
-    <para>Модуль <structname>core</structname> определяет компоненты среднего слоя системы.</para>
-    <itemizedlist>
+    <para>Сайт компании-разработчика: <ulink url="http://www.postgresql.org/">http://www.postgresql.org/</ulink></para>
+    <para>Дистрибутив: <ulink url="ftp://ftp-archives.postgresql.org/pub/binary/v8.3.9/">ftp://ftp-archives.postgresql.org/pub/binary/v8.3.9/</ulink></para>
+    <orderedlist>
       <listitem>
-        <para>Каталог <filename>db</filename> содержит sql-скрипты создания и изменения базы данных в подкаталогах <filename>init</filename> и <filename>update</filename> соответственно.</para>
+        <para>Скачайте архив <filename>postgresql-8.3.9-1.zip</filename> и распакуйте его.</para>
       </listitem>
       <listitem>
-        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются классы реализации сервисов <glossterm linkend="glossary_middleware_id">middleware</glossterm>, а также другие компоненты бизнес-логики приложения.</para>
+        <para>Запустите в этом каталоге файл <filename>postgresql-8.3.msi</filename>.</para>
       </listitem>
       <listitem>
-        <para>Файл <filename>shop-app.properties</filename> содержит конфигурационные параметры среднего слоя:</para>
-        <para><parameter>cuba.springContextConfig</parameter> − определяет набор конфигурационных файлов <ulink url="http://www.springsource.org/">Spring</ulink>-фреймворка;</para>
-        <para><parameter>cuba.persistenceConfig</parameter> − определяет набор конфигурационных файлов ORM;</para>
-        <para><parameter>cuba.viewsConfig</parameter> − задает набор конфигурационных файлов <glossterm linkend="glossary_view_ru_id">представлений</glossterm>;</para>
+        <para>В первом окне установите переключатель в положение <guilabel>Russian</guilabel> (русский язык установки) и нажмите на кнопку <guibutton>Start</guibutton>.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/ch1_posgres_1.png" width="100%" scalefit="1" contentdepth="100%"/>
+          </imageobject>
+        </mediaobject>
       </listitem>
       <listitem>
-        <para>В файле <filename>shop-spring.xml</filename> при необходимости можно подменить реализацию стандартных сервисов или других управляемых фреймворком Spring компонентов, а также зарегистрировать создаваемые JMX-компоненты.</para>
+        <para>В следующем окне нажмите на кнопку <guibutton>Далее</guibutton>.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/ch1_postgres_2.png" width="100%" scalefit="1" contentdepth="100%"/>
+          </imageobject>
+        </mediaobject>
       </listitem>
       <listitem>
-        <para>Файл <filename>shop-views.xml</filename> содержит описание <glossterm linkend="glossary_view_ru_id">представлений</glossterm>, используемых в расширении. Механизм представлений  обеспечивает извлечение из БД и передачу клиенту графов сущностей, ограниченных в глубину и/или по атрибутам.</para>
+        <para>В следующем окне предоставляется возможность ознакомиться с инструкцией по установке. Нажмите на кнопку <guibutton>Далее</guibutton>.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/ch1_postgres_3.png" width="100%" scalefit="1" contentdepth="100%"/>
+          </imageobject>
+        </mediaobject>
       </listitem>
       <listitem>
-        <para>Файл <filename>web\META-INF\context.xml</filename> содержит настройки подключения к базе данных.</para>
+        <para>В следующем окне Вы можете выбрать дополнительные компоненты и сменить каталог установки программы, нажав на кнопку <guibutton>Обзор</guibutton> и выбрав новый путь. Нажмите на кнопку <guibutton>Далее</guibutton>.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/ch1_postgres_4.png" width="100%" scalefit="1" contentdepth="100%"/>
+          </imageobject>
+        </mediaobject>
       </listitem>
       <listitem>
-        <para>Файл <filename>web\WEB-INF\web.xml</filename> − это дескриптор веб-приложения среднего слоя. Среди прочего содержит список конфигурационных файлов <filename>*-app.properties</filename>, используемых данным приложением.</para>
-      </listitem>
-    </itemizedlist>
-    <para>Модуль <structname>gui</structname> определяет компоненты графического пользовательского интерфейса. Этот модуль доступен всем типам клиентов. Модуль <structname>gui</structname> содержит универсальные экраны: классы <glossterm linkend="glossary_controller_id">контроллеров</glossterm>, <glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторы</glossterm> экранов, файлы <glossterm linkend="glossary_localized_folders_id">локализованных сообщений</glossterm>.</para>
-    <itemizedlist>
-      <listitem>
-        <para>В пакете <package>com.haulmont.shop.gui.ui</package> создаются экраны приложения.</para>
-      </listitem>
-      <listitem>
-        <para>В файле <filename>shop-screens.xml</filename> регистрируются экраны приложения.</para>
-      </listitem>
-    </itemizedlist>
-    <para>Модуль <structname>web</structname> определяет компоненты веб-клиента. Зависит от модулей <structname>gui</structname> и <structname>global</structname>. Содержит специфические экраны и/или компаньоны и файлы конфигурации.</para>
-    <itemizedlist>
-      <listitem>
-        <para>Класс  <classname>com.haulmont.shop.App.java</classname> определяет главное окно приложения.</para>
+        <para>В следующем окне нужно обязательно убедиться в том, что установлена галочка <guilabel>Установить как сервис</guilabel>. В поле ввода <guilabel>Домен</guilabel> отображается имя Вашего компьютера. В поля <guilabel>Пароль</guilabel> и <guilabel>Подтверждение</guilabel> введите пароль, который будет использоваться при входе в учетную запись. Нажмите на кнопку <guibutton>Далее</guibutton>.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/ch1_postgres_5.png" width="100%" scalefit="1" contentdepth="100%"/>
+          </imageobject>
+        </mediaobject>
       </listitem>
       <listitem>
-        <para>Файл <filename>shop-web-app.properties</filename> содержит конфигурационные параметры веб-клиента:</para>
-        <para><parameter>cuba.windowConfig</parameter> − в этом свойстве указывается набор файлов конфигурации экранов приложения;</para>
-        <para><parameter>cuba.menuConfig</parameter> содержит список файлов, описывающих меню приложения;</para>
-        <para><parameter>cuba.appConfig.messagesPack</parameter>  задает список имен <glossterm linkend="glossary_localized_folders_id">пакетов сообщений</glossterm>, формирующих <glossterm linkend="glossary_main_localized_folder_id">главный пакет</glossterm>, используемый главным меню и другими общими компонентами системы;</para>
+        <para>Если Вы впервые создаете учетную запись, возникнет экран <guilabel>Ошибка учетной записи</guilabel>. Если у Вас появился такой экран, нажмите на кнопку <guibutton>Да</guibutton>.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/ch1_postgres_6.png"/>
+          </imageobject>
+        </mediaobject>
       </listitem>
       <listitem>
-        <para>Файл <filename>shop-web-menu.xml</filename> содержит описание пунктов главного меню приложения.</para>
+        <para>Если на следующем шаге возникнет окно с предложением заменить Ваш пароль, нажмите на кнопку <guibutton>Нет</guibutton>.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/ch1_postgres_7.png"/>
+          </imageobject>
+        </mediaobject>
       </listitem>
       <listitem>
-        <para>В файле <filename>shop-web-screens.xml</filename> регистрируются экраны приложения.</para>
+        <para>В следующем окне введите пароль для пользователя <authorinitials>postgres</authorinitials>  в базе данных. Рекомендуем использовать пароль <userinput role="italic">postgres</userinput>. Выберите в качестве кодировки сервера и кодировки клиента <code>UTF-8</code>.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/ch1_postgres_8.png" width="100%" scalefit="1" contentdepth="100%"/>
+          </imageobject>
+        </mediaobject>
       </listitem>
-    </itemizedlist>
-  </simplesect>
+      <listitem>
+        <para>В следующем окне нажмите на кнопку <guibutton>Далее</guibutton>.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/ch1_postgres_9.png" width="100%" scalefit="1" contentdepth="100%"/>
+          </imageobject>
+        </mediaobject>
+      </listitem>
+      <listitem>
+        <para>В следующем окне установите следующие галочки: <guilabel>Adminpack</guilabel>, <guilabel>Table Functions</guilabel>, <guilabel>UUID OSSP</guilabel>.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/ch1_postgres_10.png" width="100%" scalefit="1" contentdepth="100%"/>
+          </imageobject>
+        </mediaobject>
+      </listitem>
+      <listitem>
+        <para>В следующем окне нажмите на кнопку <guibutton>Далее</guibutton>.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/ch1_postgres_11.png" width="100%" scalefit="1" contentdepth="100%"/>
+          </imageobject>
+        </mediaobject>
+      </listitem>
+      <listitem>
+        <para>В следующем окне отображается информация об успешном завершении установки. Нажмите на кнопку <guibutton>Завершить</guibutton>.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/ch1_postgres_12.png" width="100%" scalefit="1" contentdepth="100%"/>
+          </imageobject>
+        </mediaobject>
+      </listitem>
+    </orderedlist>
+    <para>После установки убедимся в работоспособности сервера базы данных. Для этого зайдите в меню <guimenu>Пуск</guimenu>, далее −   <guimenu>PostgreSQL 8.3</guimenu>, далее −   <guisubmenu>pgAdmin III</guisubmenu>. На экране отобразится  окно, представленное на рисунке:</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/ch1_db_1.png" width="100%"/>
+      </imageobject>
+    </mediaobject>
+    <para>Создадим нового пользователя. Для этого нажмите правой клавишей мыши на <guilabel>PostgreSQL Database Server 8.3 (localhost:5432)</guilabel> и в отобразившемся контекстном меню выберите <guimenuitem>Подсоединение</guimenuitem>. Далее нажмите правой клавишей мыши на <guilabel>Роли входа</guilabel>  и в открывшемся контекстном меню выберите <guimenuitem>Новое правило</guimenuitem>. На экране отобразится окно, представленное на рисунке:</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/ch1_db_2.png" width="100%" scalefit="1" contentdepth="100%"/>
+      </imageobject>
+    </mediaobject>
+    <para>В этом окне в качестве имени роли и пароля укажите <userinput role="italic">root</userinput>. В списке <guilabel>Привилегии роли</guilabel> установите флажок <guilabel>Суперюзер</guilabel>.</para>
+    <para>Установка и настройка базы данных завершена.</para>
+  </section>
+  <section>
+    <title>Установка Java SE 7</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/Java_logo.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Сайт компании-разработчика: <ulink url="http://oracle.com/technetwork/java/">http://oracle.com/technetwork/java/</ulink></para>
+    <para>Дистрибутив: <ulink url="http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1637583.html">http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1637583.html</ulink></para>
+    <orderedlist>
+      <listitem>
+        <para>Скачайте последнюю версию <application>JDK 7</application>, например, <filename>jdk-7u5-windows-x64.exe</filename>.</para>
+      </listitem>
+      <listitem>
+        <para>Запустите файл <filename>jdk-7u5-windows-x64.exe</filename>.</para>
+      </listitem>
+      <listitem>
+        <para>В первом окне нажмите на кнопку <guibutton>Next</guibutton>.</para>
+      </listitem>
+      <listitem>
+        <para>В следующем окне Вы можете выбрать дополнительные компоненты и сменить каталог установки программы, нажав на кнопку <guibutton>Change</guibutton> и выбрав новый путь. Нажмите на кнопку <guibutton>Next</guibutton>.</para>
+      </listitem>
+      <listitem>
+        <para>В следующем окне нажмите на кнопку <guibutton>Next</guibutton>.</para>
+      </listitem>
+      <listitem>
+        <para>В следующем окне отображается информация об успешном завершении установки. Нажмите на кнопку <guibutton>Continue</guibutton>.</para>
+      </listitem>
+      <listitem id="path_setting">
+        <para>Теперь создайте переменную среды <envar>JAVA_HOME</envar>. В качестве значения переменной окружения <envar>JAVA_HOME</envar> установите путь до каталога установки  <application>JDK</application>, например, <filename>C:\Program Files\Java\jdk1.7.0_05</filename>.</para>
+        <caution>
+          <title>Подсказка</title>
+          <para>Как установить или изменить переменную среды?</para>
+          <para>В пункте меню <guimenu>Пуск</guimenu> выберите <guimenuitem>Панель управления</guimenuitem>, далее в элементах панели управления выберите элемент <guisubmenu>Система</guisubmenu>. На панели слева найдите ссылку на <guisubmenu>Дополнительные параметры системы</guisubmenu> и нажмите на нее. В отобразившемся окне <guilabel>Свойства системы</guilabel> перейдите на вкладку <guilabel>Дополнительно</guilabel> и нажмите на кнопку <guibutton>Переменные среды</guibutton>.</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/ch1_path_1.png" width="100%"/>
+            </imageobject>
+          </mediaobject>
+          <para>Чтобы создать новую переменную среды, нажмите на кнопку <guibutton>Создать</guibutton> в панели <guilabel>Системные переменные</guilabel>.</para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/ch1_path_2.png" width="100%" scalefit="1" contentdepth="100%"/>
+            </imageobject>
+          </mediaobject>
+          <para>В поле <guilabel>Имя переменной</guilabel> введите <userinput>JAVA_HOME</userinput>, а в поле <guilabel>Значение переменной</guilabel> <userinput>C:\Program Files\Java\jdk1.7.0_05.</userinput></para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/ch_path_3.png"/>
+            </imageobject>
+          </mediaobject>
+          <para>Чтобы изменить значение существующей переменной среды, например, <envar>Path</envar>, найдите ее в списке на панели <guilabel>Системные переменные</guilabel> и нажмите на кнопку <guibutton>Изменить</guibutton>. В поле <guilabel>Значение переменной</guilabel> введите значение <userinput>%JAVA_HOME%\bin.</userinput></para>
+          <mediaobject>
+            <imageobject>
+              <imagedata align="center" fileref="img/ch1_path_4.png"/>
+            </imageobject>
+          </mediaobject>
+        </caution>
+      </listitem>
+      <listitem>
+        <para>К значению переменной среды <envar>Path</envar> добавьте значение <userinput>%JAVA_HOME%\bin.</userinput> Значение переменной <envar>Path</envar> необходимо обновить для того, чтобы исполняемые файлы <application>JDK</application>  стали доступны в командной строке.</para>
+      </listitem>
+    </orderedlist>
+    <para>После установки убедимся в работоспособности java-машины. Для этого запустите командную строку и введите в ней команду </para>
+    <para><prompt>java -version</prompt>.</para>
+    <tip>
+      <title>Совет</title>
+      <para>Для того чтобы запустить командную строку <application>Windows</application>, нажмите сочетание клавиш <keycombo>
+          <keycap>WIN</keycap>
+          <keycap>R</keycap>
+        </keycombo> и в отобразившемся окне наберите <userinput>cmd.</userinput></para>
+    </tip>
+    <para>В результате выполнения команды Вы увидите окно командной строки, вид которого представлен на следующем рисунке:</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/ch1_java_check_version.png" width="100%" scalefit="1" format="PNG"/>
+      </imageobject>
+    </mediaobject>
+    <para>Если в результате выполнения команды Вы увидите окно, вид которого представлен ниже, вернитесь к <link linkend="path_setting">пункту 7</link> и проверьте правильность установки переменных среды <envar>JAVA_HOME</envar> и <envar>Path</envar>.<mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/ch1_not_java.png" width="100%" format="PNG"/>
+        </imageobject>
+      </mediaobject></para>
+    <para>Установка и настройка  <application>Java</application> завершена.</para>
+  </section>
+  <section>
+    <title>Установка Gradle 1.0</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/gradle_2000.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Сайт компании-разработчика: <ulink url="http://www.gradle.org/">http://www.gradle.org/</ulink></para>
+    <para>Дистрибутив: <ulink url="http://services.gradle.org/distributions/gradle-1.0-all.zip">http://services.gradle.org/distributions/gradle-1.0-all.zip</ulink></para>
+    <orderedlist>
+      <listitem>
+        <para>Скачайте архив <filename>gradle-1.0-all.zip</filename> и распакуйте его, например,  в <filename>C:\Program Files (x86)\gradle</filename>.</para>
+      </listitem>
+      <listitem>
+        <para>К значению переменной среды <envar>Path</envar> добавьте значение </para>
+        <para><userinput>C:\Program Files (x86)\gradle\gradle-1.0\bin.</userinput></para>
+      </listitem>
+    </orderedlist>
+    <para>Убедимся в работоспособности <application>gradle</application>. Для этого в командной строке введите команду</para>
+    <para> <prompt>gradle -version</prompt></para>
+    <para>В результате выполнения команды Вы увидите окно командной строки, вид которого представлен на следующем рисунке:</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/ch1_gradle.png" width="100%" format="PNG"/>
+      </imageobject>
+    </mediaobject>
+  </section>
+  <section>
+    <title>Установка IntelliJ IDEA 11 Community Edition</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/IntelliJIDEA.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Сайт компании-разработчика: <ulink url="http://www.jetbrains.com/">http://www.jetbrains.com/</ulink></para>
+    <para>Дистрибутив: <ulink url="http://download-ln.jetbrains.com/idea/ideaIC-11.exe">http://download-ln.jetbrains.com/idea/ideaIC-11.exe</ulink></para>
+    <orderedlist>
+      <listitem>
+        <para>Скачайте последнюю версию <application>IntelliJ IDEA Community Edition</application>. На момент написания данного руководства это <application>IntelliJ IDEA 11</application>.</para>
+      </listitem>
+      <listitem>
+        <para>Запустите файл <filename>ideaIC-11.exe</filename>.</para>
+      </listitem>
+      <listitem>
+        <para>В первом окне нажмите на кнопку <guibutton>Next</guibutton>.</para>
+      </listitem>
+      <listitem>
+        <para>В следующем окне предоставляется возможность сменить каталог установки программы, нажав на кнопку <guibutton>Browse</guibutton>.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/ch1_idea_2.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+      </listitem>
+      <listitem>
+        <para>В следующем окне предоставляется возможность установления ярлыка на рабочем столе и ярлыка быстрого запуска приложения.</para>
+      </listitem>
+      <listitem>
+        <para>Далее можно задать имя папки, которое будет отображаться в меню <guimenu>Пуск</guimenu>.</para>
+      </listitem>
+      <listitem>
+        <para>В следующем окне установите галочку <guilabel>Run IntelliJ IDEA Community Edition</guilabel>.</para>
+      </listitem>
+      <listitem>
+        <para>Произведем настройку среды разработки. В отобразившемся окне предлагается  импортировать настройки, если другая версия <application>IDEA</application> уже была установлена на данном локальном компьютере. Если вы устанавливаете <application>IDEA</application> в первый раз, установите переключатель в положение <guilabel>I do not have a previous version of IntelliJ IDEA or I do not want to import my settings</guilabel> и нажмите на кнопку <guibutton>OK</guibutton>.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/ch1_idea_6.png" format="PNG"/>
+          </imageobject>
+        </mediaobject>
+      </listitem>
+      <listitem>
+        <para>Теперь установим <application>SDK</application>, которое будет использоваться по умолчанию. Для этого в меню <guimenu>File</guimenu> выберите пункт  меню <guimenuitem>Project Structure</guimenuitem>. Далее слева в группе <guisubmenu>Project Settings</guisubmenu> выберите строку <guisubmenu>Project</guisubmenu>. На отобразившейся панели настроек нажмите  на кнопку <guibutton>New</guibutton> и выберите в контекстном меню пункт <guimenuitem>JSDK</guimenuitem>.</para>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/ch1_idea_7.png" width="100%"/>
+          </imageobject>
+        </mediaobject>
+        <para>В отобразившемся окне укажите путь к папке с <application>JDK</application>, например, <filename>C:\Program Files\Java\jdk1.7.0_05</filename>. Для сохранения настроек нажмите на кнопку <guibutton>Apply</guibutton>.</para>
+      </listitem>
+    </orderedlist>
+    <para>Установка и настройка среды разработки  <application>IntelliJ IDEA</application> завершена.</para>
+  </section>
 </chapter>

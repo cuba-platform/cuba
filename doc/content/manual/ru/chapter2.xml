@@ -1,1072 +1,471 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter2_create_app_code">
-  <title>Создание исходного кода приложения</title>
+<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter2_architecture">
+  <title>Архитектура</title>
+  <para>В данном разделе описываются различные аспекты архитектуры платформы <trademark>CUBA</trademark> и приложений на ее основе.</para>
   <section>
-    <title>Описание предметной области</title>
-    <para>Учебное приложение предназначено для хранения сведений о товарах, продавцах, покупателях, продажах и скидках. Пользователем системы является продавец.</para>
-    <para>Товар имеет следующие характеристики: </para>
+    <title>Структура проекта</title>
+    <para id="text_module_id">Функционально проект приложения содержит зависимости от <firstterm>проектов</firstterm>, входящих в состав платформы. Проект − это структурная единица, содержащая программный код. Каждый проект имеет определенное предназначение. Диаграмма зависимостей проектов платформы изображена на рисунке.</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/projectStructure.png"/>
+      </imageobject>
+    </mediaobject>
+    <para>Сплошными линиями изображены обязательные зависимости, пунктирными − опциональные.</para>
+    <para>Рассмотрим проекты платформы более подробно.</para>
+    <para><emphasis role="bold">Проект cuba</emphasis></para>
+    <para>Это базовый проект, обязательная часть любого приложения.  Содержит функциональность для работы с базой данных, набор <link linkend="section_services_id">сервисов</link> <link linkend="section_middleware_id">
+        <structfield>Middleware</structfield>
+      </link>, <link linkend="section_gui_framework">Generic User Interface Framework</link>, функциональность управления пользователями и их доступом к данным. Данный проект может быть собран как полноценное независимое приложение.</para>
+    <para><emphasis role="bold">Проект workflow</emphasis></para>
+    <para>Опциональный проект для работы с <glossterm linkend="glossary_process_id">бизнес-процессами</glossterm>.</para>
+    <para><emphasis role="bold">Проект fts</emphasis></para>
+    <para>Опциональный проект  <link>полнотекстового поиска</link>.</para>
+    <para><emphasis role="bold">Проект charts</emphasis></para>
+    <para>Опциональный проект для отображения диаграмм в Web-клиенте.</para>
+    <para><emphasis role="bold">Проект ccpayments</emphasis></para>
+    <para>Опциональный проект для приема платежей по картам.</para>
+    <para><emphasis role="bold">Проект reports</emphasis></para>
+    <para>Опциональный проект подсистемы генерации отчетов.</para>
+  </section>
+  <section>
+    <title>Структура и назначение каталогов и файлов проекта</title>
+    <para>Рассмотрим структуру классов и других файлов в проекте.</para>
+    <para>В корне проекта расположены скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>IntelliJ IDEA</application>.</para>
+    <para id="text_module_id">В каталоге <filename>modules</filename> расположены подкаталоги <firstterm linkend="text_module_id">модулей</firstterm> проекта − <structname>global</structname>, <structname>core</structname>, <structname>gui</structname>, <structname>web</structname>. Модуль – это элемент проекта, в котором хранится программный код.</para>
     <itemizedlist>
       <listitem>
-        <para>Наименование</para>
+        <para><structname>global</structname></para>
       </listitem>
       <listitem>
-        <para>Стоимость единицы</para>
+        <para><structname>core</structname></para>
       </listitem>
       <listitem>
-        <para>Название единицы (шт/кг/метр/и т.д.)</para>
+        <para><structname>gui</structname></para>
+      </listitem>
+      <listitem>
+        <para><structname>client</structname></para>
+      </listitem>
+      <listitem>
+        <para><structname>web</structname></para>
+      </listitem>
+      <listitem>
+        <para><structname>web-portal</structname></para>
+      </listitem>
+      <listitem>
+        <para><structname>desktop</structname></para>
       </listitem>
     </itemizedlist>
-    <para>Покупатель имеет характеристики:</para>
+    <para>Модуль <structname>global</structname> определяет компоненты, доступные как <link linkend="section_middleware_id">среднему слою</link>, так и <link linkend="section_client_id">клиентскому коду</link>.</para>
     <itemizedlist>
       <listitem>
-        <para>Полное имя</para>
+        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются интерфейсы <link linkend="section_services_id">сервисов</link><link linkend="section_middleware_id"> Middleware</link>. </para>
       </listitem>
       <listitem>
-        <para>Дата рождения</para>
+        <para>В пакете <package>com.haulmont.shop.core.entity</package> создаются классы сущностей и <glossterm linkend="glossary_localized_folders_id">файлы локализованных сообщений</glossterm> <filename>messages.properties</filename> для задания названий <link>сущностей</link> и их атрибутов.</para>
       </listitem>
       <listitem>
-        <para>Электронная почта</para>
+        <para><filename>shop-persistence.xml</filename> − в этом файле регистрируются новые классы сущностей.</para>
       </listitem>
       <listitem>
-        <para>Мобильный телефон</para>
-      </listitem>
-      <listitem>
-        <para>Адрес доставки</para>
+        <para><filename>shop-metadata.xml</filename> − в этом файле может быть задано замещение стандартных сущностей новыми.</para>
       </listitem>
     </itemizedlist>
-    <para>Продавец характеризуется:</para>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/ch2_structure.png" scale="60%"/>
+      </imageobject>
+    </mediaobject>
+    <para>Модуль <structname>core</structname> определяет компоненты <link linkend="section_middleware_id">среднего слоя</link> системы.</para>
     <itemizedlist>
       <listitem>
-        <para>Полным именем</para>
+        <para>Каталог <filename>db</filename> содержит sql-скрипты создания и изменения базы данных в подкаталогах <filename>init</filename> и <filename>update</filename> соответственно.</para>
       </listitem>
       <listitem>
-        <para>Датой рождения</para>
+        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются классы реализации <link linkend="section_services_id">сервисов</link><link linkend="section_middleware_id"> Middleware</link>, а также другие компоненты бизнес-логики приложения.</para>
       </listitem>
       <listitem>
-        <para>Датой приема на работу</para>
+        <para>Файл <filename>shop-app.properties</filename> содержит <link>конфигурационные параметры</link> среднего слоя:</para>
+        <para><parameter>cuba.springContextConfig</parameter> − определяет набор конфигурационных файлов <link linkend="text_additionally_spring">Spring</link>-фреймворка;</para>
+        <para><parameter>cuba.persistenceConfig</parameter> − определяет набор конфигурационных файлов <link linkend="text_additionally_ORM">ORM</link>;</para>
+        <para><parameter>cuba.viewsConfig</parameter> − задает набор конфигурационных файлов <link linkend="section_views_id">представлений</link>;</para>
       </listitem>
       <listitem>
-        <para>Электронной почтой</para>
+        <para>В файле <filename>shop-spring.xml</filename> при необходимости можно подменить реализацию стандартных сервисов или других управляемых фреймворком <link linkend="text_additionally_spring">Spring</link> компонентов, а также зарегистрировать создаваемые <link>JMX</link>-компоненты.</para>
       </listitem>
       <listitem>
-        <para>Номером мобильного телефона</para>
+        <para>Файл <filename>shop-views.xml</filename> содержит описание <link linkend="section_views_id">представлений</link>. Механизм представлений  обеспечивает извлечение из БД и передачу клиенту графов сущностей, ограниченных в глубину и/или по атрибутам.</para>
       </listitem>
       <listitem>
-        <para>Адресом проживания</para>
+        <para>Файл <filename>web\META-INF\context.xml</filename> содержит настройки подключения к базе данных.</para>
+      </listitem>
+      <listitem>
+        <para>Файл <filename>web\WEB-INF\web.xml</filename> − это дескриптор Web-приложения <link linkend="section_middleware_id">среднего слоя</link>. Среди прочего содержит список <link>конфигурационных файлов</link> <filename>*-app.properties</filename>, используемых данным приложением.</para>
       </listitem>
     </itemizedlist>
-    <para>Продажа имеет следующие характеристики:</para>
+    <para>Модуль <structname>gui</structname> определяет компоненты <link linkend="section_gui_framework">графического пользовательского интерфейса</link>. Этот модуль доступен всем типам клиентов. Модуль <structname>gui</structname> содержит универсальные экраны: классы <glossterm linkend="glossary_controller_id">контроллеров</glossterm>, <glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторы</glossterm> экранов, файлы <glossterm linkend="glossary_localized_folders_id">локализованных сообщений</glossterm>.</para>
     <itemizedlist>
       <listitem>
-        <para>Дата заказа</para>
+        <para>В пакете <package>com.haulmont.shop.gui.ui</package> создаются экраны приложения.</para>
       </listitem>
       <listitem>
-        <para>Дата поставки</para>
-      </listitem>
-      <listitem>
-        <para>Количество товара</para>
-      </listitem>
-      <listitem>
-        <para>Цена</para>
-      </listitem>
-      <listitem>
-        <para>Описание ценообразования</para>
-      </listitem>
-      <listitem>
-        <para>Адрес доставки</para>
+        <para>В файле <filename>shop-screens.xml</filename> регистрируются экраны приложения.</para>
       </listitem>
     </itemizedlist>
-    <para>Скидка характеризуется:</para>
+    <para>Модуль <structname>web</structname> определяет компоненты Web-клиента. Зависит от модулей <structname>gui</structname> и <structname>global</structname>. Содержит специфические экраны и/или компаньоны и файлы конфигурации.</para>
     <itemizedlist>
       <listitem>
-        <para>Минимальным количеством товара</para>
+        <para>Класс  <classname>com.haulmont.shop.App.java</classname> определяет главное окно приложения.</para>
       </listitem>
       <listitem>
-        <para>Ценой за единицу</para>
+        <para>Файл <filename>shop-web-app.properties</filename> содержит конфигурационные параметры Web-клиента:</para>
+        <para><parameter>cuba.windowConfig</parameter> − в этом свойстве указывается набор файлов конфигурации экранов приложения;</para>
+        <para><parameter>cuba.menuConfig</parameter> содержит список файлов, описывающих меню приложения;</para>
+        <para><parameter>cuba.appConfig.messagesPack</parameter>  задает список имен <glossterm linkend="glossary_localized_folders_id">пакетов сообщений</glossterm>, формирующих <glossterm linkend="glossary_main_localized_folder_id">главный пакет</glossterm>, используемый главным меню и другими общими компонентами системы;</para>
       </listitem>
       <listitem>
-        <para>Датой начала скидки</para>
+        <para>Файл <filename>shop-web-menu.xml</filename> содержит описание пунктов главного меню приложения.</para>
       </listitem>
       <listitem>
-        <para>Датой окончания скидки</para>
-      </listitem>
-    </itemizedlist>
-    <para>Требования к системе:</para>
-    <itemizedlist>
-      <listitem>
-        <para>Система должна предоставлять доступ к просмотру списка товаров, продаж и продавцов, а также к экрану редактирования товара, продажи и продавца.</para>
-      </listitem>
-      <listitem>
-        <para>Должен быть инструмент, позволяющий задавать соответствие пользователя системы  продавцу.</para>
-      </listitem>
-      <listitem>
-        <para>Должна быть возможность просматривать список покупателей и редактировать профиль покупателя, включающий редактирование скидок покупателя.</para>
-      </listitem>
-      <listitem>
-        <para>Настроить права доступа в системе так, чтобы продавец видел только свой профиль и только свои продажи.</para>
-      </listitem>
-      <listitem>
-        <para>Настроить делегирование полномочий одних пользователей другим пользователям.</para>
-      </listitem>
-      <listitem>
-        <para>Настроить аудит изменений.</para>
-      </listitem>
-      <listitem>
-        <para>В экране редактирования информации о продаже должна быть кнопка, по нажатию на которую считается цена продажи исходя из выбранного покупателя, товара, даты заказа и количества товара.</para>
+        <para>В файле <filename>shop-web-screens.xml</filename> регистрируются экраны приложения.</para>
       </listitem>
     </itemizedlist>
   </section>
   <section>
-    <title>Создание таблиц базы данных</title>
-    <para>Приведем логическую модель базы данных <application>&quot;Магазин&quot;</application>. </para>
+    <title>Структура CUBA-приложения</title>
+    <para>На диаграмме ниже приведена структура развернутого приложения, созданного на базе платформы. </para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/er_dia.png"/>
+        <imagedata align="center" fileref="img/DeploymentStructure.png"/>
       </imageobject>
     </mediaobject>
-    <para>Название таблиц, относящихся к разрабатываемому приложению, условимся предварять префиксом SHOP. Создадим таблицу <database>Товар</database>, имеющую три поля: &quot;Наименование&quot;, &quot;Стоимость единицы&quot; и &quot;Название единицы&quot;. Скрипт создания таблицы будет выглядеть следующим образом:</para>
-    <para><programlisting>create table SHOP_PRODUCT (
-    ID uuid not null,       --Первичный ключ (системное поле)
-    CREATE_TS timestamp,    --Когда создано (системное поле)
-    CREATED_BY varchar(50), --Кем  создано (системное поле)
-    VERSION integer,        --Версия (системное поле)
-    UPDATE_TS timestamp,    --Когда было последнее изменение (системное поле)
-    UPDATED_BY varchar(50), --Кто последний раз изменил сущность(системное поле)
-    DELETE_TS timestamp,    --Когда удалено (системное поле)
-    DELETED_BY varchar(50), --Кем удалено (системное поле)
-
-    NAME varchar(255),      --Наименование
-    PRICE numeric(19,2),    --Стоимость единицы
-    UNIT varchar(100),      --Название единицы
-
-    primary key (ID)
-)^</programlisting></para>
-    <para>SQL-команды разделяются знаком &quot;^&quot;. Это дает возможность задания сложных команд, содержащих внутри себя знаки &quot;;&quot;.</para>
-    <para>Системные поля обязательны во всех сущностях.</para>
-    <para>Добавьте  данный скрипт   в файл <filename>db\init\postgres\create-db.sql</filename> модуля <structname>core</structname>. Таким образом, в файле <filename>db\init\postgres\create-db.sql</filename> модуля <structname>core</structname> будет храниться последняя структура БД. </para>
-    <para>Проверим, создается ли таблица  в базе данных. Для этого выполните следующее: </para>
-    <orderedlist>
+    <para>В приведенном варианте приложение обеспечивает отсутствие единой точки отказа, балансировку нагрузки и подключение различных типов клиентов. В простейшем случае приложение может быть развернуто на одном сервере, в том числе содержащем и базу данных. Стрелками изображено направление запросов &quot;от пользователя к данным&quot;.</para>
+    <para>Приложение, основанное на платформе, физически состоит из нескольких <firstterm>уровней</firstterm> (tiers):</para>
+    <para><emphasis role="bold">Middleware</emphasis></para>
+    <para>Средний слой, содержащий основную бизнес-логику приложения. Представляет собой отдельное Web-приложение под управлением стандартного контейнера Java EE Web Profile.</para>
+    <para><emphasis role="bold">Web Client</emphasis></para>
+    <para>Основной клиентский уровень, как правило содержащий полнофункциональный интерфейс для Intranet-пользователей. Представляет собой отдельное Web-приложение под управлением стандартного контейнера Java EE Web Profile. Реализация пользовательского интерфейса основана на фреймворке Vaadin.</para>
+    <para><emphasis role="bold">Web Portal</emphasis></para>
+    <para>Дополнительный клиентский уровень, содержащий интерфейс для внешних (Internet) пользователей. Может использоваться для интеграции с мобильными устройствами или сторонними приложениями. Представляет собой отдельное Web-приложение под управлением стандартного контейнера Java EE Web Profile. Реализация пользовательского интерфейса основана на фреймворке Spring MVC.</para>
+    <para><emphasis role="bold">Desktop Client</emphasis></para>
+    <para>Дополнительный клиентский уровень, содержащий интерфейс для Intranet-пользователей. Представляет собой десктопное Java-приложение, реализация пользовательского интерфейса основана на фреймворке Java Swing.</para>
+    <para>REST API − компонент <structfield>Middleware</structfield>, обеспечивающий интеграцию системы со сторонними приложениями.</para>
+    <para>Физически CUBA-приложение всегда состоит как минимум из двух частей:</para>
+    <itemizedlist>
       <listitem>
-        <para>Запустите командную строку в <glossterm linkend="glossary_work_folder_id">рабочем каталоге</glossterm>.</para>
-      </listitem>
-      <listitem id="restart_id">
-        <para>В командной строке введите команду </para>
-        <para><prompt>gradle restart</prompt></para>
+        <para>Web-приложения <structfield>Middleware</structfield></para>
       </listitem>
       <listitem>
-        <para>После выполнения команды откройте <application>pgAdmin</application> и подключитесь к базе данных <database>shop</database>. Убедитесь, что таблица <database>shop_product</database> появилась в списке таблиц.</para>
-        <mediaobject>
-          <imageobject>
-            <imagedata align="center" fileref="img/check_table.png" width="100%"/>
-          </imageobject>
-        </mediaobject>
+        <para>Web-приложения Web-клиента</para>
       </listitem>
-    </orderedlist>
-    <para>Создайте по такому же принципу следующие таблицы, представленные на физической диаграмме базы данных:</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/er_eng.png"/>
-      </imageobject>
-    </mediaobject>
-    <warning>
-      <para>В целях упрощения на диаграмме из списка системных полей приведено только поле <database>ID</database> для каждой таблицы. Создавать требуется все системные поля для каждой таблицы базы данных так, как это показано в примере создания таблицы <database>Товар</database>.</para>
-    </warning>
+    </itemizedlist>
+    <para>Оба этих Web-приложения  могут быть развернуты на любом Web-сервере <application>Java</application>. По умолчанию используется <application>Apache Tomcat</application>. </para>
+    <para>Web и Desktop клиенты взаимодействуют со средним слоем одинаковым образом посредством протокола <application>HTTP</application>, что позволяет размещать средний слой произвольным образом, в том числе за сетевым брандмауэром. Следует отметить, что при развертывании в простейшем случае среднего слоя и Web-клиента на одном сервере между ними организуется локальное взаимодействие в обход сетевого стека для снижения накладных расходов.</para>
   </section>
-  <section>
-    <title>Создание сущностей</title>
-    <para>Предметная область моделируется в системе с помощью взаимосвязанных классов сущностей. Класс сущностей – это простой класс Java, как правило, соответствующий таблице в базе данных. Все персистентные (хранящиеся в БД) сущности должны находиться в пакете <package>com.haulmont.shop.core.entity</package> модуля <structname>global</structname>.</para>
-    <para>Из ER-диаграммы видно, что сущности <database>Продавец (Sales person)</database> и <database>Покупатель (Buyer)</database> имеют одинаковый набор атрибутов (<database>Полное имя</database>, <database>Дата рождения</database>, <database>Электронная почта</database>, <database>Мобильный телефон</database>). Поэтому выделим данные атрибуты в отдельную сущность <database>Личные данные (Personal data)</database>. Диаграмма классов представлена на рисунке ниже:</para>
+  <section id="section_middleware_id">
+    <title>Архитектура среднего слоя</title>
+    <para>На следующем рисунке приведены основные компоненты среднего слоя CUBA-приложения.</para>
     <mediaobject>
       <imageobject>
-        <imagedata align="center" fileref="img/class_dia.png"/>
+        <imagedata align="center" fileref="img/Middleware.png"/>
       </imageobject>
     </mediaobject>
-    <para>Классы сущности должны быть унаследованы от класса <classname>com.haulmont.cuba.core.entity.StandardEntity</classname>, который содержит в себе все системные поля. Создадим сущность <classname>Product</classname>, класс которой представлен в листинге.</para>
-    <para><programlisting>// аннотируем класс как сущность предметной области
-@Entity(name = &quot;shop$Product&quot;)
+    <para>Компоненты сгруппированы по двум <link linkend="text_module_id">модулям</link>: <structname>core</structname> и <structname>global</structname>. В <structname>global</structname> расположены компоненты, доступные как коду <structfield>Middleware</structfield>, так и клиентскому коду. В <structname>core</structname> расположены компоненты ядра <structfield>Middleware</structfield>.</para>
+    <para>Рассмотрим элементы диаграммы более подробно.</para>
+    <para><link linkend="section_services_id">
+        <emphasis role="bold">Services</emphasis>
+      </link> – управляемые <glossterm linkend="glossary_conteiner_id">контейнером</glossterm> компоненты, формирующие <glossterm linkend="glossary_app_boundary_id">границу приложения</glossterm> и предоставляющие интерфейс клиентам <link linkend="section_middleware_id">Middleware</link>. Сервисы могут содержать бизнес-логику сами, либо делегировать выполнение <link linkend="section_managed_beans_id">Managed Beans</link>.</para>
+    <para><link linkend="section_managed_beans_id">
+        <emphasis role="bold">Managed Beans</emphasis>
+      </link> – управляемые <glossterm linkend="glossary_conteiner_id">контейнером</glossterm> компоненты, содержащие бизнес-логику приложения. Вызываются <link linkend="section_services_id">сервисами</link>, другими бинами или через опциональный <glossterm linkend="glossary_jmx_id">JMX</glossterm> интерфейс.</para>
+    <para><emphasis role="bold">Entity Classes</emphasis> – классы, моделирующие предметную область приложения.  Представляют собой аннотированные <glossterm linkend="glossary_pojo_id">POJO</glossterm>. Аннотации используются для задания соответствий между столбцами таблицы базы данных и полями объектов с помощью <link linkend="text_additionally_JPA">OpenJPA</link>, а также для формирования метаданных в <link linkend="section_metadata_framework">Metadata Framework</link>.</para>
+    <para><emphasis role="bold">Persistence</emphasis> −  центральный интерфейс для доступа к функциональности хранения данных. Позволяет получать ссылки на интерфейсы <classname>EntityManager</classname> и <classname>Transaction</classname>.</para>
+    <para><emphasis role="bold">Transaction</emphasis> − интерфейс управления <link linkend="section_transaction_id">транзакциями</link> <link linkend="section_middleware_id">Middleware</link>.</para>
+    <para><emphasis role="bold">Entity Manager</emphasis> − интерфейс для работы с данными на уровне <link linkend="section_middleware_id">Middleware</link>. Позволяет извлекать сущности из базы данных по идентификатору и по запросу, а также сохранять и удалять их.</para>
+    <para><link linkend="section_metadata_framework">Metadata Framework</link> позволяет создавать описание предметной области в терминах классов, атрибутов и отношений между классами. Метаданные (модель данных) существенно упрощают создание универсальных механизмов работы с данными. Исходной информацией для построения модели являются аннотированные классы сущностей.</para>
+    <para><link linkend="section_infrastructure_interfaces_id">Global Infrastructure Interfaces</link> (интерфейсы инфраструктуры) предоставляют доступ к общей часто используемой функциональности. Реализованы в платформе аналогично <link linkend="section_managed_beans_id">Managed Beans</link>.
 
-// помечаем, что данный класс связан с таблицей в БД
-@Table(name = &quot;SHOP_PRODUCT&quot;)
-
-//формируем текстовое имя объекта
-@NamePattern(&quot;%s|name&quot;)
-public class Product extends StandardEntity {
-
-    @Column(name = &quot;NAME&quot;, nullable = false)
-    private String name;
-
-    @Column(name = &quot;PRICE&quot;, length = 15)
-    private BigDecimal price;
-
-    //помечаем атрибут unit, что он связан с колонкой SHOP_PRODUCT.UNIT
-    //и длина текстового поля &lt;= 100
-    @Column(name = &quot;UNIT&quot;, length = 100)
-    private String unit;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-}</programlisting></para>
-    <tip>
-      <title>Совет</title>
-      <para>Для автоматической генерации методов доступа (get/set) можно воспользоваться сочетанием клавиш <keycombo>
-          <keycap>Alt</keycap>
-          <keycap>Ins</keycap>
-        </keycombo>, затем в меню выбрать <guimenuitem>Getter and Setter</guimenuitem>. В открывшемся окне  выберите требуемые поля и нажмите на кнопку <guibutton>ОК</guibutton>. </para>
-    </tip>
-    <warning>
-      <title>Внимание!</title>
-      <para>Методы доступа не должны содержать никакой логики кроме чтения/установки атрибутов данной или связанных с ней сущностей.</para>
-    </warning>
-    <para>Классы сущностей должны быть соответствующим образом проаннотированы. </para>
-    <para>Аннотация <literal>@Entity</literal> определяет сущность. </para>
-    <para>Для формирования текстового имени объекта и отображении его в графическом интерфейсе пользователя используется аннотация <glossterm linkend="glossary_namePattern_id">@NamePattern</glossterm> на классе сущности.</para>
-    <para>Аннотация <literal>@Table</literal> указывает на таблицу базы данных, соответствующую классу сущности.</para>
-    <para>Более подробно об аннотациях можно прочитать в документации по OpenJPA <ulink url="http://openjpa.apache.org">http://openjpa.apache.org</ulink></para>
-    <para>После создания класса зарегистрируйте его в файле <filename>shop-persistence.xml</filename>:</para>
-    <para><programlisting>&lt;class&gt;com.haulmont.shop.core.entity.Product&lt;/class&gt;</programlisting></para>
-    <para>Для <glossterm linkend="glossary_localized_folders_id">локализации</glossterm> названий свойств сущностей в том же пакете что и классы создайте файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename>.</para>
-    <para>В этих файлах определяются строки с ключом <property>имя_сущности</property> для имени сущности и <property>имя_сущности.имя_атрибута</property> для имен атрибутов. Эти названия будут использованы при отображении списка экземпляров сущности и в окне редактирования сущности.</para>
-    <caution>
-      <title>Подсказка</title>
-      <para>Все исходные файлы, в том числе <filename>*.properties</filename>, должны иметь кодировку <code>UTF-8</code>, поэтому в начале работы необходимо настроить кодировку <code>UTF-8</code> в среде <application>IntelliJ IDEA</application>. Для этого зайдите в <guimenuitem role="italic">File−&gt;Settings−&gt;Project Settings−&gt;File Encodings</guimenuitem>. В выпадающем списке <guilabel role="italic">Default encoding for properties files</guilabel> выберите <code>UTF-8</code>. Если не выбрана опция <guilabel role="italic">Autodetect UTF-encoded files</guilabel>, то включите ее.</para>
-    </caution>
-    <para>Например, для русской локализации сущности <classname>Product</classname> перевод будет следующим:</para>
-    <para><programlisting>Product=Товар
-Product.ID=Идентификатор
-Product.name=Наименование
-Product.price=Стоимость единицы
-Product.unit=Название единицы</programlisting></para>
-    <para>Рассмотрим создание сущности <classname>PersonalData</classname>. Эта сущность не имеет соответствующей таблицы в базе данных, поэтому аннотацию <literal>@Table</literal> использовать не нужно. Но так как эта сущность является &quot;встраиваемой&quot; в сущности <classname>Покупатель (Buyer)</classname>  и <classname>Продавец (SalesPerson)</classname>, нужно использовать аннотацию <literal>@Embeddable</literal>.</para>
-    <para><programlisting>@Embeddable
-@MetaClass(name = &quot;shop$PersonalData&quot;)
-@NamePattern(&quot;%s|fullName&quot;)
-public class PersonalData extends EmbeddableEntity {
-
-    @Column(name = &quot;FULL_NAME&quot;)
-    private String fullName;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name = &quot;BIRTHDAY&quot;)
-    private Date birthday;
-
-    @Column(name = &quot;EMAIL&quot;)
-    private String email;
-
-    @Column(name = &quot;PHONE&quot;)
-    private String phone;
-
-    /*...*/
-}</programlisting></para>
-    <para>В сущностях <classname>Buyer</classname> и <classname>SalesPerson</classname> &quot;встраиваем&quot; сущность <classname>PersonalData</classname>, помечая ее аннотацией <literal>@Embedded</literal>.</para>
-    <para>Поля, содержащие дату, пометьте аннотацией <literal>@Temporal</literal>, чтобы поле хранило только дату без времени.</para>
-    <para>В листинге ниже приведена часть кода класса <classname>SalesPerson</classname>:</para>
-    <para><programlisting>@Entity(name = &quot;shop$SalesPerson&quot;)
-@Table(name = &quot;SHOP_SALES_PERSON&quot;)
-@NamePattern(&quot;%s|personalData&quot;)
-public class SalesPerson extends StandardEntity {
-
-    @Temporal(value=TemporalType.DATE)
-    @Column(name = &quot;WORKS_FROM&quot;)
-    private Date worksFrom;
-
-    @Column(name = &quot;ADDRESS&quot;)
-    private String address;
-
-    @Embedded
-    private PersonalData personalData;
-    /*...*/
-}</programlisting></para>
-    <section>
-      <title>Определение отношений между сущностями</title>
-      <para>В каждом отношении участвуют две сущности. Рассмотрим виды отношений, которые есть в базе данных <database>shop</database>.</para>
-      <para>Сущность <database>Скидка</database> ссылается на сущность <database>Товар</database>. Данное отношение имеет связь <literal>&quot;многие-к-одному&quot;</literal> (<literal>ManyToOne</literal>). Аналогичные связи существуют между сущностями <database>Скидка</database> и <database>Покупатель</database>, <database>Продажа</database> и <database>Товар</database>, <database>Продажа</database> и <database>Покупатель</database>, <database>Продажа</database> и <database>Продавец</database>.</para>
-      <para>Рассмотрим создание сущности <classname>Discount</classname>.</para>
-      <para><programlisting>@Entity(name = &quot;shop$Discount&quot;)
-@Table(name = &quot;SHOP_DISCOUNT&quot;)
-public class Discount extends StandardEntity {
-
-    @Column(name = &quot;MIN_QUANTITY&quot;)
-    private Integer minQuantity;
-
-    @Column(name = &quot;PRICE&quot;, length = 15)
-    private BigDecimal price;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name = &quot;FROM_DATE&quot;)
-    private Date fromDate;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name = &quot;TILL_DATE&quot;)
-    private Date tillDate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = &quot;BUYER_ID&quot;)
-    private Buyer buyer;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = &quot;PRODUCT_ID&quot;)
-    private Product product;
-    
-    /*...*/
-}</programlisting></para>
-      <para>Аннотацией <literal>@ManyToOne</literal> определяется отношение, в котором ссылаемая сущность имеет мощность 1.</para>
-      <para>Внешние ключи обозначаются аннотацией <literal>@JoinColumn</literal>. Атрибут <parameter>name</parameter> определяет внешний ключ для таблицы, с которой связан класс <classname>Discount</classname>.</para>
-      <para>Так как связь между сущностями <classname>Discount</classname> и <classname>Buyer</classname> является двунаправленной, необходимо сделать также ссылку на сущность <classname>Discount</classname> в сущности <classname>Buyer</classname>.</para>
-      <para><programlisting>@OneToMany(mappedBy = &quot;buyer&quot;)
-@Aggregation
-@OnDelete(DeletePolicy.CASCADE)
-private List&lt;Discount&gt; discounts;</programlisting></para>
-      <para>Атрибут <parameter>mappedBy</parameter> указывает, что <classname>Buyer</classname> привязан к классу <classname>Discount</classname>.</para>
-      <para>Аннотация <literal>@Aggregation</literal> устанавливает в метаданных  тип ссылочного атрибута (как правило, коллекции). Используется для организации сохранения элементов коллекции совместно с master-сущностью. </para>
-      <para>Кроме поддержки различных ограничений на уровне баз данных, JPA позволяет определять ограничения для отношений. В классе  <classname>Buyer</classname> показан каскадный эффект удаления сущности. Если покупатель будет удален, то удалятся и связанные с ним скидки.</para>
-    </section>
-    <section>
-      <title>Создание класса перечисления</title>
-      <para>Обратите внимание, в сущности <database>Товар</database> существует атрибут <database>Название единицы</database>. Значением этого атрибута должно являться одно значение из списка допустимых значений. Список таких допустимых значений и будет являться перечислением. Создадим класс перечисления.</para>
-      <para><programlisting>public enum Unit implements EnumClass&lt;String&gt;
-{
-    PCS(&quot;pcs&quot;),
-    KG(&quot;kg&quot;),
-    M(&quot;m&quot;);
-
-    private String id;
-
-    Unit(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public static Unit fromId(String id) {
-        if (&quot;pcs&quot;.equals(id))
-            return PCS;
-        else if (&quot;kg&quot;.equals(id))
-            return KG;
-        else if (&quot;m&quot;.equals(id))
-            return M;
-        else
-            return null;
-    }
-}</programlisting></para>
-      <para>Далее создайте <glossterm linkend="glossary_localized_folders_id">файлы локализованных сообщений</glossterm> для класса <classname>Unit</classname>.</para>
-      <para><programlisting>Unit.PCS=шт
-Unit.KG=кг
-Unit.M=м</programlisting></para>
-      <para>Вернитесь к классу <classname>Product</classname> и измените методы доступа для атрибута <varname>Unit</varname>:</para>
-      <para><programlisting>public Unit getUnit() {
-    return Unit.fromId(unit);
-}
-
-public void setUnit(Unit unit) {
-    this.unit = unit == null ? null: unit.getId();
-}</programlisting></para>
-    </section>
-  </section>
-  <section>
-    <title>Создание графического интерфейса пользователя приложения</title>
-    <para>Файлы, относящиеся к экранам, необходимо создавать в пакете <package>com.haulmont.shop.gui.ui</package> модуля <structname>gui</structname>.</para>
-    <para>Любой экран состоит из:</para>
-    <orderedlist>
+Все интерфейсы инфраструктуры имеют соответствующие <firstterm>статические фасады</firstterm> − классы со статическими методами, позволяющие иметь доступ к нужной функциональности из статического контекста (при невозможности использовать <link>dependency injection</link>). Статические фасады имеют имена, заканчивающиеся на <classname>*Provider</classname>.</para>
+    <para><link linkend="text_additionally_spring">Spring Framework</link> − основа среднего слоя. Используются следующие возможности <link linkend="text_additionally_spring">Spring</link> Framework: </para>
+    <itemizedlist>
       <listitem>
-        <para><glossterm linkend="glossary_xml_descriptor_id">XML-дескриптора</glossterm>, описывающего <glossterm linkend="glossary_datasource_id">источники данных</glossterm> и расположение визуальных компонентов экрана.</para>
+        <para>Инверсия управления (IoC container)</para>
       </listitem>
       <listitem>
-        <para><glossterm linkend="glossary_controller_id">Контроллера экрана</glossterm> − <classname>Java</classname> или <classname>Groovy</classname>  класса, в котором можно реализовывать бизнес-логику и управлять поведением компонентов, описанных в xml-дескрипторе, с помощью различных событий.</para>
+        <para>Аспектно-ориентированное программирование (AOP)</para>
       </listitem>
-    </orderedlist>
-    <section lang="ru">
-      <title>Создание экранов просмотра сущностей</title>
-      <para>Рассмотрим создание экрана просмотра товаров как типичного экрана приложения.</para>
-      <para>Создадим экран, на котором будет отображаться список товаров в виде таблицы. В первую очередь  создайте пакет <package>com.haulmont.shop.gui.ui.product</package> в модуле <structname>gui</structname>, где мы будем создавать файлы, относящиеся к экранам сущности  <classname>Product</classname>.</para>
-      <para>Для создания списка &quot;Товары&quot; создайте следующие файлы:</para>
-      <orderedlist>
-        <listitem>
-          <para><glossterm linkend="glossary_xml_descriptor_id">XML-дескриптор</glossterm> списка сущностей  <filename>product-browse.xml</filename></para>
-          <para>Для того чтобы отобразить товары в таблице с возможностью создавать, изменять и удалять, необходимо чтобы файл <filename>product-browse.xml</filename> имел следующий вид:<programlisting>&lt;window
-        xmlns=&quot;http://www.haulmont.com/schema/cuba/gui/window.xsd&quot;
-        messagesPack=&quot;com.haulmont.shop.gui.ui.product&quot;
-        class=&quot;com.haulmont.shop.gui.ui.product.ProductBrowser&quot;
-        caption=&quot;msg://browserCaption&quot;
-        lookupComponent=&quot;productsTable&quot;
-        &gt;
-
-    &lt;dsContext&gt;
-        &lt;collectionDatasource id=&quot;productsDs&quot;
-                              class=&quot;com.haulmont.shop.core.entity.Product&quot;
-                              view=&quot;_local&quot;&gt;
-            &lt;query&gt;
-                select p from shop$Product p order by p.name
-            &lt;/query&gt;
-        &lt;/collectionDatasource&gt;
-    &lt;/dsContext&gt;
-
-    &lt;layout expandLayout=&quot;true&quot;&gt;
-        &lt;vbox id=&quot;table-panel&quot;
-              expand=&quot;productsTable&quot;
-              spacing=&quot;true&quot;
-              height=&quot;100%&quot;&gt;
-            &lt;groupBox id=&quot;filterBox&quot; collapsable=&quot;false&quot; stylename=&quot;edit-area&quot;&gt;
-                &lt;filter id=&quot;genericProductFilter&quot;
-                        datasource=&quot;productsDs&quot;
-                        width=&quot;100%&quot;&gt;
-                    &lt;properties include=&quot;.*&quot;
-                                exclude=&quot;&quot;/&gt;
-                &lt;/filter&gt;
-            &lt;/groupBox&gt;
-            &lt;table id=&quot;productsTable&quot;
-                   editable=&quot;false&quot;&gt;
-                &lt;actions&gt;
-                    &lt;action id=&quot;create&quot;/&gt;
-                    &lt;action id=&quot;edit&quot;/&gt;
-                    &lt;action id=&quot;remove&quot;/&gt;
-                    &lt;action id=&quot;refresh&quot;/&gt;
-                    &lt;action id=&quot;excel&quot;/&gt;
-                &lt;/actions&gt;
-                &lt;buttonsPanel&gt;
-                    &lt;button action=&quot;productsTable.create&quot;/&gt;
-                    &lt;button action=&quot;productsTable.edit&quot;/&gt;
-                    &lt;button action=&quot;productsTable.remove&quot;/&gt;
-                    &lt;button action=&quot;productsTable.excel&quot;/&gt;
-                    &lt;button action=&quot;productsTable.refresh&quot;/&gt;
-                &lt;/buttonsPanel&gt;
-                &lt;rowsCount/&gt;
-                &lt;columns&gt;
-                    &lt;column id=&quot;name&quot;/&gt;
-                    &lt;column id=&quot;price&quot;/&gt;
-                    &lt;column id=&quot;unit&quot;/&gt;
-                &lt;/columns&gt;
-                &lt;rows datasource=&quot;productsDs&quot;/&gt;
-            &lt;/table&gt;
-        &lt;/vbox&gt;
-    &lt;/layout&gt;
-&lt;/window&gt;</programlisting></para>
-          <para>В элементе <property>dsContext</property> добавлен один компонент <glossterm linkend="glossary_datasource_id">источника данных</glossterm>  <parameter>collectionDatasource</parameter>, который  выбирает сущности <classname>Product</classname> с помощью JPQL запроса  <classname>select p from shop$Product p order by p.name</classname> (Подробнее о JPQL можно прочитать на сайте <ulink url="http://openjpa.apache.org/">http://openjpa.apache.org/</ulink>) с <glossterm linkend="glossary_view_ru_id">представлением</glossterm> view=<emphasis role="italic">&quot;_local&quot;</emphasis>. </para>
-          <para>Рассмотрим элементы дескриптора более подробно.</para>
-          <para>Компонент <glossterm linkend="glossary_filter_id">Generic Filter</glossterm> (XML-имя компонента − <parameter>filter</parameter>) служит для отображения произвольного фильтра.</para>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/generic_filter.png"/>
-            </imageobject>
-          </mediaobject>
-          <para>Компонент <glossterm linkend="glossary_table_id">Table</glossterm> (XML-имя компонента − <parameter>table</parameter>) служит для отображения данных в виде таблицы.</para>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/create_browser_1.png"/>
-            </imageobject>
-          </mediaobject>
-          <para>Элемент <parameter>column</parameter> задает опции для колонки таблицы. Обязательно содержит атрибут <parameter>id</parameter>, в котором задается название атрибута сущности, выводимого в колонке. Название берется из <glossterm linkend="glossary_localized_folders_id">пакета локализованных сообщений</glossterm>.</para>
-          <para>Для отображения количества строк таблицы используется элемент <parameter>rowsCount</parameter>.</para>
-          <para>Над таблицей находится панель, содержащая кнопки для управления данными в этой таблице. XML-имя такой панели − <glossterm>buttonsPanel</glossterm>.</para>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/create_browser_2.png"/>
-            </imageobject>
-          </mediaobject>
-          <para>Размещение перечисленных выше компонентов задается с помощью контейнера <classname>BoxLayout</classname>. Существует три типа этого контейнера, определяемых именем XML-элемента. В нашем дескрипторе используется <parameter>vbox</parameter>, в результате чего элементы расположены вертикально.</para>
-          <para>Определим <glossterm linkend="glossary_view_ru_id">представление</glossterm>  в файле <filename>shop-views.xml</filename> модуля <structname>core</structname>.</para>
-          <para><programlisting>&lt;view class=&quot;com.haulmont.shop.core.entity.Product&quot;
-      name=&quot;editProduct&quot;
-      extends=&quot;_local&quot;&gt;
-   &lt;property name=&quot;unit&quot;/&gt;
-&lt;/view&gt;</programlisting></para>
-          <para><glossterm linkend="glossary_xml_descriptor_id">Дескрипторы экранов</glossterm> имеют идентификаторы, по которым удобно вызывать экраны из меню или из программного кода. Идентификаторы назначаются в файле <filename>shop-screens.xml</filename> модуля <structname>gui</structname>.</para>
-          <para><programlisting>&lt;screen id=&quot;shop$Product.browse&quot; template=&quot;/com/haulmont/shop/gui/ui/product/product-browse.xml&quot;/&gt;</programlisting></para>
-          <para>Чтобы добавить экран в меню, измените файл <filename>shop-web-menu.xml</filename> модуля <structname>web</structname> следующим образом:</para>
-          <para><programlisting>&lt;menu-config xmlns=&quot;http://www.haulmont.com/schema/cuba/gui/menu-config.xsd&quot;&gt;
-    &lt;menu id=&quot;shop&quot; insertBefore=&quot;administration&quot;&gt;
-        &lt;item id=&quot;shop$Product.browse&quot;/&gt;
-    &lt;/menu&gt;
-&lt;/menu-config&gt;</programlisting></para>
-          <para>Для того чтобы ссылки отображались в меню корректно, создайте файлы <glossterm linkend="glossary_main_localized_folder_id">главного пакета сообщений</glossterm> расширения <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> в пакете <package>com.haulmont.shop</package> модуля <structname>web</structname>, прописав в них названия пункта меню на английском и русском языках соответственно.</para>
-          <programlisting>menu-config.shop=Магазин
-menu-config.shop$Product.browse=Товары</programlisting>
-        </listitem>
-        <listitem>
-          <para>Класс <glossterm linkend="glossary_controller_id">контроллера</glossterm> будет называться  <classname>ProductBrowser</classname>. Описание класса представлено ниже.</para>
-          <para><programlisting>public class ProductBrowser extends AbstractLookup {
-
-    public ProductBrowser(IFrame frame) {
-        super(frame);
-    }
-
-    @Override
-    public void init(Map&lt;String, Object&gt; params) {
-        super.init(params);
-    }
-}</programlisting></para>
-          <para><classname>ProductBrowser</classname> наследуется от <classname>AbstractLookup</classname> и переопределяет метод <methodname>init(Map&lt;String, Object&gt; params)</methodname>, который вызывается при формировании окна.</para>
-        </listitem>
-      </orderedlist>
-      <para>Посмотрим, как созданный нами экран выглядит в системе. Для этого  <link linkend="faq_restart_id">пересоберите проект</link> и зайдите в систему. Откройте пункт меню <guimenu>Магазин</guimenu> −&gt; <guimenu>Товары</guimenu>.</para>
-      <mediaobject>
-        <imageobject>
-          <imagedata align="center" fileref="img/interface_17.png" width="100%"/>
-        </imageobject>
-      </mediaobject>
-      <para>Можно убедиться, что данный экран содержит следующие элементы:</para>
+      <listitem>
+        <para>Управление транзакциями</para>
+      </listitem>
+      <listitem>
+        <para>Remoting − доступ к сервисам среднего слоя по протоколу HTTP</para>
+      </listitem>
+      <listitem>
+        <para>Реализация Web-сервисов и <link>REST API</link></para>
+      </listitem>
+    </itemizedlist>
+    <para><link linkend="text_additionally_JPA">OpenJPA Framework</link> − реализация <link linkend="text_additionally_ORM">ORM</link> по стандарту JPA. Позволяет работать с таблицами базы данных как с объектами Java и создавать запросы на языке <link>JPQL</link>.</para>
+    <section id="section_services_id">
+      <title>Сервисы</title>
+      <para><emphasis role="bold">Назначение</emphasis></para>
+      <para>Сервисы представляют собой слой  компонентов, формирующих <glossterm linkend="glossary_app_boundary_id">границу приложения</glossterm>. Все клиенты должны обращаться к уровню <link linkend="section_middleware_id">Middleware</link> только посредством вызова методов сервисов.</para>
+      <para>Основные задачи сервисов:</para>
       <itemizedlist>
         <listitem>
-          <para>Панель с фильтром.</para>
+          <para>Обеспечить выполнение каждого метода в отдельной <link linkend="section_transaction_id">транзакции</link>. </para>
         </listitem>
         <listitem>
-          <para>Панель с кнопками <guibutton>Создать</guibutton>, <guibutton>Изменить</guibutton>, <guibutton>Удалить</guibutton>, <guibutton>Обновить</guibutton>, <guibutton>Excel</guibutton> и с меткой, отображающей число записей в таблице.</para>
+          <para>Обепечивать запись исключений в журнал.</para>
         </listitem>
         <listitem>
-          <para>Таблицу с колонками <guilabel>&quot;Наименование&quot;</guilabel>, <guilabel>&quot;Стоимость единицы&quot;</guilabel> и <guilabel>&quot;Название единицы&quot;</guilabel>.</para>
+          <para>Обеспечивать <firstterm>отказоустойчивость</firstterm> (failover) в <link>кластере</link>  для удаленных клиентов.</para>
+        </listitem>
+        <listitem>
+          <para>В бизнес-методах сервисов могут проверяться права пользователя</para>
         </listitem>
       </itemizedlist>
-      <para>Далее по аналогии создайте экраны для просмотра списка покупателей, продавцов и продаж.</para>
-    </section>
-    <section lang="ru">
-      <title>Создание экранов редактирования сущностей</title>
-      <para>Рассмотрим создание экрана редактирования товара как типичного экрана редактирования сущности системы.</para>
-      <para>Экран редактирования сущности <classname>Товар</classname>  состоит из:</para>
-      <orderedlist>
-        <listitem>
-          <para><glossterm linkend="glossary_xml_descriptor_id">XML-дескриптора</glossterm> <filename>product-edit.xml</filename>. Для того чтобы  экран редактирования сущности <classname>Товар</classname> имел поля для ввода наименования, стоимости единицы и названия единицы, XML-дескриптор должен иметь следующий вид:</para>
-          <programlisting>&lt;window
-        xmlns=&quot;http://www.haulmont.com/schema/cuba/gui/window.xsd&quot;
-        class=&quot;com.haulmont.shop.gui.ui.product.ProductEditor&quot;
-        caption=&quot;msg://editorCaption&quot;
-        datasource=&quot;productDs&quot;
-        messagesPack=&quot;com.haulmont.shop.gui.ui.product&quot;
-        focusComponent=&quot;fieldGroup&quot;&gt;
-
-    &lt;dsContext&gt;
-        &lt;datasource id=&quot;productDs&quot;
-                    class=&quot;com.haulmont.shop.core.entity.Product&quot;
-                    view=&quot;editProduct&quot;/&gt;
-    &lt;/dsContext&gt;
-
-    &lt;layout expand=&quot;windowActions&quot;&gt;
-        &lt;fieldGroup id=&quot;fieldGroup&quot;
-                    datasource=&quot;productDs&quot;
-                    stylename=&quot;edit-area&quot;&gt;
-            &lt;column width=&quot;250px&quot;&gt;
-                &lt;field id=&quot;name&quot;
-                       required=&quot;true&quot;/&gt;
-                &lt;field id=&quot;price&quot;/&gt;
-                &lt;field id=&quot;unit&quot;/&gt;
-            &lt;/column&gt;
-        &lt;/fieldGroup&gt;
-        &lt;iframe id=&quot;windowActions&quot;
-                src=&quot;/com/haulmont/cuba/gui/edit-window.actions.xml&quot;/&gt;
-    &lt;/layout&gt;
-&lt;/window&gt;</programlisting>
-          <para>В экран редактирования будет передаваться одна сущность либо на создание, либо на изменение, и проставляться в <property>datasource</property>. Поэтому вместо <property>collectionDatasource</property> объявлен <property>datasource</property>.</para>
-          <para>Для отображения набора атрибутов редактируемой или создаваемой сущности используется компонент FieldGroup (XML-имя компонента − <parameter>fieldGroup</parameter>).</para>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/create_browser_4.png"/>
-            </imageobject>
-          </mediaobject>
-          <para>Данный компонент содержит в себе три элемента <parameter>field</parameter>: </para>
-          <para><programlisting>&lt;field id = &quot;name&quot;
-       required = &quot;true&quot;/&gt;
-&lt;field id = &quot;price&quot;/&gt;
-&lt;field id=&quot;unit&quot;/&gt;</programlisting></para>
-          <para>Обратите внимание, что в первом элементе <parameter>field</parameter> указан атрибут <code>required = &quot;true&quot;</code>. Данный атрибут указывает, что в данное поле обязательно должно быть введено значение. Такое поле помечается красной звездочкой. В случае если значение в данное поле не было введено, пользователю выводится сообщение.</para>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/create_editor_1.png" width="100%"/>
-            </imageobject>
-          </mediaobject>
-          <para><glossterm linkend="glossary_xml_descriptor_id">XML-дескриптор</glossterm> экрана редактирования должен содержать фрейм с кнопками подтверждения или отказа операции над сущностью. Есть два стандартных варианта такого фрейма:</para>
-          <itemizedlist>
-            <listitem>
-              <para><filename>/com/haulmont/cuba/gui/edit-window.actions.xml</filename> − фрейм с двумя кнопками: <guibutton>OK</guibutton>, <guibutton>Cancel</guibutton>. При нажатии на кнопку <guibutton>OK</guibutton> происходит фиксация операции, и  окно закрывается.</para>
-            </listitem>
-            <listitem>
-              <para><filename>/com/haulmont/cuba/gui/extended-edit-window.actions.xml</filename>− фрейм с тремя кнопками: <guibutton>OK</guibutton>, <guibutton>OK&amp;Close</guibutton>, <guibutton>Cancel</guibutton>. В этом фрейме есть возможность подтвердить операцию, не закрывая окна.</para>
-            </listitem>
-          </itemizedlist>
-          <para>Зарегистрируйте экран в файле <filename>shop-screens.xml</filename> модуля <structname>gui</structname>, чтобы его можно было открывать из меню, других окон или из программного кода.</para>
-          <programlisting>&lt;screen id=&quot;shop$Product.edit&quot; template=&quot;/com/haulmont/shop/gui/ui/product/product-edit.xml&quot;/&gt;</programlisting>
-          <para>Для корректного отображения название редактируемой сущности нужно добавить <glossterm linkend="glossary_localized_folders_id">локализованное название</glossterm> сущности в  файлы <filename>messages.properties</filename> и <filename>messages_ru.properties</filename> в пакете <package>com.haulmont.shop.gui.ui.product</package>. Например, для русской локализации в файл будет добавлена следующая строка:</para>
-          <programlisting>editorCaption=Товар</programlisting>
-        </listitem>
-        <listitem>
-          <para>Класс <glossterm linkend="glossary_controller_id">контроллера</glossterm> для редактирования сущности должен быть унаследован от <classname>com.haulmont.cuba.gui.components.AbstractEditor</classname>, который реализует интерфейс <interfacename>Window.Editor</interfacename>.</para>
-          <para>В контроллере часто приходится переопределять метод <methodname>setItem()</methodname>, так как в этот момент становится известным экземпляр, который будет редактироваться. В зависимости от свойств этого экземпляра может быть произведена та или иная инициализация. Метод <methodname>setItem()</methodname> вызывается после <methodname>init()</methodname>. </para>
-          <para>Класс контроллера будет иметь следующий вид:</para>
-          <programlisting>public class ProductEditor extends AbstractEditor {
-
-    public ProductEditor(IFrame frame) {
-        super(frame);
-    }
-
-    @Override
-    public void setItem(Entity item) {
-        super.setItem(item);
-    }
-
-    @Override
-    public void init(Map&lt;String, Object&gt; params) {
-        super.init(params);
-    }
-}</programlisting>
-        </listitem>
-      </orderedlist>
-      <para><glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторы</glossterm> остальных сущностей, описывающие экраны-браузеры, создаются аналогично. Исключение составляет сущность <classname>Discount</classname>. Для этой сущности не нужно создавать XML-дескриптор экрана просмотра сущностей. Таблица, содержащая экземпляры сущности <classname>Discount</classname>, будет располагаться в экране редактирования сущности <classname>Buyer</classname>.</para>
-      <para>Рассмотрим более подробно создание экрана редактирования профиля покупателя.</para>
-      <para><programlisting>&lt;window
-        xmlns=&quot;http://www.haulmont.com/schema/cuba/gui/window.xsd&quot;
-        class=&quot;com.haulmont.shop.gui.ui.buyer.BuyerEditor&quot;
-        caption=&quot;msg://editorCaption&quot;
-        datasource=&quot;buyerDs&quot;
-        messagesPack=&quot;com.haulmont.shop.gui.ui.buyer&quot;
-        focusComponent=&quot;fieldGroup&quot;&gt;
-
-    &lt;dsContext&gt;
-        &lt;datasource id=&quot;buyerDs&quot;
-                    class=&quot;com.haulmont.shop.core.entity.Buyer&quot;
-                    view=&quot;buyerEdit&quot;&gt;
-            &lt;datasource id=&quot;personalDataDs&quot; property=&quot;personalData&quot;/&gt;
-            &lt;collectionDatasource id=&quot;discountsDs&quot; property=&quot;discounts&quot;/&gt;
-        &lt;/datasource&gt;
-    &lt;/dsContext&gt;
-
-    &lt;layout expand=&quot;buyerProfile&quot;&gt;
-        &lt;vbox spacing=&quot;true&quot; expand=&quot;discountBox&quot; id=&quot;buyerProfile&quot;&gt;
-            &lt;fieldGroup id=&quot;personalFieldGroup&quot;
-                        datasource=&quot;personalDataDs&quot;
-                        stylename=&quot;edit-area&quot;&gt;
-                &lt;column width=&quot;250px&quot;&gt;
-                    &lt;field id=&quot;fullName&quot;/&gt;
-                    &lt;field id=&quot;birthday&quot;/&gt;
-                    &lt;field id=&quot;email&quot;/&gt;
-                    &lt;field id=&quot;phone&quot;/&gt;
-                    &lt;field id=&quot;deliveryAddress&quot; datasource=&quot;buyerDs&quot;/&gt;
-                &lt;/column&gt;
-            &lt;/fieldGroup&gt;
-
-            &lt;vbox id=&quot;discountBox&quot; expand=&quot;discountsTable&quot; margin=&quot;true&quot; spacing=&quot;true&quot;&gt;
-                &lt;label value=&quot;msg://discounts&quot; stylename=&quot;h2&quot;/&gt;
-                &lt;table id=&quot;discountsTable&quot;
-                       editable=&quot;false&quot;&gt;
-                    &lt;actions&gt;
-                        &lt;action id=&quot;create&quot;/&gt;
-                        &lt;action id=&quot;edit&quot;/&gt;
-                        &lt;action id=&quot;remove&quot;/&gt;
-                        &lt;action id=&quot;refresh&quot;/&gt;
-                        &lt;action id=&quot;excel&quot;/&gt;
-                    &lt;/actions&gt;
-                    &lt;buttonsPanel&gt;
-                        &lt;button action=&quot;discountsTable.create&quot;/&gt;
-                        &lt;button action=&quot;discountsTable.edit&quot;/&gt;
-                        &lt;button action=&quot;discountsTable.remove&quot;/&gt;
-                        &lt;button action=&quot;discountsTable.excel&quot;/&gt;
-                        &lt;button action=&quot;discountsTable.refresh&quot;/&gt;
-                    &lt;/buttonsPanel&gt;
-                    &lt;rowsCount/&gt;
-                    &lt;columns&gt;
-                        &lt;column id=&quot;product&quot;/&gt;
-                        &lt;column id=&quot;minQuantity&quot;/&gt;
-                        &lt;column id=&quot;price&quot;/&gt;
-                        &lt;column id=&quot;fromDate&quot;/&gt;
-                        &lt;column id=&quot;tillDate&quot;/&gt;
-                    &lt;/columns&gt;
-                    &lt;rows datasource=&quot;discountsDs&quot;/&gt;
-                &lt;/table&gt;
-            &lt;/vbox&gt;
-        &lt;/vbox&gt;
-        &lt;iframe id=&quot;windowActions&quot;
-                src=&quot;/com/haulmont/cuba/gui/edit-window.actions.xml&quot;/&gt;
-    &lt;/layout&gt;
-&lt;/window&gt;</programlisting></para>
-      <para>Особого внимания заслуживает элемент для инициализации <glossterm linkend="glossary_datasource_id">источников данных</glossterm>. Внутри источника данных существуют вложенные источники данных. Вложенные источники нужны для работы с экземплярами связанных сущностей, загруженных вместе с основной. Описание вложенного источника всегда содержит атрибут <property>property</property>, указывающий на атрибут основной сущности.</para>
-      <para>Кроме элемента <parameter>fieldGroup</parameter> в экране редактирования есть контейнер  <code>&lt;vbox id=&quot;discountBox&quot;&gt;</code>, содержащий таблицу со скидками, относящимися к редактируемому покупателю.</para>
-      <para>Необходимо отметить  метод <methodname>setItem()</methodname>  <glossterm linkend="glossary_controller_id">контроллера</glossterm>. В этом методе создается экземпляр &quot;встраиваемой&quot; сущности <classname>PersonalData</classname> и устанавливается в экземпляр сущности <classname>Buyer</classname>.</para>
-      <para><programlisting>@Override
-public void setItem(Entity item) {
-   if (PersistenceHelper.isNew(item)){
-       ((Buyer)item).setPersonalData(new PersonalData());
-   }
-   super.setItem(item);
-}</programlisting></para>
-    </section>
-  </section>
-  <section>
-    <title>Создание прав доступа в систему</title>
-    <para>Система должна предоставлять доступ к просмотру списка товаров, продаж и продавцов, а также к экрану редактирования товара, продажи и продавца.</para>
-    <para>Воспользуемся механизмом <application>Security</application> платформы <application>CUBA</application>. </para>
-    <para>В системе существует возможность создавать роли и группы доступа.</para>
-    <para>При создании роли задаются права на объекты системы. Существуют следующие особенности:</para>
-    <itemizedlist>
-      <listitem>
-        <para>Пользователь получает логическую сумму прав на некоторый объект от всех ролей, которые у него есть. При этом если ни одна роль не определяет явно право на объект, то пользователь получает право на этот объект. Таким образом, пользователь имеет права на все объекты, на которые либо ни одна роль явно не определяет право, либо хотя бы одна роль определяет, что право есть. Отсюда следующие нюанс: если пользователю дать единственную роль без явно установленных прав, то у него будут все права на все объекты.</para>
-      </listitem>
-      <listitem>
-        <para>Если пользователю дать супер-роль, то он получит все права, независимо от остальных его ролей. Это удобно для назначения администраторов системы.</para>
-      </listitem>
-    </itemizedlist>
-    <para>Очевидно, в системе должно быть две роли:</para>
-    <itemizedlist>
-      <listitem>
-        <para><authorinitials>Администратор</authorinitials> (эта роль уже существует в системе).</para>
-      </listitem>
-      <listitem>
-        <para><authorinitials>Продавец</authorinitials>.</para>
-      </listitem>
-    </itemizedlist>
-    <para>Создадим роль <authorinitials>Продавец</authorinitials>. В главном меню приложения выберите пункт меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Роли</guimenu>. На экране откроется окно, представленное на рисунке.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/create_roles_1.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>В открывшейся закладке нажмите на кнопку <guibutton>Создать</guibutton>. После этого откроется окно, представленное на рисунке.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/create_roles_2.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>В поле <guilabel>Имя</guilabel> введите имя роли − <userinput>salesPerson</userinput>, а в поле <guilabel>Локализованное имя</guilabel> − название роли на нужном языке. Далее перейдите на закладку <guilabel>Сущности</guilabel>.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/create_roles_3.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>В отобразившейся закладке снимите опцию <guilabel>Только назначенные</guilabel> и затем нажмите на кнопку <guibutton>Применить</guibutton>. После этого в таблице ниже будут отражены все сущности, существующие в системе.</para>
-    <para>Пользователь с ролью <authorinitials>Продавец</authorinitials> может просматривать и изменять все сущности системы, но не имеет права  создавать и удалять экземпляры сущности <classname>Продавец</classname>. Покажем, как создать такое ограничение, на примере сущности <classname>Покупатель</classname>. </para>
-    <para>Для этого в таблице найдите и выделите сущность <classname>shop$Buyer</classname>. После этого на панели <guilabel>Изменение разрешений</guilabel> появятся опции по заданию разрешений на создание, чтение, изменение и удаление данной сущности. Так как требуются разрешающие действия, поставьте опцию <guilabel>все</guilabel> в колонке <guilabel>разрешено</guilabel>.  После этого колонки <guilabel>Создание</guilabel>, <guilabel>Чтение</guilabel>, <guilabel>Изменение</guilabel>, <guilabel>Удаление</guilabel> в таблице слева заполнятся, а сами значения будут выделены цветом.</para>
-    <para>По аналогии задайте  разрешения на создание, чтение, изменение и удаление остальных сущностей, созданных в рамках учебного проекта. </para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/create_roles_5.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>После этого нажмите на кнопку <guibutton>ОК</guibutton>.</para>
-    <para>Далее создадим группы доступа. Группы доступа предоставляют удобный инструмент для быстрого задания ограничений
-большому числу пользователей. Для этого достаточно создать группу с необходимыми
-ограничениями и определять туда новых пользователей при создании или добавлять
-существующих пользователей в список группы при ее редактировании.</para>
-    <para>Очевидно, нам понадобится создать  группу доступа  <authorinitials>Продавцы</authorinitials>. Для этого перейдите к пункту меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Группы доступа</guimenu>.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/create_group_1.png"/>
-      </imageobject>
-    </mediaobject>
-    <para> В открывшемся окне на панели слева выделите мышкой группу доступа <authorinitials>Company</authorinitials> и нажмите на кнопку <guibutton>Создать</guibutton>. В выпадающем списке выберите пункт <guilabel>Создать</guilabel>.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/create_group_3.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>В открывшемся окне в поле <guilabel>Наименование</guilabel> введите название группы − <userinput>Продавцы</userinput>. Далее нажмите на кнопку <guibutton>ОК</guibutton>.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/create_group_4.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>На панели слева выделите созданную группу мышкой, на панели справа перейдите на закладку <guilabel>Ограничения</guilabel> и нажмите на кнопку <guibutton>Создать</guibutton>.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/create_group_6.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>Далее заполните поля <guilabel>Имя сущности</guilabel>, <guilabel>Оператор Join</guilabel>, <guilabel>Оператор Where</guilabel> и нажмите на кнопку <guibutton>ОК</guibutton>. Значения Вы можете взять из таблицы, расположенной ниже.</para>
-    <informaltable frame="all" align="center" pgwide="0">
-      <tgroup colsep="1" cols="2" rowsep="1" align="center">
-        <colspec colname="c1"/>
-        <colspec colname="c2"/>
-        <thead>
-          <row>
-            <entry colname="Имя атрибута">Название поля</entry>
-            <entry colname="Тип атрибута">Значение</entry>
-          </row>
-        </thead>
-        <tbody>
-          <row>
-            <entry align="center" namest="c1" nameend="c2">Ограничения для группы <authorinitials>Продавцы</authorinitials></entry>
-          </row>
-          <row>
-            <entry align="left">Имя сущности</entry>
-            <entry align="left">
-              <classname>shop$Sale</classname>
-            </entry>
-          </row>
-          <row>
-            <entry align="left">Оператор Join</entry>
-            <entry align="left">
-              <code>left join {E}.salesPerson a</code>
-            </entry>
-          </row>
-          <row>
-            <entry align="left">Оператор Where</entry>
-            <entry align="left">
-              <code>(a.id in (select p.id from shop$SalesPerson p where p.user.id= :session$userId))</code>
-            </entry>
-          </row>
-          <row>
-            <entry align="left">Имя сущности</entry>
-            <entry align="left">
-              <classname>shop$SalesPerson</classname>
-            </entry>
-          </row>
-          <row>
-            <entry align="left">Оператор Where</entry>
-            <entry align="left">
-              <code>({E}.user.id = :session$userId)</code>
-            </entry>
-          </row>
-        </tbody>
-      </tgroup>
-    </informaltable>
-  </section>
-  <section>
-    <title>Создание новых пользователей системы и настройка делегирования полномочий</title>
-    <para>Создадим пользователя с ролью <authorinitials>Продавец</authorinitials>. Для этого перейдите к пункту меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Пользователи</guimenu>. Перед Вами откроется экран, представленный на рисунке.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/create_user_1.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>В таблице, расположенной на открывшейся закладке, отображаются системные пользователи, уже созданные в системе. </para>
-    <warning>
-      <para>Удалять системных пользователей не рекомендуется!</para>
-    </warning>
-    <para>Для создания нового пользователя нажмите на кнопку <guibutton>Создать</guibutton>.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/create_user_2.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>Заполните поля <guilabel>Логин</guilabel>, <guilabel>Новый пароль</guilabel>, <guilabel>Подтверждение пароля</guilabel>, <guilabel>Фамилия</guilabel>, <guilabel>Имя</guilabel>. В поле <guilabel>Группа</guilabel> нажмите на кнопку <inlinemediaobject>
+      <para><emphasis role="bold">Реализация</emphasis></para>
+      <para>Диаграмма классов, входящих в состав сервиса:</para>
+      <mediaobject>
         <imageobject>
-          <imagedata fileref="img/dots.png"/>
+          <imagedata align="center" fileref="img/MiddlewareServices.png"/>
         </imageobject>
-      </inlinemediaobject>.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/create_user_3.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>В открывшемся окне выделите группу <authorinitials>Продавцы</authorinitials> и нажмите на кнопку <guibutton>Выбрать</guibutton>. Далее назначим создаваемому пользователю роль <authorinitials>Продавец</authorinitials>. Для этого  в панели <guilabel>Роли</guilabel> нажмите на кнопку <guibutton>Добавить</guibutton>.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/create_user_4.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>В открывшемся окне выделите роль <authorinitials>Продавец</authorinitials> и нажмите на кнопку <guibutton>Выбрать</guibutton>. После этого в окне редактирования пользователя нажмите на кнопку <guibutton>ОК</guibutton>. Роль создана.</para>
-    <para>Настроим делегирование пользователей. Делегирование − это передача полномочий одного пользователя другому пользователю. Настроим делегирование полномочий пользователя <authorinitials>Иван Иванов</authorinitials> пользователю <authorinitials>Администратор</authorinitials>.</para>
-    <para>Для этого в списке пользователей выберите пользователя <authorinitials>Администратор</authorinitials> и нажмите на кнопку <guibutton>Изменить</guibutton>.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/create_user_5.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>Перед Вами откроется окно, представленное на рисунке.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/create_user_6.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>На панели <guilabel>Замещаемые пользователи</guilabel> нажмите на кнопку <guibutton>Добавить</guibutton>.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/create_user_7.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>В открывшемся окне необходимо выбрать замещаемого пользователя из списка существующих. В
-поле <guilabel>Действует до</guilabel> можно установить дату, по прошествии которой делегированные
-полномочия автоматически снимаются. В случае если дата не проставлена, полномочия остаются
-до тех пор, пока их снимет администратор.</para>
-  </section>
-  <section>
-    <title>Настройка аудита изменений</title>
-    <para>В пункте меню <guimenu>Помощь</guimenu> −&gt; <guimenu>История</guimenu>  пользователь может просмотреть информацию об открытых объектах системы. Для того чтобы подключить историю открытых экранов созданных ранее сущностей, необходимо открыть файл свойств <filename>shop-web-app.properties</filename> и добавить в него следующее свойство:</para>
-    <para><programlisting>cuba.screenIdsToSaveHistory=shop$Buyer.edit,shop$Discount.edit,\
-                            shop$Product.edit,shop$Sale.edit,\
-                            shop$SalesPerson.edit</programlisting></para>
-  </section>
-  <section>
-    <title>Создание сервисов</title>
-    <para>Создадим <glossterm linkend="glossary_middleware_services_id">сервис</glossterm><classname> SaleService</classname> с методом <methodname>getPrice(Sale sale)</methodname>. Метод должен возвращать посчитанную цену продажи исходя из покупателя, товара, скидки на этот товар, количества товара и даты покупки. </para>
-    <para>При создании сервиса необходимо выполнить следующее:</para>
-    <itemizedlist>
-      <listitem>
-        <para>Создать интерфейс в модуле <structname>global</structname> в пакете <package>app</package> и задать в нем имя сервиса. Имя должно начинаться с имени проекта, затем через подчеркивание должно идти имя сервиса.</para>
-        <para><programlisting>String NAME = &quot;shop_SaleService&quot;;</programlisting></para>
-      </listitem>
-      <listitem>
-        <para>Создать класс сервиса и добавить ему аннотацию <literal>@Service</literal> с именем, заданным в интерфейсе.</para>
-        <para><programlisting>@Service(SaleService.NAME)
-public class SaleServiceBean implements SaleService {
-
-    @Inject
-    private Persistence persistence;
-
-
-    @Override
-    public BigDecimal getPrice(Sale sale) {
-        BigDecimal price = null;
-        Transaction tx = persistence.createTransaction();
-
-        try {
-            EntityManager em = persistence.getEntityManager();
-            Query query = em.createQuery(&quot;select d from shop$Discount d where d.product.id = ?1 and d.buyer.id = ?2&quot; +
-                    &quot; and d.fromDate&lt;= ?3 and d.tillDate&gt;= ?4 and d.minQuantity&lt;=?5&quot;);
-            query.setParameter(1, sale.getProduct());
-            query.setParameter(2, sale.getBuyer());
-            query.setParameter(3, sale.getOrderDate());
-            query.setParameter(4, sale.getOrderDate());
-            query.setParameter(5, sale.getQuantity());
-            List&lt;Discount&gt; discounts = query.getResultList();
-            if (discounts != null &amp;&amp; !discounts.isEmpty()) {
-                Discount discount = (Discount) query.getSingleResult();
-                price = discount.getPrice().multiply(new BigDecimal(new Integer(sale.getQuantity())));
-            } else {
-                price = sale.getProduct().getPrice().multiply(new BigDecimal(new Integer(sale.getQuantity())));
-            }
-            tx.commit();
-        } finally {
-            tx.end();
-        }
-
-        return price;
-    }
-}</programlisting></para>
-      </listitem>
-    </itemizedlist>
-    <caution>
-      <title>Подсказка</title>
-      <para>Имена интерфейсов сервисов должны заканчиваться на <classname>...Service</classname>, имена имплементаций на <classname>...ServiceBean</classname>.</para>
-    </caution>
-    <warning>
-      <para>Сервисы не должны вызывать методы других сервисов, ни напрямую, ни через другие объекты, так как это может нарушить логику работы с транзакциями и другие механизмы. </para>
-    </warning>
-    <para>Чтобы вызывать сервис с клиента, для него должен быть создан соответствующий прокси-объект. Делается это путем объявления имени и интерфейса сервиса в параметрах объекта <classname>WebRemoteProxyBeanCreator</classname> для веб-клиента или <classname>RemoteProxyBeanCreator</classname> для десктопного клиента.</para>
-    <para>Например, чтобы в приложении <application>shop</application> вызвать с веб-клиента сервис <classname>shop_SaleService</classname>, необходимо добавить в файл <filename>shop-web-spring.xml</filename> следующий код:</para>
-    <para><programlisting>&lt;bean id=&quot;shop_proxyCreator&quot; class=&quot;com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator&quot;&gt;
+      </mediaobject>
+      <para>Имена интерфейсов сервисов должны заканчиваться на <classname>...Service</classname>, имена реализаций на <classname>...ServiceBean</classname>.</para>
+      <para>При создании сервиса необходимо выполнить следующее:</para>
+      <procedure>
+        <step>
+          <para>Создать интерфейс в модуле <structname>global</structname> в пакете <package>app</package> и задать в нем имя сервиса. Имя должно начинаться с имени проекта, затем через символ нижнего подчеркивания должно идти имя сервиса. Например:</para>
+          <programlisting language="java">String NAME = &quot;cuba_DataService&quot;;</programlisting>
+        </step>
+        <step>
+          <para>Создать класс сервиса и добавить ему аннотацию <literal>@Service</literal> с именем, заданным в интерфейсе</para>
+          <programlisting>@Service(DataService.NAME)</programlisting>
+        </step>
+        <step>
+          <para>При необходимости обращения к базе данных создавать и завершать <link linkend="section_transaction_id">транзакцию</link></para>
+          <programlisting>@Inject
+private Persistence persistence;
+...
+Transaction tx = persistence.createTransaction();
+try {
+    ...
+    tx.commit();
+} finally {
+    tx.end();
+}</programlisting>
+        </step>
+      </procedure>
+      <para>Каждый вызов сервиса перехватывается с помощью <link linkend="text_additionally_spring">Spring AOP</link>  и обрамляется вызовом <acronym>ServiceInterceptor.aroundInvoke()</acronym>.</para>
+      <warning>
+        <para>Сервисы не должны вызывать методы других сервисов ни напрямую, ни через другие объекты, так как это может нарушить логику работы с транзакциями и другие механизмы. В случае вызова сервиса сервисом в журнале приложения появятся соответствующие сообщения об ошибке.</para>
+      </warning>
+      <tip>
+        <title>Совет</title>
+        <para>Если некую бизнес-логику требуется вызывать из разных сервисов либо других компонентов <link linkend="section_middleware_id">Middleware</link>, ее необходимо инкапсулировать внутри соответствующего <link linkend="section_managed_beans_id">Managed Bean</link> либо <glossterm linkend="glossary_pojo_id">POJO</glossterm>.</para>
+      </tip>
+      <para><emphasis role="bold">Использование на клиенте</emphasis></para>
+      <para>Для того чтобы вызывать сервис с клиента, для него должен быть создан соответствующий <firstterm>объект-заместитель</firstterm> (прокси-объект). Делается это путем объявления имени и интерфейса сервиса в параметрах объекта <parameter>WebRemoteProxyBeanCreator</parameter> для Web-клиента или <parameter>RemoteProxyBeanCreator</parameter> для  Desktop-клиента.</para>
+      <para>Например, чтобы в приложении <application>RefApp</application> вызвать с Web-клиента сервис <classname>refapp_MyService</classname>, необходимо добавить в файл <filename>refapp-web-spring.xml</filename> следующее:</para>
+      <programlisting language="xml">&lt;bean id=&quot;refapp_proxyCreator&quot; class=&quot;com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator&quot;&gt;
     &lt;property name=&quot;clusterInvocationSupport&quot; ref=&quot;cuba_clusterInvocationSupport&quot;/&gt;
     &lt;property name=&quot;remoteServices&quot;&gt;
         &lt;map&gt;
-            &lt;entry key=&quot;shop_SaleService&quot; value=&quot;com.haulmont.shop.core.app.SaleService&quot;/&gt;
+            &lt;entry key=&quot;refapp_MyService&quot; value=&quot;com.haulmont.refapp.core.app.MyService&quot;/&gt;
         &lt;/map&gt;
     &lt;/property&gt;
-    &lt;/bean&gt;</programlisting></para>
-    <para>Все импортируемые сервисы должны быть объявлены в одном словаре (map) бина <classname>shop_proxyCreator</classname>.</para>
-    <para>Метод <methodname>getPrice(Sale sale)</methodname> сервиса <classname>SaleService</classname> должен вызываться по нажатию на кнопку <guibutton>Посчитать цену</guibutton>, расположенную на экране редактирования информации о продаже. Возвращаемое методом значение должно проставляться в поле <guilabel>Цена</guilabel>.</para>
-    <para>Изменим <glossterm linkend="glossary_xml_descriptor_id">XML-дескриптор</glossterm> экрана редактирования информации о продаже <filename>sale-edit.xml</filename>, добавив в него описание кнопки <guibutton>Посчитать цену</guibutton>.</para>
-    <para><programlisting>&lt;window
-        xmlns=&quot;http://www.haulmont.com/schema/cuba/gui/window.xsd&quot;
-        class=&quot;com.haulmont.shop.gui.ui.sale.SaleEditor&quot;
-        caption=&quot;msg://editorCaption&quot;
-        datasource=&quot;saleDs&quot;
-        messagesPack=&quot;com.haulmont.shop.gui.ui.sale&quot;&gt;
+&lt;/bean&gt;</programlisting>
+      <para>Все импортируемые сервисы должны быть объявлены в одном <firstterm>словаре</firstterm> (map) бина <classname>refapp_proxyCreator</classname>.</para>
+      <para>Получить ссылку на сервис с клиента можно двумя способами:</para>
+      <itemizedlist>
+        <listitem>
+          <para><classname>ServiceLocator</classname> </para>
+          <programlisting>BookingService service = ServiceLocator.lookup(BookingService.NAME);</programlisting>
+        </listitem>
+        <listitem>
+          <para>Для <glossterm linkend="glossary_controller_id">контроллеров</glossterm> экранов предпочтительный способ − <glossterm linkend="glossary_injection_id">внедрение зависимости</glossterm>.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+    <section id="section_managed_beans_id">
+      <title>Управляемые бины</title>
+      <para><firstterm>Управляемые бины (Managed Beans)</firstterm> − это программные компоненты, реализующие бизнес-логику приложения и создаваемые в соответствии с принципами <link linkend="glossary_conteiner_id">Inversion of Control</link>. <glossterm>Контейнером</glossterm> для бинов служит <link linkend="text_additionally_spring">Spring Framework</link>.</para>
+      <para>Managed Bean представляет собой <firstterm>singleton</firstterm>, то есть всегда используется один экземпляр данного класса. Соответственно, если создаваемый Вами бин содержит изменяемые данные в полях (имеет состояние), то необходимо синхронизировать обращение к таким данным.</para>
+      <para>В простейшем случае Managed Bean может быть просто Java-классом, аннотированным как <literal>@ManagedBean</literal>. Однако рекомендуется придерживаться следующих правил создания бинов:</para>
+      <itemizedlist>
+        <listitem>
+          <para>Создать интерфейс бина в пакете <package>app</package> и задать в нем кроме методов поле с именем бина. Имя бина должно иметь префикс с именем проекта. Например:</para>
+          <para><programlisting>public interface TaskWorker {
+    String NAME = &quot;taskman_TaskWorker&quot;;
+    ...</programlisting></para>
+        </listitem>
+        <listitem>
+          <para>Создать класс реализации в пакете <package>app</package> и аннотировать его, указав имя бина:</para>
+          <para><programlisting>@ManagedBean(TaskWorker.NAME)
+public class TaskWorkerBean implements TaskWorker {
+...</programlisting></para>
+        </listitem>
+      </itemizedlist>
+      <para>Данные правила дают возможность в дальнейшем получать ссылки на бин, указывая константу в качестве имени:</para>
+      <programlisting>LoginService ls = AppContext.getBean(LoginService.NAME);</programlisting>
+      <para>Ссылку на бин в другом управляемом бине (а также  в <link linkend="section_services_id">сервисе</link> или <link linkend="section_MBean_id">МБине</link>) можно получить более простым и естественным способом, объявив поле соответствующего типа и добавив ему аннотацию<literal> @Inject</literal>:</para>
+      <programlisting>@Inject
+private TaskWorker taskWorker;</programlisting>
+      <para>В этом случае контейнер автоматически найдет подходящую реализацию и установит ссылку на объект во время разворачивания приложения в памяти.</para>
+      <para>Довольно часто программный компонент, реализующий бизнес-логику, должен иметь состояние (например кэш или конфигурационные данные), и предоставлять интерфейс администратору системы для просмотра и управления этими данными. В этом случае рекомендуется добавить управляемому бину <glossterm linkend="glossary_jmx_id">JMX</glossterm>-интерфейс и превратить его тем самым в <link linkend="section_MBean_id">МБин</link>.</para>
+    </section>
+    <section id="section_MBean_id">
+      <title>Мбины</title>
+      <para><firstterm>МБин</firstterm> − программный компонент, реализующий бизнес-логику, и имеющий <glossterm linkend="glossary_jmx_id">JMX</glossterm>-интерфейс. Как правило, имеет внутреннее состояние (например кэш, конфигурационные данные или статистику), к которому нужно обеспечить доступ через JMX.</para>
+      <para>МБин является расширенным вариантом <link linkend="section_managed_beans_id">управляемого бина</link>.</para>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/MBeans.png"/>
+        </imageobject>
+      </mediaobject>
+      <para>Как видно из диаграммы, МБин имеет два набора методов, разделенных по интерфейсам <interfacename>...MBean</interfacename> и <interfacename>...API</interfacename>. Первый из них служит для управления через JMX, а второй − для вызова из программного кода.</para>
+      <para>Вызовы JMX-интерфейса МБина перехватываются специальным классом − <glossterm linkend="glossary_interceptor_id">интерцептором</glossterm> <methodname>MBeanInterceptor.aroundInvoke()</methodname> (с помощью <link linkend="text_additionally_spring">Spring</link> AOP), который обеспечивает журналирование неперехваченных исключений и установку правильного контекстного <classname>ClassLoader</classname>.</para>
+      <para>Если JMX-методы МБина работают с данными, то ему потребуется пользовательская сессия с правами на доступ. В этом случае рекомендуется наследовать МБин от базового класса <classname>ManagementBean</classname>, который содержит удобные методы входа в систему/выхода из системы (login/logout).</para>
+      <para><emphasis role="bold">Правила создания</emphasis></para>
+      <itemizedlist>
+        <listitem>
+          <para>Создать интерфейс с именем, заканчивающимся на <classname>*MBean</classname>, например, <classname>SampleMBean</classname> в пакете <package>app</package></para>
+        </listitem>
+        <listitem>
+          <para>Если нужно обращение к МБину из кода сервера (а не только из <glossterm linkend="glossary_jmx_id">JMX</glossterm>-консоли), создать интерфейс <interfacename>SampleAPI</interfacename>. Создать в интерфейсе поле с именем бина, в качестве префикса использовать имя проекта:</para>
+          <programlisting>public interface SampleAPI {
+    String NAME = &quot;myproject_Sample&quot;;
+    ...</programlisting>
+        </listitem>
+        <listitem>
+          <para>Создать класс реализации с именем, соответствующим интерфейсу, в нашем случае <classname>Sample</classname> и аннотировать его как <literal>@ManagedBean(SampleAPI.NAME)</literal></para>
+        </listitem>
+        <listitem>
+          <para>Экспортировать <interfacename>*MBean</interfacename> интерфейс в JMX в файле <filename>myproject-spring.xml</filename>, например:</para>
+          <programlisting>&lt;bean id=&quot;myproject_MBeanExporter&quot; class=&quot;org.springframework.jmx.export.MBeanExporter&quot; lazy-init=&quot;false&quot;&gt;
+        &lt;property name=&quot;beans&quot;&gt;
+            &lt;map&gt;
+                &lt;entry key=&quot;${cuba.webContextName}:service=Sample&quot; value-ref=&quot;myproject_Sample&quot;/&gt;
+            &lt;/map&gt;
+        &lt;/property&gt;
+        &lt;property name=&quot;assembler&quot;&gt;
+            &lt;bean class=&quot;org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler&quot;&gt;
+                &lt;property name=&quot;interfaceMappings&quot;&gt;
+                    &lt;map&gt;
+                        &lt;entry key=&quot;myproject_Sample&quot; value=&quot;com.haulmont.myproject.core.app.SampleMBean&quot;/&gt;
+                    &lt;/map&gt;
+                &lt;/property&gt;
+            &lt;/bean&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;</programlisting>
+        </listitem>
+      </itemizedlist>
+      <para>Один <link linkend="text_additionally_spring">Spring</link>-объект <classname>MBeanExporter</classname> может экспортировать несколько МБинов. 
+Для удобства работы администратора методы JMX-интерфейса должны возвращать строку. В случае успешного выполнения это может быть полезная информация, либо просто строка <computeroutput>Done</computeroutput>. В случае возникновения исключения нужно его записать в журнал и вернуть stacktrace:</para>
+      <programlisting>public String jmxMethod1() {
+    try {
+        return &quot;Done&quot;;
+    } catch (Exception e) {
+        log.error(&quot;Error executing jmxMethod1&quot;, e);
+        return ExceptionUtils.getStackTrace(e);
+    } 
+}</programlisting>
+      <para><emphasis role="bold">Security</emphasis></para>
+      <para>Как правило, для выполнения функций МБинов требуется аутентификация в <trademark>CUBA</trademark>-security, а <glossterm linkend="glossary_jmx_id">JMX</glossterm>-интерфейс  ее обеспечить не может. Простой механизм входа в систему/выхода из системы (login/logout) содержится в классе <classname>com.haulmont.cuba.core.app.ManagementBean</classname>, поэтому желательно наследовать свои классы МБинов, работающих с данными, от этого класса. Пример использования:</para>
+      <programlisting>public String jmxMethod2() {
+    try {
+loginOnce(); // defined in ManagementBean
+...
+return &quot;Done&quot;;
+    } catch (Exception e) {
+        log.error(&quot;Error executing jmxMethod2&quot;, e);
+return ExceptionUtils.getStackTrace(e);
+    } 
+}</programlisting>
+      <para>Методы <methodname>login()</methodname> и <methodname>loginOnce()</methodname>, определенные в классе <classname>ManagementBean</classname>, осуществляют вход в систему, используя имя и пароль, заданные в <link>файле свойств</link> в параметрах  <parameter>cuba.jmxUserLogin</parameter> и <parameter>cuba.jmxUserPassword</parameter> соответственно. Пароль должен быть захеширован и указан с префиксом <code>md5:</code>. Простейший способ получить пароль пользователя в <code>md5</code> − скопировать значение из поля <database>SEC_USER.PASSWORD</database> базы данных.</para>
+      <para><emphasis role="bold">Работа с JMX-интерфейсом</emphasis></para>
+      <para>Обращаться к МБинам можно с помощью утилиты <application>jconsole</application>, входящей в состав <application>JDK</application>, либо с помощью программы <application>VisualVM</application>.</para>
+      <para>Для того чтобы увидеть свои МБины, сервер <application>Tomcat</application> должен быть запущен с опциями удаленного подключения к <glossterm linkend="glossary_jmx_id">JMX</glossterm>. В простейшем случае, без аутентификации, параметры запуска <application>JVM</application> должны содержать следующие опции:</para>
+      <programlisting>set CATALINA_OPTS=-Dcom.sun.management.jmxremote
+-Dcom.sun.management.jmxremote.port=7777
+-Dcom.sun.management.jmxremote.ssl=false
+-Dcom.sun.management.jmxremote.authenticate=false</programlisting>
+    </section>
+    <section id="section_infrastructure_interfaces_id">
+      <title>Интерфейсы инфраструктуры</title>
+      <para>Интерфейсы инфраструктуры обеспечивают доступ к часто используемой функциональности платформы. Некоторые из этих интерфейсов расположены в модуле <structname>global</structname> и могут быть использованы как изнутри среднего слоя, так и из любого клиентского кода, другие доступны только коду среднего слоя.</para>
+      <para>Интерфейсы инфраструктуры реализуются управляемыми компонентами <link linkend="text_additionally_spring">Spring</link>, поэтому зависимости от интерфейсов могут быть <link>внедрены</link> в любые другие управляемые компоненты (Managed Beans, MiddlewareServices, Screen Controllers).</para>
+      <para>Все интерфейсы инфраструктуры имеют соответствующие &quot;статические фасады&quot;, которые называются провайдерами, и могут быть использованы в неуправляемых компонентах (<glossterm linkend="glossary_pojo_id">POJO</glossterm>, utility classes, helpers, etc.).</para>
+      <para><emphasis role="bold">Глобальные интерфейсы инфраструктуры</emphasis></para>
+      <simpara><emphasis role="bold">TimeSource</emphasis>. Обеспечивает получение текущего времени. Применение <classname>new Date()</classname> и т.п. запрещено. Статический фасад − <classname>TimeProvider</classname>.</simpara>
+      <simpara><emphasis role="bold">UuidSource</emphasis>. Обеспечивает получение значений <classname>UUID</classname>, в том числе для идентификаторов сущностей. Статический фасад − <classname>UuidProvider</classname>.</simpara>
+    </section>
+    <section>
+      <title>ORM</title>
+    </section>
+    <section id="section_metadata_framework">
+      <title>Metadata Framework</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/Metadata Framework.png"/>
+        </imageobject>
+      </mediaobject>
+    </section>
+    <section id="section_views_id">
+      <title>Представления</title>
+    </section>
+    <section id="section_transaction_id">
+      <title>Управление транзакциями</title>
+    </section>
+  </section>
+  <section id="section_client_id">
+    <title>Архитектура клиента</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/ClientStructure.png"/>
+      </imageobject>
+    </mediaobject>
+  </section>
+  <section id="section_gui_framework">
+    <title>Графический интерфейс пользователя</title>
+    <section>
+      <title>Библиотека визуальных компонентов</title>
+    </section>
+    <section>
+      <title>Источники данных</title>
+    </section>
+    <section>
+      <title>Создание экранов</title>
+    </section>
+  </section>
+  <section>
+    <title>Интеграция со сторонними приложениями</title>
+  </section>
+  <section>
+    <title>Описание конфигурационных файлов</title>
+    <para>Соединение с базой данных</para>
+    <para>Большинство приложений используют базы данных, и наше приложение не исключение. Для использования базы данных необходимо настроить подключение. Это делается в конфигурационном файле <filename>core/web/META-INF/context.xml</filename> модуля <structname>core</structname>. Например, так:</para>
+    <para><programlisting>&lt;Resource
+      name=&quot;jdbc/CubaDS&quot;
+      type=&quot;javax.sql.DataSource&quot;
+      maxActive=&quot;20&quot;
+      maxIdle=&quot;2&quot;
+      maxWait=&quot;5000&quot;
+      driverClassName=&quot;org.postgresql.Driver&quot;
+      username=&quot;root&quot;
+      password=&quot;root&quot;
+      url=&quot;jdbc:postgresql://localhost/shop&quot;/&gt;
 
-    &lt;dsContext&gt;
-        &lt;datasource id=&quot;saleDs&quot;
-                    class=&quot;com.haulmont.shop.core.entity.Sale&quot;
-                    view=&quot;saleEdit&quot;&gt;
-        &lt;/datasource&gt;
-        &lt;collectionDatasource id=&quot;buyersDs&quot; class=&quot;com.haulmont.shop.core.entity.Buyer&quot; view=&quot;_local&quot;/&gt;
-        &lt;collectionDatasource id=&quot;productsDs&quot; class=&quot;com.haulmont.shop.core.entity.Product&quot; view=&quot;_local&quot;/&gt;
-        &lt;collectionDatasource id=&quot;salesPersonsDs&quot; class=&quot;com.haulmont.shop.core.entity.SalesPerson&quot; view=&quot;_local&quot;/&gt;
-    &lt;/dsContext&gt;
-    &lt;#assign width = 200&gt;
-    &lt;layout expand=&quot;windowActions&quot;&gt;
-        &lt;vbox spacing=&quot;true&quot; width=&quot;-1px&quot;
-              height=&quot;-1px&quot;&gt;
-            &lt;grid margin=&quot;true&quot; spacing=&quot;true&quot; stylename=&quot;edit-area&quot; expandable=&quot;false&quot;&gt;
-                &lt;columns count=&quot;2&quot;/&gt;
-                &lt;rows&gt;
-                    &lt;row&gt;
-                        &lt;label value=&quot;msg://buyer&quot;/&gt;
-                        &lt;pickerField id=&quot;buyer&quot; datasource=&quot;saleDs&quot; property=&quot;buyer&quot; lookupScreen=&quot;shop$Buyer.lookup&quot;
-                                     width=&quot;${width}&quot;/&gt;
-                    &lt;/row&gt;
-                    &lt;row&gt;
-                        &lt;label value=&quot;msg://product&quot;/&gt;
-                        &lt;pickerField id=&quot;product&quot; datasource=&quot;saleDs&quot; property=&quot;product&quot;
-                                     lookupScreen=&quot;shop$Product.lookup&quot; width=&quot;${width}&quot;/&gt;
-                    &lt;/row&gt;
-                    &lt;row&gt;
-                        &lt;label value=&quot;msg://salesPerson&quot;/&gt;
-                        &lt;pickerField id=&quot;salesPerson&quot; datasource=&quot;saleDs&quot; property=&quot;salesPerson&quot;
-                                     lookupScreen=&quot;shop$SalesPerson.lookup&quot; width=&quot;${width}&quot;/&gt;
-                    &lt;/row&gt;
-                    &lt;row&gt;
-                        &lt;label value=&quot;msg://orderDate&quot;/&gt;
-                        &lt;dateField id=&quot;orderDate&quot; datasource=&quot;saleDs&quot; property=&quot;orderDate&quot; width=&quot;${width}&quot;/&gt;
-                    &lt;/row&gt;
-                    &lt;row&gt;
-                        &lt;label value=&quot;msg://quantity&quot;/&gt;
-                        &lt;textField id=&quot;quantity&quot; datasource=&quot;saleDs&quot; property=&quot;quantity&quot; required=&quot;true&quot;
-                                   width=&quot;${width}&quot;/&gt;
-                    &lt;/row&gt;
-                    &lt;row&gt;
-                        &lt;label value=&quot;msg://price&quot;/&gt;
-                        &lt;hbox spacing=&quot;true&quot;&gt;
-                            &lt;textField id=&quot;price&quot; datasource=&quot;saleDs&quot; property=&quot;price&quot; width=&quot;${width}&quot;/&gt;
-                            &lt;button id=&quot;calcPrice&quot; caption=&quot;msg://calcPrice&quot; invoke=&quot;calcPrice&quot; icon=&quot;icons/run.png&quot;/&gt;
-                        &lt;/hbox&gt;
-                    &lt;/row&gt;
-                    &lt;row&gt;
-                        &lt;label value=&quot;msg://deliveryDate&quot;/&gt;
-                        &lt;dateField id=&quot;deliveryDate&quot; datasource=&quot;saleDs&quot; property=&quot;deliveryDate&quot; width=&quot;${width}&quot;/&gt;
-                    &lt;/row&gt;
-                    &lt;row&gt;
-                        &lt;label value=&quot;msg://deliveryAddress&quot;/&gt;
-                        &lt;textField id=&quot;deliveryAddress&quot; datasource=&quot;saleDs&quot; property=&quot;deliveryAddress&quot;
-                                   width=&quot;${width}&quot;/&gt;
-                    &lt;/row&gt;
-                    &lt;row&gt;
-                        &lt;label value=&quot;msg://priceDescription&quot;/&gt;
-                        &lt;textField id=&quot;priceDescription&quot; datasource=&quot;saleDs&quot; property=&quot;priceDescription&quot; width=&quot;340px&quot;
-                                   rows=&quot;5&quot;/&gt;
-                    &lt;/row&gt;
-                &lt;/rows&gt;
-            &lt;/grid&gt;
-        &lt;/vbox&gt;
-        &lt;iframe id=&quot;windowActions&quot;
-                src=&quot;/com/haulmont/cuba/gui/edit-window.actions.xml&quot;&gt;
-        &lt;/iframe&gt;
-    &lt;/layout&gt;
-&lt;/window&gt;</programlisting></para>
-    <para>Обратите внимание, в элементе <parameter>button</parameter> дескриптора используется атрибут <property>invoke=&quot;calcPrice&quot;</property>. В этом атрибуте указывается  имя вызываемого метода контроллера. Метод должен быть <classname>public</classname>, не возвращать результата и либо не иметь аргументов, либо иметь один аргумент типа <classname>Component</classname>. Если метод имеет аргумент <classname>Component</classname>, то при вызове в него будет передан экземпляр вызвавшей кнопки. Данный атрибут игнорируется, если для кнопки задан атрибут <property>action</property>.</para>
-    <para>Далее изменим класс контроллера <classname>SaleEditor</classname>. Необходимо написать метод, который будет вызываться при нажатии на кнопку <guibutton>Посчитать цену</guibutton>.</para>
-    <para><programlisting>    public void calcPrice() {
-        Sale sale = saleDs.getItem();
-        if ((sale.getBuyer() == null) || (sale.getProduct() == null) || (sale.getOrderDate() == null) || (sale.getQuantity() == null)) {
-            showNotification(getMessage(&quot;notificationMessage&quot;),
-                    NotificationType.HUMANIZED);
-        } else {
-            BigDecimal price = null;
-            try {
-                price = service.getPrice(sale);
-                sale.setPrice(price);
-            } catch (Exception e) {
-
-            }
-        }
-    }</programlisting></para>
-    <para>Получение ссылки на сервис с клиента происходит с помощью механизма <glossterm linkend="glossary_injection_id">внедрения зависимости</glossterm>:</para>
-    <para><programlisting>@Inject
-private SaleService shop_SaleService;</programlisting></para>
+    &lt;!-- Microsoft SQLServer connection
+    &lt;Resource
+      name=&quot;jdbc/CubaDS&quot;
+      type=&quot;javax.sql.DataSource&quot;
+      maxActive=&quot;20&quot;
+      maxIdle=&quot;2&quot;
+      maxWait=&quot;5000&quot;
+      driverClassName=&quot;net.sourceforge.jtds.jdbc.Driver&quot;
+      username=&quot;sa&quot;
+      password=&quot;saPass1&quot;
+      url=&quot;jdbc:jtds:sqlserver://localhost/refapp&quot;/&gt;
+      --&gt;</programlisting></para>
   </section>
 </chapter>

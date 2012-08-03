@@ -1,145 +1,189 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. --><chapter id="chapter0_necessary_soft" lang="ru">
-  <title>Настройка инструментария</title>
-  <para>В этой главе описывается процесс  настройки рабочей среды разработчика. Перед началом работы убедитесь, что  на локальный компьютер установлены следующие программы:</para>
-  <itemizedlist>
-    <listitem>
-      <para><application>Java SE 6 SDK.</application></para>
-    </listitem>
-    <listitem>
-      <para><application>PostgreSQL 8.3.9</application>. <ulink url="http://postgresql.ru.net/docs/about_pgsql.html">PostgreSQL</ulink>− реляционная система управления базами данных. PostgreSQL поставляется под лицензией BSD, что обеспечивает максимальную открытость и доступность.</para>
-    </listitem>
-    <listitem>
-      <para><application>Gradle 1.0-milestone-6</application>. Gradle − инструмент автоматизации сборки с открытым исходным кодом.</para>
-    </listitem>
-    <listitem>
-      <para><application>IntelliJ IDEA 11 Community Edition</application>. <ulink url="http://ru.wikipedia.org/wiki/IntelliJ_IDEA">IntelliJ IDEA</ulink> − интегрированная среда разработки для Java компании <orgname>JetBrains</orgname>. IntelliJ IDEA Community Edition является свободно распространяемой версией с открытым исходным кодом.</para>
-    </listitem>
-  </itemizedlist>
-  <warning>
-    <title>Внимание</title>
-    <para>Инструкции по настройке приведены для операционной системы <application>Windows 7</application>.</para>
-  </warning>
+<!-- This document was created with Syntext Serna Free. --><chapter id="chapter0_introduction" lang="ru">
+  <title>Введение</title>
   <section>
-    <title>Настройка Postgres 8.3.9</title>
-    <para>Сайт компании-разработчика: <ulink url="http://www.postgresql.org/">http://www.postgresql.org/</ulink></para>
-    <para>Дистрибутив: <ulink url="ftp://ftp-archives.postgresql.org/pub/binary/v8.3.9/">ftp://ftp-archives.postgresql.org/pub/binary/v8.3.9/</ulink></para>
-    <para>Убедимся в работоспособности сервера базы данных. Для этого зайдите в меню <guimenu>Пуск</guimenu>, далее −   <guimenu>PostgreSQL 8.3</guimenu>, далее −   <guisubmenu>pgAdmin III</guisubmenu>. На экране откроется окно, представленное на рисунке:</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/ch1_db_1.png" width="100%"/>
-      </imageobject>
-    </mediaobject>
-    <para>Создадим нового пользователя. Для этого нажмите правой клавишей мыши на <guilabel>PostgreSQL Database Server 8.3 (localhost:5432)</guilabel> и в открывшемся контекстном меню выберите <guimenuitem>Подсоединение</guimenuitem>. Далее нажмите правой клавишей мыши на <guilabel>Роли входа</guilabel>  и в открывшемся контекстном меню выберите <guimenuitem>Новое правило</guimenuitem>. На экране отобразится окно, представленное на рисунке:</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/ch1_db_2.png" width="100%" scalefit="1" contentdepth="100%"/>
-      </imageobject>
-    </mediaobject>
-    <para>В этом окне в качестве имени роли и пароля укажите <userinput role="italic">root</userinput>. В списке <guilabel>Привилегии роли</guilabel> установите флажок <guilabel>Суперюзер</guilabel>.</para>
-    <para>Установка и настройка базы данных завершена.</para>
-  </section>
-  <section>
-    <title>Настройка Java SE 6</title>
-    <para>Сайт компании-разработчика: <ulink url="http://oracle.com/technetwork/java/">http://oracle.com/technetwork/java/</ulink></para>
-    <para>Дистрибутив: <ulink url="http://www.oracle.com/technetwork/java/javase/downloads/index.html">http://www.oracle.com/technetwork/java/javase/downloads/index.html</ulink></para>
-    <orderedlist>
-      <listitem id="path_setting">
-        <para>Создайте переменную среды <envar>JAVA_HOME</envar>. В качестве значения переменной окружения <envar>JAVA_HOME</envar> установите путь до каталога установки  <application>JDK</application>, например, <filename>C:\Program Files\Java\jdk1.6.0_29</filename>.</para>
-        <caution>
-          <title>Подсказка</title>
-          <para>Как установить или изменить переменную среды?</para>
-          <para>В пункте меню <guimenu>Пуск</guimenu> выберите <guimenuitem>Панель управления</guimenuitem>, далее в элементах панели управления выберите элемент <guisubmenu>Система</guisubmenu>. На панели слева найдите ссылку на <guisubmenu>Дополнительные параметры системы</guisubmenu> и нажмите на нее. В открывшемся окне <guilabel>Свойства системы</guilabel> перейдите на вкладку <guilabel>Дополнительно</guilabel> и нажмите на кнопку <guibutton>Переменные среды</guibutton>.</para>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/ch1_path_1.png" width="100%"/>
-            </imageobject>
-          </mediaobject>
-          <para>Чтобы создать новую переменную среды, нажмите на кнопку <guibutton>Создать</guibutton> в панели <guilabel>Системные переменные</guilabel>.</para>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/ch1_path_2.png" width="100%" scalefit="1" contentdepth="100%"/>
-            </imageobject>
-          </mediaobject>
-          <para>В поле <guilabel>Имя переменной</guilabel> введите <userinput>JAVA_HOME</userinput>, а в поле <guilabel>Значение переменной</guilabel> <userinput>C:\Program Files\Java\jdk1.6.0_29.</userinput></para>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/ch_path_3.png"/>
-            </imageobject>
-          </mediaobject>
-          <para>Чтобы изменить значение существующей переменной среды, например, <envar>Path</envar>, найдите ее в списке на панели <guilabel>Системные переменные</guilabel> и нажмите на кнопку <guibutton>Изменить</guibutton>. В поле <guilabel>Значение переменной</guilabel> введите значение <userinput>%JAVA_HOME%\bin.</userinput></para>
-          <mediaobject>
-            <imageobject>
-              <imagedata align="center" fileref="img/ch1_path_4.png"/>
-            </imageobject>
-          </mediaobject>
-        </caution>
+    <title>Технические требования</title>
+    <para><emphasis role="bold">Минимальные аппаратные требования для платформы <trademark>CUBA</trademark></emphasis></para>
+    <itemizedlist>
+      <listitem>
+        <para>Процессор 32-разрядный двухъядерный </para>
       </listitem>
       <listitem>
-        <para>К значению переменной среды <envar>Path</envar> добавьте значение <userinput>%JAVA_HOME%\bin.</userinput> Значение переменной <envar>Path</envar> необходимо обновить для того, чтобы исполняемые файлы <application>JDK</application>  стали доступны в командной строке.</para>
-      </listitem>
-    </orderedlist>
-    <para>Убедимся в работоспособности java-машины. Для этого запустите командную строку и введите в ней команду </para>
-    <para><prompt>java -version</prompt>.</para>
-    <tip>
-      <title>Совет</title>
-      <para>Для того чтобы запустить командную строку <application>Windows</application>, нажмите сочетание клавиш <keycombo>
-          <keycap>WIN</keycap>
-          <keycap>R</keycap>
-        </keycombo> и в открывшемся окне наберите <userinput>cmd.</userinput></para>
-    </tip>
-    <para>В результате выполнения команды Вы увидите окно командной строки, вид которого представлен на следующем рисунке:</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/ch1_java_check_version.png" width="100%" scalefit="1" format="PNG"/>
-      </imageobject>
-    </mediaobject>
-    <para>Если в результате выполнения команды Вы увидите окно, вид которого представлен ниже,  проверьте правильность установки переменных среды <envar>JAVA_HOME</envar> и <envar>Path</envar>.<mediaobject>
-        <imageobject>
-          <imagedata align="center" fileref="img/ch1_not_java.png" width="100%" format="PNG"/>
-        </imageobject>
-      </mediaobject></para>
-    <para>Настройка  <application>Java</application> завершена.</para>
-  </section>
-  <section>
-    <title>Установка Gradle 1.0-milestone-6</title>
-    <para>Сайт компании-разработчика: <ulink url="http://www.gradle.org/">http://www.gradle.org/</ulink></para>
-    <para>Дистрибутив: <ulink url="http://services.gradle.org/distributions/gradle-1.0-milestone-6-all.zip">http://services.gradle.org/distributions/gradle-1.0-milestone-6-all.zip</ulink></para>
-    <orderedlist>
-      <listitem>
-        <para>Скачайте архив <filename>gradle-1.0-milestone-6-all.zip</filename> и распакуйте его, например,  в <filename>C:\Program Files (x86)\gradle</filename>.</para>
+        <para>Оперативная память 4 ГБ</para>
       </listitem>
       <listitem>
-        <para>К значению переменной среды <envar>Path</envar> добавьте значение </para>
-        <para><userinput>C:\Program Files (x86)\gradle\gradle-1.0-milestone-6\bin.</userinput></para>
+        <para>Место на жестком диске 5 ГБ</para>
       </listitem>
-    </orderedlist>
-    <para>Убедимся в работоспособности <application>gradle</application>. Для этого в командной строке введите команду</para>
-    <para> <prompt>gradle -version</prompt></para>
-    <para>В результате выполнения команды Вы увидите окно командной строки, вид которого представлен на следующем рисунке:</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/ch1_gradle.png" width="100%" format="PNG"/>
-      </imageobject>
-    </mediaobject>
+    </itemizedlist>
+    <para><emphasis role="bold">Программные требования для платформы <trademark>CUBA</trademark></emphasis> − операционная система <application>Microsoft Windows</application> или <application>Unix</application> (<application>Linux</application>, <application>FreeBSD</application> и пр.).</para>
   </section>
   <section>
-    <title>Настройка IntelliJ IDEA 11 Community Edition</title>
-    <para>Сайт компании-разработчика: <ulink url="http://www.jetbrains.com/">http://www.jetbrains.com/</ulink></para>
-    <para>Дистрибутив: <ulink url="http://download-ln.jetbrains.com/idea/ideaIC-11.exe">http://download-ln.jetbrains.com/idea/ideaIC-11.exe</ulink></para>
-    <para>Произведем настройку среды разработки. Запустите <application>IntelliJ IDEA</application> и установите <application>SDK</application>, которое будет использоваться по умолчанию.</para>
-    <para>Для этого в меню <guimenu>File</guimenu> выберите пункт  меню <guimenuitem>Project Structure</guimenuitem>. Далее слева в группе <guisubmenu>Project Settings</guisubmenu> выберите строку <guisubmenu>Project</guisubmenu>. На отобразившейся панели настроек нажмите  на кнопку <guibutton>New</guibutton> и выберите в контекстном меню пункт <guimenuitem>JSDK</guimenuitem>.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/ch1_idea_7.png" width="100%"/>
-      </imageobject>
-    </mediaobject>
-    <para>В открывшемся окне укажите путь к папке с <application>JDK</application>, например, <filename>C:\Program Files\Java\jdk1.6.0_29</filename>. Для сохранения настроек нажмите на кнопку <guibutton>Apply</guibutton>.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/ch1_idea_8.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>Настройка среды разработки  <application>IntelliJ IDEA</application> завершена.</para>
+    <title>Основные возможности платформы</title>
+    <para>Платформа <trademark>CUBA</trademark>  развивается компанией <application>Haulmont</application> начиная с 2008 года и применяется в качестве основы всех создаваемых ею приложений – как тиражируемых продуктов, так и сделанных на заказ решений. Наиболее известным на рынке продуктом является система электронного документооборота <trademark>ТЕЗИС</trademark> (<ulink url="http://www.tezis-doc.ru/">http://www.tezis-doc.ru/</ulink>).</para>
+    <para><emphasis role="bold">Ключевые особенности</emphasis></para>
+    <itemizedlist>
+      <listitem>
+        <para>Использование платформы <application>Java</application>, а, следовательно, возможность работы под управлением практически любых операционных систем на серверах и рабочих станциях</para>
+      </listitem>
+      <listitem>
+        <para>Полностью открытый исходный код</para>
+      </listitem>
+      <listitem>
+        <para>Независимость от специфики СУБД</para>
+      </listitem>
+      <listitem>
+        <para>Создаваемые на базе платформы приложения легко могут быть развернуты в отказоустойчивой конфигурации</para>
+      </listitem>
+      <listitem>
+        <para>Наличие эффективных средств разработки пользовательского интерфейса с помощью только <application>Java</application> и <application>XML</application></para>
+      </listitem>
+      <listitem>
+        <para>Мощные средства разграничения прав доступа пользователей к информации с возможностью настройки в работающем приложении</para>
+      </listitem>
+      <listitem>
+        <para>Встроенный механизм создания и генерации отчетов с выводом в форматы офисных документов и PDF</para>
+      </listitem>
+      <listitem>
+        <para>Механизм создания и выполнения бизнес-процессов с интегрированным визуальным редактором процессов</para>
+      </listitem>
+      <listitem>
+        <para>Полнотекстовый поиск по атрибутам сущностей и по содержимому загруженных файлов</para>
+      </listitem>
+      <listitem>
+        <para>Возможность отображения диаграмм, в том числе диграммы Ганта</para>
+      </listitem>
+      <listitem>
+        <para>Встроенный REST API с передачей данных в форматах XML или JSON для быстрой интеграции со сторонними приложениями</para>
+      </listitem>
+      <listitem>
+        <para>Механизм создания расширений функциональности, позволяющий адаптировать тиражируемые продукты для конкретных заказчиков, не затрудняя при этом обновления версий продуктов</para>
+      </listitem>
+    </itemizedlist>
+    <para><emphasis role="bold">Преимущества использования платформы <trademark>CUBA</trademark></emphasis></para>
+    <itemizedlist>
+      <listitem>
+        <para>Система, строящаяся на платформе, приобретает эффективную архитектуру, опробованную на множестве приложений, созданных компанией <application>Haulmont</application> и другими разработчиками</para>
+      </listitem>
+      <listitem>
+        <para>Декларативный подход к созданию пользовательского интерфейса имеет следующие преимущества:<itemizedlist>
+            <listitem>
+              <para>абстрагирует разработчика от сложностей разнородных технологий (HTML/JavaScript, Swing, и т.п.)</para>
+            </listitem>
+            <listitem>
+              <para>четко разделяет визуальное расположение и логику инициализации и реакции на события, облегчая понимание и изменение кода</para>
+            </listitem>
+          </itemizedlist></para>
+      </listitem>
+      <listitem>
+        <para>Созданные таким образом экраны одинаково работоспособны в обоих типах клиентов, поддерживаемых платформой: Web и Desktop, что позволяет с мимимумом усилий создавать системы, использующие преимущества Web-интерфейса и/или настольных приложений</para>
+      </listitem>
+      <listitem>
+        <para>Платформой предоставляется готовая функциональность на следующих уровнях:<itemizedlist>
+            <listitem>
+              <para>Системный уровень<itemizedlist>
+                  <listitem>
+                    <para>Инфраструктура и средства организации бизнес-логики на среднем слое</para>
+                  </listitem>
+                  <listitem>
+                    <para>Библиотека визуальных компонентов и инфраструктура клиентов</para>
+                  </listitem>
+                  <listitem>
+                    <para>Средства работы с параметрами конфигурации и локализованными сообщениями</para>
+                  </listitem>
+                  <listitem>
+                    <para>Средства выполнения фоновых задач пользовательского интерфейса</para>
+                  </listitem>
+                  <listitem>
+                    <para>Механизмы запуска на среднем слое задач по расписанию</para>
+                  </listitem>
+                  <listitem>
+                    <para>Возможность применения динамических атрибутов, позволяющих задавать новые атрибуты сущностей на этапе настройки и эксплуатации системы</para>
+                  </listitem>
+                </itemizedlist></para>
+            </listitem>
+            <listitem>
+              <para>Прикладной уровень<itemizedlist>
+                  <listitem>
+                    <para>Подсистема безопасности</para>
+                  </listitem>
+                  <listitem>
+                    <para>Подсистема генерации отчетов</para>
+                  </listitem>
+                  <listitem>
+                    <para>Подсистема работы с бизнес-процессами</para>
+                  </listitem>
+                  <listitem>
+                    <para>Полнотекстовый поиск</para>
+                  </listitem>
+                  <listitem>
+                    <para>Механизм надежной асинхронной рассылки email</para>
+                  </listitem>
+                  <listitem>
+                    <para>Средства ведения журнала аудита изменений сущностей и сохранения версий</para>
+                  </listitem>
+                  <listitem>
+                    <para>Средства организации кэшей данных</para>
+                  </listitem>
+                </itemizedlist></para>
+            </listitem>
+            <listitem>
+              <para>Уровень развертывания<itemizedlist>
+                  <listitem>
+                    <para>Возможность работы в отказоустойчивой конфигурации</para>
+                  </listitem>
+                  <listitem>
+                    <para>Готовые средства интеграции со сторонними приложениями</para>
+                  </listitem>
+                  <listitem>
+                    <para>Возможность независимого создания расширений основного продукта для адаптации под конкретного заказчика</para>
+                  </listitem>
+                </itemizedlist></para>
+            </listitem>
+          </itemizedlist></para>
+      </listitem>
+      <listitem>
+        <para>Функциональность платформы позволяет значительно сократить сроки разработки и удешевить проект</para>
+      </listitem>
+      <listitem>
+        <para>Для создания Web-клиента приложения на основе <trademark>CUBA</trademark>  не обязательно хорошее знание классических Web-технологий: HTML, CSS, JavaScript</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+  <section>
+    <title>
+      <acronym>Использование сторонних библиотек</acronym>
+    </title>
+    <itemizedlist>
+      <listitem>
+        <para>activation</para>
+      </listitem>
+      <listitem>
+        <para>antlr</para>
+      </listitem>
+      <listitem>
+        <para>asm</para>
+      </listitem>
+      <listitem>
+        <para>freemarker</para>
+      </listitem>
+      <listitem>
+        <para>groovy</para>
+      </listitem>
+      <listitem>
+        <para>jespa</para>
+      </listitem>
+      <listitem>
+        <para>json</para>
+      </listitem>
+      <listitem>
+        <para>junit</para>
+      </listitem>
+      <listitem>
+        <para>openjpa</para>
+      </listitem>
+      <listitem>
+        <para>spring</para>
+      </listitem>
+    </itemizedlist>
   </section>
 </chapter>

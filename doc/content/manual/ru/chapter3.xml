@@ -1,31 +1,159 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter3_build_deploy_app">
-  <title>Построение и развертывание приложения</title>
-  <para>Если Вы пропустили действия, описанные в разделе <link linkend="chapter1_create_app_project">Создание и настройка проекта приложения</link>, вернитесь к данному разделу и выполните действия, описанные в нем.</para>
-  <para>В данной главе будет показано, как собрать проект приложения, развернуть его на сервере <application>Tomcat</application> и запустить приложение  в веб-браузере. Для этого выполните следующие действия:</para>
-  <orderedlist>
-    <listitem>
-      <para>Запустите командную строку в <glossterm linkend="glossary_work_folder_id">рабочем каталоге</glossterm>.</para>
-    </listitem>
-    <listitem>
-      <para>Собираем проект. На этом этапе будут загружены все необходимые библиотеки и в каталогах модулей в подкаталогах <filename>build</filename> будут собраны артефакты проекта.</para>
-      <para>В командной строке введите команду</para>
-      <para><prompt>gradle assemble</prompt></para>
-    </listitem>
-    <listitem>
-      <para>Разворачиваем артефакты и библиотеки проекта в <application>To</application>mcat:</para>
-      <para><prompt>gradle deploy</prompt></para>
-    </listitem>
-    <listitem>
-      <para>Запускаем сервер:</para>
-      <para><prompt>gradle start</prompt></para>
-    </listitem>
-    <listitem>
-      <para>Для просмотра приложения в веб-браузере введите в адресную строку <ulink url="http://localhost:8080/app">http://localhost:8080/app</ulink></para>
-      <para>Логин и пароль пользователя − admin/admin.</para>
-    </listitem>
-  </orderedlist>
-  <para>Если приложение уже развернуто, достаточно использовать команду </para>
-  <para><prompt>gradle restart</prompt></para>
-  <para>В результате этой команды сервер приложений, если он был запущен, останавливается, проект приложения пересобирается, приложение разворачивается на сервере, и сервер запускается.</para>
+<!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter3_development">
+  <title>Разработка приложений</title>
+  <section>
+    <title>Создание и настройка рабочей среды</title>
+    <para>Ссылка на главу с установкой и настройкой инструментария</para>
+  </section>
+  <section>
+    <title>Создание проекта</title>
+  </section>
+  <section>
+    <title>Соглашения по именованию</title>
+    <para>Ниже представлены соглашения, рекомендуемые для программирования на платформе <trademark>CUBA</trademark>.</para>
+    <para>При написании класов рекомендуем использовать стиль <application>IntelliJ IDEA</application> по умолчанию (это можно сделать с помощью сочетания клавиш <keycombo>
+        <keycap function="control">Ctrl</keycap>
+        <keycap function="alt">Alt</keycap>
+        <keycap>L</keycap>
+      </keycombo>). Стиль <application>IntelliJ IDEA</application> по умолчанию удовлетворяет Code Conventions for the Java Programming Language (<ulink url="http://www.oracle.com/technetwork/java/codeconv-138413.html">http://www.oracle.com/technetwork/java/codeconv-138413.html</ulink>)</para>
+    <para>Максимальная длина строки − 120 символов. Максимальная длина метода − 50 строк.</para>
+    <para>Правила использования прописных букв в идентификаторах:
+</para>
+    <informaltable frame="all" align="center" pgwide="0">
+      <tgroup colsep="1" cols="3" rowsep="1" align="center">
+        <colspec colname="c1"/>
+        <colspec colname="c2"/>
+        <colspec colname="c3"/>
+        <thead wordsize="16">
+          <row>
+            <entry colname="Имя атрибута">Идентификатор</entry>
+            <entry colname="Тип атрибута">Правило именования</entry>
+            <entry colname="Тип атрибута">Пример</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry align="center" namest="c1" nameend="c3">
+              <emphasis role="bold">Java и Groovy классы </emphasis>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Название класса</entry>
+            <entry align="left">UpperCamelCase </entry>
+            <entry align="left"><classname>Buyer</classname>, <classname>StandardEntity</classname></entry>
+          </row>
+          <row>
+            <entry align="left">Название класса контроллера</entry>
+            <entry align="left">UpperCamelCase, контроллеры экранов со списком сущностей − <classname>&lt;ИмяКлассаСущности&gt;Browser</classname>, контроллеры экранов редактирования − <classname>&lt;ИмяКлассаСущности&gt;Editor</classname></entry>
+            <entry align="left">
+              <classname>BuyerBrowser</classname>
+             </entry>
+          </row>
+          <row>
+            <entry align="left">Тип перечисления</entry>
+            <entry align="left">UpperCamelCase</entry>
+            <entry align="left">
+              <classname>Unit</classname>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Событие</entry>
+            <entry align="left">UpperCamelCase</entry>
+            <entry align="left">
+              <classname>EditRoleAction</classname>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Класс исключения</entry>
+            <entry align="left">UpperCamelCase</entry>
+            <entry align="left">
+              <classname>RuntimeException</classname>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Статическое поле только для чтения</entry>
+            <entry align="left">UPPERCASE</entry>
+            <entry align="left">
+              <classname>ENTITY_SPECIAL_KEY</classname>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Интерфейс</entry>
+            <entry align="left">UpperCamelCase</entry>
+            <entry align="left">
+              <classname>Editor</classname>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Метод</entry>
+            <entry align="left">lowerCamelCase</entry>
+            <entry align="left">
+              <classname>setItem</classname>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Переменная</entry>
+            <entry align="left">lowerCamelCase</entry>
+            <entry align="left">
+              <classname>discountsTable</classname>
+            </entry>
+          </row>
+          <row>
+            <entry align="center" namest="c1" nameend="c3">
+              <emphasis role="bold">XML-дескрипторы</emphasis>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Идентификатор компонента</entry>
+            <entry align="left">lowerCamelCase, только буквы и цифры</entry>
+            <entry align="left">
+              <classname>attributesTable</classname>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Идентификатор источника данных</entry>
+            <entry align="left">lowerCamelCase, только буквы и цифры, оканчивается на <classname>Ds</classname></entry>
+            <entry align="left">
+              <classname>attributesDs</classname>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Имена параметров в запросах</entry>
+            <entry align="left">lowerCamelCase, только буквы и цифры</entry>
+            <entry align="left">
+              <classname>component$relevantTo</classname>
+            </entry>
+          </row>
+          <row>
+            <entry align="center" namest="c1" nameend="c3">
+              <emphasis role="bold">Объекты базы данных</emphasis>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Зарезервированные слова</entry>
+            <entry align="left">lowercase</entry>
+            <entry align="left">
+              <classname>create table</classname>
+            </entry>
+          </row>
+          <row>
+            <entry align="left">Идентификаторы</entry>
+            <entry align="left">UPPERCASE. Слова в названии разделяются подчеркиванием. В именах таблиц используется либо единственное число, либо множественное, но не оба сразу. Рекомендуем использовать единственное число.</entry>
+            <entry align="left">
+              <classname>SYS_FTS_QUEUE</classname>
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+  </section>
+  <section>
+    <title>Рекомендации по программированию</title>
+  </section>
+  <section>
+    <title>Отладка и тестирование</title>
+  </section>
+  <section>
+    <title>Пошаговые практические руководства</title>
+  </section>
 </chapter>

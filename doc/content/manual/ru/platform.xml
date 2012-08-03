@@ -1,0 +1,239 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- This document was created with Syntext Serna Free. --><book lang="ru" id="platform">
+  <bookinfo>
+    <copyright>
+      <year>2012</year>
+      <holder>Haulmont (<ulink url="www.haulmont.ru">www.haulmont.ru</ulink>)</holder>
+    </copyright>
+    <title>Платформа разработки бизнес-приложений <trademark>CUBA</trademark>. Руководство программиста</title>
+  </bookinfo>
+  <preface lang="ru">
+    <title>Предисловие</title>
+    <para>В предисловии приведено краткое содержание Руководства. В нем также описаны соглашения, используемые в тексте документа, и приведены источники дополнительной информации, касающейся используемых библиотек и технологий. </para>
+    <section id="appointment_id">
+      <title>Назначение</title>
+      <para>Данное руководство содержит информацию, необходимую для разработки <firstterm>бизнес-приложений</firstterm> на  платформе <trademark>CUBA</trademark>. Под бизнес-приложениями здесь понимается широкий спектр информационных систем, предназначенных для поддержки деятельности предприятия, управления и принятия решений. </para>
+    </section>
+    <section>
+      <title>Целевая аудитория</title>
+      <para>Данное Руководство предназначено для программистов, которые будут разрабатывать бизнес-приложения с помощью платформы <trademark>CUBA</trademark>. Для успешной работы требуется хорошее знание следующих технологий:
+
+<itemizedlist>
+          <listitem>
+            <para>Java Standard Edition;</para>
+          </listitem>
+          <listitem>
+            <para>XML/XSD;</para>
+          </listitem>
+          <listitem>
+            <para>RDBMS (SQL, DDL).</para>
+          </listitem>
+        </itemizedlist></para>
+      <para>Кроме того, полезным является знание следующих технологии и фреймворков:</para>
+      <itemizedlist>
+        <listitem>
+          <para>SpringFramework 3.x (<ulink url="http://www.springsource.org">http://www.springsource.org</ulink>)</para>
+        </listitem>
+        <listitem>
+          <para>Apache OpenJPA 2.x (<ulink url="http://openjpa.apache.org">http://openjpa.apache.org</ulink>)</para>
+        </listitem>
+        <listitem>
+          <para>Servlets (<ulink url="http://www.oracle.com/technetwork/java/javaee/servlet/index.html">http://www.oracle.com/technetwork/java/javaee/servlet/index.html</ulink>)</para>
+        </listitem>
+        <listitem>
+          <para>HTML/CSS/JavaScript</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+    <section>
+      <title>Структура руководства</title>
+      <para>Данное Руководство состоит из следующих разделов.</para>
+      <para><link linkend="chapter0_introduction">
+          <emphasis role="bold">Глава 1. Введение</emphasis>
+        </link></para>
+      <para>Во вводной главе приводятся  сведения о возможностях платформы <trademark>CUBA</trademark>.</para>
+      <para><link linkend="chapter1_setup">
+          <emphasis role="bold">Глава 2. Установка и настройка инструментария</emphasis>
+        </link></para>
+      <para>В данной главе приводится список программного обеспечения, необходимого для создания бизнес-приложей на основе платформы <trademark>CUBA</trademark>. Приведены инструкции по установке и настройке инструментов.</para>
+      <para><link linkend="chapter_quickStart">
+          <emphasis role="bold">Глава 3. Быстрый старт</emphasis>
+        </link></para>
+      <para>В данной главе представлены основные сведения по созданию простого приложения на основе платформы. Информация изложена в краткой форме для того, чтобы Вы могли в кратчайшие сроки овладеть основами создания бизнес-приложений с помощью платформы <trademark>CUBA</trademark>.</para>
+      <para><link linkend="chapter2_architecture">
+          <emphasis role="bold">Глава 4. Архитектура</emphasis>
+        </link></para>
+      <para>Данная глава содержит описание архитектуры платформы, компонентов пользовательского интерфейса, а также средств интеграции со сторонними приложениями.</para>
+      <para><link linkend="chapter3_development">
+          <emphasis role="bold">Глава 5. Разработка приложений</emphasis>
+        </link></para>
+      <para>Данная глава дает практические знания, требуемые для создания приложений на основе платформы.</para>
+      <para><link linkend="chapter4_deployment">
+          <emphasis role="bold">Глава 6. Развертывание приложений на основе платформы</emphasis>
+        </link></para>
+    </section>
+    <section>
+      <title>Соглашения, принятые в документе</title>
+      <para>Для привлечения внимания к определенной информации в данном Руководстве используется выделение текста различными шрифтами, стилями и размером.</para>
+      <section>
+        <title>Типографские соглашения</title>
+        <para>Далее приводятся примеры выделенных слов и пояснения, в каких случаях используется то или иное оформление.</para>
+        <formalpara>
+          <title>Переменные среды, команды, имена классов, интерфейсов, объектов, методов, переменных, тексты ошибок</title>
+          <para>Обозначены в руководстве <classname>специальным моноширинным шрифтом</classname>.</para>
+        </formalpara>
+        <formalpara>
+          <title>Элементы интерфейса</title>
+          <para>Пункты меню, названия окон, папок, закладок выделяются в тексте <guimenu>полужирным текстом</guimenu>. Кнопки выглядят следующим образом: <guibutton>Кнопка</guibutton></para>
+        </formalpara>
+        <formalpara>
+          <title>Имена приложений, объекты базы данных, названия внешних документов</title>
+          <para>Обозначаются в тексте руководства <emphasis role="bold">полужирным текстом</emphasis>.</para>
+        </formalpara>
+        <formalpara>
+          <title>Имена файлов, каталогов, папок и расширений</title>
+          <para>Обозначены в руководстве следующим образом: <filename>C:\Program Files (x86)</filename>.</para>
+        </formalpara>
+        <formalpara>
+          <title>Имя пакета</title>
+          <para>Для имени пакета используется следующее обозначение: <package>com.haulmont.fts.core.app</package>.</para>
+        </formalpara>
+        <formalpara>
+          <title>Имя модуля</title>
+          <para>Имя модуля обозначается в тексте следующим образом: <structname>модуль</structname>.</para>
+        </formalpara>
+        <formalpara>
+          <title>Имя уровня</title>
+          <para>Имя уровня обозначается в тексте следующим образом: <structfield>уровень</structfield>.</para>
+        </formalpara>
+        <formalpara>
+          <title>Параметры и свойства</title>
+          <para><parameter>Параметры</parameter> и <property>свойства</property> также выделяются в тексте руководства.</para>
+        </formalpara>
+        <formalpara>
+          <title>Клавиши</title>
+          <para>Клавиши представляются в виде <emphasis role="bold">полужирного текста</emphasis> для того, чтобы выделяться среди остального текста. Комбинации клавиш, которые должны вводиться одновременно, разделяются символом &quot;+&quot;, например, <keycombo>
+              <keycap>Alt</keycap>
+              <keycap>Ins</keycap>
+            </keycombo>.
+
+ Комбинации клавиш, которые должны вводиться последовательно, разделяются запятыми, например:
+
+<keycombo>
+              <keycap>Ctrl</keycap>
+              <keycap>X</keycap>
+            </keycombo>, <keycombo>
+              <keycap>Ctrl</keycap>
+              <keycap>S</keycap>
+            </keycombo>.</para>
+        </formalpara>
+        <formalpara>
+          <title>Роль пользователя</title>
+          <para>Роль пользователя выделяется в тексте следующим образом: <authorinitials>Администратор</authorinitials>.</para>
+        </formalpara>
+        <formalpara>
+          <title>Аннотации</title>
+          <para>Аннотации обозначаются следующим образом: <literal>@Annotation</literal>.</para>
+        </formalpara>
+      </section>
+      <section>
+        <title>Врезки</title>
+        <para>Листинг исходного кода, а также содержимое файлов визуально отделяются от окружающего текста следующим образом:</para>
+        <para><programlisting>[appdefaults]
+autologin = true
+forward = true
+forwardable = true
+encrypt = true </programlisting></para>
+      </section>
+      <section>
+        <title>Замечания и предупреждения</title>
+        <para>В тексте руководства будут встречаться сообщения,  используемые для привлечения внимания к информации. <tip>
+            <title>Совет</title>
+            <para>Это сообщение, содержащее информацию о способах упрощения работы.</para>
+          </tip><caution>
+            <title>Подсказка</title>
+            <para>Это дополнительная информация к задаче или проблеме, позволяющая найти правильное решение.</para>
+          </caution><warning>
+            <title>Внимание</title>
+            <para>Данные сообщения  акцентируют внимание на вещах, которые легко упустить из виду.</para>
+          </warning></para>
+      </section>
+    </section>
+    <section>
+      <title>Дополнительные материалы</title>
+      <para>Информация о создании отчетов с помощью платформы находится в <productname>Руководстве по созданию отчетов</productname>. Информацию о подсистеме безопасности платформы Вы можете посмотреть в <productname>Руководстве подсистемы безопасности платформы <trademark>CUBA</trademark></productname>.</para>
+      <para>Ниже приведен список источников дополнительной информации по <application>Spring</application>, <application>ORM</application>, <application>OpenJPA</application>. </para>
+      <para id="text_additionally_spring"><emphasis role="bold">Информация по Spring Framework</emphasis></para>
+      <para>Большое количество информации Вы можете найти на Web-сайте <ulink url="http://www.springsource.org/">http://www.springsource.org/</ulink></para>
+      <para>Информация, на которую стоит обратить особое внимание:</para>
+      <itemizedlist>
+        <listitem>
+          <para>Dependency Injection and Inversion of Control <itemizedlist>
+              <listitem>
+                <para><ulink url="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/">http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/</ulink></para>
+              </listitem>
+            </itemizedlist></para>
+        </listitem>
+        <listitem>
+          <para>Aspect Oriented Programming <itemizedlist>
+              <listitem>
+                <para><ulink url="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/">http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/</ulink></para>
+              </listitem>
+            </itemizedlist></para>
+        </listitem>
+        <listitem>
+          <para>Transaction Management <itemizedlist>
+              <listitem>
+                <para><ulink url="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/">http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/</ulink></para>
+              </listitem>
+            </itemizedlist></para>
+        </listitem>
+        <listitem>
+          <para>Web services<itemizedlist>
+              <listitem>
+                <para><ulink url="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/">http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/</ulink></para>
+              </listitem>
+              <listitem>
+                <para><ulink url="http://static.springsource.org/spring-ws/sites/2.0/reference/html/index.html">http://static.springsource.org/spring-ws/sites/2.0/reference/html/index.html</ulink></para>
+              </listitem>
+            </itemizedlist></para>
+        </listitem>
+      </itemizedlist>
+      <para id="text_additionally_ORM"><emphasis role="bold">Информация по ORM</emphasis></para>
+      <para>Краткие сведения о том, что такое <firstterm>Object-relational mapping</firstterm> (ORM), Вы можете найти по следующей ссылке: <ulink url="http://ru.wikipedia.org/wiki/ORM">http://ru.wikipedia.org/wiki/ORM</ulink></para>
+      <para id="text_additionally_JPA"><emphasis role="bold">Информация по OpenJPA</emphasis></para>
+      <para>Web-сайт <ulink url="http://openjpa.apache.org/">http://openjpa.apache.org/</ulink> также содержит информацию, которая может быть полезна для Вас.</para>
+    </section>
+    <section>
+      <title>Обратная связь</title>
+      <para>Если Вы нашли ошибку в платформе, или у Вас появились вопросы, ответы на которые отсутствуют в данном Руководстве, пожалуйста, обратитесть в службу поддержки по электронной почте <email>name@haulmont.com</email>. В теме письма укажите</para>
+      <para><code>PlatformDocumentation</code></para>
+      <para>Также Вы можете направлять на этот адрес запросы по добавлению новой функциональности или предложения по модификации существующей функциональности платформы. </para>
+      <para>Если у Вас есть предложения по улучшению данного руководства, постарайтесь сформулировать их как можно точнее. Если Вы обнаружили ошибку, укажите, пожалуйста, номер раздела и приведите небольшой участок окружающего текста для облегчения поиска. </para>
+    </section>
+  </preface>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter0.xml" encoding="UTF-8"/>
+   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter1.xml" encoding="UTF-8"/>
+   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_quick_start.xml" encoding="UTF-8"/>
+   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter2.xml" encoding="UTF-8"/>
+   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter3.xml" encoding="UTF-8"/>
+   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter4.xml" encoding="UTF-8"/>
+   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter5.xml" encoding="UTF-8"/>
+  <appendix>
+    <title>Часто задаваемые вопросы</title>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="qanda.xml" encoding="UTF-8"/>
+  </appendix>
+  <appendix>
+    <title>Схема базы данных</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/dbStructure.png" contentwidth="100%" scalefit="1"/>
+      </imageobject>
+    </mediaobject>
+  </appendix>
+  <appendix>
+    <title>Описание API</title>
+  </appendix>
+  <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="glossary.xml" encoding="UTF-8"/>
+  <index type="А" lang="ru"/>
+</book>
