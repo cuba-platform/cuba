@@ -229,7 +229,9 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
             initCollection();
         }
 
-        __getCollection().add(item);
+        // Don't add the same object instance twice (this is possible when committing nested datasources)
+        if (!containsObjectInstance(item))
+            __getCollection().add(item);
         attachListener(item);
 
         if (ObjectUtils.equals(this.item, item)) {
@@ -251,6 +253,19 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         }
 
         forceCollectionChanged(CollectionDatasourceListener.Operation.ADD);
+    }
+
+    /**
+     * Search the collection using object identity.
+     * @param instance
+     * @return true if the collection already contains the instance
+     */
+    protected boolean containsObjectInstance(T instance) {
+        for (T item : __getCollection()) {
+            if (instance == item)
+                return true;
+        }
+        return false;
     }
 
     private void initCollection() {
@@ -310,7 +325,9 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
         checkState();
         checkPermission();
 
-        __getCollection().add(item);
+        // Don't add the same object instance twice
+        if (!containsObjectInstance(item))
+            __getCollection().add(item);
 
         MetaProperty inverseProperty = metaProperty.getInverse();
         if (inverseProperty != null)

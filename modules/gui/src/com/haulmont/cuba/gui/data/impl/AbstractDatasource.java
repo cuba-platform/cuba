@@ -42,6 +42,8 @@ public abstract class AbstractDatasource<T extends Entity>
     protected Collection itemToDelete = new HashSet();
     protected ValueListener listener;
 
+    protected volatile boolean listenersEnabled = true;
+
     public AbstractDatasource(String id) {
         this.id = id;
         listener = new ItemListener();
@@ -89,6 +91,13 @@ public abstract class AbstractDatasource<T extends Entity>
             itemToDelete.add(item);
         }
         modified = true;
+    }
+
+    @Override
+    public boolean enableListeners(boolean enable) {
+        boolean oldValue = listenersEnabled;
+        listenersEnabled = enable;
+        return oldValue;
     }
 
     public CommitMode getCommitMode() {
@@ -172,6 +181,9 @@ public abstract class AbstractDatasource<T extends Entity>
         private static final long serialVersionUID = 358102907204482975L;
 
         public void propertyChanged(Object item, String property, Object prevValue, Object value) {
+            if (!listenersEnabled)
+                return;
+
             log.trace("propertyChanged: item=" + item + ", property=" + property + ", value=" + value + ", prevValue=" + prevValue);
 
             for (DatasourceListener dsListener : new ArrayList<DatasourceListener>(dsListeners)) {

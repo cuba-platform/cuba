@@ -33,4 +33,11 @@ public interface DatasourceImplementation<T extends Entity> {
     void deleted(T item);
 
     void committed(Set<Entity> entities);
+
+    /**
+     * Enables or disables datasource listeners.
+     * @param enable    true to enable, false to disable
+     * @return          previous state
+     */
+    boolean enableListeners(boolean enable);
 }

@@ -215,14 +215,19 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
         for (Datasource<Entity> datasource : commitData.get(dataservice)) {
             final DatasourceImplementation<Entity> implementation = (DatasourceImplementation) datasource;
 
-            for (Entity entity : implementation.getItemsToCreate()) {
-                addToContext(entity, datasource, context.getCommitInstances(), context.getViews());
-            }
-            for (Entity entity : implementation.getItemsToUpdate()) {
-                addToContext(entity, datasource, context.getCommitInstances(), context.getViews());
-            }
-            for (Entity entity : implementation.getItemsToDelete()) {
-                addToContext(entity, datasource, context.getRemoveInstances(), context.getViews());
+            boolean listenersEnabled = implementation.enableListeners(false);
+            try {
+                for (Entity entity : implementation.getItemsToCreate()) {
+                    addToContext(entity, datasource, context.getCommitInstances(), context.getViews());
+                }
+                for (Entity entity : implementation.getItemsToUpdate()) {
+                    addToContext(entity, datasource, context.getCommitInstances(), context.getViews());
+                }
+                for (Entity entity : implementation.getItemsToDelete()) {
+                    addToContext(entity, datasource, context.getRemoveInstances(), context.getViews());
+                }
+            } finally {
+                implementation.enableListeners(listenersEnabled);
             }
         }
         return context;
@@ -247,7 +252,14 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
             if (inverseProp != null && inverseProp.getDomain().equals(datasource.getMetaClass())
                     && entity.getValue(inverseProp.getName()) != null) // replace master only if it's already set
             {
-                ((AbstractInstance) entity).setValue(inverseProp.getName(), masterDs.getItem(), false);
+                Object masterItem;
+                if (masterDs instanceof CollectionDatasource) {
+                    Object id = ((Entity) entity.getValue(inverseProp.getName())).getId();
+                    masterItem = ((CollectionDatasource) masterDs).getItem(id);
+                } else {
+                    masterItem = masterDs.getItem();
+                }
+                ((AbstractInstance) entity).setValue(inverseProp.getName(), masterItem, false);
             }
         }
     }
