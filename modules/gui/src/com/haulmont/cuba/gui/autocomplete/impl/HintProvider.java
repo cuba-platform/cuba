@@ -3,6 +3,7 @@ package com.haulmont.cuba.gui.autocomplete.impl;
 import com.haulmont.cuba.core.sys.jpql.*;
 import com.haulmont.cuba.core.sys.jpql.model.Attribute;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
+import com.haulmont.cuba.core.sys.jpql.model.NoEntity;
 import com.haulmont.cuba.core.sys.jpql.pointer.CollectionPointer;
 import com.haulmont.cuba.core.sys.jpql.pointer.EntityPointer;
 import com.haulmont.cuba.core.sys.jpql.pointer.NoPointer;
@@ -116,11 +117,14 @@ public class HintProvider {
             return new HintResponse("Query error", errorMessages);
         }
 
+        List<Option> options = new ArrayList<>();
         Entity targetEntity = ((EntityPointer) pointer).getEntity();
+        if (targetEntity instanceof NoEntity)
+            return new HintResponse(options, path.lastEntityFieldPattern);
+
         List<Attribute> attributes = targetEntity.findAttributesStartingWith(
                 path.lastEntityFieldPattern, expectedTypes);
 
-        List<Option> options = new ArrayList<Option>();
         for (Attribute attribute : attributes) {
             options.add(new Option(attribute.getName(), attribute.getUserFriendlyName()));
         }

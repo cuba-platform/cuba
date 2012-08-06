@@ -1,152 +1,135 @@
-// $ANTLR 3.3 Nov 30, 2010 12:50:56 JPA.g 2011-09-15 00:27:08
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 JPA.g 2012-08-06 14:42:50
 
 package com.haulmont.cuba.core.sys.jpql.antlr;
 
-import com.haulmont.cuba.core.sys.jpql.tree.QueryNode;
-import com.haulmont.cuba.core.sys.jpql.tree.SelectedItemNode;
-import com.haulmont.cuba.core.sys.jpql.tree.PathNode;
-import com.haulmont.cuba.core.sys.jpql.tree.FromNode;
-import com.haulmont.cuba.core.sys.jpql.tree.SelectionSourceNode;
-import com.haulmont.cuba.core.sys.jpql.tree.IdentificationVariableNode;
-import com.haulmont.cuba.core.sys.jpql.tree.JoinVariableNode;
-import com.haulmont.cuba.core.sys.jpql.tree.CollectionMemberNode;
-import com.haulmont.cuba.core.sys.jpql.tree.WhereNode;
-import com.haulmont.cuba.core.sys.jpql.tree.SimpleConditionNode;
-import com.haulmont.cuba.core.sys.jpql.tree.ParameterNode;
-import com.haulmont.cuba.core.sys.jpql.tree.GroupByNode;
-import com.haulmont.cuba.core.sys.jpql.tree.OrderByNode;
-import com.haulmont.cuba.core.sys.jpql.tree.OrderByFieldNode;
-import com.haulmont.cuba.core.sys.jpql.tree.AggregateExpressionNode;
-
-
+import com.haulmont.cuba.core.sys.jpql.tree.*;
 import org.antlr.runtime.*;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-
-import org.antlr.runtime.tree.*;
+import org.antlr.runtime.tree.CommonTreeAdaptor;
+import org.antlr.runtime.tree.RewriteRuleSubtreeStream;
+import org.antlr.runtime.tree.RewriteRuleTokenStream;
+import org.antlr.runtime.tree.TreeAdaptor;
 
 public class JPAParser extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "T_SELECTED_ITEMS", "T_SELECTED_ITEM", "T_SOURCES", "T_SOURCE", "T_SELECTED_FIELD", "T_SELECTED_ENTITY", "T_ID_VAR", "T_JOIN_VAR", "T_COLLECTION_MEMBER", "T_QUERY", "T_CONDITION", "T_SIMPLE_CONDITION", "T_PARAMETER", "T_GROUP_BY", "T_ORDER_BY", "T_ORDER_BY_FIELD", "T_AGGREGATE_EXPR", "HAVING", "ASC", "DESC", "AVG", "MAX", "MIN", "SUM", "COUNT", "OR", "AND", "LPAREN", "RPAREN", "DISTINCT", "LEFT", "OUTER", "INNER", "JOIN", "FETCH", "ORDER", "GROUP", "BY", "INT_NUMERAL", "ESCAPE_CHARACTER", "STRINGLITERAL", "TRIM_CHARACTER", "WORD", "NAMED_PARAMETER", "RUSSIAN_SYMBOLS", "WS", "COMMENT", "LINE_COMMENT", "'SELECT'", "'FROM'", "','", "'AS'", "'(SELECT'", "'.'", "'IN'", "'OBJECT'", "'NEW'", "'WHERE'", "'NOT'", "'@BETWEEN'", "'NOW'", "'+'", "'-'", "'YEAR'", "'MONTH'", "'DAY'", "'HOUR'", "'MINUTE'", "'SECOND'", "'@DATEBEFORE'", "'@DATEAFTER'", "'@DATEEQUALS'", "'@TODAY'", "'BETWEEN'", "'LIKE'", "'ESCAPE'", "'IS'", "'NULL'", "'EMPTY'", "'MEMBER'", "'OF'", "'EXISTS'", "'ALL'", "'ANY'", "'SOME'", "'='", "'<>'", "'>'", "'>='", "'<'", "'<='", "'*'", "'/'", "'LENGTH'", "'LOCATE'", "'ABS'", "'SQRT'", "'MOD'", "'SIZE'", "'CURRENT_DATE'", "'CURRENT_TIME'", "'CURRENT_TIMESTAMP'", "'CONCAT'", "'SUBSTRING'", "'TRIM'", "'LOWER'", "'UPPER'", "'LEADING'", "'TRAILING'", "'BOTH'", "'0x'", "'?'", "'true'", "'false'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "T_SELECTED_ITEMS", "T_SELECTED_ITEM", "T_SOURCES", "T_SOURCE", "T_SELECTED_FIELD", "T_SELECTED_ENTITY", "T_ID_VAR", "T_JOIN_VAR", "T_COLLECTION_MEMBER", "T_QUERY", "T_CONDITION", "T_SIMPLE_CONDITION", "T_PARAMETER", "T_GROUP_BY", "T_ORDER_BY", "T_ORDER_BY_FIELD", "T_AGGREGATE_EXPR", "HAVING", "ASC", "DESC", "AVG", "MAX", "MIN", "SUM", "COUNT", "OR", "AND", "LPAREN", "RPAREN", "DISTINCT", "LEFT", "OUTER", "INNER", "JOIN", "FETCH", "ORDER", "GROUP", "BY", "INT_NUMERAL", "ESCAPE_CHARACTER", "STRINGLITERAL", "TRIM_CHARACTER", "WORD", "NAMED_PARAMETER", "RUSSIAN_SYMBOLS", "WS", "COMMENT", "LINE_COMMENT", "'SELECT'", "'FROM'", "','", "'AS'", "'(SELECT'", "'.'", "'IN'", "'OBJECT'", "'NEW'", "'WHERE'", "'NOT'", "'@BETWEEN'", "'NOW'", "'+'", "'-'", "'YEAR'", "'MONTH'", "'DAY'", "'HOUR'", "'MINUTE'", "'SECOND'", "'@DATEBEFORE'", "'@DATEAFTER'", "'@DATEEQUALS'", "'@TODAY'", "'BETWEEN'", "'LIKE'", "'ESCAPE'", "'IS'", "'NULL'", "'EMPTY'", "'MEMBER'", "'OF'", "'EXISTS'", "'ALL'", "'ANY'", "'SOME'", "'='", "'<>'", "'>'", "'>='", "'<'", "'<='", "'*'", "'/'", "'LENGTH'", "'LOCATE'", "'ABS'", "'SQRT'", "'MOD'", "'SIZE'", "'CURRENT_DATE'", "'CURRENT_TIME'", "'CURRENT_TIMESTAMP'", "'CONCAT'", "'SUBSTRING'", "'TRIM'", "'LOWER'", "'UPPER'", "'LEADING'", "'TRAILING'", "'BOTH'", "'0x'", "'?'", "'${'", "'}'", "'true'", "'false'"
     };
+    public static final int T_JOIN_VAR=11;
+    public static final int T_AGGREGATE_EXPR=20;
+    public static final int COUNT=28;
+    public static final int T_ORDER_BY=18;
     public static final int EOF=-1;
-    public static final int T__52=52;
-    public static final int T__53=53;
-    public static final int T__54=54;
-    public static final int T__55=55;
-    public static final int T__56=56;
-    public static final int T__57=57;
-    public static final int T__58=58;
-    public static final int T__59=59;
-    public static final int T__60=60;
-    public static final int T__61=61;
-    public static final int T__62=62;
-    public static final int T__63=63;
-    public static final int T__64=64;
-    public static final int T__65=65;
-    public static final int T__66=66;
-    public static final int T__67=67;
-    public static final int T__68=68;
-    public static final int T__69=69;
-    public static final int T__70=70;
-    public static final int T__71=71;
-    public static final int T__72=72;
-    public static final int T__73=73;
-    public static final int T__74=74;
-    public static final int T__75=75;
-    public static final int T__76=76;
-    public static final int T__77=77;
-    public static final int T__78=78;
-    public static final int T__79=79;
+    public static final int WORD=46;
+    public static final int T__93=93;
+    public static final int T__94=94;
+    public static final int RPAREN=32;
+    public static final int T__91=91;
+    public static final int T__92=92;
+    public static final int T__90=90;
+    public static final int TRIM_CHARACTER=45;
+    public static final int T_SELECTED_ITEM=5;
+    public static final int COMMENT=50;
+    public static final int T__99=99;
+    public static final int T__98=98;
+    public static final int T__97=97;
+    public static final int T__96=96;
+    public static final int T_QUERY=13;
+    public static final int T__95=95;
     public static final int T__80=80;
     public static final int T__81=81;
     public static final int T__82=82;
     public static final int T__83=83;
-    public static final int T__84=84;
+    public static final int ASC=22;
+    public static final int LINE_COMMENT=51;
     public static final int T__85=85;
-    public static final int T__86=86;
+    public static final int T__84=84;
     public static final int T__87=87;
-    public static final int T__88=88;
+    public static final int T__86=86;
     public static final int T__89=89;
-    public static final int T__90=90;
-    public static final int T__91=91;
-    public static final int T__92=92;
-    public static final int T__93=93;
-    public static final int T__94=94;
-    public static final int T__95=95;
-    public static final int T__96=96;
-    public static final int T__97=97;
-    public static final int T__98=98;
-    public static final int T__99=99;
-    public static final int T__100=100;
-    public static final int T__101=101;
-    public static final int T__102=102;
+    public static final int T__88=88;
+    public static final int GROUP=40;
+    public static final int WS=49;
+    public static final int T__71=71;
+    public static final int T__72=72;
+    public static final int FETCH=38;
+    public static final int T__70=70;
+    public static final int T_SELECTED_FIELD=8;
+    public static final int OR=29;
+    public static final int T__76=76;
+    public static final int T__75=75;
+    public static final int DISTINCT=33;
+    public static final int T__74=74;
+    public static final int T__73=73;
+    public static final int T__79=79;
+    public static final int T__78=78;
+    public static final int T__77=77;
+    public static final int T__68=68;
+    public static final int T__69=69;
+    public static final int T__66=66;
+    public static final int T__67=67;
+    public static final int T_SELECTED_ITEMS=4;
+    public static final int T__64=64;
+    public static final int T__65=65;
+    public static final int INNER=36;
+    public static final int T__62=62;
+    public static final int T__63=63;
+    public static final int ORDER=39;
+    public static final int T__118=118;
+    public static final int T_SOURCE=7;
+    public static final int T__119=119;
+    public static final int T__116=116;
+    public static final int T_ID_VAR=10;
+    public static final int T__117=117;
+    public static final int T_SIMPLE_CONDITION=15;
+    public static final int T__114=114;
+    public static final int T__115=115;
+    public static final int MAX=25;
+    public static final int AND=30;
+    public static final int SUM=27;
+    public static final int T__61=61;
+    public static final int T__60=60;
+    public static final int RUSSIAN_SYMBOLS=48;
+    public static final int LPAREN=31;
+    public static final int T__55=55;
+    public static final int T__56=56;
+    public static final int T__57=57;
+    public static final int T__58=58;
+    public static final int T__52=52;
+    public static final int T__53=53;
+    public static final int T__54=54;
+    public static final int T__107=107;
+    public static final int T__108=108;
+    public static final int T__109=109;
+    public static final int LEFT=34;
+    public static final int AVG=24;
+    public static final int T_ORDER_BY_FIELD=19;
+    public static final int T__59=59;
     public static final int T__103=103;
     public static final int T__104=104;
     public static final int T__105=105;
     public static final int T__106=106;
-    public static final int T__107=107;
-    public static final int T__108=108;
-    public static final int T__109=109;
-    public static final int T__110=110;
     public static final int T__111=111;
-    public static final int T__112=112;
+    public static final int T__110=110;
     public static final int T__113=113;
-    public static final int T__114=114;
-    public static final int T__115=115;
-    public static final int T__116=116;
-    public static final int T__117=117;
-    public static final int T_SELECTED_ITEMS=4;
-    public static final int T_SELECTED_ITEM=5;
-    public static final int T_SOURCES=6;
-    public static final int T_SOURCE=7;
-    public static final int T_SELECTED_FIELD=8;
-    public static final int T_SELECTED_ENTITY=9;
-    public static final int T_ID_VAR=10;
-    public static final int T_JOIN_VAR=11;
-    public static final int T_COLLECTION_MEMBER=12;
-    public static final int T_QUERY=13;
-    public static final int T_CONDITION=14;
-    public static final int T_SIMPLE_CONDITION=15;
-    public static final int T_PARAMETER=16;
+    public static final int T__112=112;
     public static final int T_GROUP_BY=17;
-    public static final int T_ORDER_BY=18;
-    public static final int T_ORDER_BY_FIELD=19;
-    public static final int T_AGGREGATE_EXPR=20;
-    public static final int HAVING=21;
-    public static final int ASC=22;
-    public static final int DESC=23;
-    public static final int AVG=24;
-    public static final int MAX=25;
-    public static final int MIN=26;
-    public static final int SUM=27;
-    public static final int COUNT=28;
-    public static final int OR=29;
-    public static final int AND=30;
-    public static final int LPAREN=31;
-    public static final int RPAREN=32;
-    public static final int DISTINCT=33;
-    public static final int LEFT=34;
     public static final int OUTER=35;
-    public static final int INNER=36;
-    public static final int JOIN=37;
-    public static final int FETCH=38;
-    public static final int ORDER=39;
-    public static final int GROUP=40;
     public static final int BY=41;
-    public static final int INT_NUMERAL=42;
-    public static final int ESCAPE_CHARACTER=43;
-    public static final int STRINGLITERAL=44;
-    public static final int TRIM_CHARACTER=45;
-    public static final int WORD=46;
+    public static final int T_CONDITION=14;
+    public static final int T_SELECTED_ENTITY=9;
+    public static final int T__102=102;
+    public static final int HAVING=21;
+    public static final int T__101=101;
+    public static final int MIN=26;
+    public static final int T__100=100;
+    public static final int T_PARAMETER=16;
+    public static final int JOIN=37;
     public static final int NAMED_PARAMETER=47;
-    public static final int RUSSIAN_SYMBOLS=48;
-    public static final int WS=49;
-    public static final int COMMENT=50;
-    public static final int LINE_COMMENT=51;
+    public static final int ESCAPE_CHARACTER=43;
+    public static final int INT_NUMERAL=42;
+    public static final int STRINGLITERAL=44;
+    public static final int T_COLLECTION_MEMBER=12;
+    public static final int DESC=23;
+    public static final int T_SOURCES=6;
 
     // delegates
     // delegators
@@ -157,9 +140,9 @@ public class JPAParser extends Parser {
         }
         public JPAParser(TokenStream input, RecognizerSharedState state) {
             super(input, state);
-
+             
         }
-
+        
     protected TreeAdaptor adaptor = new CommonTreeAdaptor();
 
     public void setTreeAdaptor(TreeAdaptor adaptor) {
@@ -179,7 +162,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "ql_statement"
-    // JPA.g:84:1: ql_statement : select_statement ;
+    // JPA.g:85:1: ql_statement : select_statement ;
     public final JPAParser.ql_statement_return ql_statement() throws RecognitionException {
         JPAParser.ql_statement_return retval = new JPAParser.ql_statement_return();
         retval.start = input.LT(1);
@@ -191,12 +174,12 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:85:2: ( select_statement )
-            // JPA.g:85:4: select_statement
+            // JPA.g:86:5: ( select_statement )
+            // JPA.g:86:7: select_statement
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_select_statement_in_ql_statement416);
+            pushFollow(FOLLOW_select_statement_in_ql_statement426);
             select_statement1=select_statement();
 
             state._fsp--;
@@ -231,7 +214,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "select_statement"
-    // JPA.g:87:1: select_statement : sl= 'SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? -> ^( T_QUERY[$sl] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? ) ;
+    // JPA.g:88:1: select_statement : sl= 'SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? -> ^( T_QUERY[$sl] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? ) ;
     public final JPAParser.select_statement_return select_statement() throws RecognitionException {
         JPAParser.select_statement_return retval = new JPAParser.select_statement_return();
         retval.start = input.LT(1);
@@ -261,25 +244,25 @@ public class JPAParser extends Parser {
         RewriteRuleSubtreeStream stream_where_clause=new RewriteRuleSubtreeStream(adaptor,"rule where_clause");
         RewriteRuleSubtreeStream stream_orderby_clause=new RewriteRuleSubtreeStream(adaptor,"rule orderby_clause");
         try {
-            // JPA.g:88:2: (sl= 'SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? -> ^( T_QUERY[$sl] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? ) )
-            // JPA.g:88:5: sl= 'SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )?
+            // JPA.g:89:5: (sl= 'SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? -> ^( T_QUERY[$sl] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? ) )
+            // JPA.g:89:8: sl= 'SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )?
             {
-            sl=(Token)match(input,52,FOLLOW_52_in_select_statement428); if (state.failed) return retval;
+            sl=(Token)match(input,52,FOLLOW_52_in_select_statement441); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_52.add(sl);
 
-            pushFollow(FOLLOW_select_clause_in_select_statement430);
+            pushFollow(FOLLOW_select_clause_in_select_statement443);
             select_clause2=select_clause();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_select_clause.add(select_clause2.getTree());
-            pushFollow(FOLLOW_from_clause_in_select_statement432);
+            pushFollow(FOLLOW_from_clause_in_select_statement445);
             from_clause3=from_clause();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_from_clause.add(from_clause3.getTree());
-            // JPA.g:88:43: ( where_clause )?
+            // JPA.g:89:46: ( where_clause )?
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -288,9 +271,9 @@ public class JPAParser extends Parser {
             }
             switch (alt1) {
                 case 1 :
-                    // JPA.g:88:44: where_clause
+                    // JPA.g:89:47: where_clause
                     {
-                    pushFollow(FOLLOW_where_clause_in_select_statement435);
+                    pushFollow(FOLLOW_where_clause_in_select_statement448);
                     where_clause4=where_clause();
 
                     state._fsp--;
@@ -302,7 +285,7 @@ public class JPAParser extends Parser {
 
             }
 
-            // JPA.g:88:59: ( groupby_clause )?
+            // JPA.g:89:62: ( groupby_clause )?
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -311,9 +294,9 @@ public class JPAParser extends Parser {
             }
             switch (alt2) {
                 case 1 :
-                    // JPA.g:88:60: groupby_clause
+                    // JPA.g:89:63: groupby_clause
                     {
-                    pushFollow(FOLLOW_groupby_clause_in_select_statement440);
+                    pushFollow(FOLLOW_groupby_clause_in_select_statement453);
                     groupby_clause5=groupby_clause();
 
                     state._fsp--;
@@ -325,7 +308,7 @@ public class JPAParser extends Parser {
 
             }
 
-            // JPA.g:88:77: ( having_clause )?
+            // JPA.g:89:80: ( having_clause )?
             int alt3=2;
             int LA3_0 = input.LA(1);
 
@@ -334,9 +317,9 @@ public class JPAParser extends Parser {
             }
             switch (alt3) {
                 case 1 :
-                    // JPA.g:88:78: having_clause
+                    // JPA.g:89:81: having_clause
                     {
-                    pushFollow(FOLLOW_having_clause_in_select_statement445);
+                    pushFollow(FOLLOW_having_clause_in_select_statement458);
                     having_clause6=having_clause();
 
                     state._fsp--;
@@ -348,7 +331,7 @@ public class JPAParser extends Parser {
 
             }
 
-            // JPA.g:88:93: ( orderby_clause )?
+            // JPA.g:89:96: ( orderby_clause )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -357,9 +340,9 @@ public class JPAParser extends Parser {
             }
             switch (alt4) {
                 case 1 :
-                    // JPA.g:88:94: orderby_clause
+                    // JPA.g:89:97: orderby_clause
                     {
-                    pushFollow(FOLLOW_orderby_clause_in_select_statement449);
+                    pushFollow(FOLLOW_orderby_clause_in_select_statement462);
                     orderby_clause7=orderby_clause();
 
                     state._fsp--;
@@ -374,50 +357,50 @@ public class JPAParser extends Parser {
 
 
             // AST REWRITE
-            // elements: from_clause, where_clause, select_clause, groupby_clause, having_clause, orderby_clause
-            // token labels:
+            // elements: orderby_clause, having_clause, groupby_clause, select_clause, from_clause, where_clause
+            // token labels: 
             // rule labels: retval
-            // token list labels:
-            // rule list labels:
-            // wildcard labels:
+            // token list labels: 
+            // rule list labels: 
+            // wildcard labels: 
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 89:3: -> ^( T_QUERY[$sl] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? )
+            // 90:6: -> ^( T_QUERY[$sl] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? )
             {
-                // JPA.g:89:6: ^( T_QUERY[$sl] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? )
+                // JPA.g:90:9: ^( T_QUERY[$sl] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(new QueryNode(T_QUERY, sl), root_1);
 
-                // JPA.g:89:32: ( select_clause )?
+                // JPA.g:90:35: ( select_clause )?
                 if ( stream_select_clause.hasNext() ) {
                     adaptor.addChild(root_1, stream_select_clause.nextTree());
 
                 }
                 stream_select_clause.reset();
                 adaptor.addChild(root_1, stream_from_clause.nextTree());
-                // JPA.g:89:61: ( where_clause )?
+                // JPA.g:90:64: ( where_clause )?
                 if ( stream_where_clause.hasNext() ) {
                     adaptor.addChild(root_1, stream_where_clause.nextTree());
 
                 }
                 stream_where_clause.reset();
-                // JPA.g:89:77: ( groupby_clause )?
+                // JPA.g:90:80: ( groupby_clause )?
                 if ( stream_groupby_clause.hasNext() ) {
                     adaptor.addChild(root_1, stream_groupby_clause.nextTree());
 
                 }
                 stream_groupby_clause.reset();
-                // JPA.g:89:95: ( having_clause )?
+                // JPA.g:90:98: ( having_clause )?
                 if ( stream_having_clause.hasNext() ) {
                     adaptor.addChild(root_1, stream_having_clause.nextTree());
 
                 }
                 stream_having_clause.reset();
-                // JPA.g:89:112: ( orderby_clause )?
+                // JPA.g:90:115: ( orderby_clause )?
                 if ( stream_orderby_clause.hasNext() ) {
                     adaptor.addChild(root_1, stream_orderby_clause.nextTree());
 
@@ -458,7 +441,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "from_clause"
-    // JPA.g:91:1: from_clause : fr= 'FROM' identification_variable_declaration ( ',' identification_variable_or_collection_declaration )* -> ^( T_SOURCES[$fr] identification_variable_declaration ( identification_variable_or_collection_declaration )* ) ;
+    // JPA.g:92:1: from_clause : fr= 'FROM' identification_variable_declaration ( ',' identification_variable_or_collection_declaration )* -> ^( T_SOURCES[$fr] identification_variable_declaration ( identification_variable_or_collection_declaration )* ) ;
     public final JPAParser.from_clause_return from_clause() throws RecognitionException {
         JPAParser.from_clause_return retval = new JPAParser.from_clause_return();
         retval.start = input.LT(1);
@@ -479,19 +462,19 @@ public class JPAParser extends Parser {
         RewriteRuleSubtreeStream stream_identification_variable_or_collection_declaration=new RewriteRuleSubtreeStream(adaptor,"rule identification_variable_or_collection_declaration");
         RewriteRuleSubtreeStream stream_identification_variable_declaration=new RewriteRuleSubtreeStream(adaptor,"rule identification_variable_declaration");
         try {
-            // JPA.g:92:2: (fr= 'FROM' identification_variable_declaration ( ',' identification_variable_or_collection_declaration )* -> ^( T_SOURCES[$fr] identification_variable_declaration ( identification_variable_or_collection_declaration )* ) )
-            // JPA.g:92:4: fr= 'FROM' identification_variable_declaration ( ',' identification_variable_or_collection_declaration )*
+            // JPA.g:93:5: (fr= 'FROM' identification_variable_declaration ( ',' identification_variable_or_collection_declaration )* -> ^( T_SOURCES[$fr] identification_variable_declaration ( identification_variable_or_collection_declaration )* ) )
+            // JPA.g:93:7: fr= 'FROM' identification_variable_declaration ( ',' identification_variable_or_collection_declaration )*
             {
-            fr=(Token)match(input,53,FOLLOW_53_in_from_clause504); if (state.failed) return retval;
+            fr=(Token)match(input,53,FOLLOW_53_in_from_clause523); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_53.add(fr);
 
-            pushFollow(FOLLOW_identification_variable_declaration_in_from_clause506);
+            pushFollow(FOLLOW_identification_variable_declaration_in_from_clause525);
             identification_variable_declaration8=identification_variable_declaration();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_identification_variable_declaration.add(identification_variable_declaration8.getTree());
-            // JPA.g:92:50: ( ',' identification_variable_or_collection_declaration )*
+            // JPA.g:93:53: ( ',' identification_variable_or_collection_declaration )*
             loop5:
             do {
                 int alt5=2;
@@ -504,12 +487,12 @@ public class JPAParser extends Parser {
 
                 switch (alt5) {
             	case 1 :
-            	    // JPA.g:92:51: ',' identification_variable_or_collection_declaration
+            	    // JPA.g:93:54: ',' identification_variable_or_collection_declaration
             	    {
-            	    char_literal9=(Token)match(input,54,FOLLOW_54_in_from_clause509); if (state.failed) return retval;
+            	    char_literal9=(Token)match(input,54,FOLLOW_54_in_from_clause528); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_54.add(char_literal9);
 
-            	    pushFollow(FOLLOW_identification_variable_or_collection_declaration_in_from_clause511);
+            	    pushFollow(FOLLOW_identification_variable_or_collection_declaration_in_from_clause530);
             	    identification_variable_or_collection_declaration10=identification_variable_or_collection_declaration();
 
             	    state._fsp--;
@@ -527,26 +510,26 @@ public class JPAParser extends Parser {
 
 
             // AST REWRITE
-            // elements: identification_variable_declaration, identification_variable_or_collection_declaration
-            // token labels:
+            // elements: identification_variable_or_collection_declaration, identification_variable_declaration
+            // token labels: 
             // rule labels: retval
-            // token list labels:
-            // rule list labels:
-            // wildcard labels:
+            // token list labels: 
+            // rule list labels: 
+            // wildcard labels: 
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 93:2: -> ^( T_SOURCES[$fr] identification_variable_declaration ( identification_variable_or_collection_declaration )* )
+            // 94:5: -> ^( T_SOURCES[$fr] identification_variable_declaration ( identification_variable_or_collection_declaration )* )
             {
-                // JPA.g:93:5: ^( T_SOURCES[$fr] identification_variable_declaration ( identification_variable_or_collection_declaration )* )
+                // JPA.g:94:8: ^( T_SOURCES[$fr] identification_variable_declaration ( identification_variable_or_collection_declaration )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(new FromNode(T_SOURCES, fr), root_1);
 
                 adaptor.addChild(root_1, stream_identification_variable_declaration.nextTree());
-                // JPA.g:93:68: ( identification_variable_or_collection_declaration )*
+                // JPA.g:94:71: ( identification_variable_or_collection_declaration )*
                 while ( stream_identification_variable_or_collection_declaration.hasNext() ) {
                     adaptor.addChild(root_1, stream_identification_variable_or_collection_declaration.nextTree());
 
@@ -587,7 +570,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "identification_variable_or_collection_declaration"
-    // JPA.g:95:1: identification_variable_or_collection_declaration : ( identification_variable_declaration | collection_member_declaration -> ^( T_SOURCE collection_member_declaration ) );
+    // JPA.g:96:1: identification_variable_or_collection_declaration : ( identification_variable_declaration | collection_member_declaration -> ^( T_SOURCE collection_member_declaration ) );
     public final JPAParser.identification_variable_or_collection_declaration_return identification_variable_or_collection_declaration() throws RecognitionException {
         JPAParser.identification_variable_or_collection_declaration_return retval = new JPAParser.identification_variable_or_collection_declaration_return();
         retval.start = input.LT(1);
@@ -601,7 +584,7 @@ public class JPAParser extends Parser {
 
         RewriteRuleSubtreeStream stream_collection_member_declaration=new RewriteRuleSubtreeStream(adaptor,"rule collection_member_declaration");
         try {
-            // JPA.g:96:5: ( identification_variable_declaration | collection_member_declaration -> ^( T_SOURCE collection_member_declaration ) )
+            // JPA.g:97:5: ( identification_variable_declaration | collection_member_declaration -> ^( T_SOURCE collection_member_declaration ) )
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -620,11 +603,11 @@ public class JPAParser extends Parser {
             }
             switch (alt6) {
                 case 1 :
-                    // JPA.g:96:7: identification_variable_declaration
+                    // JPA.g:97:7: identification_variable_declaration
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_identification_variable_declaration_in_identification_variable_or_collection_declaration541);
+                    pushFollow(FOLLOW_identification_variable_declaration_in_identification_variable_or_collection_declaration563);
                     identification_variable_declaration11=identification_variable_declaration();
 
                     state._fsp--;
@@ -634,9 +617,9 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:97:7: collection_member_declaration
+                    // JPA.g:98:7: collection_member_declaration
                     {
-                    pushFollow(FOLLOW_collection_member_declaration_in_identification_variable_or_collection_declaration549);
+                    pushFollow(FOLLOW_collection_member_declaration_in_identification_variable_or_collection_declaration571);
                     collection_member_declaration12=collection_member_declaration();
 
                     state._fsp--;
@@ -646,19 +629,19 @@ public class JPAParser extends Parser {
 
                     // AST REWRITE
                     // elements: collection_member_declaration
-                    // token labels:
+                    // token labels: 
                     // rule labels: retval
-                    // token list labels:
-                    // rule list labels:
-                    // wildcard labels:
+                    // token list labels: 
+                    // rule list labels: 
+                    // wildcard labels: 
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 97:37: -> ^( T_SOURCE collection_member_declaration )
+                    // 98:37: -> ^( T_SOURCE collection_member_declaration )
                     {
-                        // JPA.g:97:40: ^( T_SOURCE collection_member_declaration )
+                        // JPA.g:98:40: ^( T_SOURCE collection_member_declaration )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(new SelectionSourceNode(T_SOURCE), root_1);
@@ -701,7 +684,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "identification_variable_declaration"
-    // JPA.g:99:1: identification_variable_declaration : range_variable_declaration ( joined_clause )* -> ^( T_SOURCE range_variable_declaration ( joined_clause )* ) ;
+    // JPA.g:100:1: identification_variable_declaration : range_variable_declaration ( joined_clause )* -> ^( T_SOURCE range_variable_declaration ( joined_clause )* ) ;
     public final JPAParser.identification_variable_declaration_return identification_variable_declaration() throws RecognitionException {
         JPAParser.identification_variable_declaration_return retval = new JPAParser.identification_variable_declaration_return();
         retval.start = input.LT(1);
@@ -716,16 +699,16 @@ public class JPAParser extends Parser {
         RewriteRuleSubtreeStream stream_joined_clause=new RewriteRuleSubtreeStream(adaptor,"rule joined_clause");
         RewriteRuleSubtreeStream stream_range_variable_declaration=new RewriteRuleSubtreeStream(adaptor,"rule range_variable_declaration");
         try {
-            // JPA.g:100:2: ( range_variable_declaration ( joined_clause )* -> ^( T_SOURCE range_variable_declaration ( joined_clause )* ) )
-            // JPA.g:100:4: range_variable_declaration ( joined_clause )*
+            // JPA.g:101:5: ( range_variable_declaration ( joined_clause )* -> ^( T_SOURCE range_variable_declaration ( joined_clause )* ) )
+            // JPA.g:101:7: range_variable_declaration ( joined_clause )*
             {
-            pushFollow(FOLLOW_range_variable_declaration_in_identification_variable_declaration569);
+            pushFollow(FOLLOW_range_variable_declaration_in_identification_variable_declaration594);
             range_variable_declaration13=range_variable_declaration();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_range_variable_declaration.add(range_variable_declaration13.getTree());
-            // JPA.g:100:31: ( joined_clause )*
+            // JPA.g:101:34: ( joined_clause )*
             loop7:
             do {
                 int alt7=2;
@@ -740,7 +723,7 @@ public class JPAParser extends Parser {
             	case 1 :
             	    // JPA.g:0:0: joined_clause
             	    {
-            	    pushFollow(FOLLOW_joined_clause_in_identification_variable_declaration571);
+            	    pushFollow(FOLLOW_joined_clause_in_identification_variable_declaration596);
             	    joined_clause14=joined_clause();
 
             	    state._fsp--;
@@ -759,25 +742,25 @@ public class JPAParser extends Parser {
 
             // AST REWRITE
             // elements: joined_clause, range_variable_declaration
-            // token labels:
+            // token labels: 
             // rule labels: retval
-            // token list labels:
-            // rule list labels:
-            // wildcard labels:
+            // token list labels: 
+            // rule list labels: 
+            // wildcard labels: 
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 101:2: -> ^( T_SOURCE range_variable_declaration ( joined_clause )* )
+            // 102:5: -> ^( T_SOURCE range_variable_declaration ( joined_clause )* )
             {
-                // JPA.g:101:5: ^( T_SOURCE range_variable_declaration ( joined_clause )* )
+                // JPA.g:102:8: ^( T_SOURCE range_variable_declaration ( joined_clause )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(new SelectionSourceNode(T_SOURCE), root_1);
 
                 adaptor.addChild(root_1, stream_range_variable_declaration.nextTree());
-                // JPA.g:101:64: ( joined_clause )*
+                // JPA.g:102:67: ( joined_clause )*
                 while ( stream_joined_clause.hasNext() ) {
                     adaptor.addChild(root_1, stream_joined_clause.nextTree());
 
@@ -818,7 +801,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "joined_clause"
-    // JPA.g:103:1: joined_clause : ( join | fetch_join );
+    // JPA.g:104:1: joined_clause : ( join | fetch_join );
     public final JPAParser.joined_clause_return joined_clause() throws RecognitionException {
         JPAParser.joined_clause_return retval = new JPAParser.joined_clause_return();
         retval.start = input.LT(1);
@@ -832,7 +815,7 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:104:5: ( join | fetch_join )
+            // JPA.g:105:5: ( join | fetch_join )
             int alt8=2;
             switch ( input.LA(1) ) {
             case LEFT:
@@ -845,11 +828,11 @@ public class JPAParser extends Parser {
                     if ( (LA8_4==JOIN) ) {
                         int LA8_3 = input.LA(4);
 
-                        if ( (LA8_3==WORD) ) {
-                            alt8=1;
-                        }
-                        else if ( (LA8_3==FETCH) ) {
+                        if ( (LA8_3==FETCH) ) {
                             alt8=2;
+                        }
+                        else if ( (LA8_3==WORD) ) {
+                            alt8=1;
                         }
                         else {
                             if (state.backtracking>0) {state.failed=true; return retval;}
@@ -870,11 +853,11 @@ public class JPAParser extends Parser {
                 else if ( (LA8_1==JOIN) ) {
                     int LA8_3 = input.LA(3);
 
-                    if ( (LA8_3==WORD) ) {
-                        alt8=1;
-                    }
-                    else if ( (LA8_3==FETCH) ) {
+                    if ( (LA8_3==FETCH) ) {
                         alt8=2;
+                    }
+                    else if ( (LA8_3==WORD) ) {
+                        alt8=1;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
@@ -900,11 +883,11 @@ public class JPAParser extends Parser {
                 if ( (LA8_2==JOIN) ) {
                     int LA8_3 = input.LA(3);
 
-                    if ( (LA8_3==WORD) ) {
-                        alt8=1;
-                    }
-                    else if ( (LA8_3==FETCH) ) {
+                    if ( (LA8_3==FETCH) ) {
                         alt8=2;
+                    }
+                    else if ( (LA8_3==WORD) ) {
+                        alt8=1;
                     }
                     else {
                         if (state.backtracking>0) {state.failed=true; return retval;}
@@ -927,11 +910,11 @@ public class JPAParser extends Parser {
                 {
                 int LA8_3 = input.LA(2);
 
-                if ( (LA8_3==WORD) ) {
-                    alt8=1;
-                }
-                else if ( (LA8_3==FETCH) ) {
+                if ( (LA8_3==FETCH) ) {
                     alt8=2;
+                }
+                else if ( (LA8_3==WORD) ) {
+                    alt8=1;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
@@ -952,11 +935,11 @@ public class JPAParser extends Parser {
 
             switch (alt8) {
                 case 1 :
-                    // JPA.g:104:7: join
+                    // JPA.g:105:7: join
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_join_in_joined_clause599);
+                    pushFollow(FOLLOW_join_in_joined_clause627);
                     join15=join();
 
                     state._fsp--;
@@ -966,11 +949,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:104:14: fetch_join
+                    // JPA.g:105:14: fetch_join
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_fetch_join_in_joined_clause603);
+                    pushFollow(FOLLOW_fetch_join_in_joined_clause631);
                     fetch_join16=fetch_join();
 
                     state._fsp--;
@@ -1007,7 +990,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "range_variable_declaration"
-    // JPA.g:106:1: range_variable_declaration : range_variable_declaration_source ( 'AS' )? identification_variable -> ^( T_ID_VAR[$identification_variable.text] range_variable_declaration_source ) ;
+    // JPA.g:107:1: range_variable_declaration : range_variable_declaration_source ( 'AS' )? identification_variable -> ^( T_ID_VAR[$identification_variable.text] range_variable_declaration_source ) ;
     public final JPAParser.range_variable_declaration_return range_variable_declaration() throws RecognitionException {
         JPAParser.range_variable_declaration_return retval = new JPAParser.range_variable_declaration_return();
         retval.start = input.LT(1);
@@ -1025,16 +1008,16 @@ public class JPAParser extends Parser {
         RewriteRuleSubtreeStream stream_identification_variable=new RewriteRuleSubtreeStream(adaptor,"rule identification_variable");
         RewriteRuleSubtreeStream stream_range_variable_declaration_source=new RewriteRuleSubtreeStream(adaptor,"rule range_variable_declaration_source");
         try {
-            // JPA.g:107:2: ( range_variable_declaration_source ( 'AS' )? identification_variable -> ^( T_ID_VAR[$identification_variable.text] range_variable_declaration_source ) )
-            // JPA.g:107:4: range_variable_declaration_source ( 'AS' )? identification_variable
+            // JPA.g:108:5: ( range_variable_declaration_source ( 'AS' )? identification_variable -> ^( T_ID_VAR[$identification_variable.text] range_variable_declaration_source ) )
+            // JPA.g:108:7: range_variable_declaration_source ( 'AS' )? identification_variable
             {
-            pushFollow(FOLLOW_range_variable_declaration_source_in_range_variable_declaration612);
+            pushFollow(FOLLOW_range_variable_declaration_source_in_range_variable_declaration643);
             range_variable_declaration_source17=range_variable_declaration_source();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_range_variable_declaration_source.add(range_variable_declaration_source17.getTree());
-            // JPA.g:107:38: ( 'AS' )?
+            // JPA.g:108:41: ( 'AS' )?
             int alt9=2;
             int LA9_0 = input.LA(1);
 
@@ -1043,9 +1026,9 @@ public class JPAParser extends Parser {
             }
             switch (alt9) {
                 case 1 :
-                    // JPA.g:107:39: 'AS'
+                    // JPA.g:108:42: 'AS'
                     {
-                    string_literal18=(Token)match(input,55,FOLLOW_55_in_range_variable_declaration615); if (state.failed) return retval;
+                    string_literal18=(Token)match(input,55,FOLLOW_55_in_range_variable_declaration646); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_55.add(string_literal18);
 
 
@@ -1054,7 +1037,7 @@ public class JPAParser extends Parser {
 
             }
 
-            pushFollow(FOLLOW_identification_variable_in_range_variable_declaration619);
+            pushFollow(FOLLOW_identification_variable_in_range_variable_declaration650);
             identification_variable19=identification_variable();
 
             state._fsp--;
@@ -1064,19 +1047,19 @@ public class JPAParser extends Parser {
 
             // AST REWRITE
             // elements: range_variable_declaration_source
-            // token labels:
+            // token labels: 
             // rule labels: retval
-            // token list labels:
-            // rule list labels:
-            // wildcard labels:
+            // token list labels: 
+            // rule list labels: 
+            // wildcard labels: 
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 108:4: -> ^( T_ID_VAR[$identification_variable.text] range_variable_declaration_source )
+            // 109:7: -> ^( T_ID_VAR[$identification_variable.text] range_variable_declaration_source )
             {
-                // JPA.g:108:7: ^( T_ID_VAR[$identification_variable.text] range_variable_declaration_source )
+                // JPA.g:109:10: ^( T_ID_VAR[$identification_variable.text] range_variable_declaration_source )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(new IdentificationVariableNode(T_ID_VAR, (identification_variable19!=null?input.toString(identification_variable19.start,identification_variable19.stop):null)), root_1);
@@ -1117,7 +1100,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "range_variable_declaration_source"
-    // JPA.g:111:1: range_variable_declaration_source : ( abstract_schema_name | lp= '(SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? rp= ')' -> ^( T_QUERY[$lp, $rp] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? ) );
+    // JPA.g:112:1: range_variable_declaration_source : ( abstract_schema_name | lp= '(SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? rp= ')' -> ^( T_QUERY[$lp, $rp] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? ) );
     public final JPAParser.range_variable_declaration_source_return range_variable_declaration_source() throws RecognitionException {
         JPAParser.range_variable_declaration_source_return retval = new JPAParser.range_variable_declaration_source_return();
         retval.start = input.LT(1);
@@ -1152,7 +1135,7 @@ public class JPAParser extends Parser {
         RewriteRuleSubtreeStream stream_where_clause=new RewriteRuleSubtreeStream(adaptor,"rule where_clause");
         RewriteRuleSubtreeStream stream_orderby_clause=new RewriteRuleSubtreeStream(adaptor,"rule orderby_clause");
         try {
-            // JPA.g:112:2: ( abstract_schema_name | lp= '(SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? rp= ')' -> ^( T_QUERY[$lp, $rp] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? ) )
+            // JPA.g:113:5: ( abstract_schema_name | lp= '(SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? rp= ')' -> ^( T_QUERY[$lp, $rp] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? ) )
             int alt14=2;
             int LA14_0 = input.LA(1);
 
@@ -1171,11 +1154,11 @@ public class JPAParser extends Parser {
             }
             switch (alt14) {
                 case 1 :
-                    // JPA.g:112:4: abstract_schema_name
+                    // JPA.g:113:7: abstract_schema_name
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_abstract_schema_name_in_range_variable_declaration_source646);
+                    pushFollow(FOLLOW_abstract_schema_name_in_range_variable_declaration_source686);
                     abstract_schema_name20=abstract_schema_name();
 
                     state._fsp--;
@@ -1185,24 +1168,24 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:113:4: lp= '(SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? rp= ')'
+                    // JPA.g:114:7: lp= '(SELECT' select_clause from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? rp= ')'
                     {
-                    lp=(Token)match(input,56,FOLLOW_56_in_range_variable_declaration_source653); if (state.failed) return retval;
+                    lp=(Token)match(input,56,FOLLOW_56_in_range_variable_declaration_source696); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_56.add(lp);
 
-                    pushFollow(FOLLOW_select_clause_in_range_variable_declaration_source655);
+                    pushFollow(FOLLOW_select_clause_in_range_variable_declaration_source698);
                     select_clause21=select_clause();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) stream_select_clause.add(select_clause21.getTree());
-                    pushFollow(FOLLOW_from_clause_in_range_variable_declaration_source657);
+                    pushFollow(FOLLOW_from_clause_in_range_variable_declaration_source700);
                     from_clause22=from_clause();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) stream_from_clause.add(from_clause22.getTree());
-                    // JPA.g:113:43: ( where_clause )?
+                    // JPA.g:114:46: ( where_clause )?
                     int alt10=2;
                     int LA10_0 = input.LA(1);
 
@@ -1211,9 +1194,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt10) {
                         case 1 :
-                            // JPA.g:113:44: where_clause
+                            // JPA.g:114:47: where_clause
                             {
-                            pushFollow(FOLLOW_where_clause_in_range_variable_declaration_source660);
+                            pushFollow(FOLLOW_where_clause_in_range_variable_declaration_source703);
                             where_clause23=where_clause();
 
                             state._fsp--;
@@ -1225,7 +1208,7 @@ public class JPAParser extends Parser {
 
                     }
 
-                    // JPA.g:113:59: ( groupby_clause )?
+                    // JPA.g:114:62: ( groupby_clause )?
                     int alt11=2;
                     int LA11_0 = input.LA(1);
 
@@ -1234,9 +1217,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt11) {
                         case 1 :
-                            // JPA.g:113:60: groupby_clause
+                            // JPA.g:114:63: groupby_clause
                             {
-                            pushFollow(FOLLOW_groupby_clause_in_range_variable_declaration_source665);
+                            pushFollow(FOLLOW_groupby_clause_in_range_variable_declaration_source708);
                             groupby_clause24=groupby_clause();
 
                             state._fsp--;
@@ -1248,7 +1231,7 @@ public class JPAParser extends Parser {
 
                     }
 
-                    // JPA.g:113:77: ( having_clause )?
+                    // JPA.g:114:80: ( having_clause )?
                     int alt12=2;
                     int LA12_0 = input.LA(1);
 
@@ -1257,9 +1240,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt12) {
                         case 1 :
-                            // JPA.g:113:78: having_clause
+                            // JPA.g:114:81: having_clause
                             {
-                            pushFollow(FOLLOW_having_clause_in_range_variable_declaration_source670);
+                            pushFollow(FOLLOW_having_clause_in_range_variable_declaration_source713);
                             having_clause25=having_clause();
 
                             state._fsp--;
@@ -1271,7 +1254,7 @@ public class JPAParser extends Parser {
 
                     }
 
-                    // JPA.g:113:93: ( orderby_clause )?
+                    // JPA.g:114:96: ( orderby_clause )?
                     int alt13=2;
                     int LA13_0 = input.LA(1);
 
@@ -1280,9 +1263,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt13) {
                         case 1 :
-                            // JPA.g:113:94: orderby_clause
+                            // JPA.g:114:97: orderby_clause
                             {
-                            pushFollow(FOLLOW_orderby_clause_in_range_variable_declaration_source674);
+                            pushFollow(FOLLOW_orderby_clause_in_range_variable_declaration_source717);
                             orderby_clause26=orderby_clause();
 
                             state._fsp--;
@@ -1294,56 +1277,56 @@ public class JPAParser extends Parser {
 
                     }
 
-                    rp=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_range_variable_declaration_source680); if (state.failed) return retval;
+                    rp=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_range_variable_declaration_source723); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_RPAREN.add(rp);
 
 
 
                     // AST REWRITE
-                    // elements: from_clause, select_clause, groupby_clause, orderby_clause, having_clause, where_clause
-                    // token labels:
+                    // elements: select_clause, having_clause, groupby_clause, from_clause, where_clause, orderby_clause
+                    // token labels: 
                     // rule labels: retval
-                    // token list labels:
-                    // rule list labels:
-                    // wildcard labels:
+                    // token list labels: 
+                    // rule list labels: 
+                    // wildcard labels: 
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 114:3: -> ^( T_QUERY[$lp, $rp] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? )
+                    // 115:6: -> ^( T_QUERY[$lp, $rp] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? )
                     {
-                        // JPA.g:114:6: ^( T_QUERY[$lp, $rp] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? )
+                        // JPA.g:115:9: ^( T_QUERY[$lp, $rp] ( select_clause )? from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ( orderby_clause )? )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(new QueryNode(T_QUERY, lp, rp), root_1);
 
-                        // JPA.g:114:37: ( select_clause )?
+                        // JPA.g:115:40: ( select_clause )?
                         if ( stream_select_clause.hasNext() ) {
                             adaptor.addChild(root_1, stream_select_clause.nextTree());
 
                         }
                         stream_select_clause.reset();
                         adaptor.addChild(root_1, stream_from_clause.nextTree());
-                        // JPA.g:114:66: ( where_clause )?
+                        // JPA.g:115:69: ( where_clause )?
                         if ( stream_where_clause.hasNext() ) {
                             adaptor.addChild(root_1, stream_where_clause.nextTree());
 
                         }
                         stream_where_clause.reset();
-                        // JPA.g:114:82: ( groupby_clause )?
+                        // JPA.g:115:85: ( groupby_clause )?
                         if ( stream_groupby_clause.hasNext() ) {
                             adaptor.addChild(root_1, stream_groupby_clause.nextTree());
 
                         }
                         stream_groupby_clause.reset();
-                        // JPA.g:114:100: ( having_clause )?
+                        // JPA.g:115:103: ( having_clause )?
                         if ( stream_having_clause.hasNext() ) {
                             adaptor.addChild(root_1, stream_having_clause.nextTree());
 
                         }
                         stream_having_clause.reset();
-                        // JPA.g:114:117: ( orderby_clause )?
+                        // JPA.g:115:120: ( orderby_clause )?
                         if ( stream_orderby_clause.hasNext() ) {
                             adaptor.addChild(root_1, stream_orderby_clause.nextTree());
 
@@ -1386,7 +1369,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "join"
-    // JPA.g:117:1: join : join_spec join_association_path_expression ( 'AS' )? identification_variable -> ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression ) ;
+    // JPA.g:118:1: join : join_spec join_association_path_expression ( 'AS' )? identification_variable -> ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression ) ;
     public final JPAParser.join_return join() throws RecognitionException {
         JPAParser.join_return retval = new JPAParser.join_return();
         retval.start = input.LT(1);
@@ -1407,22 +1390,22 @@ public class JPAParser extends Parser {
         RewriteRuleSubtreeStream stream_join_association_path_expression=new RewriteRuleSubtreeStream(adaptor,"rule join_association_path_expression");
         RewriteRuleSubtreeStream stream_join_spec=new RewriteRuleSubtreeStream(adaptor,"rule join_spec");
         try {
-            // JPA.g:118:2: ( join_spec join_association_path_expression ( 'AS' )? identification_variable -> ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression ) )
-            // JPA.g:118:4: join_spec join_association_path_expression ( 'AS' )? identification_variable
+            // JPA.g:119:5: ( join_spec join_association_path_expression ( 'AS' )? identification_variable -> ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression ) )
+            // JPA.g:119:7: join_spec join_association_path_expression ( 'AS' )? identification_variable
             {
-            pushFollow(FOLLOW_join_spec_in_join734);
+            pushFollow(FOLLOW_join_spec_in_join786);
             join_spec27=join_spec();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_join_spec.add(join_spec27.getTree());
-            pushFollow(FOLLOW_join_association_path_expression_in_join736);
+            pushFollow(FOLLOW_join_association_path_expression_in_join788);
             join_association_path_expression28=join_association_path_expression();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_join_association_path_expression.add(join_association_path_expression28.getTree());
-            // JPA.g:118:47: ( 'AS' )?
+            // JPA.g:119:50: ( 'AS' )?
             int alt15=2;
             int LA15_0 = input.LA(1);
 
@@ -1431,9 +1414,9 @@ public class JPAParser extends Parser {
             }
             switch (alt15) {
                 case 1 :
-                    // JPA.g:118:48: 'AS'
+                    // JPA.g:119:51: 'AS'
                     {
-                    string_literal29=(Token)match(input,55,FOLLOW_55_in_join739); if (state.failed) return retval;
+                    string_literal29=(Token)match(input,55,FOLLOW_55_in_join791); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_55.add(string_literal29);
 
 
@@ -1442,7 +1425,7 @@ public class JPAParser extends Parser {
 
             }
 
-            pushFollow(FOLLOW_identification_variable_in_join743);
+            pushFollow(FOLLOW_identification_variable_in_join795);
             identification_variable30=identification_variable();
 
             state._fsp--;
@@ -1452,19 +1435,19 @@ public class JPAParser extends Parser {
 
             // AST REWRITE
             // elements: join_association_path_expression
-            // token labels:
+            // token labels: 
             // rule labels: retval
-            // token list labels:
-            // rule list labels:
-            // wildcard labels:
+            // token list labels: 
+            // rule list labels: 
+            // wildcard labels: 
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 119:4: -> ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression )
+            // 120:7: -> ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression )
             {
-                // JPA.g:119:7: ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression )
+                // JPA.g:120:10: ^( T_JOIN_VAR[$join_spec.text, $identification_variable.text] join_association_path_expression )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(new JoinVariableNode(T_JOIN_VAR, (join_spec27!=null?input.toString(join_spec27.start,join_spec27.stop):null), (identification_variable30!=null?input.toString(identification_variable30.start,identification_variable30.stop):null)), root_1);
@@ -1505,7 +1488,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "fetch_join"
-    // JPA.g:122:1: fetch_join : join_spec 'FETCH' join_association_path_expression ;
+    // JPA.g:123:1: fetch_join : join_spec 'FETCH' join_association_path_expression ;
     public final JPAParser.fetch_join_return fetch_join() throws RecognitionException {
         JPAParser.fetch_join_return retval = new JPAParser.fetch_join_return();
         retval.start = input.LT(1);
@@ -1521,23 +1504,23 @@ public class JPAParser extends Parser {
         Object string_literal32_tree=null;
 
         try {
-            // JPA.g:123:2: ( join_spec 'FETCH' join_association_path_expression )
-            // JPA.g:123:4: join_spec 'FETCH' join_association_path_expression
+            // JPA.g:124:5: ( join_spec 'FETCH' join_association_path_expression )
+            // JPA.g:124:7: join_spec 'FETCH' join_association_path_expression
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_join_spec_in_fetch_join772);
+            pushFollow(FOLLOW_join_spec_in_fetch_join833);
             join_spec31=join_spec();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, join_spec31.getTree());
-            string_literal32=(Token)match(input,FETCH,FOLLOW_FETCH_in_fetch_join774); if (state.failed) return retval;
+            string_literal32=(Token)match(input,FETCH,FOLLOW_FETCH_in_fetch_join835); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal32_tree = (Object)adaptor.create(string_literal32);
             adaptor.addChild(root_0, string_literal32_tree);
             }
-            pushFollow(FOLLOW_join_association_path_expression_in_fetch_join776);
+            pushFollow(FOLLOW_join_association_path_expression_in_fetch_join837);
             join_association_path_expression33=join_association_path_expression();
 
             state._fsp--;
@@ -1572,7 +1555,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "join_spec"
-    // JPA.g:125:1: join_spec : ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )? 'JOIN' ;
+    // JPA.g:126:1: join_spec : ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )? 'JOIN' ;
     public final JPAParser.join_spec_return join_spec() throws RecognitionException {
         JPAParser.join_spec_return retval = new JPAParser.join_spec_return();
         retval.start = input.LT(1);
@@ -1590,12 +1573,12 @@ public class JPAParser extends Parser {
         Object string_literal37_tree=null;
 
         try {
-            // JPA.g:126:2: ( ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )? 'JOIN' )
-            // JPA.g:126:3: ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )? 'JOIN'
+            // JPA.g:127:5: ( ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )? 'JOIN' )
+            // JPA.g:127:6: ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )? 'JOIN'
             {
             root_0 = (Object)adaptor.nil();
 
-            // JPA.g:126:3: ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )?
+            // JPA.g:127:6: ( ( 'LEFT' ) ( 'OUTER' )? | 'INNER' )?
             int alt17=3;
             int LA17_0 = input.LA(1);
 
@@ -1607,12 +1590,12 @@ public class JPAParser extends Parser {
             }
             switch (alt17) {
                 case 1 :
-                    // JPA.g:126:4: ( 'LEFT' ) ( 'OUTER' )?
+                    // JPA.g:127:7: ( 'LEFT' ) ( 'OUTER' )?
                     {
-                    // JPA.g:126:4: ( 'LEFT' )
-                    // JPA.g:126:5: 'LEFT'
+                    // JPA.g:127:7: ( 'LEFT' )
+                    // JPA.g:127:8: 'LEFT'
                     {
-                    string_literal34=(Token)match(input,LEFT,FOLLOW_LEFT_in_join_spec786); if (state.failed) return retval;
+                    string_literal34=(Token)match(input,LEFT,FOLLOW_LEFT_in_join_spec850); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal34_tree = (Object)adaptor.create(string_literal34);
                     adaptor.addChild(root_0, string_literal34_tree);
@@ -1620,7 +1603,7 @@ public class JPAParser extends Parser {
 
                     }
 
-                    // JPA.g:126:13: ( 'OUTER' )?
+                    // JPA.g:127:16: ( 'OUTER' )?
                     int alt16=2;
                     int LA16_0 = input.LA(1);
 
@@ -1629,9 +1612,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt16) {
                         case 1 :
-                            // JPA.g:126:14: 'OUTER'
+                            // JPA.g:127:17: 'OUTER'
                             {
-                            string_literal35=(Token)match(input,OUTER,FOLLOW_OUTER_in_join_spec790); if (state.failed) return retval;
+                            string_literal35=(Token)match(input,OUTER,FOLLOW_OUTER_in_join_spec854); if (state.failed) return retval;
                             if ( state.backtracking==0 ) {
                             string_literal35_tree = (Object)adaptor.create(string_literal35);
                             adaptor.addChild(root_0, string_literal35_tree);
@@ -1646,9 +1629,9 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:126:26: 'INNER'
+                    // JPA.g:127:29: 'INNER'
                     {
-                    string_literal36=(Token)match(input,INNER,FOLLOW_INNER_in_join_spec796); if (state.failed) return retval;
+                    string_literal36=(Token)match(input,INNER,FOLLOW_INNER_in_join_spec860); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal36_tree = (Object)adaptor.create(string_literal36);
                     adaptor.addChild(root_0, string_literal36_tree);
@@ -1659,7 +1642,7 @@ public class JPAParser extends Parser {
 
             }
 
-            string_literal37=(Token)match(input,JOIN,FOLLOW_JOIN_in_join_spec801); if (state.failed) return retval;
+            string_literal37=(Token)match(input,JOIN,FOLLOW_JOIN_in_join_spec865); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal37_tree = (Object)adaptor.create(string_literal37);
             adaptor.addChild(root_0, string_literal37_tree);
@@ -1693,7 +1676,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "join_association_path_expression"
-    // JPA.g:128:1: join_association_path_expression : identification_variable '.' ( field '.' )* ( field )? -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) ;
+    // JPA.g:129:1: join_association_path_expression : identification_variable '.' ( field '.' )* ( field )? -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) ;
     public final JPAParser.join_association_path_expression_return join_association_path_expression() throws RecognitionException {
         JPAParser.join_association_path_expression_return retval = new JPAParser.join_association_path_expression_return();
         retval.start = input.LT(1);
@@ -1715,19 +1698,19 @@ public class JPAParser extends Parser {
         RewriteRuleSubtreeStream stream_identification_variable=new RewriteRuleSubtreeStream(adaptor,"rule identification_variable");
         RewriteRuleSubtreeStream stream_field=new RewriteRuleSubtreeStream(adaptor,"rule field");
         try {
-            // JPA.g:129:2: ( identification_variable '.' ( field '.' )* ( field )? -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) )
-            // JPA.g:129:4: identification_variable '.' ( field '.' )* ( field )?
+            // JPA.g:130:5: ( identification_variable '.' ( field '.' )* ( field )? -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) )
+            // JPA.g:130:7: identification_variable '.' ( field '.' )* ( field )?
             {
-            pushFollow(FOLLOW_identification_variable_in_join_association_path_expression810);
+            pushFollow(FOLLOW_identification_variable_in_join_association_path_expression877);
             identification_variable38=identification_variable();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_identification_variable.add(identification_variable38.getTree());
-            char_literal39=(Token)match(input,57,FOLLOW_57_in_join_association_path_expression812); if (state.failed) return retval;
+            char_literal39=(Token)match(input,57,FOLLOW_57_in_join_association_path_expression879); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_57.add(char_literal39);
 
-            // JPA.g:129:32: ( field '.' )*
+            // JPA.g:130:35: ( field '.' )*
             loop18:
             do {
                 int alt18=2;
@@ -1755,15 +1738,15 @@ public class JPAParser extends Parser {
 
                 switch (alt18) {
             	case 1 :
-            	    // JPA.g:129:33: field '.'
+            	    // JPA.g:130:36: field '.'
             	    {
-            	    pushFollow(FOLLOW_field_in_join_association_path_expression815);
+            	    pushFollow(FOLLOW_field_in_join_association_path_expression882);
             	    field40=field();
 
             	    state._fsp--;
             	    if (state.failed) return retval;
             	    if ( state.backtracking==0 ) stream_field.add(field40.getTree());
-            	    char_literal41=(Token)match(input,57,FOLLOW_57_in_join_association_path_expression816); if (state.failed) return retval;
+            	    char_literal41=(Token)match(input,57,FOLLOW_57_in_join_association_path_expression883); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_57.add(char_literal41);
 
 
@@ -1775,7 +1758,7 @@ public class JPAParser extends Parser {
                 }
             } while (true);
 
-            // JPA.g:129:44: ( field )?
+            // JPA.g:130:47: ( field )?
             int alt19=2;
             int LA19_0 = input.LA(1);
 
@@ -1797,7 +1780,7 @@ public class JPAParser extends Parser {
                 case 1 :
                     // JPA.g:0:0: field
                     {
-                    pushFollow(FOLLOW_field_in_join_association_path_expression820);
+                    pushFollow(FOLLOW_field_in_join_association_path_expression887);
                     field42=field();
 
                     state._fsp--;
@@ -1813,24 +1796,24 @@ public class JPAParser extends Parser {
 
             // AST REWRITE
             // elements: field
-            // token labels:
+            // token labels: 
             // rule labels: retval
-            // token list labels:
-            // rule list labels:
-            // wildcard labels:
+            // token list labels: 
+            // rule list labels: 
+            // wildcard labels: 
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 130:2: -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
+            // 131:5: -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
             {
-                // JPA.g:130:5: ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
+                // JPA.g:131:8: ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(new PathNode(T_SELECTED_FIELD, (identification_variable38!=null?input.toString(identification_variable38.start,identification_variable38.stop):null)), root_1);
 
-                // JPA.g:130:65: ( field )*
+                // JPA.g:131:68: ( field )*
                 while ( stream_field.hasNext() ) {
                     adaptor.addChild(root_1, stream_field.nextTree());
 
@@ -1871,7 +1854,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "collection_member_declaration"
-    // JPA.g:133:1: collection_member_declaration : 'IN' '(' path_expression ')' ( 'AS' )? identification_variable -> ^( T_COLLECTION_MEMBER[$identification_variable.text] path_expression ) ;
+    // JPA.g:134:1: collection_member_declaration : 'IN' '(' path_expression ')' ( 'AS' )? identification_variable -> ^( T_COLLECTION_MEMBER[$identification_variable.text] path_expression ) ;
     public final JPAParser.collection_member_declaration_return collection_member_declaration() throws RecognitionException {
         JPAParser.collection_member_declaration_return retval = new JPAParser.collection_member_declaration_return();
         retval.start = input.LT(1);
@@ -1898,25 +1881,25 @@ public class JPAParser extends Parser {
         RewriteRuleSubtreeStream stream_identification_variable=new RewriteRuleSubtreeStream(adaptor,"rule identification_variable");
         RewriteRuleSubtreeStream stream_path_expression=new RewriteRuleSubtreeStream(adaptor,"rule path_expression");
         try {
-            // JPA.g:134:2: ( 'IN' '(' path_expression ')' ( 'AS' )? identification_variable -> ^( T_COLLECTION_MEMBER[$identification_variable.text] path_expression ) )
-            // JPA.g:134:4: 'IN' '(' path_expression ')' ( 'AS' )? identification_variable
+            // JPA.g:135:5: ( 'IN' '(' path_expression ')' ( 'AS' )? identification_variable -> ^( T_COLLECTION_MEMBER[$identification_variable.text] path_expression ) )
+            // JPA.g:135:7: 'IN' '(' path_expression ')' ( 'AS' )? identification_variable
             {
-            string_literal43=(Token)match(input,58,FOLLOW_58_in_collection_member_declaration848); if (state.failed) return retval;
+            string_literal43=(Token)match(input,58,FOLLOW_58_in_collection_member_declaration924); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_58.add(string_literal43);
 
-            char_literal44=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_collection_member_declaration849); if (state.failed) return retval;
+            char_literal44=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_collection_member_declaration925); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_LPAREN.add(char_literal44);
 
-            pushFollow(FOLLOW_path_expression_in_collection_member_declaration851);
+            pushFollow(FOLLOW_path_expression_in_collection_member_declaration927);
             path_expression45=path_expression();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_path_expression.add(path_expression45.getTree());
-            char_literal46=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_collection_member_declaration853); if (state.failed) return retval;
+            char_literal46=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_collection_member_declaration929); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_RPAREN.add(char_literal46);
 
-            // JPA.g:134:32: ( 'AS' )?
+            // JPA.g:135:35: ( 'AS' )?
             int alt20=2;
             int LA20_0 = input.LA(1);
 
@@ -1925,9 +1908,9 @@ public class JPAParser extends Parser {
             }
             switch (alt20) {
                 case 1 :
-                    // JPA.g:134:33: 'AS'
+                    // JPA.g:135:36: 'AS'
                     {
-                    string_literal47=(Token)match(input,55,FOLLOW_55_in_collection_member_declaration856); if (state.failed) return retval;
+                    string_literal47=(Token)match(input,55,FOLLOW_55_in_collection_member_declaration932); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_55.add(string_literal47);
 
 
@@ -1936,7 +1919,7 @@ public class JPAParser extends Parser {
 
             }
 
-            pushFollow(FOLLOW_identification_variable_in_collection_member_declaration860);
+            pushFollow(FOLLOW_identification_variable_in_collection_member_declaration936);
             identification_variable48=identification_variable();
 
             state._fsp--;
@@ -1946,19 +1929,19 @@ public class JPAParser extends Parser {
 
             // AST REWRITE
             // elements: path_expression
-            // token labels:
+            // token labels: 
             // rule labels: retval
-            // token list labels:
-            // rule list labels:
-            // wildcard labels:
+            // token list labels: 
+            // rule list labels: 
+            // wildcard labels: 
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 135:2: -> ^( T_COLLECTION_MEMBER[$identification_variable.text] path_expression )
+            // 136:5: -> ^( T_COLLECTION_MEMBER[$identification_variable.text] path_expression )
             {
-                // JPA.g:135:5: ^( T_COLLECTION_MEMBER[$identification_variable.text] path_expression )
+                // JPA.g:136:8: ^( T_COLLECTION_MEMBER[$identification_variable.text] path_expression )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(new CollectionMemberNode(T_COLLECTION_MEMBER, (identification_variable48!=null?input.toString(identification_variable48.start,identification_variable48.stop):null)), root_1);
@@ -1999,7 +1982,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "path_expression"
-    // JPA.g:138:1: path_expression : identification_variable '.' ( field '.' )* ( field )? -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) ;
+    // JPA.g:139:1: path_expression : identification_variable '.' ( field '.' )* ( field )? -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) ;
     public final JPAParser.path_expression_return path_expression() throws RecognitionException {
         JPAParser.path_expression_return retval = new JPAParser.path_expression_return();
         retval.start = input.LT(1);
@@ -2021,19 +2004,19 @@ public class JPAParser extends Parser {
         RewriteRuleSubtreeStream stream_identification_variable=new RewriteRuleSubtreeStream(adaptor,"rule identification_variable");
         RewriteRuleSubtreeStream stream_field=new RewriteRuleSubtreeStream(adaptor,"rule field");
         try {
-            // JPA.g:139:2: ( identification_variable '.' ( field '.' )* ( field )? -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) )
-            // JPA.g:139:5: identification_variable '.' ( field '.' )* ( field )?
+            // JPA.g:140:5: ( identification_variable '.' ( field '.' )* ( field )? -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* ) )
+            // JPA.g:140:8: identification_variable '.' ( field '.' )* ( field )?
             {
-            pushFollow(FOLLOW_identification_variable_in_path_expression886);
+            pushFollow(FOLLOW_identification_variable_in_path_expression971);
             identification_variable49=identification_variable();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_identification_variable.add(identification_variable49.getTree());
-            char_literal50=(Token)match(input,57,FOLLOW_57_in_path_expression888); if (state.failed) return retval;
+            char_literal50=(Token)match(input,57,FOLLOW_57_in_path_expression973); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_57.add(char_literal50);
 
-            // JPA.g:139:33: ( field '.' )*
+            // JPA.g:140:36: ( field '.' )*
             loop21:
             do {
                 int alt21=2;
@@ -2061,15 +2044,15 @@ public class JPAParser extends Parser {
 
                 switch (alt21) {
             	case 1 :
-            	    // JPA.g:139:34: field '.'
+            	    // JPA.g:140:37: field '.'
             	    {
-            	    pushFollow(FOLLOW_field_in_path_expression891);
+            	    pushFollow(FOLLOW_field_in_path_expression976);
             	    field51=field();
 
             	    state._fsp--;
             	    if (state.failed) return retval;
             	    if ( state.backtracking==0 ) stream_field.add(field51.getTree());
-            	    char_literal52=(Token)match(input,57,FOLLOW_57_in_path_expression892); if (state.failed) return retval;
+            	    char_literal52=(Token)match(input,57,FOLLOW_57_in_path_expression977); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_57.add(char_literal52);
 
 
@@ -2081,7 +2064,7 @@ public class JPAParser extends Parser {
                 }
             } while (true);
 
-            // JPA.g:139:45: ( field )?
+            // JPA.g:140:48: ( field )?
             int alt22=2;
             int LA22_0 = input.LA(1);
 
@@ -2101,9 +2084,9 @@ public class JPAParser extends Parser {
             }
             switch (alt22) {
                 case 1 :
-                    // JPA.g:139:46: field
+                    // JPA.g:140:49: field
                     {
-                    pushFollow(FOLLOW_field_in_path_expression897);
+                    pushFollow(FOLLOW_field_in_path_expression982);
                     field53=field();
 
                     state._fsp--;
@@ -2119,24 +2102,24 @@ public class JPAParser extends Parser {
 
             // AST REWRITE
             // elements: field
-            // token labels:
+            // token labels: 
             // rule labels: retval
-            // token list labels:
-            // rule list labels:
-            // wildcard labels:
+            // token list labels: 
+            // rule list labels: 
+            // wildcard labels: 
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 140:2: -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
+            // 141:5: -> ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
             {
-                // JPA.g:140:5: ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
+                // JPA.g:141:8: ^( T_SELECTED_FIELD[$identification_variable.text] ( field )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(new PathNode(T_SELECTED_FIELD, (identification_variable49!=null?input.toString(identification_variable49.start,identification_variable49.stop):null)), root_1);
 
-                // JPA.g:140:65: ( field )*
+                // JPA.g:141:68: ( field )*
                 while ( stream_field.hasNext() ) {
                     adaptor.addChild(root_1, stream_field.nextTree());
 
@@ -2177,7 +2160,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "select_clause"
-    // JPA.g:143:1: select_clause : ( 'DISTINCT' )? select_expression ( ',' select_expression )* -> ^( T_SELECTED_ITEMS ( 'DISTINCT' )? ( ^( T_SELECTED_ITEM[] select_expression ) )* ) ;
+    // JPA.g:144:1: select_clause : ( 'DISTINCT' )? select_expression ( ',' select_expression )* -> ^( T_SELECTED_ITEMS ( 'DISTINCT' )? ( ^( T_SELECTED_ITEM[] select_expression ) )* ) ;
     public final JPAParser.select_clause_return select_clause() throws RecognitionException {
         JPAParser.select_clause_return retval = new JPAParser.select_clause_return();
         retval.start = input.LT(1);
@@ -2197,10 +2180,10 @@ public class JPAParser extends Parser {
         RewriteRuleTokenStream stream_54=new RewriteRuleTokenStream(adaptor,"token 54");
         RewriteRuleSubtreeStream stream_select_expression=new RewriteRuleSubtreeStream(adaptor,"rule select_expression");
         try {
-            // JPA.g:144:2: ( ( 'DISTINCT' )? select_expression ( ',' select_expression )* -> ^( T_SELECTED_ITEMS ( 'DISTINCT' )? ( ^( T_SELECTED_ITEM[] select_expression ) )* ) )
-            // JPA.g:144:4: ( 'DISTINCT' )? select_expression ( ',' select_expression )*
+            // JPA.g:145:5: ( ( 'DISTINCT' )? select_expression ( ',' select_expression )* -> ^( T_SELECTED_ITEMS ( 'DISTINCT' )? ( ^( T_SELECTED_ITEM[] select_expression ) )* ) )
+            // JPA.g:145:7: ( 'DISTINCT' )? select_expression ( ',' select_expression )*
             {
-            // JPA.g:144:4: ( 'DISTINCT' )?
+            // JPA.g:145:7: ( 'DISTINCT' )?
             int alt23=2;
             int LA23_0 = input.LA(1);
 
@@ -2209,9 +2192,9 @@ public class JPAParser extends Parser {
             }
             switch (alt23) {
                 case 1 :
-                    // JPA.g:144:5: 'DISTINCT'
+                    // JPA.g:145:8: 'DISTINCT'
                     {
-                    string_literal54=(Token)match(input,DISTINCT,FOLLOW_DISTINCT_in_select_clause927); if (state.failed) return retval;
+                    string_literal54=(Token)match(input,DISTINCT,FOLLOW_DISTINCT_in_select_clause1021); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_DISTINCT.add(string_literal54);
 
 
@@ -2220,13 +2203,13 @@ public class JPAParser extends Parser {
 
             }
 
-            pushFollow(FOLLOW_select_expression_in_select_clause931);
+            pushFollow(FOLLOW_select_expression_in_select_clause1025);
             select_expression55=select_expression();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_select_expression.add(select_expression55.getTree());
-            // JPA.g:144:36: ( ',' select_expression )*
+            // JPA.g:145:39: ( ',' select_expression )*
             loop24:
             do {
                 int alt24=2;
@@ -2239,12 +2222,12 @@ public class JPAParser extends Parser {
 
                 switch (alt24) {
             	case 1 :
-            	    // JPA.g:144:37: ',' select_expression
+            	    // JPA.g:145:40: ',' select_expression
             	    {
-            	    char_literal56=(Token)match(input,54,FOLLOW_54_in_select_clause934); if (state.failed) return retval;
+            	    char_literal56=(Token)match(input,54,FOLLOW_54_in_select_clause1028); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_54.add(char_literal56);
 
-            	    pushFollow(FOLLOW_select_expression_in_select_clause936);
+            	    pushFollow(FOLLOW_select_expression_in_select_clause1030);
             	    select_expression57=select_expression();
 
             	    state._fsp--;
@@ -2262,33 +2245,33 @@ public class JPAParser extends Parser {
 
 
             // AST REWRITE
-            // elements: select_expression, DISTINCT
-            // token labels:
+            // elements: DISTINCT, select_expression
+            // token labels: 
             // rule labels: retval
-            // token list labels:
-            // rule list labels:
-            // wildcard labels:
+            // token list labels: 
+            // rule list labels: 
+            // wildcard labels: 
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 145:2: -> ^( T_SELECTED_ITEMS ( 'DISTINCT' )? ( ^( T_SELECTED_ITEM[] select_expression ) )* )
+            // 146:5: -> ^( T_SELECTED_ITEMS ( 'DISTINCT' )? ( ^( T_SELECTED_ITEM[] select_expression ) )* )
             {
-                // JPA.g:145:5: ^( T_SELECTED_ITEMS ( 'DISTINCT' )? ( ^( T_SELECTED_ITEM[] select_expression ) )* )
+                // JPA.g:146:8: ^( T_SELECTED_ITEMS ( 'DISTINCT' )? ( ^( T_SELECTED_ITEM[] select_expression ) )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(T_SELECTED_ITEMS, "T_SELECTED_ITEMS"), root_1);
 
-                // JPA.g:145:24: ( 'DISTINCT' )?
+                // JPA.g:146:27: ( 'DISTINCT' )?
                 if ( stream_DISTINCT.hasNext() ) {
                     adaptor.addChild(root_1, stream_DISTINCT.nextNode());
 
                 }
                 stream_DISTINCT.reset();
-                // JPA.g:145:38: ( ^( T_SELECTED_ITEM[] select_expression ) )*
+                // JPA.g:146:41: ( ^( T_SELECTED_ITEM[] select_expression ) )*
                 while ( stream_select_expression.hasNext() ) {
-                    // JPA.g:145:38: ^( T_SELECTED_ITEM[] select_expression )
+                    // JPA.g:146:41: ^( T_SELECTED_ITEM[] select_expression )
                     {
                     Object root_2 = (Object)adaptor.nil();
                     root_2 = (Object)adaptor.becomeRoot(new SelectedItemNode(T_SELECTED_ITEM), root_2);
@@ -2335,7 +2318,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "select_expression"
-    // JPA.g:148:1: select_expression : ( path_expression | aggregate_expression | identification_variable -> ^( T_SELECTED_ENTITY[$identification_variable.text] ) | 'OBJECT' '(' identification_variable ')' | constructor_expression );
+    // JPA.g:149:1: select_expression : ( path_expression | aggregate_expression | identification_variable -> ^( T_SELECTED_ENTITY[$identification_variable.text] ) | 'OBJECT' '(' identification_variable ')' | constructor_expression );
     public final JPAParser.select_expression_return select_expression() throws RecognitionException {
         JPAParser.select_expression_return retval = new JPAParser.select_expression_return();
         retval.start = input.LT(1);
@@ -2361,18 +2344,18 @@ public class JPAParser extends Parser {
         Object char_literal64_tree=null;
         RewriteRuleSubtreeStream stream_identification_variable=new RewriteRuleSubtreeStream(adaptor,"rule identification_variable");
         try {
-            // JPA.g:149:2: ( path_expression | aggregate_expression | identification_variable -> ^( T_SELECTED_ENTITY[$identification_variable.text] ) | 'OBJECT' '(' identification_variable ')' | constructor_expression )
+            // JPA.g:150:5: ( path_expression | aggregate_expression | identification_variable -> ^( T_SELECTED_ENTITY[$identification_variable.text] ) | 'OBJECT' '(' identification_variable ')' | constructor_expression )
             int alt25=5;
             switch ( input.LA(1) ) {
             case WORD:
                 {
                 int LA25_1 = input.LA(2);
 
-                if ( (LA25_1==57) ) {
-                    alt25=1;
-                }
-                else if ( (LA25_1==EOF||(LA25_1>=53 && LA25_1<=54)) ) {
+                if ( (LA25_1==EOF||(LA25_1>=53 && LA25_1<=54)) ) {
                     alt25=3;
+                }
+                else if ( (LA25_1==57) ) {
+                    alt25=1;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
@@ -2412,11 +2395,11 @@ public class JPAParser extends Parser {
 
             switch (alt25) {
                 case 1 :
-                    // JPA.g:149:4: path_expression
+                    // JPA.g:150:7: path_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_path_expression_in_select_expression972);
+                    pushFollow(FOLLOW_path_expression_in_select_expression1075);
                     path_expression58=path_expression();
 
                     state._fsp--;
@@ -2426,11 +2409,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:150:4: aggregate_expression
+                    // JPA.g:151:7: aggregate_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_aggregate_expression_in_select_expression977);
+                    pushFollow(FOLLOW_aggregate_expression_in_select_expression1083);
                     aggregate_expression59=aggregate_expression();
 
                     state._fsp--;
@@ -2440,9 +2423,9 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // JPA.g:151:4: identification_variable
+                    // JPA.g:152:7: identification_variable
                     {
-                    pushFollow(FOLLOW_identification_variable_in_select_expression982);
+                    pushFollow(FOLLOW_identification_variable_in_select_expression1091);
                     identification_variable60=identification_variable();
 
                     state._fsp--;
@@ -2451,20 +2434,20 @@ public class JPAParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements:
-                    // token labels:
+                    // elements: 
+                    // token labels: 
                     // rule labels: retval
-                    // token list labels:
-                    // rule list labels:
-                    // wildcard labels:
+                    // token list labels: 
+                    // rule list labels: 
+                    // wildcard labels: 
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 151:28: -> ^( T_SELECTED_ENTITY[$identification_variable.text] )
+                    // 152:31: -> ^( T_SELECTED_ENTITY[$identification_variable.text] )
                     {
-                        // JPA.g:151:31: ^( T_SELECTED_ENTITY[$identification_variable.text] )
+                        // JPA.g:152:34: ^( T_SELECTED_ENTITY[$identification_variable.text] )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(new PathNode(T_SELECTED_ENTITY, (identification_variable60!=null?input.toString(identification_variable60.start,identification_variable60.stop):null)), root_1);
@@ -2478,27 +2461,27 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // JPA.g:152:4: 'OBJECT' '(' identification_variable ')'
+                    // JPA.g:153:7: 'OBJECT' '(' identification_variable ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    string_literal61=(Token)match(input,59,FOLLOW_59_in_select_expression997); if (state.failed) return retval;
+                    string_literal61=(Token)match(input,59,FOLLOW_59_in_select_expression1109); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal61_tree = (Object)adaptor.create(string_literal61);
                     adaptor.addChild(root_0, string_literal61_tree);
                     }
-                    char_literal62=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_select_expression999); if (state.failed) return retval;
+                    char_literal62=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_select_expression1111); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal62_tree = (Object)adaptor.create(char_literal62);
                     adaptor.addChild(root_0, char_literal62_tree);
                     }
-                    pushFollow(FOLLOW_identification_variable_in_select_expression1000);
+                    pushFollow(FOLLOW_identification_variable_in_select_expression1112);
                     identification_variable63=identification_variable();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, identification_variable63.getTree());
-                    char_literal64=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_select_expression1001); if (state.failed) return retval;
+                    char_literal64=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_select_expression1113); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal64_tree = (Object)adaptor.create(char_literal64);
                     adaptor.addChild(root_0, char_literal64_tree);
@@ -2507,11 +2490,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // JPA.g:153:4: constructor_expression
+                    // JPA.g:154:7: constructor_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_constructor_expression_in_select_expression1006);
+                    pushFollow(FOLLOW_constructor_expression_in_select_expression1121);
                     constructor_expression65=constructor_expression();
 
                     state._fsp--;
@@ -2548,7 +2531,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "constructor_expression"
-    // JPA.g:155:1: constructor_expression : 'NEW' constructor_name '(' constructor_item ( ',' constructor_item )* ')' ;
+    // JPA.g:156:1: constructor_expression : 'NEW' constructor_name '(' constructor_item ( ',' constructor_item )* ')' ;
     public final JPAParser.constructor_expression_return constructor_expression() throws RecognitionException {
         JPAParser.constructor_expression_return retval = new JPAParser.constructor_expression_return();
         retval.start = input.LT(1);
@@ -2572,34 +2555,34 @@ public class JPAParser extends Parser {
         Object char_literal72_tree=null;
 
         try {
-            // JPA.g:156:2: ( 'NEW' constructor_name '(' constructor_item ( ',' constructor_item )* ')' )
-            // JPA.g:156:4: 'NEW' constructor_name '(' constructor_item ( ',' constructor_item )* ')'
+            // JPA.g:157:5: ( 'NEW' constructor_name '(' constructor_item ( ',' constructor_item )* ')' )
+            // JPA.g:157:7: 'NEW' constructor_name '(' constructor_item ( ',' constructor_item )* ')'
             {
             root_0 = (Object)adaptor.nil();
 
-            string_literal66=(Token)match(input,60,FOLLOW_60_in_constructor_expression1015); if (state.failed) return retval;
+            string_literal66=(Token)match(input,60,FOLLOW_60_in_constructor_expression1133); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal66_tree = (Object)adaptor.create(string_literal66);
             adaptor.addChild(root_0, string_literal66_tree);
             }
-            pushFollow(FOLLOW_constructor_name_in_constructor_expression1017);
+            pushFollow(FOLLOW_constructor_name_in_constructor_expression1135);
             constructor_name67=constructor_name();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, constructor_name67.getTree());
-            char_literal68=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_constructor_expression1019); if (state.failed) return retval;
+            char_literal68=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_constructor_expression1137); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal68_tree = (Object)adaptor.create(char_literal68);
             adaptor.addChild(root_0, char_literal68_tree);
             }
-            pushFollow(FOLLOW_constructor_item_in_constructor_expression1021);
+            pushFollow(FOLLOW_constructor_item_in_constructor_expression1139);
             constructor_item69=constructor_item();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, constructor_item69.getTree());
-            // JPA.g:156:48: ( ',' constructor_item )*
+            // JPA.g:157:51: ( ',' constructor_item )*
             loop26:
             do {
                 int alt26=2;
@@ -2612,14 +2595,14 @@ public class JPAParser extends Parser {
 
                 switch (alt26) {
             	case 1 :
-            	    // JPA.g:156:49: ',' constructor_item
+            	    // JPA.g:157:52: ',' constructor_item
             	    {
-            	    char_literal70=(Token)match(input,54,FOLLOW_54_in_constructor_expression1024); if (state.failed) return retval;
+            	    char_literal70=(Token)match(input,54,FOLLOW_54_in_constructor_expression1142); if (state.failed) return retval;
             	    if ( state.backtracking==0 ) {
             	    char_literal70_tree = (Object)adaptor.create(char_literal70);
             	    adaptor.addChild(root_0, char_literal70_tree);
             	    }
-            	    pushFollow(FOLLOW_constructor_item_in_constructor_expression1026);
+            	    pushFollow(FOLLOW_constructor_item_in_constructor_expression1144);
             	    constructor_item71=constructor_item();
 
             	    state._fsp--;
@@ -2634,7 +2617,7 @@ public class JPAParser extends Parser {
                 }
             } while (true);
 
-            char_literal72=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_constructor_expression1030); if (state.failed) return retval;
+            char_literal72=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_constructor_expression1148); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal72_tree = (Object)adaptor.create(char_literal72);
             adaptor.addChild(root_0, char_literal72_tree);
@@ -2668,7 +2651,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "constructor_item"
-    // JPA.g:158:1: constructor_item : ( path_expression | aggregate_expression );
+    // JPA.g:159:1: constructor_item : ( path_expression | aggregate_expression );
     public final JPAParser.constructor_item_return constructor_item() throws RecognitionException {
         JPAParser.constructor_item_return retval = new JPAParser.constructor_item_return();
         retval.start = input.LT(1);
@@ -2682,7 +2665,7 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:159:2: ( path_expression | aggregate_expression )
+            // JPA.g:160:5: ( path_expression | aggregate_expression )
             int alt27=2;
             int LA27_0 = input.LA(1);
 
@@ -2701,11 +2684,11 @@ public class JPAParser extends Parser {
             }
             switch (alt27) {
                 case 1 :
-                    // JPA.g:159:4: path_expression
+                    // JPA.g:160:7: path_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_path_expression_in_constructor_item1039);
+                    pushFollow(FOLLOW_path_expression_in_constructor_item1160);
                     path_expression73=path_expression();
 
                     state._fsp--;
@@ -2715,11 +2698,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:159:22: aggregate_expression
+                    // JPA.g:160:25: aggregate_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_aggregate_expression_in_constructor_item1043);
+                    pushFollow(FOLLOW_aggregate_expression_in_constructor_item1164);
                     aggregate_expression74=aggregate_expression();
 
                     state._fsp--;
@@ -2756,7 +2739,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "aggregate_expression"
-    // JPA.g:161:1: aggregate_expression : ( aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' ) | 'COUNT' '(' ( 'DISTINCT' )? identification_variable ')' -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? identification_variable ')' ) );
+    // JPA.g:162:1: aggregate_expression : ( aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' ) | 'COUNT' '(' ( 'DISTINCT' )? identification_variable ')' -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? identification_variable ')' ) );
     public final JPAParser.aggregate_expression_return aggregate_expression() throws RecognitionException {
         JPAParser.aggregate_expression_return retval = new JPAParser.aggregate_expression_return();
         retval.start = input.LT(1);
@@ -2792,7 +2775,7 @@ public class JPAParser extends Parser {
         RewriteRuleSubtreeStream stream_path_expression=new RewriteRuleSubtreeStream(adaptor,"rule path_expression");
         RewriteRuleSubtreeStream stream_aggregate_expression_function_name=new RewriteRuleSubtreeStream(adaptor,"rule aggregate_expression_function_name");
         try {
-            // JPA.g:162:2: ( aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' ) | 'COUNT' '(' ( 'DISTINCT' )? identification_variable ')' -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? identification_variable ')' ) )
+            // JPA.g:163:5: ( aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' ) | 'COUNT' '(' ( 'DISTINCT' )? identification_variable ')' -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? identification_variable ')' ) )
             int alt30=2;
             int LA30_0 = input.LA(1);
 
@@ -2808,11 +2791,11 @@ public class JPAParser extends Parser {
                         if ( (LA30_4==WORD) ) {
                             int LA30_5 = input.LA(5);
 
-                            if ( (LA30_5==RPAREN) ) {
-                                alt30=2;
-                            }
-                            else if ( (LA30_5==57) ) {
+                            if ( (LA30_5==57) ) {
                                 alt30=1;
+                            }
+                            else if ( (LA30_5==RPAREN) ) {
+                                alt30=2;
                             }
                             else {
                                 if (state.backtracking>0) {state.failed=true; return retval;}
@@ -2833,11 +2816,11 @@ public class JPAParser extends Parser {
                     else if ( (LA30_3==WORD) ) {
                         int LA30_5 = input.LA(4);
 
-                        if ( (LA30_5==RPAREN) ) {
-                            alt30=2;
-                        }
-                        else if ( (LA30_5==57) ) {
+                        if ( (LA30_5==57) ) {
                             alt30=1;
+                        }
+                        else if ( (LA30_5==RPAREN) ) {
+                            alt30=2;
                         }
                         else {
                             if (state.backtracking>0) {state.failed=true; return retval;}
@@ -2875,18 +2858,18 @@ public class JPAParser extends Parser {
             }
             switch (alt30) {
                 case 1 :
-                    // JPA.g:162:4: aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')'
+                    // JPA.g:163:7: aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')'
                     {
-                    pushFollow(FOLLOW_aggregate_expression_function_name_in_aggregate_expression1052);
+                    pushFollow(FOLLOW_aggregate_expression_function_name_in_aggregate_expression1176);
                     aggregate_expression_function_name75=aggregate_expression_function_name();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) stream_aggregate_expression_function_name.add(aggregate_expression_function_name75.getTree());
-                    char_literal76=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_aggregate_expression1054); if (state.failed) return retval;
+                    char_literal76=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_aggregate_expression1178); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_LPAREN.add(char_literal76);
 
-                    // JPA.g:162:43: ( 'DISTINCT' )?
+                    // JPA.g:163:46: ( 'DISTINCT' )?
                     int alt28=2;
                     int LA28_0 = input.LA(1);
 
@@ -2895,9 +2878,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt28) {
                         case 1 :
-                            // JPA.g:162:44: 'DISTINCT'
+                            // JPA.g:163:47: 'DISTINCT'
                             {
-                            string_literal77=(Token)match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregate_expression1057); if (state.failed) return retval;
+                            string_literal77=(Token)match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregate_expression1181); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_DISTINCT.add(string_literal77);
 
 
@@ -2906,39 +2889,39 @@ public class JPAParser extends Parser {
 
                     }
 
-                    pushFollow(FOLLOW_path_expression_in_aggregate_expression1061);
+                    pushFollow(FOLLOW_path_expression_in_aggregate_expression1185);
                     path_expression78=path_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) stream_path_expression.add(path_expression78.getTree());
-                    char_literal79=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_aggregate_expression1062); if (state.failed) return retval;
+                    char_literal79=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_aggregate_expression1186); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_RPAREN.add(char_literal79);
 
 
 
                     // AST REWRITE
-                    // elements: path_expression, DISTINCT, aggregate_expression_function_name, RPAREN, LPAREN
-                    // token labels:
+                    // elements: aggregate_expression_function_name, path_expression, LPAREN, RPAREN, DISTINCT
+                    // token labels: 
                     // rule labels: retval
-                    // token list labels:
-                    // rule list labels:
-                    // wildcard labels:
+                    // token list labels: 
+                    // rule list labels: 
+                    // wildcard labels: 
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 163:2: -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' )
+                    // 164:5: -> ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' )
                     {
-                        // JPA.g:163:5: ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' )
+                        // JPA.g:164:8: ^( T_AGGREGATE_EXPR[] aggregate_expression_function_name '(' ( 'DISTINCT' )? path_expression ')' )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(new AggregateExpressionNode(T_AGGREGATE_EXPR), root_1);
 
                         adaptor.addChild(root_1, stream_aggregate_expression_function_name.nextTree());
                         adaptor.addChild(root_1, stream_LPAREN.nextNode());
-                        // JPA.g:163:90: ( 'DISTINCT' )?
+                        // JPA.g:164:93: ( 'DISTINCT' )?
                         if ( stream_DISTINCT.hasNext() ) {
                             adaptor.addChild(root_1, stream_DISTINCT.nextNode());
 
@@ -2956,15 +2939,15 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:164:4: 'COUNT' '(' ( 'DISTINCT' )? identification_variable ')'
+                    // JPA.g:165:7: 'COUNT' '(' ( 'DISTINCT' )? identification_variable ')'
                     {
-                    string_literal80=(Token)match(input,COUNT,FOLLOW_COUNT_in_aggregate_expression1090); if (state.failed) return retval;
+                    string_literal80=(Token)match(input,COUNT,FOLLOW_COUNT_in_aggregate_expression1220); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_COUNT.add(string_literal80);
 
-                    char_literal81=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_aggregate_expression1092); if (state.failed) return retval;
+                    char_literal81=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_aggregate_expression1222); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_LPAREN.add(char_literal81);
 
-                    // JPA.g:164:16: ( 'DISTINCT' )?
+                    // JPA.g:165:19: ( 'DISTINCT' )?
                     int alt29=2;
                     int LA29_0 = input.LA(1);
 
@@ -2973,9 +2956,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt29) {
                         case 1 :
-                            // JPA.g:164:17: 'DISTINCT'
+                            // JPA.g:165:20: 'DISTINCT'
                             {
-                            string_literal82=(Token)match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregate_expression1095); if (state.failed) return retval;
+                            string_literal82=(Token)match(input,DISTINCT,FOLLOW_DISTINCT_in_aggregate_expression1225); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_DISTINCT.add(string_literal82);
 
 
@@ -2984,39 +2967,39 @@ public class JPAParser extends Parser {
 
                     }
 
-                    pushFollow(FOLLOW_identification_variable_in_aggregate_expression1099);
+                    pushFollow(FOLLOW_identification_variable_in_aggregate_expression1229);
                     identification_variable83=identification_variable();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) stream_identification_variable.add(identification_variable83.getTree());
-                    char_literal84=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_aggregate_expression1101); if (state.failed) return retval;
+                    char_literal84=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_aggregate_expression1231); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_RPAREN.add(char_literal84);
 
 
 
                     // AST REWRITE
-                    // elements: DISTINCT, LPAREN, RPAREN, identification_variable, COUNT
-                    // token labels:
+                    // elements: DISTINCT, identification_variable, COUNT, LPAREN, RPAREN
+                    // token labels: 
                     // rule labels: retval
-                    // token list labels:
-                    // rule list labels:
-                    // wildcard labels:
+                    // token list labels: 
+                    // rule list labels: 
+                    // wildcard labels: 
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 165:2: -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? identification_variable ')' )
+                    // 166:5: -> ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? identification_variable ')' )
                     {
-                        // JPA.g:165:5: ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? identification_variable ')' )
+                        // JPA.g:166:8: ^( T_AGGREGATE_EXPR[] 'COUNT' '(' ( 'DISTINCT' )? identification_variable ')' )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(new AggregateExpressionNode(T_AGGREGATE_EXPR), root_1);
 
                         adaptor.addChild(root_1, stream_COUNT.nextNode());
                         adaptor.addChild(root_1, stream_LPAREN.nextNode());
-                        // JPA.g:165:63: ( 'DISTINCT' )?
+                        // JPA.g:166:66: ( 'DISTINCT' )?
                         if ( stream_DISTINCT.hasNext() ) {
                             adaptor.addChild(root_1, stream_DISTINCT.nextNode());
 
@@ -3061,7 +3044,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "aggregate_expression_function_name"
-    // JPA.g:167:1: aggregate_expression_function_name : ( 'AVG' | 'MAX' | 'MIN' | 'SUM' | 'COUNT' );
+    // JPA.g:168:1: aggregate_expression_function_name : ( 'AVG' | 'MAX' | 'MIN' | 'SUM' | 'COUNT' );
     public final JPAParser.aggregate_expression_function_name_return aggregate_expression_function_name() throws RecognitionException {
         JPAParser.aggregate_expression_function_name_return retval = new JPAParser.aggregate_expression_function_name_return();
         retval.start = input.LT(1);
@@ -3073,7 +3056,7 @@ public class JPAParser extends Parser {
         Object set85_tree=null;
 
         try {
-            // JPA.g:168:5: ( 'AVG' | 'MAX' | 'MIN' | 'SUM' | 'COUNT' )
+            // JPA.g:169:5: ( 'AVG' | 'MAX' | 'MIN' | 'SUM' | 'COUNT' )
             // JPA.g:
             {
             root_0 = (Object)adaptor.nil();
@@ -3119,7 +3102,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "where_clause"
-    // JPA.g:170:1: where_clause : (wh= 'WHERE' conditional_expression -> ^( T_CONDITION[$wh] conditional_expression ) | 'WHERE' path_expression -> ^( T_CONDITION[$wh] path_expression ) );
+    // JPA.g:171:1: where_clause : (wh= 'WHERE' conditional_expression -> ^( T_CONDITION[$wh] conditional_expression ) | 'WHERE' path_expression -> ^( T_CONDITION[$wh] path_expression ) );
     public final JPAParser.where_clause_return where_clause() throws RecognitionException {
         JPAParser.where_clause_return retval = new JPAParser.where_clause_return();
         retval.start = input.LT(1);
@@ -3139,17 +3122,17 @@ public class JPAParser extends Parser {
         RewriteRuleSubtreeStream stream_conditional_expression=new RewriteRuleSubtreeStream(adaptor,"rule conditional_expression");
         RewriteRuleSubtreeStream stream_path_expression=new RewriteRuleSubtreeStream(adaptor,"rule path_expression");
         try {
-            // JPA.g:171:2: (wh= 'WHERE' conditional_expression -> ^( T_CONDITION[$wh] conditional_expression ) | 'WHERE' path_expression -> ^( T_CONDITION[$wh] path_expression ) )
+            // JPA.g:172:5: (wh= 'WHERE' conditional_expression -> ^( T_CONDITION[$wh] conditional_expression ) | 'WHERE' path_expression -> ^( T_CONDITION[$wh] path_expression ) )
             int alt31=2;
             alt31 = dfa31.predict(input);
             switch (alt31) {
                 case 1 :
-                    // JPA.g:171:4: wh= 'WHERE' conditional_expression
+                    // JPA.g:172:7: wh= 'WHERE' conditional_expression
                     {
-                    wh=(Token)match(input,61,FOLLOW_61_in_where_clause1163); if (state.failed) return retval;
+                    wh=(Token)match(input,61,FOLLOW_61_in_where_clause1299); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_61.add(wh);
 
-                    pushFollow(FOLLOW_conditional_expression_in_where_clause1165);
+                    pushFollow(FOLLOW_conditional_expression_in_where_clause1301);
                     conditional_expression86=conditional_expression();
 
                     state._fsp--;
@@ -3159,19 +3142,19 @@ public class JPAParser extends Parser {
 
                     // AST REWRITE
                     // elements: conditional_expression
-                    // token labels:
+                    // token labels: 
                     // rule labels: retval
-                    // token list labels:
-                    // rule list labels:
-                    // wildcard labels:
+                    // token list labels: 
+                    // rule list labels: 
+                    // wildcard labels: 
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 171:37: -> ^( T_CONDITION[$wh] conditional_expression )
+                    // 172:40: -> ^( T_CONDITION[$wh] conditional_expression )
                     {
-                        // JPA.g:171:40: ^( T_CONDITION[$wh] conditional_expression )
+                        // JPA.g:172:43: ^( T_CONDITION[$wh] conditional_expression )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(new WhereNode(T_CONDITION, wh), root_1);
@@ -3187,12 +3170,12 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:172:4: 'WHERE' path_expression
+                    // JPA.g:173:7: 'WHERE' path_expression
                     {
-                    string_literal87=(Token)match(input,61,FOLLOW_61_in_where_clause1181); if (state.failed) return retval;
+                    string_literal87=(Token)match(input,61,FOLLOW_61_in_where_clause1320); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_61.add(string_literal87);
 
-                    pushFollow(FOLLOW_path_expression_in_where_clause1183);
+                    pushFollow(FOLLOW_path_expression_in_where_clause1322);
                     path_expression88=path_expression();
 
                     state._fsp--;
@@ -3202,19 +3185,19 @@ public class JPAParser extends Parser {
 
                     // AST REWRITE
                     // elements: path_expression
-                    // token labels:
+                    // token labels: 
                     // rule labels: retval
-                    // token list labels:
-                    // rule list labels:
-                    // wildcard labels:
+                    // token list labels: 
+                    // rule list labels: 
+                    // wildcard labels: 
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 172:28: -> ^( T_CONDITION[$wh] path_expression )
+                    // 173:31: -> ^( T_CONDITION[$wh] path_expression )
                     {
-                        // JPA.g:172:31: ^( T_CONDITION[$wh] path_expression )
+                        // JPA.g:173:34: ^( T_CONDITION[$wh] path_expression )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(new WhereNode(T_CONDITION, wh), root_1);
@@ -3257,7 +3240,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "groupby_clause"
-    // JPA.g:174:1: groupby_clause : 'GROUP' 'BY' groupby_item ( ',' groupby_item )* -> ^( T_GROUP_BY[] 'GROUP' 'BY' ( groupby_item )* ) ;
+    // JPA.g:175:1: groupby_clause : 'GROUP' 'BY' groupby_item ( ',' groupby_item )* -> ^( T_GROUP_BY[] 'GROUP' 'BY' ( groupby_item )* ) ;
     public final JPAParser.groupby_clause_return groupby_clause() throws RecognitionException {
         JPAParser.groupby_clause_return retval = new JPAParser.groupby_clause_return();
         retval.start = input.LT(1);
@@ -3280,22 +3263,22 @@ public class JPAParser extends Parser {
         RewriteRuleTokenStream stream_54=new RewriteRuleTokenStream(adaptor,"token 54");
         RewriteRuleSubtreeStream stream_groupby_item=new RewriteRuleSubtreeStream(adaptor,"rule groupby_item");
         try {
-            // JPA.g:175:2: ( 'GROUP' 'BY' groupby_item ( ',' groupby_item )* -> ^( T_GROUP_BY[] 'GROUP' 'BY' ( groupby_item )* ) )
-            // JPA.g:175:4: 'GROUP' 'BY' groupby_item ( ',' groupby_item )*
+            // JPA.g:176:5: ( 'GROUP' 'BY' groupby_item ( ',' groupby_item )* -> ^( T_GROUP_BY[] 'GROUP' 'BY' ( groupby_item )* ) )
+            // JPA.g:176:7: 'GROUP' 'BY' groupby_item ( ',' groupby_item )*
             {
-            string_literal89=(Token)match(input,GROUP,FOLLOW_GROUP_in_groupby_clause1204); if (state.failed) return retval;
+            string_literal89=(Token)match(input,GROUP,FOLLOW_GROUP_in_groupby_clause1346); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_GROUP.add(string_literal89);
 
-            string_literal90=(Token)match(input,BY,FOLLOW_BY_in_groupby_clause1206); if (state.failed) return retval;
+            string_literal90=(Token)match(input,BY,FOLLOW_BY_in_groupby_clause1348); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_BY.add(string_literal90);
 
-            pushFollow(FOLLOW_groupby_item_in_groupby_clause1208);
+            pushFollow(FOLLOW_groupby_item_in_groupby_clause1350);
             groupby_item91=groupby_item();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_groupby_item.add(groupby_item91.getTree());
-            // JPA.g:175:30: ( ',' groupby_item )*
+            // JPA.g:176:33: ( ',' groupby_item )*
             loop32:
             do {
                 int alt32=2;
@@ -3308,12 +3291,12 @@ public class JPAParser extends Parser {
 
                 switch (alt32) {
             	case 1 :
-            	    // JPA.g:175:31: ',' groupby_item
+            	    // JPA.g:176:34: ',' groupby_item
             	    {
-            	    char_literal92=(Token)match(input,54,FOLLOW_54_in_groupby_clause1211); if (state.failed) return retval;
+            	    char_literal92=(Token)match(input,54,FOLLOW_54_in_groupby_clause1353); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_54.add(char_literal92);
 
-            	    pushFollow(FOLLOW_groupby_item_in_groupby_clause1213);
+            	    pushFollow(FOLLOW_groupby_item_in_groupby_clause1355);
             	    groupby_item93=groupby_item();
 
             	    state._fsp--;
@@ -3331,27 +3314,27 @@ public class JPAParser extends Parser {
 
 
             // AST REWRITE
-            // elements: groupby_item, GROUP, BY
-            // token labels:
+            // elements: BY, groupby_item, GROUP
+            // token labels: 
             // rule labels: retval
-            // token list labels:
-            // rule list labels:
-            // wildcard labels:
+            // token list labels: 
+            // rule list labels: 
+            // wildcard labels: 
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 176:2: -> ^( T_GROUP_BY[] 'GROUP' 'BY' ( groupby_item )* )
+            // 177:5: -> ^( T_GROUP_BY[] 'GROUP' 'BY' ( groupby_item )* )
             {
-                // JPA.g:176:5: ^( T_GROUP_BY[] 'GROUP' 'BY' ( groupby_item )* )
+                // JPA.g:177:8: ^( T_GROUP_BY[] 'GROUP' 'BY' ( groupby_item )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(new GroupByNode(T_GROUP_BY), root_1);
 
                 adaptor.addChild(root_1, stream_GROUP.nextNode());
                 adaptor.addChild(root_1, stream_BY.nextNode());
-                // JPA.g:176:46: ( groupby_item )*
+                // JPA.g:177:49: ( groupby_item )*
                 while ( stream_groupby_item.hasNext() ) {
                     adaptor.addChild(root_1, stream_groupby_item.nextTree());
 
@@ -3392,7 +3375,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "groupby_item"
-    // JPA.g:179:1: groupby_item : ( path_expression | identification_variable );
+    // JPA.g:180:1: groupby_item : ( path_expression | identification_variable );
     public final JPAParser.groupby_item_return groupby_item() throws RecognitionException {
         JPAParser.groupby_item_return retval = new JPAParser.groupby_item_return();
         retval.start = input.LT(1);
@@ -3406,18 +3389,18 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:180:2: ( path_expression | identification_variable )
+            // JPA.g:181:5: ( path_expression | identification_variable )
             int alt33=2;
             int LA33_0 = input.LA(1);
 
             if ( (LA33_0==WORD) ) {
                 int LA33_1 = input.LA(2);
 
-                if ( (LA33_1==57) ) {
-                    alt33=1;
-                }
-                else if ( (LA33_1==EOF||LA33_1==HAVING||LA33_1==RPAREN||LA33_1==ORDER||LA33_1==54) ) {
+                if ( (LA33_1==EOF||LA33_1==HAVING||LA33_1==RPAREN||LA33_1==ORDER||LA33_1==54) ) {
                     alt33=2;
+                }
+                else if ( (LA33_1==57) ) {
+                    alt33=1;
                 }
                 else {
                     if (state.backtracking>0) {state.failed=true; return retval;}
@@ -3436,11 +3419,11 @@ public class JPAParser extends Parser {
             }
             switch (alt33) {
                 case 1 :
-                    // JPA.g:180:4: path_expression
+                    // JPA.g:181:7: path_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_path_expression_in_groupby_item1244);
+                    pushFollow(FOLLOW_path_expression_in_groupby_item1395);
                     path_expression94=path_expression();
 
                     state._fsp--;
@@ -3450,11 +3433,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:180:22: identification_variable
+                    // JPA.g:181:25: identification_variable
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_identification_variable_in_groupby_item1248);
+                    pushFollow(FOLLOW_identification_variable_in_groupby_item1399);
                     identification_variable95=identification_variable();
 
                     state._fsp--;
@@ -3491,7 +3474,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "having_clause"
-    // JPA.g:182:1: having_clause : 'HAVING' conditional_expression ;
+    // JPA.g:183:1: having_clause : 'HAVING' conditional_expression ;
     public final JPAParser.having_clause_return having_clause() throws RecognitionException {
         JPAParser.having_clause_return retval = new JPAParser.having_clause_return();
         retval.start = input.LT(1);
@@ -3505,17 +3488,17 @@ public class JPAParser extends Parser {
         Object string_literal96_tree=null;
 
         try {
-            // JPA.g:183:2: ( 'HAVING' conditional_expression )
-            // JPA.g:183:4: 'HAVING' conditional_expression
+            // JPA.g:184:5: ( 'HAVING' conditional_expression )
+            // JPA.g:184:7: 'HAVING' conditional_expression
             {
             root_0 = (Object)adaptor.nil();
 
-            string_literal96=(Token)match(input,HAVING,FOLLOW_HAVING_in_having_clause1257); if (state.failed) return retval;
+            string_literal96=(Token)match(input,HAVING,FOLLOW_HAVING_in_having_clause1411); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal96_tree = (Object)adaptor.create(string_literal96);
             adaptor.addChild(root_0, string_literal96_tree);
             }
-            pushFollow(FOLLOW_conditional_expression_in_having_clause1259);
+            pushFollow(FOLLOW_conditional_expression_in_having_clause1413);
             conditional_expression97=conditional_expression();
 
             state._fsp--;
@@ -3550,7 +3533,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "orderby_clause"
-    // JPA.g:185:1: orderby_clause : 'ORDER' 'BY' orderby_item ( ',' orderby_item )* -> ^( T_ORDER_BY[] 'ORDER' 'BY' ( orderby_item )* ) ;
+    // JPA.g:186:1: orderby_clause : 'ORDER' 'BY' orderby_item ( ',' orderby_item )* -> ^( T_ORDER_BY[] 'ORDER' 'BY' ( orderby_item )* ) ;
     public final JPAParser.orderby_clause_return orderby_clause() throws RecognitionException {
         JPAParser.orderby_clause_return retval = new JPAParser.orderby_clause_return();
         retval.start = input.LT(1);
@@ -3573,22 +3556,22 @@ public class JPAParser extends Parser {
         RewriteRuleTokenStream stream_54=new RewriteRuleTokenStream(adaptor,"token 54");
         RewriteRuleSubtreeStream stream_orderby_item=new RewriteRuleSubtreeStream(adaptor,"rule orderby_item");
         try {
-            // JPA.g:186:2: ( 'ORDER' 'BY' orderby_item ( ',' orderby_item )* -> ^( T_ORDER_BY[] 'ORDER' 'BY' ( orderby_item )* ) )
-            // JPA.g:186:4: 'ORDER' 'BY' orderby_item ( ',' orderby_item )*
+            // JPA.g:187:5: ( 'ORDER' 'BY' orderby_item ( ',' orderby_item )* -> ^( T_ORDER_BY[] 'ORDER' 'BY' ( orderby_item )* ) )
+            // JPA.g:187:7: 'ORDER' 'BY' orderby_item ( ',' orderby_item )*
             {
-            string_literal98=(Token)match(input,ORDER,FOLLOW_ORDER_in_orderby_clause1268); if (state.failed) return retval;
+            string_literal98=(Token)match(input,ORDER,FOLLOW_ORDER_in_orderby_clause1425); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_ORDER.add(string_literal98);
 
-            string_literal99=(Token)match(input,BY,FOLLOW_BY_in_orderby_clause1270); if (state.failed) return retval;
+            string_literal99=(Token)match(input,BY,FOLLOW_BY_in_orderby_clause1427); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_BY.add(string_literal99);
 
-            pushFollow(FOLLOW_orderby_item_in_orderby_clause1272);
+            pushFollow(FOLLOW_orderby_item_in_orderby_clause1429);
             orderby_item100=orderby_item();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_orderby_item.add(orderby_item100.getTree());
-            // JPA.g:186:30: ( ',' orderby_item )*
+            // JPA.g:187:33: ( ',' orderby_item )*
             loop34:
             do {
                 int alt34=2;
@@ -3601,12 +3584,12 @@ public class JPAParser extends Parser {
 
                 switch (alt34) {
             	case 1 :
-            	    // JPA.g:186:31: ',' orderby_item
+            	    // JPA.g:187:34: ',' orderby_item
             	    {
-            	    char_literal101=(Token)match(input,54,FOLLOW_54_in_orderby_clause1275); if (state.failed) return retval;
+            	    char_literal101=(Token)match(input,54,FOLLOW_54_in_orderby_clause1432); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_54.add(char_literal101);
 
-            	    pushFollow(FOLLOW_orderby_item_in_orderby_clause1277);
+            	    pushFollow(FOLLOW_orderby_item_in_orderby_clause1434);
             	    orderby_item102=orderby_item();
 
             	    state._fsp--;
@@ -3624,27 +3607,27 @@ public class JPAParser extends Parser {
 
 
             // AST REWRITE
-            // elements: BY, ORDER, orderby_item
-            // token labels:
+            // elements: BY, orderby_item, ORDER
+            // token labels: 
             // rule labels: retval
-            // token list labels:
-            // rule list labels:
-            // wildcard labels:
+            // token list labels: 
+            // rule list labels: 
+            // wildcard labels: 
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 187:2: -> ^( T_ORDER_BY[] 'ORDER' 'BY' ( orderby_item )* )
+            // 188:5: -> ^( T_ORDER_BY[] 'ORDER' 'BY' ( orderby_item )* )
             {
-                // JPA.g:187:5: ^( T_ORDER_BY[] 'ORDER' 'BY' ( orderby_item )* )
+                // JPA.g:188:8: ^( T_ORDER_BY[] 'ORDER' 'BY' ( orderby_item )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(new OrderByNode(T_ORDER_BY), root_1);
 
                 adaptor.addChild(root_1, stream_ORDER.nextNode());
                 adaptor.addChild(root_1, stream_BY.nextNode());
-                // JPA.g:187:46: ( orderby_item )*
+                // JPA.g:188:49: ( orderby_item )*
                 while ( stream_orderby_item.hasNext() ) {
                     adaptor.addChild(root_1, stream_orderby_item.nextTree());
 
@@ -3685,7 +3668,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "orderby_item"
-    // JPA.g:189:1: orderby_item : ( path_expression ( 'ASC' )? -> ^( T_ORDER_BY_FIELD[] path_expression ( 'ASC' )? ) | path_expression 'DESC' -> ^( T_ORDER_BY_FIELD[] path_expression 'DESC' ) );
+    // JPA.g:190:1: orderby_item : ( path_expression ( 'ASC' )? -> ^( T_ORDER_BY_FIELD[] path_expression ( 'ASC' )? ) | path_expression 'DESC' -> ^( T_ORDER_BY_FIELD[] path_expression 'DESC' ) );
     public final JPAParser.orderby_item_return orderby_item() throws RecognitionException {
         JPAParser.orderby_item_return retval = new JPAParser.orderby_item_return();
         retval.start = input.LT(1);
@@ -3705,20 +3688,20 @@ public class JPAParser extends Parser {
         RewriteRuleTokenStream stream_ASC=new RewriteRuleTokenStream(adaptor,"token ASC");
         RewriteRuleSubtreeStream stream_path_expression=new RewriteRuleSubtreeStream(adaptor,"rule path_expression");
         try {
-            // JPA.g:190:2: ( path_expression ( 'ASC' )? -> ^( T_ORDER_BY_FIELD[] path_expression ( 'ASC' )? ) | path_expression 'DESC' -> ^( T_ORDER_BY_FIELD[] path_expression 'DESC' ) )
+            // JPA.g:191:5: ( path_expression ( 'ASC' )? -> ^( T_ORDER_BY_FIELD[] path_expression ( 'ASC' )? ) | path_expression 'DESC' -> ^( T_ORDER_BY_FIELD[] path_expression 'DESC' ) )
             int alt36=2;
             alt36 = dfa36.predict(input);
             switch (alt36) {
                 case 1 :
-                    // JPA.g:190:4: path_expression ( 'ASC' )?
+                    // JPA.g:191:7: path_expression ( 'ASC' )?
                     {
-                    pushFollow(FOLLOW_path_expression_in_orderby_item1306);
+                    pushFollow(FOLLOW_path_expression_in_orderby_item1469);
                     path_expression103=path_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) stream_path_expression.add(path_expression103.getTree());
-                    // JPA.g:190:20: ( 'ASC' )?
+                    // JPA.g:191:25: ( 'ASC' )?
                     int alt35=2;
                     int LA35_0 = input.LA(1);
 
@@ -3727,9 +3710,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt35) {
                         case 1 :
-                            // JPA.g:190:21: 'ASC'
+                            // JPA.g:191:26: 'ASC'
                             {
-                            string_literal104=(Token)match(input,ASC,FOLLOW_ASC_in_orderby_item1309); if (state.failed) return retval;
+                            string_literal104=(Token)match(input,ASC,FOLLOW_ASC_in_orderby_item1474); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_ASC.add(string_literal104);
 
 
@@ -3741,26 +3724,26 @@ public class JPAParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: path_expression, ASC
-                    // token labels:
+                    // elements: ASC, path_expression
+                    // token labels: 
                     // rule labels: retval
-                    // token list labels:
-                    // rule list labels:
-                    // wildcard labels:
+                    // token list labels: 
+                    // rule list labels: 
+                    // wildcard labels: 
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 191:3: -> ^( T_ORDER_BY_FIELD[] path_expression ( 'ASC' )? )
+                    // 192:6: -> ^( T_ORDER_BY_FIELD[] path_expression ( 'ASC' )? )
                     {
-                        // JPA.g:191:6: ^( T_ORDER_BY_FIELD[] path_expression ( 'ASC' )? )
+                        // JPA.g:192:9: ^( T_ORDER_BY_FIELD[] path_expression ( 'ASC' )? )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(new OrderByFieldNode(T_ORDER_BY_FIELD), root_1);
 
                         adaptor.addChild(root_1, stream_path_expression.nextTree());
-                        // JPA.g:191:61: ( 'ASC' )?
+                        // JPA.g:192:64: ( 'ASC' )?
                         if ( stream_ASC.hasNext() ) {
                             adaptor.addChild(root_1, stream_ASC.nextNode());
 
@@ -3776,34 +3759,34 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:192:4: path_expression 'DESC'
+                    // JPA.g:193:7: path_expression 'DESC'
                     {
-                    pushFollow(FOLLOW_path_expression_in_orderby_item1335);
+                    pushFollow(FOLLOW_path_expression_in_orderby_item1506);
                     path_expression105=path_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) stream_path_expression.add(path_expression105.getTree());
-                    string_literal106=(Token)match(input,DESC,FOLLOW_DESC_in_orderby_item1337); if (state.failed) return retval;
+                    string_literal106=(Token)match(input,DESC,FOLLOW_DESC_in_orderby_item1510); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_DESC.add(string_literal106);
 
 
 
                     // AST REWRITE
                     // elements: path_expression, DESC
-                    // token labels:
+                    // token labels: 
                     // rule labels: retval
-                    // token list labels:
-                    // rule list labels:
-                    // wildcard labels:
+                    // token list labels: 
+                    // rule list labels: 
+                    // wildcard labels: 
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 193:2: -> ^( T_ORDER_BY_FIELD[] path_expression 'DESC' )
+                    // 194:5: -> ^( T_ORDER_BY_FIELD[] path_expression 'DESC' )
                     {
-                        // JPA.g:193:5: ^( T_ORDER_BY_FIELD[] path_expression 'DESC' )
+                        // JPA.g:194:8: ^( T_ORDER_BY_FIELD[] path_expression 'DESC' )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(new OrderByFieldNode(T_ORDER_BY_FIELD), root_1);
@@ -3847,7 +3830,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "subquery"
-    // JPA.g:195:1: subquery : lp= '(SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? rp= ')' -> ^( T_QUERY[$lp,$rp] simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ) ;
+    // JPA.g:196:1: subquery : lp= '(SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? rp= ')' -> ^( T_QUERY[$lp,$rp] simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ) ;
     public final JPAParser.subquery_return subquery() throws RecognitionException {
         JPAParser.subquery_return retval = new JPAParser.subquery_return();
         retval.start = input.LT(1);
@@ -3877,25 +3860,25 @@ public class JPAParser extends Parser {
         RewriteRuleSubtreeStream stream_subquery_from_clause=new RewriteRuleSubtreeStream(adaptor,"rule subquery_from_clause");
         RewriteRuleSubtreeStream stream_simple_select_clause=new RewriteRuleSubtreeStream(adaptor,"rule simple_select_clause");
         try {
-            // JPA.g:196:2: (lp= '(SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? rp= ')' -> ^( T_QUERY[$lp,$rp] simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ) )
-            // JPA.g:196:4: lp= '(SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? rp= ')'
+            // JPA.g:197:5: (lp= '(SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? rp= ')' -> ^( T_QUERY[$lp,$rp] simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? ) )
+            // JPA.g:197:7: lp= '(SELECT' simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? rp= ')'
             {
-            lp=(Token)match(input,56,FOLLOW_56_in_subquery1363); if (state.failed) return retval;
+            lp=(Token)match(input,56,FOLLOW_56_in_subquery1542); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_56.add(lp);
 
-            pushFollow(FOLLOW_simple_select_clause_in_subquery1365);
+            pushFollow(FOLLOW_simple_select_clause_in_subquery1544);
             simple_select_clause107=simple_select_clause();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_simple_select_clause.add(simple_select_clause107.getTree());
-            pushFollow(FOLLOW_subquery_from_clause_in_subquery1367);
+            pushFollow(FOLLOW_subquery_from_clause_in_subquery1546);
             subquery_from_clause108=subquery_from_clause();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_subquery_from_clause.add(subquery_from_clause108.getTree());
-            // JPA.g:196:59: ( where_clause )?
+            // JPA.g:197:62: ( where_clause )?
             int alt37=2;
             int LA37_0 = input.LA(1);
 
@@ -3904,9 +3887,9 @@ public class JPAParser extends Parser {
             }
             switch (alt37) {
                 case 1 :
-                    // JPA.g:196:60: where_clause
+                    // JPA.g:197:63: where_clause
                     {
-                    pushFollow(FOLLOW_where_clause_in_subquery1370);
+                    pushFollow(FOLLOW_where_clause_in_subquery1549);
                     where_clause109=where_clause();
 
                     state._fsp--;
@@ -3918,7 +3901,7 @@ public class JPAParser extends Parser {
 
             }
 
-            // JPA.g:196:75: ( groupby_clause )?
+            // JPA.g:197:78: ( groupby_clause )?
             int alt38=2;
             int LA38_0 = input.LA(1);
 
@@ -3927,9 +3910,9 @@ public class JPAParser extends Parser {
             }
             switch (alt38) {
                 case 1 :
-                    // JPA.g:196:76: groupby_clause
+                    // JPA.g:197:79: groupby_clause
                     {
-                    pushFollow(FOLLOW_groupby_clause_in_subquery1375);
+                    pushFollow(FOLLOW_groupby_clause_in_subquery1554);
                     groupby_clause110=groupby_clause();
 
                     state._fsp--;
@@ -3941,7 +3924,7 @@ public class JPAParser extends Parser {
 
             }
 
-            // JPA.g:196:93: ( having_clause )?
+            // JPA.g:197:96: ( having_clause )?
             int alt39=2;
             int LA39_0 = input.LA(1);
 
@@ -3950,9 +3933,9 @@ public class JPAParser extends Parser {
             }
             switch (alt39) {
                 case 1 :
-                    // JPA.g:196:94: having_clause
+                    // JPA.g:197:97: having_clause
                     {
-                    pushFollow(FOLLOW_having_clause_in_subquery1380);
+                    pushFollow(FOLLOW_having_clause_in_subquery1559);
                     having_clause111=having_clause();
 
                     state._fsp--;
@@ -3964,45 +3947,45 @@ public class JPAParser extends Parser {
 
             }
 
-            rp=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_subquery1386); if (state.failed) return retval;
+            rp=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_subquery1565); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_RPAREN.add(rp);
 
 
 
             // AST REWRITE
-            // elements: subquery_from_clause, groupby_clause, where_clause, simple_select_clause, having_clause
-            // token labels:
+            // elements: where_clause, simple_select_clause, groupby_clause, subquery_from_clause, having_clause
+            // token labels: 
             // rule labels: retval
-            // token list labels:
-            // rule list labels:
-            // wildcard labels:
+            // token list labels: 
+            // rule list labels: 
+            // wildcard labels: 
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 197:3: -> ^( T_QUERY[$lp,$rp] simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? )
+            // 198:6: -> ^( T_QUERY[$lp,$rp] simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? )
             {
-                // JPA.g:197:6: ^( T_QUERY[$lp,$rp] simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? )
+                // JPA.g:198:9: ^( T_QUERY[$lp,$rp] simple_select_clause subquery_from_clause ( where_clause )? ( groupby_clause )? ( having_clause )? )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(new QueryNode(T_QUERY, lp, rp), root_1);
 
                 adaptor.addChild(root_1, stream_simple_select_clause.nextTree());
                 adaptor.addChild(root_1, stream_subquery_from_clause.nextTree());
-                // JPA.g:197:78: ( where_clause )?
+                // JPA.g:198:81: ( where_clause )?
                 if ( stream_where_clause.hasNext() ) {
                     adaptor.addChild(root_1, stream_where_clause.nextTree());
 
                 }
                 stream_where_clause.reset();
-                // JPA.g:197:94: ( groupby_clause )?
+                // JPA.g:198:97: ( groupby_clause )?
                 if ( stream_groupby_clause.hasNext() ) {
                     adaptor.addChild(root_1, stream_groupby_clause.nextTree());
 
                 }
                 stream_groupby_clause.reset();
-                // JPA.g:197:112: ( having_clause )?
+                // JPA.g:198:115: ( having_clause )?
                 if ( stream_having_clause.hasNext() ) {
                     adaptor.addChild(root_1, stream_having_clause.nextTree());
 
@@ -4043,7 +4026,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "subquery_from_clause"
-    // JPA.g:199:1: subquery_from_clause : fr= 'FROM' subselect_identification_variable_declaration ( ',' subselect_identification_variable_declaration )* -> ^( T_SOURCES[$fr] ( ^( T_SOURCE subselect_identification_variable_declaration ) )* ) ;
+    // JPA.g:200:1: subquery_from_clause : fr= 'FROM' subselect_identification_variable_declaration ( ',' subselect_identification_variable_declaration )* -> ^( T_SOURCES[$fr] ( ^( T_SOURCE subselect_identification_variable_declaration ) )* ) ;
     public final JPAParser.subquery_from_clause_return subquery_from_clause() throws RecognitionException {
         JPAParser.subquery_from_clause_return retval = new JPAParser.subquery_from_clause_return();
         retval.start = input.LT(1);
@@ -4063,19 +4046,19 @@ public class JPAParser extends Parser {
         RewriteRuleTokenStream stream_54=new RewriteRuleTokenStream(adaptor,"token 54");
         RewriteRuleSubtreeStream stream_subselect_identification_variable_declaration=new RewriteRuleSubtreeStream(adaptor,"rule subselect_identification_variable_declaration");
         try {
-            // JPA.g:200:2: (fr= 'FROM' subselect_identification_variable_declaration ( ',' subselect_identification_variable_declaration )* -> ^( T_SOURCES[$fr] ( ^( T_SOURCE subselect_identification_variable_declaration ) )* ) )
-            // JPA.g:200:4: fr= 'FROM' subselect_identification_variable_declaration ( ',' subselect_identification_variable_declaration )*
+            // JPA.g:201:5: (fr= 'FROM' subselect_identification_variable_declaration ( ',' subselect_identification_variable_declaration )* -> ^( T_SOURCES[$fr] ( ^( T_SOURCE subselect_identification_variable_declaration ) )* ) )
+            // JPA.g:201:7: fr= 'FROM' subselect_identification_variable_declaration ( ',' subselect_identification_variable_declaration )*
             {
-            fr=(Token)match(input,53,FOLLOW_53_in_subquery_from_clause1429); if (state.failed) return retval;
+            fr=(Token)match(input,53,FOLLOW_53_in_subquery_from_clause1614); if (state.failed) return retval; 
             if ( state.backtracking==0 ) stream_53.add(fr);
 
-            pushFollow(FOLLOW_subselect_identification_variable_declaration_in_subquery_from_clause1431);
+            pushFollow(FOLLOW_subselect_identification_variable_declaration_in_subquery_from_clause1616);
             subselect_identification_variable_declaration112=subselect_identification_variable_declaration();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) stream_subselect_identification_variable_declaration.add(subselect_identification_variable_declaration112.getTree());
-            // JPA.g:200:60: ( ',' subselect_identification_variable_declaration )*
+            // JPA.g:201:63: ( ',' subselect_identification_variable_declaration )*
             loop40:
             do {
                 int alt40=2;
@@ -4088,12 +4071,12 @@ public class JPAParser extends Parser {
 
                 switch (alt40) {
             	case 1 :
-            	    // JPA.g:200:61: ',' subselect_identification_variable_declaration
+            	    // JPA.g:201:64: ',' subselect_identification_variable_declaration
             	    {
-            	    char_literal113=(Token)match(input,54,FOLLOW_54_in_subquery_from_clause1434); if (state.failed) return retval;
+            	    char_literal113=(Token)match(input,54,FOLLOW_54_in_subquery_from_clause1619); if (state.failed) return retval; 
             	    if ( state.backtracking==0 ) stream_54.add(char_literal113);
 
-            	    pushFollow(FOLLOW_subselect_identification_variable_declaration_in_subquery_from_clause1436);
+            	    pushFollow(FOLLOW_subselect_identification_variable_declaration_in_subquery_from_clause1621);
             	    subselect_identification_variable_declaration114=subselect_identification_variable_declaration();
 
             	    state._fsp--;
@@ -4112,26 +4095,26 @@ public class JPAParser extends Parser {
 
             // AST REWRITE
             // elements: subselect_identification_variable_declaration
-            // token labels:
+            // token labels: 
             // rule labels: retval
-            // token list labels:
-            // rule list labels:
-            // wildcard labels:
+            // token list labels: 
+            // rule list labels: 
+            // wildcard labels: 
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 201:2: -> ^( T_SOURCES[$fr] ( ^( T_SOURCE subselect_identification_variable_declaration ) )* )
+            // 202:5: -> ^( T_SOURCES[$fr] ( ^( T_SOURCE subselect_identification_variable_declaration ) )* )
             {
-                // JPA.g:201:5: ^( T_SOURCES[$fr] ( ^( T_SOURCE subselect_identification_variable_declaration ) )* )
+                // JPA.g:202:8: ^( T_SOURCES[$fr] ( ^( T_SOURCE subselect_identification_variable_declaration ) )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(new FromNode(T_SOURCES, fr), root_1);
 
-                // JPA.g:201:32: ( ^( T_SOURCE subselect_identification_variable_declaration ) )*
+                // JPA.g:202:35: ( ^( T_SOURCE subselect_identification_variable_declaration ) )*
                 while ( stream_subselect_identification_variable_declaration.hasNext() ) {
-                    // JPA.g:201:32: ^( T_SOURCE subselect_identification_variable_declaration )
+                    // JPA.g:202:35: ^( T_SOURCE subselect_identification_variable_declaration )
                     {
                     Object root_2 = (Object)adaptor.nil();
                     root_2 = (Object)adaptor.becomeRoot(new SelectionSourceNode(T_SOURCE), root_2);
@@ -4178,7 +4161,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "subselect_identification_variable_declaration"
-    // JPA.g:203:1: subselect_identification_variable_declaration : ( identification_variable_declaration | association_path_expression ( 'AS' )? identification_variable | collection_member_declaration );
+    // JPA.g:204:1: subselect_identification_variable_declaration : ( identification_variable_declaration | association_path_expression ( 'AS' )? identification_variable | collection_member_declaration );
     public final JPAParser.subselect_identification_variable_declaration_return subselect_identification_variable_declaration() throws RecognitionException {
         JPAParser.subselect_identification_variable_declaration_return retval = new JPAParser.subselect_identification_variable_declaration_return();
         retval.start = input.LT(1);
@@ -4198,7 +4181,7 @@ public class JPAParser extends Parser {
         Object string_literal117_tree=null;
 
         try {
-            // JPA.g:204:2: ( identification_variable_declaration | association_path_expression ( 'AS' )? identification_variable | collection_member_declaration )
+            // JPA.g:205:5: ( identification_variable_declaration | association_path_expression ( 'AS' )? identification_variable | collection_member_declaration )
             int alt42=3;
             switch ( input.LA(1) ) {
             case WORD:
@@ -4240,11 +4223,11 @@ public class JPAParser extends Parser {
 
             switch (alt42) {
                 case 1 :
-                    // JPA.g:204:4: identification_variable_declaration
+                    // JPA.g:205:7: identification_variable_declaration
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_identification_variable_declaration_in_subselect_identification_variable_declaration1468);
+                    pushFollow(FOLLOW_identification_variable_declaration_in_subselect_identification_variable_declaration1659);
                     identification_variable_declaration115=identification_variable_declaration();
 
                     state._fsp--;
@@ -4254,17 +4237,17 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:205:4: association_path_expression ( 'AS' )? identification_variable
+                    // JPA.g:206:7: association_path_expression ( 'AS' )? identification_variable
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_association_path_expression_in_subselect_identification_variable_declaration1473);
+                    pushFollow(FOLLOW_association_path_expression_in_subselect_identification_variable_declaration1667);
                     association_path_expression116=association_path_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, association_path_expression116.getTree());
-                    // JPA.g:205:32: ( 'AS' )?
+                    // JPA.g:206:35: ( 'AS' )?
                     int alt41=2;
                     int LA41_0 = input.LA(1);
 
@@ -4273,9 +4256,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt41) {
                         case 1 :
-                            // JPA.g:205:33: 'AS'
+                            // JPA.g:206:36: 'AS'
                             {
-                            string_literal117=(Token)match(input,55,FOLLOW_55_in_subselect_identification_variable_declaration1476); if (state.failed) return retval;
+                            string_literal117=(Token)match(input,55,FOLLOW_55_in_subselect_identification_variable_declaration1670); if (state.failed) return retval;
                             if ( state.backtracking==0 ) {
                             string_literal117_tree = (Object)adaptor.create(string_literal117);
                             adaptor.addChild(root_0, string_literal117_tree);
@@ -4286,7 +4269,7 @@ public class JPAParser extends Parser {
 
                     }
 
-                    pushFollow(FOLLOW_identification_variable_in_subselect_identification_variable_declaration1480);
+                    pushFollow(FOLLOW_identification_variable_in_subselect_identification_variable_declaration1674);
                     identification_variable118=identification_variable();
 
                     state._fsp--;
@@ -4296,11 +4279,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // JPA.g:206:4: collection_member_declaration
+                    // JPA.g:207:7: collection_member_declaration
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_collection_member_declaration_in_subselect_identification_variable_declaration1485);
+                    pushFollow(FOLLOW_collection_member_declaration_in_subselect_identification_variable_declaration1682);
                     collection_member_declaration119=collection_member_declaration();
 
                     state._fsp--;
@@ -4337,7 +4320,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "association_path_expression"
-    // JPA.g:208:1: association_path_expression : path_expression ;
+    // JPA.g:209:1: association_path_expression : path_expression ;
     public final JPAParser.association_path_expression_return association_path_expression() throws RecognitionException {
         JPAParser.association_path_expression_return retval = new JPAParser.association_path_expression_return();
         retval.start = input.LT(1);
@@ -4349,12 +4332,12 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:209:2: ( path_expression )
-            // JPA.g:209:4: path_expression
+            // JPA.g:210:5: ( path_expression )
+            // JPA.g:210:7: path_expression
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_path_expression_in_association_path_expression1494);
+            pushFollow(FOLLOW_path_expression_in_association_path_expression1694);
             path_expression120=path_expression();
 
             state._fsp--;
@@ -4389,7 +4372,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "simple_select_clause"
-    // JPA.g:211:1: simple_select_clause : ( 'DISTINCT' )? simple_select_expression -> ^( T_SELECTED_ITEMS ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression ) ) ;
+    // JPA.g:212:1: simple_select_clause : ( 'DISTINCT' )? simple_select_expression -> ^( T_SELECTED_ITEMS ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression ) ) ;
     public final JPAParser.simple_select_clause_return simple_select_clause() throws RecognitionException {
         JPAParser.simple_select_clause_return retval = new JPAParser.simple_select_clause_return();
         retval.start = input.LT(1);
@@ -4404,10 +4387,10 @@ public class JPAParser extends Parser {
         RewriteRuleTokenStream stream_DISTINCT=new RewriteRuleTokenStream(adaptor,"token DISTINCT");
         RewriteRuleSubtreeStream stream_simple_select_expression=new RewriteRuleSubtreeStream(adaptor,"rule simple_select_expression");
         try {
-            // JPA.g:212:2: ( ( 'DISTINCT' )? simple_select_expression -> ^( T_SELECTED_ITEMS ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression ) ) )
-            // JPA.g:212:4: ( 'DISTINCT' )? simple_select_expression
+            // JPA.g:213:5: ( ( 'DISTINCT' )? simple_select_expression -> ^( T_SELECTED_ITEMS ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression ) ) )
+            // JPA.g:213:7: ( 'DISTINCT' )? simple_select_expression
             {
-            // JPA.g:212:4: ( 'DISTINCT' )?
+            // JPA.g:213:7: ( 'DISTINCT' )?
             int alt43=2;
             int LA43_0 = input.LA(1);
 
@@ -4416,9 +4399,9 @@ public class JPAParser extends Parser {
             }
             switch (alt43) {
                 case 1 :
-                    // JPA.g:212:5: 'DISTINCT'
+                    // JPA.g:213:8: 'DISTINCT'
                     {
-                    string_literal121=(Token)match(input,DISTINCT,FOLLOW_DISTINCT_in_simple_select_clause1504); if (state.failed) return retval;
+                    string_literal121=(Token)match(input,DISTINCT,FOLLOW_DISTINCT_in_simple_select_clause1707); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_DISTINCT.add(string_literal121);
 
 
@@ -4427,7 +4410,7 @@ public class JPAParser extends Parser {
 
             }
 
-            pushFollow(FOLLOW_simple_select_expression_in_simple_select_clause1508);
+            pushFollow(FOLLOW_simple_select_expression_in_simple_select_clause1711);
             simple_select_expression122=simple_select_expression();
 
             state._fsp--;
@@ -4437,29 +4420,29 @@ public class JPAParser extends Parser {
 
             // AST REWRITE
             // elements: simple_select_expression, DISTINCT
-            // token labels:
+            // token labels: 
             // rule labels: retval
-            // token list labels:
-            // rule list labels:
-            // wildcard labels:
+            // token list labels: 
+            // rule list labels: 
+            // wildcard labels: 
             if ( state.backtracking==0 ) {
             retval.tree = root_0;
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 213:2: -> ^( T_SELECTED_ITEMS ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression ) )
+            // 214:5: -> ^( T_SELECTED_ITEMS ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression ) )
             {
-                // JPA.g:213:5: ^( T_SELECTED_ITEMS ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression ) )
+                // JPA.g:214:8: ^( T_SELECTED_ITEMS ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression ) )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(T_SELECTED_ITEMS, "T_SELECTED_ITEMS"), root_1);
 
-                // JPA.g:213:24: ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression )
+                // JPA.g:214:27: ^( T_SELECTED_ITEM[] ( 'DISTINCT' )? simple_select_expression )
                 {
                 Object root_2 = (Object)adaptor.nil();
                 root_2 = (Object)adaptor.becomeRoot(new SelectedItemNode(T_SELECTED_ITEM), root_2);
 
-                // JPA.g:213:62: ( 'DISTINCT' )?
+                // JPA.g:214:65: ( 'DISTINCT' )?
                 if ( stream_DISTINCT.hasNext() ) {
                     adaptor.addChild(root_2, stream_DISTINCT.nextNode());
 
@@ -4504,7 +4487,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "simple_select_expression"
-    // JPA.g:215:1: simple_select_expression : ( path_expression | aggregate_expression | identification_variable );
+    // JPA.g:216:1: simple_select_expression : ( path_expression | aggregate_expression | identification_variable );
     public final JPAParser.simple_select_expression_return simple_select_expression() throws RecognitionException {
         JPAParser.simple_select_expression_return retval = new JPAParser.simple_select_expression_return();
         retval.start = input.LT(1);
@@ -4520,7 +4503,7 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:216:2: ( path_expression | aggregate_expression | identification_variable )
+            // JPA.g:217:5: ( path_expression | aggregate_expression | identification_variable )
             int alt44=3;
             int LA44_0 = input.LA(1);
 
@@ -4553,11 +4536,11 @@ public class JPAParser extends Parser {
             }
             switch (alt44) {
                 case 1 :
-                    // JPA.g:216:4: path_expression
+                    // JPA.g:217:7: path_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_path_expression_in_simple_select_expression1539);
+                    pushFollow(FOLLOW_path_expression_in_simple_select_expression1748);
                     path_expression123=path_expression();
 
                     state._fsp--;
@@ -4567,11 +4550,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:217:4: aggregate_expression
+                    // JPA.g:218:7: aggregate_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_aggregate_expression_in_simple_select_expression1544);
+                    pushFollow(FOLLOW_aggregate_expression_in_simple_select_expression1756);
                     aggregate_expression124=aggregate_expression();
 
                     state._fsp--;
@@ -4581,11 +4564,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // JPA.g:218:4: identification_variable
+                    // JPA.g:219:7: identification_variable
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_identification_variable_in_simple_select_expression1549);
+                    pushFollow(FOLLOW_identification_variable_in_simple_select_expression1764);
                     identification_variable125=identification_variable();
 
                     state._fsp--;
@@ -4622,7 +4605,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "conditional_expression"
-    // JPA.g:220:1: conditional_expression : ( conditional_term ) ( 'OR' conditional_term )* ;
+    // JPA.g:221:1: conditional_expression : ( conditional_term ) ( 'OR' conditional_term )* ;
     public final JPAParser.conditional_expression_return conditional_expression() throws RecognitionException {
         JPAParser.conditional_expression_return retval = new JPAParser.conditional_expression_return();
         retval.start = input.LT(1);
@@ -4638,15 +4621,15 @@ public class JPAParser extends Parser {
         Object string_literal127_tree=null;
 
         try {
-            // JPA.g:221:2: ( ( conditional_term ) ( 'OR' conditional_term )* )
-            // JPA.g:221:4: ( conditional_term ) ( 'OR' conditional_term )*
+            // JPA.g:222:5: ( ( conditional_term ) ( 'OR' conditional_term )* )
+            // JPA.g:222:7: ( conditional_term ) ( 'OR' conditional_term )*
             {
             root_0 = (Object)adaptor.nil();
 
-            // JPA.g:221:4: ( conditional_term )
-            // JPA.g:221:5: conditional_term
+            // JPA.g:222:7: ( conditional_term )
+            // JPA.g:222:8: conditional_term
             {
-            pushFollow(FOLLOW_conditional_term_in_conditional_expression1559);
+            pushFollow(FOLLOW_conditional_term_in_conditional_expression1777);
             conditional_term126=conditional_term();
 
             state._fsp--;
@@ -4655,7 +4638,7 @@ public class JPAParser extends Parser {
 
             }
 
-            // JPA.g:221:23: ( 'OR' conditional_term )*
+            // JPA.g:222:26: ( 'OR' conditional_term )*
             loop45:
             do {
                 int alt45=2;
@@ -4668,14 +4651,14 @@ public class JPAParser extends Parser {
 
                 switch (alt45) {
             	case 1 :
-            	    // JPA.g:221:24: 'OR' conditional_term
+            	    // JPA.g:222:27: 'OR' conditional_term
             	    {
-            	    string_literal127=(Token)match(input,OR,FOLLOW_OR_in_conditional_expression1563); if (state.failed) return retval;
+            	    string_literal127=(Token)match(input,OR,FOLLOW_OR_in_conditional_expression1781); if (state.failed) return retval;
             	    if ( state.backtracking==0 ) {
             	    string_literal127_tree = (Object)adaptor.create(string_literal127);
             	    adaptor.addChild(root_0, string_literal127_tree);
             	    }
-            	    pushFollow(FOLLOW_conditional_term_in_conditional_expression1565);
+            	    pushFollow(FOLLOW_conditional_term_in_conditional_expression1783);
             	    conditional_term128=conditional_term();
 
             	    state._fsp--;
@@ -4719,7 +4702,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "conditional_term"
-    // JPA.g:223:1: conditional_term : ( conditional_factor ) ( 'AND' conditional_factor )* ;
+    // JPA.g:224:1: conditional_term : ( conditional_factor ) ( 'AND' conditional_factor )* ;
     public final JPAParser.conditional_term_return conditional_term() throws RecognitionException {
         JPAParser.conditional_term_return retval = new JPAParser.conditional_term_return();
         retval.start = input.LT(1);
@@ -4735,15 +4718,15 @@ public class JPAParser extends Parser {
         Object string_literal130_tree=null;
 
         try {
-            // JPA.g:224:2: ( ( conditional_factor ) ( 'AND' conditional_factor )* )
-            // JPA.g:224:4: ( conditional_factor ) ( 'AND' conditional_factor )*
+            // JPA.g:225:5: ( ( conditional_factor ) ( 'AND' conditional_factor )* )
+            // JPA.g:225:7: ( conditional_factor ) ( 'AND' conditional_factor )*
             {
             root_0 = (Object)adaptor.nil();
 
-            // JPA.g:224:4: ( conditional_factor )
-            // JPA.g:224:5: conditional_factor
+            // JPA.g:225:7: ( conditional_factor )
+            // JPA.g:225:8: conditional_factor
             {
-            pushFollow(FOLLOW_conditional_factor_in_conditional_term1577);
+            pushFollow(FOLLOW_conditional_factor_in_conditional_term1798);
             conditional_factor129=conditional_factor();
 
             state._fsp--;
@@ -4752,7 +4735,7 @@ public class JPAParser extends Parser {
 
             }
 
-            // JPA.g:224:25: ( 'AND' conditional_factor )*
+            // JPA.g:225:28: ( 'AND' conditional_factor )*
             loop46:
             do {
                 int alt46=2;
@@ -4765,14 +4748,14 @@ public class JPAParser extends Parser {
 
                 switch (alt46) {
             	case 1 :
-            	    // JPA.g:224:26: 'AND' conditional_factor
+            	    // JPA.g:225:29: 'AND' conditional_factor
             	    {
-            	    string_literal130=(Token)match(input,AND,FOLLOW_AND_in_conditional_term1581); if (state.failed) return retval;
+            	    string_literal130=(Token)match(input,AND,FOLLOW_AND_in_conditional_term1802); if (state.failed) return retval;
             	    if ( state.backtracking==0 ) {
             	    string_literal130_tree = (Object)adaptor.create(string_literal130);
             	    adaptor.addChild(root_0, string_literal130_tree);
             	    }
-            	    pushFollow(FOLLOW_conditional_factor_in_conditional_term1583);
+            	    pushFollow(FOLLOW_conditional_factor_in_conditional_term1804);
             	    conditional_factor131=conditional_factor();
 
             	    state._fsp--;
@@ -4816,7 +4799,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "conditional_factor"
-    // JPA.g:226:1: conditional_factor : ( ( 'NOT' )? simple_cond_expression -> ^( T_SIMPLE_CONDITION[] ( 'NOT' )? simple_cond_expression ) | '(' conditional_expression ')' );
+    // JPA.g:227:1: conditional_factor : ( ( 'NOT' )? simple_cond_expression -> ^( T_SIMPLE_CONDITION[] ( 'NOT' )? simple_cond_expression ) | '(' conditional_expression ')' );
     public final JPAParser.conditional_factor_return conditional_factor() throws RecognitionException {
         JPAParser.conditional_factor_return retval = new JPAParser.conditional_factor_return();
         retval.start = input.LT(1);
@@ -4837,14 +4820,14 @@ public class JPAParser extends Parser {
         RewriteRuleTokenStream stream_62=new RewriteRuleTokenStream(adaptor,"token 62");
         RewriteRuleSubtreeStream stream_simple_cond_expression=new RewriteRuleSubtreeStream(adaptor,"rule simple_cond_expression");
         try {
-            // JPA.g:227:2: ( ( 'NOT' )? simple_cond_expression -> ^( T_SIMPLE_CONDITION[] ( 'NOT' )? simple_cond_expression ) | '(' conditional_expression ')' )
+            // JPA.g:228:5: ( ( 'NOT' )? simple_cond_expression -> ^( T_SIMPLE_CONDITION[] ( 'NOT' )? simple_cond_expression ) | '(' conditional_expression ')' )
             int alt48=2;
             alt48 = dfa48.predict(input);
             switch (alt48) {
                 case 1 :
-                    // JPA.g:227:4: ( 'NOT' )? simple_cond_expression
+                    // JPA.g:228:7: ( 'NOT' )? simple_cond_expression
                     {
-                    // JPA.g:227:4: ( 'NOT' )?
+                    // JPA.g:228:7: ( 'NOT' )?
                     int alt47=2;
                     int LA47_0 = input.LA(1);
 
@@ -4857,9 +4840,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt47) {
                         case 1 :
-                            // JPA.g:227:5: 'NOT'
+                            // JPA.g:228:8: 'NOT'
                             {
-                            string_literal132=(Token)match(input,62,FOLLOW_62_in_conditional_factor1596); if (state.failed) return retval;
+                            string_literal132=(Token)match(input,62,FOLLOW_62_in_conditional_factor1823); if (state.failed) return retval; 
                             if ( state.backtracking==0 ) stream_62.add(string_literal132);
 
 
@@ -4868,7 +4851,7 @@ public class JPAParser extends Parser {
 
                     }
 
-                    pushFollow(FOLLOW_simple_cond_expression_in_conditional_factor1600);
+                    pushFollow(FOLLOW_simple_cond_expression_in_conditional_factor1827);
                     simple_cond_expression133=simple_cond_expression();
 
                     state._fsp--;
@@ -4877,25 +4860,25 @@ public class JPAParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: 62, simple_cond_expression
-                    // token labels:
+                    // elements: simple_cond_expression, 62
+                    // token labels: 
                     // rule labels: retval
-                    // token list labels:
-                    // rule list labels:
-                    // wildcard labels:
+                    // token list labels: 
+                    // rule list labels: 
+                    // wildcard labels: 
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 227:36: -> ^( T_SIMPLE_CONDITION[] ( 'NOT' )? simple_cond_expression )
+                    // 228:39: -> ^( T_SIMPLE_CONDITION[] ( 'NOT' )? simple_cond_expression )
                     {
-                        // JPA.g:227:39: ^( T_SIMPLE_CONDITION[] ( 'NOT' )? simple_cond_expression )
+                        // JPA.g:228:42: ^( T_SIMPLE_CONDITION[] ( 'NOT' )? simple_cond_expression )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(new SimpleConditionNode(T_SIMPLE_CONDITION), root_1);
 
-                        // JPA.g:227:83: ( 'NOT' )?
+                        // JPA.g:228:86: ( 'NOT' )?
                         if ( stream_62.hasNext() ) {
                             adaptor.addChild(root_1, stream_62.nextNode());
 
@@ -4912,22 +4895,22 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:228:4: '(' conditional_expression ')'
+                    // JPA.g:229:7: '(' conditional_expression ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    char_literal134=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_conditional_factor1622); if (state.failed) return retval;
+                    char_literal134=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_conditional_factor1852); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal134_tree = (Object)adaptor.create(char_literal134);
                     adaptor.addChild(root_0, char_literal134_tree);
                     }
-                    pushFollow(FOLLOW_conditional_expression_in_conditional_factor1623);
+                    pushFollow(FOLLOW_conditional_expression_in_conditional_factor1853);
                     conditional_expression135=conditional_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, conditional_expression135.getTree());
-                    char_literal136=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_conditional_factor1624); if (state.failed) return retval;
+                    char_literal136=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_conditional_factor1854); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal136_tree = (Object)adaptor.create(char_literal136);
                     adaptor.addChild(root_0, char_literal136_tree);
@@ -4963,7 +4946,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "simple_cond_expression"
-    // JPA.g:230:1: simple_cond_expression : ( comparison_expression | between_expression | like_expression | in_expression | null_comparison_expression | empty_collection_comparison_expression | collection_member_expression | exists_expression | date_macro_expression );
+    // JPA.g:231:1: simple_cond_expression : ( comparison_expression | between_expression | like_expression | in_expression | null_comparison_expression | empty_collection_comparison_expression | collection_member_expression | exists_expression | date_macro_expression );
     public final JPAParser.simple_cond_expression_return simple_cond_expression() throws RecognitionException {
         JPAParser.simple_cond_expression_return retval = new JPAParser.simple_cond_expression_return();
         retval.start = input.LT(1);
@@ -4991,16 +4974,16 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:231:2: ( comparison_expression | between_expression | like_expression | in_expression | null_comparison_expression | empty_collection_comparison_expression | collection_member_expression | exists_expression | date_macro_expression )
+            // JPA.g:232:5: ( comparison_expression | between_expression | like_expression | in_expression | null_comparison_expression | empty_collection_comparison_expression | collection_member_expression | exists_expression | date_macro_expression )
             int alt49=9;
             alt49 = dfa49.predict(input);
             switch (alt49) {
                 case 1 :
-                    // JPA.g:231:4: comparison_expression
+                    // JPA.g:232:7: comparison_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_comparison_expression_in_simple_cond_expression1633);
+                    pushFollow(FOLLOW_comparison_expression_in_simple_cond_expression1866);
                     comparison_expression137=comparison_expression();
 
                     state._fsp--;
@@ -5010,11 +4993,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:232:4: between_expression
+                    // JPA.g:233:7: between_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_between_expression_in_simple_cond_expression1638);
+                    pushFollow(FOLLOW_between_expression_in_simple_cond_expression1874);
                     between_expression138=between_expression();
 
                     state._fsp--;
@@ -5024,11 +5007,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // JPA.g:233:4: like_expression
+                    // JPA.g:234:7: like_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_like_expression_in_simple_cond_expression1643);
+                    pushFollow(FOLLOW_like_expression_in_simple_cond_expression1882);
                     like_expression139=like_expression();
 
                     state._fsp--;
@@ -5038,11 +5021,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // JPA.g:234:4: in_expression
+                    // JPA.g:235:7: in_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_in_expression_in_simple_cond_expression1648);
+                    pushFollow(FOLLOW_in_expression_in_simple_cond_expression1890);
                     in_expression140=in_expression();
 
                     state._fsp--;
@@ -5052,11 +5035,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // JPA.g:235:4: null_comparison_expression
+                    // JPA.g:236:7: null_comparison_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_null_comparison_expression_in_simple_cond_expression1653);
+                    pushFollow(FOLLOW_null_comparison_expression_in_simple_cond_expression1898);
                     null_comparison_expression141=null_comparison_expression();
 
                     state._fsp--;
@@ -5066,11 +5049,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // JPA.g:236:4: empty_collection_comparison_expression
+                    // JPA.g:237:7: empty_collection_comparison_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_empty_collection_comparison_expression_in_simple_cond_expression1658);
+                    pushFollow(FOLLOW_empty_collection_comparison_expression_in_simple_cond_expression1906);
                     empty_collection_comparison_expression142=empty_collection_comparison_expression();
 
                     state._fsp--;
@@ -5080,11 +5063,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 7 :
-                    // JPA.g:237:4: collection_member_expression
+                    // JPA.g:238:7: collection_member_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_collection_member_expression_in_simple_cond_expression1663);
+                    pushFollow(FOLLOW_collection_member_expression_in_simple_cond_expression1914);
                     collection_member_expression143=collection_member_expression();
 
                     state._fsp--;
@@ -5094,11 +5077,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 8 :
-                    // JPA.g:238:4: exists_expression
+                    // JPA.g:239:7: exists_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_exists_expression_in_simple_cond_expression1668);
+                    pushFollow(FOLLOW_exists_expression_in_simple_cond_expression1922);
                     exists_expression144=exists_expression();
 
                     state._fsp--;
@@ -5108,11 +5091,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 9 :
-                    // JPA.g:239:4: date_macro_expression
+                    // JPA.g:240:7: date_macro_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_date_macro_expression_in_simple_cond_expression1673);
+                    pushFollow(FOLLOW_date_macro_expression_in_simple_cond_expression1930);
                     date_macro_expression145=date_macro_expression();
 
                     state._fsp--;
@@ -5149,7 +5132,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "date_macro_expression"
-    // JPA.g:241:1: date_macro_expression : ( date_between_macro_expression | date_before_macro_expression | date_after_macro_expression | date_equals_macro_expression | date_today_macro_expression );
+    // JPA.g:242:1: date_macro_expression : ( date_between_macro_expression | date_before_macro_expression | date_after_macro_expression | date_equals_macro_expression | date_today_macro_expression );
     public final JPAParser.date_macro_expression_return date_macro_expression() throws RecognitionException {
         JPAParser.date_macro_expression_return retval = new JPAParser.date_macro_expression_return();
         retval.start = input.LT(1);
@@ -5169,7 +5152,7 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:242:5: ( date_between_macro_expression | date_before_macro_expression | date_after_macro_expression | date_equals_macro_expression | date_today_macro_expression )
+            // JPA.g:243:5: ( date_between_macro_expression | date_before_macro_expression | date_after_macro_expression | date_equals_macro_expression | date_today_macro_expression )
             int alt50=5;
             switch ( input.LA(1) ) {
             case 63:
@@ -5207,11 +5190,11 @@ public class JPAParser extends Parser {
 
             switch (alt50) {
                 case 1 :
-                    // JPA.g:242:7: date_between_macro_expression
+                    // JPA.g:243:7: date_between_macro_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_date_between_macro_expression_in_date_macro_expression1685);
+                    pushFollow(FOLLOW_date_between_macro_expression_in_date_macro_expression1942);
                     date_between_macro_expression146=date_between_macro_expression();
 
                     state._fsp--;
@@ -5221,11 +5204,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:243:7: date_before_macro_expression
+                    // JPA.g:244:7: date_before_macro_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_date_before_macro_expression_in_date_macro_expression1693);
+                    pushFollow(FOLLOW_date_before_macro_expression_in_date_macro_expression1950);
                     date_before_macro_expression147=date_before_macro_expression();
 
                     state._fsp--;
@@ -5235,11 +5218,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // JPA.g:244:7: date_after_macro_expression
+                    // JPA.g:245:7: date_after_macro_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_date_after_macro_expression_in_date_macro_expression1701);
+                    pushFollow(FOLLOW_date_after_macro_expression_in_date_macro_expression1958);
                     date_after_macro_expression148=date_after_macro_expression();
 
                     state._fsp--;
@@ -5249,11 +5232,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // JPA.g:245:7: date_equals_macro_expression
+                    // JPA.g:246:7: date_equals_macro_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_date_equals_macro_expression_in_date_macro_expression1709);
+                    pushFollow(FOLLOW_date_equals_macro_expression_in_date_macro_expression1966);
                     date_equals_macro_expression149=date_equals_macro_expression();
 
                     state._fsp--;
@@ -5263,11 +5246,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // JPA.g:246:7: date_today_macro_expression
+                    // JPA.g:247:7: date_today_macro_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_date_today_macro_expression_in_date_macro_expression1717);
+                    pushFollow(FOLLOW_date_today_macro_expression_in_date_macro_expression1974);
                     date_today_macro_expression150=date_today_macro_expression();
 
                     state._fsp--;
@@ -5304,7 +5287,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "date_between_macro_expression"
-    // JPA.g:248:1: date_between_macro_expression : '@BETWEEN' '(' path_expression ',' 'NOW' ( ( '+' | '-' ) INT_NUMERAL )? ',' 'NOW' ( ( '+' | '-' ) INT_NUMERAL )? ',' ( 'YEAR' | 'MONTH' | 'DAY' | 'HOUR' | 'MINUTE' | 'SECOND' ) ')' ;
+    // JPA.g:249:1: date_between_macro_expression : '@BETWEEN' '(' path_expression ',' 'NOW' ( ( '+' | '-' ) INT_NUMERAL )? ',' 'NOW' ( ( '+' | '-' ) INT_NUMERAL )? ',' ( 'YEAR' | 'MONTH' | 'DAY' | 'HOUR' | 'MINUTE' | 'SECOND' ) ')' ;
     public final JPAParser.date_between_macro_expression_return date_between_macro_expression() throws RecognitionException {
         JPAParser.date_between_macro_expression_return retval = new JPAParser.date_between_macro_expression_return();
         retval.start = input.LT(1);
@@ -5342,38 +5325,38 @@ public class JPAParser extends Parser {
         Object char_literal164_tree=null;
 
         try {
-            // JPA.g:249:5: ( '@BETWEEN' '(' path_expression ',' 'NOW' ( ( '+' | '-' ) INT_NUMERAL )? ',' 'NOW' ( ( '+' | '-' ) INT_NUMERAL )? ',' ( 'YEAR' | 'MONTH' | 'DAY' | 'HOUR' | 'MINUTE' | 'SECOND' ) ')' )
-            // JPA.g:249:7: '@BETWEEN' '(' path_expression ',' 'NOW' ( ( '+' | '-' ) INT_NUMERAL )? ',' 'NOW' ( ( '+' | '-' ) INT_NUMERAL )? ',' ( 'YEAR' | 'MONTH' | 'DAY' | 'HOUR' | 'MINUTE' | 'SECOND' ) ')'
+            // JPA.g:250:5: ( '@BETWEEN' '(' path_expression ',' 'NOW' ( ( '+' | '-' ) INT_NUMERAL )? ',' 'NOW' ( ( '+' | '-' ) INT_NUMERAL )? ',' ( 'YEAR' | 'MONTH' | 'DAY' | 'HOUR' | 'MINUTE' | 'SECOND' ) ')' )
+            // JPA.g:250:7: '@BETWEEN' '(' path_expression ',' 'NOW' ( ( '+' | '-' ) INT_NUMERAL )? ',' 'NOW' ( ( '+' | '-' ) INT_NUMERAL )? ',' ( 'YEAR' | 'MONTH' | 'DAY' | 'HOUR' | 'MINUTE' | 'SECOND' ) ')'
             {
             root_0 = (Object)adaptor.nil();
 
-            string_literal151=(Token)match(input,63,FOLLOW_63_in_date_between_macro_expression1729); if (state.failed) return retval;
+            string_literal151=(Token)match(input,63,FOLLOW_63_in_date_between_macro_expression1986); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal151_tree = (Object)adaptor.create(string_literal151);
             adaptor.addChild(root_0, string_literal151_tree);
             }
-            char_literal152=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_date_between_macro_expression1731); if (state.failed) return retval;
+            char_literal152=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_date_between_macro_expression1988); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal152_tree = (Object)adaptor.create(char_literal152);
             adaptor.addChild(root_0, char_literal152_tree);
             }
-            pushFollow(FOLLOW_path_expression_in_date_between_macro_expression1733);
+            pushFollow(FOLLOW_path_expression_in_date_between_macro_expression1990);
             path_expression153=path_expression();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, path_expression153.getTree());
-            char_literal154=(Token)match(input,54,FOLLOW_54_in_date_between_macro_expression1735); if (state.failed) return retval;
+            char_literal154=(Token)match(input,54,FOLLOW_54_in_date_between_macro_expression1992); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal154_tree = (Object)adaptor.create(char_literal154);
             adaptor.addChild(root_0, char_literal154_tree);
             }
-            string_literal155=(Token)match(input,64,FOLLOW_64_in_date_between_macro_expression1737); if (state.failed) return retval;
+            string_literal155=(Token)match(input,64,FOLLOW_64_in_date_between_macro_expression1994); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal155_tree = (Object)adaptor.create(string_literal155);
             adaptor.addChild(root_0, string_literal155_tree);
             }
-            // JPA.g:249:48: ( ( '+' | '-' ) INT_NUMERAL )?
+            // JPA.g:250:48: ( ( '+' | '-' ) INT_NUMERAL )?
             int alt51=2;
             int LA51_0 = input.LA(1);
 
@@ -5382,7 +5365,7 @@ public class JPAParser extends Parser {
             }
             switch (alt51) {
                 case 1 :
-                    // JPA.g:249:49: ( '+' | '-' ) INT_NUMERAL
+                    // JPA.g:250:49: ( '+' | '-' ) INT_NUMERAL
                     {
                     set156=(Token)input.LT(1);
                     if ( (input.LA(1)>=65 && input.LA(1)<=66) ) {
@@ -5396,7 +5379,7 @@ public class JPAParser extends Parser {
                         throw mse;
                     }
 
-                    INT_NUMERAL157=(Token)match(input,INT_NUMERAL,FOLLOW_INT_NUMERAL_in_date_between_macro_expression1748); if (state.failed) return retval;
+                    INT_NUMERAL157=(Token)match(input,INT_NUMERAL,FOLLOW_INT_NUMERAL_in_date_between_macro_expression2005); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     INT_NUMERAL157_tree = (Object)adaptor.create(INT_NUMERAL157);
                     adaptor.addChild(root_0, INT_NUMERAL157_tree);
@@ -5407,17 +5390,17 @@ public class JPAParser extends Parser {
 
             }
 
-            char_literal158=(Token)match(input,54,FOLLOW_54_in_date_between_macro_expression1752); if (state.failed) return retval;
+            char_literal158=(Token)match(input,54,FOLLOW_54_in_date_between_macro_expression2009); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal158_tree = (Object)adaptor.create(char_literal158);
             adaptor.addChild(root_0, char_literal158_tree);
             }
-            string_literal159=(Token)match(input,64,FOLLOW_64_in_date_between_macro_expression1754); if (state.failed) return retval;
+            string_literal159=(Token)match(input,64,FOLLOW_64_in_date_between_macro_expression2011); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal159_tree = (Object)adaptor.create(string_literal159);
             adaptor.addChild(root_0, string_literal159_tree);
             }
-            // JPA.g:249:85: ( ( '+' | '-' ) INT_NUMERAL )?
+            // JPA.g:250:85: ( ( '+' | '-' ) INT_NUMERAL )?
             int alt52=2;
             int LA52_0 = input.LA(1);
 
@@ -5426,7 +5409,7 @@ public class JPAParser extends Parser {
             }
             switch (alt52) {
                 case 1 :
-                    // JPA.g:249:86: ( '+' | '-' ) INT_NUMERAL
+                    // JPA.g:250:86: ( '+' | '-' ) INT_NUMERAL
                     {
                     set160=(Token)input.LT(1);
                     if ( (input.LA(1)>=65 && input.LA(1)<=66) ) {
@@ -5440,7 +5423,7 @@ public class JPAParser extends Parser {
                         throw mse;
                     }
 
-                    INT_NUMERAL161=(Token)match(input,INT_NUMERAL,FOLLOW_INT_NUMERAL_in_date_between_macro_expression1765); if (state.failed) return retval;
+                    INT_NUMERAL161=(Token)match(input,INT_NUMERAL,FOLLOW_INT_NUMERAL_in_date_between_macro_expression2022); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     INT_NUMERAL161_tree = (Object)adaptor.create(INT_NUMERAL161);
                     adaptor.addChild(root_0, INT_NUMERAL161_tree);
@@ -5451,7 +5434,7 @@ public class JPAParser extends Parser {
 
             }
 
-            char_literal162=(Token)match(input,54,FOLLOW_54_in_date_between_macro_expression1769); if (state.failed) return retval;
+            char_literal162=(Token)match(input,54,FOLLOW_54_in_date_between_macro_expression2026); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal162_tree = (Object)adaptor.create(char_literal162);
             adaptor.addChild(root_0, char_literal162_tree);
@@ -5468,7 +5451,7 @@ public class JPAParser extends Parser {
                 throw mse;
             }
 
-            char_literal164=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_date_between_macro_expression1794); if (state.failed) return retval;
+            char_literal164=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_date_between_macro_expression2051); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal164_tree = (Object)adaptor.create(char_literal164);
             adaptor.addChild(root_0, char_literal164_tree);
@@ -5502,7 +5485,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "date_before_macro_expression"
-    // JPA.g:251:1: date_before_macro_expression : '@DATEBEFORE' '(' path_expression ',' ( path_expression | input_parameter ) ')' ;
+    // JPA.g:252:1: date_before_macro_expression : '@DATEBEFORE' '(' path_expression ',' ( path_expression | input_parameter ) ')' ;
     public final JPAParser.date_before_macro_expression_return date_before_macro_expression() throws RecognitionException {
         JPAParser.date_before_macro_expression_return retval = new JPAParser.date_before_macro_expression_return();
         retval.start = input.LT(1);
@@ -5526,40 +5509,40 @@ public class JPAParser extends Parser {
         Object char_literal171_tree=null;
 
         try {
-            // JPA.g:252:5: ( '@DATEBEFORE' '(' path_expression ',' ( path_expression | input_parameter ) ')' )
-            // JPA.g:252:7: '@DATEBEFORE' '(' path_expression ',' ( path_expression | input_parameter ) ')'
+            // JPA.g:253:5: ( '@DATEBEFORE' '(' path_expression ',' ( path_expression | input_parameter ) ')' )
+            // JPA.g:253:7: '@DATEBEFORE' '(' path_expression ',' ( path_expression | input_parameter ) ')'
             {
             root_0 = (Object)adaptor.nil();
 
-            string_literal165=(Token)match(input,73,FOLLOW_73_in_date_before_macro_expression1806); if (state.failed) return retval;
+            string_literal165=(Token)match(input,73,FOLLOW_73_in_date_before_macro_expression2063); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal165_tree = (Object)adaptor.create(string_literal165);
             adaptor.addChild(root_0, string_literal165_tree);
             }
-            char_literal166=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_date_before_macro_expression1808); if (state.failed) return retval;
+            char_literal166=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_date_before_macro_expression2065); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal166_tree = (Object)adaptor.create(char_literal166);
             adaptor.addChild(root_0, char_literal166_tree);
             }
-            pushFollow(FOLLOW_path_expression_in_date_before_macro_expression1810);
+            pushFollow(FOLLOW_path_expression_in_date_before_macro_expression2067);
             path_expression167=path_expression();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, path_expression167.getTree());
-            char_literal168=(Token)match(input,54,FOLLOW_54_in_date_before_macro_expression1812); if (state.failed) return retval;
+            char_literal168=(Token)match(input,54,FOLLOW_54_in_date_before_macro_expression2069); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal168_tree = (Object)adaptor.create(char_literal168);
             adaptor.addChild(root_0, char_literal168_tree);
             }
-            // JPA.g:252:45: ( path_expression | input_parameter )
+            // JPA.g:253:45: ( path_expression | input_parameter )
             int alt53=2;
             int LA53_0 = input.LA(1);
 
             if ( (LA53_0==WORD) ) {
                 alt53=1;
             }
-            else if ( (LA53_0==NAMED_PARAMETER||LA53_0==115) ) {
+            else if ( (LA53_0==NAMED_PARAMETER||(LA53_0>=115 && LA53_0<=116)) ) {
                 alt53=2;
             }
             else {
@@ -5571,9 +5554,9 @@ public class JPAParser extends Parser {
             }
             switch (alt53) {
                 case 1 :
-                    // JPA.g:252:46: path_expression
+                    // JPA.g:253:46: path_expression
                     {
-                    pushFollow(FOLLOW_path_expression_in_date_before_macro_expression1815);
+                    pushFollow(FOLLOW_path_expression_in_date_before_macro_expression2072);
                     path_expression169=path_expression();
 
                     state._fsp--;
@@ -5583,9 +5566,9 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:252:64: input_parameter
+                    // JPA.g:253:64: input_parameter
                     {
-                    pushFollow(FOLLOW_input_parameter_in_date_before_macro_expression1819);
+                    pushFollow(FOLLOW_input_parameter_in_date_before_macro_expression2076);
                     input_parameter170=input_parameter();
 
                     state._fsp--;
@@ -5597,7 +5580,7 @@ public class JPAParser extends Parser {
 
             }
 
-            char_literal171=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_date_before_macro_expression1822); if (state.failed) return retval;
+            char_literal171=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_date_before_macro_expression2079); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal171_tree = (Object)adaptor.create(char_literal171);
             adaptor.addChild(root_0, char_literal171_tree);
@@ -5631,7 +5614,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "date_after_macro_expression"
-    // JPA.g:254:1: date_after_macro_expression : '@DATEAFTER' '(' path_expression ',' ( path_expression | input_parameter ) ')' ;
+    // JPA.g:255:1: date_after_macro_expression : '@DATEAFTER' '(' path_expression ',' ( path_expression | input_parameter ) ')' ;
     public final JPAParser.date_after_macro_expression_return date_after_macro_expression() throws RecognitionException {
         JPAParser.date_after_macro_expression_return retval = new JPAParser.date_after_macro_expression_return();
         retval.start = input.LT(1);
@@ -5655,40 +5638,40 @@ public class JPAParser extends Parser {
         Object char_literal178_tree=null;
 
         try {
-            // JPA.g:255:5: ( '@DATEAFTER' '(' path_expression ',' ( path_expression | input_parameter ) ')' )
-            // JPA.g:255:7: '@DATEAFTER' '(' path_expression ',' ( path_expression | input_parameter ) ')'
+            // JPA.g:256:5: ( '@DATEAFTER' '(' path_expression ',' ( path_expression | input_parameter ) ')' )
+            // JPA.g:256:7: '@DATEAFTER' '(' path_expression ',' ( path_expression | input_parameter ) ')'
             {
             root_0 = (Object)adaptor.nil();
 
-            string_literal172=(Token)match(input,74,FOLLOW_74_in_date_after_macro_expression1834); if (state.failed) return retval;
+            string_literal172=(Token)match(input,74,FOLLOW_74_in_date_after_macro_expression2091); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal172_tree = (Object)adaptor.create(string_literal172);
             adaptor.addChild(root_0, string_literal172_tree);
             }
-            char_literal173=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_date_after_macro_expression1836); if (state.failed) return retval;
+            char_literal173=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_date_after_macro_expression2093); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal173_tree = (Object)adaptor.create(char_literal173);
             adaptor.addChild(root_0, char_literal173_tree);
             }
-            pushFollow(FOLLOW_path_expression_in_date_after_macro_expression1838);
+            pushFollow(FOLLOW_path_expression_in_date_after_macro_expression2095);
             path_expression174=path_expression();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, path_expression174.getTree());
-            char_literal175=(Token)match(input,54,FOLLOW_54_in_date_after_macro_expression1840); if (state.failed) return retval;
+            char_literal175=(Token)match(input,54,FOLLOW_54_in_date_after_macro_expression2097); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal175_tree = (Object)adaptor.create(char_literal175);
             adaptor.addChild(root_0, char_literal175_tree);
             }
-            // JPA.g:255:44: ( path_expression | input_parameter )
+            // JPA.g:256:44: ( path_expression | input_parameter )
             int alt54=2;
             int LA54_0 = input.LA(1);
 
             if ( (LA54_0==WORD) ) {
                 alt54=1;
             }
-            else if ( (LA54_0==NAMED_PARAMETER||LA54_0==115) ) {
+            else if ( (LA54_0==NAMED_PARAMETER||(LA54_0>=115 && LA54_0<=116)) ) {
                 alt54=2;
             }
             else {
@@ -5700,9 +5683,9 @@ public class JPAParser extends Parser {
             }
             switch (alt54) {
                 case 1 :
-                    // JPA.g:255:45: path_expression
+                    // JPA.g:256:45: path_expression
                     {
-                    pushFollow(FOLLOW_path_expression_in_date_after_macro_expression1843);
+                    pushFollow(FOLLOW_path_expression_in_date_after_macro_expression2100);
                     path_expression176=path_expression();
 
                     state._fsp--;
@@ -5712,9 +5695,9 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:255:63: input_parameter
+                    // JPA.g:256:63: input_parameter
                     {
-                    pushFollow(FOLLOW_input_parameter_in_date_after_macro_expression1847);
+                    pushFollow(FOLLOW_input_parameter_in_date_after_macro_expression2104);
                     input_parameter177=input_parameter();
 
                     state._fsp--;
@@ -5726,7 +5709,7 @@ public class JPAParser extends Parser {
 
             }
 
-            char_literal178=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_date_after_macro_expression1850); if (state.failed) return retval;
+            char_literal178=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_date_after_macro_expression2107); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal178_tree = (Object)adaptor.create(char_literal178);
             adaptor.addChild(root_0, char_literal178_tree);
@@ -5760,7 +5743,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "date_equals_macro_expression"
-    // JPA.g:257:1: date_equals_macro_expression : '@DATEEQUALS' '(' path_expression ',' ( path_expression | input_parameter ) ')' ;
+    // JPA.g:258:1: date_equals_macro_expression : '@DATEEQUALS' '(' path_expression ',' ( path_expression | input_parameter ) ')' ;
     public final JPAParser.date_equals_macro_expression_return date_equals_macro_expression() throws RecognitionException {
         JPAParser.date_equals_macro_expression_return retval = new JPAParser.date_equals_macro_expression_return();
         retval.start = input.LT(1);
@@ -5784,40 +5767,40 @@ public class JPAParser extends Parser {
         Object char_literal185_tree=null;
 
         try {
-            // JPA.g:258:5: ( '@DATEEQUALS' '(' path_expression ',' ( path_expression | input_parameter ) ')' )
-            // JPA.g:258:7: '@DATEEQUALS' '(' path_expression ',' ( path_expression | input_parameter ) ')'
+            // JPA.g:259:5: ( '@DATEEQUALS' '(' path_expression ',' ( path_expression | input_parameter ) ')' )
+            // JPA.g:259:7: '@DATEEQUALS' '(' path_expression ',' ( path_expression | input_parameter ) ')'
             {
             root_0 = (Object)adaptor.nil();
 
-            string_literal179=(Token)match(input,75,FOLLOW_75_in_date_equals_macro_expression1862); if (state.failed) return retval;
+            string_literal179=(Token)match(input,75,FOLLOW_75_in_date_equals_macro_expression2119); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal179_tree = (Object)adaptor.create(string_literal179);
             adaptor.addChild(root_0, string_literal179_tree);
             }
-            char_literal180=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_date_equals_macro_expression1864); if (state.failed) return retval;
+            char_literal180=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_date_equals_macro_expression2121); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal180_tree = (Object)adaptor.create(char_literal180);
             adaptor.addChild(root_0, char_literal180_tree);
             }
-            pushFollow(FOLLOW_path_expression_in_date_equals_macro_expression1866);
+            pushFollow(FOLLOW_path_expression_in_date_equals_macro_expression2123);
             path_expression181=path_expression();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, path_expression181.getTree());
-            char_literal182=(Token)match(input,54,FOLLOW_54_in_date_equals_macro_expression1868); if (state.failed) return retval;
+            char_literal182=(Token)match(input,54,FOLLOW_54_in_date_equals_macro_expression2125); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal182_tree = (Object)adaptor.create(char_literal182);
             adaptor.addChild(root_0, char_literal182_tree);
             }
-            // JPA.g:258:45: ( path_expression | input_parameter )
+            // JPA.g:259:45: ( path_expression | input_parameter )
             int alt55=2;
             int LA55_0 = input.LA(1);
 
             if ( (LA55_0==WORD) ) {
                 alt55=1;
             }
-            else if ( (LA55_0==NAMED_PARAMETER||LA55_0==115) ) {
+            else if ( (LA55_0==NAMED_PARAMETER||(LA55_0>=115 && LA55_0<=116)) ) {
                 alt55=2;
             }
             else {
@@ -5829,9 +5812,9 @@ public class JPAParser extends Parser {
             }
             switch (alt55) {
                 case 1 :
-                    // JPA.g:258:46: path_expression
+                    // JPA.g:259:46: path_expression
                     {
-                    pushFollow(FOLLOW_path_expression_in_date_equals_macro_expression1871);
+                    pushFollow(FOLLOW_path_expression_in_date_equals_macro_expression2128);
                     path_expression183=path_expression();
 
                     state._fsp--;
@@ -5841,9 +5824,9 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:258:64: input_parameter
+                    // JPA.g:259:64: input_parameter
                     {
-                    pushFollow(FOLLOW_input_parameter_in_date_equals_macro_expression1875);
+                    pushFollow(FOLLOW_input_parameter_in_date_equals_macro_expression2132);
                     input_parameter184=input_parameter();
 
                     state._fsp--;
@@ -5855,7 +5838,7 @@ public class JPAParser extends Parser {
 
             }
 
-            char_literal185=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_date_equals_macro_expression1878); if (state.failed) return retval;
+            char_literal185=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_date_equals_macro_expression2135); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal185_tree = (Object)adaptor.create(char_literal185);
             adaptor.addChild(root_0, char_literal185_tree);
@@ -5889,7 +5872,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "date_today_macro_expression"
-    // JPA.g:260:1: date_today_macro_expression : '@TODAY' '(' path_expression ')' ;
+    // JPA.g:261:1: date_today_macro_expression : '@TODAY' '(' path_expression ')' ;
     public final JPAParser.date_today_macro_expression_return date_today_macro_expression() throws RecognitionException {
         JPAParser.date_today_macro_expression_return retval = new JPAParser.date_today_macro_expression_return();
         retval.start = input.LT(1);
@@ -5907,28 +5890,28 @@ public class JPAParser extends Parser {
         Object char_literal189_tree=null;
 
         try {
-            // JPA.g:261:5: ( '@TODAY' '(' path_expression ')' )
-            // JPA.g:261:7: '@TODAY' '(' path_expression ')'
+            // JPA.g:262:5: ( '@TODAY' '(' path_expression ')' )
+            // JPA.g:262:7: '@TODAY' '(' path_expression ')'
             {
             root_0 = (Object)adaptor.nil();
 
-            string_literal186=(Token)match(input,76,FOLLOW_76_in_date_today_macro_expression1890); if (state.failed) return retval;
+            string_literal186=(Token)match(input,76,FOLLOW_76_in_date_today_macro_expression2147); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal186_tree = (Object)adaptor.create(string_literal186);
             adaptor.addChild(root_0, string_literal186_tree);
             }
-            char_literal187=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_date_today_macro_expression1892); if (state.failed) return retval;
+            char_literal187=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_date_today_macro_expression2149); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal187_tree = (Object)adaptor.create(char_literal187);
             adaptor.addChild(root_0, char_literal187_tree);
             }
-            pushFollow(FOLLOW_path_expression_in_date_today_macro_expression1894);
+            pushFollow(FOLLOW_path_expression_in_date_today_macro_expression2151);
             path_expression188=path_expression();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, path_expression188.getTree());
-            char_literal189=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_date_today_macro_expression1896); if (state.failed) return retval;
+            char_literal189=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_date_today_macro_expression2153); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             char_literal189_tree = (Object)adaptor.create(char_literal189);
             adaptor.addChild(root_0, char_literal189_tree);
@@ -5962,7 +5945,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "between_expression"
-    // JPA.g:263:1: between_expression : ( arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression | string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression | datetime_expression ( 'NOT' )? 'BETWEEN' datetime_expression 'AND' datetime_expression );
+    // JPA.g:264:1: between_expression : ( arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression | string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression | datetime_expression ( 'NOT' )? 'BETWEEN' datetime_expression 'AND' datetime_expression );
     public final JPAParser.between_expression_return between_expression() throws RecognitionException {
         JPAParser.between_expression_return retval = new JPAParser.between_expression_return();
         retval.start = input.LT(1);
@@ -6008,22 +5991,22 @@ public class JPAParser extends Parser {
         Object string_literal206_tree=null;
 
         try {
-            // JPA.g:264:2: ( arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression | string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression | datetime_expression ( 'NOT' )? 'BETWEEN' datetime_expression 'AND' datetime_expression )
+            // JPA.g:265:5: ( arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression | string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression | datetime_expression ( 'NOT' )? 'BETWEEN' datetime_expression 'AND' datetime_expression )
             int alt59=3;
             alt59 = dfa59.predict(input);
             switch (alt59) {
                 case 1 :
-                    // JPA.g:264:4: arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression
+                    // JPA.g:265:7: arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_arithmetic_expression_in_between_expression1905);
+                    pushFollow(FOLLOW_arithmetic_expression_in_between_expression2165);
                     arithmetic_expression190=arithmetic_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, arithmetic_expression190.getTree());
-                    // JPA.g:264:26: ( 'NOT' )?
+                    // JPA.g:265:29: ( 'NOT' )?
                     int alt56=2;
                     int LA56_0 = input.LA(1);
 
@@ -6032,9 +6015,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt56) {
                         case 1 :
-                            // JPA.g:264:27: 'NOT'
+                            // JPA.g:265:30: 'NOT'
                             {
-                            string_literal191=(Token)match(input,62,FOLLOW_62_in_between_expression1908); if (state.failed) return retval;
+                            string_literal191=(Token)match(input,62,FOLLOW_62_in_between_expression2168); if (state.failed) return retval;
                             if ( state.backtracking==0 ) {
                             string_literal191_tree = (Object)adaptor.create(string_literal191);
                             adaptor.addChild(root_0, string_literal191_tree);
@@ -6045,23 +6028,23 @@ public class JPAParser extends Parser {
 
                     }
 
-                    string_literal192=(Token)match(input,77,FOLLOW_77_in_between_expression1912); if (state.failed) return retval;
+                    string_literal192=(Token)match(input,77,FOLLOW_77_in_between_expression2172); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal192_tree = (Object)adaptor.create(string_literal192);
                     adaptor.addChild(root_0, string_literal192_tree);
                     }
-                    pushFollow(FOLLOW_arithmetic_expression_in_between_expression1914);
+                    pushFollow(FOLLOW_arithmetic_expression_in_between_expression2174);
                     arithmetic_expression193=arithmetic_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, arithmetic_expression193.getTree());
-                    string_literal194=(Token)match(input,AND,FOLLOW_AND_in_between_expression1916); if (state.failed) return retval;
+                    string_literal194=(Token)match(input,AND,FOLLOW_AND_in_between_expression2176); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal194_tree = (Object)adaptor.create(string_literal194);
                     adaptor.addChild(root_0, string_literal194_tree);
                     }
-                    pushFollow(FOLLOW_arithmetic_expression_in_between_expression1918);
+                    pushFollow(FOLLOW_arithmetic_expression_in_between_expression2178);
                     arithmetic_expression195=arithmetic_expression();
 
                     state._fsp--;
@@ -6071,17 +6054,17 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:265:4: string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression
+                    // JPA.g:266:7: string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_string_expression_in_between_expression1923);
+                    pushFollow(FOLLOW_string_expression_in_between_expression2186);
                     string_expression196=string_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, string_expression196.getTree());
-                    // JPA.g:265:22: ( 'NOT' )?
+                    // JPA.g:266:25: ( 'NOT' )?
                     int alt57=2;
                     int LA57_0 = input.LA(1);
 
@@ -6090,9 +6073,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt57) {
                         case 1 :
-                            // JPA.g:265:23: 'NOT'
+                            // JPA.g:266:26: 'NOT'
                             {
-                            string_literal197=(Token)match(input,62,FOLLOW_62_in_between_expression1926); if (state.failed) return retval;
+                            string_literal197=(Token)match(input,62,FOLLOW_62_in_between_expression2189); if (state.failed) return retval;
                             if ( state.backtracking==0 ) {
                             string_literal197_tree = (Object)adaptor.create(string_literal197);
                             adaptor.addChild(root_0, string_literal197_tree);
@@ -6103,23 +6086,23 @@ public class JPAParser extends Parser {
 
                     }
 
-                    string_literal198=(Token)match(input,77,FOLLOW_77_in_between_expression1930); if (state.failed) return retval;
+                    string_literal198=(Token)match(input,77,FOLLOW_77_in_between_expression2193); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal198_tree = (Object)adaptor.create(string_literal198);
                     adaptor.addChild(root_0, string_literal198_tree);
                     }
-                    pushFollow(FOLLOW_string_expression_in_between_expression1932);
+                    pushFollow(FOLLOW_string_expression_in_between_expression2195);
                     string_expression199=string_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, string_expression199.getTree());
-                    string_literal200=(Token)match(input,AND,FOLLOW_AND_in_between_expression1934); if (state.failed) return retval;
+                    string_literal200=(Token)match(input,AND,FOLLOW_AND_in_between_expression2197); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal200_tree = (Object)adaptor.create(string_literal200);
                     adaptor.addChild(root_0, string_literal200_tree);
                     }
-                    pushFollow(FOLLOW_string_expression_in_between_expression1936);
+                    pushFollow(FOLLOW_string_expression_in_between_expression2199);
                     string_expression201=string_expression();
 
                     state._fsp--;
@@ -6129,17 +6112,17 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // JPA.g:266:4: datetime_expression ( 'NOT' )? 'BETWEEN' datetime_expression 'AND' datetime_expression
+                    // JPA.g:267:7: datetime_expression ( 'NOT' )? 'BETWEEN' datetime_expression 'AND' datetime_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_datetime_expression_in_between_expression1941);
+                    pushFollow(FOLLOW_datetime_expression_in_between_expression2207);
                     datetime_expression202=datetime_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, datetime_expression202.getTree());
-                    // JPA.g:266:24: ( 'NOT' )?
+                    // JPA.g:267:27: ( 'NOT' )?
                     int alt58=2;
                     int LA58_0 = input.LA(1);
 
@@ -6148,9 +6131,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt58) {
                         case 1 :
-                            // JPA.g:266:25: 'NOT'
+                            // JPA.g:267:28: 'NOT'
                             {
-                            string_literal203=(Token)match(input,62,FOLLOW_62_in_between_expression1944); if (state.failed) return retval;
+                            string_literal203=(Token)match(input,62,FOLLOW_62_in_between_expression2210); if (state.failed) return retval;
                             if ( state.backtracking==0 ) {
                             string_literal203_tree = (Object)adaptor.create(string_literal203);
                             adaptor.addChild(root_0, string_literal203_tree);
@@ -6161,23 +6144,23 @@ public class JPAParser extends Parser {
 
                     }
 
-                    string_literal204=(Token)match(input,77,FOLLOW_77_in_between_expression1948); if (state.failed) return retval;
+                    string_literal204=(Token)match(input,77,FOLLOW_77_in_between_expression2214); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal204_tree = (Object)adaptor.create(string_literal204);
                     adaptor.addChild(root_0, string_literal204_tree);
                     }
-                    pushFollow(FOLLOW_datetime_expression_in_between_expression1950);
+                    pushFollow(FOLLOW_datetime_expression_in_between_expression2216);
                     datetime_expression205=datetime_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, datetime_expression205.getTree());
-                    string_literal206=(Token)match(input,AND,FOLLOW_AND_in_between_expression1952); if (state.failed) return retval;
+                    string_literal206=(Token)match(input,AND,FOLLOW_AND_in_between_expression2218); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal206_tree = (Object)adaptor.create(string_literal206);
                     adaptor.addChild(root_0, string_literal206_tree);
                     }
-                    pushFollow(FOLLOW_datetime_expression_in_between_expression1954);
+                    pushFollow(FOLLOW_datetime_expression_in_between_expression2220);
                     datetime_expression207=datetime_expression();
 
                     state._fsp--;
@@ -6214,7 +6197,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "in_expression"
-    // JPA.g:268:1: in_expression : path_expression ( 'NOT' )? 'IN' in_expression_right_part ;
+    // JPA.g:269:1: in_expression : path_expression ( 'NOT' )? 'IN' in_expression_right_part ;
     public final JPAParser.in_expression_return in_expression() throws RecognitionException {
         JPAParser.in_expression_return retval = new JPAParser.in_expression_return();
         retval.start = input.LT(1);
@@ -6232,18 +6215,18 @@ public class JPAParser extends Parser {
         Object string_literal210_tree=null;
 
         try {
-            // JPA.g:269:2: ( path_expression ( 'NOT' )? 'IN' in_expression_right_part )
-            // JPA.g:269:4: path_expression ( 'NOT' )? 'IN' in_expression_right_part
+            // JPA.g:270:5: ( path_expression ( 'NOT' )? 'IN' in_expression_right_part )
+            // JPA.g:270:7: path_expression ( 'NOT' )? 'IN' in_expression_right_part
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_path_expression_in_in_expression1963);
+            pushFollow(FOLLOW_path_expression_in_in_expression2232);
             path_expression208=path_expression();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, path_expression208.getTree());
-            // JPA.g:269:20: ( 'NOT' )?
+            // JPA.g:270:23: ( 'NOT' )?
             int alt60=2;
             int LA60_0 = input.LA(1);
 
@@ -6252,9 +6235,9 @@ public class JPAParser extends Parser {
             }
             switch (alt60) {
                 case 1 :
-                    // JPA.g:269:21: 'NOT'
+                    // JPA.g:270:24: 'NOT'
                     {
-                    string_literal209=(Token)match(input,62,FOLLOW_62_in_in_expression1966); if (state.failed) return retval;
+                    string_literal209=(Token)match(input,62,FOLLOW_62_in_in_expression2235); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal209_tree = (Object)adaptor.create(string_literal209);
                     adaptor.addChild(root_0, string_literal209_tree);
@@ -6265,12 +6248,12 @@ public class JPAParser extends Parser {
 
             }
 
-            string_literal210=(Token)match(input,58,FOLLOW_58_in_in_expression1970); if (state.failed) return retval;
+            string_literal210=(Token)match(input,58,FOLLOW_58_in_in_expression2239); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal210_tree = (Object)adaptor.create(string_literal210);
             adaptor.addChild(root_0, string_literal210_tree);
             }
-            pushFollow(FOLLOW_in_expression_right_part_in_in_expression1972);
+            pushFollow(FOLLOW_in_expression_right_part_in_in_expression2241);
             in_expression_right_part211=in_expression_right_part();
 
             state._fsp--;
@@ -6305,7 +6288,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "in_expression_right_part"
-    // JPA.g:271:1: in_expression_right_part : ( '(' in_item ( ',' in_item )* ')' | subquery );
+    // JPA.g:272:1: in_expression_right_part : ( '(' in_item ( ',' in_item )* ')' | subquery );
     public final JPAParser.in_expression_right_part_return in_expression_right_part() throws RecognitionException {
         JPAParser.in_expression_right_part_return retval = new JPAParser.in_expression_right_part_return();
         retval.start = input.LT(1);
@@ -6327,7 +6310,7 @@ public class JPAParser extends Parser {
         Object char_literal216_tree=null;
 
         try {
-            // JPA.g:272:2: ( '(' in_item ( ',' in_item )* ')' | subquery )
+            // JPA.g:273:5: ( '(' in_item ( ',' in_item )* ')' | subquery )
             int alt62=2;
             int LA62_0 = input.LA(1);
 
@@ -6346,22 +6329,22 @@ public class JPAParser extends Parser {
             }
             switch (alt62) {
                 case 1 :
-                    // JPA.g:272:4: '(' in_item ( ',' in_item )* ')'
+                    // JPA.g:273:7: '(' in_item ( ',' in_item )* ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    char_literal212=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_in_expression_right_part1981); if (state.failed) return retval;
+                    char_literal212=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_in_expression_right_part2253); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal212_tree = (Object)adaptor.create(char_literal212);
                     adaptor.addChild(root_0, char_literal212_tree);
                     }
-                    pushFollow(FOLLOW_in_item_in_in_expression_right_part1983);
+                    pushFollow(FOLLOW_in_item_in_in_expression_right_part2255);
                     in_item213=in_item();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, in_item213.getTree());
-                    // JPA.g:272:16: ( ',' in_item )*
+                    // JPA.g:273:19: ( ',' in_item )*
                     loop61:
                     do {
                         int alt61=2;
@@ -6374,14 +6357,14 @@ public class JPAParser extends Parser {
 
                         switch (alt61) {
                     	case 1 :
-                    	    // JPA.g:272:17: ',' in_item
+                    	    // JPA.g:273:20: ',' in_item
                     	    {
-                    	    char_literal214=(Token)match(input,54,FOLLOW_54_in_in_expression_right_part1986); if (state.failed) return retval;
+                    	    char_literal214=(Token)match(input,54,FOLLOW_54_in_in_expression_right_part2258); if (state.failed) return retval;
                     	    if ( state.backtracking==0 ) {
                     	    char_literal214_tree = (Object)adaptor.create(char_literal214);
                     	    adaptor.addChild(root_0, char_literal214_tree);
                     	    }
-                    	    pushFollow(FOLLOW_in_item_in_in_expression_right_part1988);
+                    	    pushFollow(FOLLOW_in_item_in_in_expression_right_part2260);
                     	    in_item215=in_item();
 
                     	    state._fsp--;
@@ -6396,7 +6379,7 @@ public class JPAParser extends Parser {
                         }
                     } while (true);
 
-                    char_literal216=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_in_expression_right_part1992); if (state.failed) return retval;
+                    char_literal216=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_in_expression_right_part2264); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal216_tree = (Object)adaptor.create(char_literal216);
                     adaptor.addChild(root_0, char_literal216_tree);
@@ -6405,11 +6388,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:273:4: subquery
+                    // JPA.g:274:7: subquery
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_subquery_in_in_expression_right_part1997);
+                    pushFollow(FOLLOW_subquery_in_in_expression_right_part2272);
                     subquery217=subquery();
 
                     state._fsp--;
@@ -6446,7 +6429,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "in_item"
-    // JPA.g:275:1: in_item : ( literal | input_parameter );
+    // JPA.g:276:1: in_item : ( literal | input_parameter );
     public final JPAParser.in_item_return in_item() throws RecognitionException {
         JPAParser.in_item_return retval = new JPAParser.in_item_return();
         retval.start = input.LT(1);
@@ -6460,14 +6443,14 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:276:2: ( literal | input_parameter )
+            // JPA.g:277:5: ( literal | input_parameter )
             int alt63=2;
             int LA63_0 = input.LA(1);
 
             if ( (LA63_0==WORD) ) {
                 alt63=1;
             }
-            else if ( (LA63_0==NAMED_PARAMETER||LA63_0==115) ) {
+            else if ( (LA63_0==NAMED_PARAMETER||(LA63_0>=115 && LA63_0<=116)) ) {
                 alt63=2;
             }
             else {
@@ -6479,11 +6462,11 @@ public class JPAParser extends Parser {
             }
             switch (alt63) {
                 case 1 :
-                    // JPA.g:276:4: literal
+                    // JPA.g:277:7: literal
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_literal_in_in_item2006);
+                    pushFollow(FOLLOW_literal_in_in_item2284);
                     literal218=literal();
 
                     state._fsp--;
@@ -6493,11 +6476,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:277:4: input_parameter
+                    // JPA.g:278:7: input_parameter
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_input_parameter_in_in_item2011);
+                    pushFollow(FOLLOW_input_parameter_in_in_item2292);
                     input_parameter219=input_parameter();
 
                     state._fsp--;
@@ -6534,7 +6517,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "like_expression"
-    // JPA.g:279:1: like_expression : string_expression ( 'NOT' )? 'LIKE' ( pattern_value | input_parameter ) ( 'ESCAPE' ESCAPE_CHARACTER )? ;
+    // JPA.g:280:1: like_expression : string_expression ( 'NOT' )? 'LIKE' ( pattern_value | input_parameter ) ( 'ESCAPE' ESCAPE_CHARACTER )? ;
     public final JPAParser.like_expression_return like_expression() throws RecognitionException {
         JPAParser.like_expression_return retval = new JPAParser.like_expression_return();
         retval.start = input.LT(1);
@@ -6558,18 +6541,18 @@ public class JPAParser extends Parser {
         Object ESCAPE_CHARACTER226_tree=null;
 
         try {
-            // JPA.g:280:2: ( string_expression ( 'NOT' )? 'LIKE' ( pattern_value | input_parameter ) ( 'ESCAPE' ESCAPE_CHARACTER )? )
-            // JPA.g:280:4: string_expression ( 'NOT' )? 'LIKE' ( pattern_value | input_parameter ) ( 'ESCAPE' ESCAPE_CHARACTER )?
+            // JPA.g:281:5: ( string_expression ( 'NOT' )? 'LIKE' ( pattern_value | input_parameter ) ( 'ESCAPE' ESCAPE_CHARACTER )? )
+            // JPA.g:281:7: string_expression ( 'NOT' )? 'LIKE' ( pattern_value | input_parameter ) ( 'ESCAPE' ESCAPE_CHARACTER )?
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_string_expression_in_like_expression2020);
+            pushFollow(FOLLOW_string_expression_in_like_expression2304);
             string_expression220=string_expression();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, string_expression220.getTree());
-            // JPA.g:280:22: ( 'NOT' )?
+            // JPA.g:281:25: ( 'NOT' )?
             int alt64=2;
             int LA64_0 = input.LA(1);
 
@@ -6578,9 +6561,9 @@ public class JPAParser extends Parser {
             }
             switch (alt64) {
                 case 1 :
-                    // JPA.g:280:23: 'NOT'
+                    // JPA.g:281:26: 'NOT'
                     {
-                    string_literal221=(Token)match(input,62,FOLLOW_62_in_like_expression2023); if (state.failed) return retval;
+                    string_literal221=(Token)match(input,62,FOLLOW_62_in_like_expression2307); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal221_tree = (Object)adaptor.create(string_literal221);
                     adaptor.addChild(root_0, string_literal221_tree);
@@ -6591,19 +6574,19 @@ public class JPAParser extends Parser {
 
             }
 
-            string_literal222=(Token)match(input,78,FOLLOW_78_in_like_expression2027); if (state.failed) return retval;
+            string_literal222=(Token)match(input,78,FOLLOW_78_in_like_expression2311); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal222_tree = (Object)adaptor.create(string_literal222);
             adaptor.addChild(root_0, string_literal222_tree);
             }
-            // JPA.g:280:38: ( pattern_value | input_parameter )
+            // JPA.g:281:41: ( pattern_value | input_parameter )
             int alt65=2;
             int LA65_0 = input.LA(1);
 
             if ( (LA65_0==WORD) ) {
                 alt65=1;
             }
-            else if ( (LA65_0==NAMED_PARAMETER||LA65_0==115) ) {
+            else if ( (LA65_0==NAMED_PARAMETER||(LA65_0>=115 && LA65_0<=116)) ) {
                 alt65=2;
             }
             else {
@@ -6615,9 +6598,9 @@ public class JPAParser extends Parser {
             }
             switch (alt65) {
                 case 1 :
-                    // JPA.g:280:39: pattern_value
+                    // JPA.g:281:42: pattern_value
                     {
-                    pushFollow(FOLLOW_pattern_value_in_like_expression2030);
+                    pushFollow(FOLLOW_pattern_value_in_like_expression2314);
                     pattern_value223=pattern_value();
 
                     state._fsp--;
@@ -6627,9 +6610,9 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:280:55: input_parameter
+                    // JPA.g:281:58: input_parameter
                     {
-                    pushFollow(FOLLOW_input_parameter_in_like_expression2034);
+                    pushFollow(FOLLOW_input_parameter_in_like_expression2318);
                     input_parameter224=input_parameter();
 
                     state._fsp--;
@@ -6641,7 +6624,7 @@ public class JPAParser extends Parser {
 
             }
 
-            // JPA.g:280:71: ( 'ESCAPE' ESCAPE_CHARACTER )?
+            // JPA.g:281:74: ( 'ESCAPE' ESCAPE_CHARACTER )?
             int alt66=2;
             int LA66_0 = input.LA(1);
 
@@ -6650,14 +6633,14 @@ public class JPAParser extends Parser {
             }
             switch (alt66) {
                 case 1 :
-                    // JPA.g:280:72: 'ESCAPE' ESCAPE_CHARACTER
+                    // JPA.g:281:75: 'ESCAPE' ESCAPE_CHARACTER
                     {
-                    string_literal225=(Token)match(input,79,FOLLOW_79_in_like_expression2037); if (state.failed) return retval;
+                    string_literal225=(Token)match(input,79,FOLLOW_79_in_like_expression2321); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal225_tree = (Object)adaptor.create(string_literal225);
                     adaptor.addChild(root_0, string_literal225_tree);
                     }
-                    ESCAPE_CHARACTER226=(Token)match(input,ESCAPE_CHARACTER,FOLLOW_ESCAPE_CHARACTER_in_like_expression2039); if (state.failed) return retval;
+                    ESCAPE_CHARACTER226=(Token)match(input,ESCAPE_CHARACTER,FOLLOW_ESCAPE_CHARACTER_in_like_expression2323); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     ESCAPE_CHARACTER226_tree = (Object)adaptor.create(ESCAPE_CHARACTER226);
                     adaptor.addChild(root_0, ESCAPE_CHARACTER226_tree);
@@ -6697,7 +6680,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "null_comparison_expression"
-    // JPA.g:282:1: null_comparison_expression : ( path_expression | input_parameter ) 'IS' ( 'NOT' )? 'NULL' ;
+    // JPA.g:283:1: null_comparison_expression : ( path_expression | input_parameter ) 'IS' ( 'NOT' )? 'NULL' ;
     public final JPAParser.null_comparison_expression_return null_comparison_expression() throws RecognitionException {
         JPAParser.null_comparison_expression_return retval = new JPAParser.null_comparison_expression_return();
         retval.start = input.LT(1);
@@ -6717,19 +6700,19 @@ public class JPAParser extends Parser {
         Object string_literal231_tree=null;
 
         try {
-            // JPA.g:283:2: ( ( path_expression | input_parameter ) 'IS' ( 'NOT' )? 'NULL' )
-            // JPA.g:283:4: ( path_expression | input_parameter ) 'IS' ( 'NOT' )? 'NULL'
+            // JPA.g:284:5: ( ( path_expression | input_parameter ) 'IS' ( 'NOT' )? 'NULL' )
+            // JPA.g:284:7: ( path_expression | input_parameter ) 'IS' ( 'NOT' )? 'NULL'
             {
             root_0 = (Object)adaptor.nil();
 
-            // JPA.g:283:4: ( path_expression | input_parameter )
+            // JPA.g:284:7: ( path_expression | input_parameter )
             int alt67=2;
             int LA67_0 = input.LA(1);
 
             if ( (LA67_0==WORD) ) {
                 alt67=1;
             }
-            else if ( (LA67_0==NAMED_PARAMETER||LA67_0==115) ) {
+            else if ( (LA67_0==NAMED_PARAMETER||(LA67_0>=115 && LA67_0<=116)) ) {
                 alt67=2;
             }
             else {
@@ -6741,9 +6724,9 @@ public class JPAParser extends Parser {
             }
             switch (alt67) {
                 case 1 :
-                    // JPA.g:283:5: path_expression
+                    // JPA.g:284:8: path_expression
                     {
-                    pushFollow(FOLLOW_path_expression_in_null_comparison_expression2051);
+                    pushFollow(FOLLOW_path_expression_in_null_comparison_expression2338);
                     path_expression227=path_expression();
 
                     state._fsp--;
@@ -6753,9 +6736,9 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:283:23: input_parameter
+                    // JPA.g:284:26: input_parameter
                     {
-                    pushFollow(FOLLOW_input_parameter_in_null_comparison_expression2055);
+                    pushFollow(FOLLOW_input_parameter_in_null_comparison_expression2342);
                     input_parameter228=input_parameter();
 
                     state._fsp--;
@@ -6767,12 +6750,12 @@ public class JPAParser extends Parser {
 
             }
 
-            string_literal229=(Token)match(input,80,FOLLOW_80_in_null_comparison_expression2058); if (state.failed) return retval;
+            string_literal229=(Token)match(input,80,FOLLOW_80_in_null_comparison_expression2345); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal229_tree = (Object)adaptor.create(string_literal229);
             adaptor.addChild(root_0, string_literal229_tree);
             }
-            // JPA.g:283:45: ( 'NOT' )?
+            // JPA.g:284:48: ( 'NOT' )?
             int alt68=2;
             int LA68_0 = input.LA(1);
 
@@ -6781,9 +6764,9 @@ public class JPAParser extends Parser {
             }
             switch (alt68) {
                 case 1 :
-                    // JPA.g:283:46: 'NOT'
+                    // JPA.g:284:49: 'NOT'
                     {
-                    string_literal230=(Token)match(input,62,FOLLOW_62_in_null_comparison_expression2061); if (state.failed) return retval;
+                    string_literal230=(Token)match(input,62,FOLLOW_62_in_null_comparison_expression2348); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal230_tree = (Object)adaptor.create(string_literal230);
                     adaptor.addChild(root_0, string_literal230_tree);
@@ -6794,7 +6777,7 @@ public class JPAParser extends Parser {
 
             }
 
-            string_literal231=(Token)match(input,81,FOLLOW_81_in_null_comparison_expression2065); if (state.failed) return retval;
+            string_literal231=(Token)match(input,81,FOLLOW_81_in_null_comparison_expression2352); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal231_tree = (Object)adaptor.create(string_literal231);
             adaptor.addChild(root_0, string_literal231_tree);
@@ -6828,7 +6811,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "empty_collection_comparison_expression"
-    // JPA.g:285:1: empty_collection_comparison_expression : path_expression 'IS' ( 'NOT' )? 'EMPTY' ;
+    // JPA.g:286:1: empty_collection_comparison_expression : path_expression 'IS' ( 'NOT' )? 'EMPTY' ;
     public final JPAParser.empty_collection_comparison_expression_return empty_collection_comparison_expression() throws RecognitionException {
         JPAParser.empty_collection_comparison_expression_return retval = new JPAParser.empty_collection_comparison_expression_return();
         retval.start = input.LT(1);
@@ -6846,23 +6829,23 @@ public class JPAParser extends Parser {
         Object string_literal235_tree=null;
 
         try {
-            // JPA.g:286:2: ( path_expression 'IS' ( 'NOT' )? 'EMPTY' )
-            // JPA.g:286:4: path_expression 'IS' ( 'NOT' )? 'EMPTY'
+            // JPA.g:287:5: ( path_expression 'IS' ( 'NOT' )? 'EMPTY' )
+            // JPA.g:287:7: path_expression 'IS' ( 'NOT' )? 'EMPTY'
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_path_expression_in_empty_collection_comparison_expression2074);
+            pushFollow(FOLLOW_path_expression_in_empty_collection_comparison_expression2364);
             path_expression232=path_expression();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, path_expression232.getTree());
-            string_literal233=(Token)match(input,80,FOLLOW_80_in_empty_collection_comparison_expression2076); if (state.failed) return retval;
+            string_literal233=(Token)match(input,80,FOLLOW_80_in_empty_collection_comparison_expression2366); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal233_tree = (Object)adaptor.create(string_literal233);
             adaptor.addChild(root_0, string_literal233_tree);
             }
-            // JPA.g:286:25: ( 'NOT' )?
+            // JPA.g:287:28: ( 'NOT' )?
             int alt69=2;
             int LA69_0 = input.LA(1);
 
@@ -6871,9 +6854,9 @@ public class JPAParser extends Parser {
             }
             switch (alt69) {
                 case 1 :
-                    // JPA.g:286:26: 'NOT'
+                    // JPA.g:287:29: 'NOT'
                     {
-                    string_literal234=(Token)match(input,62,FOLLOW_62_in_empty_collection_comparison_expression2079); if (state.failed) return retval;
+                    string_literal234=(Token)match(input,62,FOLLOW_62_in_empty_collection_comparison_expression2369); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal234_tree = (Object)adaptor.create(string_literal234);
                     adaptor.addChild(root_0, string_literal234_tree);
@@ -6884,7 +6867,7 @@ public class JPAParser extends Parser {
 
             }
 
-            string_literal235=(Token)match(input,82,FOLLOW_82_in_empty_collection_comparison_expression2083); if (state.failed) return retval;
+            string_literal235=(Token)match(input,82,FOLLOW_82_in_empty_collection_comparison_expression2373); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal235_tree = (Object)adaptor.create(string_literal235);
             adaptor.addChild(root_0, string_literal235_tree);
@@ -6918,7 +6901,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "collection_member_expression"
-    // JPA.g:288:1: collection_member_expression : entity_expression ( 'NOT' )? 'MEMBER' ( 'OF' )? path_expression ;
+    // JPA.g:289:1: collection_member_expression : entity_expression ( 'NOT' )? 'MEMBER' ( 'OF' )? path_expression ;
     public final JPAParser.collection_member_expression_return collection_member_expression() throws RecognitionException {
         JPAParser.collection_member_expression_return retval = new JPAParser.collection_member_expression_return();
         retval.start = input.LT(1);
@@ -6938,18 +6921,18 @@ public class JPAParser extends Parser {
         Object string_literal239_tree=null;
 
         try {
-            // JPA.g:289:2: ( entity_expression ( 'NOT' )? 'MEMBER' ( 'OF' )? path_expression )
-            // JPA.g:289:4: entity_expression ( 'NOT' )? 'MEMBER' ( 'OF' )? path_expression
+            // JPA.g:290:5: ( entity_expression ( 'NOT' )? 'MEMBER' ( 'OF' )? path_expression )
+            // JPA.g:290:7: entity_expression ( 'NOT' )? 'MEMBER' ( 'OF' )? path_expression
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_entity_expression_in_collection_member_expression2092);
+            pushFollow(FOLLOW_entity_expression_in_collection_member_expression2385);
             entity_expression236=entity_expression();
 
             state._fsp--;
             if (state.failed) return retval;
             if ( state.backtracking==0 ) adaptor.addChild(root_0, entity_expression236.getTree());
-            // JPA.g:289:22: ( 'NOT' )?
+            // JPA.g:290:25: ( 'NOT' )?
             int alt70=2;
             int LA70_0 = input.LA(1);
 
@@ -6958,9 +6941,9 @@ public class JPAParser extends Parser {
             }
             switch (alt70) {
                 case 1 :
-                    // JPA.g:289:23: 'NOT'
+                    // JPA.g:290:26: 'NOT'
                     {
-                    string_literal237=(Token)match(input,62,FOLLOW_62_in_collection_member_expression2095); if (state.failed) return retval;
+                    string_literal237=(Token)match(input,62,FOLLOW_62_in_collection_member_expression2388); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal237_tree = (Object)adaptor.create(string_literal237);
                     adaptor.addChild(root_0, string_literal237_tree);
@@ -6971,12 +6954,12 @@ public class JPAParser extends Parser {
 
             }
 
-            string_literal238=(Token)match(input,83,FOLLOW_83_in_collection_member_expression2099); if (state.failed) return retval;
+            string_literal238=(Token)match(input,83,FOLLOW_83_in_collection_member_expression2392); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal238_tree = (Object)adaptor.create(string_literal238);
             adaptor.addChild(root_0, string_literal238_tree);
             }
-            // JPA.g:289:40: ( 'OF' )?
+            // JPA.g:290:43: ( 'OF' )?
             int alt71=2;
             int LA71_0 = input.LA(1);
 
@@ -6985,9 +6968,9 @@ public class JPAParser extends Parser {
             }
             switch (alt71) {
                 case 1 :
-                    // JPA.g:289:41: 'OF'
+                    // JPA.g:290:44: 'OF'
                     {
-                    string_literal239=(Token)match(input,84,FOLLOW_84_in_collection_member_expression2102); if (state.failed) return retval;
+                    string_literal239=(Token)match(input,84,FOLLOW_84_in_collection_member_expression2395); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal239_tree = (Object)adaptor.create(string_literal239);
                     adaptor.addChild(root_0, string_literal239_tree);
@@ -6998,7 +6981,7 @@ public class JPAParser extends Parser {
 
             }
 
-            pushFollow(FOLLOW_path_expression_in_collection_member_expression2106);
+            pushFollow(FOLLOW_path_expression_in_collection_member_expression2399);
             path_expression240=path_expression();
 
             state._fsp--;
@@ -7033,7 +7016,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "exists_expression"
-    // JPA.g:291:1: exists_expression : ( 'NOT' )? 'EXISTS' subquery ;
+    // JPA.g:292:1: exists_expression : ( 'NOT' )? 'EXISTS' subquery ;
     public final JPAParser.exists_expression_return exists_expression() throws RecognitionException {
         JPAParser.exists_expression_return retval = new JPAParser.exists_expression_return();
         retval.start = input.LT(1);
@@ -7049,12 +7032,12 @@ public class JPAParser extends Parser {
         Object string_literal242_tree=null;
 
         try {
-            // JPA.g:292:2: ( ( 'NOT' )? 'EXISTS' subquery )
-            // JPA.g:292:4: ( 'NOT' )? 'EXISTS' subquery
+            // JPA.g:293:5: ( ( 'NOT' )? 'EXISTS' subquery )
+            // JPA.g:293:7: ( 'NOT' )? 'EXISTS' subquery
             {
             root_0 = (Object)adaptor.nil();
 
-            // JPA.g:292:4: ( 'NOT' )?
+            // JPA.g:293:7: ( 'NOT' )?
             int alt72=2;
             int LA72_0 = input.LA(1);
 
@@ -7063,9 +7046,9 @@ public class JPAParser extends Parser {
             }
             switch (alt72) {
                 case 1 :
-                    // JPA.g:292:5: 'NOT'
+                    // JPA.g:293:8: 'NOT'
                     {
-                    string_literal241=(Token)match(input,62,FOLLOW_62_in_exists_expression2116); if (state.failed) return retval;
+                    string_literal241=(Token)match(input,62,FOLLOW_62_in_exists_expression2412); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal241_tree = (Object)adaptor.create(string_literal241);
                     adaptor.addChild(root_0, string_literal241_tree);
@@ -7076,12 +7059,12 @@ public class JPAParser extends Parser {
 
             }
 
-            string_literal242=(Token)match(input,85,FOLLOW_85_in_exists_expression2120); if (state.failed) return retval;
+            string_literal242=(Token)match(input,85,FOLLOW_85_in_exists_expression2416); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             string_literal242_tree = (Object)adaptor.create(string_literal242);
             adaptor.addChild(root_0, string_literal242_tree);
             }
-            pushFollow(FOLLOW_subquery_in_exists_expression2122);
+            pushFollow(FOLLOW_subquery_in_exists_expression2418);
             subquery243=subquery();
 
             state._fsp--;
@@ -7116,7 +7099,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "all_or_any_expression"
-    // JPA.g:294:1: all_or_any_expression : ( 'ALL' | 'ANY' | 'SOME' ) subquery ;
+    // JPA.g:295:1: all_or_any_expression : ( 'ALL' | 'ANY' | 'SOME' ) subquery ;
     public final JPAParser.all_or_any_expression_return all_or_any_expression() throws RecognitionException {
         JPAParser.all_or_any_expression_return retval = new JPAParser.all_or_any_expression_return();
         retval.start = input.LT(1);
@@ -7130,8 +7113,8 @@ public class JPAParser extends Parser {
         Object set244_tree=null;
 
         try {
-            // JPA.g:295:2: ( ( 'ALL' | 'ANY' | 'SOME' ) subquery )
-            // JPA.g:295:4: ( 'ALL' | 'ANY' | 'SOME' ) subquery
+            // JPA.g:296:5: ( ( 'ALL' | 'ANY' | 'SOME' ) subquery )
+            // JPA.g:296:7: ( 'ALL' | 'ANY' | 'SOME' ) subquery
             {
             root_0 = (Object)adaptor.nil();
 
@@ -7147,7 +7130,7 @@ public class JPAParser extends Parser {
                 throw mse;
             }
 
-            pushFollow(FOLLOW_subquery_in_all_or_any_expression2144);
+            pushFollow(FOLLOW_subquery_in_all_or_any_expression2443);
             subquery245=subquery();
 
             state._fsp--;
@@ -7182,7 +7165,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "comparison_expression"
-    // JPA.g:297:1: comparison_expression : ( string_expression comparison_operator ( string_expression | all_or_any_expression ) | boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression ) | enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression ) | datetime_expression comparison_operator ( datetime_expression | all_or_any_expression ) | entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression ) | arithmetic_expression comparison_operator ( arithmetic_expression | all_or_any_expression ) );
+    // JPA.g:298:1: comparison_expression : ( string_expression comparison_operator ( string_expression | all_or_any_expression ) | boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression ) | enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression ) | datetime_expression comparison_operator ( datetime_expression | all_or_any_expression ) | entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression ) | arithmetic_expression comparison_operator ( arithmetic_expression | all_or_any_expression ) );
     public final JPAParser.comparison_expression_return comparison_expression() throws RecognitionException {
         JPAParser.comparison_expression_return retval = new JPAParser.comparison_expression_return();
         retval.start = input.LT(1);
@@ -7240,32 +7223,32 @@ public class JPAParser extends Parser {
         Object set263_tree=null;
 
         try {
-            // JPA.g:298:2: ( string_expression comparison_operator ( string_expression | all_or_any_expression ) | boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression ) | enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression ) | datetime_expression comparison_operator ( datetime_expression | all_or_any_expression ) | entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression ) | arithmetic_expression comparison_operator ( arithmetic_expression | all_or_any_expression ) )
+            // JPA.g:299:5: ( string_expression comparison_operator ( string_expression | all_or_any_expression ) | boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression ) | enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression ) | datetime_expression comparison_operator ( datetime_expression | all_or_any_expression ) | entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression ) | arithmetic_expression comparison_operator ( arithmetic_expression | all_or_any_expression ) )
             int alt79=6;
             alt79 = dfa79.predict(input);
             switch (alt79) {
                 case 1 :
-                    // JPA.g:298:4: string_expression comparison_operator ( string_expression | all_or_any_expression )
+                    // JPA.g:299:7: string_expression comparison_operator ( string_expression | all_or_any_expression )
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_string_expression_in_comparison_expression2153);
+                    pushFollow(FOLLOW_string_expression_in_comparison_expression2455);
                     string_expression246=string_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, string_expression246.getTree());
-                    pushFollow(FOLLOW_comparison_operator_in_comparison_expression2155);
+                    pushFollow(FOLLOW_comparison_operator_in_comparison_expression2457);
                     comparison_operator247=comparison_operator();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, comparison_operator247.getTree());
-                    // JPA.g:298:42: ( string_expression | all_or_any_expression )
+                    // JPA.g:299:45: ( string_expression | all_or_any_expression )
                     int alt73=2;
                     int LA73_0 = input.LA(1);
 
-                    if ( ((LA73_0>=AVG && LA73_0<=COUNT)||LA73_0==STRINGLITERAL||(LA73_0>=WORD && LA73_0<=NAMED_PARAMETER)||LA73_0==56||(LA73_0>=106 && LA73_0<=110)||LA73_0==115) ) {
+                    if ( ((LA73_0>=AVG && LA73_0<=COUNT)||LA73_0==STRINGLITERAL||(LA73_0>=WORD && LA73_0<=NAMED_PARAMETER)||LA73_0==56||(LA73_0>=106 && LA73_0<=110)||(LA73_0>=115 && LA73_0<=116)) ) {
                         alt73=1;
                     }
                     else if ( ((LA73_0>=86 && LA73_0<=88)) ) {
@@ -7280,9 +7263,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt73) {
                         case 1 :
-                            // JPA.g:298:43: string_expression
+                            // JPA.g:299:46: string_expression
                             {
-                            pushFollow(FOLLOW_string_expression_in_comparison_expression2158);
+                            pushFollow(FOLLOW_string_expression_in_comparison_expression2460);
                             string_expression248=string_expression();
 
                             state._fsp--;
@@ -7292,9 +7275,9 @@ public class JPAParser extends Parser {
                             }
                             break;
                         case 2 :
-                            // JPA.g:298:63: all_or_any_expression
+                            // JPA.g:299:66: all_or_any_expression
                             {
-                            pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2162);
+                            pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2464);
                             all_or_any_expression249=all_or_any_expression();
 
                             state._fsp--;
@@ -7310,11 +7293,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:299:4: boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression )
+                    // JPA.g:300:7: boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression )
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_boolean_expression_in_comparison_expression2168);
+                    pushFollow(FOLLOW_boolean_expression_in_comparison_expression2473);
                     boolean_expression250=boolean_expression();
 
                     state._fsp--;
@@ -7332,11 +7315,11 @@ public class JPAParser extends Parser {
                         throw mse;
                     }
 
-                    // JPA.g:299:36: ( boolean_expression | all_or_any_expression )
+                    // JPA.g:300:39: ( boolean_expression | all_or_any_expression )
                     int alt74=2;
                     int LA74_0 = input.LA(1);
 
-                    if ( ((LA74_0>=WORD && LA74_0<=NAMED_PARAMETER)||LA74_0==56||(LA74_0>=115 && LA74_0<=117)) ) {
+                    if ( ((LA74_0>=WORD && LA74_0<=NAMED_PARAMETER)||LA74_0==56||(LA74_0>=115 && LA74_0<=116)||(LA74_0>=118 && LA74_0<=119)) ) {
                         alt74=1;
                     }
                     else if ( ((LA74_0>=86 && LA74_0<=88)) ) {
@@ -7351,9 +7334,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt74) {
                         case 1 :
-                            // JPA.g:299:37: boolean_expression
+                            // JPA.g:300:40: boolean_expression
                             {
-                            pushFollow(FOLLOW_boolean_expression_in_comparison_expression2179);
+                            pushFollow(FOLLOW_boolean_expression_in_comparison_expression2484);
                             boolean_expression252=boolean_expression();
 
                             state._fsp--;
@@ -7363,9 +7346,9 @@ public class JPAParser extends Parser {
                             }
                             break;
                         case 2 :
-                            // JPA.g:299:58: all_or_any_expression
+                            // JPA.g:300:61: all_or_any_expression
                             {
-                            pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2183);
+                            pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2488);
                             all_or_any_expression253=all_or_any_expression();
 
                             state._fsp--;
@@ -7381,11 +7364,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // JPA.g:300:4: enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression )
+                    // JPA.g:301:7: enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression )
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_enum_expression_in_comparison_expression2189);
+                    pushFollow(FOLLOW_enum_expression_in_comparison_expression2497);
                     enum_expression254=enum_expression();
 
                     state._fsp--;
@@ -7403,11 +7386,11 @@ public class JPAParser extends Parser {
                         throw mse;
                     }
 
-                    // JPA.g:300:31: ( enum_expression | all_or_any_expression )
+                    // JPA.g:301:34: ( enum_expression | all_or_any_expression )
                     int alt75=2;
                     int LA75_0 = input.LA(1);
 
-                    if ( ((LA75_0>=WORD && LA75_0<=NAMED_PARAMETER)||LA75_0==56||LA75_0==115) ) {
+                    if ( ((LA75_0>=WORD && LA75_0<=NAMED_PARAMETER)||LA75_0==56||(LA75_0>=115 && LA75_0<=116)) ) {
                         alt75=1;
                     }
                     else if ( ((LA75_0>=86 && LA75_0<=88)) ) {
@@ -7422,9 +7405,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt75) {
                         case 1 :
-                            // JPA.g:300:32: enum_expression
+                            // JPA.g:301:35: enum_expression
                             {
-                            pushFollow(FOLLOW_enum_expression_in_comparison_expression2198);
+                            pushFollow(FOLLOW_enum_expression_in_comparison_expression2506);
                             enum_expression256=enum_expression();
 
                             state._fsp--;
@@ -7434,9 +7417,9 @@ public class JPAParser extends Parser {
                             }
                             break;
                         case 2 :
-                            // JPA.g:300:50: all_or_any_expression
+                            // JPA.g:301:53: all_or_any_expression
                             {
-                            pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2202);
+                            pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2510);
                             all_or_any_expression257=all_or_any_expression();
 
                             state._fsp--;
@@ -7452,27 +7435,27 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // JPA.g:301:4: datetime_expression comparison_operator ( datetime_expression | all_or_any_expression )
+                    // JPA.g:302:7: datetime_expression comparison_operator ( datetime_expression | all_or_any_expression )
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_datetime_expression_in_comparison_expression2208);
+                    pushFollow(FOLLOW_datetime_expression_in_comparison_expression2519);
                     datetime_expression258=datetime_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, datetime_expression258.getTree());
-                    pushFollow(FOLLOW_comparison_operator_in_comparison_expression2210);
+                    pushFollow(FOLLOW_comparison_operator_in_comparison_expression2521);
                     comparison_operator259=comparison_operator();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, comparison_operator259.getTree());
-                    // JPA.g:301:44: ( datetime_expression | all_or_any_expression )
+                    // JPA.g:302:47: ( datetime_expression | all_or_any_expression )
                     int alt76=2;
                     int LA76_0 = input.LA(1);
 
-                    if ( ((LA76_0>=AVG && LA76_0<=COUNT)||(LA76_0>=WORD && LA76_0<=NAMED_PARAMETER)||LA76_0==56||(LA76_0>=103 && LA76_0<=105)||LA76_0==115) ) {
+                    if ( ((LA76_0>=AVG && LA76_0<=COUNT)||(LA76_0>=WORD && LA76_0<=NAMED_PARAMETER)||LA76_0==56||(LA76_0>=103 && LA76_0<=105)||(LA76_0>=115 && LA76_0<=116)) ) {
                         alt76=1;
                     }
                     else if ( ((LA76_0>=86 && LA76_0<=88)) ) {
@@ -7487,9 +7470,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt76) {
                         case 1 :
-                            // JPA.g:301:45: datetime_expression
+                            // JPA.g:302:48: datetime_expression
                             {
-                            pushFollow(FOLLOW_datetime_expression_in_comparison_expression2213);
+                            pushFollow(FOLLOW_datetime_expression_in_comparison_expression2524);
                             datetime_expression260=datetime_expression();
 
                             state._fsp--;
@@ -7499,9 +7482,9 @@ public class JPAParser extends Parser {
                             }
                             break;
                         case 2 :
-                            // JPA.g:301:67: all_or_any_expression
+                            // JPA.g:302:70: all_or_any_expression
                             {
-                            pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2217);
+                            pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2528);
                             all_or_any_expression261=all_or_any_expression();
 
                             state._fsp--;
@@ -7517,11 +7500,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // JPA.g:302:4: entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression )
+                    // JPA.g:303:7: entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression )
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_entity_expression_in_comparison_expression2223);
+                    pushFollow(FOLLOW_entity_expression_in_comparison_expression2537);
                     entity_expression262=entity_expression();
 
                     state._fsp--;
@@ -7539,11 +7522,11 @@ public class JPAParser extends Parser {
                         throw mse;
                     }
 
-                    // JPA.g:302:35: ( entity_expression | all_or_any_expression )
+                    // JPA.g:303:38: ( entity_expression | all_or_any_expression )
                     int alt77=2;
                     int LA77_0 = input.LA(1);
 
-                    if ( ((LA77_0>=WORD && LA77_0<=NAMED_PARAMETER)||LA77_0==115) ) {
+                    if ( ((LA77_0>=WORD && LA77_0<=NAMED_PARAMETER)||(LA77_0>=115 && LA77_0<=116)) ) {
                         alt77=1;
                     }
                     else if ( ((LA77_0>=86 && LA77_0<=88)) ) {
@@ -7558,9 +7541,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt77) {
                         case 1 :
-                            // JPA.g:302:36: entity_expression
+                            // JPA.g:303:39: entity_expression
                             {
-                            pushFollow(FOLLOW_entity_expression_in_comparison_expression2234);
+                            pushFollow(FOLLOW_entity_expression_in_comparison_expression2548);
                             entity_expression264=entity_expression();
 
                             state._fsp--;
@@ -7570,9 +7553,9 @@ public class JPAParser extends Parser {
                             }
                             break;
                         case 2 :
-                            // JPA.g:302:56: all_or_any_expression
+                            // JPA.g:303:59: all_or_any_expression
                             {
-                            pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2238);
+                            pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2552);
                             all_or_any_expression265=all_or_any_expression();
 
                             state._fsp--;
@@ -7588,27 +7571,27 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // JPA.g:303:4: arithmetic_expression comparison_operator ( arithmetic_expression | all_or_any_expression )
+                    // JPA.g:304:7: arithmetic_expression comparison_operator ( arithmetic_expression | all_or_any_expression )
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_arithmetic_expression_in_comparison_expression2244);
+                    pushFollow(FOLLOW_arithmetic_expression_in_comparison_expression2561);
                     arithmetic_expression266=arithmetic_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, arithmetic_expression266.getTree());
-                    pushFollow(FOLLOW_comparison_operator_in_comparison_expression2246);
+                    pushFollow(FOLLOW_comparison_operator_in_comparison_expression2563);
                     comparison_operator267=comparison_operator();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, comparison_operator267.getTree());
-                    // JPA.g:303:46: ( arithmetic_expression | all_or_any_expression )
+                    // JPA.g:304:49: ( arithmetic_expression | all_or_any_expression )
                     int alt78=2;
                     int LA78_0 = input.LA(1);
 
-                    if ( ((LA78_0>=AVG && LA78_0<=COUNT)||LA78_0==LPAREN||LA78_0==INT_NUMERAL||(LA78_0>=WORD && LA78_0<=NAMED_PARAMETER)||LA78_0==56||(LA78_0>=65 && LA78_0<=66)||(LA78_0>=97 && LA78_0<=102)||(LA78_0>=114 && LA78_0<=115)) ) {
+                    if ( ((LA78_0>=AVG && LA78_0<=COUNT)||LA78_0==LPAREN||LA78_0==INT_NUMERAL||(LA78_0>=WORD && LA78_0<=NAMED_PARAMETER)||LA78_0==56||(LA78_0>=65 && LA78_0<=66)||(LA78_0>=97 && LA78_0<=102)||(LA78_0>=114 && LA78_0<=116)) ) {
                         alt78=1;
                     }
                     else if ( ((LA78_0>=86 && LA78_0<=88)) ) {
@@ -7623,9 +7606,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt78) {
                         case 1 :
-                            // JPA.g:303:47: arithmetic_expression
+                            // JPA.g:304:50: arithmetic_expression
                             {
-                            pushFollow(FOLLOW_arithmetic_expression_in_comparison_expression2249);
+                            pushFollow(FOLLOW_arithmetic_expression_in_comparison_expression2566);
                             arithmetic_expression268=arithmetic_expression();
 
                             state._fsp--;
@@ -7635,9 +7618,9 @@ public class JPAParser extends Parser {
                             }
                             break;
                         case 2 :
-                            // JPA.g:303:71: all_or_any_expression
+                            // JPA.g:304:74: all_or_any_expression
                             {
-                            pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2253);
+                            pushFollow(FOLLOW_all_or_any_expression_in_comparison_expression2570);
                             all_or_any_expression269=all_or_any_expression();
 
                             state._fsp--;
@@ -7680,7 +7663,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "comparison_operator"
-    // JPA.g:305:1: comparison_operator : ( '=' | '>' | '>=' | '<' | '<=' | '<>' );
+    // JPA.g:306:1: comparison_operator : ( '=' | '>' | '>=' | '<' | '<=' | '<>' );
     public final JPAParser.comparison_operator_return comparison_operator() throws RecognitionException {
         JPAParser.comparison_operator_return retval = new JPAParser.comparison_operator_return();
         retval.start = input.LT(1);
@@ -7692,7 +7675,7 @@ public class JPAParser extends Parser {
         Object set270_tree=null;
 
         try {
-            // JPA.g:306:2: ( '=' | '>' | '>=' | '<' | '<=' | '<>' )
+            // JPA.g:307:5: ( '=' | '>' | '>=' | '<' | '<=' | '<>' )
             // JPA.g:
             {
             root_0 = (Object)adaptor.nil();
@@ -7738,7 +7721,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "arithmetic_expression"
-    // JPA.g:313:1: arithmetic_expression : ( simple_arithmetic_expression | subquery );
+    // JPA.g:314:1: arithmetic_expression : ( simple_arithmetic_expression | subquery );
     public final JPAParser.arithmetic_expression_return arithmetic_expression() throws RecognitionException {
         JPAParser.arithmetic_expression_return retval = new JPAParser.arithmetic_expression_return();
         retval.start = input.LT(1);
@@ -7752,11 +7735,11 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:314:2: ( simple_arithmetic_expression | subquery )
+            // JPA.g:315:5: ( simple_arithmetic_expression | subquery )
             int alt80=2;
             int LA80_0 = input.LA(1);
 
-            if ( ((LA80_0>=AVG && LA80_0<=COUNT)||LA80_0==LPAREN||LA80_0==INT_NUMERAL||(LA80_0>=WORD && LA80_0<=NAMED_PARAMETER)||(LA80_0>=65 && LA80_0<=66)||(LA80_0>=97 && LA80_0<=102)||(LA80_0>=114 && LA80_0<=115)) ) {
+            if ( ((LA80_0>=AVG && LA80_0<=COUNT)||LA80_0==LPAREN||LA80_0==INT_NUMERAL||(LA80_0>=WORD && LA80_0<=NAMED_PARAMETER)||(LA80_0>=65 && LA80_0<=66)||(LA80_0>=97 && LA80_0<=102)||(LA80_0>=114 && LA80_0<=116)) ) {
                 alt80=1;
             }
             else if ( (LA80_0==56) ) {
@@ -7771,11 +7754,11 @@ public class JPAParser extends Parser {
             }
             switch (alt80) {
                 case 1 :
-                    // JPA.g:314:4: simple_arithmetic_expression
+                    // JPA.g:315:7: simple_arithmetic_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_simple_arithmetic_expression_in_arithmetic_expression2297);
+                    pushFollow(FOLLOW_simple_arithmetic_expression_in_arithmetic_expression2635);
                     simple_arithmetic_expression271=simple_arithmetic_expression();
 
                     state._fsp--;
@@ -7785,11 +7768,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:315:4: subquery
+                    // JPA.g:316:7: subquery
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_subquery_in_arithmetic_expression2302);
+                    pushFollow(FOLLOW_subquery_in_arithmetic_expression2643);
                     subquery272=subquery();
 
                     state._fsp--;
@@ -7826,7 +7809,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "simple_arithmetic_expression"
-    // JPA.g:317:1: simple_arithmetic_expression : ( arithmetic_term ) ( ( '+' | '-' ) arithmetic_term )* ;
+    // JPA.g:318:1: simple_arithmetic_expression : ( arithmetic_term ) ( ( '+' | '-' ) arithmetic_term )* ;
     public final JPAParser.simple_arithmetic_expression_return simple_arithmetic_expression() throws RecognitionException {
         JPAParser.simple_arithmetic_expression_return retval = new JPAParser.simple_arithmetic_expression_return();
         retval.start = input.LT(1);
@@ -7842,15 +7825,15 @@ public class JPAParser extends Parser {
         Object set274_tree=null;
 
         try {
-            // JPA.g:318:2: ( ( arithmetic_term ) ( ( '+' | '-' ) arithmetic_term )* )
-            // JPA.g:318:4: ( arithmetic_term ) ( ( '+' | '-' ) arithmetic_term )*
+            // JPA.g:319:5: ( ( arithmetic_term ) ( ( '+' | '-' ) arithmetic_term )* )
+            // JPA.g:319:7: ( arithmetic_term ) ( ( '+' | '-' ) arithmetic_term )*
             {
             root_0 = (Object)adaptor.nil();
 
-            // JPA.g:318:4: ( arithmetic_term )
-            // JPA.g:318:5: arithmetic_term
+            // JPA.g:319:7: ( arithmetic_term )
+            // JPA.g:319:8: arithmetic_term
             {
-            pushFollow(FOLLOW_arithmetic_term_in_simple_arithmetic_expression2312);
+            pushFollow(FOLLOW_arithmetic_term_in_simple_arithmetic_expression2656);
             arithmetic_term273=arithmetic_term();
 
             state._fsp--;
@@ -7859,7 +7842,7 @@ public class JPAParser extends Parser {
 
             }
 
-            // JPA.g:318:22: ( ( '+' | '-' ) arithmetic_term )*
+            // JPA.g:319:25: ( ( '+' | '-' ) arithmetic_term )*
             loop81:
             do {
                 int alt81=2;
@@ -7872,7 +7855,7 @@ public class JPAParser extends Parser {
 
                 switch (alt81) {
             	case 1 :
-            	    // JPA.g:318:23: ( '+' | '-' ) arithmetic_term
+            	    // JPA.g:319:26: ( '+' | '-' ) arithmetic_term
             	    {
             	    set274=(Token)input.LT(1);
             	    if ( (input.LA(1)>=65 && input.LA(1)<=66) ) {
@@ -7886,7 +7869,7 @@ public class JPAParser extends Parser {
             	        throw mse;
             	    }
 
-            	    pushFollow(FOLLOW_arithmetic_term_in_simple_arithmetic_expression2326);
+            	    pushFollow(FOLLOW_arithmetic_term_in_simple_arithmetic_expression2670);
             	    arithmetic_term275=arithmetic_term();
 
             	    state._fsp--;
@@ -7930,7 +7913,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "arithmetic_term"
-    // JPA.g:320:1: arithmetic_term : ( arithmetic_factor ) ( ( '*' | '/' ) arithmetic_factor )* ;
+    // JPA.g:321:1: arithmetic_term : ( arithmetic_factor ) ( ( '*' | '/' ) arithmetic_factor )* ;
     public final JPAParser.arithmetic_term_return arithmetic_term() throws RecognitionException {
         JPAParser.arithmetic_term_return retval = new JPAParser.arithmetic_term_return();
         retval.start = input.LT(1);
@@ -7946,15 +7929,15 @@ public class JPAParser extends Parser {
         Object set277_tree=null;
 
         try {
-            // JPA.g:321:2: ( ( arithmetic_factor ) ( ( '*' | '/' ) arithmetic_factor )* )
-            // JPA.g:321:4: ( arithmetic_factor ) ( ( '*' | '/' ) arithmetic_factor )*
+            // JPA.g:322:5: ( ( arithmetic_factor ) ( ( '*' | '/' ) arithmetic_factor )* )
+            // JPA.g:322:7: ( arithmetic_factor ) ( ( '*' | '/' ) arithmetic_factor )*
             {
             root_0 = (Object)adaptor.nil();
 
-            // JPA.g:321:4: ( arithmetic_factor )
-            // JPA.g:321:5: arithmetic_factor
+            // JPA.g:322:7: ( arithmetic_factor )
+            // JPA.g:322:8: arithmetic_factor
             {
-            pushFollow(FOLLOW_arithmetic_factor_in_arithmetic_term2338);
+            pushFollow(FOLLOW_arithmetic_factor_in_arithmetic_term2685);
             arithmetic_factor276=arithmetic_factor();
 
             state._fsp--;
@@ -7963,7 +7946,7 @@ public class JPAParser extends Parser {
 
             }
 
-            // JPA.g:321:24: ( ( '*' | '/' ) arithmetic_factor )*
+            // JPA.g:322:27: ( ( '*' | '/' ) arithmetic_factor )*
             loop82:
             do {
                 int alt82=2;
@@ -7976,7 +7959,7 @@ public class JPAParser extends Parser {
 
                 switch (alt82) {
             	case 1 :
-            	    // JPA.g:321:25: ( '*' | '/' ) arithmetic_factor
+            	    // JPA.g:322:28: ( '*' | '/' ) arithmetic_factor
             	    {
             	    set277=(Token)input.LT(1);
             	    if ( (input.LA(1)>=95 && input.LA(1)<=96) ) {
@@ -7990,7 +7973,7 @@ public class JPAParser extends Parser {
             	        throw mse;
             	    }
 
-            	    pushFollow(FOLLOW_arithmetic_factor_in_arithmetic_term2352);
+            	    pushFollow(FOLLOW_arithmetic_factor_in_arithmetic_term2699);
             	    arithmetic_factor278=arithmetic_factor();
 
             	    state._fsp--;
@@ -8034,7 +8017,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "arithmetic_factor"
-    // JPA.g:323:1: arithmetic_factor : ( '+' | '-' )? arithmetic_primary ;
+    // JPA.g:324:1: arithmetic_factor : ( '+' | '-' )? arithmetic_primary ;
     public final JPAParser.arithmetic_factor_return arithmetic_factor() throws RecognitionException {
         JPAParser.arithmetic_factor_return retval = new JPAParser.arithmetic_factor_return();
         retval.start = input.LT(1);
@@ -8048,12 +8031,12 @@ public class JPAParser extends Parser {
         Object set279_tree=null;
 
         try {
-            // JPA.g:324:2: ( ( '+' | '-' )? arithmetic_primary )
-            // JPA.g:324:4: ( '+' | '-' )? arithmetic_primary
+            // JPA.g:325:5: ( ( '+' | '-' )? arithmetic_primary )
+            // JPA.g:325:7: ( '+' | '-' )? arithmetic_primary
             {
             root_0 = (Object)adaptor.nil();
 
-            // JPA.g:324:4: ( '+' | '-' )?
+            // JPA.g:325:7: ( '+' | '-' )?
             int alt83=2;
             int LA83_0 = input.LA(1);
 
@@ -8082,7 +8065,7 @@ public class JPAParser extends Parser {
 
             }
 
-            pushFollow(FOLLOW_arithmetic_primary_in_arithmetic_factor2374);
+            pushFollow(FOLLOW_arithmetic_primary_in_arithmetic_factor2724);
             arithmetic_primary280=arithmetic_primary();
 
             state._fsp--;
@@ -8117,7 +8100,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "arithmetic_primary"
-    // JPA.g:326:1: arithmetic_primary : ( path_expression | numeric_literal | '(' simple_arithmetic_expression ')' | input_parameter | functions_returning_numerics | aggregate_expression );
+    // JPA.g:327:1: arithmetic_primary : ( path_expression | numeric_literal | '(' simple_arithmetic_expression ')' | input_parameter | functions_returning_numerics | aggregate_expression );
     public final JPAParser.arithmetic_primary_return arithmetic_primary() throws RecognitionException {
         JPAParser.arithmetic_primary_return retval = new JPAParser.arithmetic_primary_return();
         retval.start = input.LT(1);
@@ -8143,7 +8126,7 @@ public class JPAParser extends Parser {
         Object char_literal285_tree=null;
 
         try {
-            // JPA.g:327:2: ( path_expression | numeric_literal | '(' simple_arithmetic_expression ')' | input_parameter | functions_returning_numerics | aggregate_expression )
+            // JPA.g:328:5: ( path_expression | numeric_literal | '(' simple_arithmetic_expression ')' | input_parameter | functions_returning_numerics | aggregate_expression )
             int alt84=6;
             switch ( input.LA(1) ) {
             case WORD:
@@ -8164,6 +8147,7 @@ public class JPAParser extends Parser {
                 break;
             case NAMED_PARAMETER:
             case 115:
+            case 116:
                 {
                 alt84=4;
                 }
@@ -8197,11 +8181,11 @@ public class JPAParser extends Parser {
 
             switch (alt84) {
                 case 1 :
-                    // JPA.g:327:4: path_expression
+                    // JPA.g:328:7: path_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_path_expression_in_arithmetic_primary2383);
+                    pushFollow(FOLLOW_path_expression_in_arithmetic_primary2736);
                     path_expression281=path_expression();
 
                     state._fsp--;
@@ -8211,11 +8195,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:328:4: numeric_literal
+                    // JPA.g:329:7: numeric_literal
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_numeric_literal_in_arithmetic_primary2388);
+                    pushFollow(FOLLOW_numeric_literal_in_arithmetic_primary2744);
                     numeric_literal282=numeric_literal();
 
                     state._fsp--;
@@ -8225,22 +8209,22 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // JPA.g:329:4: '(' simple_arithmetic_expression ')'
+                    // JPA.g:330:7: '(' simple_arithmetic_expression ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    char_literal283=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_arithmetic_primary2393); if (state.failed) return retval;
+                    char_literal283=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_arithmetic_primary2752); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal283_tree = (Object)adaptor.create(char_literal283);
                     adaptor.addChild(root_0, char_literal283_tree);
                     }
-                    pushFollow(FOLLOW_simple_arithmetic_expression_in_arithmetic_primary2394);
+                    pushFollow(FOLLOW_simple_arithmetic_expression_in_arithmetic_primary2753);
                     simple_arithmetic_expression284=simple_arithmetic_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, simple_arithmetic_expression284.getTree());
-                    char_literal285=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_arithmetic_primary2395); if (state.failed) return retval;
+                    char_literal285=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_arithmetic_primary2754); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal285_tree = (Object)adaptor.create(char_literal285);
                     adaptor.addChild(root_0, char_literal285_tree);
@@ -8249,11 +8233,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // JPA.g:330:4: input_parameter
+                    // JPA.g:331:7: input_parameter
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_input_parameter_in_arithmetic_primary2400);
+                    pushFollow(FOLLOW_input_parameter_in_arithmetic_primary2762);
                     input_parameter286=input_parameter();
 
                     state._fsp--;
@@ -8263,11 +8247,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // JPA.g:331:4: functions_returning_numerics
+                    // JPA.g:332:7: functions_returning_numerics
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_functions_returning_numerics_in_arithmetic_primary2405);
+                    pushFollow(FOLLOW_functions_returning_numerics_in_arithmetic_primary2770);
                     functions_returning_numerics287=functions_returning_numerics();
 
                     state._fsp--;
@@ -8277,11 +8261,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // JPA.g:332:4: aggregate_expression
+                    // JPA.g:333:7: aggregate_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_aggregate_expression_in_arithmetic_primary2410);
+                    pushFollow(FOLLOW_aggregate_expression_in_arithmetic_primary2778);
                     aggregate_expression288=aggregate_expression();
 
                     state._fsp--;
@@ -8318,7 +8302,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "string_expression"
-    // JPA.g:334:1: string_expression : ( string_primary | subquery );
+    // JPA.g:335:1: string_expression : ( string_primary | subquery );
     public final JPAParser.string_expression_return string_expression() throws RecognitionException {
         JPAParser.string_expression_return retval = new JPAParser.string_expression_return();
         retval.start = input.LT(1);
@@ -8332,11 +8316,11 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:335:2: ( string_primary | subquery )
+            // JPA.g:336:5: ( string_primary | subquery )
             int alt85=2;
             int LA85_0 = input.LA(1);
 
-            if ( ((LA85_0>=AVG && LA85_0<=COUNT)||LA85_0==STRINGLITERAL||(LA85_0>=WORD && LA85_0<=NAMED_PARAMETER)||(LA85_0>=106 && LA85_0<=110)||LA85_0==115) ) {
+            if ( ((LA85_0>=AVG && LA85_0<=COUNT)||LA85_0==STRINGLITERAL||(LA85_0>=WORD && LA85_0<=NAMED_PARAMETER)||(LA85_0>=106 && LA85_0<=110)||(LA85_0>=115 && LA85_0<=116)) ) {
                 alt85=1;
             }
             else if ( (LA85_0==56) ) {
@@ -8351,11 +8335,11 @@ public class JPAParser extends Parser {
             }
             switch (alt85) {
                 case 1 :
-                    // JPA.g:335:4: string_primary
+                    // JPA.g:336:7: string_primary
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_string_primary_in_string_expression2419);
+                    pushFollow(FOLLOW_string_primary_in_string_expression2790);
                     string_primary289=string_primary();
 
                     state._fsp--;
@@ -8365,11 +8349,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:335:21: subquery
+                    // JPA.g:336:24: subquery
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_subquery_in_string_expression2423);
+                    pushFollow(FOLLOW_subquery_in_string_expression2794);
                     subquery290=subquery();
 
                     state._fsp--;
@@ -8406,7 +8390,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "string_primary"
-    // JPA.g:337:1: string_primary : ( path_expression | STRINGLITERAL | input_parameter | functions_returning_strings | aggregate_expression );
+    // JPA.g:338:1: string_primary : ( path_expression | STRINGLITERAL | input_parameter | functions_returning_strings | aggregate_expression );
     public final JPAParser.string_primary_return string_primary() throws RecognitionException {
         JPAParser.string_primary_return retval = new JPAParser.string_primary_return();
         retval.start = input.LT(1);
@@ -8426,7 +8410,7 @@ public class JPAParser extends Parser {
         Object STRINGLITERAL292_tree=null;
 
         try {
-            // JPA.g:338:2: ( path_expression | STRINGLITERAL | input_parameter | functions_returning_strings | aggregate_expression )
+            // JPA.g:339:5: ( path_expression | STRINGLITERAL | input_parameter | functions_returning_strings | aggregate_expression )
             int alt86=5;
             switch ( input.LA(1) ) {
             case WORD:
@@ -8441,6 +8425,7 @@ public class JPAParser extends Parser {
                 break;
             case NAMED_PARAMETER:
             case 115:
+            case 116:
                 {
                 alt86=3;
                 }
@@ -8473,11 +8458,11 @@ public class JPAParser extends Parser {
 
             switch (alt86) {
                 case 1 :
-                    // JPA.g:338:4: path_expression
+                    // JPA.g:339:7: path_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_path_expression_in_string_primary2432);
+                    pushFollow(FOLLOW_path_expression_in_string_primary2806);
                     path_expression291=path_expression();
 
                     state._fsp--;
@@ -8487,11 +8472,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:339:4: STRINGLITERAL
+                    // JPA.g:340:7: STRINGLITERAL
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    STRINGLITERAL292=(Token)match(input,STRINGLITERAL,FOLLOW_STRINGLITERAL_in_string_primary2437); if (state.failed) return retval;
+                    STRINGLITERAL292=(Token)match(input,STRINGLITERAL,FOLLOW_STRINGLITERAL_in_string_primary2814); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     STRINGLITERAL292_tree = (Object)adaptor.create(STRINGLITERAL292);
                     adaptor.addChild(root_0, STRINGLITERAL292_tree);
@@ -8500,11 +8485,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // JPA.g:340:4: input_parameter
+                    // JPA.g:341:7: input_parameter
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_input_parameter_in_string_primary2442);
+                    pushFollow(FOLLOW_input_parameter_in_string_primary2822);
                     input_parameter293=input_parameter();
 
                     state._fsp--;
@@ -8514,11 +8499,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // JPA.g:341:4: functions_returning_strings
+                    // JPA.g:342:7: functions_returning_strings
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_functions_returning_strings_in_string_primary2447);
+                    pushFollow(FOLLOW_functions_returning_strings_in_string_primary2830);
                     functions_returning_strings294=functions_returning_strings();
 
                     state._fsp--;
@@ -8528,11 +8513,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // JPA.g:342:4: aggregate_expression
+                    // JPA.g:343:7: aggregate_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_aggregate_expression_in_string_primary2452);
+                    pushFollow(FOLLOW_aggregate_expression_in_string_primary2838);
                     aggregate_expression295=aggregate_expression();
 
                     state._fsp--;
@@ -8569,7 +8554,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "datetime_expression"
-    // JPA.g:344:1: datetime_expression : ( datetime_primary | subquery );
+    // JPA.g:345:1: datetime_expression : ( datetime_primary | subquery );
     public final JPAParser.datetime_expression_return datetime_expression() throws RecognitionException {
         JPAParser.datetime_expression_return retval = new JPAParser.datetime_expression_return();
         retval.start = input.LT(1);
@@ -8583,11 +8568,11 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:345:2: ( datetime_primary | subquery )
+            // JPA.g:346:5: ( datetime_primary | subquery )
             int alt87=2;
             int LA87_0 = input.LA(1);
 
-            if ( ((LA87_0>=AVG && LA87_0<=COUNT)||(LA87_0>=WORD && LA87_0<=NAMED_PARAMETER)||(LA87_0>=103 && LA87_0<=105)||LA87_0==115) ) {
+            if ( ((LA87_0>=AVG && LA87_0<=COUNT)||(LA87_0>=WORD && LA87_0<=NAMED_PARAMETER)||(LA87_0>=103 && LA87_0<=105)||(LA87_0>=115 && LA87_0<=116)) ) {
                 alt87=1;
             }
             else if ( (LA87_0==56) ) {
@@ -8602,11 +8587,11 @@ public class JPAParser extends Parser {
             }
             switch (alt87) {
                 case 1 :
-                    // JPA.g:345:4: datetime_primary
+                    // JPA.g:346:7: datetime_primary
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_datetime_primary_in_datetime_expression2461);
+                    pushFollow(FOLLOW_datetime_primary_in_datetime_expression2850);
                     datetime_primary296=datetime_primary();
 
                     state._fsp--;
@@ -8616,11 +8601,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:346:4: subquery
+                    // JPA.g:347:7: subquery
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_subquery_in_datetime_expression2466);
+                    pushFollow(FOLLOW_subquery_in_datetime_expression2858);
                     subquery297=subquery();
 
                     state._fsp--;
@@ -8657,7 +8642,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "datetime_primary"
-    // JPA.g:348:1: datetime_primary : ( path_expression | input_parameter | functions_returning_datetime | aggregate_expression );
+    // JPA.g:349:1: datetime_primary : ( path_expression | input_parameter | functions_returning_datetime | aggregate_expression );
     public final JPAParser.datetime_primary_return datetime_primary() throws RecognitionException {
         JPAParser.datetime_primary_return retval = new JPAParser.datetime_primary_return();
         retval.start = input.LT(1);
@@ -8675,7 +8660,7 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:349:2: ( path_expression | input_parameter | functions_returning_datetime | aggregate_expression )
+            // JPA.g:350:5: ( path_expression | input_parameter | functions_returning_datetime | aggregate_expression )
             int alt88=4;
             switch ( input.LA(1) ) {
             case WORD:
@@ -8685,6 +8670,7 @@ public class JPAParser extends Parser {
                 break;
             case NAMED_PARAMETER:
             case 115:
+            case 116:
                 {
                 alt88=2;
                 }
@@ -8715,11 +8701,11 @@ public class JPAParser extends Parser {
 
             switch (alt88) {
                 case 1 :
-                    // JPA.g:349:4: path_expression
+                    // JPA.g:350:7: path_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_path_expression_in_datetime_primary2475);
+                    pushFollow(FOLLOW_path_expression_in_datetime_primary2870);
                     path_expression298=path_expression();
 
                     state._fsp--;
@@ -8729,11 +8715,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:350:4: input_parameter
+                    // JPA.g:351:7: input_parameter
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_input_parameter_in_datetime_primary2480);
+                    pushFollow(FOLLOW_input_parameter_in_datetime_primary2878);
                     input_parameter299=input_parameter();
 
                     state._fsp--;
@@ -8743,11 +8729,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // JPA.g:351:4: functions_returning_datetime
+                    // JPA.g:352:7: functions_returning_datetime
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_functions_returning_datetime_in_datetime_primary2485);
+                    pushFollow(FOLLOW_functions_returning_datetime_in_datetime_primary2886);
                     functions_returning_datetime300=functions_returning_datetime();
 
                     state._fsp--;
@@ -8757,11 +8743,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // JPA.g:352:4: aggregate_expression
+                    // JPA.g:353:7: aggregate_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_aggregate_expression_in_datetime_primary2490);
+                    pushFollow(FOLLOW_aggregate_expression_in_datetime_primary2894);
                     aggregate_expression301=aggregate_expression();
 
                     state._fsp--;
@@ -8798,7 +8784,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "boolean_expression"
-    // JPA.g:354:1: boolean_expression : ( boolean_primary | subquery );
+    // JPA.g:355:1: boolean_expression : ( boolean_primary | subquery );
     public final JPAParser.boolean_expression_return boolean_expression() throws RecognitionException {
         JPAParser.boolean_expression_return retval = new JPAParser.boolean_expression_return();
         retval.start = input.LT(1);
@@ -8812,11 +8798,11 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:355:2: ( boolean_primary | subquery )
+            // JPA.g:356:5: ( boolean_primary | subquery )
             int alt89=2;
             int LA89_0 = input.LA(1);
 
-            if ( ((LA89_0>=WORD && LA89_0<=NAMED_PARAMETER)||(LA89_0>=115 && LA89_0<=117)) ) {
+            if ( ((LA89_0>=WORD && LA89_0<=NAMED_PARAMETER)||(LA89_0>=115 && LA89_0<=116)||(LA89_0>=118 && LA89_0<=119)) ) {
                 alt89=1;
             }
             else if ( (LA89_0==56) ) {
@@ -8831,11 +8817,11 @@ public class JPAParser extends Parser {
             }
             switch (alt89) {
                 case 1 :
-                    // JPA.g:355:4: boolean_primary
+                    // JPA.g:356:7: boolean_primary
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_boolean_primary_in_boolean_expression2499);
+                    pushFollow(FOLLOW_boolean_primary_in_boolean_expression2906);
                     boolean_primary302=boolean_primary();
 
                     state._fsp--;
@@ -8845,11 +8831,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:356:4: subquery
+                    // JPA.g:357:7: subquery
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_subquery_in_boolean_expression2504);
+                    pushFollow(FOLLOW_subquery_in_boolean_expression2914);
                     subquery303=subquery();
 
                     state._fsp--;
@@ -8886,7 +8872,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "boolean_primary"
-    // JPA.g:358:1: boolean_primary : ( path_expression | boolean_literal | input_parameter );
+    // JPA.g:359:1: boolean_primary : ( path_expression | boolean_literal | input_parameter );
     public final JPAParser.boolean_primary_return boolean_primary() throws RecognitionException {
         JPAParser.boolean_primary_return retval = new JPAParser.boolean_primary_return();
         retval.start = input.LT(1);
@@ -8902,7 +8888,7 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:359:2: ( path_expression | boolean_literal | input_parameter )
+            // JPA.g:360:5: ( path_expression | boolean_literal | input_parameter )
             int alt90=3;
             switch ( input.LA(1) ) {
             case WORD:
@@ -8910,14 +8896,15 @@ public class JPAParser extends Parser {
                 alt90=1;
                 }
                 break;
-            case 116:
-            case 117:
+            case 118:
+            case 119:
                 {
                 alt90=2;
                 }
                 break;
             case NAMED_PARAMETER:
             case 115:
+            case 116:
                 {
                 alt90=3;
                 }
@@ -8932,11 +8919,11 @@ public class JPAParser extends Parser {
 
             switch (alt90) {
                 case 1 :
-                    // JPA.g:359:4: path_expression
+                    // JPA.g:360:7: path_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_path_expression_in_boolean_primary2513);
+                    pushFollow(FOLLOW_path_expression_in_boolean_primary2926);
                     path_expression304=path_expression();
 
                     state._fsp--;
@@ -8946,11 +8933,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:360:4: boolean_literal
+                    // JPA.g:361:7: boolean_literal
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_boolean_literal_in_boolean_primary2518);
+                    pushFollow(FOLLOW_boolean_literal_in_boolean_primary2934);
                     boolean_literal305=boolean_literal();
 
                     state._fsp--;
@@ -8960,11 +8947,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // JPA.g:361:4: input_parameter
+                    // JPA.g:362:7: input_parameter
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_input_parameter_in_boolean_primary2523);
+                    pushFollow(FOLLOW_input_parameter_in_boolean_primary2942);
                     input_parameter306=input_parameter();
 
                     state._fsp--;
@@ -9001,7 +8988,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "enum_expression"
-    // JPA.g:363:1: enum_expression : ( enum_primary | subquery );
+    // JPA.g:364:1: enum_expression : ( enum_primary | subquery );
     public final JPAParser.enum_expression_return enum_expression() throws RecognitionException {
         JPAParser.enum_expression_return retval = new JPAParser.enum_expression_return();
         retval.start = input.LT(1);
@@ -9015,11 +9002,11 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:364:2: ( enum_primary | subquery )
+            // JPA.g:365:5: ( enum_primary | subquery )
             int alt91=2;
             int LA91_0 = input.LA(1);
 
-            if ( ((LA91_0>=WORD && LA91_0<=NAMED_PARAMETER)||LA91_0==115) ) {
+            if ( ((LA91_0>=WORD && LA91_0<=NAMED_PARAMETER)||(LA91_0>=115 && LA91_0<=116)) ) {
                 alt91=1;
             }
             else if ( (LA91_0==56) ) {
@@ -9034,11 +9021,11 @@ public class JPAParser extends Parser {
             }
             switch (alt91) {
                 case 1 :
-                    // JPA.g:364:4: enum_primary
+                    // JPA.g:365:7: enum_primary
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_enum_primary_in_enum_expression2532);
+                    pushFollow(FOLLOW_enum_primary_in_enum_expression2954);
                     enum_primary307=enum_primary();
 
                     state._fsp--;
@@ -9048,11 +9035,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:365:4: subquery
+                    // JPA.g:366:7: subquery
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_subquery_in_enum_expression2537);
+                    pushFollow(FOLLOW_subquery_in_enum_expression2962);
                     subquery308=subquery();
 
                     state._fsp--;
@@ -9089,7 +9076,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "enum_primary"
-    // JPA.g:367:1: enum_primary : ( path_expression | enum_literal | input_parameter );
+    // JPA.g:368:1: enum_primary : ( path_expression | enum_literal | input_parameter );
     public final JPAParser.enum_primary_return enum_primary() throws RecognitionException {
         JPAParser.enum_primary_return retval = new JPAParser.enum_primary_return();
         retval.start = input.LT(1);
@@ -9105,7 +9092,7 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:368:2: ( path_expression | enum_literal | input_parameter )
+            // JPA.g:369:5: ( path_expression | enum_literal | input_parameter )
             int alt92=3;
             int LA92_0 = input.LA(1);
 
@@ -9126,7 +9113,7 @@ public class JPAParser extends Parser {
                     throw nvae;
                 }
             }
-            else if ( (LA92_0==NAMED_PARAMETER||LA92_0==115) ) {
+            else if ( (LA92_0==NAMED_PARAMETER||(LA92_0>=115 && LA92_0<=116)) ) {
                 alt92=3;
             }
             else {
@@ -9138,11 +9125,11 @@ public class JPAParser extends Parser {
             }
             switch (alt92) {
                 case 1 :
-                    // JPA.g:368:4: path_expression
+                    // JPA.g:369:7: path_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_path_expression_in_enum_primary2546);
+                    pushFollow(FOLLOW_path_expression_in_enum_primary2974);
                     path_expression309=path_expression();
 
                     state._fsp--;
@@ -9152,11 +9139,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:369:4: enum_literal
+                    // JPA.g:370:7: enum_literal
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_enum_literal_in_enum_primary2551);
+                    pushFollow(FOLLOW_enum_literal_in_enum_primary2982);
                     enum_literal310=enum_literal();
 
                     state._fsp--;
@@ -9166,11 +9153,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // JPA.g:370:4: input_parameter
+                    // JPA.g:371:7: input_parameter
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_input_parameter_in_enum_primary2556);
+                    pushFollow(FOLLOW_input_parameter_in_enum_primary2990);
                     input_parameter311=input_parameter();
 
                     state._fsp--;
@@ -9207,7 +9194,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "entity_expression"
-    // JPA.g:372:1: entity_expression : ( path_expression | simple_entity_expression );
+    // JPA.g:373:1: entity_expression : ( path_expression | simple_entity_expression );
     public final JPAParser.entity_expression_return entity_expression() throws RecognitionException {
         JPAParser.entity_expression_return retval = new JPAParser.entity_expression_return();
         retval.start = input.LT(1);
@@ -9221,7 +9208,7 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:373:2: ( path_expression | simple_entity_expression )
+            // JPA.g:374:5: ( path_expression | simple_entity_expression )
             int alt93=2;
             int LA93_0 = input.LA(1);
 
@@ -9242,7 +9229,7 @@ public class JPAParser extends Parser {
                     throw nvae;
                 }
             }
-            else if ( (LA93_0==NAMED_PARAMETER||LA93_0==115) ) {
+            else if ( (LA93_0==NAMED_PARAMETER||(LA93_0>=115 && LA93_0<=116)) ) {
                 alt93=2;
             }
             else {
@@ -9254,11 +9241,11 @@ public class JPAParser extends Parser {
             }
             switch (alt93) {
                 case 1 :
-                    // JPA.g:373:4: path_expression
+                    // JPA.g:374:7: path_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_path_expression_in_entity_expression2565);
+                    pushFollow(FOLLOW_path_expression_in_entity_expression3002);
                     path_expression312=path_expression();
 
                     state._fsp--;
@@ -9268,11 +9255,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:374:4: simple_entity_expression
+                    // JPA.g:375:7: simple_entity_expression
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_simple_entity_expression_in_entity_expression2570);
+                    pushFollow(FOLLOW_simple_entity_expression_in_entity_expression3010);
                     simple_entity_expression313=simple_entity_expression();
 
                     state._fsp--;
@@ -9309,7 +9296,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "simple_entity_expression"
-    // JPA.g:376:1: simple_entity_expression : ( identification_variable | input_parameter );
+    // JPA.g:377:1: simple_entity_expression : ( identification_variable | input_parameter );
     public final JPAParser.simple_entity_expression_return simple_entity_expression() throws RecognitionException {
         JPAParser.simple_entity_expression_return retval = new JPAParser.simple_entity_expression_return();
         retval.start = input.LT(1);
@@ -9323,14 +9310,14 @@ public class JPAParser extends Parser {
 
 
         try {
-            // JPA.g:377:2: ( identification_variable | input_parameter )
+            // JPA.g:378:5: ( identification_variable | input_parameter )
             int alt94=2;
             int LA94_0 = input.LA(1);
 
             if ( (LA94_0==WORD) ) {
                 alt94=1;
             }
-            else if ( (LA94_0==NAMED_PARAMETER||LA94_0==115) ) {
+            else if ( (LA94_0==NAMED_PARAMETER||(LA94_0>=115 && LA94_0<=116)) ) {
                 alt94=2;
             }
             else {
@@ -9342,11 +9329,11 @@ public class JPAParser extends Parser {
             }
             switch (alt94) {
                 case 1 :
-                    // JPA.g:377:4: identification_variable
+                    // JPA.g:378:7: identification_variable
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_identification_variable_in_simple_entity_expression2579);
+                    pushFollow(FOLLOW_identification_variable_in_simple_entity_expression3022);
                     identification_variable314=identification_variable();
 
                     state._fsp--;
@@ -9356,11 +9343,11 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:378:4: input_parameter
+                    // JPA.g:379:7: input_parameter
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_input_parameter_in_simple_entity_expression2584);
+                    pushFollow(FOLLOW_input_parameter_in_simple_entity_expression3030);
                     input_parameter315=input_parameter();
 
                     state._fsp--;
@@ -9397,7 +9384,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "functions_returning_numerics"
-    // JPA.g:380:1: functions_returning_numerics : ( 'LENGTH' '(' string_primary ')' | 'LOCATE' '(' string_primary ',' string_primary ( ',' simple_arithmetic_expression )? ')' | 'ABS' '(' simple_arithmetic_expression ')' | 'SQRT' '(' simple_arithmetic_expression ')' | 'MOD' '(' simple_arithmetic_expression ',' simple_arithmetic_expression ')' | 'SIZE' '(' path_expression ')' );
+    // JPA.g:381:1: functions_returning_numerics : ( 'LENGTH' '(' string_primary ')' | 'LOCATE' '(' string_primary ',' string_primary ( ',' simple_arithmetic_expression )? ')' | 'ABS' '(' simple_arithmetic_expression ')' | 'SQRT' '(' simple_arithmetic_expression ')' | 'MOD' '(' simple_arithmetic_expression ',' simple_arithmetic_expression ')' | 'SIZE' '(' path_expression ')' );
     public final JPAParser.functions_returning_numerics_return functions_returning_numerics() throws RecognitionException {
         JPAParser.functions_returning_numerics_return retval = new JPAParser.functions_returning_numerics_return();
         retval.start = input.LT(1);
@@ -9467,7 +9454,7 @@ public class JPAParser extends Parser {
         Object char_literal345_tree=null;
 
         try {
-            // JPA.g:381:2: ( 'LENGTH' '(' string_primary ')' | 'LOCATE' '(' string_primary ',' string_primary ( ',' simple_arithmetic_expression )? ')' | 'ABS' '(' simple_arithmetic_expression ')' | 'SQRT' '(' simple_arithmetic_expression ')' | 'MOD' '(' simple_arithmetic_expression ',' simple_arithmetic_expression ')' | 'SIZE' '(' path_expression ')' )
+            // JPA.g:382:5: ( 'LENGTH' '(' string_primary ')' | 'LOCATE' '(' string_primary ',' string_primary ( ',' simple_arithmetic_expression )? ')' | 'ABS' '(' simple_arithmetic_expression ')' | 'SQRT' '(' simple_arithmetic_expression ')' | 'MOD' '(' simple_arithmetic_expression ',' simple_arithmetic_expression ')' | 'SIZE' '(' path_expression ')' )
             int alt96=6;
             switch ( input.LA(1) ) {
             case 97:
@@ -9510,27 +9497,27 @@ public class JPAParser extends Parser {
 
             switch (alt96) {
                 case 1 :
-                    // JPA.g:381:4: 'LENGTH' '(' string_primary ')'
+                    // JPA.g:382:7: 'LENGTH' '(' string_primary ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    string_literal316=(Token)match(input,97,FOLLOW_97_in_functions_returning_numerics2593); if (state.failed) return retval;
+                    string_literal316=(Token)match(input,97,FOLLOW_97_in_functions_returning_numerics3042); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal316_tree = (Object)adaptor.create(string_literal316);
                     adaptor.addChild(root_0, string_literal316_tree);
                     }
-                    char_literal317=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_numerics2595); if (state.failed) return retval;
+                    char_literal317=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_numerics3044); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal317_tree = (Object)adaptor.create(char_literal317);
                     adaptor.addChild(root_0, char_literal317_tree);
                     }
-                    pushFollow(FOLLOW_string_primary_in_functions_returning_numerics2596);
+                    pushFollow(FOLLOW_string_primary_in_functions_returning_numerics3045);
                     string_primary318=string_primary();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, string_primary318.getTree());
-                    char_literal319=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_numerics2597); if (state.failed) return retval;
+                    char_literal319=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_numerics3046); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal319_tree = (Object)adaptor.create(char_literal319);
                     adaptor.addChild(root_0, char_literal319_tree);
@@ -9539,38 +9526,38 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:382:4: 'LOCATE' '(' string_primary ',' string_primary ( ',' simple_arithmetic_expression )? ')'
+                    // JPA.g:383:7: 'LOCATE' '(' string_primary ',' string_primary ( ',' simple_arithmetic_expression )? ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    string_literal320=(Token)match(input,98,FOLLOW_98_in_functions_returning_numerics2602); if (state.failed) return retval;
+                    string_literal320=(Token)match(input,98,FOLLOW_98_in_functions_returning_numerics3054); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal320_tree = (Object)adaptor.create(string_literal320);
                     adaptor.addChild(root_0, string_literal320_tree);
                     }
-                    char_literal321=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_numerics2604); if (state.failed) return retval;
+                    char_literal321=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_numerics3056); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal321_tree = (Object)adaptor.create(char_literal321);
                     adaptor.addChild(root_0, char_literal321_tree);
                     }
-                    pushFollow(FOLLOW_string_primary_in_functions_returning_numerics2605);
+                    pushFollow(FOLLOW_string_primary_in_functions_returning_numerics3057);
                     string_primary322=string_primary();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, string_primary322.getTree());
-                    char_literal323=(Token)match(input,54,FOLLOW_54_in_functions_returning_numerics2606); if (state.failed) return retval;
+                    char_literal323=(Token)match(input,54,FOLLOW_54_in_functions_returning_numerics3058); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal323_tree = (Object)adaptor.create(char_literal323);
                     adaptor.addChild(root_0, char_literal323_tree);
                     }
-                    pushFollow(FOLLOW_string_primary_in_functions_returning_numerics2608);
+                    pushFollow(FOLLOW_string_primary_in_functions_returning_numerics3060);
                     string_primary324=string_primary();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, string_primary324.getTree());
-                    // JPA.g:382:48: ( ',' simple_arithmetic_expression )?
+                    // JPA.g:383:51: ( ',' simple_arithmetic_expression )?
                     int alt95=2;
                     int LA95_0 = input.LA(1);
 
@@ -9579,14 +9566,14 @@ public class JPAParser extends Parser {
                     }
                     switch (alt95) {
                         case 1 :
-                            // JPA.g:382:49: ',' simple_arithmetic_expression
+                            // JPA.g:383:52: ',' simple_arithmetic_expression
                             {
-                            char_literal325=(Token)match(input,54,FOLLOW_54_in_functions_returning_numerics2610); if (state.failed) return retval;
+                            char_literal325=(Token)match(input,54,FOLLOW_54_in_functions_returning_numerics3062); if (state.failed) return retval;
                             if ( state.backtracking==0 ) {
                             char_literal325_tree = (Object)adaptor.create(char_literal325);
                             adaptor.addChild(root_0, char_literal325_tree);
                             }
-                            pushFollow(FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics2612);
+                            pushFollow(FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics3064);
                             simple_arithmetic_expression326=simple_arithmetic_expression();
 
                             state._fsp--;
@@ -9598,7 +9585,7 @@ public class JPAParser extends Parser {
 
                     }
 
-                    char_literal327=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_numerics2615); if (state.failed) return retval;
+                    char_literal327=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_numerics3067); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal327_tree = (Object)adaptor.create(char_literal327);
                     adaptor.addChild(root_0, char_literal327_tree);
@@ -9607,27 +9594,27 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // JPA.g:383:4: 'ABS' '(' simple_arithmetic_expression ')'
+                    // JPA.g:384:7: 'ABS' '(' simple_arithmetic_expression ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    string_literal328=(Token)match(input,99,FOLLOW_99_in_functions_returning_numerics2620); if (state.failed) return retval;
+                    string_literal328=(Token)match(input,99,FOLLOW_99_in_functions_returning_numerics3075); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal328_tree = (Object)adaptor.create(string_literal328);
                     adaptor.addChild(root_0, string_literal328_tree);
                     }
-                    char_literal329=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_numerics2622); if (state.failed) return retval;
+                    char_literal329=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_numerics3077); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal329_tree = (Object)adaptor.create(char_literal329);
                     adaptor.addChild(root_0, char_literal329_tree);
                     }
-                    pushFollow(FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics2623);
+                    pushFollow(FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics3078);
                     simple_arithmetic_expression330=simple_arithmetic_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, simple_arithmetic_expression330.getTree());
-                    char_literal331=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_numerics2624); if (state.failed) return retval;
+                    char_literal331=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_numerics3079); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal331_tree = (Object)adaptor.create(char_literal331);
                     adaptor.addChild(root_0, char_literal331_tree);
@@ -9636,27 +9623,27 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // JPA.g:384:4: 'SQRT' '(' simple_arithmetic_expression ')'
+                    // JPA.g:385:7: 'SQRT' '(' simple_arithmetic_expression ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    string_literal332=(Token)match(input,100,FOLLOW_100_in_functions_returning_numerics2629); if (state.failed) return retval;
+                    string_literal332=(Token)match(input,100,FOLLOW_100_in_functions_returning_numerics3087); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal332_tree = (Object)adaptor.create(string_literal332);
                     adaptor.addChild(root_0, string_literal332_tree);
                     }
-                    char_literal333=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_numerics2631); if (state.failed) return retval;
+                    char_literal333=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_numerics3089); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal333_tree = (Object)adaptor.create(char_literal333);
                     adaptor.addChild(root_0, char_literal333_tree);
                     }
-                    pushFollow(FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics2632);
+                    pushFollow(FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics3090);
                     simple_arithmetic_expression334=simple_arithmetic_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, simple_arithmetic_expression334.getTree());
-                    char_literal335=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_numerics2633); if (state.failed) return retval;
+                    char_literal335=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_numerics3091); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal335_tree = (Object)adaptor.create(char_literal335);
                     adaptor.addChild(root_0, char_literal335_tree);
@@ -9665,38 +9652,38 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // JPA.g:385:4: 'MOD' '(' simple_arithmetic_expression ',' simple_arithmetic_expression ')'
+                    // JPA.g:386:7: 'MOD' '(' simple_arithmetic_expression ',' simple_arithmetic_expression ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    string_literal336=(Token)match(input,101,FOLLOW_101_in_functions_returning_numerics2638); if (state.failed) return retval;
+                    string_literal336=(Token)match(input,101,FOLLOW_101_in_functions_returning_numerics3099); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal336_tree = (Object)adaptor.create(string_literal336);
                     adaptor.addChild(root_0, string_literal336_tree);
                     }
-                    char_literal337=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_numerics2640); if (state.failed) return retval;
+                    char_literal337=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_numerics3101); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal337_tree = (Object)adaptor.create(char_literal337);
                     adaptor.addChild(root_0, char_literal337_tree);
                     }
-                    pushFollow(FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics2641);
+                    pushFollow(FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics3102);
                     simple_arithmetic_expression338=simple_arithmetic_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, simple_arithmetic_expression338.getTree());
-                    char_literal339=(Token)match(input,54,FOLLOW_54_in_functions_returning_numerics2642); if (state.failed) return retval;
+                    char_literal339=(Token)match(input,54,FOLLOW_54_in_functions_returning_numerics3103); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal339_tree = (Object)adaptor.create(char_literal339);
                     adaptor.addChild(root_0, char_literal339_tree);
                     }
-                    pushFollow(FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics2644);
+                    pushFollow(FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics3105);
                     simple_arithmetic_expression340=simple_arithmetic_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, simple_arithmetic_expression340.getTree());
-                    char_literal341=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_numerics2645); if (state.failed) return retval;
+                    char_literal341=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_numerics3106); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal341_tree = (Object)adaptor.create(char_literal341);
                     adaptor.addChild(root_0, char_literal341_tree);
@@ -9705,27 +9692,27 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // JPA.g:386:4: 'SIZE' '(' path_expression ')'
+                    // JPA.g:387:7: 'SIZE' '(' path_expression ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    string_literal342=(Token)match(input,102,FOLLOW_102_in_functions_returning_numerics2650); if (state.failed) return retval;
+                    string_literal342=(Token)match(input,102,FOLLOW_102_in_functions_returning_numerics3114); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal342_tree = (Object)adaptor.create(string_literal342);
                     adaptor.addChild(root_0, string_literal342_tree);
                     }
-                    char_literal343=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_numerics2652); if (state.failed) return retval;
+                    char_literal343=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_numerics3116); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal343_tree = (Object)adaptor.create(char_literal343);
                     adaptor.addChild(root_0, char_literal343_tree);
                     }
-                    pushFollow(FOLLOW_path_expression_in_functions_returning_numerics2653);
+                    pushFollow(FOLLOW_path_expression_in_functions_returning_numerics3117);
                     path_expression344=path_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, path_expression344.getTree());
-                    char_literal345=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_numerics2654); if (state.failed) return retval;
+                    char_literal345=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_numerics3118); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal345_tree = (Object)adaptor.create(char_literal345);
                     adaptor.addChild(root_0, char_literal345_tree);
@@ -9761,7 +9748,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "functions_returning_datetime"
-    // JPA.g:388:1: functions_returning_datetime : ( 'CURRENT_DATE' | 'CURRENT_TIME' | 'CURRENT_TIMESTAMP' );
+    // JPA.g:389:1: functions_returning_datetime : ( 'CURRENT_DATE' | 'CURRENT_TIME' | 'CURRENT_TIMESTAMP' );
     public final JPAParser.functions_returning_datetime_return functions_returning_datetime() throws RecognitionException {
         JPAParser.functions_returning_datetime_return retval = new JPAParser.functions_returning_datetime_return();
         retval.start = input.LT(1);
@@ -9773,7 +9760,7 @@ public class JPAParser extends Parser {
         Object set346_tree=null;
 
         try {
-            // JPA.g:389:2: ( 'CURRENT_DATE' | 'CURRENT_TIME' | 'CURRENT_TIMESTAMP' )
+            // JPA.g:390:5: ( 'CURRENT_DATE' | 'CURRENT_TIME' | 'CURRENT_TIMESTAMP' )
             // JPA.g:
             {
             root_0 = (Object)adaptor.nil();
@@ -9819,7 +9806,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "functions_returning_strings"
-    // JPA.g:393:1: functions_returning_strings : ( 'CONCAT' '(' string_primary ',' string_primary ')' | 'SUBSTRING' '(' string_primary ',' simple_arithmetic_expression ',' simple_arithmetic_expression ')' | 'TRIM' '(' ( ( trim_specification )? ( TRIM_CHARACTER )? 'FROM' )? string_primary ')' | 'LOWER' '(' string_primary ')' | 'UPPER' '(' string_primary ')' );
+    // JPA.g:394:1: functions_returning_strings : ( 'CONCAT' '(' string_primary ',' string_primary ')' | 'SUBSTRING' '(' string_primary ',' simple_arithmetic_expression ',' simple_arithmetic_expression ')' | 'TRIM' '(' ( ( trim_specification )? ( TRIM_CHARACTER )? 'FROM' )? string_primary ')' | 'LOWER' '(' string_primary ')' | 'UPPER' '(' string_primary ')' );
     public final JPAParser.functions_returning_strings_return functions_returning_strings() throws RecognitionException {
         JPAParser.functions_returning_strings_return retval = new JPAParser.functions_returning_strings_return();
         retval.start = input.LT(1);
@@ -9887,7 +9874,7 @@ public class JPAParser extends Parser {
         Object char_literal375_tree=null;
 
         try {
-            // JPA.g:394:2: ( 'CONCAT' '(' string_primary ',' string_primary ')' | 'SUBSTRING' '(' string_primary ',' simple_arithmetic_expression ',' simple_arithmetic_expression ')' | 'TRIM' '(' ( ( trim_specification )? ( TRIM_CHARACTER )? 'FROM' )? string_primary ')' | 'LOWER' '(' string_primary ')' | 'UPPER' '(' string_primary ')' )
+            // JPA.g:395:5: ( 'CONCAT' '(' string_primary ',' string_primary ')' | 'SUBSTRING' '(' string_primary ',' simple_arithmetic_expression ',' simple_arithmetic_expression ')' | 'TRIM' '(' ( ( trim_specification )? ( TRIM_CHARACTER )? 'FROM' )? string_primary ')' | 'LOWER' '(' string_primary ')' | 'UPPER' '(' string_primary ')' )
             int alt100=5;
             switch ( input.LA(1) ) {
             case 106:
@@ -9925,38 +9912,38 @@ public class JPAParser extends Parser {
 
             switch (alt100) {
                 case 1 :
-                    // JPA.g:394:4: 'CONCAT' '(' string_primary ',' string_primary ')'
+                    // JPA.g:395:7: 'CONCAT' '(' string_primary ',' string_primary ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    string_literal347=(Token)match(input,106,FOLLOW_106_in_functions_returning_strings2682); if (state.failed) return retval;
+                    string_literal347=(Token)match(input,106,FOLLOW_106_in_functions_returning_strings3158); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal347_tree = (Object)adaptor.create(string_literal347);
                     adaptor.addChild(root_0, string_literal347_tree);
                     }
-                    char_literal348=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_strings2684); if (state.failed) return retval;
+                    char_literal348=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_strings3160); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal348_tree = (Object)adaptor.create(char_literal348);
                     adaptor.addChild(root_0, char_literal348_tree);
                     }
-                    pushFollow(FOLLOW_string_primary_in_functions_returning_strings2685);
+                    pushFollow(FOLLOW_string_primary_in_functions_returning_strings3161);
                     string_primary349=string_primary();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, string_primary349.getTree());
-                    char_literal350=(Token)match(input,54,FOLLOW_54_in_functions_returning_strings2686); if (state.failed) return retval;
+                    char_literal350=(Token)match(input,54,FOLLOW_54_in_functions_returning_strings3162); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal350_tree = (Object)adaptor.create(char_literal350);
                     adaptor.addChild(root_0, char_literal350_tree);
                     }
-                    pushFollow(FOLLOW_string_primary_in_functions_returning_strings2688);
+                    pushFollow(FOLLOW_string_primary_in_functions_returning_strings3164);
                     string_primary351=string_primary();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, string_primary351.getTree());
-                    char_literal352=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_strings2689); if (state.failed) return retval;
+                    char_literal352=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_strings3165); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal352_tree = (Object)adaptor.create(char_literal352);
                     adaptor.addChild(root_0, char_literal352_tree);
@@ -9965,49 +9952,49 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:395:4: 'SUBSTRING' '(' string_primary ',' simple_arithmetic_expression ',' simple_arithmetic_expression ')'
+                    // JPA.g:396:7: 'SUBSTRING' '(' string_primary ',' simple_arithmetic_expression ',' simple_arithmetic_expression ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    string_literal353=(Token)match(input,107,FOLLOW_107_in_functions_returning_strings2694); if (state.failed) return retval;
+                    string_literal353=(Token)match(input,107,FOLLOW_107_in_functions_returning_strings3173); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal353_tree = (Object)adaptor.create(string_literal353);
                     adaptor.addChild(root_0, string_literal353_tree);
                     }
-                    char_literal354=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_strings2696); if (state.failed) return retval;
+                    char_literal354=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_strings3175); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal354_tree = (Object)adaptor.create(char_literal354);
                     adaptor.addChild(root_0, char_literal354_tree);
                     }
-                    pushFollow(FOLLOW_string_primary_in_functions_returning_strings2697);
+                    pushFollow(FOLLOW_string_primary_in_functions_returning_strings3176);
                     string_primary355=string_primary();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, string_primary355.getTree());
-                    char_literal356=(Token)match(input,54,FOLLOW_54_in_functions_returning_strings2698); if (state.failed) return retval;
+                    char_literal356=(Token)match(input,54,FOLLOW_54_in_functions_returning_strings3177); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal356_tree = (Object)adaptor.create(char_literal356);
                     adaptor.addChild(root_0, char_literal356_tree);
                     }
-                    pushFollow(FOLLOW_simple_arithmetic_expression_in_functions_returning_strings2699);
+                    pushFollow(FOLLOW_simple_arithmetic_expression_in_functions_returning_strings3178);
                     simple_arithmetic_expression357=simple_arithmetic_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, simple_arithmetic_expression357.getTree());
-                    char_literal358=(Token)match(input,54,FOLLOW_54_in_functions_returning_strings2700); if (state.failed) return retval;
+                    char_literal358=(Token)match(input,54,FOLLOW_54_in_functions_returning_strings3179); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal358_tree = (Object)adaptor.create(char_literal358);
                     adaptor.addChild(root_0, char_literal358_tree);
                     }
-                    pushFollow(FOLLOW_simple_arithmetic_expression_in_functions_returning_strings2702);
+                    pushFollow(FOLLOW_simple_arithmetic_expression_in_functions_returning_strings3181);
                     simple_arithmetic_expression359=simple_arithmetic_expression();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, simple_arithmetic_expression359.getTree());
-                    char_literal360=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_strings2703); if (state.failed) return retval;
+                    char_literal360=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_strings3182); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal360_tree = (Object)adaptor.create(char_literal360);
                     adaptor.addChild(root_0, char_literal360_tree);
@@ -10016,21 +10003,21 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // JPA.g:396:4: 'TRIM' '(' ( ( trim_specification )? ( TRIM_CHARACTER )? 'FROM' )? string_primary ')'
+                    // JPA.g:397:7: 'TRIM' '(' ( ( trim_specification )? ( TRIM_CHARACTER )? 'FROM' )? string_primary ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    string_literal361=(Token)match(input,108,FOLLOW_108_in_functions_returning_strings2708); if (state.failed) return retval;
+                    string_literal361=(Token)match(input,108,FOLLOW_108_in_functions_returning_strings3190); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal361_tree = (Object)adaptor.create(string_literal361);
                     adaptor.addChild(root_0, string_literal361_tree);
                     }
-                    char_literal362=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_strings2710); if (state.failed) return retval;
+                    char_literal362=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_strings3192); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal362_tree = (Object)adaptor.create(char_literal362);
                     adaptor.addChild(root_0, char_literal362_tree);
                     }
-                    // JPA.g:396:14: ( ( trim_specification )? ( TRIM_CHARACTER )? 'FROM' )?
+                    // JPA.g:397:17: ( ( trim_specification )? ( TRIM_CHARACTER )? 'FROM' )?
                     int alt99=2;
                     int LA99_0 = input.LA(1);
 
@@ -10039,9 +10026,9 @@ public class JPAParser extends Parser {
                     }
                     switch (alt99) {
                         case 1 :
-                            // JPA.g:396:15: ( trim_specification )? ( TRIM_CHARACTER )? 'FROM'
+                            // JPA.g:397:18: ( trim_specification )? ( TRIM_CHARACTER )? 'FROM'
                             {
-                            // JPA.g:396:15: ( trim_specification )?
+                            // JPA.g:397:18: ( trim_specification )?
                             int alt97=2;
                             int LA97_0 = input.LA(1);
 
@@ -10050,9 +10037,9 @@ public class JPAParser extends Parser {
                             }
                             switch (alt97) {
                                 case 1 :
-                                    // JPA.g:396:16: trim_specification
+                                    // JPA.g:397:19: trim_specification
                                     {
-                                    pushFollow(FOLLOW_trim_specification_in_functions_returning_strings2713);
+                                    pushFollow(FOLLOW_trim_specification_in_functions_returning_strings3195);
                                     trim_specification363=trim_specification();
 
                                     state._fsp--;
@@ -10064,7 +10051,7 @@ public class JPAParser extends Parser {
 
                             }
 
-                            // JPA.g:396:37: ( TRIM_CHARACTER )?
+                            // JPA.g:397:40: ( TRIM_CHARACTER )?
                             int alt98=2;
                             int LA98_0 = input.LA(1);
 
@@ -10073,9 +10060,9 @@ public class JPAParser extends Parser {
                             }
                             switch (alt98) {
                                 case 1 :
-                                    // JPA.g:396:38: TRIM_CHARACTER
+                                    // JPA.g:397:41: TRIM_CHARACTER
                                     {
-                                    TRIM_CHARACTER364=(Token)match(input,TRIM_CHARACTER,FOLLOW_TRIM_CHARACTER_in_functions_returning_strings2718); if (state.failed) return retval;
+                                    TRIM_CHARACTER364=(Token)match(input,TRIM_CHARACTER,FOLLOW_TRIM_CHARACTER_in_functions_returning_strings3200); if (state.failed) return retval;
                                     if ( state.backtracking==0 ) {
                                     TRIM_CHARACTER364_tree = (Object)adaptor.create(TRIM_CHARACTER364);
                                     adaptor.addChild(root_0, TRIM_CHARACTER364_tree);
@@ -10086,7 +10073,7 @@ public class JPAParser extends Parser {
 
                             }
 
-                            string_literal365=(Token)match(input,53,FOLLOW_53_in_functions_returning_strings2722); if (state.failed) return retval;
+                            string_literal365=(Token)match(input,53,FOLLOW_53_in_functions_returning_strings3204); if (state.failed) return retval;
                             if ( state.backtracking==0 ) {
                             string_literal365_tree = (Object)adaptor.create(string_literal365);
                             adaptor.addChild(root_0, string_literal365_tree);
@@ -10097,13 +10084,13 @@ public class JPAParser extends Parser {
 
                     }
 
-                    pushFollow(FOLLOW_string_primary_in_functions_returning_strings2726);
+                    pushFollow(FOLLOW_string_primary_in_functions_returning_strings3208);
                     string_primary366=string_primary();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, string_primary366.getTree());
-                    char_literal367=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_strings2727); if (state.failed) return retval;
+                    char_literal367=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_strings3209); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal367_tree = (Object)adaptor.create(char_literal367);
                     adaptor.addChild(root_0, char_literal367_tree);
@@ -10112,27 +10099,27 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // JPA.g:397:4: 'LOWER' '(' string_primary ')'
+                    // JPA.g:398:7: 'LOWER' '(' string_primary ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    string_literal368=(Token)match(input,109,FOLLOW_109_in_functions_returning_strings2732); if (state.failed) return retval;
+                    string_literal368=(Token)match(input,109,FOLLOW_109_in_functions_returning_strings3217); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal368_tree = (Object)adaptor.create(string_literal368);
                     adaptor.addChild(root_0, string_literal368_tree);
                     }
-                    char_literal369=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_strings2734); if (state.failed) return retval;
+                    char_literal369=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_strings3219); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal369_tree = (Object)adaptor.create(char_literal369);
                     adaptor.addChild(root_0, char_literal369_tree);
                     }
-                    pushFollow(FOLLOW_string_primary_in_functions_returning_strings2735);
+                    pushFollow(FOLLOW_string_primary_in_functions_returning_strings3220);
                     string_primary370=string_primary();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, string_primary370.getTree());
-                    char_literal371=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_strings2736); if (state.failed) return retval;
+                    char_literal371=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_strings3221); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal371_tree = (Object)adaptor.create(char_literal371);
                     adaptor.addChild(root_0, char_literal371_tree);
@@ -10141,27 +10128,27 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // JPA.g:398:4: 'UPPER' '(' string_primary ')'
+                    // JPA.g:399:7: 'UPPER' '(' string_primary ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    string_literal372=(Token)match(input,110,FOLLOW_110_in_functions_returning_strings2741); if (state.failed) return retval;
+                    string_literal372=(Token)match(input,110,FOLLOW_110_in_functions_returning_strings3229); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal372_tree = (Object)adaptor.create(string_literal372);
                     adaptor.addChild(root_0, string_literal372_tree);
                     }
-                    char_literal373=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_strings2743); if (state.failed) return retval;
+                    char_literal373=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_functions_returning_strings3231); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal373_tree = (Object)adaptor.create(char_literal373);
                     adaptor.addChild(root_0, char_literal373_tree);
                     }
-                    pushFollow(FOLLOW_string_primary_in_functions_returning_strings2744);
+                    pushFollow(FOLLOW_string_primary_in_functions_returning_strings3232);
                     string_primary374=string_primary();
 
                     state._fsp--;
                     if (state.failed) return retval;
                     if ( state.backtracking==0 ) adaptor.addChild(root_0, string_primary374.getTree());
-                    char_literal375=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_strings2745); if (state.failed) return retval;
+                    char_literal375=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_functions_returning_strings3233); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     char_literal375_tree = (Object)adaptor.create(char_literal375);
                     adaptor.addChild(root_0, char_literal375_tree);
@@ -10197,7 +10184,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "trim_specification"
-    // JPA.g:400:1: trim_specification : ( 'LEADING' | 'TRAILING' | 'BOTH' );
+    // JPA.g:401:1: trim_specification : ( 'LEADING' | 'TRAILING' | 'BOTH' );
     public final JPAParser.trim_specification_return trim_specification() throws RecognitionException {
         JPAParser.trim_specification_return retval = new JPAParser.trim_specification_return();
         retval.start = input.LT(1);
@@ -10209,7 +10196,7 @@ public class JPAParser extends Parser {
         Object set376_tree=null;
 
         try {
-            // JPA.g:401:2: ( 'LEADING' | 'TRAILING' | 'BOTH' )
+            // JPA.g:402:5: ( 'LEADING' | 'TRAILING' | 'BOTH' )
             // JPA.g:
             {
             root_0 = (Object)adaptor.nil();
@@ -10255,7 +10242,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "abstract_schema_name"
-    // JPA.g:406:1: abstract_schema_name : WORD ;
+    // JPA.g:407:1: abstract_schema_name : WORD ;
     public final JPAParser.abstract_schema_name_return abstract_schema_name() throws RecognitionException {
         JPAParser.abstract_schema_name_return retval = new JPAParser.abstract_schema_name_return();
         retval.start = input.LT(1);
@@ -10267,12 +10254,12 @@ public class JPAParser extends Parser {
         Object WORD377_tree=null;
 
         try {
-            // JPA.g:407:4: ( WORD )
-            // JPA.g:407:6: WORD
+            // JPA.g:408:5: ( WORD )
+            // JPA.g:408:7: WORD
             {
             root_0 = (Object)adaptor.nil();
 
-            WORD377=(Token)match(input,WORD,FOLLOW_WORD_in_abstract_schema_name2776); if (state.failed) return retval;
+            WORD377=(Token)match(input,WORD,FOLLOW_WORD_in_abstract_schema_name3274); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             WORD377_tree = (Object)adaptor.create(WORD377);
             adaptor.addChild(root_0, WORD377_tree);
@@ -10306,7 +10293,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "pattern_value"
-    // JPA.g:410:1: pattern_value : WORD ;
+    // JPA.g:411:1: pattern_value : WORD ;
     public final JPAParser.pattern_value_return pattern_value() throws RecognitionException {
         JPAParser.pattern_value_return retval = new JPAParser.pattern_value_return();
         retval.start = input.LT(1);
@@ -10318,12 +10305,12 @@ public class JPAParser extends Parser {
         Object WORD378_tree=null;
 
         try {
-            // JPA.g:411:2: ( WORD )
-            // JPA.g:411:4: WORD
+            // JPA.g:412:5: ( WORD )
+            // JPA.g:412:7: WORD
             {
             root_0 = (Object)adaptor.nil();
 
-            WORD378=(Token)match(input,WORD,FOLLOW_WORD_in_pattern_value2786); if (state.failed) return retval;
+            WORD378=(Token)match(input,WORD,FOLLOW_WORD_in_pattern_value3287); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             WORD378_tree = (Object)adaptor.create(WORD378);
             adaptor.addChild(root_0, WORD378_tree);
@@ -10357,7 +10344,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "numeric_literal"
-    // JPA.g:414:1: numeric_literal : ( '0x' )? INT_NUMERAL ;
+    // JPA.g:415:1: numeric_literal : ( '0x' )? INT_NUMERAL ;
     public final JPAParser.numeric_literal_return numeric_literal() throws RecognitionException {
         JPAParser.numeric_literal_return retval = new JPAParser.numeric_literal_return();
         retval.start = input.LT(1);
@@ -10371,12 +10358,12 @@ public class JPAParser extends Parser {
         Object INT_NUMERAL380_tree=null;
 
         try {
-            // JPA.g:415:2: ( ( '0x' )? INT_NUMERAL )
-            // JPA.g:415:4: ( '0x' )? INT_NUMERAL
+            // JPA.g:416:5: ( ( '0x' )? INT_NUMERAL )
+            // JPA.g:416:7: ( '0x' )? INT_NUMERAL
             {
             root_0 = (Object)adaptor.nil();
 
-            // JPA.g:415:4: ( '0x' )?
+            // JPA.g:416:7: ( '0x' )?
             int alt101=2;
             int LA101_0 = input.LA(1);
 
@@ -10385,9 +10372,9 @@ public class JPAParser extends Parser {
             }
             switch (alt101) {
                 case 1 :
-                    // JPA.g:415:5: '0x'
+                    // JPA.g:416:8: '0x'
                     {
-                    string_literal379=(Token)match(input,114,FOLLOW_114_in_numeric_literal2797); if (state.failed) return retval;
+                    string_literal379=(Token)match(input,114,FOLLOW_114_in_numeric_literal3301); if (state.failed) return retval;
                     if ( state.backtracking==0 ) {
                     string_literal379_tree = (Object)adaptor.create(string_literal379);
                     adaptor.addChild(root_0, string_literal379_tree);
@@ -10398,7 +10385,7 @@ public class JPAParser extends Parser {
 
             }
 
-            INT_NUMERAL380=(Token)match(input,INT_NUMERAL,FOLLOW_INT_NUMERAL_in_numeric_literal2801); if (state.failed) return retval;
+            INT_NUMERAL380=(Token)match(input,INT_NUMERAL,FOLLOW_INT_NUMERAL_in_numeric_literal3305); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
             INT_NUMERAL380_tree = (Object)adaptor.create(INT_NUMERAL380);
             adaptor.addChild(root_0, INT_NUMERAL380_tree);
@@ -10432,7 +10419,7 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "input_parameter"
-    // JPA.g:417:1: input_parameter : ( '?' INT_NUMERAL -> ^( T_PARAMETER[] '?' INT_NUMERAL ) | NAMED_PARAMETER -> ^( T_PARAMETER[] NAMED_PARAMETER ) );
+    // JPA.g:418:1: input_parameter : ( '?' INT_NUMERAL -> ^( T_PARAMETER[] '?' INT_NUMERAL ) | NAMED_PARAMETER -> ^( T_PARAMETER[] NAMED_PARAMETER ) | '${' WORD '}' -> ^( T_PARAMETER[] '${' WORD '}' ) );
     public final JPAParser.input_parameter_return input_parameter() throws RecognitionException {
         JPAParser.input_parameter_return retval = new JPAParser.input_parameter_return();
         retval.start = input.LT(1);
@@ -10442,59 +10429,77 @@ public class JPAParser extends Parser {
         Token char_literal381=null;
         Token INT_NUMERAL382=null;
         Token NAMED_PARAMETER383=null;
+        Token string_literal384=null;
+        Token WORD385=null;
+        Token char_literal386=null;
 
         Object char_literal381_tree=null;
         Object INT_NUMERAL382_tree=null;
         Object NAMED_PARAMETER383_tree=null;
+        Object string_literal384_tree=null;
+        Object WORD385_tree=null;
+        Object char_literal386_tree=null;
+        RewriteRuleTokenStream stream_116=new RewriteRuleTokenStream(adaptor,"token 116");
+        RewriteRuleTokenStream stream_WORD=new RewriteRuleTokenStream(adaptor,"token WORD");
+        RewriteRuleTokenStream stream_117=new RewriteRuleTokenStream(adaptor,"token 117");
         RewriteRuleTokenStream stream_115=new RewriteRuleTokenStream(adaptor,"token 115");
         RewriteRuleTokenStream stream_NAMED_PARAMETER=new RewriteRuleTokenStream(adaptor,"token NAMED_PARAMETER");
         RewriteRuleTokenStream stream_INT_NUMERAL=new RewriteRuleTokenStream(adaptor,"token INT_NUMERAL");
 
         try {
-            // JPA.g:418:2: ( '?' INT_NUMERAL -> ^( T_PARAMETER[] '?' INT_NUMERAL ) | NAMED_PARAMETER -> ^( T_PARAMETER[] NAMED_PARAMETER ) )
-            int alt102=2;
-            int LA102_0 = input.LA(1);
-
-            if ( (LA102_0==115) ) {
+            // JPA.g:419:5: ( '?' INT_NUMERAL -> ^( T_PARAMETER[] '?' INT_NUMERAL ) | NAMED_PARAMETER -> ^( T_PARAMETER[] NAMED_PARAMETER ) | '${' WORD '}' -> ^( T_PARAMETER[] '${' WORD '}' ) )
+            int alt102=3;
+            switch ( input.LA(1) ) {
+            case 115:
+                {
                 alt102=1;
-            }
-            else if ( (LA102_0==NAMED_PARAMETER) ) {
+                }
+                break;
+            case NAMED_PARAMETER:
+                {
                 alt102=2;
-            }
-            else {
+                }
+                break;
+            case 116:
+                {
+                alt102=3;
+                }
+                break;
+            default:
                 if (state.backtracking>0) {state.failed=true; return retval;}
                 NoViableAltException nvae =
                     new NoViableAltException("", 102, 0, input);
 
                 throw nvae;
             }
+
             switch (alt102) {
                 case 1 :
-                    // JPA.g:418:4: '?' INT_NUMERAL
+                    // JPA.g:419:7: '?' INT_NUMERAL
                     {
-                    char_literal381=(Token)match(input,115,FOLLOW_115_in_input_parameter2811); if (state.failed) return retval;
+                    char_literal381=(Token)match(input,115,FOLLOW_115_in_input_parameter3318); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_115.add(char_literal381);
 
-                    INT_NUMERAL382=(Token)match(input,INT_NUMERAL,FOLLOW_INT_NUMERAL_in_input_parameter2813); if (state.failed) return retval;
+                    INT_NUMERAL382=(Token)match(input,INT_NUMERAL,FOLLOW_INT_NUMERAL_in_input_parameter3320); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_INT_NUMERAL.add(INT_NUMERAL382);
 
 
 
                     // AST REWRITE
-                    // elements: INT_NUMERAL, 115
-                    // token labels:
+                    // elements: 115, INT_NUMERAL
+                    // token labels: 
                     // rule labels: retval
-                    // token list labels:
-                    // rule list labels:
-                    // wildcard labels:
+                    // token list labels: 
+                    // rule list labels: 
+                    // wildcard labels: 
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 418:20: -> ^( T_PARAMETER[] '?' INT_NUMERAL )
+                    // 419:23: -> ^( T_PARAMETER[] '?' INT_NUMERAL )
                     {
-                        // JPA.g:418:23: ^( T_PARAMETER[] '?' INT_NUMERAL )
+                        // JPA.g:419:26: ^( T_PARAMETER[] '?' INT_NUMERAL )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(new ParameterNode(T_PARAMETER), root_1);
@@ -10511,33 +10516,78 @@ public class JPAParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // JPA.g:419:4: NAMED_PARAMETER
+                    // JPA.g:420:7: NAMED_PARAMETER
                     {
-                    NAMED_PARAMETER383=(Token)match(input,NAMED_PARAMETER,FOLLOW_NAMED_PARAMETER_in_input_parameter2833); if (state.failed) return retval;
+                    NAMED_PARAMETER383=(Token)match(input,NAMED_PARAMETER,FOLLOW_NAMED_PARAMETER_in_input_parameter3343); if (state.failed) return retval; 
                     if ( state.backtracking==0 ) stream_NAMED_PARAMETER.add(NAMED_PARAMETER383);
 
 
 
                     // AST REWRITE
                     // elements: NAMED_PARAMETER
-                    // token labels:
+                    // token labels: 
                     // rule labels: retval
-                    // token list labels:
-                    // rule list labels:
-                    // wildcard labels:
+                    // token list labels: 
+                    // rule list labels: 
+                    // wildcard labels: 
                     if ( state.backtracking==0 ) {
                     retval.tree = root_0;
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 419:20: -> ^( T_PARAMETER[] NAMED_PARAMETER )
+                    // 420:23: -> ^( T_PARAMETER[] NAMED_PARAMETER )
                     {
-                        // JPA.g:419:23: ^( T_PARAMETER[] NAMED_PARAMETER )
+                        // JPA.g:420:26: ^( T_PARAMETER[] NAMED_PARAMETER )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(new ParameterNode(T_PARAMETER), root_1);
 
                         adaptor.addChild(root_1, stream_NAMED_PARAMETER.nextNode());
+
+                        adaptor.addChild(root_0, root_1);
+                        }
+
+                    }
+
+                    retval.tree = root_0;}
+                    }
+                    break;
+                case 3 :
+                    // JPA.g:421:7: '${' WORD '}'
+                    {
+                    string_literal384=(Token)match(input,116,FOLLOW_116_in_input_parameter3364); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_116.add(string_literal384);
+
+                    WORD385=(Token)match(input,WORD,FOLLOW_WORD_in_input_parameter3366); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_WORD.add(WORD385);
+
+                    char_literal386=(Token)match(input,117,FOLLOW_117_in_input_parameter3368); if (state.failed) return retval; 
+                    if ( state.backtracking==0 ) stream_117.add(char_literal386);
+
+
+
+                    // AST REWRITE
+                    // elements: 117, 116, WORD
+                    // token labels: 
+                    // rule labels: retval
+                    // token list labels: 
+                    // rule list labels: 
+                    // wildcard labels: 
+                    if ( state.backtracking==0 ) {
+                    retval.tree = root_0;
+                    RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
+
+                    root_0 = (Object)adaptor.nil();
+                    // 421:21: -> ^( T_PARAMETER[] '${' WORD '}' )
+                    {
+                        // JPA.g:421:24: ^( T_PARAMETER[] '${' WORD '}' )
+                        {
+                        Object root_1 = (Object)adaptor.nil();
+                        root_1 = (Object)adaptor.becomeRoot(new ParameterNode(T_PARAMETER), root_1);
+
+                        adaptor.addChild(root_1, stream_116.nextNode());
+                        adaptor.addChild(root_1, stream_WORD.nextNode());
+                        adaptor.addChild(root_1, stream_117.nextNode());
 
                         adaptor.addChild(root_0, root_1);
                         }
@@ -10575,27 +10625,27 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "literal"
-    // JPA.g:421:1: literal : WORD ;
+    // JPA.g:423:1: literal : WORD ;
     public final JPAParser.literal_return literal() throws RecognitionException {
         JPAParser.literal_return retval = new JPAParser.literal_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token WORD384=null;
+        Token WORD387=null;
 
-        Object WORD384_tree=null;
+        Object WORD387_tree=null;
 
         try {
-            // JPA.g:422:2: ( WORD )
-            // JPA.g:422:4: WORD
+            // JPA.g:424:5: ( WORD )
+            // JPA.g:424:7: WORD
             {
             root_0 = (Object)adaptor.nil();
 
-            WORD384=(Token)match(input,WORD,FOLLOW_WORD_in_literal2855); if (state.failed) return retval;
+            WORD387=(Token)match(input,WORD,FOLLOW_WORD_in_literal3396); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-            WORD384_tree = (Object)adaptor.create(WORD384);
-            adaptor.addChild(root_0, WORD384_tree);
+            WORD387_tree = (Object)adaptor.create(WORD387);
+            adaptor.addChild(root_0, WORD387_tree);
             }
 
             }
@@ -10626,27 +10676,27 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "constructor_name"
-    // JPA.g:424:1: constructor_name : WORD ;
+    // JPA.g:426:1: constructor_name : WORD ;
     public final JPAParser.constructor_name_return constructor_name() throws RecognitionException {
         JPAParser.constructor_name_return retval = new JPAParser.constructor_name_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token WORD385=null;
+        Token WORD388=null;
 
-        Object WORD385_tree=null;
+        Object WORD388_tree=null;
 
         try {
-            // JPA.g:425:2: ( WORD )
-            // JPA.g:425:4: WORD
+            // JPA.g:427:5: ( WORD )
+            // JPA.g:427:7: WORD
             {
             root_0 = (Object)adaptor.nil();
 
-            WORD385=(Token)match(input,WORD,FOLLOW_WORD_in_constructor_name2864); if (state.failed) return retval;
+            WORD388=(Token)match(input,WORD,FOLLOW_WORD_in_constructor_name3408); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-            WORD385_tree = (Object)adaptor.create(WORD385);
-            adaptor.addChild(root_0, WORD385_tree);
+            WORD388_tree = (Object)adaptor.create(WORD388);
+            adaptor.addChild(root_0, WORD388_tree);
             }
 
             }
@@ -10677,27 +10727,27 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "enum_literal"
-    // JPA.g:427:1: enum_literal : WORD ;
+    // JPA.g:429:1: enum_literal : WORD ;
     public final JPAParser.enum_literal_return enum_literal() throws RecognitionException {
         JPAParser.enum_literal_return retval = new JPAParser.enum_literal_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token WORD386=null;
+        Token WORD389=null;
 
-        Object WORD386_tree=null;
+        Object WORD389_tree=null;
 
         try {
-            // JPA.g:428:2: ( WORD )
-            // JPA.g:428:4: WORD
+            // JPA.g:430:5: ( WORD )
+            // JPA.g:430:7: WORD
             {
             root_0 = (Object)adaptor.nil();
 
-            WORD386=(Token)match(input,WORD,FOLLOW_WORD_in_enum_literal2905); if (state.failed) return retval;
+            WORD389=(Token)match(input,WORD,FOLLOW_WORD_in_enum_literal3452); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-            WORD386_tree = (Object)adaptor.create(WORD386);
-            adaptor.addChild(root_0, WORD386_tree);
+            WORD389_tree = (Object)adaptor.create(WORD389);
+            adaptor.addChild(root_0, WORD389_tree);
             }
 
             }
@@ -10728,27 +10778,27 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "boolean_literal"
-    // JPA.g:430:1: boolean_literal : ( 'true' | 'false' );
+    // JPA.g:432:1: boolean_literal : ( 'true' | 'false' );
     public final JPAParser.boolean_literal_return boolean_literal() throws RecognitionException {
         JPAParser.boolean_literal_return retval = new JPAParser.boolean_literal_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token set387=null;
+        Token set390=null;
 
-        Object set387_tree=null;
+        Object set390_tree=null;
 
         try {
-            // JPA.g:431:2: ( 'true' | 'false' )
+            // JPA.g:433:5: ( 'true' | 'false' )
             // JPA.g:
             {
             root_0 = (Object)adaptor.nil();
 
-            set387=(Token)input.LT(1);
-            if ( (input.LA(1)>=116 && input.LA(1)<=117) ) {
+            set390=(Token)input.LT(1);
+            if ( (input.LA(1)>=118 && input.LA(1)<=119) ) {
                 input.consume();
-                if ( state.backtracking==0 ) adaptor.addChild(root_0, (Object)adaptor.create(set387));
+                if ( state.backtracking==0 ) adaptor.addChild(root_0, (Object)adaptor.create(set390));
                 state.errorRecovery=false;state.failed=false;
             }
             else {
@@ -10786,27 +10836,27 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "field"
-    // JPA.g:435:1: field : ( WORD | 'GROUP' );
+    // JPA.g:437:1: field : ( WORD | 'GROUP' );
     public final JPAParser.field_return field() throws RecognitionException {
         JPAParser.field_return retval = new JPAParser.field_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token set388=null;
+        Token set391=null;
 
-        Object set388_tree=null;
+        Object set391_tree=null;
 
         try {
-            // JPA.g:436:4: ( WORD | 'GROUP' )
+            // JPA.g:438:5: ( WORD | 'GROUP' )
             // JPA.g:
             {
             root_0 = (Object)adaptor.nil();
 
-            set388=(Token)input.LT(1);
+            set391=(Token)input.LT(1);
             if ( input.LA(1)==GROUP||input.LA(1)==WORD ) {
                 input.consume();
-                if ( state.backtracking==0 ) adaptor.addChild(root_0, (Object)adaptor.create(set388));
+                if ( state.backtracking==0 ) adaptor.addChild(root_0, (Object)adaptor.create(set391));
                 state.errorRecovery=false;state.failed=false;
             }
             else {
@@ -10844,27 +10894,27 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "identification_variable"
-    // JPA.g:438:1: identification_variable : WORD ;
+    // JPA.g:440:1: identification_variable : WORD ;
     public final JPAParser.identification_variable_return identification_variable() throws RecognitionException {
         JPAParser.identification_variable_return retval = new JPAParser.identification_variable_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token WORD389=null;
+        Token WORD392=null;
 
-        Object WORD389_tree=null;
+        Object WORD392_tree=null;
 
         try {
-            // JPA.g:439:4: ( WORD )
-            // JPA.g:439:6: WORD
+            // JPA.g:441:5: ( WORD )
+            // JPA.g:441:7: WORD
             {
             root_0 = (Object)adaptor.nil();
 
-            WORD389=(Token)match(input,WORD,FOLLOW_WORD_in_identification_variable2946); if (state.failed) return retval;
+            WORD392=(Token)match(input,WORD,FOLLOW_WORD_in_identification_variable3501); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-            WORD389_tree = (Object)adaptor.create(WORD389);
-            adaptor.addChild(root_0, WORD389_tree);
+            WORD392_tree = (Object)adaptor.create(WORD392);
+            adaptor.addChild(root_0, WORD392_tree);
             }
 
             }
@@ -10895,33 +10945,33 @@ public class JPAParser extends Parser {
     };
 
     // $ANTLR start "parameter_name"
-    // JPA.g:441:1: parameter_name : WORD ( '.' WORD )* ;
+    // JPA.g:443:1: parameter_name : WORD ( '.' WORD )* ;
     public final JPAParser.parameter_name_return parameter_name() throws RecognitionException {
         JPAParser.parameter_name_return retval = new JPAParser.parameter_name_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token WORD390=null;
-        Token char_literal391=null;
-        Token WORD392=null;
+        Token WORD393=null;
+        Token char_literal394=null;
+        Token WORD395=null;
 
-        Object WORD390_tree=null;
-        Object char_literal391_tree=null;
-        Object WORD392_tree=null;
+        Object WORD393_tree=null;
+        Object char_literal394_tree=null;
+        Object WORD395_tree=null;
 
         try {
-            // JPA.g:442:4: ( WORD ( '.' WORD )* )
-            // JPA.g:442:6: WORD ( '.' WORD )*
+            // JPA.g:444:5: ( WORD ( '.' WORD )* )
+            // JPA.g:444:7: WORD ( '.' WORD )*
             {
             root_0 = (Object)adaptor.nil();
 
-            WORD390=(Token)match(input,WORD,FOLLOW_WORD_in_parameter_name2957); if (state.failed) return retval;
+            WORD393=(Token)match(input,WORD,FOLLOW_WORD_in_parameter_name3513); if (state.failed) return retval;
             if ( state.backtracking==0 ) {
-            WORD390_tree = (Object)adaptor.create(WORD390);
-            adaptor.addChild(root_0, WORD390_tree);
+            WORD393_tree = (Object)adaptor.create(WORD393);
+            adaptor.addChild(root_0, WORD393_tree);
             }
-            // JPA.g:442:11: ( '.' WORD )*
+            // JPA.g:444:12: ( '.' WORD )*
             loop103:
             do {
                 int alt103=2;
@@ -10934,17 +10984,17 @@ public class JPAParser extends Parser {
 
                 switch (alt103) {
             	case 1 :
-            	    // JPA.g:442:12: '.' WORD
+            	    // JPA.g:444:13: '.' WORD
             	    {
-            	    char_literal391=(Token)match(input,57,FOLLOW_57_in_parameter_name2960); if (state.failed) return retval;
+            	    char_literal394=(Token)match(input,57,FOLLOW_57_in_parameter_name3516); if (state.failed) return retval;
             	    if ( state.backtracking==0 ) {
-            	    char_literal391_tree = (Object)adaptor.create(char_literal391);
-            	    adaptor.addChild(root_0, char_literal391_tree);
+            	    char_literal394_tree = (Object)adaptor.create(char_literal394);
+            	    adaptor.addChild(root_0, char_literal394_tree);
             	    }
-            	    WORD392=(Token)match(input,WORD,FOLLOW_WORD_in_parameter_name2963); if (state.failed) return retval;
+            	    WORD395=(Token)match(input,WORD,FOLLOW_WORD_in_parameter_name3519); if (state.failed) return retval;
             	    if ( state.backtracking==0 ) {
-            	    WORD392_tree = (Object)adaptor.create(WORD392);
-            	    adaptor.addChild(root_0, WORD392_tree);
+            	    WORD395_tree = (Object)adaptor.create(WORD395);
+            	    adaptor.addChild(root_0, WORD395_tree);
             	    }
 
             	    }
@@ -10979,11 +11029,11 @@ public class JPAParser extends Parser {
     // $ANTLR end "parameter_name"
 
     // $ANTLR start synpred20_JPA
-    public final void synpred20_JPA_fragment() throws RecognitionException {
-        // JPA.g:129:44: ( field )
-        // JPA.g:129:44: field
+    public final void synpred20_JPA_fragment() throws RecognitionException {   
+        // JPA.g:130:47: ( field )
+        // JPA.g:130:47: field
         {
-        pushFollow(FOLLOW_field_in_synpred20_JPA820);
+        pushFollow(FOLLOW_field_in_synpred20_JPA887);
         field();
 
         state._fsp--;
@@ -10994,11 +11044,11 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred20_JPA
 
     // $ANTLR start synpred23_JPA
-    public final void synpred23_JPA_fragment() throws RecognitionException {
-        // JPA.g:139:46: ( field )
-        // JPA.g:139:46: field
+    public final void synpred23_JPA_fragment() throws RecognitionException {   
+        // JPA.g:140:49: ( field )
+        // JPA.g:140:49: field
         {
-        pushFollow(FOLLOW_field_in_synpred23_JPA897);
+        pushFollow(FOLLOW_field_in_synpred23_JPA982);
         field();
 
         state._fsp--;
@@ -11009,22 +11059,22 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred23_JPA
 
     // $ANTLR start synpred57_JPA
-    public final void synpred57_JPA_fragment() throws RecognitionException {
-        // JPA.g:227:5: ( 'NOT' )
-        // JPA.g:227:5: 'NOT'
+    public final void synpred57_JPA_fragment() throws RecognitionException {   
+        // JPA.g:228:8: ( 'NOT' )
+        // JPA.g:228:8: 'NOT'
         {
-        match(input,62,FOLLOW_62_in_synpred57_JPA1596); if (state.failed) return ;
+        match(input,62,FOLLOW_62_in_synpred57_JPA1823); if (state.failed) return ;
 
         }
     }
     // $ANTLR end synpred57_JPA
 
     // $ANTLR start synpred58_JPA
-    public final void synpred58_JPA_fragment() throws RecognitionException {
-        // JPA.g:227:4: ( ( 'NOT' )? simple_cond_expression )
-        // JPA.g:227:4: ( 'NOT' )? simple_cond_expression
+    public final void synpred58_JPA_fragment() throws RecognitionException {   
+        // JPA.g:228:7: ( ( 'NOT' )? simple_cond_expression )
+        // JPA.g:228:7: ( 'NOT' )? simple_cond_expression
         {
-        // JPA.g:227:4: ( 'NOT' )?
+        // JPA.g:228:7: ( 'NOT' )?
         int alt108=2;
         int LA108_0 = input.LA(1);
 
@@ -11037,16 +11087,16 @@ public class JPAParser extends Parser {
         }
         switch (alt108) {
             case 1 :
-                // JPA.g:227:5: 'NOT'
+                // JPA.g:228:8: 'NOT'
                 {
-                match(input,62,FOLLOW_62_in_synpred58_JPA1596); if (state.failed) return ;
+                match(input,62,FOLLOW_62_in_synpred58_JPA1823); if (state.failed) return ;
 
                 }
                 break;
 
         }
 
-        pushFollow(FOLLOW_simple_cond_expression_in_synpred58_JPA1600);
+        pushFollow(FOLLOW_simple_cond_expression_in_synpred58_JPA1827);
         simple_cond_expression();
 
         state._fsp--;
@@ -11057,11 +11107,11 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred58_JPA
 
     // $ANTLR start synpred59_JPA
-    public final void synpred59_JPA_fragment() throws RecognitionException {
-        // JPA.g:231:4: ( comparison_expression )
-        // JPA.g:231:4: comparison_expression
+    public final void synpred59_JPA_fragment() throws RecognitionException {   
+        // JPA.g:232:7: ( comparison_expression )
+        // JPA.g:232:7: comparison_expression
         {
-        pushFollow(FOLLOW_comparison_expression_in_synpred59_JPA1633);
+        pushFollow(FOLLOW_comparison_expression_in_synpred59_JPA1866);
         comparison_expression();
 
         state._fsp--;
@@ -11072,11 +11122,11 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred59_JPA
 
     // $ANTLR start synpred60_JPA
-    public final void synpred60_JPA_fragment() throws RecognitionException {
-        // JPA.g:232:4: ( between_expression )
-        // JPA.g:232:4: between_expression
+    public final void synpred60_JPA_fragment() throws RecognitionException {   
+        // JPA.g:233:7: ( between_expression )
+        // JPA.g:233:7: between_expression
         {
-        pushFollow(FOLLOW_between_expression_in_synpred60_JPA1638);
+        pushFollow(FOLLOW_between_expression_in_synpred60_JPA1874);
         between_expression();
 
         state._fsp--;
@@ -11087,11 +11137,11 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred60_JPA
 
     // $ANTLR start synpred61_JPA
-    public final void synpred61_JPA_fragment() throws RecognitionException {
-        // JPA.g:233:4: ( like_expression )
-        // JPA.g:233:4: like_expression
+    public final void synpred61_JPA_fragment() throws RecognitionException {   
+        // JPA.g:234:7: ( like_expression )
+        // JPA.g:234:7: like_expression
         {
-        pushFollow(FOLLOW_like_expression_in_synpred61_JPA1643);
+        pushFollow(FOLLOW_like_expression_in_synpred61_JPA1882);
         like_expression();
 
         state._fsp--;
@@ -11102,11 +11152,11 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred61_JPA
 
     // $ANTLR start synpred62_JPA
-    public final void synpred62_JPA_fragment() throws RecognitionException {
-        // JPA.g:234:4: ( in_expression )
-        // JPA.g:234:4: in_expression
+    public final void synpred62_JPA_fragment() throws RecognitionException {   
+        // JPA.g:235:7: ( in_expression )
+        // JPA.g:235:7: in_expression
         {
-        pushFollow(FOLLOW_in_expression_in_synpred62_JPA1648);
+        pushFollow(FOLLOW_in_expression_in_synpred62_JPA1890);
         in_expression();
 
         state._fsp--;
@@ -11117,11 +11167,11 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred62_JPA
 
     // $ANTLR start synpred63_JPA
-    public final void synpred63_JPA_fragment() throws RecognitionException {
-        // JPA.g:235:4: ( null_comparison_expression )
-        // JPA.g:235:4: null_comparison_expression
+    public final void synpred63_JPA_fragment() throws RecognitionException {   
+        // JPA.g:236:7: ( null_comparison_expression )
+        // JPA.g:236:7: null_comparison_expression
         {
-        pushFollow(FOLLOW_null_comparison_expression_in_synpred63_JPA1653);
+        pushFollow(FOLLOW_null_comparison_expression_in_synpred63_JPA1898);
         null_comparison_expression();
 
         state._fsp--;
@@ -11132,11 +11182,11 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred63_JPA
 
     // $ANTLR start synpred64_JPA
-    public final void synpred64_JPA_fragment() throws RecognitionException {
-        // JPA.g:236:4: ( empty_collection_comparison_expression )
-        // JPA.g:236:4: empty_collection_comparison_expression
+    public final void synpred64_JPA_fragment() throws RecognitionException {   
+        // JPA.g:237:7: ( empty_collection_comparison_expression )
+        // JPA.g:237:7: empty_collection_comparison_expression
         {
-        pushFollow(FOLLOW_empty_collection_comparison_expression_in_synpred64_JPA1658);
+        pushFollow(FOLLOW_empty_collection_comparison_expression_in_synpred64_JPA1906);
         empty_collection_comparison_expression();
 
         state._fsp--;
@@ -11147,11 +11197,11 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred64_JPA
 
     // $ANTLR start synpred65_JPA
-    public final void synpred65_JPA_fragment() throws RecognitionException {
-        // JPA.g:237:4: ( collection_member_expression )
-        // JPA.g:237:4: collection_member_expression
+    public final void synpred65_JPA_fragment() throws RecognitionException {   
+        // JPA.g:238:7: ( collection_member_expression )
+        // JPA.g:238:7: collection_member_expression
         {
-        pushFollow(FOLLOW_collection_member_expression_in_synpred65_JPA1663);
+        pushFollow(FOLLOW_collection_member_expression_in_synpred65_JPA1914);
         collection_member_expression();
 
         state._fsp--;
@@ -11162,16 +11212,16 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred65_JPA
 
     // $ANTLR start synpred84_JPA
-    public final void synpred84_JPA_fragment() throws RecognitionException {
-        // JPA.g:264:4: ( arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression )
-        // JPA.g:264:4: arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression
+    public final void synpred84_JPA_fragment() throws RecognitionException {   
+        // JPA.g:265:7: ( arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression )
+        // JPA.g:265:7: arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression
         {
-        pushFollow(FOLLOW_arithmetic_expression_in_synpred84_JPA1905);
+        pushFollow(FOLLOW_arithmetic_expression_in_synpred84_JPA2165);
         arithmetic_expression();
 
         state._fsp--;
         if (state.failed) return ;
-        // JPA.g:264:26: ( 'NOT' )?
+        // JPA.g:265:29: ( 'NOT' )?
         int alt109=2;
         int LA109_0 = input.LA(1);
 
@@ -11180,23 +11230,23 @@ public class JPAParser extends Parser {
         }
         switch (alt109) {
             case 1 :
-                // JPA.g:264:27: 'NOT'
+                // JPA.g:265:30: 'NOT'
                 {
-                match(input,62,FOLLOW_62_in_synpred84_JPA1908); if (state.failed) return ;
+                match(input,62,FOLLOW_62_in_synpred84_JPA2168); if (state.failed) return ;
 
                 }
                 break;
 
         }
 
-        match(input,77,FOLLOW_77_in_synpred84_JPA1912); if (state.failed) return ;
-        pushFollow(FOLLOW_arithmetic_expression_in_synpred84_JPA1914);
+        match(input,77,FOLLOW_77_in_synpred84_JPA2172); if (state.failed) return ;
+        pushFollow(FOLLOW_arithmetic_expression_in_synpred84_JPA2174);
         arithmetic_expression();
 
         state._fsp--;
         if (state.failed) return ;
-        match(input,AND,FOLLOW_AND_in_synpred84_JPA1916); if (state.failed) return ;
-        pushFollow(FOLLOW_arithmetic_expression_in_synpred84_JPA1918);
+        match(input,AND,FOLLOW_AND_in_synpred84_JPA2176); if (state.failed) return ;
+        pushFollow(FOLLOW_arithmetic_expression_in_synpred84_JPA2178);
         arithmetic_expression();
 
         state._fsp--;
@@ -11207,16 +11257,16 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred84_JPA
 
     // $ANTLR start synpred86_JPA
-    public final void synpred86_JPA_fragment() throws RecognitionException {
-        // JPA.g:265:4: ( string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression )
-        // JPA.g:265:4: string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression
+    public final void synpred86_JPA_fragment() throws RecognitionException {   
+        // JPA.g:266:7: ( string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression )
+        // JPA.g:266:7: string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression
         {
-        pushFollow(FOLLOW_string_expression_in_synpred86_JPA1923);
+        pushFollow(FOLLOW_string_expression_in_synpred86_JPA2186);
         string_expression();
 
         state._fsp--;
         if (state.failed) return ;
-        // JPA.g:265:22: ( 'NOT' )?
+        // JPA.g:266:25: ( 'NOT' )?
         int alt110=2;
         int LA110_0 = input.LA(1);
 
@@ -11225,23 +11275,23 @@ public class JPAParser extends Parser {
         }
         switch (alt110) {
             case 1 :
-                // JPA.g:265:23: 'NOT'
+                // JPA.g:266:26: 'NOT'
                 {
-                match(input,62,FOLLOW_62_in_synpred86_JPA1926); if (state.failed) return ;
+                match(input,62,FOLLOW_62_in_synpred86_JPA2189); if (state.failed) return ;
 
                 }
                 break;
 
         }
 
-        match(input,77,FOLLOW_77_in_synpred86_JPA1930); if (state.failed) return ;
-        pushFollow(FOLLOW_string_expression_in_synpred86_JPA1932);
+        match(input,77,FOLLOW_77_in_synpred86_JPA2193); if (state.failed) return ;
+        pushFollow(FOLLOW_string_expression_in_synpred86_JPA2195);
         string_expression();
 
         state._fsp--;
         if (state.failed) return ;
-        match(input,AND,FOLLOW_AND_in_synpred86_JPA1934); if (state.failed) return ;
-        pushFollow(FOLLOW_string_expression_in_synpred86_JPA1936);
+        match(input,AND,FOLLOW_AND_in_synpred86_JPA2197); if (state.failed) return ;
+        pushFollow(FOLLOW_string_expression_in_synpred86_JPA2199);
         string_expression();
 
         state._fsp--;
@@ -11252,25 +11302,25 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred86_JPA
 
     // $ANTLR start synpred104_JPA
-    public final void synpred104_JPA_fragment() throws RecognitionException {
-        // JPA.g:298:4: ( string_expression comparison_operator ( string_expression | all_or_any_expression ) )
-        // JPA.g:298:4: string_expression comparison_operator ( string_expression | all_or_any_expression )
+    public final void synpred104_JPA_fragment() throws RecognitionException {   
+        // JPA.g:299:7: ( string_expression comparison_operator ( string_expression | all_or_any_expression ) )
+        // JPA.g:299:7: string_expression comparison_operator ( string_expression | all_or_any_expression )
         {
-        pushFollow(FOLLOW_string_expression_in_synpred104_JPA2153);
+        pushFollow(FOLLOW_string_expression_in_synpred104_JPA2455);
         string_expression();
 
         state._fsp--;
         if (state.failed) return ;
-        pushFollow(FOLLOW_comparison_operator_in_synpred104_JPA2155);
+        pushFollow(FOLLOW_comparison_operator_in_synpred104_JPA2457);
         comparison_operator();
 
         state._fsp--;
         if (state.failed) return ;
-        // JPA.g:298:42: ( string_expression | all_or_any_expression )
+        // JPA.g:299:45: ( string_expression | all_or_any_expression )
         int alt112=2;
         int LA112_0 = input.LA(1);
 
-        if ( ((LA112_0>=AVG && LA112_0<=COUNT)||LA112_0==STRINGLITERAL||(LA112_0>=WORD && LA112_0<=NAMED_PARAMETER)||LA112_0==56||(LA112_0>=106 && LA112_0<=110)||LA112_0==115) ) {
+        if ( ((LA112_0>=AVG && LA112_0<=COUNT)||LA112_0==STRINGLITERAL||(LA112_0>=WORD && LA112_0<=NAMED_PARAMETER)||LA112_0==56||(LA112_0>=106 && LA112_0<=110)||(LA112_0>=115 && LA112_0<=116)) ) {
             alt112=1;
         }
         else if ( ((LA112_0>=86 && LA112_0<=88)) ) {
@@ -11285,9 +11335,9 @@ public class JPAParser extends Parser {
         }
         switch (alt112) {
             case 1 :
-                // JPA.g:298:43: string_expression
+                // JPA.g:299:46: string_expression
                 {
-                pushFollow(FOLLOW_string_expression_in_synpred104_JPA2158);
+                pushFollow(FOLLOW_string_expression_in_synpred104_JPA2460);
                 string_expression();
 
                 state._fsp--;
@@ -11296,9 +11346,9 @@ public class JPAParser extends Parser {
                 }
                 break;
             case 2 :
-                // JPA.g:298:63: all_or_any_expression
+                // JPA.g:299:66: all_or_any_expression
                 {
-                pushFollow(FOLLOW_all_or_any_expression_in_synpred104_JPA2162);
+                pushFollow(FOLLOW_all_or_any_expression_in_synpred104_JPA2464);
                 all_or_any_expression();
 
                 state._fsp--;
@@ -11315,11 +11365,11 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred104_JPA
 
     // $ANTLR start synpred107_JPA
-    public final void synpred107_JPA_fragment() throws RecognitionException {
-        // JPA.g:299:4: ( boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression ) )
-        // JPA.g:299:4: boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression )
+    public final void synpred107_JPA_fragment() throws RecognitionException {   
+        // JPA.g:300:7: ( boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression ) )
+        // JPA.g:300:7: boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression )
         {
-        pushFollow(FOLLOW_boolean_expression_in_synpred107_JPA2168);
+        pushFollow(FOLLOW_boolean_expression_in_synpred107_JPA2473);
         boolean_expression();
 
         state._fsp--;
@@ -11334,11 +11384,11 @@ public class JPAParser extends Parser {
             throw mse;
         }
 
-        // JPA.g:299:36: ( boolean_expression | all_or_any_expression )
+        // JPA.g:300:39: ( boolean_expression | all_or_any_expression )
         int alt113=2;
         int LA113_0 = input.LA(1);
 
-        if ( ((LA113_0>=WORD && LA113_0<=NAMED_PARAMETER)||LA113_0==56||(LA113_0>=115 && LA113_0<=117)) ) {
+        if ( ((LA113_0>=WORD && LA113_0<=NAMED_PARAMETER)||LA113_0==56||(LA113_0>=115 && LA113_0<=116)||(LA113_0>=118 && LA113_0<=119)) ) {
             alt113=1;
         }
         else if ( ((LA113_0>=86 && LA113_0<=88)) ) {
@@ -11353,9 +11403,9 @@ public class JPAParser extends Parser {
         }
         switch (alt113) {
             case 1 :
-                // JPA.g:299:37: boolean_expression
+                // JPA.g:300:40: boolean_expression
                 {
-                pushFollow(FOLLOW_boolean_expression_in_synpred107_JPA2179);
+                pushFollow(FOLLOW_boolean_expression_in_synpred107_JPA2484);
                 boolean_expression();
 
                 state._fsp--;
@@ -11364,9 +11414,9 @@ public class JPAParser extends Parser {
                 }
                 break;
             case 2 :
-                // JPA.g:299:58: all_or_any_expression
+                // JPA.g:300:61: all_or_any_expression
                 {
-                pushFollow(FOLLOW_all_or_any_expression_in_synpred107_JPA2183);
+                pushFollow(FOLLOW_all_or_any_expression_in_synpred107_JPA2488);
                 all_or_any_expression();
 
                 state._fsp--;
@@ -11383,11 +11433,11 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred107_JPA
 
     // $ANTLR start synpred110_JPA
-    public final void synpred110_JPA_fragment() throws RecognitionException {
-        // JPA.g:300:4: ( enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression ) )
-        // JPA.g:300:4: enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression )
+    public final void synpred110_JPA_fragment() throws RecognitionException {   
+        // JPA.g:301:7: ( enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression ) )
+        // JPA.g:301:7: enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression )
         {
-        pushFollow(FOLLOW_enum_expression_in_synpred110_JPA2189);
+        pushFollow(FOLLOW_enum_expression_in_synpred110_JPA2497);
         enum_expression();
 
         state._fsp--;
@@ -11402,11 +11452,11 @@ public class JPAParser extends Parser {
             throw mse;
         }
 
-        // JPA.g:300:31: ( enum_expression | all_or_any_expression )
+        // JPA.g:301:34: ( enum_expression | all_or_any_expression )
         int alt114=2;
         int LA114_0 = input.LA(1);
 
-        if ( ((LA114_0>=WORD && LA114_0<=NAMED_PARAMETER)||LA114_0==56||LA114_0==115) ) {
+        if ( ((LA114_0>=WORD && LA114_0<=NAMED_PARAMETER)||LA114_0==56||(LA114_0>=115 && LA114_0<=116)) ) {
             alt114=1;
         }
         else if ( ((LA114_0>=86 && LA114_0<=88)) ) {
@@ -11421,9 +11471,9 @@ public class JPAParser extends Parser {
         }
         switch (alt114) {
             case 1 :
-                // JPA.g:300:32: enum_expression
+                // JPA.g:301:35: enum_expression
                 {
-                pushFollow(FOLLOW_enum_expression_in_synpred110_JPA2198);
+                pushFollow(FOLLOW_enum_expression_in_synpred110_JPA2506);
                 enum_expression();
 
                 state._fsp--;
@@ -11432,9 +11482,9 @@ public class JPAParser extends Parser {
                 }
                 break;
             case 2 :
-                // JPA.g:300:50: all_or_any_expression
+                // JPA.g:301:53: all_or_any_expression
                 {
-                pushFollow(FOLLOW_all_or_any_expression_in_synpred110_JPA2202);
+                pushFollow(FOLLOW_all_or_any_expression_in_synpred110_JPA2510);
                 all_or_any_expression();
 
                 state._fsp--;
@@ -11451,25 +11501,25 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred110_JPA
 
     // $ANTLR start synpred112_JPA
-    public final void synpred112_JPA_fragment() throws RecognitionException {
-        // JPA.g:301:4: ( datetime_expression comparison_operator ( datetime_expression | all_or_any_expression ) )
-        // JPA.g:301:4: datetime_expression comparison_operator ( datetime_expression | all_or_any_expression )
+    public final void synpred112_JPA_fragment() throws RecognitionException {   
+        // JPA.g:302:7: ( datetime_expression comparison_operator ( datetime_expression | all_or_any_expression ) )
+        // JPA.g:302:7: datetime_expression comparison_operator ( datetime_expression | all_or_any_expression )
         {
-        pushFollow(FOLLOW_datetime_expression_in_synpred112_JPA2208);
+        pushFollow(FOLLOW_datetime_expression_in_synpred112_JPA2519);
         datetime_expression();
 
         state._fsp--;
         if (state.failed) return ;
-        pushFollow(FOLLOW_comparison_operator_in_synpred112_JPA2210);
+        pushFollow(FOLLOW_comparison_operator_in_synpred112_JPA2521);
         comparison_operator();
 
         state._fsp--;
         if (state.failed) return ;
-        // JPA.g:301:44: ( datetime_expression | all_or_any_expression )
+        // JPA.g:302:47: ( datetime_expression | all_or_any_expression )
         int alt115=2;
         int LA115_0 = input.LA(1);
 
-        if ( ((LA115_0>=AVG && LA115_0<=COUNT)||(LA115_0>=WORD && LA115_0<=NAMED_PARAMETER)||LA115_0==56||(LA115_0>=103 && LA115_0<=105)||LA115_0==115) ) {
+        if ( ((LA115_0>=AVG && LA115_0<=COUNT)||(LA115_0>=WORD && LA115_0<=NAMED_PARAMETER)||LA115_0==56||(LA115_0>=103 && LA115_0<=105)||(LA115_0>=115 && LA115_0<=116)) ) {
             alt115=1;
         }
         else if ( ((LA115_0>=86 && LA115_0<=88)) ) {
@@ -11484,9 +11534,9 @@ public class JPAParser extends Parser {
         }
         switch (alt115) {
             case 1 :
-                // JPA.g:301:45: datetime_expression
+                // JPA.g:302:48: datetime_expression
                 {
-                pushFollow(FOLLOW_datetime_expression_in_synpred112_JPA2213);
+                pushFollow(FOLLOW_datetime_expression_in_synpred112_JPA2524);
                 datetime_expression();
 
                 state._fsp--;
@@ -11495,9 +11545,9 @@ public class JPAParser extends Parser {
                 }
                 break;
             case 2 :
-                // JPA.g:301:67: all_or_any_expression
+                // JPA.g:302:70: all_or_any_expression
                 {
-                pushFollow(FOLLOW_all_or_any_expression_in_synpred112_JPA2217);
+                pushFollow(FOLLOW_all_or_any_expression_in_synpred112_JPA2528);
                 all_or_any_expression();
 
                 state._fsp--;
@@ -11514,11 +11564,11 @@ public class JPAParser extends Parser {
     // $ANTLR end synpred112_JPA
 
     // $ANTLR start synpred115_JPA
-    public final void synpred115_JPA_fragment() throws RecognitionException {
-        // JPA.g:302:4: ( entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression ) )
-        // JPA.g:302:4: entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression )
+    public final void synpred115_JPA_fragment() throws RecognitionException {   
+        // JPA.g:303:7: ( entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression ) )
+        // JPA.g:303:7: entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression )
         {
-        pushFollow(FOLLOW_entity_expression_in_synpred115_JPA2223);
+        pushFollow(FOLLOW_entity_expression_in_synpred115_JPA2537);
         entity_expression();
 
         state._fsp--;
@@ -11533,11 +11583,11 @@ public class JPAParser extends Parser {
             throw mse;
         }
 
-        // JPA.g:302:35: ( entity_expression | all_or_any_expression )
+        // JPA.g:303:38: ( entity_expression | all_or_any_expression )
         int alt116=2;
         int LA116_0 = input.LA(1);
 
-        if ( ((LA116_0>=WORD && LA116_0<=NAMED_PARAMETER)||LA116_0==115) ) {
+        if ( ((LA116_0>=WORD && LA116_0<=NAMED_PARAMETER)||(LA116_0>=115 && LA116_0<=116)) ) {
             alt116=1;
         }
         else if ( ((LA116_0>=86 && LA116_0<=88)) ) {
@@ -11552,9 +11602,9 @@ public class JPAParser extends Parser {
         }
         switch (alt116) {
             case 1 :
-                // JPA.g:302:36: entity_expression
+                // JPA.g:303:39: entity_expression
                 {
-                pushFollow(FOLLOW_entity_expression_in_synpred115_JPA2234);
+                pushFollow(FOLLOW_entity_expression_in_synpred115_JPA2548);
                 entity_expression();
 
                 state._fsp--;
@@ -11563,9 +11613,9 @@ public class JPAParser extends Parser {
                 }
                 break;
             case 2 :
-                // JPA.g:302:56: all_or_any_expression
+                // JPA.g:303:59: all_or_any_expression
                 {
-                pushFollow(FOLLOW_all_or_any_expression_in_synpred115_JPA2238);
+                pushFollow(FOLLOW_all_or_any_expression_in_synpred115_JPA2552);
                 all_or_any_expression();
 
                 state._fsp--;
@@ -11848,33 +11898,33 @@ public class JPAParser extends Parser {
     static final String DFA31_eofS =
         "\4\uffff\3\7\1\uffff\1\7";
     static final String DFA31_minS =
-        "\1\75\1\30\1\uffff\1\71\3\25\1\uffff\1\25";
+        "\1\75\1\30\1\71\1\uffff\3\25\1\uffff\1\25";
     static final String DFA31_maxS =
-        "\1\75\1\165\1\uffff\1\132\3\140\1\uffff\1\140";
+        "\1\75\1\167\1\132\1\uffff\3\140\1\uffff\1\140";
     static final String DFA31_acceptS =
-        "\2\uffff\1\1\4\uffff\1\2\1\uffff";
+        "\3\uffff\1\1\3\uffff\1\2\1\uffff";
     static final String DFA31_specialS =
         "\11\uffff}>";
     static final String[] DFA31_transitionS = {
             "\1\1",
-            "\5\2\2\uffff\1\2\12\uffff\1\2\1\uffff\1\2\1\uffff\1\3\1\2"+
-            "\10\uffff\1\2\5\uffff\2\2\1\uffff\2\2\6\uffff\4\2\10\uffff\1"+
-            "\2\13\uffff\16\2\3\uffff\4\2",
+            "\5\3\2\uffff\1\3\12\uffff\1\3\1\uffff\1\3\1\uffff\1\2\1\3"+
+            "\10\uffff\1\3\5\uffff\2\3\1\uffff\2\3\6\uffff\4\3\10\uffff\1"+
+            "\3\13\uffff\16\3\3\uffff\3\3\1\uffff\2\3",
+            "\1\4\4\uffff\1\3\24\uffff\1\3\5\uffff\2\3",
             "",
-            "\1\4\4\uffff\1\2\24\uffff\1\2\5\uffff\2\2",
-            "\1\7\12\uffff\1\7\6\uffff\1\7\1\5\5\uffff\1\6\13\uffff\1\2"+
-            "\3\uffff\1\2\2\uffff\2\2\12\uffff\2\2\1\uffff\1\2\2\uffff\1"+
-            "\2\5\uffff\10\2",
-            "\1\7\12\uffff\1\7\6\uffff\3\7\17\uffff\1\10\1\2\3\uffff\1"+
-            "\2\2\uffff\2\2\12\uffff\2\2\1\uffff\1\2\2\uffff\1\2\5\uffff"+
-            "\10\2",
-            "\1\7\12\uffff\1\7\6\uffff\2\7\20\uffff\1\10\1\2\3\uffff\1"+
-            "\2\2\uffff\2\2\12\uffff\2\2\1\uffff\1\2\2\uffff\1\2\5\uffff"+
-            "\10\2",
+            "\1\7\12\uffff\1\7\6\uffff\1\7\1\5\5\uffff\1\6\13\uffff\1\3"+
+            "\3\uffff\1\3\2\uffff\2\3\12\uffff\2\3\1\uffff\1\3\2\uffff\1"+
+            "\3\5\uffff\10\3",
+            "\1\7\12\uffff\1\7\6\uffff\3\7\17\uffff\1\10\1\3\3\uffff\1"+
+            "\3\2\uffff\2\3\12\uffff\2\3\1\uffff\1\3\2\uffff\1\3\5\uffff"+
+            "\10\3",
+            "\1\7\12\uffff\1\7\6\uffff\2\7\20\uffff\1\10\1\3\3\uffff\1"+
+            "\3\2\uffff\2\3\12\uffff\2\3\1\uffff\1\3\2\uffff\1\3\5\uffff"+
+            "\10\3",
             "",
-            "\1\7\12\uffff\1\7\6\uffff\1\7\1\5\5\uffff\1\6\13\uffff\1\2"+
-            "\3\uffff\1\2\2\uffff\2\2\12\uffff\2\2\1\uffff\1\2\2\uffff\1"+
-            "\2\5\uffff\10\2"
+            "\1\7\12\uffff\1\7\6\uffff\1\7\1\5\5\uffff\1\6\13\uffff\1\3"+
+            "\3\uffff\1\3\2\uffff\2\3\12\uffff\2\3\1\uffff\1\3\2\uffff\1"+
+            "\3\5\uffff\10\3"
     };
 
     static final short[] DFA31_eot = DFA.unpackEncodedString(DFA31_eotS);
@@ -11907,29 +11957,29 @@ public class JPAParser extends Parser {
             this.transition = DFA31_transition;
         }
         public String getDescription() {
-            return "170:1: where_clause : (wh= 'WHERE' conditional_expression -> ^( T_CONDITION[$wh] conditional_expression ) | 'WHERE' path_expression -> ^( T_CONDITION[$wh] path_expression ) );";
+            return "171:1: where_clause : (wh= 'WHERE' conditional_expression -> ^( T_CONDITION[$wh] conditional_expression ) | 'WHERE' path_expression -> ^( T_CONDITION[$wh] path_expression ) );";
         }
     }
     static final String DFA36_eotS =
         "\7\uffff";
     static final String DFA36_eofS =
-        "\2\uffff\2\4\2\uffff\1\4";
+        "\2\uffff\2\5\2\uffff\1\5";
     static final String DFA36_minS =
         "\1\56\1\71\2\26\2\uffff\1\26";
     static final String DFA36_maxS =
         "\1\56\1\71\1\66\1\71\2\uffff\1\66";
     static final String DFA36_acceptS =
-        "\4\uffff\1\1\1\2\1\uffff";
+        "\4\uffff\1\2\1\1\1\uffff";
     static final String DFA36_specialS =
         "\7\uffff}>";
     static final String[] DFA36_transitionS = {
             "\1\1",
             "\1\2",
-            "\1\4\1\5\10\uffff\1\4\7\uffff\1\3\5\uffff\1\3\7\uffff\1\4",
-            "\1\4\1\5\10\uffff\1\4\25\uffff\1\4\2\uffff\1\6",
+            "\1\5\1\4\10\uffff\1\5\7\uffff\1\3\5\uffff\1\3\7\uffff\1\5",
+            "\1\5\1\4\10\uffff\1\5\25\uffff\1\5\2\uffff\1\6",
             "",
             "",
-            "\1\4\1\5\10\uffff\1\4\7\uffff\1\3\5\uffff\1\3\7\uffff\1\4"
+            "\1\5\1\4\10\uffff\1\5\7\uffff\1\3\5\uffff\1\3\7\uffff\1\5"
     };
 
     static final short[] DFA36_eot = DFA.unpackEncodedString(DFA36_eotS);
@@ -11962,25 +12012,26 @@ public class JPAParser extends Parser {
             this.transition = DFA36_transition;
         }
         public String getDescription() {
-            return "189:1: orderby_item : ( path_expression ( 'ASC' )? -> ^( T_ORDER_BY_FIELD[] path_expression ( 'ASC' )? ) | path_expression 'DESC' -> ^( T_ORDER_BY_FIELD[] path_expression 'DESC' ) );";
+            return "190:1: orderby_item : ( path_expression ( 'ASC' )? -> ^( T_ORDER_BY_FIELD[] path_expression ( 'ASC' )? ) | path_expression 'DESC' -> ^( T_ORDER_BY_FIELD[] path_expression 'DESC' ) );";
         }
     }
     static final String DFA48_eotS =
-        "\41\uffff";
+        "\42\uffff";
     static final String DFA48_eofS =
-        "\41\uffff";
+        "\42\uffff";
     static final String DFA48_minS =
-        "\1\30\22\uffff\1\0\15\uffff";
+        "\1\30\23\uffff\1\0\15\uffff";
     static final String DFA48_maxS =
-        "\1\165\22\uffff\1\0\15\uffff";
+        "\1\167\23\uffff\1\0\15\uffff";
     static final String DFA48_acceptS =
-        "\1\uffff\1\1\36\uffff\1\2";
+        "\1\uffff\1\1\37\uffff\1\2";
     static final String DFA48_specialS =
-        "\23\uffff\1\0\15\uffff}>";
+        "\24\uffff\1\0\15\uffff}>";
     static final String[] DFA48_transitionS = {
-            "\5\1\2\uffff\1\23\12\uffff\1\1\1\uffff\1\1\1\uffff\2\1\10\uffff"+
+            "\5\1\2\uffff\1\24\12\uffff\1\1\1\uffff\1\1\1\uffff\2\1\10\uffff"+
             "\1\1\5\uffff\2\1\1\uffff\2\1\6\uffff\4\1\10\uffff\1\1\13\uffff"+
-            "\16\1\3\uffff\4\1",
+            "\16\1\3\uffff\3\1\1\uffff\2\1",
+            "",
             "",
             "",
             "",
@@ -12045,25 +12096,25 @@ public class JPAParser extends Parser {
             this.transition = DFA48_transition;
         }
         public String getDescription() {
-            return "226:1: conditional_factor : ( ( 'NOT' )? simple_cond_expression -> ^( T_SIMPLE_CONDITION[] ( 'NOT' )? simple_cond_expression ) | '(' conditional_expression ')' );";
+            return "227:1: conditional_factor : ( ( 'NOT' )? simple_cond_expression -> ^( T_SIMPLE_CONDITION[] ( 'NOT' )? simple_cond_expression ) | '(' conditional_expression ')' );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 :
-                        int LA48_19 = input.LA(1);
+                    case 0 : 
+                        int LA48_20 = input.LA(1);
 
-
-                        int index48_19 = input.index();
+                         
+                        int index48_20 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred58_JPA()) ) {s = 1;}
 
-                        else if ( (true) ) {s = 32;}
+                        else if ( (true) ) {s = 33;}
 
-
-                        input.seek(index48_19);
+                         
+                        input.seek(index48_20);
                         if ( s>=0 ) return s;
                         break;
             }
@@ -12075,25 +12126,26 @@ public class JPAParser extends Parser {
         }
     }
     static final String DFA49_eotS =
-        "\46\uffff";
+        "\47\uffff";
     static final String DFA49_eofS =
-        "\46\uffff";
+        "\47\uffff";
     static final String DFA49_minS =
-        "\1\30\14\0\1\uffff\13\0\15\uffff";
+        "\1\30\15\0\1\uffff\13\0\15\uffff";
     static final String DFA49_maxS =
-        "\1\165\14\0\1\uffff\13\0\15\uffff";
+        "\1\167\15\0\1\uffff\13\0\15\uffff";
     static final String DFA49_acceptS =
-        "\15\uffff\1\1\13\uffff\1\10\1\uffff\1\11\4\uffff\1\2\1\3\1\4\1"+
+        "\16\uffff\1\1\13\uffff\1\10\1\uffff\1\11\4\uffff\1\2\1\3\1\4\1"+
         "\5\1\6\1\7";
     static final String DFA49_specialS =
         "\1\uffff\1\0\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\13\1"+
-        "\uffff\1\14\1\15\1\16\1\17\1\20\1\21\1\22\1\23\1\24\1\25\1\26\15"+
-        "\uffff}>";
+        "\14\1\uffff\1\15\1\16\1\17\1\20\1\21\1\22\1\23\1\24\1\25\1\26\1"+
+        "\27\15\uffff}>";
     static final String[] DFA49_transitionS = {
-            "\4\13\1\12\2\uffff\1\22\12\uffff\1\21\1\uffff\1\2\1\uffff\1"+
-            "\1\1\4\10\uffff\1\14\5\uffff\1\31\1\33\1\uffff\2\17\6\uffff"+
-            "\4\33\10\uffff\1\31\13\uffff\1\23\1\24\1\25\1\26\1\27\1\30\3"+
-            "\16\1\5\1\6\1\7\1\10\1\11\3\uffff\1\20\1\3\2\15",
+            "\4\14\1\13\2\uffff\1\23\12\uffff\1\22\1\uffff\1\2\1\uffff\1"+
+            "\1\1\4\10\uffff\1\15\5\uffff\1\32\1\34\1\uffff\2\20\6\uffff"+
+            "\4\34\10\uffff\1\32\13\uffff\1\24\1\25\1\26\1\27\1\30\1\31\3"+
+            "\17\1\6\1\7\1\10\1\11\1\12\3\uffff\1\21\1\3\1\5\1\uffff\2\16",
+            "\1\uffff",
             "\1\uffff",
             "\1\uffff",
             "\1\uffff",
@@ -12163,395 +12215,416 @@ public class JPAParser extends Parser {
             this.transition = DFA49_transition;
         }
         public String getDescription() {
-            return "230:1: simple_cond_expression : ( comparison_expression | between_expression | like_expression | in_expression | null_comparison_expression | empty_collection_comparison_expression | collection_member_expression | exists_expression | date_macro_expression );";
+            return "231:1: simple_cond_expression : ( comparison_expression | between_expression | like_expression | in_expression | null_comparison_expression | empty_collection_comparison_expression | collection_member_expression | exists_expression | date_macro_expression );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 :
+                    case 0 : 
                         int LA49_1 = input.LA(1);
 
-
+                         
                         int index49_1 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-                        else if ( (synpred61_JPA()) ) {s = 33;}
+                        else if ( (synpred61_JPA()) ) {s = 34;}
 
-                        else if ( (synpred62_JPA()) ) {s = 34;}
+                        else if ( (synpred62_JPA()) ) {s = 35;}
 
-                        else if ( (synpred63_JPA()) ) {s = 35;}
+                        else if ( (synpred63_JPA()) ) {s = 36;}
 
-                        else if ( (synpred64_JPA()) ) {s = 36;}
+                        else if ( (synpred64_JPA()) ) {s = 37;}
 
-                        else if ( (synpred65_JPA()) ) {s = 37;}
+                        else if ( (synpred65_JPA()) ) {s = 38;}
 
-
+                         
                         input.seek(index49_1);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 :
+                    case 1 : 
                         int LA49_2 = input.LA(1);
 
-
+                         
                         int index49_2 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-                        else if ( (synpred61_JPA()) ) {s = 33;}
+                        else if ( (synpred61_JPA()) ) {s = 34;}
 
-
+                         
                         input.seek(index49_2);
                         if ( s>=0 ) return s;
                         break;
-                    case 2 :
+                    case 2 : 
                         int LA49_3 = input.LA(1);
 
-
+                         
                         int index49_3 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-                        else if ( (synpred61_JPA()) ) {s = 33;}
+                        else if ( (synpred61_JPA()) ) {s = 34;}
 
-                        else if ( (synpred63_JPA()) ) {s = 35;}
+                        else if ( (synpred63_JPA()) ) {s = 36;}
 
-                        else if ( (synpred65_JPA()) ) {s = 37;}
+                        else if ( (synpred65_JPA()) ) {s = 38;}
 
-
+                         
                         input.seek(index49_3);
                         if ( s>=0 ) return s;
                         break;
-                    case 3 :
+                    case 3 : 
                         int LA49_4 = input.LA(1);
 
-
+                         
                         int index49_4 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-                        else if ( (synpred61_JPA()) ) {s = 33;}
+                        else if ( (synpred61_JPA()) ) {s = 34;}
 
-                        else if ( (synpred63_JPA()) ) {s = 35;}
+                        else if ( (synpred63_JPA()) ) {s = 36;}
 
-                        else if ( (synpred65_JPA()) ) {s = 37;}
+                        else if ( (synpred65_JPA()) ) {s = 38;}
 
-
+                         
                         input.seek(index49_4);
                         if ( s>=0 ) return s;
                         break;
-                    case 4 :
+                    case 4 : 
                         int LA49_5 = input.LA(1);
 
-
+                         
                         int index49_5 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-                        else if ( (synpred61_JPA()) ) {s = 33;}
+                        else if ( (synpred61_JPA()) ) {s = 34;}
 
+                        else if ( (synpred63_JPA()) ) {s = 36;}
 
+                        else if ( (synpred65_JPA()) ) {s = 38;}
+
+                         
                         input.seek(index49_5);
                         if ( s>=0 ) return s;
                         break;
-                    case 5 :
+                    case 5 : 
                         int LA49_6 = input.LA(1);
 
-
+                         
                         int index49_6 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-                        else if ( (synpred61_JPA()) ) {s = 33;}
+                        else if ( (synpred61_JPA()) ) {s = 34;}
 
-
+                         
                         input.seek(index49_6);
                         if ( s>=0 ) return s;
                         break;
-                    case 6 :
+                    case 6 : 
                         int LA49_7 = input.LA(1);
 
-
+                         
                         int index49_7 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-                        else if ( (synpred61_JPA()) ) {s = 33;}
+                        else if ( (synpred61_JPA()) ) {s = 34;}
 
-
+                         
                         input.seek(index49_7);
                         if ( s>=0 ) return s;
                         break;
-                    case 7 :
+                    case 7 : 
                         int LA49_8 = input.LA(1);
 
-
+                         
                         int index49_8 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-                        else if ( (synpred61_JPA()) ) {s = 33;}
+                        else if ( (synpred61_JPA()) ) {s = 34;}
 
-
+                         
                         input.seek(index49_8);
                         if ( s>=0 ) return s;
                         break;
-                    case 8 :
+                    case 8 : 
                         int LA49_9 = input.LA(1);
 
-
+                         
                         int index49_9 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-                        else if ( (synpred61_JPA()) ) {s = 33;}
+                        else if ( (synpred61_JPA()) ) {s = 34;}
 
-
+                         
                         input.seek(index49_9);
                         if ( s>=0 ) return s;
                         break;
-                    case 9 :
+                    case 9 : 
                         int LA49_10 = input.LA(1);
 
-
+                         
                         int index49_10 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-                        else if ( (synpred61_JPA()) ) {s = 33;}
+                        else if ( (synpred61_JPA()) ) {s = 34;}
 
-
+                         
                         input.seek(index49_10);
                         if ( s>=0 ) return s;
                         break;
-                    case 10 :
+                    case 10 : 
                         int LA49_11 = input.LA(1);
 
-
+                         
                         int index49_11 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-                        else if ( (synpred61_JPA()) ) {s = 33;}
+                        else if ( (synpred61_JPA()) ) {s = 34;}
 
-
+                         
                         input.seek(index49_11);
                         if ( s>=0 ) return s;
                         break;
-                    case 11 :
+                    case 11 : 
                         int LA49_12 = input.LA(1);
 
-
+                         
                         int index49_12 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-                        else if ( (synpred61_JPA()) ) {s = 33;}
+                        else if ( (synpred61_JPA()) ) {s = 34;}
 
-
+                         
                         input.seek(index49_12);
                         if ( s>=0 ) return s;
                         break;
-                    case 12 :
-                        int LA49_14 = input.LA(1);
+                    case 12 : 
+                        int LA49_13 = input.LA(1);
 
-
-                        int index49_14 = input.index();
+                         
+                        int index49_13 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
+                        else if ( (synpred61_JPA()) ) {s = 34;}
 
-                        input.seek(index49_14);
+                         
+                        input.seek(index49_13);
                         if ( s>=0 ) return s;
                         break;
-                    case 13 :
+                    case 13 : 
                         int LA49_15 = input.LA(1);
 
-
+                         
                         int index49_15 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-
+                         
                         input.seek(index49_15);
                         if ( s>=0 ) return s;
                         break;
-                    case 14 :
+                    case 14 : 
                         int LA49_16 = input.LA(1);
 
-
+                         
                         int index49_16 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-
+                         
                         input.seek(index49_16);
                         if ( s>=0 ) return s;
                         break;
-                    case 15 :
+                    case 15 : 
                         int LA49_17 = input.LA(1);
 
-
+                         
                         int index49_17 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-
+                         
                         input.seek(index49_17);
                         if ( s>=0 ) return s;
                         break;
-                    case 16 :
+                    case 16 : 
                         int LA49_18 = input.LA(1);
 
-
+                         
                         int index49_18 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-
+                         
                         input.seek(index49_18);
                         if ( s>=0 ) return s;
                         break;
-                    case 17 :
+                    case 17 : 
                         int LA49_19 = input.LA(1);
 
-
+                         
                         int index49_19 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-
+                         
                         input.seek(index49_19);
                         if ( s>=0 ) return s;
                         break;
-                    case 18 :
+                    case 18 : 
                         int LA49_20 = input.LA(1);
 
-
+                         
                         int index49_20 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-
+                         
                         input.seek(index49_20);
                         if ( s>=0 ) return s;
                         break;
-                    case 19 :
+                    case 19 : 
                         int LA49_21 = input.LA(1);
 
-
+                         
                         int index49_21 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-
+                         
                         input.seek(index49_21);
                         if ( s>=0 ) return s;
                         break;
-                    case 20 :
+                    case 20 : 
                         int LA49_22 = input.LA(1);
 
-
+                         
                         int index49_22 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-
+                         
                         input.seek(index49_22);
                         if ( s>=0 ) return s;
                         break;
-                    case 21 :
+                    case 21 : 
                         int LA49_23 = input.LA(1);
 
-
+                         
                         int index49_23 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-
+                         
                         input.seek(index49_23);
                         if ( s>=0 ) return s;
                         break;
-                    case 22 :
+                    case 22 : 
                         int LA49_24 = input.LA(1);
 
-
+                         
                         int index49_24 = input.index();
                         input.rewind();
                         s = -1;
-                        if ( (synpred59_JPA()) ) {s = 13;}
+                        if ( (synpred59_JPA()) ) {s = 14;}
 
-                        else if ( (synpred60_JPA()) ) {s = 32;}
+                        else if ( (synpred60_JPA()) ) {s = 33;}
 
-
+                         
                         input.seek(index49_24);
+                        if ( s>=0 ) return s;
+                        break;
+                    case 23 : 
+                        int LA49_25 = input.LA(1);
+
+                         
+                        int index49_25 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( (synpred59_JPA()) ) {s = 14;}
+
+                        else if ( (synpred60_JPA()) ) {s = 33;}
+
+                         
+                        input.seek(index49_25);
                         if ( s>=0 ) return s;
                         break;
             }
@@ -12563,26 +12636,27 @@ public class JPAParser extends Parser {
         }
     }
     static final String DFA59_eotS =
-        "\30\uffff";
+        "\31\uffff";
     static final String DFA59_eofS =
-        "\30\uffff";
+        "\31\uffff";
     static final String DFA59_minS =
-        "\1\30\1\uffff\1\0\3\uffff\2\0\6\uffff\3\0\7\uffff";
+        "\1\30\1\uffff\1\0\3\uffff\3\0\6\uffff\3\0\7\uffff";
     static final String DFA59_maxS =
-        "\1\163\1\uffff\1\0\3\uffff\2\0\6\uffff\3\0\7\uffff";
+        "\1\164\1\uffff\1\0\3\uffff\3\0\6\uffff\3\0\7\uffff";
     static final String DFA59_acceptS =
-        "\1\uffff\1\1\17\uffff\1\2\5\uffff\1\3";
+        "\1\uffff\1\1\20\uffff\1\2\5\uffff\1\3";
     static final String DFA59_specialS =
-        "\2\uffff\1\0\3\uffff\1\1\1\2\6\uffff\1\3\1\4\1\5\7\uffff}>";
+        "\2\uffff\1\0\3\uffff\1\1\1\2\1\3\6\uffff\1\4\1\5\1\6\7\uffff}>";
     static final String[] DFA59_transitionS = {
-            "\4\17\1\16\2\uffff\1\1\12\uffff\1\1\1\uffff\1\21\1\uffff\1"+
-            "\2\1\7\10\uffff\1\20\10\uffff\2\1\36\uffff\6\1\3\27\5\21\3\uffff"+
-            "\1\1\1\6",
+            "\4\20\1\17\2\uffff\1\1\12\uffff\1\1\1\uffff\1\22\1\uffff\1"+
+            "\2\1\7\10\uffff\1\21\10\uffff\2\1\36\uffff\6\1\3\30\5\22\3\uffff"+
+            "\1\1\1\6\1\10",
             "",
             "\1\uffff",
             "",
             "",
             "",
+            "\1\uffff",
             "\1\uffff",
             "\1\uffff",
             "",
@@ -12633,112 +12707,129 @@ public class JPAParser extends Parser {
             this.transition = DFA59_transition;
         }
         public String getDescription() {
-            return "263:1: between_expression : ( arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression | string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression | datetime_expression ( 'NOT' )? 'BETWEEN' datetime_expression 'AND' datetime_expression );";
+            return "264:1: between_expression : ( arithmetic_expression ( 'NOT' )? 'BETWEEN' arithmetic_expression 'AND' arithmetic_expression | string_expression ( 'NOT' )? 'BETWEEN' string_expression 'AND' string_expression | datetime_expression ( 'NOT' )? 'BETWEEN' datetime_expression 'AND' datetime_expression );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 :
+                    case 0 : 
                         int LA59_2 = input.LA(1);
 
-
+                         
                         int index59_2 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred84_JPA()) ) {s = 1;}
 
-                        else if ( (synpred86_JPA()) ) {s = 17;}
+                        else if ( (synpred86_JPA()) ) {s = 18;}
 
-                        else if ( (true) ) {s = 23;}
+                        else if ( (true) ) {s = 24;}
 
-
+                         
                         input.seek(index59_2);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 :
+                    case 1 : 
                         int LA59_6 = input.LA(1);
 
-
+                         
                         int index59_6 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred84_JPA()) ) {s = 1;}
 
-                        else if ( (synpred86_JPA()) ) {s = 17;}
+                        else if ( (synpred86_JPA()) ) {s = 18;}
 
-                        else if ( (true) ) {s = 23;}
+                        else if ( (true) ) {s = 24;}
 
-
+                         
                         input.seek(index59_6);
                         if ( s>=0 ) return s;
                         break;
-                    case 2 :
+                    case 2 : 
                         int LA59_7 = input.LA(1);
 
-
+                         
                         int index59_7 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred84_JPA()) ) {s = 1;}
 
-                        else if ( (synpred86_JPA()) ) {s = 17;}
+                        else if ( (synpred86_JPA()) ) {s = 18;}
 
-                        else if ( (true) ) {s = 23;}
+                        else if ( (true) ) {s = 24;}
 
-
+                         
                         input.seek(index59_7);
                         if ( s>=0 ) return s;
                         break;
-                    case 3 :
-                        int LA59_14 = input.LA(1);
+                    case 3 : 
+                        int LA59_8 = input.LA(1);
 
-
-                        int index59_14 = input.index();
+                         
+                        int index59_8 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred84_JPA()) ) {s = 1;}
 
-                        else if ( (synpred86_JPA()) ) {s = 17;}
+                        else if ( (synpred86_JPA()) ) {s = 18;}
 
-                        else if ( (true) ) {s = 23;}
+                        else if ( (true) ) {s = 24;}
 
-
-                        input.seek(index59_14);
+                         
+                        input.seek(index59_8);
                         if ( s>=0 ) return s;
                         break;
-                    case 4 :
+                    case 4 : 
                         int LA59_15 = input.LA(1);
 
-
+                         
                         int index59_15 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred84_JPA()) ) {s = 1;}
 
-                        else if ( (synpred86_JPA()) ) {s = 17;}
+                        else if ( (synpred86_JPA()) ) {s = 18;}
 
-                        else if ( (true) ) {s = 23;}
+                        else if ( (true) ) {s = 24;}
 
-
+                         
                         input.seek(index59_15);
                         if ( s>=0 ) return s;
                         break;
-                    case 5 :
+                    case 5 : 
                         int LA59_16 = input.LA(1);
 
-
+                         
                         int index59_16 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred84_JPA()) ) {s = 1;}
 
-                        else if ( (synpred86_JPA()) ) {s = 17;}
+                        else if ( (synpred86_JPA()) ) {s = 18;}
 
-                        else if ( (true) ) {s = 23;}
+                        else if ( (true) ) {s = 24;}
 
-
+                         
                         input.seek(index59_16);
+                        if ( s>=0 ) return s;
+                        break;
+                    case 6 : 
+                        int LA59_17 = input.LA(1);
+
+                         
+                        int index59_17 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( (synpred84_JPA()) ) {s = 1;}
+
+                        else if ( (synpred86_JPA()) ) {s = 18;}
+
+                        else if ( (true) ) {s = 24;}
+
+                         
+                        input.seek(index59_17);
                         if ( s>=0 ) return s;
                         break;
             }
@@ -12750,23 +12841,24 @@ public class JPAParser extends Parser {
         }
     }
     static final String DFA79_eotS =
-        "\33\uffff";
+        "\34\uffff";
     static final String DFA79_eofS =
-        "\33\uffff";
+        "\34\uffff";
     static final String DFA79_minS =
-        "\1\30\1\0\1\uffff\2\0\5\uffff\3\0\16\uffff";
+        "\1\30\1\0\1\uffff\3\0\5\uffff\3\0\16\uffff";
     static final String DFA79_maxS =
-        "\1\165\1\0\1\uffff\2\0\5\uffff\3\0\16\uffff";
+        "\1\167\1\0\1\uffff\3\0\5\uffff\3\0\16\uffff";
     static final String DFA79_acceptS =
-        "\2\uffff\1\1\12\uffff\1\2\1\4\1\6\11\uffff\1\3\1\5";
+        "\2\uffff\1\1\13\uffff\1\2\1\4\1\6\11\uffff\1\3\1\5";
     static final String DFA79_specialS =
-        "\1\uffff\1\0\1\uffff\1\1\1\2\5\uffff\1\3\1\4\1\5\16\uffff}>";
+        "\1\uffff\1\0\1\uffff\1\1\1\2\1\3\5\uffff\1\4\1\5\1\6\16\uffff}>";
     static final String[] DFA79_transitionS = {
-            "\4\13\1\12\2\uffff\1\17\12\uffff\1\17\1\uffff\1\2\1\uffff\1"+
-            "\1\1\4\10\uffff\1\14\10\uffff\2\17\36\uffff\6\17\3\16\5\2\3"+
-            "\uffff\1\17\1\3\2\15",
+            "\4\14\1\13\2\uffff\1\20\12\uffff\1\20\1\uffff\1\2\1\uffff\1"+
+            "\1\1\4\10\uffff\1\15\10\uffff\2\20\36\uffff\6\20\3\17\5\2\3"+
+            "\uffff\1\20\1\3\1\5\1\uffff\2\16",
             "\1\uffff",
             "",
+            "\1\uffff",
             "\1\uffff",
             "\1\uffff",
             "",
@@ -12823,134 +12915,157 @@ public class JPAParser extends Parser {
             this.transition = DFA79_transition;
         }
         public String getDescription() {
-            return "297:1: comparison_expression : ( string_expression comparison_operator ( string_expression | all_or_any_expression ) | boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression ) | enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression ) | datetime_expression comparison_operator ( datetime_expression | all_or_any_expression ) | entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression ) | arithmetic_expression comparison_operator ( arithmetic_expression | all_or_any_expression ) );";
+            return "298:1: comparison_expression : ( string_expression comparison_operator ( string_expression | all_or_any_expression ) | boolean_expression ( '=' | '<>' ) ( boolean_expression | all_or_any_expression ) | enum_expression ( '=' | '<>' ) ( enum_expression | all_or_any_expression ) | datetime_expression comparison_operator ( datetime_expression | all_or_any_expression ) | entity_expression ( '=' | '<>' ) ( entity_expression | all_or_any_expression ) | arithmetic_expression comparison_operator ( arithmetic_expression | all_or_any_expression ) );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             TokenStream input = (TokenStream)_input;
         	int _s = s;
             switch ( s ) {
-                    case 0 :
+                    case 0 : 
                         int LA79_1 = input.LA(1);
 
-
+                         
                         int index79_1 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred104_JPA()) ) {s = 2;}
 
-                        else if ( (synpred107_JPA()) ) {s = 13;}
+                        else if ( (synpred107_JPA()) ) {s = 14;}
 
-                        else if ( (synpred110_JPA()) ) {s = 25;}
+                        else if ( (synpred110_JPA()) ) {s = 26;}
 
-                        else if ( (synpred112_JPA()) ) {s = 14;}
+                        else if ( (synpred112_JPA()) ) {s = 15;}
 
-                        else if ( (synpred115_JPA()) ) {s = 26;}
+                        else if ( (synpred115_JPA()) ) {s = 27;}
 
-                        else if ( (true) ) {s = 15;}
+                        else if ( (true) ) {s = 16;}
 
-
+                         
                         input.seek(index79_1);
                         if ( s>=0 ) return s;
                         break;
-                    case 1 :
+                    case 1 : 
                         int LA79_3 = input.LA(1);
 
-
+                         
                         int index79_3 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred104_JPA()) ) {s = 2;}
 
-                        else if ( (synpred107_JPA()) ) {s = 13;}
+                        else if ( (synpred107_JPA()) ) {s = 14;}
 
-                        else if ( (synpred110_JPA()) ) {s = 25;}
+                        else if ( (synpred110_JPA()) ) {s = 26;}
 
-                        else if ( (synpred112_JPA()) ) {s = 14;}
+                        else if ( (synpred112_JPA()) ) {s = 15;}
 
-                        else if ( (synpred115_JPA()) ) {s = 26;}
+                        else if ( (synpred115_JPA()) ) {s = 27;}
 
-                        else if ( (true) ) {s = 15;}
+                        else if ( (true) ) {s = 16;}
 
-
+                         
                         input.seek(index79_3);
                         if ( s>=0 ) return s;
                         break;
-                    case 2 :
+                    case 2 : 
                         int LA79_4 = input.LA(1);
 
-
+                         
                         int index79_4 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred104_JPA()) ) {s = 2;}
 
-                        else if ( (synpred107_JPA()) ) {s = 13;}
+                        else if ( (synpred107_JPA()) ) {s = 14;}
 
-                        else if ( (synpred110_JPA()) ) {s = 25;}
+                        else if ( (synpred110_JPA()) ) {s = 26;}
 
-                        else if ( (synpred112_JPA()) ) {s = 14;}
+                        else if ( (synpred112_JPA()) ) {s = 15;}
 
-                        else if ( (synpred115_JPA()) ) {s = 26;}
+                        else if ( (synpred115_JPA()) ) {s = 27;}
 
-                        else if ( (true) ) {s = 15;}
+                        else if ( (true) ) {s = 16;}
 
-
+                         
                         input.seek(index79_4);
                         if ( s>=0 ) return s;
                         break;
-                    case 3 :
-                        int LA79_10 = input.LA(1);
+                    case 3 : 
+                        int LA79_5 = input.LA(1);
 
-
-                        int index79_10 = input.index();
+                         
+                        int index79_5 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred104_JPA()) ) {s = 2;}
 
-                        else if ( (synpred112_JPA()) ) {s = 14;}
+                        else if ( (synpred107_JPA()) ) {s = 14;}
 
-                        else if ( (true) ) {s = 15;}
+                        else if ( (synpred110_JPA()) ) {s = 26;}
 
+                        else if ( (synpred112_JPA()) ) {s = 15;}
 
-                        input.seek(index79_10);
+                        else if ( (synpred115_JPA()) ) {s = 27;}
+
+                        else if ( (true) ) {s = 16;}
+
+                         
+                        input.seek(index79_5);
                         if ( s>=0 ) return s;
                         break;
-                    case 4 :
+                    case 4 : 
                         int LA79_11 = input.LA(1);
 
-
+                         
                         int index79_11 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred104_JPA()) ) {s = 2;}
 
-                        else if ( (synpred112_JPA()) ) {s = 14;}
+                        else if ( (synpred112_JPA()) ) {s = 15;}
 
-                        else if ( (true) ) {s = 15;}
+                        else if ( (true) ) {s = 16;}
 
-
+                         
                         input.seek(index79_11);
                         if ( s>=0 ) return s;
                         break;
-                    case 5 :
+                    case 5 : 
                         int LA79_12 = input.LA(1);
 
-
+                         
                         int index79_12 = input.index();
                         input.rewind();
                         s = -1;
                         if ( (synpred104_JPA()) ) {s = 2;}
 
-                        else if ( (synpred107_JPA()) ) {s = 13;}
+                        else if ( (synpred112_JPA()) ) {s = 15;}
 
-                        else if ( (synpred110_JPA()) ) {s = 25;}
+                        else if ( (true) ) {s = 16;}
 
-                        else if ( (synpred112_JPA()) ) {s = 14;}
-
-                        else if ( (true) ) {s = 15;}
-
-
+                         
                         input.seek(index79_12);
+                        if ( s>=0 ) return s;
+                        break;
+                    case 6 : 
+                        int LA79_13 = input.LA(1);
+
+                         
+                        int index79_13 = input.index();
+                        input.rewind();
+                        s = -1;
+                        if ( (synpred104_JPA()) ) {s = 2;}
+
+                        else if ( (synpred107_JPA()) ) {s = 14;}
+
+                        else if ( (synpred110_JPA()) ) {s = 26;}
+
+                        else if ( (synpred112_JPA()) ) {s = 15;}
+
+                        else if ( (true) ) {s = 16;}
+
+                         
+                        input.seek(index79_13);
                         if ( s>=0 ) return s;
                         break;
             }
@@ -12961,451 +13076,454 @@ public class JPAParser extends Parser {
             throw nvae;
         }
     }
+ 
 
-
-    public static final BitSet FOLLOW_select_statement_in_ql_statement416 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_52_in_select_statement428 = new BitSet(new long[]{0x180040021F000000L});
-    public static final BitSet FOLLOW_select_clause_in_select_statement430 = new BitSet(new long[]{0x0020000000000000L});
-    public static final BitSet FOLLOW_from_clause_in_select_statement432 = new BitSet(new long[]{0x2000018000200002L});
-    public static final BitSet FOLLOW_where_clause_in_select_statement435 = new BitSet(new long[]{0x0000018000200002L});
-    public static final BitSet FOLLOW_groupby_clause_in_select_statement440 = new BitSet(new long[]{0x0000008000200002L});
-    public static final BitSet FOLLOW_having_clause_in_select_statement445 = new BitSet(new long[]{0x0000008000000002L});
-    public static final BitSet FOLLOW_orderby_clause_in_select_statement449 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_53_in_from_clause504 = new BitSet(new long[]{0x0100400000000000L});
-    public static final BitSet FOLLOW_identification_variable_declaration_in_from_clause506 = new BitSet(new long[]{0x0040000000000002L});
-    public static final BitSet FOLLOW_54_in_from_clause509 = new BitSet(new long[]{0x0500400000000000L});
-    public static final BitSet FOLLOW_identification_variable_or_collection_declaration_in_from_clause511 = new BitSet(new long[]{0x0040000000000002L});
-    public static final BitSet FOLLOW_identification_variable_declaration_in_identification_variable_or_collection_declaration541 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_collection_member_declaration_in_identification_variable_or_collection_declaration549 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_range_variable_declaration_in_identification_variable_declaration569 = new BitSet(new long[]{0x0000003400000002L});
-    public static final BitSet FOLLOW_joined_clause_in_identification_variable_declaration571 = new BitSet(new long[]{0x0000003400000002L});
-    public static final BitSet FOLLOW_join_in_joined_clause599 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_fetch_join_in_joined_clause603 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_range_variable_declaration_source_in_range_variable_declaration612 = new BitSet(new long[]{0x0080400000000000L});
-    public static final BitSet FOLLOW_55_in_range_variable_declaration615 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_identification_variable_in_range_variable_declaration619 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_abstract_schema_name_in_range_variable_declaration_source646 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_56_in_range_variable_declaration_source653 = new BitSet(new long[]{0x180040021F000000L});
-    public static final BitSet FOLLOW_select_clause_in_range_variable_declaration_source655 = new BitSet(new long[]{0x0020000000000000L});
-    public static final BitSet FOLLOW_from_clause_in_range_variable_declaration_source657 = new BitSet(new long[]{0x2000018100200000L});
-    public static final BitSet FOLLOW_where_clause_in_range_variable_declaration_source660 = new BitSet(new long[]{0x0000018100200000L});
-    public static final BitSet FOLLOW_groupby_clause_in_range_variable_declaration_source665 = new BitSet(new long[]{0x0000008100200000L});
-    public static final BitSet FOLLOW_having_clause_in_range_variable_declaration_source670 = new BitSet(new long[]{0x0000008100000000L});
-    public static final BitSet FOLLOW_orderby_clause_in_range_variable_declaration_source674 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_range_variable_declaration_source680 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_join_spec_in_join734 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_join_association_path_expression_in_join736 = new BitSet(new long[]{0x0080400000000000L});
-    public static final BitSet FOLLOW_55_in_join739 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_identification_variable_in_join743 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_join_spec_in_fetch_join772 = new BitSet(new long[]{0x0000004000000000L});
-    public static final BitSet FOLLOW_FETCH_in_fetch_join774 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_join_association_path_expression_in_fetch_join776 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LEFT_in_join_spec786 = new BitSet(new long[]{0x0000002800000000L});
-    public static final BitSet FOLLOW_OUTER_in_join_spec790 = new BitSet(new long[]{0x0000002000000000L});
-    public static final BitSet FOLLOW_INNER_in_join_spec796 = new BitSet(new long[]{0x0000002000000000L});
-    public static final BitSet FOLLOW_JOIN_in_join_spec801 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_identification_variable_in_join_association_path_expression810 = new BitSet(new long[]{0x0200000000000000L});
-    public static final BitSet FOLLOW_57_in_join_association_path_expression812 = new BitSet(new long[]{0x0000410000000002L});
-    public static final BitSet FOLLOW_field_in_join_association_path_expression815 = new BitSet(new long[]{0x0200000000000000L});
-    public static final BitSet FOLLOW_57_in_join_association_path_expression816 = new BitSet(new long[]{0x0000410000000002L});
-    public static final BitSet FOLLOW_field_in_join_association_path_expression820 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_58_in_collection_member_declaration848 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_collection_member_declaration849 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_path_expression_in_collection_member_declaration851 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_collection_member_declaration853 = new BitSet(new long[]{0x0080400000000000L});
-    public static final BitSet FOLLOW_55_in_collection_member_declaration856 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_identification_variable_in_collection_member_declaration860 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_identification_variable_in_path_expression886 = new BitSet(new long[]{0x0200000000000000L});
-    public static final BitSet FOLLOW_57_in_path_expression888 = new BitSet(new long[]{0x0000410000000002L});
-    public static final BitSet FOLLOW_field_in_path_expression891 = new BitSet(new long[]{0x0200000000000000L});
-    public static final BitSet FOLLOW_57_in_path_expression892 = new BitSet(new long[]{0x0000410000000002L});
-    public static final BitSet FOLLOW_field_in_path_expression897 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DISTINCT_in_select_clause927 = new BitSet(new long[]{0x180040021F000000L});
-    public static final BitSet FOLLOW_select_expression_in_select_clause931 = new BitSet(new long[]{0x0040000000000002L});
-    public static final BitSet FOLLOW_54_in_select_clause934 = new BitSet(new long[]{0x180040021F000000L});
-    public static final BitSet FOLLOW_select_expression_in_select_clause936 = new BitSet(new long[]{0x0040000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_select_expression972 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_aggregate_expression_in_select_expression977 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_identification_variable_in_select_expression982 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_59_in_select_expression997 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_select_expression999 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_identification_variable_in_select_expression1000 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_select_expression1001 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_constructor_expression_in_select_expression1006 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_60_in_constructor_expression1015 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_constructor_name_in_constructor_expression1017 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_constructor_expression1019 = new BitSet(new long[]{0x000040001F000000L});
-    public static final BitSet FOLLOW_constructor_item_in_constructor_expression1021 = new BitSet(new long[]{0x0040000100000000L});
-    public static final BitSet FOLLOW_54_in_constructor_expression1024 = new BitSet(new long[]{0x000040001F000000L});
-    public static final BitSet FOLLOW_constructor_item_in_constructor_expression1026 = new BitSet(new long[]{0x0040000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_constructor_expression1030 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_constructor_item1039 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_aggregate_expression_in_constructor_item1043 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_aggregate_expression_function_name_in_aggregate_expression1052 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_aggregate_expression1054 = new BitSet(new long[]{0x0000400200000000L});
-    public static final BitSet FOLLOW_DISTINCT_in_aggregate_expression1057 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_path_expression_in_aggregate_expression1061 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_aggregate_expression1062 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_COUNT_in_aggregate_expression1090 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_aggregate_expression1092 = new BitSet(new long[]{0x0000400200000000L});
-    public static final BitSet FOLLOW_DISTINCT_in_aggregate_expression1095 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_identification_variable_in_aggregate_expression1099 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_aggregate_expression1101 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_select_statement_in_ql_statement426 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_52_in_select_statement441 = new BitSet(new long[]{0x180040021F000000L});
+    public static final BitSet FOLLOW_select_clause_in_select_statement443 = new BitSet(new long[]{0x0020000000000000L});
+    public static final BitSet FOLLOW_from_clause_in_select_statement445 = new BitSet(new long[]{0x2000018000200002L});
+    public static final BitSet FOLLOW_where_clause_in_select_statement448 = new BitSet(new long[]{0x0000018000200002L});
+    public static final BitSet FOLLOW_groupby_clause_in_select_statement453 = new BitSet(new long[]{0x0000008000200002L});
+    public static final BitSet FOLLOW_having_clause_in_select_statement458 = new BitSet(new long[]{0x0000008000000002L});
+    public static final BitSet FOLLOW_orderby_clause_in_select_statement462 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_53_in_from_clause523 = new BitSet(new long[]{0x0100400000000000L});
+    public static final BitSet FOLLOW_identification_variable_declaration_in_from_clause525 = new BitSet(new long[]{0x0040000000000002L});
+    public static final BitSet FOLLOW_54_in_from_clause528 = new BitSet(new long[]{0x0500400000000000L});
+    public static final BitSet FOLLOW_identification_variable_or_collection_declaration_in_from_clause530 = new BitSet(new long[]{0x0040000000000002L});
+    public static final BitSet FOLLOW_identification_variable_declaration_in_identification_variable_or_collection_declaration563 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_collection_member_declaration_in_identification_variable_or_collection_declaration571 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_range_variable_declaration_in_identification_variable_declaration594 = new BitSet(new long[]{0x0000003400000002L});
+    public static final BitSet FOLLOW_joined_clause_in_identification_variable_declaration596 = new BitSet(new long[]{0x0000003400000002L});
+    public static final BitSet FOLLOW_join_in_joined_clause627 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_fetch_join_in_joined_clause631 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_range_variable_declaration_source_in_range_variable_declaration643 = new BitSet(new long[]{0x0080400000000000L});
+    public static final BitSet FOLLOW_55_in_range_variable_declaration646 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_identification_variable_in_range_variable_declaration650 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_abstract_schema_name_in_range_variable_declaration_source686 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_56_in_range_variable_declaration_source696 = new BitSet(new long[]{0x180040021F000000L});
+    public static final BitSet FOLLOW_select_clause_in_range_variable_declaration_source698 = new BitSet(new long[]{0x0020000000000000L});
+    public static final BitSet FOLLOW_from_clause_in_range_variable_declaration_source700 = new BitSet(new long[]{0x2000018100200000L});
+    public static final BitSet FOLLOW_where_clause_in_range_variable_declaration_source703 = new BitSet(new long[]{0x0000018100200000L});
+    public static final BitSet FOLLOW_groupby_clause_in_range_variable_declaration_source708 = new BitSet(new long[]{0x0000008100200000L});
+    public static final BitSet FOLLOW_having_clause_in_range_variable_declaration_source713 = new BitSet(new long[]{0x0000008100000000L});
+    public static final BitSet FOLLOW_orderby_clause_in_range_variable_declaration_source717 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_range_variable_declaration_source723 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_join_spec_in_join786 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_join_association_path_expression_in_join788 = new BitSet(new long[]{0x0080400000000000L});
+    public static final BitSet FOLLOW_55_in_join791 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_identification_variable_in_join795 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_join_spec_in_fetch_join833 = new BitSet(new long[]{0x0000004000000000L});
+    public static final BitSet FOLLOW_FETCH_in_fetch_join835 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_join_association_path_expression_in_fetch_join837 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LEFT_in_join_spec850 = new BitSet(new long[]{0x0000002800000000L});
+    public static final BitSet FOLLOW_OUTER_in_join_spec854 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_INNER_in_join_spec860 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_JOIN_in_join_spec865 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_identification_variable_in_join_association_path_expression877 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_57_in_join_association_path_expression879 = new BitSet(new long[]{0x0000410000000002L});
+    public static final BitSet FOLLOW_field_in_join_association_path_expression882 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_57_in_join_association_path_expression883 = new BitSet(new long[]{0x0000410000000002L});
+    public static final BitSet FOLLOW_field_in_join_association_path_expression887 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_58_in_collection_member_declaration924 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_collection_member_declaration925 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_path_expression_in_collection_member_declaration927 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_collection_member_declaration929 = new BitSet(new long[]{0x0080400000000000L});
+    public static final BitSet FOLLOW_55_in_collection_member_declaration932 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_identification_variable_in_collection_member_declaration936 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_identification_variable_in_path_expression971 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_57_in_path_expression973 = new BitSet(new long[]{0x0000410000000002L});
+    public static final BitSet FOLLOW_field_in_path_expression976 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_57_in_path_expression977 = new BitSet(new long[]{0x0000410000000002L});
+    public static final BitSet FOLLOW_field_in_path_expression982 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DISTINCT_in_select_clause1021 = new BitSet(new long[]{0x180040021F000000L});
+    public static final BitSet FOLLOW_select_expression_in_select_clause1025 = new BitSet(new long[]{0x0040000000000002L});
+    public static final BitSet FOLLOW_54_in_select_clause1028 = new BitSet(new long[]{0x180040021F000000L});
+    public static final BitSet FOLLOW_select_expression_in_select_clause1030 = new BitSet(new long[]{0x0040000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_select_expression1075 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_aggregate_expression_in_select_expression1083 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_identification_variable_in_select_expression1091 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_59_in_select_expression1109 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_select_expression1111 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_identification_variable_in_select_expression1112 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_select_expression1113 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_constructor_expression_in_select_expression1121 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_60_in_constructor_expression1133 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_constructor_name_in_constructor_expression1135 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_constructor_expression1137 = new BitSet(new long[]{0x000040001F000000L});
+    public static final BitSet FOLLOW_constructor_item_in_constructor_expression1139 = new BitSet(new long[]{0x0040000100000000L});
+    public static final BitSet FOLLOW_54_in_constructor_expression1142 = new BitSet(new long[]{0x000040001F000000L});
+    public static final BitSet FOLLOW_constructor_item_in_constructor_expression1144 = new BitSet(new long[]{0x0040000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_constructor_expression1148 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_constructor_item1160 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_aggregate_expression_in_constructor_item1164 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_aggregate_expression_function_name_in_aggregate_expression1176 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_aggregate_expression1178 = new BitSet(new long[]{0x0000400200000000L});
+    public static final BitSet FOLLOW_DISTINCT_in_aggregate_expression1181 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_path_expression_in_aggregate_expression1185 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_aggregate_expression1186 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_COUNT_in_aggregate_expression1220 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_aggregate_expression1222 = new BitSet(new long[]{0x0000400200000000L});
+    public static final BitSet FOLLOW_DISTINCT_in_aggregate_expression1225 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_identification_variable_in_aggregate_expression1229 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_aggregate_expression1231 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_aggregate_expression_function_name0 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_61_in_where_clause1163 = new BitSet(new long[]{0xC100D4009F000000L,0x003C7FFE00201E06L});
-    public static final BitSet FOLLOW_conditional_expression_in_where_clause1165 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_61_in_where_clause1181 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_path_expression_in_where_clause1183 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_GROUP_in_groupby_clause1204 = new BitSet(new long[]{0x0000020000000000L});
-    public static final BitSet FOLLOW_BY_in_groupby_clause1206 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_groupby_item_in_groupby_clause1208 = new BitSet(new long[]{0x0040000000000002L});
-    public static final BitSet FOLLOW_54_in_groupby_clause1211 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_groupby_item_in_groupby_clause1213 = new BitSet(new long[]{0x0040000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_groupby_item1244 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_identification_variable_in_groupby_item1248 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_HAVING_in_having_clause1257 = new BitSet(new long[]{0xC100D4009F000000L,0x003C7FFE00201E06L});
-    public static final BitSet FOLLOW_conditional_expression_in_having_clause1259 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ORDER_in_orderby_clause1268 = new BitSet(new long[]{0x0000020000000000L});
-    public static final BitSet FOLLOW_BY_in_orderby_clause1270 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_orderby_item_in_orderby_clause1272 = new BitSet(new long[]{0x0040000000000002L});
-    public static final BitSet FOLLOW_54_in_orderby_clause1275 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_orderby_item_in_orderby_clause1277 = new BitSet(new long[]{0x0040000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_orderby_item1306 = new BitSet(new long[]{0x0000000000400002L});
-    public static final BitSet FOLLOW_ASC_in_orderby_item1309 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_orderby_item1335 = new BitSet(new long[]{0x0000000000800000L});
-    public static final BitSet FOLLOW_DESC_in_orderby_item1337 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_56_in_subquery1363 = new BitSet(new long[]{0x000040021F000000L});
-    public static final BitSet FOLLOW_simple_select_clause_in_subquery1365 = new BitSet(new long[]{0x0020000000000000L});
-    public static final BitSet FOLLOW_subquery_from_clause_in_subquery1367 = new BitSet(new long[]{0x2000010100200000L});
-    public static final BitSet FOLLOW_where_clause_in_subquery1370 = new BitSet(new long[]{0x0000010100200000L});
-    public static final BitSet FOLLOW_groupby_clause_in_subquery1375 = new BitSet(new long[]{0x0000000100200000L});
-    public static final BitSet FOLLOW_having_clause_in_subquery1380 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_subquery1386 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_53_in_subquery_from_clause1429 = new BitSet(new long[]{0x0500400000000000L});
-    public static final BitSet FOLLOW_subselect_identification_variable_declaration_in_subquery_from_clause1431 = new BitSet(new long[]{0x0040000000000002L});
-    public static final BitSet FOLLOW_54_in_subquery_from_clause1434 = new BitSet(new long[]{0x0500400000000000L});
-    public static final BitSet FOLLOW_subselect_identification_variable_declaration_in_subquery_from_clause1436 = new BitSet(new long[]{0x0040000000000002L});
-    public static final BitSet FOLLOW_identification_variable_declaration_in_subselect_identification_variable_declaration1468 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_association_path_expression_in_subselect_identification_variable_declaration1473 = new BitSet(new long[]{0x0080400000000000L});
-    public static final BitSet FOLLOW_55_in_subselect_identification_variable_declaration1476 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_identification_variable_in_subselect_identification_variable_declaration1480 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_collection_member_declaration_in_subselect_identification_variable_declaration1485 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_association_path_expression1494 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DISTINCT_in_simple_select_clause1504 = new BitSet(new long[]{0x000040021F000000L});
-    public static final BitSet FOLLOW_simple_select_expression_in_simple_select_clause1508 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_simple_select_expression1539 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_aggregate_expression_in_simple_select_expression1544 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_identification_variable_in_simple_select_expression1549 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_conditional_term_in_conditional_expression1559 = new BitSet(new long[]{0x0000000020000002L});
-    public static final BitSet FOLLOW_OR_in_conditional_expression1563 = new BitSet(new long[]{0xC100D4009F000000L,0x003C7FFE00201E06L});
-    public static final BitSet FOLLOW_conditional_term_in_conditional_expression1565 = new BitSet(new long[]{0x0000000020000002L});
-    public static final BitSet FOLLOW_conditional_factor_in_conditional_term1577 = new BitSet(new long[]{0x0000000040000002L});
-    public static final BitSet FOLLOW_AND_in_conditional_term1581 = new BitSet(new long[]{0xC100D4009F000000L,0x003C7FFE00201E06L});
-    public static final BitSet FOLLOW_conditional_factor_in_conditional_term1583 = new BitSet(new long[]{0x0000000040000002L});
-    public static final BitSet FOLLOW_62_in_conditional_factor1596 = new BitSet(new long[]{0xC100D4009F000000L,0x003C7FFE00201E06L});
-    public static final BitSet FOLLOW_simple_cond_expression_in_conditional_factor1600 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LPAREN_in_conditional_factor1622 = new BitSet(new long[]{0xC100D4009F000000L,0x003C7FFE00201E06L});
-    public static final BitSet FOLLOW_conditional_expression_in_conditional_factor1623 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_conditional_factor1624 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_comparison_expression_in_simple_cond_expression1633 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_between_expression_in_simple_cond_expression1638 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_like_expression_in_simple_cond_expression1643 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_in_expression_in_simple_cond_expression1648 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_null_comparison_expression_in_simple_cond_expression1653 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_empty_collection_comparison_expression_in_simple_cond_expression1658 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_collection_member_expression_in_simple_cond_expression1663 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_exists_expression_in_simple_cond_expression1668 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_date_macro_expression_in_simple_cond_expression1673 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_date_between_macro_expression_in_date_macro_expression1685 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_date_before_macro_expression_in_date_macro_expression1693 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_date_after_macro_expression_in_date_macro_expression1701 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_date_equals_macro_expression_in_date_macro_expression1709 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_date_today_macro_expression_in_date_macro_expression1717 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_63_in_date_between_macro_expression1729 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_date_between_macro_expression1731 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_path_expression_in_date_between_macro_expression1733 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_54_in_date_between_macro_expression1735 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_64_in_date_between_macro_expression1737 = new BitSet(new long[]{0x0040000000000000L,0x0000000000000006L});
-    public static final BitSet FOLLOW_set_in_date_between_macro_expression1740 = new BitSet(new long[]{0x0000040000000000L});
-    public static final BitSet FOLLOW_INT_NUMERAL_in_date_between_macro_expression1748 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_54_in_date_between_macro_expression1752 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000001L});
-    public static final BitSet FOLLOW_64_in_date_between_macro_expression1754 = new BitSet(new long[]{0x0040000000000000L,0x0000000000000006L});
-    public static final BitSet FOLLOW_set_in_date_between_macro_expression1757 = new BitSet(new long[]{0x0000040000000000L});
-    public static final BitSet FOLLOW_INT_NUMERAL_in_date_between_macro_expression1765 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_54_in_date_between_macro_expression1769 = new BitSet(new long[]{0x0000000000000000L,0x00000000000001F8L});
-    public static final BitSet FOLLOW_set_in_date_between_macro_expression1771 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_date_between_macro_expression1794 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_73_in_date_before_macro_expression1806 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_date_before_macro_expression1808 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_path_expression_in_date_before_macro_expression1810 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_54_in_date_before_macro_expression1812 = new BitSet(new long[]{0x0000C00000000000L,0x0008000000000000L});
-    public static final BitSet FOLLOW_path_expression_in_date_before_macro_expression1815 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_input_parameter_in_date_before_macro_expression1819 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_date_before_macro_expression1822 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_74_in_date_after_macro_expression1834 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_date_after_macro_expression1836 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_path_expression_in_date_after_macro_expression1838 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_54_in_date_after_macro_expression1840 = new BitSet(new long[]{0x0000C00000000000L,0x0008000000000000L});
-    public static final BitSet FOLLOW_path_expression_in_date_after_macro_expression1843 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_input_parameter_in_date_after_macro_expression1847 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_date_after_macro_expression1850 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_75_in_date_equals_macro_expression1862 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_date_equals_macro_expression1864 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_path_expression_in_date_equals_macro_expression1866 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_54_in_date_equals_macro_expression1868 = new BitSet(new long[]{0x0000C00000000000L,0x0008000000000000L});
-    public static final BitSet FOLLOW_path_expression_in_date_equals_macro_expression1871 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_input_parameter_in_date_equals_macro_expression1875 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_date_equals_macro_expression1878 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_76_in_date_today_macro_expression1890 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_date_today_macro_expression1892 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_path_expression_in_date_today_macro_expression1894 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_date_today_macro_expression1896 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_arithmetic_expression_in_between_expression1905 = new BitSet(new long[]{0x4000000000000000L,0x0000000000002000L});
-    public static final BitSet FOLLOW_62_in_between_expression1908 = new BitSet(new long[]{0x0000000000000000L,0x0000000000002000L});
-    public static final BitSet FOLLOW_77_in_between_expression1912 = new BitSet(new long[]{0x0100D4009F000000L,0x003C7FFE00000006L});
-    public static final BitSet FOLLOW_arithmetic_expression_in_between_expression1914 = new BitSet(new long[]{0x0000000040000000L});
-    public static final BitSet FOLLOW_AND_in_between_expression1916 = new BitSet(new long[]{0x0100D4009F000000L,0x003C7FFE00000006L});
-    public static final BitSet FOLLOW_arithmetic_expression_in_between_expression1918 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_string_expression_in_between_expression1923 = new BitSet(new long[]{0x4000000000000000L,0x0000000000002000L});
-    public static final BitSet FOLLOW_62_in_between_expression1926 = new BitSet(new long[]{0x0000000000000000L,0x0000000000002000L});
-    public static final BitSet FOLLOW_77_in_between_expression1930 = new BitSet(new long[]{0x0100D0001F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_string_expression_in_between_expression1932 = new BitSet(new long[]{0x0000000040000000L});
-    public static final BitSet FOLLOW_AND_in_between_expression1934 = new BitSet(new long[]{0x0100D0001F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_string_expression_in_between_expression1936 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_datetime_expression_in_between_expression1941 = new BitSet(new long[]{0x4000000000000000L,0x0000000000002000L});
-    public static final BitSet FOLLOW_62_in_between_expression1944 = new BitSet(new long[]{0x0000000000000000L,0x0000000000002000L});
-    public static final BitSet FOLLOW_77_in_between_expression1948 = new BitSet(new long[]{0x0100D0001F000000L,0x00087F8000000000L});
-    public static final BitSet FOLLOW_datetime_expression_in_between_expression1950 = new BitSet(new long[]{0x0000000040000000L});
-    public static final BitSet FOLLOW_AND_in_between_expression1952 = new BitSet(new long[]{0x0100D0001F000000L,0x00087F8000000000L});
-    public static final BitSet FOLLOW_datetime_expression_in_between_expression1954 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_in_expression1963 = new BitSet(new long[]{0x4400000000000000L});
-    public static final BitSet FOLLOW_62_in_in_expression1966 = new BitSet(new long[]{0x0400000000000000L});
-    public static final BitSet FOLLOW_58_in_in_expression1970 = new BitSet(new long[]{0x0100D0009F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_in_expression_right_part_in_in_expression1972 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LPAREN_in_in_expression_right_part1981 = new BitSet(new long[]{0x0000C00000000000L,0x0008000000000000L});
-    public static final BitSet FOLLOW_in_item_in_in_expression_right_part1983 = new BitSet(new long[]{0x0040000100000000L});
-    public static final BitSet FOLLOW_54_in_in_expression_right_part1986 = new BitSet(new long[]{0x0000C00000000000L,0x0008000000000000L});
-    public static final BitSet FOLLOW_in_item_in_in_expression_right_part1988 = new BitSet(new long[]{0x0040000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_in_expression_right_part1992 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_subquery_in_in_expression_right_part1997 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literal_in_in_item2006 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_input_parameter_in_in_item2011 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_string_expression_in_like_expression2020 = new BitSet(new long[]{0x4000000000000000L,0x0000000000004000L});
-    public static final BitSet FOLLOW_62_in_like_expression2023 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
-    public static final BitSet FOLLOW_78_in_like_expression2027 = new BitSet(new long[]{0x0000C00000000000L,0x0008000000000000L});
-    public static final BitSet FOLLOW_pattern_value_in_like_expression2030 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
-    public static final BitSet FOLLOW_input_parameter_in_like_expression2034 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
-    public static final BitSet FOLLOW_79_in_like_expression2037 = new BitSet(new long[]{0x0000080000000000L});
-    public static final BitSet FOLLOW_ESCAPE_CHARACTER_in_like_expression2039 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_null_comparison_expression2051 = new BitSet(new long[]{0x0000000000000000L,0x0000000000010000L});
-    public static final BitSet FOLLOW_input_parameter_in_null_comparison_expression2055 = new BitSet(new long[]{0x0000000000000000L,0x0000000000010000L});
-    public static final BitSet FOLLOW_80_in_null_comparison_expression2058 = new BitSet(new long[]{0x4000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_62_in_null_comparison_expression2061 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
-    public static final BitSet FOLLOW_81_in_null_comparison_expression2065 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_empty_collection_comparison_expression2074 = new BitSet(new long[]{0x0000000000000000L,0x0000000000010000L});
-    public static final BitSet FOLLOW_80_in_empty_collection_comparison_expression2076 = new BitSet(new long[]{0x4000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_62_in_empty_collection_comparison_expression2079 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
-    public static final BitSet FOLLOW_82_in_empty_collection_comparison_expression2083 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_entity_expression_in_collection_member_expression2092 = new BitSet(new long[]{0x4000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_62_in_collection_member_expression2095 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_83_in_collection_member_expression2099 = new BitSet(new long[]{0x0000400000000000L,0x0000000000100000L});
-    public static final BitSet FOLLOW_84_in_collection_member_expression2102 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_path_expression_in_collection_member_expression2106 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_62_in_exists_expression2116 = new BitSet(new long[]{0x0000000000000000L,0x0000000000200000L});
-    public static final BitSet FOLLOW_85_in_exists_expression2120 = new BitSet(new long[]{0x0100D0001F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_subquery_in_exists_expression2122 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_all_or_any_expression2131 = new BitSet(new long[]{0x0100D0001F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_subquery_in_all_or_any_expression2144 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_string_expression_in_comparison_expression2153 = new BitSet(new long[]{0x0000000000000000L,0x000000007E000000L});
-    public static final BitSet FOLLOW_comparison_operator_in_comparison_expression2155 = new BitSet(new long[]{0x0100D0001F000000L,0x00087C0001C00000L});
-    public static final BitSet FOLLOW_string_expression_in_comparison_expression2158 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression2162 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_boolean_expression_in_comparison_expression2168 = new BitSet(new long[]{0x0000000000000000L,0x0000000006000000L});
-    public static final BitSet FOLLOW_set_in_comparison_expression2170 = new BitSet(new long[]{0x0100D0001F000000L,0x00387C0001C00000L});
-    public static final BitSet FOLLOW_boolean_expression_in_comparison_expression2179 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression2183 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_enum_expression_in_comparison_expression2189 = new BitSet(new long[]{0x0000000000000000L,0x0000000006000000L});
-    public static final BitSet FOLLOW_set_in_comparison_expression2191 = new BitSet(new long[]{0x0100D0001F000000L,0x00087C0001C00000L});
-    public static final BitSet FOLLOW_enum_expression_in_comparison_expression2198 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression2202 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_datetime_expression_in_comparison_expression2208 = new BitSet(new long[]{0x0000000000000000L,0x000000007E000000L});
-    public static final BitSet FOLLOW_comparison_operator_in_comparison_expression2210 = new BitSet(new long[]{0x0100D0001F000000L,0x00087F8001C00000L});
-    public static final BitSet FOLLOW_datetime_expression_in_comparison_expression2213 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression2217 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_entity_expression_in_comparison_expression2223 = new BitSet(new long[]{0x0000000000000000L,0x0000000006000000L});
-    public static final BitSet FOLLOW_set_in_comparison_expression2225 = new BitSet(new long[]{0x0100D0001F000000L,0x00087C0001C00000L});
-    public static final BitSet FOLLOW_entity_expression_in_comparison_expression2234 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression2238 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_arithmetic_expression_in_comparison_expression2244 = new BitSet(new long[]{0x0000000000000000L,0x000000007E000000L});
-    public static final BitSet FOLLOW_comparison_operator_in_comparison_expression2246 = new BitSet(new long[]{0x0100D4009F000000L,0x003C7FFE01C00006L});
-    public static final BitSet FOLLOW_arithmetic_expression_in_comparison_expression2249 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression2253 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_61_in_where_clause1299 = new BitSet(new long[]{0xC100D4009F000000L,0x00DC7FFE00201E06L});
+    public static final BitSet FOLLOW_conditional_expression_in_where_clause1301 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_61_in_where_clause1320 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_path_expression_in_where_clause1322 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_GROUP_in_groupby_clause1346 = new BitSet(new long[]{0x0000020000000000L});
+    public static final BitSet FOLLOW_BY_in_groupby_clause1348 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_groupby_item_in_groupby_clause1350 = new BitSet(new long[]{0x0040000000000002L});
+    public static final BitSet FOLLOW_54_in_groupby_clause1353 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_groupby_item_in_groupby_clause1355 = new BitSet(new long[]{0x0040000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_groupby_item1395 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_identification_variable_in_groupby_item1399 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_HAVING_in_having_clause1411 = new BitSet(new long[]{0xC100D4009F000000L,0x00DC7FFE00201E06L});
+    public static final BitSet FOLLOW_conditional_expression_in_having_clause1413 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ORDER_in_orderby_clause1425 = new BitSet(new long[]{0x0000020000000000L});
+    public static final BitSet FOLLOW_BY_in_orderby_clause1427 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_orderby_item_in_orderby_clause1429 = new BitSet(new long[]{0x0040000000000002L});
+    public static final BitSet FOLLOW_54_in_orderby_clause1432 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_orderby_item_in_orderby_clause1434 = new BitSet(new long[]{0x0040000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_orderby_item1469 = new BitSet(new long[]{0x0000000000400002L});
+    public static final BitSet FOLLOW_ASC_in_orderby_item1474 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_orderby_item1506 = new BitSet(new long[]{0x0000000000800000L});
+    public static final BitSet FOLLOW_DESC_in_orderby_item1510 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_56_in_subquery1542 = new BitSet(new long[]{0x000040021F000000L});
+    public static final BitSet FOLLOW_simple_select_clause_in_subquery1544 = new BitSet(new long[]{0x0020000000000000L});
+    public static final BitSet FOLLOW_subquery_from_clause_in_subquery1546 = new BitSet(new long[]{0x2000010100200000L});
+    public static final BitSet FOLLOW_where_clause_in_subquery1549 = new BitSet(new long[]{0x0000010100200000L});
+    public static final BitSet FOLLOW_groupby_clause_in_subquery1554 = new BitSet(new long[]{0x0000000100200000L});
+    public static final BitSet FOLLOW_having_clause_in_subquery1559 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_subquery1565 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_53_in_subquery_from_clause1614 = new BitSet(new long[]{0x0500400000000000L});
+    public static final BitSet FOLLOW_subselect_identification_variable_declaration_in_subquery_from_clause1616 = new BitSet(new long[]{0x0040000000000002L});
+    public static final BitSet FOLLOW_54_in_subquery_from_clause1619 = new BitSet(new long[]{0x0500400000000000L});
+    public static final BitSet FOLLOW_subselect_identification_variable_declaration_in_subquery_from_clause1621 = new BitSet(new long[]{0x0040000000000002L});
+    public static final BitSet FOLLOW_identification_variable_declaration_in_subselect_identification_variable_declaration1659 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_association_path_expression_in_subselect_identification_variable_declaration1667 = new BitSet(new long[]{0x0080400000000000L});
+    public static final BitSet FOLLOW_55_in_subselect_identification_variable_declaration1670 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_identification_variable_in_subselect_identification_variable_declaration1674 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_collection_member_declaration_in_subselect_identification_variable_declaration1682 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_association_path_expression1694 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DISTINCT_in_simple_select_clause1707 = new BitSet(new long[]{0x000040021F000000L});
+    public static final BitSet FOLLOW_simple_select_expression_in_simple_select_clause1711 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_simple_select_expression1748 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_aggregate_expression_in_simple_select_expression1756 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_identification_variable_in_simple_select_expression1764 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_conditional_term_in_conditional_expression1777 = new BitSet(new long[]{0x0000000020000002L});
+    public static final BitSet FOLLOW_OR_in_conditional_expression1781 = new BitSet(new long[]{0xC100D4009F000000L,0x00DC7FFE00201E06L});
+    public static final BitSet FOLLOW_conditional_term_in_conditional_expression1783 = new BitSet(new long[]{0x0000000020000002L});
+    public static final BitSet FOLLOW_conditional_factor_in_conditional_term1798 = new BitSet(new long[]{0x0000000040000002L});
+    public static final BitSet FOLLOW_AND_in_conditional_term1802 = new BitSet(new long[]{0xC100D4009F000000L,0x00DC7FFE00201E06L});
+    public static final BitSet FOLLOW_conditional_factor_in_conditional_term1804 = new BitSet(new long[]{0x0000000040000002L});
+    public static final BitSet FOLLOW_62_in_conditional_factor1823 = new BitSet(new long[]{0xC100D4009F000000L,0x00DC7FFE00201E06L});
+    public static final BitSet FOLLOW_simple_cond_expression_in_conditional_factor1827 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LPAREN_in_conditional_factor1852 = new BitSet(new long[]{0xC100D4009F000000L,0x00DC7FFE00201E06L});
+    public static final BitSet FOLLOW_conditional_expression_in_conditional_factor1853 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_conditional_factor1854 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_comparison_expression_in_simple_cond_expression1866 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_between_expression_in_simple_cond_expression1874 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_like_expression_in_simple_cond_expression1882 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_in_expression_in_simple_cond_expression1890 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_null_comparison_expression_in_simple_cond_expression1898 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_empty_collection_comparison_expression_in_simple_cond_expression1906 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_collection_member_expression_in_simple_cond_expression1914 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_exists_expression_in_simple_cond_expression1922 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_date_macro_expression_in_simple_cond_expression1930 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_date_between_macro_expression_in_date_macro_expression1942 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_date_before_macro_expression_in_date_macro_expression1950 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_date_after_macro_expression_in_date_macro_expression1958 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_date_equals_macro_expression_in_date_macro_expression1966 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_date_today_macro_expression_in_date_macro_expression1974 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_63_in_date_between_macro_expression1986 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_date_between_macro_expression1988 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_path_expression_in_date_between_macro_expression1990 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_54_in_date_between_macro_expression1992 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_64_in_date_between_macro_expression1994 = new BitSet(new long[]{0x0040000000000000L,0x0000000000000006L});
+    public static final BitSet FOLLOW_set_in_date_between_macro_expression1997 = new BitSet(new long[]{0x0000040000000000L});
+    public static final BitSet FOLLOW_INT_NUMERAL_in_date_between_macro_expression2005 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_54_in_date_between_macro_expression2009 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000001L});
+    public static final BitSet FOLLOW_64_in_date_between_macro_expression2011 = new BitSet(new long[]{0x0040000000000000L,0x0000000000000006L});
+    public static final BitSet FOLLOW_set_in_date_between_macro_expression2014 = new BitSet(new long[]{0x0000040000000000L});
+    public static final BitSet FOLLOW_INT_NUMERAL_in_date_between_macro_expression2022 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_54_in_date_between_macro_expression2026 = new BitSet(new long[]{0x0000000000000000L,0x00000000000001F8L});
+    public static final BitSet FOLLOW_set_in_date_between_macro_expression2028 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_date_between_macro_expression2051 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_73_in_date_before_macro_expression2063 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_date_before_macro_expression2065 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_path_expression_in_date_before_macro_expression2067 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_54_in_date_before_macro_expression2069 = new BitSet(new long[]{0x0000C00000000000L,0x0018000000000000L});
+    public static final BitSet FOLLOW_path_expression_in_date_before_macro_expression2072 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_input_parameter_in_date_before_macro_expression2076 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_date_before_macro_expression2079 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_74_in_date_after_macro_expression2091 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_date_after_macro_expression2093 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_path_expression_in_date_after_macro_expression2095 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_54_in_date_after_macro_expression2097 = new BitSet(new long[]{0x0000C00000000000L,0x0018000000000000L});
+    public static final BitSet FOLLOW_path_expression_in_date_after_macro_expression2100 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_input_parameter_in_date_after_macro_expression2104 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_date_after_macro_expression2107 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_75_in_date_equals_macro_expression2119 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_date_equals_macro_expression2121 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_path_expression_in_date_equals_macro_expression2123 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_54_in_date_equals_macro_expression2125 = new BitSet(new long[]{0x0000C00000000000L,0x0018000000000000L});
+    public static final BitSet FOLLOW_path_expression_in_date_equals_macro_expression2128 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_input_parameter_in_date_equals_macro_expression2132 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_date_equals_macro_expression2135 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_76_in_date_today_macro_expression2147 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_date_today_macro_expression2149 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_path_expression_in_date_today_macro_expression2151 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_date_today_macro_expression2153 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_arithmetic_expression_in_between_expression2165 = new BitSet(new long[]{0x4000000000000000L,0x0000000000002000L});
+    public static final BitSet FOLLOW_62_in_between_expression2168 = new BitSet(new long[]{0x0000000000000000L,0x0000000000002000L});
+    public static final BitSet FOLLOW_77_in_between_expression2172 = new BitSet(new long[]{0x0100D4009F000000L,0x00DC7FFE00000006L});
+    public static final BitSet FOLLOW_arithmetic_expression_in_between_expression2174 = new BitSet(new long[]{0x0000000040000000L});
+    public static final BitSet FOLLOW_AND_in_between_expression2176 = new BitSet(new long[]{0x0100D4009F000000L,0x00DC7FFE00000006L});
+    public static final BitSet FOLLOW_arithmetic_expression_in_between_expression2178 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_string_expression_in_between_expression2186 = new BitSet(new long[]{0x4000000000000000L,0x0000000000002000L});
+    public static final BitSet FOLLOW_62_in_between_expression2189 = new BitSet(new long[]{0x0000000000000000L,0x0000000000002000L});
+    public static final BitSet FOLLOW_77_in_between_expression2193 = new BitSet(new long[]{0x0100D0001F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_string_expression_in_between_expression2195 = new BitSet(new long[]{0x0000000040000000L});
+    public static final BitSet FOLLOW_AND_in_between_expression2197 = new BitSet(new long[]{0x0100D0001F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_string_expression_in_between_expression2199 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_datetime_expression_in_between_expression2207 = new BitSet(new long[]{0x4000000000000000L,0x0000000000002000L});
+    public static final BitSet FOLLOW_62_in_between_expression2210 = new BitSet(new long[]{0x0000000000000000L,0x0000000000002000L});
+    public static final BitSet FOLLOW_77_in_between_expression2214 = new BitSet(new long[]{0x0100D0001F000000L,0x00187F8000000000L});
+    public static final BitSet FOLLOW_datetime_expression_in_between_expression2216 = new BitSet(new long[]{0x0000000040000000L});
+    public static final BitSet FOLLOW_AND_in_between_expression2218 = new BitSet(new long[]{0x0100D0001F000000L,0x00187F8000000000L});
+    public static final BitSet FOLLOW_datetime_expression_in_between_expression2220 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_in_expression2232 = new BitSet(new long[]{0x4400000000000000L});
+    public static final BitSet FOLLOW_62_in_in_expression2235 = new BitSet(new long[]{0x0400000000000000L});
+    public static final BitSet FOLLOW_58_in_in_expression2239 = new BitSet(new long[]{0x0100D0009F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_in_expression_right_part_in_in_expression2241 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LPAREN_in_in_expression_right_part2253 = new BitSet(new long[]{0x0000C00000000000L,0x0018000000000000L});
+    public static final BitSet FOLLOW_in_item_in_in_expression_right_part2255 = new BitSet(new long[]{0x0040000100000000L});
+    public static final BitSet FOLLOW_54_in_in_expression_right_part2258 = new BitSet(new long[]{0x0000C00000000000L,0x0018000000000000L});
+    public static final BitSet FOLLOW_in_item_in_in_expression_right_part2260 = new BitSet(new long[]{0x0040000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_in_expression_right_part2264 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_subquery_in_in_expression_right_part2272 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literal_in_in_item2284 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_input_parameter_in_in_item2292 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_string_expression_in_like_expression2304 = new BitSet(new long[]{0x4000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_62_in_like_expression2307 = new BitSet(new long[]{0x0000000000000000L,0x0000000000004000L});
+    public static final BitSet FOLLOW_78_in_like_expression2311 = new BitSet(new long[]{0x0000C00000000000L,0x0018000000000000L});
+    public static final BitSet FOLLOW_pattern_value_in_like_expression2314 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
+    public static final BitSet FOLLOW_input_parameter_in_like_expression2318 = new BitSet(new long[]{0x0000000000000002L,0x0000000000008000L});
+    public static final BitSet FOLLOW_79_in_like_expression2321 = new BitSet(new long[]{0x0000080000000000L});
+    public static final BitSet FOLLOW_ESCAPE_CHARACTER_in_like_expression2323 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_null_comparison_expression2338 = new BitSet(new long[]{0x0000000000000000L,0x0000000000010000L});
+    public static final BitSet FOLLOW_input_parameter_in_null_comparison_expression2342 = new BitSet(new long[]{0x0000000000000000L,0x0000000000010000L});
+    public static final BitSet FOLLOW_80_in_null_comparison_expression2345 = new BitSet(new long[]{0x4000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_62_in_null_comparison_expression2348 = new BitSet(new long[]{0x0000000000000000L,0x0000000000020000L});
+    public static final BitSet FOLLOW_81_in_null_comparison_expression2352 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_empty_collection_comparison_expression2364 = new BitSet(new long[]{0x0000000000000000L,0x0000000000010000L});
+    public static final BitSet FOLLOW_80_in_empty_collection_comparison_expression2366 = new BitSet(new long[]{0x4000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_62_in_empty_collection_comparison_expression2369 = new BitSet(new long[]{0x0000000000000000L,0x0000000000040000L});
+    public static final BitSet FOLLOW_82_in_empty_collection_comparison_expression2373 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_entity_expression_in_collection_member_expression2385 = new BitSet(new long[]{0x4000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_62_in_collection_member_expression2388 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_83_in_collection_member_expression2392 = new BitSet(new long[]{0x0000400000000000L,0x0000000000100000L});
+    public static final BitSet FOLLOW_84_in_collection_member_expression2395 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_path_expression_in_collection_member_expression2399 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_62_in_exists_expression2412 = new BitSet(new long[]{0x0000000000000000L,0x0000000000200000L});
+    public static final BitSet FOLLOW_85_in_exists_expression2416 = new BitSet(new long[]{0x0100D0001F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_subquery_in_exists_expression2418 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_all_or_any_expression2430 = new BitSet(new long[]{0x0100D0001F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_subquery_in_all_or_any_expression2443 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_string_expression_in_comparison_expression2455 = new BitSet(new long[]{0x0000000000000000L,0x000000007E000000L});
+    public static final BitSet FOLLOW_comparison_operator_in_comparison_expression2457 = new BitSet(new long[]{0x0100D0001F000000L,0x00187C0001C00000L});
+    public static final BitSet FOLLOW_string_expression_in_comparison_expression2460 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression2464 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_boolean_expression_in_comparison_expression2473 = new BitSet(new long[]{0x0000000000000000L,0x0000000006000000L});
+    public static final BitSet FOLLOW_set_in_comparison_expression2475 = new BitSet(new long[]{0x0100D0001F000000L,0x00D87C0001C00000L});
+    public static final BitSet FOLLOW_boolean_expression_in_comparison_expression2484 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression2488 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_enum_expression_in_comparison_expression2497 = new BitSet(new long[]{0x0000000000000000L,0x0000000006000000L});
+    public static final BitSet FOLLOW_set_in_comparison_expression2499 = new BitSet(new long[]{0x0100D0001F000000L,0x00187C0001C00000L});
+    public static final BitSet FOLLOW_enum_expression_in_comparison_expression2506 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression2510 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_datetime_expression_in_comparison_expression2519 = new BitSet(new long[]{0x0000000000000000L,0x000000007E000000L});
+    public static final BitSet FOLLOW_comparison_operator_in_comparison_expression2521 = new BitSet(new long[]{0x0100D0001F000000L,0x00187F8001C00000L});
+    public static final BitSet FOLLOW_datetime_expression_in_comparison_expression2524 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression2528 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_entity_expression_in_comparison_expression2537 = new BitSet(new long[]{0x0000000000000000L,0x0000000006000000L});
+    public static final BitSet FOLLOW_set_in_comparison_expression2539 = new BitSet(new long[]{0x0100D0001F000000L,0x00187C0001C00000L});
+    public static final BitSet FOLLOW_entity_expression_in_comparison_expression2548 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression2552 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_arithmetic_expression_in_comparison_expression2561 = new BitSet(new long[]{0x0000000000000000L,0x000000007E000000L});
+    public static final BitSet FOLLOW_comparison_operator_in_comparison_expression2563 = new BitSet(new long[]{0x0100D4009F000000L,0x00DC7FFE01C00006L});
+    public static final BitSet FOLLOW_arithmetic_expression_in_comparison_expression2566 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_all_or_any_expression_in_comparison_expression2570 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_comparison_operator0 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_simple_arithmetic_expression_in_arithmetic_expression2297 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_subquery_in_arithmetic_expression2302 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_arithmetic_term_in_simple_arithmetic_expression2312 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000006L});
-    public static final BitSet FOLLOW_set_in_simple_arithmetic_expression2316 = new BitSet(new long[]{0x0000C4009F000000L,0x000C007E00000006L});
-    public static final BitSet FOLLOW_arithmetic_term_in_simple_arithmetic_expression2326 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000006L});
-    public static final BitSet FOLLOW_arithmetic_factor_in_arithmetic_term2338 = new BitSet(new long[]{0x0000000000000002L,0x0000000180000000L});
-    public static final BitSet FOLLOW_set_in_arithmetic_term2342 = new BitSet(new long[]{0x0000C4009F000000L,0x000C007E00000006L});
-    public static final BitSet FOLLOW_arithmetic_factor_in_arithmetic_term2352 = new BitSet(new long[]{0x0000000000000002L,0x0000000180000000L});
-    public static final BitSet FOLLOW_set_in_arithmetic_factor2363 = new BitSet(new long[]{0x0000C4009F000000L,0x000C007E00000006L});
-    public static final BitSet FOLLOW_arithmetic_primary_in_arithmetic_factor2374 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_arithmetic_primary2383 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_numeric_literal_in_arithmetic_primary2388 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LPAREN_in_arithmetic_primary2393 = new BitSet(new long[]{0x0000C4009F000000L,0x000C007E00000006L});
-    public static final BitSet FOLLOW_simple_arithmetic_expression_in_arithmetic_primary2394 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_arithmetic_primary2395 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_input_parameter_in_arithmetic_primary2400 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_functions_returning_numerics_in_arithmetic_primary2405 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_aggregate_expression_in_arithmetic_primary2410 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_string_primary_in_string_expression2419 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_subquery_in_string_expression2423 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_string_primary2432 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STRINGLITERAL_in_string_primary2437 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_input_parameter_in_string_primary2442 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_functions_returning_strings_in_string_primary2447 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_aggregate_expression_in_string_primary2452 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_datetime_primary_in_datetime_expression2461 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_subquery_in_datetime_expression2466 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_datetime_primary2475 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_input_parameter_in_datetime_primary2480 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_functions_returning_datetime_in_datetime_primary2485 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_aggregate_expression_in_datetime_primary2490 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_boolean_primary_in_boolean_expression2499 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_subquery_in_boolean_expression2504 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_boolean_primary2513 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_boolean_literal_in_boolean_primary2518 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_input_parameter_in_boolean_primary2523 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_enum_primary_in_enum_expression2532 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_subquery_in_enum_expression2537 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_enum_primary2546 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_enum_literal_in_enum_primary2551 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_input_parameter_in_enum_primary2556 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_path_expression_in_entity_expression2565 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_simple_entity_expression_in_entity_expression2570 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_identification_variable_in_simple_entity_expression2579 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_input_parameter_in_simple_entity_expression2584 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_97_in_functions_returning_numerics2593 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_functions_returning_numerics2595 = new BitSet(new long[]{0x0000D0001F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_string_primary_in_functions_returning_numerics2596 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics2597 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_98_in_functions_returning_numerics2602 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_functions_returning_numerics2604 = new BitSet(new long[]{0x0000D0001F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_string_primary_in_functions_returning_numerics2605 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_54_in_functions_returning_numerics2606 = new BitSet(new long[]{0x0000D0001F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_string_primary_in_functions_returning_numerics2608 = new BitSet(new long[]{0x0040000100000000L});
-    public static final BitSet FOLLOW_54_in_functions_returning_numerics2610 = new BitSet(new long[]{0x0000C4009F000000L,0x000C007E00000006L});
-    public static final BitSet FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics2612 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics2615 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_99_in_functions_returning_numerics2620 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_functions_returning_numerics2622 = new BitSet(new long[]{0x0000C4009F000000L,0x000C007E00000006L});
-    public static final BitSet FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics2623 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics2624 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_100_in_functions_returning_numerics2629 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_functions_returning_numerics2631 = new BitSet(new long[]{0x0000C4009F000000L,0x000C007E00000006L});
-    public static final BitSet FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics2632 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics2633 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_101_in_functions_returning_numerics2638 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_functions_returning_numerics2640 = new BitSet(new long[]{0x0000C4009F000000L,0x000C007E00000006L});
-    public static final BitSet FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics2641 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_54_in_functions_returning_numerics2642 = new BitSet(new long[]{0x0000C4009F000000L,0x000C007E00000006L});
-    public static final BitSet FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics2644 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics2645 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_102_in_functions_returning_numerics2650 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_functions_returning_numerics2652 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_path_expression_in_functions_returning_numerics2653 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics2654 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_simple_arithmetic_expression_in_arithmetic_expression2635 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_subquery_in_arithmetic_expression2643 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_arithmetic_term_in_simple_arithmetic_expression2656 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000006L});
+    public static final BitSet FOLLOW_set_in_simple_arithmetic_expression2660 = new BitSet(new long[]{0x0000C4009F000000L,0x001C007E00000006L});
+    public static final BitSet FOLLOW_arithmetic_term_in_simple_arithmetic_expression2670 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000006L});
+    public static final BitSet FOLLOW_arithmetic_factor_in_arithmetic_term2685 = new BitSet(new long[]{0x0000000000000002L,0x0000000180000000L});
+    public static final BitSet FOLLOW_set_in_arithmetic_term2689 = new BitSet(new long[]{0x0000C4009F000000L,0x001C007E00000006L});
+    public static final BitSet FOLLOW_arithmetic_factor_in_arithmetic_term2699 = new BitSet(new long[]{0x0000000000000002L,0x0000000180000000L});
+    public static final BitSet FOLLOW_set_in_arithmetic_factor2713 = new BitSet(new long[]{0x0000C4009F000000L,0x001C007E00000006L});
+    public static final BitSet FOLLOW_arithmetic_primary_in_arithmetic_factor2724 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_arithmetic_primary2736 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_numeric_literal_in_arithmetic_primary2744 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LPAREN_in_arithmetic_primary2752 = new BitSet(new long[]{0x0000C4009F000000L,0x001C007E00000006L});
+    public static final BitSet FOLLOW_simple_arithmetic_expression_in_arithmetic_primary2753 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_arithmetic_primary2754 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_input_parameter_in_arithmetic_primary2762 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_functions_returning_numerics_in_arithmetic_primary2770 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_aggregate_expression_in_arithmetic_primary2778 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_string_primary_in_string_expression2790 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_subquery_in_string_expression2794 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_string_primary2806 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STRINGLITERAL_in_string_primary2814 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_input_parameter_in_string_primary2822 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_functions_returning_strings_in_string_primary2830 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_aggregate_expression_in_string_primary2838 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_datetime_primary_in_datetime_expression2850 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_subquery_in_datetime_expression2858 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_datetime_primary2870 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_input_parameter_in_datetime_primary2878 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_functions_returning_datetime_in_datetime_primary2886 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_aggregate_expression_in_datetime_primary2894 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_boolean_primary_in_boolean_expression2906 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_subquery_in_boolean_expression2914 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_boolean_primary2926 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_boolean_literal_in_boolean_primary2934 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_input_parameter_in_boolean_primary2942 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_enum_primary_in_enum_expression2954 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_subquery_in_enum_expression2962 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_enum_primary2974 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_enum_literal_in_enum_primary2982 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_input_parameter_in_enum_primary2990 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_path_expression_in_entity_expression3002 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_simple_entity_expression_in_entity_expression3010 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_identification_variable_in_simple_entity_expression3022 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_input_parameter_in_simple_entity_expression3030 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_97_in_functions_returning_numerics3042 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_functions_returning_numerics3044 = new BitSet(new long[]{0x0000D0001F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_string_primary_in_functions_returning_numerics3045 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics3046 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_98_in_functions_returning_numerics3054 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_functions_returning_numerics3056 = new BitSet(new long[]{0x0000D0001F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_string_primary_in_functions_returning_numerics3057 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_54_in_functions_returning_numerics3058 = new BitSet(new long[]{0x0000D0001F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_string_primary_in_functions_returning_numerics3060 = new BitSet(new long[]{0x0040000100000000L});
+    public static final BitSet FOLLOW_54_in_functions_returning_numerics3062 = new BitSet(new long[]{0x0000C4009F000000L,0x001C007E00000006L});
+    public static final BitSet FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics3064 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics3067 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_99_in_functions_returning_numerics3075 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_functions_returning_numerics3077 = new BitSet(new long[]{0x0000C4009F000000L,0x001C007E00000006L});
+    public static final BitSet FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics3078 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics3079 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_100_in_functions_returning_numerics3087 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_functions_returning_numerics3089 = new BitSet(new long[]{0x0000C4009F000000L,0x001C007E00000006L});
+    public static final BitSet FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics3090 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics3091 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_101_in_functions_returning_numerics3099 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_functions_returning_numerics3101 = new BitSet(new long[]{0x0000C4009F000000L,0x001C007E00000006L});
+    public static final BitSet FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics3102 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_54_in_functions_returning_numerics3103 = new BitSet(new long[]{0x0000C4009F000000L,0x001C007E00000006L});
+    public static final BitSet FOLLOW_simple_arithmetic_expression_in_functions_returning_numerics3105 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics3106 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_102_in_functions_returning_numerics3114 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_functions_returning_numerics3116 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_path_expression_in_functions_returning_numerics3117 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_functions_returning_numerics3118 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_functions_returning_datetime0 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_106_in_functions_returning_strings2682 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_functions_returning_strings2684 = new BitSet(new long[]{0x0000D0001F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_string_primary_in_functions_returning_strings2685 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_54_in_functions_returning_strings2686 = new BitSet(new long[]{0x0000D0001F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_string_primary_in_functions_returning_strings2688 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_functions_returning_strings2689 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_107_in_functions_returning_strings2694 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_functions_returning_strings2696 = new BitSet(new long[]{0x0000D0001F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_string_primary_in_functions_returning_strings2697 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_54_in_functions_returning_strings2698 = new BitSet(new long[]{0x0000C4009F000000L,0x000C007E00000006L});
-    public static final BitSet FOLLOW_simple_arithmetic_expression_in_functions_returning_strings2699 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_54_in_functions_returning_strings2700 = new BitSet(new long[]{0x0000C4009F000000L,0x000C007E00000006L});
-    public static final BitSet FOLLOW_simple_arithmetic_expression_in_functions_returning_strings2702 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_functions_returning_strings2703 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_108_in_functions_returning_strings2708 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_functions_returning_strings2710 = new BitSet(new long[]{0x0020F0001F000000L,0x000BFC0000000000L});
-    public static final BitSet FOLLOW_trim_specification_in_functions_returning_strings2713 = new BitSet(new long[]{0x0020200000000000L});
-    public static final BitSet FOLLOW_TRIM_CHARACTER_in_functions_returning_strings2718 = new BitSet(new long[]{0x0020000000000000L});
-    public static final BitSet FOLLOW_53_in_functions_returning_strings2722 = new BitSet(new long[]{0x0000D0001F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_string_primary_in_functions_returning_strings2726 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_functions_returning_strings2727 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_109_in_functions_returning_strings2732 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_functions_returning_strings2734 = new BitSet(new long[]{0x0000D0001F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_string_primary_in_functions_returning_strings2735 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_functions_returning_strings2736 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_110_in_functions_returning_strings2741 = new BitSet(new long[]{0x0000000080000000L});
-    public static final BitSet FOLLOW_LPAREN_in_functions_returning_strings2743 = new BitSet(new long[]{0x0000D0001F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_string_primary_in_functions_returning_strings2744 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_RPAREN_in_functions_returning_strings2745 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_106_in_functions_returning_strings3158 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_functions_returning_strings3160 = new BitSet(new long[]{0x0000D0001F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_string_primary_in_functions_returning_strings3161 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_54_in_functions_returning_strings3162 = new BitSet(new long[]{0x0000D0001F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_string_primary_in_functions_returning_strings3164 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_functions_returning_strings3165 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_107_in_functions_returning_strings3173 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_functions_returning_strings3175 = new BitSet(new long[]{0x0000D0001F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_string_primary_in_functions_returning_strings3176 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_54_in_functions_returning_strings3177 = new BitSet(new long[]{0x0000C4009F000000L,0x001C007E00000006L});
+    public static final BitSet FOLLOW_simple_arithmetic_expression_in_functions_returning_strings3178 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_54_in_functions_returning_strings3179 = new BitSet(new long[]{0x0000C4009F000000L,0x001C007E00000006L});
+    public static final BitSet FOLLOW_simple_arithmetic_expression_in_functions_returning_strings3181 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_functions_returning_strings3182 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_108_in_functions_returning_strings3190 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_functions_returning_strings3192 = new BitSet(new long[]{0x0020F0001F000000L,0x001BFC0000000000L});
+    public static final BitSet FOLLOW_trim_specification_in_functions_returning_strings3195 = new BitSet(new long[]{0x0020200000000000L});
+    public static final BitSet FOLLOW_TRIM_CHARACTER_in_functions_returning_strings3200 = new BitSet(new long[]{0x0020000000000000L});
+    public static final BitSet FOLLOW_53_in_functions_returning_strings3204 = new BitSet(new long[]{0x0000D0001F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_string_primary_in_functions_returning_strings3208 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_functions_returning_strings3209 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_109_in_functions_returning_strings3217 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_functions_returning_strings3219 = new BitSet(new long[]{0x0000D0001F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_string_primary_in_functions_returning_strings3220 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_functions_returning_strings3221 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_110_in_functions_returning_strings3229 = new BitSet(new long[]{0x0000000080000000L});
+    public static final BitSet FOLLOW_LPAREN_in_functions_returning_strings3231 = new BitSet(new long[]{0x0000D0001F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_string_primary_in_functions_returning_strings3232 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_RPAREN_in_functions_returning_strings3233 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_trim_specification0 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WORD_in_abstract_schema_name2776 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WORD_in_pattern_value2786 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_114_in_numeric_literal2797 = new BitSet(new long[]{0x0000040000000000L});
-    public static final BitSet FOLLOW_INT_NUMERAL_in_numeric_literal2801 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_115_in_input_parameter2811 = new BitSet(new long[]{0x0000040000000000L});
-    public static final BitSet FOLLOW_INT_NUMERAL_in_input_parameter2813 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NAMED_PARAMETER_in_input_parameter2833 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WORD_in_literal2855 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WORD_in_constructor_name2864 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WORD_in_enum_literal2905 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WORD_in_abstract_schema_name3274 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WORD_in_pattern_value3287 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_114_in_numeric_literal3301 = new BitSet(new long[]{0x0000040000000000L});
+    public static final BitSet FOLLOW_INT_NUMERAL_in_numeric_literal3305 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_115_in_input_parameter3318 = new BitSet(new long[]{0x0000040000000000L});
+    public static final BitSet FOLLOW_INT_NUMERAL_in_input_parameter3320 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NAMED_PARAMETER_in_input_parameter3343 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_116_in_input_parameter3364 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_WORD_in_input_parameter3366 = new BitSet(new long[]{0x0000000000000000L,0x0020000000000000L});
+    public static final BitSet FOLLOW_117_in_input_parameter3368 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WORD_in_literal3396 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WORD_in_constructor_name3408 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WORD_in_enum_literal3452 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_boolean_literal0 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_field0 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WORD_in_identification_variable2946 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WORD_in_parameter_name2957 = new BitSet(new long[]{0x0200000000000002L});
-    public static final BitSet FOLLOW_57_in_parameter_name2960 = new BitSet(new long[]{0x0000400000000000L});
-    public static final BitSet FOLLOW_WORD_in_parameter_name2963 = new BitSet(new long[]{0x0200000000000002L});
-    public static final BitSet FOLLOW_field_in_synpred20_JPA820 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_field_in_synpred23_JPA897 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_62_in_synpred57_JPA1596 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_62_in_synpred58_JPA1596 = new BitSet(new long[]{0xC100D4009F000000L,0x003C7FFE00201E06L});
-    public static final BitSet FOLLOW_simple_cond_expression_in_synpred58_JPA1600 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_comparison_expression_in_synpred59_JPA1633 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_between_expression_in_synpred60_JPA1638 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_like_expression_in_synpred61_JPA1643 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_in_expression_in_synpred62_JPA1648 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_null_comparison_expression_in_synpred63_JPA1653 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_empty_collection_comparison_expression_in_synpred64_JPA1658 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_collection_member_expression_in_synpred65_JPA1663 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_arithmetic_expression_in_synpred84_JPA1905 = new BitSet(new long[]{0x4000000000000000L,0x0000000000002000L});
-    public static final BitSet FOLLOW_62_in_synpred84_JPA1908 = new BitSet(new long[]{0x0000000000000000L,0x0000000000002000L});
-    public static final BitSet FOLLOW_77_in_synpred84_JPA1912 = new BitSet(new long[]{0x0100D4009F000000L,0x003C7FFE00000006L});
-    public static final BitSet FOLLOW_arithmetic_expression_in_synpred84_JPA1914 = new BitSet(new long[]{0x0000000040000000L});
-    public static final BitSet FOLLOW_AND_in_synpred84_JPA1916 = new BitSet(new long[]{0x0100D4009F000000L,0x003C7FFE00000006L});
-    public static final BitSet FOLLOW_arithmetic_expression_in_synpred84_JPA1918 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_string_expression_in_synpred86_JPA1923 = new BitSet(new long[]{0x4000000000000000L,0x0000000000002000L});
-    public static final BitSet FOLLOW_62_in_synpred86_JPA1926 = new BitSet(new long[]{0x0000000000000000L,0x0000000000002000L});
-    public static final BitSet FOLLOW_77_in_synpred86_JPA1930 = new BitSet(new long[]{0x0100D0001F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_string_expression_in_synpred86_JPA1932 = new BitSet(new long[]{0x0000000040000000L});
-    public static final BitSet FOLLOW_AND_in_synpred86_JPA1934 = new BitSet(new long[]{0x0100D0001F000000L,0x00087C0000000000L});
-    public static final BitSet FOLLOW_string_expression_in_synpred86_JPA1936 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_string_expression_in_synpred104_JPA2153 = new BitSet(new long[]{0x0000000000000000L,0x000000007E000000L});
-    public static final BitSet FOLLOW_comparison_operator_in_synpred104_JPA2155 = new BitSet(new long[]{0x0100D0001F000000L,0x00087C0001C00000L});
-    public static final BitSet FOLLOW_string_expression_in_synpred104_JPA2158 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_all_or_any_expression_in_synpred104_JPA2162 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_boolean_expression_in_synpred107_JPA2168 = new BitSet(new long[]{0x0000000000000000L,0x0000000006000000L});
-    public static final BitSet FOLLOW_set_in_synpred107_JPA2170 = new BitSet(new long[]{0x0100D0001F000000L,0x00387C0001C00000L});
-    public static final BitSet FOLLOW_boolean_expression_in_synpred107_JPA2179 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_all_or_any_expression_in_synpred107_JPA2183 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_enum_expression_in_synpred110_JPA2189 = new BitSet(new long[]{0x0000000000000000L,0x0000000006000000L});
-    public static final BitSet FOLLOW_set_in_synpred110_JPA2191 = new BitSet(new long[]{0x0100D0001F000000L,0x00087C0001C00000L});
-    public static final BitSet FOLLOW_enum_expression_in_synpred110_JPA2198 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_all_or_any_expression_in_synpred110_JPA2202 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_datetime_expression_in_synpred112_JPA2208 = new BitSet(new long[]{0x0000000000000000L,0x000000007E000000L});
-    public static final BitSet FOLLOW_comparison_operator_in_synpred112_JPA2210 = new BitSet(new long[]{0x0100D0001F000000L,0x00087F8001C00000L});
-    public static final BitSet FOLLOW_datetime_expression_in_synpred112_JPA2213 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_all_or_any_expression_in_synpred112_JPA2217 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_entity_expression_in_synpred115_JPA2223 = new BitSet(new long[]{0x0000000000000000L,0x0000000006000000L});
-    public static final BitSet FOLLOW_set_in_synpred115_JPA2225 = new BitSet(new long[]{0x0100D0001F000000L,0x00087C0001C00000L});
-    public static final BitSet FOLLOW_entity_expression_in_synpred115_JPA2234 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_all_or_any_expression_in_synpred115_JPA2238 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WORD_in_identification_variable3501 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WORD_in_parameter_name3513 = new BitSet(new long[]{0x0200000000000002L});
+    public static final BitSet FOLLOW_57_in_parameter_name3516 = new BitSet(new long[]{0x0000400000000000L});
+    public static final BitSet FOLLOW_WORD_in_parameter_name3519 = new BitSet(new long[]{0x0200000000000002L});
+    public static final BitSet FOLLOW_field_in_synpred20_JPA887 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_field_in_synpred23_JPA982 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_62_in_synpred57_JPA1823 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_62_in_synpred58_JPA1823 = new BitSet(new long[]{0xC100D4009F000000L,0x00DC7FFE00201E06L});
+    public static final BitSet FOLLOW_simple_cond_expression_in_synpred58_JPA1827 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_comparison_expression_in_synpred59_JPA1866 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_between_expression_in_synpred60_JPA1874 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_like_expression_in_synpred61_JPA1882 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_in_expression_in_synpred62_JPA1890 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_null_comparison_expression_in_synpred63_JPA1898 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_empty_collection_comparison_expression_in_synpred64_JPA1906 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_collection_member_expression_in_synpred65_JPA1914 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_arithmetic_expression_in_synpred84_JPA2165 = new BitSet(new long[]{0x4000000000000000L,0x0000000000002000L});
+    public static final BitSet FOLLOW_62_in_synpred84_JPA2168 = new BitSet(new long[]{0x0000000000000000L,0x0000000000002000L});
+    public static final BitSet FOLLOW_77_in_synpred84_JPA2172 = new BitSet(new long[]{0x0100D4009F000000L,0x00DC7FFE00000006L});
+    public static final BitSet FOLLOW_arithmetic_expression_in_synpred84_JPA2174 = new BitSet(new long[]{0x0000000040000000L});
+    public static final BitSet FOLLOW_AND_in_synpred84_JPA2176 = new BitSet(new long[]{0x0100D4009F000000L,0x00DC7FFE00000006L});
+    public static final BitSet FOLLOW_arithmetic_expression_in_synpred84_JPA2178 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_string_expression_in_synpred86_JPA2186 = new BitSet(new long[]{0x4000000000000000L,0x0000000000002000L});
+    public static final BitSet FOLLOW_62_in_synpred86_JPA2189 = new BitSet(new long[]{0x0000000000000000L,0x0000000000002000L});
+    public static final BitSet FOLLOW_77_in_synpred86_JPA2193 = new BitSet(new long[]{0x0100D0001F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_string_expression_in_synpred86_JPA2195 = new BitSet(new long[]{0x0000000040000000L});
+    public static final BitSet FOLLOW_AND_in_synpred86_JPA2197 = new BitSet(new long[]{0x0100D0001F000000L,0x00187C0000000000L});
+    public static final BitSet FOLLOW_string_expression_in_synpred86_JPA2199 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_string_expression_in_synpred104_JPA2455 = new BitSet(new long[]{0x0000000000000000L,0x000000007E000000L});
+    public static final BitSet FOLLOW_comparison_operator_in_synpred104_JPA2457 = new BitSet(new long[]{0x0100D0001F000000L,0x00187C0001C00000L});
+    public static final BitSet FOLLOW_string_expression_in_synpred104_JPA2460 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_all_or_any_expression_in_synpred104_JPA2464 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_boolean_expression_in_synpred107_JPA2473 = new BitSet(new long[]{0x0000000000000000L,0x0000000006000000L});
+    public static final BitSet FOLLOW_set_in_synpred107_JPA2475 = new BitSet(new long[]{0x0100D0001F000000L,0x00D87C0001C00000L});
+    public static final BitSet FOLLOW_boolean_expression_in_synpred107_JPA2484 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_all_or_any_expression_in_synpred107_JPA2488 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_enum_expression_in_synpred110_JPA2497 = new BitSet(new long[]{0x0000000000000000L,0x0000000006000000L});
+    public static final BitSet FOLLOW_set_in_synpred110_JPA2499 = new BitSet(new long[]{0x0100D0001F000000L,0x00187C0001C00000L});
+    public static final BitSet FOLLOW_enum_expression_in_synpred110_JPA2506 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_all_or_any_expression_in_synpred110_JPA2510 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_datetime_expression_in_synpred112_JPA2519 = new BitSet(new long[]{0x0000000000000000L,0x000000007E000000L});
+    public static final BitSet FOLLOW_comparison_operator_in_synpred112_JPA2521 = new BitSet(new long[]{0x0100D0001F000000L,0x00187F8001C00000L});
+    public static final BitSet FOLLOW_datetime_expression_in_synpred112_JPA2524 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_all_or_any_expression_in_synpred112_JPA2528 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_entity_expression_in_synpred115_JPA2537 = new BitSet(new long[]{0x0000000000000000L,0x0000000006000000L});
+    public static final BitSet FOLLOW_set_in_synpred115_JPA2539 = new BitSet(new long[]{0x0100D0001F000000L,0x00187C0001C00000L});
+    public static final BitSet FOLLOW_entity_expression_in_synpred115_JPA2548 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_all_or_any_expression_in_synpred115_JPA2552 = new BitSet(new long[]{0x0000000000000002L});
 
 }

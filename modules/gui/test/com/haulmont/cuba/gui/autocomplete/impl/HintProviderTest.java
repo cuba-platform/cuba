@@ -11,7 +11,6 @@ import com.haulmont.cuba.core.sys.jpql.InferredType;
 import com.haulmont.cuba.core.sys.jpql.model.Entity;
 import com.haulmont.cuba.core.sys.jpql.model.EntityBuilder;
 import com.haulmont.cuba.core.sys.jpql.model.EntityImpl;
-import com.haulmont.cuba.core.sys.jpql.transform.QueryTransformerAstBased;
 import junit.framework.Assert;
 import org.antlr.runtime.RecognitionException;
 import org.junit.Test;
@@ -23,7 +22,6 @@ import java.util.Set;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 /**
  * User: Alex Chevelev
@@ -789,6 +787,26 @@ public class HintProviderTest {
     }
 
     @Test
+    public void requestHint_with_templateParam() throws RecognitionException {
+        EntityBuilder builder = new EntityBuilder();
+        Entity driver = builder.produceImmediately("Driver", "name", "signal");
+
+        builder.startNewEntity("Car");
+        builder.addStringAttribute("model");
+        builder.addCollectionReferenceAttribute("drivers", "Driver");
+        Entity car = builder.produce();
+        DomainModel model = new DomainModel(car, driver);
+
+        HintProvider hintProvider = createTestHintProvider(model);
+        HintResponse response = hintProvider.requestHint("select a.~ from Car a where a.model = ${param}");
+        List<String> options = response.getOptions();
+        options = response.getOptions();
+        assertEquals(2, options.size());
+        assertEquals("drivers", options.get(0));
+        assertEquals("model", options.get(1));
+    }
+
+    @Test
     public void narrowExpectedTypes() {
         Set<InferredType> result = HintProvider.narrowExpectedTypes(" in(p.te", 5, EnumSet.of(InferredType.Any));
         assertEquals(EnumSet.of(InferredType.Collection, InferredType.Entity), result);
@@ -840,5 +858,14 @@ public class HintProviderTest {
 
         lastWord = HintProvider.getLastWord("in(p.teams", "in(p.teams".length() - 1);
         assertEquals("p.teams", lastWord);
+
+        lastWord = HintProvider.getLastWord("SELECT\t\tp.team.na", "SELECT\t\tp.team.na".length() - 1);
+        assertEquals("p.team.na", lastWord);
+
+        lastWord = HintProvider.getLastWord("SELECT\n\np.team.na", "SELECT\n\np.team.na".length() - 1);
+        assertEquals("p.team.na", lastWord);
+
+        lastWord = HintProvider.getLastWord("SELECT\r\np.team.na", "SELECT\r\np.team.na".length() - 1);
+        assertEquals("p.team.na", lastWord);
     }
 }
