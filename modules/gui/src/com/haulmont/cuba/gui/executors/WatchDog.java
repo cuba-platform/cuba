@@ -30,4 +30,9 @@ public interface WatchDog {
      * Stop execution of all background tasks
      */
     void stopTasks();
+
+    /**
+     * @return Active tasks count
+     */
+    int getActiveTasksCount();
 }

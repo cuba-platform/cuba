@@ -47,6 +47,6 @@ public class BackgroundTaskWrapper<T, V> {
 
     public void cancel() {
         if (taskHandler != null)
-            taskHandler.cancel(true);
+            taskHandler.cancel();
     }
 }

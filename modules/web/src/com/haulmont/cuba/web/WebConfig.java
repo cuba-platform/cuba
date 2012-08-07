@@ -277,6 +277,13 @@ public interface WebConfig extends Config
     Integer getUiCheckInterval();
 
     /**
+     * @return Maximum number of active background tasks
+     */
+    @Property("cuba.backgroundWorker.maxActiveTasksCount")
+    @DefaultInteger(100)
+    Integer getMaxActiveBackgroundTasksCount();
+
+    /**
      * @return System ID. Use for identification (support emails).
      */
     @Property("cuba.systemId")
@@ -288,7 +295,6 @@ public interface WebConfig extends Config
      */
     @Property("cuba.appLogoImagePath")
     String getAppLogoImagePath();
-
 
     /**
      * @return Path to an image for use as application logo in the login window.

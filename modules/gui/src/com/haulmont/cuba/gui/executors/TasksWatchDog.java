@@ -69,6 +69,15 @@ public class TasksWatchDog implements WatchDog {
         }
     }
 
+    @Override
+    public int getActiveTasksCount() {
+        int size;
+        synchronized (watches) {
+            size = watches.size();
+        }
+        return size;
+    }
+
     /**
      * {@inheritDoc}
      *

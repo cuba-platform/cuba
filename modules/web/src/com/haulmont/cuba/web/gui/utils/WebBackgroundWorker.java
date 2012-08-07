@@ -6,15 +6,14 @@
 
 package com.haulmont.cuba.web.gui.utils;
 
+import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.components.Timer;
-import com.haulmont.cuba.gui.executors.BackgroundTask;
-import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
-import com.haulmont.cuba.gui.executors.BackgroundWorker;
-import com.haulmont.cuba.gui.executors.WatchDog;
+import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.WebTimer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -182,20 +181,27 @@ public class WebBackgroundWorker implements BackgroundWorker {
             // Set security permissions
             AppContext.setSecurityContext(securityContext);
 
-            // assign thread local handler
-            BackgroundWorker.ProgressManager.setExecutor(this);
-
-            runnableTask.setInterrupted(false);
-
             V result = null;
             try {
-                result = runnableTask.run();
+                result = runnableTask.run(new TaskLifeCycle<T>() {
+
+                    @SafeVarargs
+                    @Override
+                    public final void publish(T... changes) {
+                        handleProgress(changes);
+                    }
+
+                    @Override
+                    public boolean isInterrupted() {
+                        return WebTaskExecutor.this.isInterrupted();
+                    }
+                });
             } catch (Exception ex) {
                 this.taskException = ex;
             } finally {
                 this.result = result;
                 // Is done
-                if (!runnableTask.isInterrupted())
+                if (!isInterrupted())
                     done = true;
                 // Remove from executions
                 app.removeBackgroundTask(this);
@@ -214,12 +220,10 @@ public class WebBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
-        public final boolean cancelExecution(boolean mayInterruptIfRunning) {
+        public final boolean cancelExecution() {
             boolean canceled = super.isAlive();
 
-            runnableTask.setInterrupted(true);
-
-            if (!closed && mayInterruptIfRunning) {
+            if (!closed) {
                 log.debug("Cancel task. User: " + userId);
 
                 // Interrupt
@@ -236,13 +240,13 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 this.canceled = canceled;
                 this.closed = canceled;
 
-                stopTimer(mayInterruptIfRunning);
+                stopTimer();
             }
             return canceled;
         }
 
-        private void stopTimer(boolean mayInterruptIfRunning) {
-            if ((webTimerListener != null) && mayInterruptIfRunning) {
+        private void stopTimer() {
+            if (webTimerListener != null) {
                 webTimerListener.stopListen();
             }
         }
@@ -252,7 +256,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
             try {
                 if (this.isAlive()) {
                     this.join();
-                    stopTimer(true);
+                    this.stopTimer();
+
                     runnableTask.done(result);
 
                     closed = true;
@@ -270,6 +275,12 @@ public class WebBackgroundWorker implements BackgroundWorker {
 
         @Override
         public final void startExecution() {
+            WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+            int activeTasksCount = watchDog.getActiveTasksCount();
+
+            if (activeTasksCount >= webConfig.getMaxActiveBackgroundTasksCount())
+                throw new ActiveBackgroundTasksLimitException("Maximum active background tasks limit exceeded");
+
             // Run timer listener
             webTimerListener.startListen();
 

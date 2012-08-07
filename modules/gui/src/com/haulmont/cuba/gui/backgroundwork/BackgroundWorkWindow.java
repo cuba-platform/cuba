@@ -118,9 +118,21 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
 
         addAction(new CancelAction());
 
-        BackgroundTask<T, V> wrapperTask = new WrapperTask(task);
+        task.addProgressListener(new BackgroundTask.ProgressListenerAdapter<T, V>() {
+            @Override
+            public void onDone(V result) {
+                closeBackgroundWindow();
+                super.onDone(result);
+            }
 
-        taskHandler = backgroundWorker.handle(wrapperTask);
+            @Override
+            public void onCancel() {
+                closeBackgroundWindow();
+                super.onCancel();
+            }
+        });
+
+        taskHandler = backgroundWorker.handle(task);
         taskHandler.execute(timeoutSec, TimeUnit.SECONDS);
     }
 
@@ -135,34 +147,7 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
-            taskHandler.cancel(true);
-        }
-    }
-
-    private class WrapperTask extends BackgroundTask<T, V> {
-
-        private BackgroundTask<T, V> task;
-
-        protected WrapperTask(BackgroundTask<T, V> task) {
-            super(BackgroundWorkWindow.this);
-            this.task = task;
-        }
-
-        @Override
-        public V run() {
-            return task.run();
-        }
-
-        @Override
-        public void done(V result) {
-            closeBackgroundWindow();
-            task.done(result);
-        }
-
-        @Override
-        public void canceled() {
-            closeBackgroundWindow();
-            task.canceled();
+            taskHandler.cancel();
         }
     }
 }

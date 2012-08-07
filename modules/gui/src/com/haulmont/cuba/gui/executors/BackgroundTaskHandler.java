@@ -28,10 +28,9 @@ public interface BackgroundTaskHandler<V> {
     /**
      * Try to cancel task
      *
-     * @param mayInterruptIfRunning Interrupt if running
      * @return True if canceled
      */
-    boolean cancel(boolean mayInterruptIfRunning);
+    boolean cancel();
 
     /**
      * Synchronous get result from execution

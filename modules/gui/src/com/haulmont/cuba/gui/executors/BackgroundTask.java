@@ -8,8 +8,8 @@ package com.haulmont.cuba.gui.executors;
 
 import com.haulmont.cuba.gui.components.Window;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -26,25 +26,26 @@ import java.util.List;
  */
 public abstract class BackgroundTask<T, V> {
 
-    private Window ownerWindow;
+    private final Window ownerWindow;
 
-    private List<ProgressListener<T, V>> progressListeners = new LinkedList<ProgressListener<T, V>>();
-
-    private volatile boolean isInterrupted = false;
+    private final List<ProgressListener<T, V>> progressListeners =
+            Collections.synchronizedList(new ArrayList<ProgressListener<T, V>>());
 
     protected BackgroundTask(Window ownerWindow) {
         this.ownerWindow = ownerWindow;
     }
 
     protected BackgroundTask() {
+        this.ownerWindow = null;
     }
 
     /**
      * Main tasks method
      *
+     * @param taskLifeCycle Task life cycle
      * @return Result
      */
-    public abstract V run();
+    public abstract V run(TaskLifeCycle<T> taskLifeCycle);
 
     /**
      * Task completed handler
@@ -69,17 +70,6 @@ public abstract class BackgroundTask<T, V> {
     }
 
     /**
-     * Publish changes from working thread
-     *
-     * @param changes Changes
-     */
-    @SafeVarargs
-    public final void publish(T... changes) {
-        BackgroundWorker.TaskExecutor<T, V> handler = BackgroundWorker.ProgressManager.getExecutor();
-        handler.handleProgress(changes);
-    }
-
-    /**
      * On progress change
      *
      * @param changes Changes list
@@ -87,28 +77,20 @@ public abstract class BackgroundTask<T, V> {
     public void progress(List<T> changes) {
     }
 
-    public Window getOwnerWindow() {
+    public final Window getOwnerWindow() {
         return ownerWindow;
     }
 
-    public boolean isInterrupted() {
-        return isInterrupted;
-    }
-
-    public void setInterrupted(boolean interrupted) {
-        isInterrupted = interrupted;
-    }
-
-    public void addProgressListener(ProgressListener<T, V> progressListener) {
+    public final void addProgressListener(ProgressListener<T, V> progressListener) {
         if (!progressListeners.contains(progressListener))
             progressListeners.add(progressListener);
     }
 
-    public List<ProgressListener<T, V>> getProgressListeners() {
+    public final List<ProgressListener<T, V>> getProgressListeners() {
         return Collections.unmodifiableList(progressListeners);
     }
 
-    public void removeProgressListener(ProgressListener<T, V> progressListener) {
+    public final void removeProgressListener(ProgressListener<T, V> progressListener) {
         progressListeners.remove(progressListener);
     }
 

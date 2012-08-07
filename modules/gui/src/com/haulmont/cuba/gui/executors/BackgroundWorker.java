@@ -45,7 +45,7 @@ public interface BackgroundWorker {
 
         void startExecution();
 
-        boolean cancelExecution(boolean mayInterruptIfRunning);
+        boolean cancelExecution();
 
         V getResult();
 
@@ -73,23 +73,6 @@ public interface BackgroundWorker {
          */
         @SuppressWarnings({"unchecked"})
         void handleProgress(T... changes);
-    }
-
-    /**
-     * Special container for private platform realization of ProgressHandler
-     */
-    class ProgressManager {
-
-        private static ThreadLocal<BackgroundWorker.TaskExecutor> executorThreadLocal = new ThreadLocal<>();
-
-        public static void setExecutor(BackgroundWorker.TaskExecutor progressHandler) {
-            executorThreadLocal.set(progressHandler);
-        }
-
-        @SuppressWarnings("unchecked")
-        public static <T, V> BackgroundWorker.TaskExecutor<T, V> getExecutor() {
-            return executorThreadLocal.get();
-        }
     }
 
     /**
@@ -143,7 +126,7 @@ public interface BackgroundWorker {
                 String windowClass = ownerWindow.getClass().getCanonicalName();
                 log.debug("Window closed. User: " + userId + " Window: " + windowClass);
 
-                taskExecutor.cancelExecution(true);
+                taskExecutor.cancelExecution();
             }
         }
 
@@ -168,12 +151,12 @@ public interface BackgroundWorker {
         }
 
         @Override
-        public final boolean cancel(boolean mayInterruptIfRunning) {
+        public final boolean cancel() {
             checkState(started, "Task is not running");
 
             boolean canceled = false;
             if (isAlive()) {
-                canceled = taskExecutor.cancelExecution(mayInterruptIfRunning);
+                canceled = taskExecutor.cancelExecution();
                 if (canceled) {
                     BackgroundTask<T, V> task = taskExecutor.getTask();
                     task.canceled();
@@ -201,7 +184,7 @@ public interface BackgroundWorker {
 
         /**
          * Join task thread to current <br/>
-         * <b>Attention!</b> Call this method only from synchronous gui action
+         * <b>Caution!</b> Call this method only from synchronous gui action
          *
          * @return Task result
          */
@@ -229,7 +212,7 @@ public interface BackgroundWorker {
                     log.debug("Task killed. User: " + userId);
             }
 
-            taskExecutor.cancelExecution(true);
+            taskExecutor.cancelExecution();
         }
 
         @Override

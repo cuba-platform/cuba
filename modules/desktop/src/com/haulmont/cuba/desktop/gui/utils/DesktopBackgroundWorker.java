@@ -7,10 +7,7 @@
 package com.haulmont.cuba.desktop.gui.utils;
 
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.gui.executors.BackgroundTask;
-import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
-import com.haulmont.cuba.gui.executors.BackgroundWorker;
-import com.haulmont.cuba.gui.executors.WatchDog;
+import com.haulmont.cuba.gui.executors.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -62,6 +59,8 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         private volatile boolean isClosed = false;
 
+        private volatile boolean isInterrupted = false;
+
         private DesktopTaskExecutor(BackgroundTask<T, V> runnableTask) {
             this.runnableTask = runnableTask;
             userId = UserSessionProvider.getUserSession().getId();
@@ -70,10 +69,20 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         @Override
         protected final V doInBackground() throws Exception {
             // assign thread local handler
-            BackgroundWorker.ProgressManager.setExecutor(this);
-            runnableTask.setInterrupted(false);
+            this.isInterrupted = false;
             try {
-                result = runnableTask.run();
+                result = runnableTask.run(new TaskLifeCycle<T>() {
+                    @SafeVarargs
+                    @Override
+                    public final void publish(T... changes) {
+                        handleProgress(changes);
+                    }
+
+                    @Override
+                    public boolean isInterrupted() {
+                        return DesktopTaskExecutor.this.isInterrupted;
+                    }
+                });
             } catch (Exception ex) {
                 taskException = ex;
             }
@@ -98,7 +107,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
             if (isClosed)
                 return;
 
-            if (!runnableTask.isInterrupted()) {
+            if (!isInterrupted) {
                 try {
                     if (this.taskException == null) {
                         try {
@@ -130,15 +139,15 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         }
 
         @Override
-        public final boolean cancelExecution(boolean mayInterruptIfRunning) {
+        public final boolean cancelExecution() {
             if (isClosed)
                 return false;
 
-            runnableTask.setInterrupted(true);
+            this.isInterrupted = true;
 
             if (!isDone() && !isCancelled()) {
                 log.debug("Cancel task. User: " + userId);
-                isClosed = cancel(mayInterruptIfRunning);
+                isClosed = cancel(true);
                 return isClosed;
             } else
                 return false;
