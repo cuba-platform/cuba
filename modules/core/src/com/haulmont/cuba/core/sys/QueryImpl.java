@@ -10,6 +10,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.BaseEntity;
@@ -19,7 +20,6 @@ import com.haulmont.cuba.core.global.QueryTransformer;
 import com.haulmont.cuba.core.global.QueryTransformerFactory;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
-import com.haulmont.cuba.core.sys.persistence.PostgresUUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -28,7 +28,6 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.TemporalType;
-import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -189,9 +188,10 @@ public class QueryImpl<T> implements TypedQuery<T> {
     @Override
     public Query setParameter(int position, Object value, boolean implicitConversions) {
         if (isNative && value instanceof UUID && DbmsType.getCurrent() == DbmsType.POSTGRES) {
+            Class c = ReflectionHelper.getClass("com.haulmont.cuba.core.sys.persistence.PostgresUUID");
             try {
-                value = new PostgresUUID((UUID) value);
-            } catch (SQLException e) {
+                value = ReflectionHelper.newInstance(c, value);
+            } catch (NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }
         } else if (implicitConversions && value instanceof Entity)
