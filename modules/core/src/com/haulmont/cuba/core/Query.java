@@ -81,13 +81,25 @@ public interface Query {
     /**
      * Bind an argument to a named parameter.<br>
      * Native Query doesn't support named parameters.
-     * @param name the parameter name
-     * @param value
+     * @param name                      parameter name
+     * @param value                     parameter value. Entity instance replaced with its ID.
      * @return the same query instance
      * @throws IllegalArgumentException if parameter name does not correspond to parameter in query string
      * or argument is of incorrect type
      */
     Query setParameter(String name, Object value);
+
+    /**
+     * Bind an argument to a named parameter.<br>
+     * Native Query doesn't support named parameters.
+     * @param name                      parameter name
+     * @param value                     parameter value
+     * @param implicitConversions       whether to make parameter value conversions, e.g. convert an entity to its ID
+     * @return the same query instance
+     * @throws IllegalArgumentException if parameter name does not correspond to parameter in query string
+     * or argument is of incorrect type
+     */
+    Query setParameter(String name, Object value, boolean implicitConversions);
 
     /**
      * Bind an instance of java.util.Date to a named parameter.<br>
@@ -102,13 +114,24 @@ public interface Query {
 
     /**
      * Bind an argument to a positional parameter.
-     * @param position
-     * @param value
+     * @param position                  parameter position, starting with 1
+     * @param value                     parameter value. Entity instance replaced with its ID.
      * @return the same query instance
      * @throws IllegalArgumentException if position does not correspond to positional parameter of query
      * or argument is of incorrect type
      */
     Query setParameter(int position, Object value);
+
+    /**
+     * Bind an argument to a positional parameter.
+     * @param position                  parameter position, starting with 1
+     * @param value                     parameter value
+     * @param implicitConversions       whether to make parameter value conversions, e.g. convert an entity to its ID
+     * @return the same query instance
+     * @throws IllegalArgumentException if position does not correspond to positional parameter of query
+     * or argument is of incorrect type
+     */
+    Query setParameter(int position, Object value, boolean implicitConversions);
 
     /**
      * Bind an instance of java.util.Date to a positional parameter.

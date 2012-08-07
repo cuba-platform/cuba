@@ -10,11 +10,15 @@
  */
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.BaseEntity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.QueryTransformer;
+import com.haulmont.cuba.core.global.QueryTransformerFactory;
+import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import com.haulmont.cuba.core.sys.persistence.PostgresUUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -160,7 +164,12 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     @Override
     public Query setParameter(String name, Object value) {
-        if (value instanceof BaseEntity)
+        return setParameter(name, value, true);
+    }
+
+    @Override
+    public Query setParameter(String name, Object value, boolean implicitConversions) {
+        if (implicitConversions && value instanceof Entity)
             value = ((BaseEntity) value).getId();
         getQuery().setParameter(name, value);
         return this;
@@ -174,17 +183,20 @@ public class QueryImpl<T> implements TypedQuery<T> {
 
     @Override
     public Query setParameter(int position, Object value) {
-        if (value instanceof BaseEntity)
-            value = ((BaseEntity) value).getId();
-        else if (isNative
-                && value instanceof UUID
-                && PersistenceProvider.getDbDialect() instanceof PostgresDbDialect) {
+        return setParameter(position, value, true);
+    }
+
+    @Override
+    public Query setParameter(int position, Object value, boolean implicitConversions) {
+        if (isNative && value instanceof UUID && DbmsType.getCurrent() == DbmsType.POSTGRES) {
             try {
                 value = new PostgresUUID((UUID) value);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-        }
+        } else if (implicitConversions && value instanceof Entity)
+            value = ((BaseEntity) value).getId();
+
         getQuery().setParameter(position, value);
         return this;
     }
