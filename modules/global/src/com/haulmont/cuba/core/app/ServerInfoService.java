@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MetadataBuildInfo;
 import com.haulmont.cuba.core.global.View;
 
@@ -31,6 +32,8 @@ public interface ServerInfoService {
     MetadataBuildInfo getMetadataBuildInfo();
 
     List<View> getViews();
+
+    View getView(Class<? extends Entity> entityClass, String name);
 
     /**
      * Return time zone used by server application.

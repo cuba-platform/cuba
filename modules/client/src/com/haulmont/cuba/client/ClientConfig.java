@@ -109,4 +109,13 @@ public interface ClientConfig extends Config {
     @DefaultString("CTRL-DELETE")
     @Property("cuba.gui.tableRemoveShortcut")
     String getTableRemoveShortcut();
+
+    /**
+     * @return If false, the client loads all server views on startup.
+     * If true, it loads views one by one only when needed.
+     * <p>Lazy loading is required if the server can contain views for entities, not available on the client.</p>
+     */
+    @Property("cuba.lazyLoadServerViews")
+    @DefaultBoolean(false)
+    boolean getLazyLoadServerViews();
 }

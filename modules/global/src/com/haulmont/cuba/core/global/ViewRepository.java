@@ -152,7 +152,7 @@ public class ViewRepository
         }
     }
 
-    private View findView(MetaClass metaClass, String name) {
+    protected View findView(MetaClass metaClass, String name) {
         Map<String, View> views = storage.get(metaClass);
         View view = (views == null ? null : views.get(name));
         if (view == null && (name.equals(View.LOCAL) || name.equals(View.MINIMAL))) {

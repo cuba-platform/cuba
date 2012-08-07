@@ -6,9 +6,11 @@
 package com.haulmont.cuba.core.app;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataBuildInfo;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewNotFoundException;
 import com.haulmont.cuba.core.sys.MetadataBuildHelper;
 
 import javax.annotation.ManagedBean;
@@ -32,14 +34,17 @@ public class ServerInfoServiceBean implements ServerInfoService {
     @Inject
     protected ServerInfoAPI serverInfo;
 
+    @Override
     public String getReleaseNumber() {
         return serverInfo.getReleaseNumber();
     }
 
+    @Override
     public String getReleaseTimestamp() {
         return serverInfo.getReleaseTimestamp();
     }
 
+    @Override
     public MetadataBuildInfo getMetadataBuildInfo() {
         return new MetadataBuildInfo(
                 MetadataBuildHelper.getPersistentEntitiesPackages(),
@@ -75,8 +80,18 @@ public class ServerInfoServiceBean implements ServerInfoService {
         return result;
     }
 
+    @Override
     public List<View> getViews() {
         return metadata.getViewRepository().getAll();
+    }
+
+    @Override
+    public View getView(Class<? extends Entity> entityClass, String name) {
+        try {
+            return metadata.getViewRepository().getView(entityClass, name);
+        } catch (ViewNotFoundException e) {
+            return null;
+        }
     }
 
     @Override

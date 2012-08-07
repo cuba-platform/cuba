@@ -10,11 +10,9 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.loader.ChileMetadataLoader;
 import com.haulmont.chile.core.loader.MetadataLoader;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.ServerInfoService;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.MetadataBuildInfo;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AbstractMetadata;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.PersistentClassesMetadataLoader;
@@ -42,6 +40,9 @@ public class MetadataClientImpl extends AbstractMetadata {
 
     @Inject
     private ServerInfoService serverInfoService;
+
+    @Inject
+    private Configuration configuration;
 
     @Override
     protected void initMetadata() {
@@ -82,12 +83,16 @@ public class MetadataClientImpl extends AbstractMetadata {
     protected void initViews() {
         log.info("Initializing views");
 
-        viewRepository = new ViewRepository();
+        boolean lazyLoadServerViews = configuration.getConfig(ClientConfig.class).getLazyLoadServerViews();
 
-        List<View> views = serverInfoService.getViews();
-        for (View view : views) {
-            MetaClass metaClass = getSession().getClass(view.getEntityClass());
-            viewRepository.storeView(metaClass, view);
+        viewRepository = new ViewRepositoryClient(lazyLoadServerViews, serverInfoService);
+
+        if (!lazyLoadServerViews) {
+            List<View> views = serverInfoService.getViews();
+            for (View view : views) {
+                MetaClass metaClass = getSession().getClass(view.getEntityClass());
+                viewRepository.storeView(metaClass, view);
+            }
         }
 
         String configName = AppContext.getProperty("cuba.viewsConfig");
