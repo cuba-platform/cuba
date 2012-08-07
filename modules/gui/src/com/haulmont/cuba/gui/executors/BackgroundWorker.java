@@ -41,7 +41,7 @@ public interface BackgroundWorker {
      * Task runner
      */
     @SuppressWarnings("unused")
-    interface TaskExecutor<T, V> extends ProgressHandler<T> {
+    interface TaskExecutor<T, V> {
 
         void startExecution();
 
@@ -65,6 +65,31 @@ public interface BackgroundWorker {
         void setFinalizer(Runnable finalizer);
 
         Runnable getFinalizer();
+
+        /**
+         * Handle changes from working thread
+         *
+         * @param changes Changes
+         */
+        @SuppressWarnings({"unchecked"})
+        void handleProgress(T... changes);
+    }
+
+    /**
+     * Special container for private platform realization of ProgressHandler
+     */
+    class ProgressManager {
+
+        private static ThreadLocal<BackgroundWorker.TaskExecutor> executorThreadLocal = new ThreadLocal<>();
+
+        public static void setExecutor(BackgroundWorker.TaskExecutor progressHandler) {
+            executorThreadLocal.set(progressHandler);
+        }
+
+        @SuppressWarnings("unchecked")
+        public static <T, V> BackgroundWorker.TaskExecutor<T, V> getExecutor() {
+            return executorThreadLocal.get();
+        }
     }
 
     /**

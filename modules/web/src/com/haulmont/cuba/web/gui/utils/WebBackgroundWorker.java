@@ -172,7 +172,6 @@ public class WebBackgroundWorker implements BackgroundWorker {
             this.runnableTask = runnableTask;
             this.webTimerListener = webTimerListener;
             this.app = app;
-            runnableTask.setProgressHandler(this);
 
             securityContext = AppContext.getSecurityContext();
             userId = UserSessionProvider.getUserSession().getId();
@@ -182,6 +181,9 @@ public class WebBackgroundWorker implements BackgroundWorker {
         public final void run() {
             // Set security permissions
             AppContext.setSecurityContext(securityContext);
+
+            // assign thread local handler
+            BackgroundWorker.ProgressManager.setExecutor(this);
 
             runnableTask.setInterrupted(false);
 

@@ -26,7 +26,6 @@ import java.util.List;
  */
 public abstract class BackgroundTask<T, V> {
 
-    private ProgressHandler<T> progressHandler;
     private Window ownerWindow;
 
     private List<ProgressListener<T, V>> progressListeners = new LinkedList<ProgressListener<T, V>>();
@@ -76,7 +75,8 @@ public abstract class BackgroundTask<T, V> {
      */
     @SafeVarargs
     public final void publish(T... changes) {
-        progressHandler.handleProgress(changes);
+        BackgroundWorker.TaskExecutor<T, V> handler = BackgroundWorker.ProgressManager.getExecutor();
+        handler.handleProgress(changes);
     }
 
     /**
@@ -85,14 +85,6 @@ public abstract class BackgroundTask<T, V> {
      * @param changes Changes list
      */
     public void progress(List<T> changes) {
-    }
-
-    public ProgressHandler<T> getProgressHandler() {
-        return progressHandler;
-    }
-
-    public void setProgressHandler(ProgressHandler<T> progressHandler) {
-        this.progressHandler = progressHandler;
     }
 
     public Window getOwnerWindow() {
@@ -145,5 +137,20 @@ public abstract class BackgroundTask<T, V> {
          * On task canceled
          */
         void onCancel();
+    }
+
+    public static class ProgressListenerAdapter<T, V> implements ProgressListener<T, V> {
+
+        @Override
+        public void onProgress(List<T> changes) {
+        }
+
+        @Override
+        public void onDone(V result) {
+        }
+
+        @Override
+        public void onCancel() {
+        }
     }
 }

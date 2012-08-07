@@ -64,12 +64,13 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         private DesktopTaskExecutor(BackgroundTask<T, V> runnableTask) {
             this.runnableTask = runnableTask;
-            runnableTask.setProgressHandler(this);
             userId = UserSessionProvider.getUserSession().getId();
         }
 
         @Override
         protected final V doInBackground() throws Exception {
+            // assign thread local handler
+            BackgroundWorker.ProgressManager.setExecutor(this);
             runnableTask.setInterrupted(false);
             try {
                 result = runnableTask.run();
