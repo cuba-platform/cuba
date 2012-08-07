@@ -6,7 +6,6 @@
 
 package com.haulmont.cuba.core.sys.remoting;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientConfiguration;
 import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
 import org.springframework.remoting.support.RemoteInvocationResult;
@@ -14,7 +13,6 @@ import org.springframework.remoting.support.RemoteInvocationResult;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -35,43 +33,35 @@ public class ClusteredHttpInvokerRequestExecutor extends SimpleHttpInvokerReques
 
     @Override
     protected RemoteInvocationResult doExecuteRequest(HttpInvokerClientConfiguration config, ByteArrayOutputStream baos) throws IOException, ClassNotFoundException {
-        HttpURLConnection con = null;
-
         List<String> urlList = support.getUrlList(config.getServiceUrl());
+        if (urlList.isEmpty())
+            throw new IllegalStateException("URL list is empty");
+
+        RemoteInvocationResult result = null;
         for (int i = 0; i < urlList.size(); i++) {
             String url = urlList.get(i);
-            con = openConnection(url);
+            HttpURLConnection con = openConnection(url);
             try {
                 prepareConnection(con, baos.size());
                 writeRequestBody(config, con, baos);
+                validateResponse(config, con);
+                InputStream responseBody = readResponseBody(config, con);
                 if (i > 0) {
                     support.updateUrlPriority(url);
                 }
+                result = readRemoteInvocationResult(responseBody, config.getCodebaseUrl());
                 break;
             } catch (IOException e) {
-                List list = ExceptionUtils.getThrowableList(e);
-                boolean isConnectException = false;
-                for (Object throwable : list) {
-                    if (throwable instanceof ConnectException) {
-                        logger.info("Invocation of " + url + " failed: " + throwable);
-                        isConnectException = true;
-                        break;
-                    }
+                logger.info("Invocation of " + url + " failed: " + e);
+                if (i < urlList.size() - 1) {
+                    logger.info("Trying to invoke the next available URL: " + urlList.get(i + 1));
+                    continue;
                 }
-                if (isConnectException) {
-                    if (i < urlList.size() - 1) {
-                        logger.info("Trying to invoke the next available URL");
-                        continue;
-                    }
-                    logger.info("No more URL available");
-                }
+                logger.info("No more URL available");
                 throw e;
             }
         }
-        validateResponse(config, con);
-        InputStream responseBody = readResponseBody(config, con);
-
-        return readRemoteInvocationResult(responseBody, config.getCodebaseUrl());
+        return result;
     }
 
     protected HttpURLConnection openConnection(String serviceUrl) throws IOException {
