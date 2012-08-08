@@ -24,8 +24,7 @@ import java.util.Map;
 
 @SuppressWarnings("serial")
 @ClientWidget(VMaskedPopupCalendar.class)
-public class
-        DateField extends com.vaadin.ui.DateField {
+public class DateField extends com.vaadin.ui.DateField {
 
     protected boolean closeWhenDateSelected = false;
 

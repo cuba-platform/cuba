@@ -9,6 +9,7 @@ package com.haulmont.cuba.web.toolkit.ui;
 import com.haulmont.cuba.web.gui.components.WebDateField;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Layout;
+import org.apache.commons.lang.ObjectUtils;
 
 import java.util.Date;
 
@@ -77,7 +78,7 @@ public class DateFieldWrapper extends CustomField {
         super.valueChange(event);
         // support dateField in editable table
         Property property = event.getProperty();
-        if (property != null)
+        if (property != null && !ObjectUtils.equals(property.getValue(), getValue()))
             dateField.setValue(property.getValue());
     }
 
@@ -85,7 +86,7 @@ public class DateFieldWrapper extends CustomField {
     public void setPropertyDataSource(Property newDataSource) {
         super.setPropertyDataSource(newDataSource);
         // support dateField in editable table
-        if (newDataSource != null)
+        if (newDataSource != null && !ObjectUtils.equals(newDataSource.getValue(), getValue()))
             dateField.setValue(newDataSource.getValue());
     }
 }
