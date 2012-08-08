@@ -8,8 +8,6 @@ package com.haulmont.cuba.gui.executors;
 
 import com.haulmont.cuba.gui.AppConfig;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author artamonov
  * @version $Id$
@@ -18,16 +16,12 @@ import java.util.concurrent.TimeUnit;
 public class BackgroundTaskWrapper<T, V> {
 
     private BackgroundTask<T, V> task;
-    private long timeout;
-    private TimeUnit timeUnit;
 
     private BackgroundTaskHandler<V> taskHandler;
     private BackgroundWorker backgroundWorker;
 
-    public BackgroundTaskWrapper(BackgroundTask<T, V> task, long timeout, TimeUnit timeUnit) {
+    public BackgroundTaskWrapper(BackgroundTask<T, V> task) {
         this.task = task;
-        this.timeout = timeout;
-        this.timeUnit = timeUnit;
         this.backgroundWorker = AppConfig.getBackgroundWorker();
     }
 
@@ -35,7 +29,7 @@ public class BackgroundTaskWrapper<T, V> {
         cancel();
 
         taskHandler = backgroundWorker.handle(task);
-        taskHandler.execute(timeout, timeUnit);
+        taskHandler.execute();
     }
 
     public V getResult() {

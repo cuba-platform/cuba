@@ -6,8 +6,6 @@
 
 package com.haulmont.cuba.gui.executors;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * Task handler for {@link BackgroundTask}
  *
@@ -19,11 +17,8 @@ public interface BackgroundTaskHandler<V> {
     /**
      * Execute with timeout <br/>
      * If the task appears to hang then it will be canceled
-     *
-     * @param timeout Timeout
-     * @param unit    TimeUnit
      */
-    void execute(long timeout, TimeUnit unit);
+    void execute();
 
     /**
      * Try to cancel task

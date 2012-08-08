@@ -11,9 +11,10 @@ import com.haulmont.cuba.gui.components.Window;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Backround task for execute in {@link BackgroundWorker}
+ * Background task for execute in {@link BackgroundWorker}
  * <p>
  * <b>It is strongly recommended to be able to interrupt working thread. <br/>
  * Don't ignore {@link InterruptedException} or its ancestors.</b>
@@ -28,15 +29,53 @@ public abstract class BackgroundTask<T, V> {
 
     private final Window ownerWindow;
 
+    private final long timeoutMilliseconds;
+
     private final List<ProgressListener<T, V>> progressListeners =
             Collections.synchronizedList(new ArrayList<ProgressListener<T, V>>());
 
-    protected BackgroundTask(Window ownerWindow) {
+    /**
+     * Task with timeout
+     *
+     * @param timeout     Timeout
+     * @param timeUnit    Time unit
+     * @param ownerWindow Owner window
+     */
+    protected BackgroundTask(long timeout, TimeUnit timeUnit, Window ownerWindow) {
         this.ownerWindow = ownerWindow;
+        this.timeoutMilliseconds = timeUnit.toMillis(timeout);
     }
 
-    protected BackgroundTask() {
+    /**
+     * Task with timeout
+     *
+     * @param timeout  Timeout
+     * @param timeUnit Time unit
+     */
+    protected BackgroundTask(long timeout, TimeUnit timeUnit) {
         this.ownerWindow = null;
+        this.timeoutMilliseconds = timeUnit.toMillis(timeout);
+    }
+
+    /**
+     * Task with timeout in default SECONDS unit
+     *
+     * @param timeoutSeconds Timeout in seconds
+     */
+    protected BackgroundTask(long timeoutSeconds) {
+        this.ownerWindow = null;
+        this.timeoutMilliseconds = TimeUnit.SECONDS.toMillis(timeoutSeconds);
+    }
+
+    /**
+     * Task with timeout in default SECONDS unit
+     *
+     * @param timeoutSeconds Timeout in seconds
+     * @param ownerWindow    Owner window
+     */
+    protected BackgroundTask(long timeoutSeconds, Window ownerWindow) {
+        this.ownerWindow = ownerWindow;
+        this.timeoutMilliseconds = TimeUnit.SECONDS.toMillis(timeoutSeconds);
     }
 
     /**
@@ -79,6 +118,14 @@ public abstract class BackgroundTask<T, V> {
 
     public final Window getOwnerWindow() {
         return ownerWindow;
+    }
+
+    public final long getTimeoutMilliseconds() {
+        return timeoutMilliseconds;
+    }
+
+    public final long getTimeoutSeconds() {
+        return TimeUnit.MILLISECONDS.toSeconds(timeoutMilliseconds);
     }
 
     public final void addProgressListener(ProgressListener<T, V> progressListener) {

@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.gui.executors;
 
+import com.haulmont.cuba.gui.executors.impl.TaskHandler;
+
 /**
  * @author artamonov
  * @version $Id$
@@ -19,7 +21,7 @@ public interface WatchDog {
      *
      * @param backroundTask Task handler
      */
-    void manageTask(BackgroundWorker.TaskHandler backroundTask);
+    void manageTask(TaskHandler backroundTask);
 
     /**
      * Remove finished, canceled or hangup tasks
