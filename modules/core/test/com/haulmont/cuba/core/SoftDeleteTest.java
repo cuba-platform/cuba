@@ -168,7 +168,7 @@ public class SoftDeleteTest extends CubaTestCase
             );
             User user = em.find(User.class, userId);
 
-            Set<UserRole> userRoles = user.getUserRoles();
+            List<UserRole> userRoles = user.getUserRoles();
             assertEquals(1, userRoles.size());
             for (UserRole ur : userRoles) {
                 assertNotNull(ur.getRole());
@@ -189,7 +189,7 @@ public class SoftDeleteTest extends CubaTestCase
 
             User user = em.find(User.class, userId);
 
-            Set<UserRole> userRoles = user.getUserRoles();
+            List<UserRole> userRoles = user.getUserRoles();
             assertEquals(1, userRoles.size());
             for (UserRole ur : userRoles) {
                 assertNotNull(ur.getRole());
@@ -222,7 +222,7 @@ public class SoftDeleteTest extends CubaTestCase
             );
             User user = em.find(User.class, userId);
 
-            Set<UserRole> userRoles = user.getUserRoles();
+            List<UserRole> userRoles = user.getUserRoles();
             assertEquals(2, userRoles.size());
             for (UserRole ur : userRoles) {
                 assertNotNull(ur.getRole());
@@ -246,7 +246,7 @@ public class SoftDeleteTest extends CubaTestCase
             q.setParameter(1, userId);
             User user = (User) q.getSingleResult();
 
-            Set<UserRole> userRoles = user.getUserRoles();
+            List<UserRole> userRoles = user.getUserRoles();
             assertEquals(1, userRoles.size());
             for (UserRole ur : userRoles) {
                 assertNotNull(ur.getRole());
@@ -270,7 +270,7 @@ public class SoftDeleteTest extends CubaTestCase
             q.setParameter(1, userId);
             User user = (User) q.getSingleResult();
 
-            Set<UserRole> userRoles = user.getUserRoles();
+            List<UserRole> userRoles = user.getUserRoles();
             assertEquals(1, userRoles.size());
             for (UserRole ur : userRoles) {
                 assertNotNull(ur.getRole());

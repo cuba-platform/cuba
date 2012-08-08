@@ -13,6 +13,7 @@ package com.haulmont.cuba.security;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.security.entity.*;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.Set;
 
@@ -47,7 +48,7 @@ public class UserRoleTest extends CubaTestCase
 
             em = PersistenceProvider.getEntityManager();
             user = em.find(User.class, userId);
-            Set<UserRole> userRoles = user.getUserRoles();
+            List<UserRole> userRoles = user.getUserRoles();
             assertEquals(1, userRoles.size());
             for (UserRole ur : userRoles) {
                 Role r = ur.getRole();
