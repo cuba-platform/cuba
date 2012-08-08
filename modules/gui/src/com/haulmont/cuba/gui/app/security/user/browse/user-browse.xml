@@ -42,10 +42,8 @@
                 <action id="edit"/>
                 <action id="copy" caption="msg://copy" icon="icons/copy.png" invoke="copy"/>
                 <action id="remove"/>
-                <action id="copySettings" caption="msg://copySettings" icon="icons/copy.png"
-                        invoke="copySettings"/>
-                <action id="changePassw" caption="msg://changePassw" icon="icons/change-pass.png"
-                        invoke="changePassword"/>
+                <action id="copySettings" caption="msg://copySettings" icon="icons/copy.png"/>
+                <action id="changePassw" caption="msg://changePassw" icon="icons/change-pass.png"/>
                 <action id="excel"/>
             </actions>
             <buttonsPanel>

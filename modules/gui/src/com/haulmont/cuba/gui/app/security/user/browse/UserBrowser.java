@@ -11,7 +11,9 @@ import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
 import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
@@ -69,6 +71,20 @@ public class UserBrowser extends AbstractLookup {
         Boolean multiSelect = BooleanUtils.toBooleanObject((String) params.get("multiselect"));
         if (multiSelect != null)
             usersTable.setMultiSelect(multiSelect);
+
+        usersTable.addAction(new ItemTrackingAction("copySettings") {
+            @Override
+            public void actionPerform(Component component) {
+                copySettings();
+            }
+        });
+
+        usersTable.addAction(new ItemTrackingAction("changePassw") {
+            @Override
+            public void actionPerform(Component component) {
+                changePassword();
+            }
+        });
     }
 
     public void copy() {
@@ -101,7 +117,6 @@ public class UserBrowser extends AbstractLookup {
         }
     }
 
-    @SuppressWarnings("unused")
     public void copySettings() {
         if (!usersTable.getSelected().isEmpty()) {
             openWindow(
@@ -112,7 +127,6 @@ public class UserBrowser extends AbstractLookup {
         }
     }
 
-    @SuppressWarnings("unused")
     public void changePassword() {
         if (!usersTable.getSelected().isEmpty()) {
             openEditor(

@@ -5,15 +5,15 @@
   -->
 
 <window
-    xmlns="http://schemas.haulmont.com/cuba/4.0/window.xsd"
+    xmlns="http://schemas.haulmont.com/cuba/3.3/window.xsd"
     datasource="users"
     caption="msg://copySettings"
-    class="com.haulmont.cuba.web.app.ui.security.user.copysettings.CopySettings"
-    messagesPack="com.haulmont.cuba.web.app.ui.security.user.copysettings"
+    class="com.haulmont.cuba.gui.app.security.user.copysettings.CopySettings"
+    messagesPack="com.haulmont.cuba.gui.app.security.user.copysettings"
     focusComponent="user"
 >
     <dsContext>
-        <collectionDatasource id="users"
+        <collectionDatasource id="usersDs"
                     class="com.haulmont.cuba.security.entity.User"
                     view="user.copySettings">
             <query>select u from sec$User u</query>
@@ -22,9 +22,9 @@
 
     <layout>
         <vbox spacing="true">
-            <label id="label" value="msg://copyFromUser" width="200px"/>
+            <label id="label" value="msg://copyFromUser" width="400px"/>
             <lookupField width="200px" id="user"
-                         optionsDatasource="users"
+                         optionsDatasource="usersDs"
                          required="true"
                          requiredMessage="msg://selectUser"/>
             <buttonsPanel id="panel">
