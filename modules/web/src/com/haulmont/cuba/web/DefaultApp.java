@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.client.sys.MessagesClientImpl;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
@@ -120,6 +122,8 @@ public class DefaultApp extends App implements ConnectionListener {
 
     @Override
     public void connectionStateChanged(Connection connection) throws LoginException {
+        MessagesClientImpl messagesClient = AppContext.getBean(Messages.NAME);
+
         if (connection.isConnected()) {
             log.debug("Creating AppWindow");
 
@@ -128,6 +132,8 @@ public class DefaultApp extends App implements ConnectionListener {
             for (Object win : new ArrayList<Object>(getWindows())) {
                 removeWindow((Window) win);
             }
+
+            messagesClient.setRemoteSearch(true);
 
             String name = currentWindowName.get();
             if (name == null)
@@ -154,6 +160,8 @@ public class DefaultApp extends App implements ConnectionListener {
             for (Object win : new ArrayList<Object>(getWindows())) {
                 removeWindow((Window) win);
             }
+
+            messagesClient.setRemoteSearch(false);
 
             String name = currentWindowName.get();
             if (name == null)

@@ -6,7 +6,9 @@
 
 package com.haulmont.cuba.client.sys;
 
+import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.LocalizedMessageService;
+import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.sys.AbstractMessages;
@@ -16,7 +18,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.net.ConnectException;
+import java.net.SocketException;
 import java.util.List;
 import java.util.Locale;
 
@@ -31,6 +33,11 @@ public class MessagesClientImpl extends AbstractMessages {
     @Inject
     private LocalizedMessageService localizedMessageService;
 
+    @Inject
+    private Configuration configuration;
+
+    private volatile boolean remoteSearch;
+
     @Override
     protected Locale getUserLocale() {
         UserSession userSession = UserSessionProvider.getUserSession();
@@ -39,7 +46,7 @@ public class MessagesClientImpl extends AbstractMessages {
 
     @Override
     protected String searchRemotely(String pack, String key, Locale locale) {
-        if (!AppContext.isStarted())
+        if (!remoteSearch || !AppContext.isStarted())
             return null;
 
         if (log.isTraceEnabled())
@@ -54,10 +61,20 @@ public class MessagesClientImpl extends AbstractMessages {
         } catch (Exception e) {
             List list = ExceptionUtils.getThrowableList(e);
             for (Object throwable : list) {
-                if (throwable instanceof ConnectException)
-                    return null; // silently ignore connection errors
+                if (throwable instanceof SocketException) {
+                    log.trace("searchRemotely: " + throwable);
+                    return null; // silently ignore network errors
+                }
             }
             throw (RuntimeException) e;
         }
+    }
+
+    public boolean isRemoteSearch() {
+        return remoteSearch;
+    }
+
+    public void setRemoteSearch(boolean remoteSearch) {
+        this.remoteSearch = remoteSearch && configuration.getConfig(ClientConfig.class).getRemoteMessagesSearchEnabled();
     }
 }

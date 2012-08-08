@@ -6,9 +6,11 @@
 
 package com.haulmont.cuba.desktop;
 
+import com.haulmont.cuba.client.sys.MessagesClientImpl;
 import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.remoting.ClusterInvocationSupport;
 import com.haulmont.cuba.desktop.exception.ExceptionHandlers;
@@ -18,7 +20,6 @@ import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
@@ -402,19 +403,28 @@ public class App implements ConnectionListener {
     }
 
     public void connectionStateChanged(Connection connection) throws LoginException {
+        MessagesClientImpl messagesClient = AppContext.getBean(Messages.NAME);
+
         if (connection.isConnected()) {
-            windowManager = (DesktopWindowManager) getWindowManager();
+            messagesClient.setRemoteSearch(true);
+
+            windowManager = getWindowManager();
             frame.setContentPane(createContentPane());
             frame.repaint();
             windowManager.setTabsPane(tabsPane);
+
             initExceptionHandlers(true);
             initTimeZone();
+
         } else {
+            messagesClient.setRemoteSearch(false);
+
             if (windowManager != null)
                 windowManager.dispose();
             windowManager = null;
             frame.setContentPane(createStartContentPane());
             frame.repaint();
+
             initExceptionHandlers(false);
             showLoginDialog();
         }

@@ -118,4 +118,11 @@ public interface ClientConfig extends Config {
     @Property("cuba.lazyLoadServerViews")
     @DefaultBoolean(false)
     boolean getLazyLoadServerViews();
+
+    /**
+     * @return If true, client will try to find missing localized messages on the server.
+     */
+    @Property("cuba.remoteMessagesSearchEnabled")
+    @DefaultBoolean(true)
+    boolean getRemoteMessagesSearchEnabled();
 }
