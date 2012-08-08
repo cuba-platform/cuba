@@ -496,17 +496,6 @@ public class CollectionDatasourceImpl<T extends Entity<K>, K>
                 detachListener((Instance) obj);
         }
     }
-    
-    protected void setSortDirection(LoadContext.Query q) {
-        boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
-        MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
-        if (MetadataHelper.isPersistent(propertyPath)) {
-            QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
-            transformer.replaceOrderBy(propertyPath.toString(), !asc);
-            String jpqlQuery = transformer.getResult();
-            q.setQueryString(jpqlQuery);
-        }
-    }
 
     @SuppressWarnings("unchecked")
     public Map<Object, String> aggregate(AggregationInfo[] aggregationInfos, Collection itemIds) {

@@ -482,6 +482,19 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
         }
     }
 
+    protected void setSortDirection(LoadContext.Query q) {
+        boolean asc = Sortable.Order.ASC.equals(sortInfos[0].getOrder());
+        MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
+        // Sort on DB only if the property is not transient and it is not an entity. Sorting by entity in JPQL
+        // translates to order by entity's id in SQL, that makes no sense.
+        if (MetadataHelper.isPersistent(propertyPath) && !propertyPath.getMetaProperty().getRange().isClass()) {
+            QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
+            transformer.replaceOrderBy(propertyPath.toString(), !asc);
+            String jpqlQuery = transformer.getResult();
+            q.setQueryString(jpqlQuery);
+        }
+    }
+
     private class ComponentValueListener implements ValueListener {
         public void valueChanged(Object source, String property, Object prevValue, Object value) {
             refresh();

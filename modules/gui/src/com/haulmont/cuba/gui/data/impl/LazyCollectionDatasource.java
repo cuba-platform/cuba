@@ -359,15 +359,7 @@ public class LazyCollectionDatasource<T extends Entity<K>, K>
         LoadContext.Query q = createLoadContextQuery(ctx, params);
         if (q != null) {
             if (sortInfos != null) {
-                QueryTransformer transformer = QueryTransformerFactory.createTransformer(q.getQueryString(), metaClass.getName());
-
-                boolean asc = Order.ASC.equals(sortInfos[0].getOrder());
-                MetaPropertyPath propertyPath = sortInfos[0].getPropertyPath();
-
-                transformer.replaceOrderBy(propertyPath.toString(), !asc);
-                String jpqlQuery = transformer.getResult();
-
-                q.setQueryString(jpqlQuery);
+                setSortDirection(q);
             }
 
             if (maxResults == 0 || data.size() < maxResults) {
