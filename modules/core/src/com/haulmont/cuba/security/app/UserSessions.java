@@ -158,6 +158,15 @@ public class UserSessions implements UserSessionsMBean, UserSessionsAPI {
         return null;
     }
 
+    @Override
+    public void propagate(UUID id) {
+        UserSessionInfo usi = cache.get(id);
+        if (usi != null) {
+            usi.lastUsedTs = TimeProvider.currentTimestamp().getTime();
+            clusterManager.send(usi);
+        }
+    }
+
     public int getExpirationTimeoutSec() {
         return expirationTimeout;
     }

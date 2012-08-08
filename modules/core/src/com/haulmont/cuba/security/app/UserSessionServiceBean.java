@@ -34,6 +34,9 @@ public class UserSessionServiceBean implements UserSessionService
     private UserSessionManager userSessionManager;
 
     @Inject
+    private UserSessionsAPI userSessions;
+
+    @Inject
     private UserSessionSource userSessionSource;
 
     public UserSession getUserSession(UUID sessionId) {
@@ -44,16 +47,19 @@ public class UserSessionServiceBean implements UserSessionService
     public void setSessionAttribute(UUID sessionId, String name, Serializable value) {
         UserSession userSession = userSessionManager.getSession(sessionId);
         userSession.setAttribute(name, value);
+        userSessions.propagate(sessionId);
     }
 
     public void setSessionAddress(UUID sessionId, String address) {
         UserSession userSession = userSessionManager.getSession(sessionId);
         userSession.setAddress(address);
+        userSessions.propagate(sessionId);
     }
 
     public void setSessionClientInfo(UUID sessionId, String clientInfo) {
         UserSession userSession = userSessionManager.getSession(sessionId);
         userSession.setClientInfo(clientInfo);
+        userSessions.propagate(sessionId);
     }
 
     public Collection<UserSessionEntity> getUserSessionInfo() {

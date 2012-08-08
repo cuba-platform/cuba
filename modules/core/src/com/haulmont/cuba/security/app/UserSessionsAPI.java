@@ -34,6 +34,12 @@ public interface UserSessionsAPI
      */
     UserSession get(UUID id, boolean propagate);
 
+    /**
+     * Propagates the user session state to the cluster
+     * @param id    session id. If session with this id is not found, does nothing.
+     */
+    void propagate(UUID id);
+
     Collection<UserSessionEntity> getUserSessionInfo();
 
     void killSession(UUID id);
