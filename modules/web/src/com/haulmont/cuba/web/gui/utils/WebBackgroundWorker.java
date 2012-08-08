@@ -12,6 +12,8 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.executors.*;
+import com.haulmont.cuba.gui.executors.impl.TaskExecutor;
+import com.haulmont.cuba.gui.executors.impl.TaskHandler;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.WebTimer;

@@ -11,13 +11,13 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
+import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import org.apache.commons.lang.BooleanUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Modal window wrapping around background task. Displays title, message and optional cancel button.
@@ -111,29 +111,13 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
         if (BooleanUtils.isFalse(cancelAllowed)) {
             cancelButton.setVisible(false);
         }
-        Integer timeoutSec = (Integer) params.get("timeoutSec");
-        if (timeoutSec == null) {
-            timeoutSec = DEFAULT_TIMEOUT_SEC;
-        }
 
         addAction(new CancelAction());
 
-        task.addProgressListener(new BackgroundTask.ProgressListenerAdapter<T, V>() {
-            @Override
-            public void onDone(V result) {
-                closeBackgroundWindow();
-                super.onDone(result);
-            }
+        BackgroundTask<T, V> wrapperTask = new WrapperTask(task);
 
-            @Override
-            public void onCancel() {
-                closeBackgroundWindow();
-                super.onCancel();
-            }
-        });
-
-        taskHandler = backgroundWorker.handle(task);
-        taskHandler.execute(timeoutSec, TimeUnit.SECONDS);
+        taskHandler = backgroundWorker.handle(wrapperTask);
+        taskHandler.execute();
     }
 
     private void closeBackgroundWindow() {
@@ -148,6 +132,33 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
         @Override
         public void actionPerform(Component component) {
             taskHandler.cancel();
+        }
+    }
+
+    private class WrapperTask extends BackgroundTask<T, V> {
+
+        private BackgroundTask<T, V> task;
+
+        protected WrapperTask(BackgroundTask<T, V> task) {
+            super(task.getTimeoutSeconds(), BackgroundWorkWindow.this);
+            this.task = task;
+        }
+
+        @Override
+        public V run(TaskLifeCycle<T> lifeCycle) {
+            return task.run(lifeCycle);
+        }
+
+        @Override
+        public void done(V result) {
+            closeBackgroundWindow();
+            task.done(result);
+        }
+
+        @Override
+        public void canceled() {
+            closeBackgroundWindow();
+            task.canceled();
         }
     }
 }

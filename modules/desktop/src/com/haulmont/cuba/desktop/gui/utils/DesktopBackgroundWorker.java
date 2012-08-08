@@ -8,6 +8,8 @@ package com.haulmont.cuba.desktop.gui.utils;
 
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.executors.*;
+import com.haulmont.cuba.gui.executors.impl.TaskExecutor;
+import com.haulmont.cuba.gui.executors.impl.TaskHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
