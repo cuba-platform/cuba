@@ -42,8 +42,6 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
 
     private BackgroundTaskHandler<V> taskHandler;
 
-    private static final Integer DEFAULT_TIMEOUT_SEC = 60;
-
     /**
      * Show modal window with message which will last until task completes.
      * Optionally cancel button can be displayed. By pressing cancel button user can cancel task execution.
@@ -51,25 +49,23 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
      * @param task          background task containing long operation
      * @param title         window title, optional
      * @param message       window message, optional
-     * @param timeoutSec    timeout in seconds, after passing timeout task will be cancelled automatically
      * @param cancelAllowed show or not cancel button
      * @param <T>           task progress unit
      * @param <V>           task result type
      */
     public static <T, V> void show(BackgroundTask<T, V> task, @Nullable String title, @Nullable String message,
-                                   int timeoutSec, boolean cancelAllowed) {
-        Map<String, Object> params = new HashMap<String, Object>();
+                                   boolean cancelAllowed) {
+        Map<String, Object> params = new HashMap<>();
         params.put("task", task);
         params.put("title", title);
         params.put("message", message);
         params.put("cancelAllowed", cancelAllowed);
-        params.put("timeoutSec", timeoutSec);
         task.getOwnerWindow().openWindow("core$BackgroundWorkWindow", WindowManager.OpenType.DIALOG, params);
     }
 
     /**
      * Show modal window with message which will last until task completes.
-     * Cancel button is not shown. Timeout set to 60 seconds.
+     * Cancel button is not shown.
      *
      * @param task    background task containing long operation
      * @param title   window title, optional
@@ -78,19 +74,19 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
      * @param <V>     task result type
      */
     public static <T, V> void show(BackgroundTask<T, V> task, String title, String message) {
-        show(task, title, message, DEFAULT_TIMEOUT_SEC, false);
+        show(task, title, message, false);
     }
 
     /**
      * Show modal window with default title and message which will last until task completes.
-     * Cancel button is not shown. Timeout set to 60 seconds.
+     * Cancel button is not shown.
      *
      * @param task background task containing long operation
      * @param <T>  task progress unit
      * @param <V>  task result type
      */
     public static <T, V> void show(BackgroundTask<T, V> task) {
-        show(task, null, null, DEFAULT_TIMEOUT_SEC, false);
+        show(task, null, null, false);
     }
 
     @Override
