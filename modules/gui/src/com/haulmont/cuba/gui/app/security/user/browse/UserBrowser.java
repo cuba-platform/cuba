@@ -26,7 +26,8 @@ import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -76,7 +77,7 @@ public class UserBrowser extends AbstractLookup {
             selectedUser = dataService.reload(selectedUser, "user.edit");
             User newUser = metadata.create(User.class);
             if (selectedUser.getUserRoles() != null) {
-                LinkedHashSet<UserRole> userRoles = new LinkedHashSet<UserRole>();
+                List<UserRole> userRoles = new ArrayList<>();
                 for (UserRole oldUserRole : selectedUser.getUserRoles()) {
                     Role oldRole = dataService.reload(oldUserRole.getRole(), "_local");
                     if (BooleanUtils.isTrue(oldRole.getDefaultRole()))

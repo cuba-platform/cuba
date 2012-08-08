@@ -22,7 +22,7 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
 import java.text.MessageFormat;
-import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * User
@@ -75,16 +75,18 @@ public class User extends StandardEntity
     protected Group group;
 
     @OneToMany(mappedBy = "user")
+    @OrderBy("createTs")
     @Aggregation
-    protected LinkedHashSet<UserRole> userRoles;
+    protected List<UserRole> userRoles;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DEFAULT_SUBSTITUTED_USER_ID")
     protected User defaultSubstitutedUser;
 
     @OneToMany(mappedBy = "user")
+    @OrderBy("createTs")
     @Aggregation
-    protected LinkedHashSet<UserSubstitution> substitutions;
+    protected List<UserSubstitution> substitutions;
 
     @Column(name = "IP_MASK", length = 200)
     protected String ipMask;
@@ -129,11 +131,11 @@ public class User extends StandardEntity
         this.group = group;
     }
 
-    public LinkedHashSet<UserRole> getUserRoles() {
+    public List<UserRole> getUserRoles() {
         return userRoles;
     }
 
-    public void setUserRoles(LinkedHashSet<UserRole> userRoles) {
+    public void setUserRoles(List<UserRole> userRoles) {
         this.userRoles = userRoles;
     }
 
@@ -189,11 +191,11 @@ public class User extends StandardEntity
         this.position = position;
     }
 
-    public LinkedHashSet<UserSubstitution> getSubstitutions() {
+    public List<UserSubstitution> getSubstitutions() {
         return substitutions;
     }
 
-    public void setSubstitutions(LinkedHashSet<UserSubstitution> substitutions) {
+    public void setSubstitutions(List<UserSubstitution> substitutions) {
         this.substitutions = substitutions;
     }
 

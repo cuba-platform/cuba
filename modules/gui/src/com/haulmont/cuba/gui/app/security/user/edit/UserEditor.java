@@ -131,7 +131,7 @@ public class UserEditor extends AbstractEditor {
         ctx.setQueryString("select r from sec$Role r where r.defaultRole = true");
         List<Role> defaultRoles = dataService.loadList(ctx);
 
-        LinkedHashSet<UserRole> newRoles = new LinkedHashSet<UserRole>();
+        List<UserRole> newRoles = new ArrayList<>();
         if (user.getUserRoles() != null)
             newRoles.addAll(user.getUserRoles());
 
