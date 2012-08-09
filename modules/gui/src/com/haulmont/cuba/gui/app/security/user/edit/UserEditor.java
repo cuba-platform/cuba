@@ -10,6 +10,7 @@ import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.app.security.user.NameBuilderListener;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
@@ -92,7 +93,7 @@ public class UserEditor extends AbstractEditor {
         substTable.addAction(new EditSubstitutedAction());
         substTable.addAction(new RemoveAction(substTable, false));
 
-        initCustomFields();
+        initCustomFields(PersistenceHelper.isNew(WindowParams.ITEM.getEntity(params)));
 
         dsContext.addListener(
                 new DsContext.CommitListener() {
@@ -146,11 +147,9 @@ public class UserEditor extends AbstractEditor {
         user.setUserRoles(newRoles);
     }
 
-    private void initCustomFields() {
-        FieldGroup.Field f;
-        f = fieldGroup.getField("passw");
-        if (f != null) {
-            fieldGroup.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
+    private void initCustomFields(boolean isNew) {
+        if (isNew) {
+            fieldGroup.addCustomField("passw", new FieldGroup.CustomFieldGenerator() {
                 @Override
                 public Component generateField(Datasource datasource, Object propertyId) {
                     passwField = factory.createComponent(TextField.NAME);
@@ -164,11 +163,8 @@ public class UserEditor extends AbstractEditor {
                     return passwField;
                 }
             });
-        }
 
-        f = fieldGroup.getField("confirmPassw");
-        if (f != null) {
-            fieldGroup.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
+            fieldGroup.addCustomField("confirmPassw", new FieldGroup.CustomFieldGenerator() {
                 @Override
                 public Component generateField(Datasource datasource, Object propertyId) {
                     confirmPasswField = factory.createComponent(TextField.NAME);
@@ -184,8 +180,7 @@ public class UserEditor extends AbstractEditor {
             });
         }
 
-        f = fieldGroup.getField("language");
-        fieldGroup.addCustomField(f, new FieldGroup.CustomFieldGenerator() {
+        fieldGroup.addCustomField("language", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, Object propertyId) {
                 languageLookup = factory.createComponent(LookupField.NAME);
