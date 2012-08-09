@@ -10,6 +10,7 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.loader.ChileMetadataLoader;
 import com.haulmont.chile.core.loader.MetadataLoader;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.ServerInfoService;
 import com.haulmont.cuba.core.global.*;
@@ -57,7 +58,7 @@ public class MetadataClientImpl extends AbstractMetadata {
         loadMetadata(metadataLoader, packages);
         metadataLoader.postProcess();
 
-        session = metadataLoader.getSession();
+        Session session = metadataLoader.getSession();
 
         metadataLoader = new ChileMetadataLoader(session);
         packages = metadataBuildInfo.getTransientEntitiesPackages();
@@ -71,12 +72,15 @@ public class MetadataClientImpl extends AbstractMetadata {
             }
         }
 
-        replacedEntities = new HashMap<Class, Class>();
+        Map<Class, Class> replacedEntities = new HashMap<Class, Class>();
         for (Map.Entry<String, String> entry : metadataBuildInfo.getReplacedEntities().entrySet()) {
             Class from = ReflectionHelper.getClass(entry.getKey());
             Class to = ReflectionHelper.getClass(entry.getValue());
             replacedEntities.put(from, to);
         }
+
+        this.session = session;
+        this.replacedEntities = replacedEntities;
     }
 
     @Override
@@ -85,7 +89,7 @@ public class MetadataClientImpl extends AbstractMetadata {
 
         boolean lazyLoadServerViews = configuration.getConfig(ClientConfig.class).getLazyLoadServerViews();
 
-        viewRepository = new ViewRepositoryClient(lazyLoadServerViews, serverInfoService);
+        ViewRepositoryClient viewRepository = new ViewRepositoryClient(lazyLoadServerViews, serverInfoService);
 
         if (!lazyLoadServerViews) {
             List<View> views = serverInfoService.getViews();
@@ -102,5 +106,7 @@ public class MetadataClientImpl extends AbstractMetadata {
                 viewRepository.deployViews(fileName);
             }
         }
+
+        this.viewRepository = viewRepository;
     }
 }

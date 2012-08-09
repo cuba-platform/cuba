@@ -11,6 +11,7 @@ import com.haulmont.bali.util.ReflectionHelper;
 import com.haulmont.chile.core.loader.ChileMetadataLoader;
 import com.haulmont.chile.core.loader.MetadataLoader;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.entity.annotation.EnableRestore;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
@@ -23,9 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
 import javax.annotation.ManagedBean;
-import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>$Id$</p>
@@ -48,7 +49,7 @@ public class MetadataImpl extends AbstractMetadata {
         loadMetadata(metadataLoader, packages);
         metadataLoader.postProcess();
 
-        session = metadataLoader.getSession();
+        Session session = metadataLoader.getSession();
 
         metadataLoader = new ChileMetadataLoader(session);
         packages = MetadataBuildHelper.getTransientEntitiesPackages();
@@ -59,9 +60,12 @@ public class MetadataImpl extends AbstractMetadata {
             initMetaAnnotations(metaClass);
         }
 
-        replacedEntities = new HashMap<Class, Class>();
+        Map<Class, Class> replacedEntities = new HashMap<Class, Class>();
 
-        processMetadataXml();
+        processMetadataXml(session, replacedEntities);
+
+        this.session = session;
+        this.replacedEntities = replacedEntities;
     }
 
     /**
@@ -86,21 +90,21 @@ public class MetadataImpl extends AbstractMetadata {
             metaClass.getAnnotations().put(TrackEditScreenHistory.class.getName(), trackEditScreenHistory.value());
     }
 
-    protected void processMetadataXml() {
+    protected void processMetadataXml(Session session, Map<Class, Class> replacedEntities) {
         String config = MetadataBuildHelper.getMetadataConfig();
         StrTokenizer tokenizer = new StrTokenizer(config);
         for (String fileName : tokenizer.getTokenArray()) {
-            processMetadataXmlFile(fileName);
+            processMetadataXmlFile(session, replacedEntities, fileName);
         }
     }
 
-    protected void processMetadataXmlFile(String path) {
+    protected void processMetadataXmlFile(Session session, Map<Class, Class> replacedEntities, String path) {
         Element root = MetadataBuildHelper.readXml(path);
 
         for (Element element : Dom4j.elements(root, "include")) {
             String fileName = element.attributeValue("file");
             if (!StringUtils.isBlank(fileName)) {
-                processMetadataXmlFile(fileName);
+                processMetadataXmlFile(session, replacedEntities, fileName);
             }
         }
 
@@ -136,7 +140,7 @@ public class MetadataImpl extends AbstractMetadata {
     @Override
     protected void initViews() {
         log.info("Initializing views");
-        viewRepository  = new ViewRepository();
+        ViewRepository viewRepository = new ViewRepository();
 
         String configName = AppContext.getProperty("cuba.viewsConfig");
         if (!StringUtils.isBlank(configName)) {
@@ -145,5 +149,7 @@ public class MetadataImpl extends AbstractMetadata {
                 viewRepository.deployViews(fileName);
             }
         }
+
+        this.viewRepository = viewRepository;
     }
 }

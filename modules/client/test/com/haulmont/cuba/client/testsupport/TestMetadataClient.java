@@ -8,6 +8,7 @@ package com.haulmont.cuba.client.testsupport;
 
 import com.haulmont.chile.core.loader.ChileMetadataLoader;
 import com.haulmont.chile.core.loader.MetadataLoader;
+import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.sys.AbstractMetadata;
 import com.haulmont.cuba.core.sys.PersistentClassesMetadataLoader;
@@ -40,7 +41,7 @@ public class TestMetadataClient extends AbstractMetadata {
         }
         metadataLoader.postProcess();
 
-        session = metadataLoader.getSession();
+        Session session = metadataLoader.getSession();
 
         metadataLoader = new ChileMetadataLoader(session);
         for (String p : packages) {
@@ -48,13 +49,15 @@ public class TestMetadataClient extends AbstractMetadata {
         }
         metadataLoader.postProcess();
 
-        replacedEntities = new HashMap<Class, Class>();
+        this.session = session;
+        this.replacedEntities = new HashMap<Class, Class>();
     }
 
     @Override
     protected void initViews() {
-        viewRepository = new ViewRepository();
+        ViewRepository viewRepository = new ViewRepository();
         if (!StringUtils.isEmpty(viewsConfig))
             viewRepository.deployViews(viewsConfig);
+        this.viewRepository = viewRepository;
     }
 }
