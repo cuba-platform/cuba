@@ -23,8 +23,8 @@
         </hierarchicalDatasource>
     </dsContext>
 
-    <layout expandLayout="true">
-        <tree id="groups">
+    <layout expand="groups">
+        <tree id="groups" width="100%">
             <treechildren datasource="groupsDs" captionProperty="name" hierarchyProperty="parent"/>
         </tree>
     </layout>
