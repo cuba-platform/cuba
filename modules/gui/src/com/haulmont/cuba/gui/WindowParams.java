@@ -11,6 +11,7 @@ import org.apache.commons.lang.BooleanUtils;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Describes special window parameters that are set by system mechanisms such as {@link WindowManager}.
@@ -25,6 +26,11 @@ public enum WindowParams {
      * Entity instance which is passed to an editor's controller <code>init</code> method from {@link WindowManager}.
      */
     ITEM,
+
+    /**
+     * Folder's UUID if the screen is opening from <code>FoldersPane</code>.
+     */
+    FOLDER_ID,
 
     /**
      * Window caption that can be set by controller in its <code>init</code> method.
@@ -89,6 +95,15 @@ public enum WindowParams {
      */
     public <T extends Entity> T getEntity(Map<String, Object> params) {
         return (T) params.get(name());
+    }
+
+    /**
+     * Get UUID value from the parameters map.
+     * @param params    parameters map
+     * @return          parameter value
+     */
+    public UUID getUuid(Map<String, Object> params) {
+        return (UUID) params.get(name());
     }
 
     /**

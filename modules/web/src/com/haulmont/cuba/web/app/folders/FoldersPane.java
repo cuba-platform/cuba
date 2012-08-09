@@ -501,7 +501,7 @@ public class FoldersPane extends VerticalLayout {
             WindowParams.DESCRIPTION.set(params, MessageProvider.getMessage(messagesPack, folder.getName()));
         }
 
-        params.put("folderId", folder.getId());
+        WindowParams.FOLDER_ID.set(params, folder.getId());
 
         Window window = App.getInstance().getWindowManager().openWindow(windowInfo,
                 WindowManager.OpenType.NEW_TAB, params);
