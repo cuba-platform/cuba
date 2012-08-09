@@ -45,8 +45,13 @@ public class EntityDiffManager {
     public EntityDiff getDifference(EntitySnapshot first, EntitySnapshot second) {
 
         // Sort snapshots by date, first - old, second - new
-        long firstTime = first != null ? first.getCreateTs().getTime() : 0;
-        long secondTime = second != null ? second.getCreateTs().getTime() : 0;
+        long firstTime = 0;
+        if (first != null && first.getCreateTs() != null)
+            firstTime = first.getCreateTs().getTime();
+
+        long secondTime = 0;
+        if (second != null && second.getCreateTs() != null)
+            secondTime = second.getCreateTs().getTime();
 
         if (secondTime < firstTime) {
             EntitySnapshot temp = first;
