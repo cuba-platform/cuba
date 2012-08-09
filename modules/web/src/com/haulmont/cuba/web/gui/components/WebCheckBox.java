@@ -32,6 +32,7 @@ public class WebCheckBox
     public WebCheckBox() {
         this.component = new com.haulmont.cuba.web.toolkit.ui.CheckBox();
         this.composition = new VerticalLayout();
+        this.composition.setWidth("-1px");
         attachListener(component);
         component.setImmediate(true);
         component.setInvalidCommitted(true);
