@@ -8,6 +8,7 @@ package com.haulmont.cuba.web.app.ui.security.history;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
@@ -35,7 +36,7 @@ public class EntityOpenHistoryFrame extends AbstractFrame {
 //        if (openHistoryDs == null) {
 //            throw new IllegalArgumentException("datasource with name " + entityDsName + " not found in DsContext");
 //        }
-        Entity item = (Entity) params.get("item");
+        Entity item = WindowParams.ITEM.getEntity(params);
         if (!PersistenceHelper.isNew(item)) {
             openHistoryDs = getDsContext().get("openHistoryDs");
             openHistoryDs.setRefreshMode(CollectionDatasource.RefreshMode.ALWAYS);

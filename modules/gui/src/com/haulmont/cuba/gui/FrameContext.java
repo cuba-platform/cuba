@@ -10,7 +10,6 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.WindowContext;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;

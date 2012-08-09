@@ -20,11 +20,11 @@ import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.config.WindowConfig;
 import com.haulmont.cuba.gui.config.WindowInfo;
-import com.haulmont.cuba.gui.data.WindowParams;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.export.ByteArrayDataProvider;
 import com.haulmont.cuba.gui.export.ExportFormat;
@@ -55,8 +55,6 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.util.*;
-
-import com.haulmont.cuba.web.toolkit.Timer;
 
 @SuppressWarnings("serial")
 public class FoldersPane extends VerticalLayout {
@@ -498,9 +496,9 @@ public class FoldersPane extends VerticalLayout {
         WindowParams.DISABLE_RESUME_SUSPENDED.set(params, true);
 
         if (!StringUtils.isBlank(folder.getTabName())) {
-            params.put("description", MessageProvider.getMessage(messagesPack, folder.getTabName()));
+            WindowParams.DESCRIPTION.set(params, MessageProvider.getMessage(messagesPack, folder.getTabName()));
         } else {
-            params.put("description", MessageProvider.getMessage(messagesPack, folder.getName()));
+            WindowParams.DESCRIPTION.set(params, MessageProvider.getMessage(messagesPack, folder.getName()));
         }
 
         params.put("folderId", folder.getId());

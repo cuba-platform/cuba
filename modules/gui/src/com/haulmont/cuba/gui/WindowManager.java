@@ -20,7 +20,6 @@ import com.haulmont.cuba.gui.data.impl.DatasourceImplementation;
 import com.haulmont.cuba.gui.data.impl.DsContextImplementation;
 import com.haulmont.cuba.gui.data.impl.GenericDataService;
 import com.haulmont.cuba.gui.settings.SettingsImpl;
-import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.gui.xml.XmlInheritanceProcessor;
 import com.haulmont.cuba.gui.xml.data.DsContextLoader;
 import com.haulmont.cuba.gui.xml.layout.ComponentLoader;
@@ -29,7 +28,6 @@ import com.haulmont.cuba.gui.xml.layout.LayoutLoaderConfig;
 import com.haulmont.cuba.gui.xml.layout.loaders.ComponentLoaderContext;
 import com.haulmont.cuba.security.entity.PermissionType;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -335,7 +333,7 @@ public abstract class WindowManager implements Serializable {
         if (!StringUtils.isEmpty(caption)) {
             caption = TemplateHelper.processTemplate(caption, params);
         } else {
-            caption = (String) params.get("param$caption");
+            caption = WindowParams.CAPTION.getString(params);
             if (StringUtils.isEmpty(caption)) {
                 String msgPack = window.getMessagesPack();
                 if (msgPack != null) {
@@ -358,7 +356,7 @@ public abstract class WindowManager implements Serializable {
         if (!StringUtils.isEmpty(description)) {
             return TemplateHelper.processTemplate(description, params);
         } else {
-            description = (String) params.get("param$description");
+            description = WindowParams.DESCRIPTION.getString(params);
             if (StringUtils.isEmpty(description)) {
                 description = null;
             } else {
@@ -406,8 +404,7 @@ public abstract class WindowManager implements Serializable {
         }
 
         params = createParametersMap(windowInfo, params);
-        params.put("item", item instanceof Datasource ? ((Datasource) item).getItem() : item);
-        params.put("param$item", item instanceof Datasource ? ((Datasource) item).getItem() : item);
+        WindowParams.ITEM.set(params, item instanceof Datasource ? ((Datasource) item).getItem() : item);
 
         if (template != null) {
             window = createWindow(windowInfo, params, LayoutLoaderConfig.getEditorLoaders());
@@ -533,8 +530,6 @@ public abstract class WindowManager implements Serializable {
     protected Map<String, Object> createParametersMap(WindowInfo windowInfo, Map<String, Object> params) {
         final Map<String, Object> map = new HashMap<String, Object>(params.size());
 
-        // resulting map will contain 2 entries for each parameter: one with param$ prefix and one without
-
         final Element element = windowInfo.getDescriptor();
         if (element != null) {
             final Element paramsElement = element.element("params");
@@ -547,19 +542,14 @@ public abstract class WindowManager implements Serializable {
                     if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
                         Boolean booleanValue = Boolean.valueOf(value);
                         map.put(name, booleanValue);
-                        map.put(ParameterInfo.Type.PARAM.getPrefix() + "$" + name, booleanValue);
                     } else {
                         map.put(name, value);
-                        map.put(ParameterInfo.Type.PARAM.getPrefix() + "$" + name, value);
                     }
                 }
             }
         }
 
         map.putAll(params);
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            map.put(ParameterInfo.Type.PARAM.getPrefix() + "$" + entry.getKey(), entry.getValue());
-        }
 
         return map;
     }

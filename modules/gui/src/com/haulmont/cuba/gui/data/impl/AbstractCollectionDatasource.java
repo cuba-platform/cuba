@@ -17,6 +17,7 @@ import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.filter.QueryFilter;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
@@ -198,9 +199,9 @@ public abstract class AbstractCollectionDatasource<T extends Entity<K>, K>
                         value = null;
                     } else {
                         Map<String, Object> windowParams = dsContext.getWindowContext().getParams();
-                        value = windowParams.get(ParameterInfo.Type.PARAM.getPrefix() + "$" + path);
+                        value = windowParams.get(path);
                         if (value == null && elements.length > 1) {
-                            Instance instance = (Instance) windowParams.get(ParameterInfo.Type.PARAM.getPrefix() + "$" + elements[0]);
+                            Instance instance = (Instance) windowParams.get(elements[0]);
                             if (instance != null) {
                                 String[] valuePath = (String[]) ArrayUtils.subarray(elements, 1, elements.length);
                                 String propertyName = InstanceUtils.formatValuePath(valuePath);

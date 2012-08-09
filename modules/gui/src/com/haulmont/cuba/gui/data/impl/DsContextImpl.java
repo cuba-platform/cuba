@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.data.impl;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.data.*;
 import com.haulmont.cuba.gui.xml.ParameterInfo;
 import com.haulmont.cuba.core.entity.Entity;

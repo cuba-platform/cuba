@@ -20,6 +20,7 @@ import com.haulmont.cuba.desktop.gui.components.*;
 import com.haulmont.cuba.desktop.sys.vcl.ExtendedComboBox;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
+import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.filter.AbstractParam;

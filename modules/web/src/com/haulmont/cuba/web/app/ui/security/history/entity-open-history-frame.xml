@@ -7,7 +7,7 @@
         <collectionDatasource id="openHistoryDs" class="com.haulmont.cuba.security.entity.ScreenHistoryEntity"
                               view="browse">
             <query>
-                <![CDATA[select h from sec$ScreenHistory h where h.entityId = :param$item
+                <![CDATA[select h from sec$ScreenHistory h where h.entityId = :param$ITEM
                 order by h.createTs desc]]>
             </query>
         </collectionDatasource>

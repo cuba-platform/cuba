@@ -7,9 +7,10 @@
  * Created: 25.12.2008 12:35:10
  * $Id$
  */
-package com.haulmont.cuba.gui.data;
+package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.gui.components.IFrame;
+import com.haulmont.cuba.gui.data.ValueListener;
 
 import java.io.Serializable;
 import java.util.Map;

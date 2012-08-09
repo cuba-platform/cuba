@@ -11,12 +11,12 @@ package com.haulmont.cuba.gui.data;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.gui.WindowContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Map;
 import java.util.List;
 import java.util.Set;
 
