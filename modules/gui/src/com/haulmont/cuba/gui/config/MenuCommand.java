@@ -16,6 +16,7 @@ import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.WindowParams;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -121,7 +122,7 @@ public class MenuCommand {
         }
 
         String caption = MenuConfig.getMenuItemCaption(item.getId());
-        params.put("caption", caption);
+        WindowParams.CAPTION.set(params, caption);
 
         return params;
     }
