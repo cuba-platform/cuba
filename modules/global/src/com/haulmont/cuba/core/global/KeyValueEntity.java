@@ -20,7 +20,7 @@ import java.io.Serializable;
  * @author artamonov
  */
 @NamePattern("%s|keyValue")
-@MetaClass(name = "core$KeyValueItem")
+@MetaClass(name = "sys$KeyValueItem")
 public class KeyValueEntity extends AbstractNotPersistentEntity implements Serializable {
 
     @MetaProperty

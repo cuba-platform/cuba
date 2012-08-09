@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-@javax.persistence.Entity(name = "core$FileDescriptor")
+@javax.persistence.Entity(name = "sys$FileDescriptor")
 @Table(name = "SYS_FILE")
 @NamePattern("%s (%s)|name,createDate")
 @SystemLevel

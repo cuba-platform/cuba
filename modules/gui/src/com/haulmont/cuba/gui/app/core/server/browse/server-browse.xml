@@ -10,7 +10,7 @@
     <dsContext>
         <collectionDatasource id="serversDs" class="com.haulmont.cuba.core.entity.Server" view="_local">
             <query>
-                select s from core$Server s
+                select s from sys$Server s
             </query>
         </collectionDatasource>
     </dsContext>

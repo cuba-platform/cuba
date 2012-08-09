@@ -25,8 +25,8 @@ public class PermissionTest extends CubaTestCase
     private static final String USER_NAME = "testUser";
     private static final String USER_PASSW = DigestUtils.md5Hex("testUser");
     private static final String PROFILE_NAME = "testProfile";
-    private static final String PERM_TARGET_SCREEN = "w:core$Server.browse";
-    private static final String PERM_TARGET_ATTR = "core$Server:address";
+    private static final String PERM_TARGET_SCREEN = "w:sys$Server.browse";
+    private static final String PERM_TARGET_ATTR = "sys$Server:address";
 
     private UUID role1Id, permission1Id, role2Id, permission2Id, userId, groupId,
             userRole1Id, userRole2Id;

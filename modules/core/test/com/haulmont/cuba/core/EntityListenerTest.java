@@ -41,13 +41,13 @@ public class EntityListenerTest extends CubaTestCase
             System.out.println(dirtyFields);
 
             EntityManager em = PersistenceProvider.getEntityManager();
-            Query q = em.createQuery("select max(s.createTs) from core$Server s where s.address = :address");
+            Query q = em.createQuery("select max(s.createTs) from sys$Server s where s.address = :address");
             q.setParameter("address", entity.getAddress());
             Date maxDate = (Date) q.getSingleResult();
             System.out.println(maxDate);
 
             // JPA update queries don't work: reentrant flush error
-//            Query q = em.createQuery("update core$Server s set s.name = :name where s.id = :id");
+//            Query q = em.createQuery("update sys$Server s set s.name = :name where s.id = :id");
 //            Query q = em.createNativeQuery("update SYS_SERVER set NAME = ?1 where ID = ?2");
 //            q.setParameter(1, "some other");
 //            q.setParameter(2, entity.getId());

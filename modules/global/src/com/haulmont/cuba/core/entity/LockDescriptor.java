@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import javax.persistence.Column;
 import javax.persistence.Table;
 
-@javax.persistence.Entity(name = "core$LockDescriptor")
+@javax.persistence.Entity(name = "sys$LockDescriptor")
 @Table(name = "SYS_LOCK_CONFIG")
 @SystemLevel
 public class LockDescriptor extends BaseUuidEntity {

@@ -104,7 +104,7 @@ public class ScheduledTaskBrowser extends AbstractWindow {
             if (task != null) {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("task", task);
-                openWindow("core$ScheduledExecution.browse", WindowManager.OpenType.THIS_TAB, params);
+                openWindow("sys$ScheduledExecution.browse", WindowManager.OpenType.THIS_TAB, params);
             }
         }
 

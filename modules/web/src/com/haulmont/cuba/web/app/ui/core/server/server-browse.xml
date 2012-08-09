@@ -13,7 +13,7 @@
     <dsContext>
         <collectionDatasource id="servers" class="com.haulmont.cuba.core.entity.Server" view="browse">
             <query>
-                select s from core$Server s order by s.name
+                select s from sys$Server s order by s.name
             </query>
         </collectionDatasource>
     </dsContext>

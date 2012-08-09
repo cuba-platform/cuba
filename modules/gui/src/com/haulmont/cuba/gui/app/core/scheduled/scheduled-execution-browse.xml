@@ -15,7 +15,7 @@
     <dsContext>
         <collectionDatasource id="executionsDs" class="com.haulmont.cuba.core.entity.ScheduledExecution" view="_local">
             <query><![CDATA[
-                select e from core$ScheduledExecution e
+                select e from sys$ScheduledExecution e
                 where e.task.id = :param$task
                     <#if (component$finishedField?has_content && component$finishedField == true)>and e.finishTime is not null</#if>
                 order by e.startTime desc

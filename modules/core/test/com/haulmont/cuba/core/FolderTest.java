@@ -18,7 +18,7 @@ public class FolderTest extends CubaTestCase {
         Transaction tx = Locator.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
-            Query q = em.createQuery("select f from core$Folder f");
+            Query q = em.createQuery("select f from sys$Folder f");
             List list = q.getResultList();
 
             tx.commit();

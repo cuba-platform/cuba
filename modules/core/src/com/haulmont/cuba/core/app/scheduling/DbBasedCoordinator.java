@@ -80,7 +80,7 @@ public class DbBasedCoordinator implements Coordinator {
     public boolean isLastExecutionFinished(ScheduledTask task, long now) {
         EntityManager em = persistence.getEntityManager();
         Query query = em.createQuery(
-                "select e.finishTime from core$ScheduledExecution e where e.task.id = ?1 and e.startTime = ?2");
+                "select e.finishTime from sys$ScheduledExecution e where e.task.id = ?1 and e.startTime = ?2");
         query.setParameter(1, task.getId());
         query.setParameter(2, task.getLastStartTime());
         List list = query.getResultList();
@@ -103,7 +103,7 @@ public class DbBasedCoordinator implements Coordinator {
     private synchronized List<ScheduledTask> getTasks() {
         log.trace("Read all active tasks from DB and lock them");
         EntityManager em = persistence.getEntityManager();
-        Query query = em.createQuery("select t from core$ScheduledTask t where t.active = true");
+        Query query = em.createQuery("select t from sys$ScheduledTask t where t.active = true");
         query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
         return query.getResultList();
     }

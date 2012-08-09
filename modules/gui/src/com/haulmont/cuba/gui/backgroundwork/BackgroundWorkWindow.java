@@ -60,7 +60,7 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
         params.put("title", title);
         params.put("message", message);
         params.put("cancelAllowed", cancelAllowed);
-        task.getOwnerWindow().openWindow("core$BackgroundWorkWindow", WindowManager.OpenType.DIALOG, params);
+        task.getOwnerWindow().openWindow("sys$BackgroundWorkWindow", WindowManager.OpenType.DIALOG, params);
     }
 
     /**

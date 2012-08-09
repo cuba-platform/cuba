@@ -218,7 +218,7 @@ public class TransactionTest extends CubaTestCase
                 EntityManager em1 = PersistenceProvider.getEntityManager();
                 assertTrue(em != em1);
 
-                Query query = em1.createQuery("select s from core$Server s");
+                Query query = em1.createQuery("select s from sys$Server s");
                 List list = query.getResultList();
                 assertNotNull(list);
 

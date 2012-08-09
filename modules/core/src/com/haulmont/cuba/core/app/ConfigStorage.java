@@ -111,7 +111,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
         try {
             login();
             EntityManager em = persistence.getEntityManager();
-            Query query = em.createQuery("delete from core$Config c where c.name = ?1");
+            Query query = em.createQuery("delete from sys$Config c where c.name = ?1");
             query.setParameter(1, name);
             query.executeUpdate();
             tx.commit();
@@ -182,7 +182,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
             Transaction tx = persistence.createTransaction();
             try {
                 EntityManager em = persistence.getEntityManager();
-                String s = "select c from core$Config c";
+                String s = "select c from sys$Config c";
                 Query query = em.createQuery(s);
                 list = query.getResultList();
                 tx.commit();
@@ -229,7 +229,7 @@ public class ConfigStorage extends ManagementBean implements ConfigStorageMBean,
 
     private Config getConfigInstance(String name) {
         EntityManager em = persistence.getEntityManager();
-        Query query = em.createQuery("select c from core$Config c where c.name = ?1");
+        Query query = em.createQuery("select c from sys$Config c where c.name = ?1");
         query.setParameter(1, name);
         query.setView(null);
         List<Config> list = query.getResultList();

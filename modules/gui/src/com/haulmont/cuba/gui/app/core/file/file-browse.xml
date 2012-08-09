@@ -10,7 +10,7 @@
     <dsContext>
         <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor" view="browse">
             <query>
-                select f from core$FileDescriptor f order by f.createDate
+                select f from sys$FileDescriptor f order by f.createDate
             </query>
         </collectionDatasource>
     </dsContext>

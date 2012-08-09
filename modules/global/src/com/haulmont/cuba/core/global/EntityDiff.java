@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author artamonov
  */
-@MetaClass(name = "core$EntityDiff")
+@MetaClass(name = "sys$EntityDiff")
 public class EntityDiff extends AbstractNotPersistentEntity implements Serializable {
 
     private static final long serialVersionUID = -3884249873393845439L;

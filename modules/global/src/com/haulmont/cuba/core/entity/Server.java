@@ -16,7 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Column;
 
-@Entity(name = "core$Server")
+@Entity(name = "sys$Server")
 @Table(name = "SYS_SERVER")
 @NamePattern("%s:%s|name,address")
 @SystemLevel

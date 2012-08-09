@@ -2,7 +2,7 @@
 
     <include file="/com/haulmont/cuba/gui/screen-config.xml"/>
 
-    <screen id="core$Server.browse"
+    <screen id="sys$Server.browse"
             template="/com/haulmont/cuba/web/app/ui/core/server/server-browse.xml"/>
 
     <screen id="cuba$ExcelExport"
@@ -23,7 +23,7 @@
     <screen id="fts$SearchResults"
             template="/com/haulmont/fts/web/ui/results/search-results.xml"/>
 
-    <screen id="core$Entity.restore"
+    <screen id="sys$Entity.restore"
             template="/com/haulmont/cuba/web/app/ui/core/restore/entity-restore.xml"/>
 
     <!-- JMX control -->

@@ -49,29 +49,29 @@
 
     <screen id="sec$SaveSetWindow" template="/com/haulmont/cuba/web/app/folders/save-set-window.xml"/>
 
-    <screen id="core$SimpleLookup"
+    <screen id="sys$SimpleLookup"
             template="/com/haulmont/cuba/gui/app/core/lookup/simple-lookup.xml"/>
 
-    <screen id="core$LockInfo.browse"
+    <screen id="sys$LockInfo.browse"
             template="/com/haulmont/cuba/gui/app/core/locking/lock-browse.xml"/>
 
-    <screen id="core$Server.browse"
+    <screen id="sys$Server.browse"
             template="/com/haulmont/cuba/gui/app/core/server/browse/server-browse.xml"/>
 
-    <screen id="core$Server.edit"
+    <screen id="sys$Server.edit"
             template="/com/haulmont/cuba/gui/app/core/server/edit/server-edit.xml"/>
 
     <screen id="multiuploadDialog" template="/com/haulmont/cuba/gui/app/core/file/multiupload.xml"/>
 
     <screen id="sysInfoWindow" template="/com/haulmont/cuba/gui/app/core/showinfo/show-info.xml"/>
 
-    <screen id="core$BackgroundWorkWindow"
+    <screen id="sys$BackgroundWorkWindow"
             template="/com/haulmont/cuba/gui/backgroundwork/background-work-window.xml"/>
 
-    <screen id="core$FileDescriptor.browse"
+    <screen id="sys$FileDescriptor.browse"
             template="/com/haulmont/cuba/gui/app/core/file/file-browse.xml"/>
 
-    <screen id="core$FileDescriptor.edit"
+    <screen id="sys$FileDescriptor.edit"
             template="/com/haulmont/cuba/gui/app/core/file/file-edit.xml"/>
 
     <screen id="sys$Category.edit"
@@ -80,16 +80,16 @@
     <screen id="sys$CategoryAttribute.edit"
             template="/com/haulmont/cuba/gui/categories/attribute-edit.xml"/>
 
-    <screen id="core$EntitySnapshot.view"
+    <screen id="sys$EntitySnapshot.view"
             template="/com/haulmont/cuba/gui/app/core/entitydiff/diff-view.xml"/>
 
-    <screen id="core$ScheduledTask.browse"
+    <screen id="sys$ScheduledTask.browse"
             template="/com/haulmont/cuba/gui/app/core/scheduled/scheduled-task-browse.xml"/>
 
-    <screen id="core$ScheduledTask.edit"
+    <screen id="sys$ScheduledTask.edit"
             template="/com/haulmont/cuba/gui/app/core/scheduled/scheduled-task-edit.xml"/>
 
-    <screen id="core$ScheduledExecution.browse"
+    <screen id="sys$ScheduledExecution.browse"
             template="/com/haulmont/cuba/gui/app/core/scheduled/scheduled-execution-browse.xml"/>
 
     <screen id="entityInspector.browse"

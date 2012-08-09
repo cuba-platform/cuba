@@ -22,7 +22,7 @@ import java.util.Date;
  *
  * @author krivopustov
  */
-@Entity(name = "core$ScheduledTask")
+@Entity(name = "sys$ScheduledTask")
 @Table(name = "SYS_SCHEDULED_TASK")
 @NamePattern("%s.%s|beanName,methodName")
 public class ScheduledTask extends BaseUuidEntity implements Updatable, SoftDelete {

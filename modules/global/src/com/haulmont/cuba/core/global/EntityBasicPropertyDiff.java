@@ -15,7 +15,7 @@ import com.haulmont.chile.core.model.MetaProperty;
  *
  * @author artamonov
  */
-@MetaClass(name = "core$EntityBasicPropertyDiff")
+@MetaClass(name = "sys$EntityBasicPropertyDiff")
 public class EntityBasicPropertyDiff extends EntityPropertyDiff {
 
     private static final long serialVersionUID = -1532265990429557046L;

@@ -303,7 +303,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Query q = em.createQuery("select s from core$EntityStatistics s");
+            Query q = em.createQuery("select s from sys$EntityStatistics s");
             List<EntityStatistics> list = q.getResultList();
             for (EntityStatistics es : list) {
                 statisticsCache.put(es.getName(), es);
@@ -395,7 +395,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
             Query q = em.createQuery("select count(e) from " + name + " e");
             Long count = (Long) q.getSingleResult();
 
-            q = em.createQuery("select s from core$EntityStatistics s where s.name = ?1");
+            q = em.createQuery("select s from sys$EntityStatistics s where s.name = ?1");
             q.setParameter(1, name);
             List<EntityStatistics> list = q.getResultList();
 

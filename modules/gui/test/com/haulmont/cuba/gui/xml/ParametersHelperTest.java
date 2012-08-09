@@ -24,7 +24,7 @@ public class ParametersHelperTest extends TestCase {
     @Test
     public void testParseQuery() {
         ParameterInfo[] params = ParametersHelper.parseQuery(
-                "select e from core$ScheduledExecution e\n" +
+                "select e from sys$ScheduledExecution e\n" +
                 "  where e.task.id = :param$task\n" +
                 "   <#if (component$finishedField?has_content && component$finishedField == true)>and e.finishTime is not null</#if>\n" +
                 "order by e.startTime desc", null);

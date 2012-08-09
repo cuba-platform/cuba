@@ -22,7 +22,7 @@ import java.util.Date;
  * Entity for working with configuration parameters (see com.haulmont.cuba.core.config.Config).<br>
  * Should not be used in application code.
  */
-@Entity(name = "core$Config")
+@Entity(name = "sys$Config")
 @Table(name = "SYS_CONFIG")
 @SystemLevel
 public class Config extends BaseUuidEntity implements Versioned, Updatable

@@ -18,7 +18,7 @@ import javax.persistence.Table;
 import javax.persistence.Column;
 import java.util.UUID;
 
-@Entity(name = "core$FtsQueue")
+@Entity(name = "sys$FtsQueue")
 @Table(name = "SYS_FTS_QUEUE")
 @SystemLevel
 public class FtsQueue extends BaseUuidEntity {

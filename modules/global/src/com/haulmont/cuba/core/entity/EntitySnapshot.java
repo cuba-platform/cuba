@@ -27,7 +27,7 @@ import java.util.UUID;
  *
  * @author artamonov
  */
-@Entity(name = "core$EntitySnapshot")
+@Entity(name = "sys$EntitySnapshot")
 @Table(name = "SYS_ENTITY_SNAPSHOT")
 @SystemLevel
 public class EntitySnapshot extends BaseUuidEntity {

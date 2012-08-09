@@ -17,7 +17,7 @@ import com.haulmont.cuba.security.entity.User;
 
 import java.util.Date;
 
-@MetaClass(name = "core$LockInfo")
+@MetaClass(name = "sys$LockInfo")
 public class LockInfo extends AbstractNotPersistentEntity {
 
     private static final long serialVersionUID = -1991047219638006414L;

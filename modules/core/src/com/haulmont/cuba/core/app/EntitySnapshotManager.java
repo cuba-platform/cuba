@@ -58,7 +58,7 @@ public class EntitySnapshotManager implements EntitySnapshotAPI {
         try {
             EntityManager em = persistence.getEntityManager();
             Query query = em.createQuery(
-                    "select s from core$EntitySnapshot s where s.entityId = :entityId and s.entityMetaClass = :metaClass");
+                    "select s from sys$EntitySnapshot s where s.entityId = :entityId and s.entityMetaClass = :metaClass");
             query.setParameter("entityId", id);
             query.setParameter("metaClass", metaClass.getName());
             query.setView(view);

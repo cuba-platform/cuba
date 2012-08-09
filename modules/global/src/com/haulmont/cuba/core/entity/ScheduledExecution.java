@@ -17,7 +17,7 @@ import java.util.Date;
  *
  * @author krivopustov
  */
-@Entity(name = "core$ScheduledExecution")
+@Entity(name = "sys$ScheduledExecution")
 @Table(name = "SYS_SCHEDULED_EXECUTION")
 public class ScheduledExecution extends BaseUuidEntity {
 

@@ -15,7 +15,7 @@ import com.haulmont.cuba.core.entity.annotation.SystemLevel;
 import javax.persistence.*;
 import javax.persistence.Entity;
 
-@Entity(name = "core$Folder")
+@Entity(name = "sys$Folder")
 @Table(name = "SYS_FOLDER")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)

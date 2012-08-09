@@ -278,7 +278,7 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Query query = em.createQuery("select fd from core$FileDescriptor fd");
+            Query query = em.createQuery("select fd from sys$FileDescriptor fd");
             List<FileDescriptor> fileDescriptors = query.getResultList();
             for (FileDescriptor fileDescriptor : fileDescriptors) {
                 File dir = getStorageDir(roots[0], fileDescriptor.getCreateDate());
@@ -323,7 +323,7 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Query query = em.createQuery("select fd from core$FileDescriptor fd");
+            Query query = em.createQuery("select fd from sys$FileDescriptor fd");
             fileDescriptors = query.getResultList();
             tx.commit();
         } catch (Exception e) {

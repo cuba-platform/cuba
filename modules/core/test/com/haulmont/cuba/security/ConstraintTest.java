@@ -48,7 +48,7 @@ public class ConstraintTest extends CubaTestCase
 
             Constraint parentConstraint = new Constraint();
             parentConstraintId = parentConstraint.getId();
-            parentConstraint.setEntityName("core$Server");
+            parentConstraint.setEntityName("sys$Server");
             parentConstraint.setWhereClause("address = '127.0.0.1'");
             parentConstraint.setGroup(parentGroup);
             em.persist(parentConstraint);
@@ -61,7 +61,7 @@ public class ConstraintTest extends CubaTestCase
 
             Constraint constraint = new Constraint();
             constraintId = constraint.getId();
-            constraint.setEntityName("core$Server");
+            constraint.setEntityName("sys$Server");
             constraint.setWhereClause("name = 'localhost'");
             constraint.setGroup(group);
             em.persist(constraint);
@@ -124,7 +124,7 @@ public class ConstraintTest extends CubaTestCase
         UserSession userSession = lw.login(USER_LOGIN, USER_PASSW, Locale.getDefault());
         assertNotNull(userSession);
 
-        List<String[]> constraints = userSession.getConstraints("core$Server");
+        List<String[]> constraints = userSession.getConstraints("sys$Server");
         assertEquals(2, constraints.size());
 
 //        DataService bs = Locator.lookupLocal(DataService.JNDI_NAME);

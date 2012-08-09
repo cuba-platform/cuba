@@ -17,7 +17,7 @@
         <property name="user" view="app"/>
     </view>
 
-    <view entity="sec$User" name="user.edit" extends="_local">
+    <view class="com.haulmont.cuba.security.entity.User" name="user.edit" extends="_local">
         <property name="group">
             <property name="name"/>
         </property>
@@ -25,7 +25,7 @@
         <property name="substitutions" view="user.edit"/>
     </view>
 
-    <view entity="sec$UserRole" name="user.edit">
+    <view class="com.haulmont.cuba.security.entity.UserRole" name="user.edit">
         <property name="role">
             <property name="name"/>
             <property name="locName"/>
@@ -33,11 +33,11 @@
         </property>
     </view>
 
-    <view entity="sec$User" name="user.browse" extends="_local" systemProperties="true">
+    <view class="com.haulmont.cuba.security.entity.User" name="user.browse" extends="_local" systemProperties="true">
         <property name="group" view="_minimal"/>
     </view>
 
-    <view entity="sec$User" name="user.copySettings" extends="_minimal">
+    <view class="com.haulmont.cuba.security.entity.User" name="user.copySettings" extends="_minimal">
         <property name="login"/>
         <property name="name"/>
     </view>
@@ -55,38 +55,38 @@
         <property name="endDate"/>
     </view>
 
-    <view entity="sec$Group" name="group.lookup">
+    <view class="com.haulmont.cuba.security.entity.Group" name="group.lookup">
         <property name="name"/>
     </view>
 
-    <view entity="sec$Group" name="group.browse">
+    <view class="com.haulmont.cuba.security.entity.Group" name="group.browse">
         <property name="name"/>
         <property name="parent"/>
     </view>
 
-    <view entity="sec$Group" name="group.edit" extends="group.browse">
+    <view class="com.haulmont.cuba.security.entity.Group" name="group.edit" extends="group.browse">
         <property name="constraints" view="_local"/>
         <property name="sessionAttributes" view="_local"/>
     </view>
 
-    <view entity="sec$Group" name="group.copy">
+    <view class="com.haulmont.cuba.security.entity.Group" name="group.copy">
         <property name="name"/>
         <property name="parent"/>
         <property name="constraints" view="_local"/>
         <property name="sessionAttributes" view="_local"/>
     </view>
 
-    <view entity="sec$User" name="group.browse">
+    <view class="com.haulmont.cuba.security.entity.User" name="group.browse">
         <property name="name"/>
         <property name="login"/>
         <property name="group"/>
     </view>
 
-    <view entity="sec$User" name="user.moveToGroup">
+    <view class="com.haulmont.cuba.security.entity.User" name="user.moveToGroup">
         <property name="group"/>
     </view>
 
-    <view entity="sec$Constraint" name="group.browse">
+    <view class="com.haulmont.cuba.security.entity.Constraint" name="group.browse">
         <property name="group" view="group.lookup"/>
         <property name="entityName"/>
         <property name="joinClause"/>
@@ -109,7 +109,7 @@
         <property name="user" view="_minimal"/>
     </view>
 
-    <view entity="sys$SendingMessage" name="sendingMessage.browse">
+    <view class="com.haulmont.cuba.core.entity.SendingMessage" name="sendingMessage.browse">
         <property name="address"/>
         <property name="attachments"/>
         <property name="attachmentsName"/>
@@ -123,19 +123,19 @@
         <property name="status"/>
     </view>
 
-    <view entity="sys$CategoryAttributeValue" name="categoryAttributeValue" extends="_local">
+    <view class="com.haulmont.cuba.core.entity.CategoryAttributeValue" name="categoryAttributeValue" extends="_local">
         <property name="categoryAttribute" view="_local"/>
     </view>
 
-    <view entity="sys$Category" name="category.edit" extends="_local">
+    <view class="com.haulmont.cuba.core.entity.Category" name="category.edit" extends="_local">
         <property name="categoryAttrs" view="_local"/>
     </view>
 
-    <view entity="sys$Category" name="category.defaultEdit" extends="_minimal">
+    <view class="com.haulmont.cuba.core.entity.Category" name="category.defaultEdit" extends="_minimal">
         <property name="isDefault"/>
     </view>
 
-    <view entity="core$EntitySnapshot" name="entitySnapshot.browse" extends="_local">
+    <view class="com.haulmont.cuba.core.entity.EntitySnapshot" name="entitySnapshot.browse" extends="_local">
         <property name="createTs"/>
         <property name="author" view="_minimal"/>
     </view>

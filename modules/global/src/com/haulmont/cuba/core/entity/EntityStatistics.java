@@ -17,7 +17,7 @@ import javax.persistence.Column;
 import javax.persistence.Table;
 import java.util.Date;
 
-@Entity(name = "core$EntityStatistics")
+@Entity(name = "sys$EntityStatistics")
 @Table(name = "SYS_ENTITY_STATISTICS")
 @SystemLevel
 public class EntityStatistics extends BaseUuidEntity implements Updatable {

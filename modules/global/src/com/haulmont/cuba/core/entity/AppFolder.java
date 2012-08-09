@@ -17,7 +17,7 @@ import com.haulmont.cuba.core.global.MessageUtils;
 import javax.persistence.Entity;
 import javax.persistence.*;
 
-@Entity(name = "core$AppFolder")
+@Entity(name = "sys$AppFolder")
 @Table(name = "SYS_APP_FOLDER")
 @PrimaryKeyJoinColumn(name="FOLDER_ID", referencedColumnName = "ID")
 @DiscriminatorValue("A")

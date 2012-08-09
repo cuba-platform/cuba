@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author artamonov
  */
-@MetaClass(name = "core$EntityClassPropertyDiff")
+@MetaClass(name = "sys$EntityClassPropertyDiff")
 public class EntityClassPropertyDiff extends EntityPropertyDiff {
     private static final long serialVersionUID = -6783119655414015181L;
 

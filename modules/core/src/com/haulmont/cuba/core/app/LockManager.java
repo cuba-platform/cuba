@@ -87,7 +87,7 @@ public class LockManager implements LockManagerAPI, LockManagerMBean, ClusterLis
                     Transaction tx = Locator.createTransaction();
                     try {
                         EntityManager em = PersistenceProvider.getEntityManager();
-                        Query q = em.createQuery("select d from core$LockDescriptor d");
+                        Query q = em.createQuery("select d from sys$LockDescriptor d");
                         List<LockDescriptor> list = q.getResultList();
                         for (LockDescriptor ld : list) {
                             config.put(ld.getName(), ld);

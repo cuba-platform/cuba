@@ -6,10 +6,10 @@
         <item id="sec$Role.browse"/>
         <item id="-"/>
         <item id="sec$UserSessionEntity.browse"/>
-        <item id="core$FileDescriptor.browse"/>
-        <item id="core$LockInfo.browse"/>
+        <item id="sys$FileDescriptor.browse"/>
+        <item id="sys$LockInfo.browse"/>
         <item id="entityInspector.browse"/>
-        <item id="core$ScheduledTask.browse"/>
+        <item id="sys$ScheduledTask.browse"/>
     </menu>
 
     <menu id="reports">

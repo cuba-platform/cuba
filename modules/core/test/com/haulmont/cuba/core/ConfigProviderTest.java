@@ -126,7 +126,7 @@ public class ConfigProviderTest extends CubaTestCase
         Transaction tx = PersistenceProvider.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
-            Query query = em.createQuery("select c from core$Config c where c.name like ?1");
+            Query query = em.createQuery("select c from sys$Config c where c.name like ?1");
             query.setParameter(1, "cuba.test.%");
             List<Config> list = query.getResultList();
             for (Config config : list) {

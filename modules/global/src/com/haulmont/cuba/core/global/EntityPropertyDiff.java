@@ -18,7 +18,7 @@ import java.io.Serializable;
  *
  * @author artamonov
  */
-@MetaClass(name = "core$EntityPropertyDiff")
+@MetaClass(name = "sys$EntityPropertyDiff")
 public abstract class EntityPropertyDiff extends AbstractNotPersistentEntity implements Serializable {
 
     protected static final int CAPTION_CHAR_COUNT = 30;
