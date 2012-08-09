@@ -11,7 +11,6 @@
 package com.haulmont.cuba.web.gui.data;
 
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -21,20 +20,20 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class SortableCollectionDsWrapper extends CollectionDsWrapper implements Container.Sortable {
-    public SortableCollectionDsWrapper(CollectionDatasource datasource, DsManager dsManager) {
-        super(datasource, dsManager);
+    public SortableCollectionDsWrapper(CollectionDatasource datasource) {
+        super(datasource);
     }
 
-    public SortableCollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh, DsManager dsManager) {
-        super(datasource, autoRefresh, dsManager);
+    public SortableCollectionDsWrapper(CollectionDatasource datasource, boolean autoRefresh) {
+        super(datasource, autoRefresh);
     }
 
-    public SortableCollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, DsManager dsManager) {
-        super(datasource, properties, dsManager);
+    public SortableCollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
+        super(datasource, properties);
     }
 
-    public SortableCollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, boolean autoRefresh, DsManager dsManager) {
-        super(datasource, properties, autoRefresh, dsManager);
+    public SortableCollectionDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, boolean autoRefresh) {
+        super(datasource, properties, autoRefresh);
     }
 
     public void sort(Object[] propertyId, boolean[] ascending) {

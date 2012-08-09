@@ -15,7 +15,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.TwinColumn;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.TwinColumnSelect;
@@ -77,13 +76,13 @@ public class WebTwinColumn
     }
 
     @Override
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {
-        return new ItemWrapper(datasource, propertyPaths, dsManager) {
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
+        return new ItemWrapper(datasource, propertyPaths) {
             private static final long serialVersionUID = 5362825971897808953L;
 
             @Override
-            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
-                return new CollectionPropertyWrapper(item, propertyPath, dsManager);
+            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                return new CollectionPropertyWrapper(item, propertyPath);
             }
         };
     }
@@ -91,8 +90,8 @@ public class WebTwinColumn
     public class CollectionPropertyWrapper extends PropertyWrapper {
         private static final long serialVersionUID = -7658086655306380094L;
 
-        public CollectionPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
-            super(item, propertyPath, dsManager);
+        public CollectionPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+            super(item, propertyPath);
         }
 
         @Override

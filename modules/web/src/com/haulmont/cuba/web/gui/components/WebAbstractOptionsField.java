@@ -35,8 +35,6 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
     protected String captionProperty;
     protected String descriptionProperty;
 
-    protected DsManager optionsDsManager;
-
     /**
      * In the initialization list of options updating the data source is prohibited
      */
@@ -44,8 +42,6 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
-
-        dsManager = new DsManager(datasource, this);
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
@@ -59,7 +55,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
             setMultiSelect(metaProperty.getRange().getCardinality().isMany());
         }
 
-        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath), dsManager);
+        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
         final Property itemProperty = wrapper.getItemProperty(metaPropertyPath);
 
         setRequired(metaProperty.isMandatory());
@@ -202,8 +198,7 @@ public abstract class WebAbstractOptionsField<T extends com.vaadin.ui.AbstractSe
 
     public void setOptionsDatasource(CollectionDatasource datasource) {
         this.optionsDatasource = datasource;
-        this.optionsDsManager = new DsManager(datasource, this);
-        setComponentContainerDs(new CollectionDsWrapper(datasource, true, optionsDsManager));
+        setComponentContainerDs(new CollectionDsWrapper(datasource, true));
 
         if (captionProperty != null) {
             component.setItemCaptionPropertyId(optionsDatasource.getMetaClass().getProperty(captionProperty));

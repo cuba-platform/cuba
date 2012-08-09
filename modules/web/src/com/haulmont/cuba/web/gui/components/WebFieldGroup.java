@@ -26,7 +26,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.WebWindow;
-import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.CheckBox;
@@ -73,8 +72,6 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     private final FieldFactory fieldFactory = new FieldFactory();
 
     private Item itemWrapper;
-
-    private DsManager dsManager;
 
     private Security security = AppContext.getBean(Security.NAME);
 
@@ -223,7 +220,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     if (f.getPropertyDataSource() == null) {
                         if (field.getDatasource() != null) {
                             final ItemWrapper dsWrapper = createDatasourceWrapper(ds,
-                                    Collections.<MetaPropertyPath>singleton(propertyPath), dsManager);
+                                    Collections.<MetaPropertyPath>singleton(propertyPath));
                             f.setPropertyDataSource(dsWrapper.getItemProperty(propertyPath));
                         } else {
                             f.setPropertyDataSource(itemWrapper.getItemProperty(propertyPath));
@@ -285,7 +282,6 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
     @Override
     public void setDatasource(Datasource datasource) {
         this.datasource = datasource;
-        this.dsManager = new DsManager(datasource, this);
 
         component.setCols(cols);
 
@@ -324,7 +320,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
 
         if (datasource != null) {
-            itemWrapper = createDatasourceWrapper(datasource, fieldsMetaProps, dsManager);
+            itemWrapper = createDatasourceWrapper(datasource, fieldsMetaProps);
 
             if (!this.fields.isEmpty()) {
                 //Removes custom fieldsMetaProps from the list. We shouldn't to create components for custom fieldsMetaProps
@@ -367,7 +363,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                     } else {
                         MetaPropertyPath propertyPath = fieldConf.getDatasource().getMetaClass().getPropertyPath(fieldConf.getId());
                         final ItemWrapper dsWrapper = createDatasourceWrapper(fieldConf.getDatasource(),
-                                Collections.<MetaPropertyPath>singleton(propertyPath), dsManager);
+                                Collections.<MetaPropertyPath>singleton(propertyPath));
 
                         field = fieldFactory.createField(dsWrapper, propertyPath, component);
 
@@ -730,8 +726,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         f.setCaption(caption);
     }
 
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {
-        return new FieldGroupItemWrapper(datasource, propertyPaths, dsManager);
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
+        return new FieldGroupItemWrapper(datasource, propertyPaths);
     }
 
     @Override
@@ -1036,8 +1032,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         MetaPropertyPath propertyPath = datasource.getMetaClass().getPropertyPath(fieldConf.getId());
         final ItemWrapper dsWrapper = createDatasourceWrapper(
                 datasource,
-                Collections.<MetaPropertyPath>singleton(propertyPath),
-                dsManager);
+                Collections.<MetaPropertyPath>singleton(propertyPath)
+        );
 
         final LinkField field = new LinkField(datasource, fieldConf);
         field.setCaption(MessageUtils.getPropertyCaption(propertyPath.getMetaProperty()));
@@ -1124,8 +1120,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
         private static final long serialVersionUID = -7877886198903628220L;
 
-        public FieldGroupItemWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {
-            super(datasource, propertyPaths, dsManager);
+        public FieldGroupItemWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
+            super(datasource, propertyPaths);
         }
 
         public Datasource getDatasource() {
@@ -1133,8 +1129,8 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
         }
 
         @Override
-        protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
-            return new PropertyWrapper(item, propertyPath, dsManager) {
+        protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+            return new PropertyWrapper(item, propertyPath) {
                 @Override
                 public boolean isReadOnly() {
                     Field field = fields.get(propertyPath.toString());

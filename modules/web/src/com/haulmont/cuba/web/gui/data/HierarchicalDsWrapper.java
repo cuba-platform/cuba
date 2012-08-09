@@ -26,15 +26,15 @@ public class HierarchicalDsWrapper
 {
     private String parentPropertyName;
 
-    public HierarchicalDsWrapper(HierarchicalDatasource datasource, DsManager dsManager)
+    public HierarchicalDsWrapper(HierarchicalDatasource datasource)
     {
-        super(datasource, dsManager);
+        super(datasource);
         this.parentPropertyName = datasource.getHierarchyPropertyName();
     }
 
-    public HierarchicalDsWrapper(HierarchicalDatasource datasource, Collection<MetaPropertyPath> properties, DsManager dsManager)
+    public HierarchicalDsWrapper(HierarchicalDatasource datasource, Collection<MetaPropertyPath> properties)
     {
-        super(datasource, properties, dsManager);
+        super(datasource, properties);
         this.parentPropertyName = datasource.getHierarchyPropertyName();
     }
 

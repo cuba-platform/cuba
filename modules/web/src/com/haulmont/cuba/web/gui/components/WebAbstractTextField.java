@@ -18,7 +18,6 @@ import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.AbstractPropertyWrapper;
-import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.vaadin.data.Property;
@@ -201,13 +200,13 @@ public abstract class WebAbstractTextField<T extends com.haulmont.cuba.web.toolk
     }
 
     @Override
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {
-        return new ItemWrapper(datasource, propertyPaths, dsManager) {
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
+        return new ItemWrapper(datasource, propertyPaths) {
             private static final long serialVersionUID = -5672549961402055473L;
 
             @Override
-            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
-                return new PropertyWrapper(item, propertyPath, dsManager) {
+            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                return new PropertyWrapper(item, propertyPath) {
                     private static final long serialVersionUID = -6484626348078235396L;
 
                     @Override

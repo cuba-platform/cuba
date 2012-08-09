@@ -44,7 +44,6 @@ import com.haulmont.cuba.web.gui.AbstractFieldFactory;
 import com.haulmont.cuba.web.gui.CompositionLayout;
 import com.haulmont.cuba.web.gui.components.presentations.TablePresentations;
 import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
-import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
@@ -109,8 +108,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected Presentations presentations;
     protected TablePresentations tablePresentations;
-
-    protected DsManager dsManager;
 
     private List<ColumnCollapseListener> columnCollapseListeners = new ArrayList<ColumnCollapseListener>();
 
@@ -524,9 +521,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         columns = this.columns.keySet();
 
         this.datasource = datasource;
-        this.dsManager = new DsManager(datasource, this);
 
-        final CollectionDsWrapper containerDatasource = createContainerDatasource(datasource, getPropertyColumns(), dsManager);
+        final CollectionDsWrapper containerDatasource = createContainerDatasource(datasource, getPropertyColumns());
 
         component.setContainerDataSource(containerDatasource);
 
@@ -602,7 +598,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
 
         if (aggregationCells != null) {
-            dsManager.addListener(createAggregationDatasourceListener());
+            getDatasource().addListener(createAggregationDatasourceListener());
         }
 
         setVisibleColumns(getPropertyColumns());
@@ -639,7 +635,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         return result;
     }
 
-    protected abstract CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns, DsManager dsManager);
+    protected abstract CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns);
 
     protected void setVisibleColumns(List<?> columnsOrder) {
         component.setVisibleColumns(columnsOrder.toArray());
@@ -1050,8 +1046,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         private ValueChangeListener calcListener;
         private static final long serialVersionUID = -7942046867909695346L;
 
-        public TablePropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
-            super(item, propertyPath, dsManager);
+        public TablePropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+            super(item, propertyPath);
         }
 
         @Override

@@ -16,7 +16,6 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsHelper;
 import com.haulmont.cuba.web.gui.data.*;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.vaadin.terminal.PaintException;
@@ -70,10 +69,10 @@ public class WebTable
         setSortable(true);
     }
 
-    protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns, DsManager dsManager) {
+    protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
         return datasource instanceof CollectionDatasource.Sortable && isSortable() ?
-            new SortableTableDsWrapper(datasource, columns, dsManager) :
-            new TableDsWrapper(datasource, columns, dsManager);
+            new SortableTableDsWrapper(datasource, columns) :
+            new TableDsWrapper(datasource, columns);
     }
 
     protected class TableDsWrapper extends CollectionDsWrapper
@@ -81,12 +80,12 @@ public class WebTable
 
         private List<Object> aggregationProperties = null;
 
-        public TableDsWrapper(CollectionDatasource datasource, DsManager dsManager) {
-            super(datasource, dsManager);
+        public TableDsWrapper(CollectionDatasource datasource) {
+            super(datasource);
         }
 
-        public TableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, DsManager dsManager) {
-            super(datasource, properties, dsManager);
+        public TableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
+            super(datasource, properties);
         }
 
         @Override
@@ -107,10 +106,10 @@ public class WebTable
 
         @Override
         protected ItemWrapper createItemWrapper(Object item) {
-            return new ItemWrapper(item, properties, dsManager) {
+            return new ItemWrapper(item, properties) {
                 @Override
-                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
-                    return new TablePropertyWrapper(item, propertyPath, dsManager);
+                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                    return new TablePropertyWrapper(item, propertyPath);
                 }
             };
         }
@@ -155,12 +154,12 @@ public class WebTable
 
         private List<Object> aggregationProperties = null;
 
-        public SortableTableDsWrapper(CollectionDatasource datasource, DsManager dsManager) {
-            super(datasource, true, dsManager);
+        public SortableTableDsWrapper(CollectionDatasource datasource) {
+            super(datasource, true);
         }
 
-        public SortableTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, DsManager dsManager) {
-            super(datasource, properties, true, dsManager);
+        public SortableTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
+            super(datasource, properties, true);
         }
 
         @Override
@@ -181,10 +180,10 @@ public class WebTable
 
         @Override
         protected ItemWrapper createItemWrapper(Object item) {
-            return new ItemWrapper(item, properties, dsManager) {
+            return new ItemWrapper(item, properties) {
                 @Override
-                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
-                    return new TablePropertyWrapper(item, propertyPath, dsManager);
+                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                    return new TablePropertyWrapper(item, propertyPath);
                 }
             };
         }

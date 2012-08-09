@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.google.common.collect.Iterables;
 import com.haulmont.chile.core.model.*;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
@@ -342,7 +343,7 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
     public synchronized void clear() throws UnsupportedOperationException {
         checkState();
         // Get items
-        Collection<Object> collectionItems = new LinkedList<Object>(__getCollection());
+        Collection<Object> collectionItems = new ArrayList<Object>(__getCollection());
         // Clear collection
         __getCollection().clear();
         // Notify listeners
@@ -551,16 +552,16 @@ public class CollectionPropertyDatasourceImpl<T extends Entity<K>, K>
 
     public K firstItemId() {
         Collection<T> collection = __getCollection();
-        if ((collection != null) && !collection.isEmpty()) {
-            return new LinkedList<T>(collection).getFirst().getId();
+        if (collection != null && !collection.isEmpty()) {
+            return Iterables.getFirst(collection, null).getId();
         }
         return null;
     }
 
     public K lastItemId() {
         Collection<T> collection = __getCollection();
-        if ((collection != null) && !collection.isEmpty()) {
-            return new LinkedList<T>(collection).getLast().getId();
+        if (collection != null && !collection.isEmpty()) {
+            return Iterables.getLast(collection).getId();
         }
         return null;
     }

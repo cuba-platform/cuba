@@ -20,7 +20,6 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.vaadin.data.Property;
@@ -94,7 +93,7 @@ public class WebPickerField
     }
 
     private ItemWrapper createItemWrapper(final Object newValue) {
-        return new ItemWrapper(newValue, metaClass, dsManager) {
+        return new ItemWrapper(newValue, metaClass) {
             @Override
             public String toString() {
                 if (CaptionMode.PROPERTY.equals(getCaptionMode()) && (value instanceof Instance)) {
@@ -171,8 +170,6 @@ public class WebPickerField
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
-        dsManager = new DsManager(datasource, this);
-
         MetaClass metaClass = datasource.getMetaClass();
         this.metaProperty = metaClass.getProperty(property);
         if (metaProperty == null) {
@@ -180,7 +177,7 @@ public class WebPickerField
         }
 
         final MetaPropertyPath propertyPath = new MetaPropertyPath(metaProperty.getDomain(), metaProperty);
-        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(propertyPath), dsManager);
+        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(propertyPath));
         final Property itemProperty = wrapper.getItemProperty(propertyPath);
 
         component.setPropertyDataSource(itemProperty);
@@ -225,11 +222,11 @@ public class WebPickerField
     }
 
     @Override
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {
-        return new ItemWrapper(datasource, propertyPaths, dsManager) {
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
+        return new ItemWrapper(datasource, propertyPaths) {
             @Override
-            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
-                return new PropertyWrapper(item, propertyPath, dsManager) {
+            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                return new PropertyWrapper(item, propertyPath) {
                     @Override
                     public Object getValue() {
                         if (value == null)

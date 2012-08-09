@@ -17,7 +17,6 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.vaadin.data.Property;
 import org.apache.commons.lang.ObjectUtils;
@@ -41,8 +40,6 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
 
     protected boolean settingValue = false;
 
-    protected DsManager dsManager;
-
     protected String requiredMessage;
 
     public Datasource getDatasource() {
@@ -56,8 +53,6 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
 
-        dsManager = new DsManager(datasource, this);
-
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyEx(property);
         try {
@@ -67,14 +62,14 @@ public abstract class WebAbstractField<T extends com.vaadin.ui.Field>
             throw new RuntimeException("Metaproperty name is possibly wrong: " + property, e);
         }
 
-        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath), dsManager);
+        final ItemWrapper wrapper = createDatasourceWrapper(datasource, Collections.singleton(metaPropertyPath));
         component.setPropertyDataSource(wrapper.getItemProperty(metaPropertyPath));
 
         setRequired(metaProperty.isMandatory());
     }
 
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {
-        return new ItemWrapper(datasource, propertyPaths, dsManager);
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
+        return new ItemWrapper(datasource, propertyPaths);
     }
 
     public boolean isRequired() {

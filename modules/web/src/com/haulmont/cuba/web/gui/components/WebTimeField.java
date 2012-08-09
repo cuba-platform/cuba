@@ -14,13 +14,11 @@ import com.google.common.base.Preconditions;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.TimeField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.AbstractPropertyWrapper;
-import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
 import com.haulmont.cuba.web.toolkit.ui.MaskedTextField;
@@ -222,13 +220,13 @@ public class WebTimeField extends WebAbstractField<MaskedTextField> implements T
     }
 
     @Override
-    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths, DsManager dsManager) {
-        return new ItemWrapper(datasource, propertyPaths, dsManager) {
+    protected ItemWrapper createDatasourceWrapper(Datasource datasource, Collection<MetaPropertyPath> propertyPaths) {
+        return new ItemWrapper(datasource, propertyPaths) {
             private static final long serialVersionUID = 1729450322469573679L;
 
             @Override
-            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
-                return new PropertyWrapper(item, propertyPath, dsManager) {
+            protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                return new PropertyWrapper(item, propertyPath) {
                     private static final long serialVersionUID = -4481934193197224070L;
 
                     @Override

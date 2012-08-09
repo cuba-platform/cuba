@@ -31,19 +31,19 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
 
     private static final long serialVersionUID = -7298696379571470141L;
 
-    public ItemWrapper(Object item, MetaClass metaClass, DsManager dsManager) {
-        this(item, MetadataHelper.getPropertyPaths(metaClass), dsManager);
+    public ItemWrapper(Object item, MetaClass metaClass) {
+        this(item, MetadataHelper.getPropertyPaths(metaClass));
     }
 
-    public ItemWrapper(Object item, Collection<MetaPropertyPath> properties, DsManager dsManager) {
+    public ItemWrapper(Object item, Collection<MetaPropertyPath> properties) {
         this.item = item;
 
         for (MetaPropertyPath property : properties) {
-            this.properties.put(property, createPropertyWrapper(item, property, dsManager));
+            this.properties.put(property, createPropertyWrapper(item, property));
         }
 
         if (item instanceof CollectionDatasource) {
-            dsManager.addListener(new CollectionDatasourceListener<Entity>() {
+            ((CollectionDatasource) item).addListener(new CollectionDatasourceListener<Entity>() {
                 public void collectionChanged(CollectionDatasource ds, Operation operation) {}
                 public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
                     fireItemProperySetChanged();
@@ -60,8 +60,8 @@ public class ItemWrapper implements Item, Item.PropertySetChangeNotifier {
         }
     }
 
-    protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
-        return new PropertyWrapper(item, propertyPath, dsManager);
+    protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+        return new PropertyWrapper(item, propertyPath);
     }
 
     public Property getItemProperty(Object id) {

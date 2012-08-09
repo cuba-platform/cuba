@@ -29,11 +29,11 @@ public class PropertyWrapper extends AbstractPropertyWrapper {
 
     private static final long serialVersionUID = 5863216328152195113L;
 
-    public PropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
+    public PropertyWrapper(Object item, MetaPropertyPath propertyPath) {
         this.item = item;
         this.propertyPath = propertyPath;
         if (item instanceof Datasource) {
-            dsManager.addListener(new DatasourceListener<Entity>() {
+            ((Datasource) item).addListener(new DatasourceListener<Entity>() {
                 @Override
                 public void itemChanged(Datasource<Entity> ds, Entity prevItem, Entity item) {
                     fireValueChangeEvent();

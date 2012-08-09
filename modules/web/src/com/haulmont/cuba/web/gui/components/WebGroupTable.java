@@ -126,8 +126,8 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         return new GroupAggregationDatasourceListener();
     }
 
-    protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns, DsManager dsManager) {
-        return new GroupTableDsWrapper(datasource, columns, dsManager);
+    protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
+        return new GroupTableDsWrapper(datasource, columns);
     }
 
     @Override
@@ -197,13 +197,13 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
         private Object first;
         private Object last;
 
-        public GroupTableDsWrapper(CollectionDatasource datasource, DsManager dsManager) {
-            super(datasource, true, dsManager);
+        public GroupTableDsWrapper(CollectionDatasource datasource) {
+            super(datasource, true);
             groupDatasource = datasource instanceof GroupDatasource;
         }
 
-        public GroupTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties, DsManager dsManager) {
-            super(datasource, properties, true, dsManager);
+        public GroupTableDsWrapper(CollectionDatasource datasource, Collection<MetaPropertyPath> properties) {
+            super(datasource, properties, true);
             groupDatasource = datasource instanceof GroupDatasource;
         }
 
@@ -225,10 +225,10 @@ public class WebGroupTable extends WebAbstractTable<com.haulmont.cuba.web.toolki
 
         @Override
         protected ItemWrapper createItemWrapper(Object item) {
-            return new ItemWrapper(item, properties, dsManager) {
+            return new ItemWrapper(item, properties) {
                 @Override
-                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
-                    return new TablePropertyWrapper(item, propertyPath, dsManager);
+                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                    return new TablePropertyWrapper(item, propertyPath);
                 }
             };
         }

@@ -68,8 +68,8 @@ public class WebTreeTable
     }
 
     protected CollectionDsWrapper createContainerDatasource(
-            CollectionDatasource datasource, Collection<MetaPropertyPath> columns, DsManager dsManager) {
-        return new TreeTableDsWrapper((HierarchicalDatasource) datasource, dsManager);
+            CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
+        return new TreeTableDsWrapper((HierarchicalDatasource) datasource);
     }
 
     public void expandAll() {
@@ -104,8 +104,8 @@ public class WebTreeTable
 
         private List<Object> aggregationProperties = null;
 
-        public TreeTableDsWrapper(HierarchicalDatasource datasource, DsManager dsManager) {
-            super(datasource, dsManager);
+        public TreeTableDsWrapper(HierarchicalDatasource datasource) {
+            super(datasource);
             treeTableDatasource  = (datasource instanceof TreeTableDatasource);
         }
 
@@ -127,10 +127,10 @@ public class WebTreeTable
 
         @Override
         protected ItemWrapper createItemWrapper(Object item) {
-            return new ItemWrapper(item, properties, dsManager) {
+            return new ItemWrapper(item, properties) {
                 @Override
-                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath, DsManager dsManager) {
-                    return new TablePropertyWrapper(item, propertyPath, dsManager);
+                protected PropertyWrapper createPropertyWrapper(Object item, MetaPropertyPath propertyPath) {
+                    return new TablePropertyWrapper(item, propertyPath);
                 }
             };
         }

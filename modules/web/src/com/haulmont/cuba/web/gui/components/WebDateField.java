@@ -22,7 +22,6 @@ import com.haulmont.cuba.gui.data.ValueChangingListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.gui.data.DsManager;
 import com.haulmont.cuba.web.toolkit.ui.DateFieldWrapper;
 import com.haulmont.cuba.web.toolkit.ui.MaskedTextField;
 import com.vaadin.data.Property;
@@ -57,7 +56,6 @@ public class WebDateField
     protected HorizontalLayout composition;
 
     private Datasource datasource;
-    private DsManager dsManager;
     private MetaPropertyPath metaPropertyPath;
     private MetaProperty metaProperty;
 
@@ -326,8 +324,6 @@ public class WebDateField
     @Override
     public void setDatasource(Datasource datasource, String property) {
         this.datasource = datasource;
-
-        dsManager = new DsManager(datasource, this);
 
         final MetaClass metaClass = datasource.getMetaClass();
         metaPropertyPath = metaClass.getPropertyPath(property);
