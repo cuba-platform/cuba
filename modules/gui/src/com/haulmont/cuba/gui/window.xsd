@@ -1336,6 +1336,12 @@
     <xs:element name="window">
         <xs:complexType>
             <xs:sequence>
+                <xs:element name="assign" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:attribute name="name" use="required"/>
+                        <xs:attribute name="value" use="required"/>
+                    </xs:complexType>
+                </xs:element>
                 <xs:element name="companions" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>

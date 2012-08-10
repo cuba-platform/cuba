@@ -13,6 +13,8 @@
         lookupComponent="name"
         focusComponent="name">
 
+    <assign name="width" value="200"/>
+
     <metadataContext>
         <deployViews name="/com/haulmont/cuba/gui/app/security/role/role.views.xml"/>
     </metadataContext>
@@ -21,7 +23,6 @@
         <datasource id="roleDs" class="com.haulmont.cuba.security.entity.Role" view="_local"/>
     </dsContext>
 
-    <#assign width = 200>
     <layout expand="permissionsTabsheet" spacing="true">
         <hbox spacing="true" margin="true" stylename="edit-area">
             <grid spacing="true">

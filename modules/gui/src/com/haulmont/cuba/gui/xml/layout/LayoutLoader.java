@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.gui.xml.layout;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.core.global.TemplateHelper;
 import org.dom4j.Document;
@@ -22,6 +23,7 @@ import java.io.StringReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Collections;
@@ -36,11 +38,7 @@ public class LayoutLoader {
     private Locale locale;
     private String messagesPack;
 
-    public LayoutLoader(ComponentLoader.Context context, ComponentsFactory factory, LayoutLoaderConfig config) {
-        this.context = context;
-        this.factory = factory;
-        this.config = config;
-    }
+    private static final Pattern ASSIGN_PATTERN = Pattern.compile("<assign\\s+name\\s*=\\s*\"(.+)\"\\s+value\\s*=\\s*\"(.+)\"\\s*");
 
     private static final Pattern DS_CONTEXT_PATTERN = Pattern.compile("<dsContext>(\\p{ASCII}+)</dsContext>");
 
@@ -51,19 +49,28 @@ public class LayoutLoader {
         Document document;
         try {
             String template = IOUtils.toString(stream);
-            Matcher matcher = DS_CONTEXT_PATTERN.matcher(template);
+
+            Map<String, Object> templateParams = new HashMap<>(params);
+
+            Matcher matcher;
+            matcher = ASSIGN_PATTERN.matcher(template);
+            while (matcher.find()) {
+                templateParams.put(matcher.group(1), matcher.group(2));
+            }
+
+            matcher = DS_CONTEXT_PATTERN.matcher(template);
             if (matcher.find()) {
                 final String dsContext = matcher.group(1);
 
                 template = DS_CONTEXT_PATTERN.matcher(template).replaceFirst("");
-                template = TemplateHelper.processTemplate(template, params);
+                template = TemplateHelper.processTemplate(template, templateParams);
+                document = Dom4j.readDocument(template);
 
-                document = loadDocument(template);
-                final Document dsContextDocument = loadDocument("<dsContext>" + dsContext + "</dsContext>");
+                final Document dsContextDocument = Dom4j.readDocument("<dsContext>" + dsContext + "</dsContext>");
                 document.getRootElement().add(dsContextDocument.getRootElement());
             } else {
-                template = TemplateHelper.processTemplate(template, params);
-                document = loadDocument(template);
+                template = TemplateHelper.processTemplate(template, templateParams);
+                document = Dom4j.readDocument(template);
             }
         } catch (IOException e) {
             throw new IllegalStateException(e);
@@ -71,15 +78,10 @@ public class LayoutLoader {
         return document;
     }
 
-    private static Document loadDocument(String template) {
-        Document document;
-        SAXReader reader = new SAXReader();
-        try {
-            document = reader.read(new StringReader(template));
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        }
-        return document;
+    public LayoutLoader(ComponentLoader.Context context, ComponentsFactory factory, LayoutLoaderConfig config) {
+        this.context = context;
+        this.factory = factory;
+        this.config = config;
     }
 
     public String getMessagesPack() {
@@ -91,21 +93,9 @@ public class LayoutLoader {
     }
 
     public Component loadComponent(InputStream stream, Component parent) {
-        try {
-            SAXReader reader = new SAXReader();
-            Document doc;
-            try {
-                doc = reader.read(stream);
-            } catch (DocumentException e) {
-                throw new RuntimeException(e);
-            }
-
-            Element element = doc.getRootElement();
-
-            return loadComponent(element, parent);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        Document doc = Dom4j.readDocument(stream);
+        Element element = doc.getRootElement();
+        return loadComponent(element, parent);
     }
 
     public Component loadComponent(InputStream stream, Component parent, Map<String, Object> params) {

@@ -6,12 +6,14 @@
         caption="msg://editorCaption"
         focusComponent="multiUpload">
 
+    <assign name="width" value="560"/>
+    <assign name="height" value="300"/>
+
     <dsContext>
         <collectionDatasource id="filesDs" class="com.haulmont.cuba.core.entity.FileDescriptor"
                               view="browse" refreshMode="NEVER"/>
     </dsContext>
-    <#assign width = 560>
-    <#assign height = 300>
+
     <layout expand="windowActions">
         <vbox id="vBox" margin="true" spacing="true" stylename="edit-area">
             <hbox height="30" spacing="true">
