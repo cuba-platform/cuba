@@ -435,44 +435,39 @@
 .v-table-cell-content-categoryItem,
 .v-collapsed .v-table-cell-content-categoryItem .v-table-float,
 .v-expanded .v-table-cell-content-categoryItem .v-table-float {
-     background: transparent url(icons/category.png) 0 center no-repeat;
-     padding-left: 19px;
-     margin-right: -21px;
+    background: transparent url(icons/category.png) 0 center no-repeat;
+    text-indent: 20px;
 }
 
 .v-table-cell-content-addedItem,
 .v-collapsed .v-table-cell-content-addedItem .v-table-float,
 .v-expanded .v-table-cell-content-addedItem .v-table-float {
-    padding-left: 19px;
-    margin-right: -21px;
-    color : green !important;
+    text-indent: 20px;
+    color: green !important;
     background: transparent url(icons/plus.png) 0 center no-repeat;
 }
 
 .v-table-cell-content-removedItem,
 .v-collapsed .v-table-cell-content-removedItem .v-table-float,
 .v-expanded .v-table-cell-content-removedItem .v-table-float {
-    padding-left: 19px;
-    margin-right: -21px;
-    color : red !important;
+    text-indent: 20px;
+    color: red !important;
     background: transparent url(icons/minus.png) 0 center no-repeat;
 }
 
 .v-table-cell-content-modifiedItem,
 .v-collapsed .v-table-cell-content-modifiedItem .v-table-float,
 .v-expanded .v-table-cell-content-modifiedItem .v-table-float {
-    padding-left: 19px;
-    margin-right: -21px;
-    color : blue !important;
+    text-indent: 20px;
+    color: blue !important;
     background: transparent url(icons/edit.png) 0 center no-repeat;
 }
 
 .v-table-cell-content-chainItem,
 .v-collapsed .v-table-cell-content-chainItem .v-table-float,
 .v-expanded .v-table-cell-content-chainItem .v-table-float {
-    padding-left: 19px;
-    margin-right: -21px;
-    color : blue !important;
+    text-indent: 20px;
+    color: blue !important;
     background: transparent url(icons/chain.png) 0 center no-repeat;
 }
 
@@ -485,10 +480,9 @@
 .v-collapsed .v-table-cell-content-modifiedItem,
 .v-expanded .v-table-cell-content-modifiedItem,
 .v-collapsed .v-table-cell-content-chainItem,
-.v-expanded .v-table-cell-content-chainItem
-{
-     background: transparent;
-     padding-left: 0;
+.v-expanded .v-table-cell-content-chainItem {
+    background: transparent;
+    padding-left: 0;
 }
 
 /* Security: PermissionVariats markers */
@@ -496,26 +490,24 @@
 .v-table-cell-content-serviceItem,
 .v-collapsed .v-table-cell-content-serviceItem .v-table-float,
 .v-expanded .v-table-cell-content-serviceItem .v-table-float {
-     background: transparent url(icons/tag.png) 0 center no-repeat;
-     padding-left: 19px;
+    background: transparent url(icons/tag.png) 0 center no-repeat;
+    text-indent: 20px;
 }
 
 .v-table-cell-content-allowedItem,
 .v-collapsed .v-table-cell-content-allowedItem .v-table-float,
 .v-expanded .v-table-cell-content-allowedItem .v-table-float {
-     background: transparent url(icons/tag-green.png) 0 center no-repeat;
-     color: green !important;
-     padding-left: 19px;
-     margin-right: -21px;
+    background: transparent url(icons/tag-green.png) 0 center no-repeat;
+    color: green !important;
+    text-indent: 20px;
 }
 
 .v-table-cell-content-disallowedItem,
 .v-collapsed .v-table-cell-content-disallowedItem .v-table-float,
 .v-expanded .v-table-cell-content-disallowedItem .v-table-float {
-     background: transparent url(icons/tag-red.png) 0 center no-repeat;
-     color: red !important;
-     padding-left: 19px;
-     margin-right: -21px;
+    background: transparent url(icons/tag-red.png) 0 center no-repeat;
+    color: red !important;
+    text-indent: 20px;
 }
 
 .v-table-cell-content-notsetItem,
@@ -523,8 +515,7 @@
 .v-expanded .v-table-cell-content-notsetItem .v-table-float {
      background: transparent url(icons/tag-gray.png) 0 center no-repeat;
      color: gray !important;
-     padding-left: 19px;
-     margin-right: -21px;
+     text-indent: 20px;
 }
 
 .v-collapsed .v-table-cell-content-serviceItem,
@@ -537,7 +528,6 @@
 .v-expanded .v-table-cell-content-allowedItem
 {
      background: transparent;
-     padding-left: 0;
 }
 
 /***********/
