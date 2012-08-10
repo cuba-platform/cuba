@@ -235,6 +235,10 @@ public abstract class Table
 
     protected boolean textSelectionEnabled;
 
+    // Custom paddings in all cells is broken
+    // Used only one padding value for all cells
+    // See Platform #1112
+    protected RenderInformation.Size defaultPaddings = null;
     protected Map<String, RenderInformation.Size> stylePaddingBorders = new HashMap<String, RenderInformation.Size>();
 
     /*
@@ -612,12 +616,17 @@ public abstract class Table
     }
 
     protected RenderInformation.Size getElementPaddingBorders(Element el) {
+        if (defaultPaddings != null)
+            return defaultPaddings;
+
         String[] styles = Tools.getStyleNames(el);
         String style = styles[styles.length - 1];
         RenderInformation.Size paddingBorders = stylePaddingBorders.get(style);
         if (paddingBorders != null && isAttached()) {
             if (paddingBorders == RenderInformation.Size.UNDEFINED) {
                 paddingBorders = Tools.definePaddingBorders(el);
+                if (defaultPaddings == null)
+                    defaultPaddings = paddingBorders;
                 stylePaddingBorders.put(style, paddingBorders);
             }
             return paddingBorders;
