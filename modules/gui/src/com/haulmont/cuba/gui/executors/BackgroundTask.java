@@ -134,7 +134,7 @@ public abstract class BackgroundTask<T, V> {
     }
 
     public final List<ProgressListener<T, V>> getProgressListeners() {
-        return Collections.unmodifiableList(progressListeners);
+        return new ArrayList<>(progressListeners);
     }
 
     public final void removeProgressListener(ProgressListener<T, V> progressListener) {
