@@ -72,9 +72,9 @@ import java.util.*;
 public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.ui.Table>
         extends WebAbstractList<T> implements Table {
 
-    protected Map<Object, Table.Column> columns = new HashMap<Object, Table.Column>();
-    protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
-    protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<MetaClass, CollectionDatasource>();
+    protected Map<Object, Table.Column> columns = new HashMap<>();
+    protected List<Table.Column> columnsOrder = new ArrayList<>();
+    protected Map<MetaClass, CollectionDatasource> optionsDatasources = new HashMap<>();
     protected boolean editable;
     protected boolean sortable = true;
     protected Action itemClickAction;
@@ -82,17 +82,15 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected Table.StyleProvider styleProvider;
 
-    protected Map<Table.Column, String> requiredColumns = new HashMap<Table.Column, String>();
+    protected Map<Table.Column, String> requiredColumns = new HashMap<>();
 
     protected Table.PagingMode pagingMode;
 
     protected Table.PagingProvider pagingProvider;
 
-    protected Map<Table.Column, Set<com.haulmont.cuba.gui.components.Field.Validator>> validatorsMap =
-            new HashMap<Table.Column, Set<com.haulmont.cuba.gui.components.Field.Validator>>();
+    protected Map<Table.Column, Set<com.haulmont.cuba.gui.components.Field.Validator>> validatorsMap = new HashMap<>();
 
-    protected Set<com.haulmont.cuba.gui.components.Field.Validator> tableValidators =
-            new LinkedHashSet<com.haulmont.cuba.gui.components.Field.Validator>();
+    protected Set<com.haulmont.cuba.gui.components.Field.Validator> tableValidators = new LinkedHashSet<>();
 
     protected CompositionLayout componentComposition;
 
@@ -109,7 +107,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     protected Presentations presentations;
     protected TablePresentations tablePresentations;
 
-    private List<ColumnCollapseListener> columnCollapseListeners = new ArrayList<ColumnCollapseListener>();
+    private List<ColumnCollapseListener> columnCollapseListeners = new ArrayList<>();
 
     @Override
     public java.util.List<Table.Column> getColumns() {
@@ -479,7 +477,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         }
 
         if (isEditable()) {
-            final List<MetaPropertyPath> editableColumns = new ArrayList<MetaPropertyPath>(propertyIds.size());
+            final List<MetaPropertyPath> editableColumns = new ArrayList<>(propertyIds.size());
             for (final MetaPropertyPath propertyId : propertyIds) {
                 final Table.Column column = getColumn(propertyId.toString());
                 if (BooleanUtils.isTrue(column.isEditable())) {
@@ -532,7 +530,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         List<MetaPropertyPath> editableColumns = null;
         if (isEditable()) {
-            editableColumns = new LinkedList<MetaPropertyPath>();
+            editableColumns = new LinkedList<>();
         }
 
         for (final Object columnId : columns) {
@@ -557,11 +555,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 }
 
                 if (column.isCollapsed() && component.isColumnCollapsingAllowed()) {
-//                    try {
                     component.setColumnCollapsed(column.getId(), true);
-                    /*} catch (IllegalAccessException e) {
-                        // do nothing
-                    }*/
                 }
 
                 if (column.getAggregation() != null && isAggregatable()) {
@@ -577,7 +571,8 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         createColumns(containerDatasource);
 
-        List<Object> columnsOrder = new ArrayList<Object>();
+        // todo check this security issue
+        List<Object> columnsOrder = new ArrayList<>();
         for (Table.Column column : this.columnsOrder) {
             if (column.getId() instanceof MetaPropertyPath) {
                 MetaProperty colMetaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
@@ -626,7 +621,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     private List<MetaPropertyPath> getPropertyColumns() {
-        List<MetaPropertyPath> result = new ArrayList<MetaPropertyPath>();
+        List<MetaPropertyPath> result = new ArrayList<>();
         for (Column column : columnsOrder) {
             if (column.getId() instanceof MetaPropertyPath) {
                 result.add((MetaPropertyPath) column.getId());
@@ -674,7 +669,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     public void addValidator(Table.Column column, final com.haulmont.cuba.gui.components.Field.Validator validator) {
         Set<com.haulmont.cuba.gui.components.Field.Validator> validators = validatorsMap.get(column);
         if (validators == null) {
-            validators = new HashSet<com.haulmont.cuba.gui.components.Field.Validator>();
+            validators = new HashSet<>();
             validatorsMap.put(column, validators);
         }
         validators.add(validator);
@@ -713,7 +708,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         final Element columnsElem = element.element("columns");
         if (columnsElem != null) {
             Object[] oldColumns = component.getVisibleColumns();
-            List<Object> newColumns = new ArrayList<Object>();
+            List<Object> newColumns = new ArrayList<>();
             // add columns from saved settings
             for (Element colElem : Dom4j.elements(columnsElem, "columns")) {
                 for (Object column : oldColumns) {
@@ -725,14 +720,11 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                             component.setColumnWidth(column, Integer.valueOf(width));
 
                         String visible = colElem.attributeValue("visible");
-                        if (visible != null)
-//                            try {
-                        if (component.isColumnCollapsingAllowed()) { // throws exception if not
-                            component.setColumnCollapsed(column, !Boolean.valueOf(visible));
+                        if (visible != null) {
+                            if (component.isColumnCollapsingAllowed()) { // throws exception if not
+                                component.setColumnCollapsed(column, !Boolean.valueOf(visible));
+                            }
                         }
-                            /*} catch (IllegalAccessException e) {
-                                // ignore
-                            }*/
                         break;
                     }
                 }
@@ -745,13 +737,9 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
             }
             // if the table contains only one column, always show it
             if (newColumns.size() == 1) {
-//                try {
                 if (component.isColumnCollapsingAllowed()) { // throws exception if not
                     component.setColumnCollapsed(newColumns.get(0), false);
                 }
-                /*} catch (IllegalAccessException e) {
-                    //
-                }*/
             }
 
             component.setVisibleColumns(newColumns.toArray());
@@ -760,7 +748,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
                 //apply sorting
                 String sortProp = columnsElem.attributeValue("sortProperty");
                 if (!StringUtils.isEmpty(sortProp)) {
-                    MetaPropertyPath sortProperty = datasource.getMetaClass().getPropertyEx(sortProp);
+                    MetaPropertyPath sortProperty = datasource.getMetaClass().getPropertyPath(sortProp);
                     if (newColumns.contains(sortProperty)) {
                         boolean sortAscending = BooleanUtils.toBoolean(columnsElem.attributeValue("sortAscending"));
 
@@ -982,8 +970,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
             final Collection<MetaPropertyPath> propertyIds = (Collection<MetaPropertyPath>) ds.getContainerPropertyIds();
             // added generated columns
-            final List<Pair<Object, com.vaadin.ui.Table.ColumnGenerator>> columnGenerators =
-                    new LinkedList<Pair<Object, com.vaadin.ui.Table.ColumnGenerator>>();
+            final List<Pair<Object, com.vaadin.ui.Table.ColumnGenerator>> columnGenerators = new LinkedList<>();
 
             for (final MetaPropertyPath id : propertyIds) {
                 com.vaadin.ui.Table.ColumnGenerator generator = component.getColumnGenerator(id);
@@ -1010,8 +997,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     protected Map<Object, Object> __aggregate(AggregationContainer container, AggregationContainer.Context context) {
-        final List<AggregationInfo> aggregationInfos =
-                new LinkedList<AggregationInfo>();
+        final List<AggregationInfo> aggregationInfos = new LinkedList<>();
         for (final Object o : container.getAggregationPropertyIds()) {
             final MetaPropertyPath propertyId = (MetaPropertyPath) o;
             final Table.Column column = columns.get(propertyId);
@@ -1205,28 +1191,6 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
         @Override
         protected Entity getItem(Item item, Property property) {
             return ((ItemWrapper) item).getItem();
-        }
-    }
-
-    private class ReadOnlyDatatypeGenerator implements com.vaadin.ui.Table.ColumnGenerator, TableSupport.ColumnGenerator {
-        protected Component generateCell(com.vaadin.ui.AbstractSelect source, Object itemId, Object columnId) {
-            Property property = source.getItem(itemId).getItemProperty(columnId);
-            final Object value = property.getValue();
-
-            final Label label = new Label(value == null ? null : property.toString());
-            label.setImmediate(true);
-
-            return label;
-        }
-
-        @Override
-        public Component generateCell(com.vaadin.ui.Table source, Object itemId, Object columnId) {
-            return generateCell(((AbstractSelect) source), itemId, columnId);
-        }
-
-        @Override
-        public Component generateCell(TableSupport source, Object itemId, Object columnId) {
-            return generateCell(((AbstractSelect) source), itemId, columnId);
         }
     }
 
@@ -1483,7 +1447,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     @Override
     public List<Table.Column> getNotCollapsedColumns() {
-        final List<Table.Column> visibleColumns = new ArrayList<Table.Column>(component.getVisibleColumns().length);
+        final List<Table.Column> visibleColumns = new ArrayList<>(component.getVisibleColumns().length);
         Object[] keys = component.getVisibleColumns();
         for (final Object key : keys) {
             if (!component.isColumnCollapsed(key)) {

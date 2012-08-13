@@ -12,11 +12,14 @@ package com.haulmont.cuba.web.gui.components;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.web.gui.data.*;
+import com.haulmont.cuba.web.gui.data.CollectionDsWrapper;
+import com.haulmont.cuba.web.gui.data.ItemWrapper;
+import com.haulmont.cuba.web.gui.data.PropertyWrapper;
+import com.haulmont.cuba.web.gui.data.SortableCollectionDsWrapper;
 import com.haulmont.cuba.web.toolkit.data.AggregationContainer;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
@@ -69,6 +72,7 @@ public class WebTable
         setSortable(true);
     }
 
+    @Override
     protected CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns) {
         return datasource instanceof CollectionDatasource.Sortable && isSortable() ?
             new SortableTableDsWrapper(datasource, columns) :
@@ -114,6 +118,7 @@ public class WebTable
             };
         }
 
+        @Override
         public Collection getAggregationPropertyIds() {
             if (aggregationProperties != null) {
                 return Collections.unmodifiableList(aggregationProperties);
@@ -121,19 +126,22 @@ public class WebTable
             return Collections.emptyList();
         }
 
+        @Override
         public Type getContainerPropertyAggregation(Object propertyId) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void addContainerPropertyAggregation(Object propertyId, Type type) {
             if (aggregationProperties == null) {
-                aggregationProperties = new LinkedList<Object>();
+                aggregationProperties = new LinkedList<>();
             } else if (aggregationProperties.contains(propertyId)) {
                 throw new IllegalStateException("Such aggregation property is already exists");
             }
             aggregationProperties.add(propertyId);
         }
 
+        @Override
         public void removeContainerPropertyAggregation(Object propertyId) {
             if (aggregationProperties != null) {
                 aggregationProperties.remove(propertyId);
@@ -188,6 +196,7 @@ public class WebTable
             };
         }
 
+        @Override
         public Collection getAggregationPropertyIds() {
             if (aggregationProperties != null) {
                 return Collections.unmodifiableList(aggregationProperties);
@@ -195,10 +204,12 @@ public class WebTable
             return Collections.emptyList();
         }
 
+        @Override
         public Type getContainerPropertyAggregation(Object propertyId) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void addContainerPropertyAggregation(Object propertyId, Type type) {
             if (aggregationProperties == null) {
                 aggregationProperties = new LinkedList<Object>();
@@ -208,6 +219,7 @@ public class WebTable
             aggregationProperties.add(propertyId);
         }
 
+        @Override
         public void removeContainerPropertyAggregation(Object propertyId) {
             if (aggregationProperties != null) {
                 aggregationProperties.remove(propertyId);
@@ -218,6 +230,7 @@ public class WebTable
         }
 
         @SuppressWarnings("unchecked")
+        @Override
         public Map<Object, Object> aggregate(Context context) {
             return __aggregate(this, context);
         }

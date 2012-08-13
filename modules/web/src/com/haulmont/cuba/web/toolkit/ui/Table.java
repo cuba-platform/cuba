@@ -329,7 +329,13 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
         if (isAggregatable() && items instanceof AggregationContainer) {
             removeContainerPropertyAggregation(propertyId);
         }
-        return super.removeContainerProperty(propertyId);
+
+        boolean removed = super.removeContainerProperty(propertyId);
+
+        if (removed)
+            this.resetPageBuffer();
+
+        return removed;
     }
 
     @Override
@@ -803,8 +809,8 @@ public class Table extends com.vaadin.ui.Table implements AggregationContainer {
             HashSet oldVisibleComponents = visibleComponents;
 
             // initialize the listener collections
-            listenedProperties = new HashSet();
-            visibleComponents = new HashSet();
+            listenedProperties = new HashSet<>();
+            visibleComponents = new HashSet<>();
 
             // Collects the basic facts about the table page
             final Object[] colids = getVisibleColumns();
