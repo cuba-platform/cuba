@@ -29,8 +29,8 @@ public class OperationResultWindow extends AbstractWindow {
         getDialogParams().setWidth(800);
         getDialogParams().setHeight(600);
 
-        Throwable ex = (Throwable) params.get("param$exception");
-        Object result = params.get("param$result");
+        Throwable ex = (Throwable) params.get("exception");
+        Object result = params.get("result");
 
         ScrollBoxLayout container = (ScrollBoxLayout) getComponent("container");
         if (ex != null) {

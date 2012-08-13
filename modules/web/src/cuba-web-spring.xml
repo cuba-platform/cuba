@@ -26,24 +26,13 @@
 
     <!-- MBeans registration -->
 
-    <bean id="cuba_web_MBeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
+    <bean id="cuba_web_MBeanExporter" class="com.haulmont.cuba.jmxcontrol.export.MBeanExporter" lazy-init="false">
         <property name="beans">
             <map>
                 <entry key="${cuba.webContextName}.cuba:service=Configuration" value-ref="cuba_ConfigurationMBean"/>
                 <entry key="${cuba.webContextName}.cuba:service=Caching" value-ref="cuba_CachingMBean"/>
                 <entry key="${cuba.webContextName}.cuba:service=FileUploading" value-ref="cuba_FileUploading"/>
             </map>
-        </property>
-        <property name="assembler">
-            <bean class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
-                <property name="interfaceMappings">
-                    <map>
-                        <entry key="cuba_ConfigurationMBean" value="com.haulmont.cuba.web.jmx.ConfigurationMBean"/>
-                        <entry key="cuba_CachingMBean" value="com.haulmont.cuba.web.jmx.CachingMBean"/>
-                        <entry key="cuba_FileUploading" value="com.haulmont.cuba.gui.upload.FileUploadingMBean"/>
-                    </map>
-                </property>
-            </bean>
         </property>
     </bean>
 

@@ -67,7 +67,7 @@
 
     <!-- MBeans registration -->
 
-    <bean id="cuba_MBeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
+    <bean id="cuba_MBeanExporter" class="com.haulmont.cuba.jmxcontrol.export.MBeanExporter" lazy-init="false">
         <property name="beans">
             <map>
                 <entry key="${cuba.webContextName}.cuba:service=PersistenceManager"
@@ -90,33 +90,6 @@
                 <entry key="${cuba.webContextName}.cuba:service=ObjectsCacheManager"
                        value-ref="cuba_ObjectsCacheManager"/>
             </map>
-        </property>
-        <property name="assembler">
-            <bean class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
-                <property name="interfaceMappings">
-                    <map>
-                        <entry key="cuba_PersistenceManager"
-                               value="com.haulmont.cuba.core.app.PersistenceManagerMBean"/>
-                        <entry key="cuba_ConfigStorage" value="com.haulmont.cuba.core.app.ConfigStorageMBean"/>
-                        <entry key="cuba_DataCache" value="com.haulmont.cuba.core.app.DataCacheMBean"/>
-                        <entry key="cuba_ResourceRepository" value="com.haulmont.cuba.core.app.ResourceRepositoryMBean"/>
-                        <entry key="cuba_UserSessions" value="com.haulmont.cuba.security.app.UserSessionsMBean"/>
-                        <entry key="cuba_UniqueNumbers" value="com.haulmont.cuba.core.app.UniqueNumbersMBean"/>
-                        <entry key="cuba_Emailer" value="com.haulmont.cuba.core.app.EmailerMBean"/>
-                        <entry key="cuba_EntityLog" value="com.haulmont.cuba.security.app.EntityLogMBean"/>
-                        <entry key="cuba_FileStorage" value="com.haulmont.cuba.core.app.FileStorageMBean"/>
-                        <entry key="cuba_LockManager" value="com.haulmont.cuba.core.app.LockManagerMBean"/>
-                        <entry key="cuba_CachingFacade" value="com.haulmont.cuba.core.app.CachingFacadeMBean"/>
-                        <entry key="cuba_ClusterManager" value="com.haulmont.cuba.core.app.ClusterManagerMBean"/>
-                        <entry key="cuba_ScriptingManager" value="com.haulmont.cuba.core.app.ScriptingManagerMBean"/>
-                        <entry key="cuba_ServerInfo" value="com.haulmont.cuba.core.app.ServerInfoMBean"/>
-                        <entry key="cuba_EmailManager" value="com.haulmont.cuba.core.app.EmailManagerMBean"/>
-                        <entry key="cuba_Scheduling" value="com.haulmont.cuba.core.app.scheduling.SchedulingMBean"/>
-                        <entry key="${cuba.webContextName}.cuba:service=ObjectsCacheManager"
-                               value="com.haulmont.cuba.core.app.cache.ObjectsCacheManagerMBean"/>
-                    </map>
-                </property>
-            </bean>
         </property>
     </bean>
 

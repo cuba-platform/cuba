@@ -23,6 +23,7 @@ import com.haulmont.cuba.jmxcontrol.entity.ManagedBeanOperationParameter;
 import com.haulmont.cuba.jmxcontrol.util.AttributeHelper;
 import com.haulmont.cuba.web.gui.components.*;
 import com.haulmont.cuba.web.ui.jmxcontrol.util.AttributeEditor;
+import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -125,12 +126,13 @@ public class MbeanInspectWindow extends AbstractEditor {
             Label nameLbl = new WebLabel();
             nameLbl.setValue(op.getReturnType() + " " + op.getName() + "()");
             nameLbl.setStyleName("h2");
-
-            Label descrLbl = new WebLabel();
-            descrLbl.setValue(op.getDescription());
-
             vl.add(nameLbl);
-            vl.add(descrLbl);
+
+            if (StringUtils.isNotEmpty(op.getDescription())) {
+                Label descrLbl = new WebLabel();
+                descrLbl.setValue(op.getDescription());
+                vl.add(descrLbl);
+            }
 
             final List<AttributeEditor> attrProviders = new ArrayList<AttributeEditor>();
 

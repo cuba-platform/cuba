@@ -28,6 +28,21 @@ public class JmxControlServiceBean implements JmxControlService {
 
     private static Log log = LogFactory.getLog(JmxControlServiceBean.class);
 
+    /**
+   	 * Constant identifier for the role field in a JMX {@link Descriptor}.
+   	 */
+   	protected static final String FIELD_ROLE = "role";
+
+    /**
+   	 * Constant identifier for the getter role field value in a JMX {@link Descriptor}.
+   	 */
+   	protected static final String ROLE_GETTER = "getter";
+
+   	/**
+   	 * Constant identifier for the setter role field value in a JMX {@link Descriptor}.
+   	 */
+   	protected static final String ROLE_SETTER = "setter";
+
     public List<ManagedBeanInfo> getManagedBeans() {
         MBeanServerConnection connection = getConnection();
 
@@ -163,6 +178,11 @@ public class JmxControlServiceBean implements JmxControlService {
         MBeanOperationInfo[] operations = info.getOperations();
 
         for (MBeanOperationInfo operation: operations) {
+            String role = (String) operation.getDescriptor().getFieldValue(FIELD_ROLE);
+            if (ROLE_GETTER.equals(role) || ROLE_SETTER.equals(role)) {
+                continue; // these operations do the same as reading / writing attributes
+            }
+
             ManagedBeanOperation o = new ManagedBeanOperation();
             o.setName(operation.getName());
             o.setDescription(operation.getDescription());
@@ -204,7 +224,8 @@ public class JmxControlServiceBean implements JmxControlService {
                 types[i] = operation.getParameters().get(i).getType();
             }
 
-            return connection.invoke(name, operation.getName(), parameterValues, types);
+            Object result = connection.invoke(name, operation.getName(), parameterValues, types);
+            return result;
         }
         catch (IOException e) {
             throw new JmxControlException(e);

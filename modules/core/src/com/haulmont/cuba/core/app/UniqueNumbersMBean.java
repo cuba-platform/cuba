@@ -12,6 +12,9 @@
  */
 package com.haulmont.cuba.core.app;
 
+import org.springframework.jmx.export.annotation.ManagedOperationParameter;
+import org.springframework.jmx.export.annotation.ManagedOperationParameters;
+
 /**
  * {@link UniqueNumbers} JMX interface.
  *
@@ -21,9 +24,15 @@ package com.haulmont.cuba.core.app;
  */
 public interface UniqueNumbersMBean
 {
+    @ManagedOperationParameters({@ManagedOperationParameter(name = "domain", description = "")})
     long getCurrentNumber(String domain);
 
+    @ManagedOperationParameters({
+                @ManagedOperationParameter(name = "domain", description = ""),
+                @ManagedOperationParameter(name = "value", description = "")
+        })
     void setCurrentNumber(String domain, long value);
 
+    @ManagedOperationParameters({@ManagedOperationParameter(name = "domain", description = "")})
     long getNextNumber(String domain);
 }
