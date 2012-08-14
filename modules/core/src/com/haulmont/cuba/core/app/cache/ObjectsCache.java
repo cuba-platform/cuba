@@ -8,6 +8,7 @@ package com.haulmont.cuba.core.app.cache;
 
 import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.sys.AppContext;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,9 +19,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Cache for application objects
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheController {
 
@@ -37,7 +38,7 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
     private long lastUpdateDuration;
 
     private final static int UPDATE_COUNT_FOR_AVERAGE_DURATION = 10;
-    private List<Long> updateDurations = new ArrayList<Long>(UPDATE_COUNT_FOR_AVERAGE_DURATION);
+    private List<Long> updateDurations = new ArrayList<>(UPDATE_COUNT_FOR_AVERAGE_DURATION);
     private int updateDurationsIndex = 0;
 
     @Inject
@@ -180,6 +181,19 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
         cacheLock.readLock().unlock();
 
         return result;
+    }
+
+    @Override
+    public int count(Predicate... selectors) {
+        int count = 0;
+
+        cacheLock.readLock().lock();
+
+        cacheSet.countConjunction(selectors);
+
+        cacheLock.readLock().unlock();
+
+        return count;
     }
 
     @Override
