@@ -10,9 +10,13 @@
  */
 package com.haulmont.cuba.core.app;
 
+import org.springframework.jmx.export.annotation.ManagedOperationParameter;
+import org.springframework.jmx.export.annotation.ManagedOperationParameters;
+
 public interface ScriptingManagerMBean {
 
     String getRootPath();
 
+    @ManagedOperationParameters({@ManagedOperationParameter(name = "scriptName", description = "")})
     String runGroovyScript(String scriptName);
 }

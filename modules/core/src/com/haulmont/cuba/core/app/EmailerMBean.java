@@ -10,6 +10,9 @@
  */
 package com.haulmont.cuba.core.app;
 
+import org.springframework.jmx.export.annotation.ManagedOperationParameter;
+import org.springframework.jmx.export.annotation.ManagedOperationParameters;
+
 /**
  * Management interface of the {@link Emailer} MBean.<br>
  */
@@ -26,5 +29,6 @@ public interface EmailerMBean
 
     String getSmtpHost();
 
+    @ManagedOperationParameters({@ManagedOperationParameter(name = "addresses", description = "")})
     String sendTestEmail(String addresses);
 }

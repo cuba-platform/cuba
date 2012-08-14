@@ -6,6 +6,9 @@
 
 package com.haulmont.cuba.core.app.cache;
 
+import org.springframework.jmx.export.annotation.ManagedOperationParameter;
+import org.springframework.jmx.export.annotation.ManagedOperationParameters;
+
 /**
  * MBean interface for ObjectsCacheManager
  * <p>$Id$</p>
@@ -20,7 +23,9 @@ public interface ObjectsCacheManagerMBean {
 
     String printActiveCaches();
 
+    @ManagedOperationParameters({@ManagedOperationParameter(name = "cacheName", description = "")})
     String printStatsByName(String cacheName);
 
+    @ManagedOperationParameters({@ManagedOperationParameter(name = "cacheName", description = "")})
     String reloadByName(String cacheName);
 }
