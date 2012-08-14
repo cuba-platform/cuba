@@ -9,6 +9,7 @@ package com.haulmont.cuba.core.app.cache;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -39,27 +40,29 @@ public class CacheSet implements Cloneable {
 
     /**
      * Single predicate query
+     *
      * @param selector Selector
      * @return CacheSet
      */
     public CacheSet query(Predicate selector) {
         checkNotNull(selector);
 
-        LinkedList<Object> setItems = new LinkedList<Object>();
+        LinkedList<Object> setItems = new LinkedList<>();
         CollectionUtils.select(items, selector, setItems);
         return new CacheSet(setItems);
     }
 
     /**
      * Sequential filtering by selectors
+     *
      * @param selectors Selectors
      * @return CacheSet
      */
-    public CacheSet querySequential(Predicate ... selectors) {
+    public CacheSet querySequential(Predicate... selectors) {
         checkNotNull(selectors);
 
-        Collection<Object> resultCollection = new LinkedList<Object>(items);
-        Collection<Object> filterCollection = new LinkedList<Object>();
+        Collection<Object> resultCollection = new ArrayList<>(items);
+        Collection<Object> filterCollection = new LinkedList<>();
         Collection<Object> tempCollection;
 
         int i = 0;
@@ -78,23 +81,39 @@ public class CacheSet implements Cloneable {
     }
 
     /**
-     * Conjunction filtering by selectors
+     * Conjunction count matches
+     *
      * @param selectors Selectors
      * @return CacheSet
      */
-    public CacheSet queryConjunction(Predicate ... selectors) {
+    public int countConjunction(Predicate... selectors) {
+        checkNotNull(selectors);
+
+        ConjunctionPredicate predicate = new ConjunctionPredicate(selectors);
+
+        return CollectionUtils.countMatches(items, predicate);
+    }
+
+    /**
+     * Conjunction filtering by selectors
+     *
+     * @param selectors Selectors
+     * @return CacheSet
+     */
+    public CacheSet queryConjunction(Predicate... selectors) {
         return query(new ConjunctionPredicate(selectors));
     }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
         CacheSet cloneInstance = (CacheSet) super.clone();
-        cloneInstance.items = new LinkedList<Object>(items);
-        return new CacheSet(new LinkedList<Object>(items));
+        cloneInstance.items = new ArrayList<>(items);
+        return cloneInstance;
     }
 
     /**
      * Size
+     *
      * @return Cache set size
      */
     public int getSize() {

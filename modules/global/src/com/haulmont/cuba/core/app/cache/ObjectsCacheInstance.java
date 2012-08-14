@@ -6,13 +6,15 @@
 
 package com.haulmont.cuba.core.app.cache;
 
+import org.apache.commons.collections.Predicate;
+
 import java.util.Collection;
 
 /**
  * Objects cache interface
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 public interface ObjectsCacheInstance {
     String getName();
@@ -20,4 +22,6 @@ public interface ObjectsCacheInstance {
     CacheStatistics getStatistics();
 
     Collection execute(CacheSelector cacheSelector);
+
+    int count(Predicate... selectors);
 }
