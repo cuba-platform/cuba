@@ -168,11 +168,20 @@ public class WebBackgroundWorker implements BackgroundWorker {
         private volatile V result = null;
         private volatile Exception taskException = null;
 
+        private Map<String, Object> params;
+
         private WebTaskExecutor(App app, BackgroundTask<T, V> runnableTask,
                                 WebTimerListener webTimerListener) {
             this.runnableTask = runnableTask;
             this.webTimerListener = webTimerListener;
             this.app = app;
+
+            //noinspection unchecked
+            this.params = runnableTask.getParams();
+            if (this.params != null)
+                this.params = Collections.unmodifiableMap(this.params);
+            else
+                this.params = Collections.emptyMap();
 
             securityContext = AppContext.getSecurityContext();
             userId = UserSessionProvider.getUserSession().getId();
@@ -196,6 +205,11 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     @Override
                     public boolean isInterrupted() {
                         return WebTaskExecutor.this.isInterrupted();
+                    }
+
+                    @Override
+                    public Map<String, Object> getParams() {
+                        return params;
                     }
                 });
             } catch (Exception ex) {

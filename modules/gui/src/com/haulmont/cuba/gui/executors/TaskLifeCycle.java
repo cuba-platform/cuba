@@ -6,6 +6,8 @@
 
 package com.haulmont.cuba.gui.executors;
 
+import java.util.Map;
+
 /**
  * Life cycle object for task
  *
@@ -27,4 +29,9 @@ public interface TaskLifeCycle<T> {
      * @return True if working thread is interrupted
      */
     boolean isInterrupted();
+
+    /**
+     * @return Read-only run parameters
+     */
+    Map<String, Object> getParams();
 }

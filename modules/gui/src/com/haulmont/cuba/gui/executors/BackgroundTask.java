@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.components.Window;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -114,6 +115,15 @@ public abstract class BackgroundTask<T, V> {
      * @param changes Changes list
      */
     public void progress(List<T> changes) {
+    }
+
+    /**
+     * Synchronous get parameters for run from UI
+     *
+     * @return Run parameters
+     */
+    public Map<String, Object> getParams() {
+        return null;
     }
 
     public final Window getOwnerWindow() {

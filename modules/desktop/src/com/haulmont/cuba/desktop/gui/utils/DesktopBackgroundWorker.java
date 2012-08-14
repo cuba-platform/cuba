@@ -14,7 +14,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.swing.*;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -63,9 +65,18 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
 
         private volatile boolean isInterrupted = false;
 
+        private Map<String, Object> params;
+
         private DesktopTaskExecutor(BackgroundTask<T, V> runnableTask) {
             this.runnableTask = runnableTask;
             userId = UserSessionProvider.getUserSession().getId();
+
+            //noinspection unchecked
+            this.params = runnableTask.getParams();
+            if (this.params != null)
+                this.params = Collections.unmodifiableMap(this.params);
+            else
+                this.params = Collections.emptyMap();
         }
 
         @Override
@@ -83,6 +94,11 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
                     @Override
                     public boolean isInterrupted() {
                         return DesktopTaskExecutor.this.isInterrupted;
+                    }
+
+                    @Override
+                    public Map<String, Object> getParams() {
+                        return params;
                     }
                 });
             } catch (Exception ex) {
