@@ -14,6 +14,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import org.jdesktop.swingx.JXTree;
 import org.jdesktop.swingx.JXTreeTable;
+import org.jdesktop.swingx.decorator.AbstractHighlighter;
+import org.jdesktop.swingx.decorator.ComponentAdapter;
 
 import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
@@ -37,7 +39,7 @@ public class DesktopTreeTable
         implements TreeTable {
     private String hierarchyProperty;
 
-    protected Map<Integer, TableCellRenderer> cellRenderers = new HashMap<Integer, TableCellRenderer>();
+    protected Map<Integer, TableCellRenderer> cellRenderers = new HashMap<>();
 
     public DesktopTreeTable() {
         impl = new JXTreeTableExt() {
@@ -95,6 +97,30 @@ public class DesktopTreeTable
         impl.setRootVisible(false);
         impl.setColumnControlVisible(true);
         impl.setEditable(false);
+
+        // apply alternate row color
+        impl.setHighlighters(new AbstractHighlighter() {
+            @Override
+            protected Component doHighlight(Component component, ComponentAdapter adapter) {
+                if (adapter.isHierarchical()) {
+                    if (adapter.isSelected()) {
+                        component.setBackground(impl.getSelectionBackground());
+                        component.setForeground(impl.getSelectionForeground());
+                    } else {
+                        component.setForeground(impl.getForeground());
+                        Color background = UIManager.getDefaults().getColor("Table:\"Table.cellRenderer\".background");
+                        if (adapter.row % 2 == 1) {
+                            Color alternateColor = UIManager.getDefaults().getColor("Table.alternateRowColor");
+                            if (alternateColor != null) {
+                                background = alternateColor;
+                            }
+                        }
+                        component.setBackground(background);
+                    }
+                }
+                return component;
+            }
+        });
 
         initComponent();
 
