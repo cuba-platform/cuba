@@ -13,8 +13,6 @@ import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import org.dom4j.Element;
 
-import java.util.Collection;
-
 public class AbstractWindow extends AbstractFrame 
         implements Window, Component.HasXmlDescriptor, Window.Wrapper {
 
@@ -30,19 +28,11 @@ public class AbstractWindow extends AbstractFrame
     }
 
     public Element getXmlDescriptor() {
-        if (frame instanceof HasXmlDescriptor) {
-            return ((HasXmlDescriptor) frame).getXmlDescriptor();
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        return ((HasXmlDescriptor) frame).getXmlDescriptor();
     }
 
     public void setXmlDescriptor(Element element) {
-        if (frame instanceof HasXmlDescriptor) {
-            ((HasXmlDescriptor) frame).setXmlDescriptor(element);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        ((HasXmlDescriptor) frame).setXmlDescriptor(element);
     }
 
     public DsContext getDsContext() {
@@ -50,55 +40,31 @@ public class AbstractWindow extends AbstractFrame
     }
 
     public void setDsContext(DsContext dsContext) {
-        if (frame instanceof Window) {
-            frame.setDsContext(dsContext);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        frame.setDsContext(dsContext);
     }
 
     public void addListener(CloseListener listener) {
-        if (frame instanceof Window) {
-            ((Window) frame).addListener(listener);
-        }
+        ((Window) frame).addListener(listener);
     }
 
     public void removeListener(CloseListener listener) {
-        if (frame instanceof Window) {
-            ((Window) frame).removeListener(listener);
-        }
+        ((Window) frame).removeListener(listener);
     }
 
     public String getCaption() {
-        if (frame instanceof Window) {
-            return ((Window) frame).getCaption();
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        return ((Window) frame).getCaption();
     }
 
     public void setCaption(String caption) {
-        if (frame instanceof Window) {
-            ((Window) frame).setCaption(caption);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        ((Window) frame).setCaption(caption);
     }
 
     public String getDescription() {
-        if (frame instanceof Window) {
-            return ((Window) frame).getDescription();
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        return ((Window) frame).getDescription();
     }
 
     public void setDescription(String description) {
-        if (frame instanceof Window) {
-            ((Window) frame).setDescription(description);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        ((Window) frame).setDescription(description);
     }
 
     public <T extends Window> T getWrappedWindow() {
@@ -106,19 +72,11 @@ public class AbstractWindow extends AbstractFrame
     }
 
     public void applySettings(Settings settings) {
-        if (frame instanceof Window) {
-            ((Window) frame).applySettings(settings);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        ((Window) frame).applySettings(settings);
     }
 
     public void saveSettings() {
-        if (frame instanceof Window) {
-            ((Window) frame).saveSettings();
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        ((Window) frame).saveSettings();
     }
 
     public void setFocusComponent(String componentId) {
@@ -128,26 +86,34 @@ public class AbstractWindow extends AbstractFrame
     }
 
     public Settings getSettings() {
-        if (frame instanceof Window) {
-            return ((Window) frame).getSettings();
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        return ((Window) frame).getSettings();
     }
 
     public void addTimer(Timer timer) {
-        if (frame instanceof Window) {
-            ((Window) frame).addTimer(timer);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        ((Window) frame).addTimer(timer);
     }
 
     public Timer getTimer(String id) {
-        if (frame instanceof Window) {
-            return ((Window) frame).getTimer(id);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        return ((Window) frame).getTimer(id);
+    }
+
+    /**
+     * Check validity by invoking validators on all components which support them
+     * and show validation result notification. This method also calls {@link #postValidate(ValidationErrors)} hook to
+     * support additional validation.
+     * <p>You should override this method in subclasses ONLY if you want to completely replace the validation process,
+     * otherwise use {@link #postValidate(ValidationErrors)}.
+     * @return true if the validation was succesful, false if there were any problems
+     */
+    public boolean validateAll() {
+        return ((Editor) frame).validateAll();
+    }
+
+    /**
+     * Hook to be implemented in subclasses. Called by {@link #validateAll()} at the end of standard validation.
+     * @param errors the list of validation errors. Caller fills it by errors found during the default validation.
+     * Overridden method should add into it errors found by custom validation.
+     */
+    protected void postValidate(ValidationErrors errors) {
     }
 }

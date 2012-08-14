@@ -23,7 +23,8 @@ import java.util.*;
  *
  * @author devyatkin
  */
-public class CategoryEditor extends AbstractEditor {
+public class CategoryEditor extends AbstractEditor<Category> {
+
     private Category category;
     private CheckBox cb;
     private DataService dataService;
@@ -34,9 +35,9 @@ public class CategoryEditor extends AbstractEditor {
 
     }
 
-    public void setItem(Entity item) {
-        super.setItem(item);
-        category = (Category) getItem();
+    @Override
+    protected void postInit() {
+        category = getItem();
         generateEntityTypeField();
         initCb();
     }

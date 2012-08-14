@@ -26,49 +26,26 @@ public class AbstractLookup extends AbstractWindow implements Window.Lookup {
     }
 
     public Component getLookupComponent() {
-        if (frame instanceof Window.Lookup) {
-            return ((Lookup) frame).getLookupComponent();
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        return ((Lookup) frame).getLookupComponent();
     }
 
     public void setLookupComponent(Component lookupComponent) {
-        if (frame instanceof Window.Lookup) {
-            ((Lookup) frame).setLookupComponent(lookupComponent);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        ((Lookup) frame).setLookupComponent(lookupComponent);
     }
 
     public Handler getLookupHandler() {
-        if (frame instanceof Window.Lookup) {
-            return ((Lookup) frame).getLookupHandler();
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        return ((Lookup) frame).getLookupHandler();
     }
 
     public void setLookupHandler(Handler handler) {
-        if (frame instanceof Window.Lookup) {
-            ((Lookup) frame).setLookupHandler(handler);
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        ((Lookup) frame).setLookupHandler(handler);
     }
 
     public Validator getLookupValidator() {
-        if (frame instanceof Window.Lookup) {
-            return ((Lookup) frame).getLookupValidator();
-        } else {
-            throw new UnsupportedOperationException();
-        }
+        return ((Lookup) frame).getLookupValidator();
     }
 
-
     public void setLookupValidator(Validator validator) {
-        if (frame instanceof Window.Lookup) {
-            ((Lookup) frame).setLookupValidator(validator);
-        }
+        ((Lookup) frame).setLookupValidator(validator);
     }
 }

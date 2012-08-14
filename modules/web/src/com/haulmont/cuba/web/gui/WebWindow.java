@@ -23,7 +23,6 @@ import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebWindowManager;
@@ -198,6 +197,81 @@ public class WebWindow
     @Override
     public void validate() throws ValidationException {
         delegate.validate();
+    }
+
+    @Override
+    public boolean validateAll() {
+        ValidationErrors errors = new ValidationErrors();
+
+        Collection<Component> components = ComponentsHelper.getComponents(this);
+        for (Component component : components) {
+            if (component instanceof Validatable) {
+                try {
+                    ((Validatable) component).validate();
+                } catch (ValidationException e) {
+                    log.debug("Validation failed", e);
+                    errors.add(component, e.getMessage());
+                }
+            }
+        }
+
+//                    // TODO validate table columns - smthng like this:
+//                    if (impl instanceof com.vaadin.ui.Table) {
+//                        Set visibleComponents = ((Table) impl).getVisibleComponents();
+//                        for (Object visibleComponent : visibleComponents) {
+//                            if (visibleComponent instanceof com.vaadin.ui.Field
+//                                    && ((com.vaadin.ui.Field) visibleComponent).isEnabled() &&
+//                                    !((com.vaadin.ui.Field) visibleComponent).isReadOnly()) {
+//                                try {
+//                                    ((com.vaadin.ui.Field) visibleComponent).validate();
+//                                } catch (Validator.InvalidValueException e) {
+//                                    problems.put(e, ((com.vaadin.ui.Field) visibleComponent));
+//                                }
+//                            }
+//                        }
+//                    }
+//
+//                }
+//            });
+
+        delegate.postValidate(errors);
+
+        if (errors.isEmpty())
+            return true;
+
+        Component component = null;
+        StringBuilder buffer = new StringBuilder();
+        for (ValidationErrors.Item error : errors.getAll()) {
+            if (component == null)
+                component = error.component;
+            buffer.append(error.description).append("<br/>");
+        }
+
+        showNotification(MessageProvider.getMessage(WebWindow.class, "validationFail.caption"),
+                buffer.toString(), NotificationType.TRAY);
+        if (component != null) {
+            try {
+                com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
+                com.vaadin.ui.Component c = vComponent;
+                com.vaadin.ui.Component prevC = null;
+                while (c != null) {
+                    if (c instanceof com.vaadin.ui.Component.Focusable) {
+                        ((com.vaadin.ui.Component.Focusable) c).focus();
+                    } else if (c instanceof TabSheet && !((TabSheet) c).getSelectedTab().equals(prevC)) {
+                        ((TabSheet) c).setSelectedTab(prevC);
+                        break;
+                    }
+                    prevC = c;
+                    c = c.getParent();
+                }
+                if (vComponent instanceof com.vaadin.ui.Component.Focusable)
+                    ((com.vaadin.ui.Component.Focusable) vComponent).focus();
+            } catch (Exception e) {
+                //
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -733,18 +807,19 @@ public class WebWindow
 
         @Override
         public boolean commit(boolean validate) {
-            if (validate && !((Window.Editor) getWrapper()).validateOnCommit())
+            if (validate && !getWrapper().validateAll())
                 return false;
 
-            ((EditorWindowDelegate) delegate).commit();
-            return true;
+            return ((EditorWindowDelegate) delegate).commit(false);
         }
 
         @Override
         public void commitAndClose() {
-            if (commit()) {
+            if (!getWrapper().validateAll())
+                return;
+
+            if (((EditorWindowDelegate) delegate).commit(true))
                 close(COMMIT_ACTION_ID);
-            }
         }
 
         @Override
@@ -752,83 +827,6 @@ public class WebWindow
             return ((EditorWindowDelegate) delegate).isLocked();
         }
 
-        @Override
-        public boolean validateOnCommit() {
-            Map<Exception, Component> problems = new HashMap<Exception, Component>();
-
-            Collection<Component> components = ComponentsHelper.getComponents(this);
-            for (Component component : components) {
-                if (component instanceof Validatable) {
-                    try {
-                        ((Validatable) component).validate();
-                    } catch (ValidationException e) {
-                        log.debug("Validation failed", e);
-                        problems.put(e, component);
-                    }
-                }
-            }
-
-//                    // TODO validate table columns - smthng like this:
-//                    if (impl instanceof com.vaadin.ui.Table) {
-//                        Set visibleComponents = ((Table) impl).getVisibleComponents();
-//                        for (Object visibleComponent : visibleComponents) {
-//                            if (visibleComponent instanceof com.vaadin.ui.Field
-//                                    && ((com.vaadin.ui.Field) visibleComponent).isEnabled() &&
-//                                    !((com.vaadin.ui.Field) visibleComponent).isReadOnly()) {
-//                                try {
-//                                    ((com.vaadin.ui.Field) visibleComponent).validate();
-//                                } catch (Validator.InvalidValueException e) {
-//                                    problems.put(e, ((com.vaadin.ui.Field) visibleComponent));
-//                                }
-//                            }
-//                        }
-//                    }
-//
-//                }
-//            });
-
-            if (problems.isEmpty())
-                return true;
-
-            Component component = null;
-//            StringBuilder buffer = new StringBuilder(MessageProvider.getMessage(WebWindow.class, "validationFail") + "<br>");
-            StringBuilder buffer = new StringBuilder();
-            for (Exception exception : problems.keySet()) {
-                if (component == null)
-                    component = problems.get(exception);
-                buffer.append(exception.getMessage()).append("<br>");
-            }
-
-            showNotification(MessageProvider.getMessage(WebWindow.class, "validationFail.caption"),
-                    buffer.toString(), NotificationType.TRAY);
-            if (component != null) {
-                focusProblemComponent(component);
-            }
-
-            return false;
-        }
-
-        protected void focusProblemComponent(Component component) {
-            try {
-                com.vaadin.ui.Component vComponent = WebComponentsHelper.unwrap(component);
-                com.vaadin.ui.Component c = vComponent;
-                com.vaadin.ui.Component prevC = null;
-                while (c != null) {
-                    if (c instanceof com.vaadin.ui.Component.Focusable) {
-                        ((com.vaadin.ui.Component.Focusable) c).focus();
-                    } else if (c instanceof TabSheet && !((TabSheet) c).getSelectedTab().equals(prevC)) {
-                        ((TabSheet) c).setSelectedTab(prevC);
-                        break;
-                    }
-                    prevC = c;
-                    c = c.getParent();
-                }
-                if (vComponent instanceof com.vaadin.ui.Component.Focusable)
-                    ((com.vaadin.ui.Component.Focusable) vComponent).focus();
-            } catch (Exception e) {
-                //
-            }
-        }
     }
 
     public static class Lookup extends WebWindow implements Window.Lookup {

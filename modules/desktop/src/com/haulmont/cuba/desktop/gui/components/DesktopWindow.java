@@ -22,11 +22,9 @@ import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
-import com.haulmont.cuba.gui.WindowContext;
 import com.haulmont.cuba.gui.settings.Settings;
 import net.miginfocom.layout.CC;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -704,11 +702,41 @@ public class DesktopWindow implements Window, Component.Disposable,
         return disposed;
     }
 
+    public boolean validateAll() {
+        ValidationErrors errors = new ValidationErrors();
+
+        Collection<Component> components = ComponentsHelper.getComponents(this);
+        for (Component component : components) {
+            if (component instanceof Validatable) {
+                try {
+                    ((Validatable) component).validate();
+                } catch (ValidationException e) {
+                    log.debug("Validation failed", e);
+                    errors.add(component, e.getMessage());
+                }
+            }
+        }
+
+        delegate.postValidate(errors);
+
+        if (!errors.isEmpty()) {
+            StringBuilder buffer = new StringBuilder();
+            for (ValidationErrors.Item error : errors.getAll()) {
+                buffer.append(error.description).append("<br/>");
+            }
+            showNotification(
+                    MessageProvider.getMessage(AppConfig.getMessagesPack(), "validationFail.caption"),
+                    buffer.toString(),
+                    NotificationType.HUMANIZED
+            );
+            return false;
+        }
+        return true;
+    }
+
     public static class Editor extends DesktopWindow implements Window.Editor {
 
         private static final long serialVersionUID = -7042930104147784581L;
-
-        private Log log = LogFactory.getLog(DesktopWindow.Editor.class);
 
         public Editor() {
             super();
@@ -757,43 +785,18 @@ public class DesktopWindow implements Window, Component.Disposable,
         }
 
         public boolean commit(boolean validate) {
-            if (validate && !((Window.Editor)getWrapper()).validateOnCommit())
+            if (validate && !getWrapper().validateAll())
                 return false;
 
-            ((EditorWindowDelegate) delegate).commit();
-            return true;
-        }
-
-        public boolean validateOnCommit() {
-            List<String> problems = new ArrayList<String>();
-
-            Collection<Component> components = ComponentsHelper.getComponents(this);
-            for (Component component : components) {
-                if (component instanceof Validatable) {
-                    try {
-                        ((Validatable) component).validate();
-                    } catch (ValidationException e) {
-                        log.debug("Validation failed", e);
-                        problems.add(e.getMessage());
-                    }
-                }
-            }
-            if (!problems.isEmpty()) {
-                String text = new StrBuilder().appendWithSeparators(problems, "<br/>").toString();
-                showNotification(
-                        MessageProvider.getMessage(AppConfig.getMessagesPack(), "validationFail.caption"),
-                        text,
-                        NotificationType.HUMANIZED
-                );
-                return false;
-            }
-            return true;
+            return ((EditorWindowDelegate) delegate).commit(false);
         }
 
         public void commitAndClose() {
-            if (commit()) {
+            if (!getWrapper().validateAll())
+                return;
+
+            if (((EditorWindowDelegate) delegate).commit(true))
                 close(COMMIT_ACTION_ID);
-            }
         }
 
         public boolean isLocked() {

@@ -40,9 +40,9 @@ public class EditorWindowDelegate extends WindowDelegate {
     }
 
     public Window wrapBy(Class<Window> wrapperClass) {
-        final Window.Editor window = (Window.Editor) super.wrapBy(wrapperClass);
+        final Window.Editor editor = (Window.Editor) super.wrapBy(wrapperClass);
 
-        final Component commitAndCloseButton = ComponentsHelper.findComponent(window, Window.Editor.WINDOW_COMMIT_AND_CLOSE);
+        final Component commitAndCloseButton = ComponentsHelper.findComponent(editor, Window.Editor.WINDOW_COMMIT_AND_CLOSE);
         if (commitAndCloseButton != null) {
             commitAndCloseButtonExists = true;
 
@@ -55,7 +55,7 @@ public class EditorWindowDelegate extends WindowDelegate {
                         }
 
                         public void actionPerform(Component component) {
-                            window.commitAndClose();
+                            editor.commitAndClose();
                         }
                     }
             );
@@ -71,13 +71,10 @@ public class EditorWindowDelegate extends WindowDelegate {
 
                     public void actionPerform(Component component) {
                         if (!commitAndCloseButtonExists) {
-                            window.commitAndClose();
+                            editor.commitAndClose();
                         } else {
-                            if (window.commit()) {
+                            if (editor.commit()) {
                                 commitActionPerformed = true;
-                                window.showNotification(MessageProvider.formatMessage(AppConfig.getMessagesPack(),
-                                        "info.EntitySave", window.getItem().getInstanceName()),
-                                        IFrame.NotificationType.HUMANIZED);
                             }
                         }
                     }
@@ -93,12 +90,12 @@ public class EditorWindowDelegate extends WindowDelegate {
                     }
 
                     public void actionPerform(Component component) {
-                        window.close(commitActionPerformed ? Window.COMMIT_ACTION_ID : getId());
+                        editor.close(commitActionPerformed ? Window.COMMIT_ACTION_ID : getId());
                     }
                 }
         );
 
-        return window;
+        return editor;
     }
 
     public Entity getItem() {
@@ -183,10 +180,14 @@ public class EditorWindowDelegate extends WindowDelegate {
         ((DatasourceImplementation) ds).setParent(parentDs);
     }
 
-    public void commit() {
+    public boolean commit(boolean close) {
+        if (wrapper instanceof AbstractEditor && !((AbstractEditor) wrapper).preCommit())
+            return false;
+
+        boolean committed;
         final DsContext context = window.getDsContext();
         if (context != null) {
-            context.commit();
+            committed = context.commit();
             item = getDatasource().getItem();
         } else {
             if (item instanceof Datasource) {
@@ -196,7 +197,10 @@ public class EditorWindowDelegate extends WindowDelegate {
                 DataService service = getDataService();
                 item = service.commit(item, null);
             }
+            committed = true;
         }
+
+        return !(wrapper instanceof AbstractEditor) || ((AbstractEditor) wrapper).postCommit(committed, close);
     }
 
     protected DataService getDataService() {

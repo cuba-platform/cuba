@@ -125,7 +125,7 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
 //        });
     }
 
-    public void commit() {
+    public boolean commit() {
         for (DsContext childDsContext : children) {
             commitToParent(childDsContext.getAll());
         }
@@ -134,7 +134,7 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
         final Map<DataService, Collection<Datasource<Entity>>> commitData = collectCommitData();
 
         if (commitData.isEmpty())
-            return;
+            return false;
 
         final DataService dataservice = getDataService();
         final Set<DataService> services = commitData.keySet();
@@ -154,6 +154,7 @@ public class DsContextImpl implements DsContextImplementation, Serializable {
         } else {
             throw new UnsupportedOperationException();
         }
+        return true;
     }
 
     private void commitToParent(Collection<Datasource> datasources) {

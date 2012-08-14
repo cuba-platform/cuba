@@ -168,6 +168,11 @@ public class WindowDelegate {
         }
     }
 
+    public void postValidate(ValidationErrors errors) {
+        if (wrapper instanceof AbstractWindow)
+            ((AbstractWindow) wrapper).postValidate(errors);
+    }
+
     public <T extends Window> T openWindow(String windowAlias, WindowManager.OpenType openType, Map<String, Object> params) {
         WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
         return windowManager.<T>openWindow(windowInfo, openType, params);

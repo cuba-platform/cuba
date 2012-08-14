@@ -75,6 +75,13 @@ public interface Window extends Serializable, IFrame, Component.HasCaption {
     Timer getTimer(String id);
 
     /**
+     * Check validity by invoking validators on all components which support them
+     * and show validation result notification.
+     * @return true if the validation was succesful, false if there were any problems
+     */
+    boolean validateAll();
+
+    /**
      * Window intended for editing an entity instance
      */
     interface Editor extends Window {
@@ -85,7 +92,9 @@ public interface Window extends Serializable, IFrame, Component.HasCaption {
         String WINDOW_COMMIT_AND_CLOSE = "windowCommitAndClose";
         String WINDOW_CLOSE = "windowClose";
 
-        /** Get edited entity  */
+        /**
+         * @return edited entity
+         */
         Entity getItem();
 
         /** 
@@ -94,28 +103,34 @@ public interface Window extends Serializable, IFrame, Component.HasCaption {
          */
         void setParentDs(Datasource parentDs);
 
-        /** Set edited entity. Invoked by the framework on opening the window. */
+        /**
+         * Set edited entity. Invoked by the framework after opening the window.
+         * @param item  entity instance
+         */
         void setItem(Entity item);
 
         /**
-         * Check validity by invoking validators on all components which support them
-         * and show validation result notification
-         * */
-        boolean validateOnCommit();
-
-        /** Validate and commit changes */
+         * Validate and commit changes.
+         * @return true if commit was succesful
+         */
         boolean commit();
 
-        /** Commit changes with optional validating */
+        /**
+         * Commit changes with optional validation.
+         * @param validate false to avoid validation
+         * @return true if commit was succesful
+         */
         boolean commit(boolean validate);
 
         /**
-         * Validate, commit and close if commit was successful.
+         * Validate, commit and close the window if commit was successful.
          * Passes {@link #COMMIT_ACTION_ID} to associated {@link CloseListener}s
          */
         void commitAndClose();
 
-        /** Check whether item was pessimistically locked when editor was opened */
+        /**
+         * Check whether the item was pessimistically locked when editor was opened
+         */
         boolean isLocked();
 
     }

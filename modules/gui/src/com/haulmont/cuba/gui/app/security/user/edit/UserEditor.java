@@ -32,7 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import javax.inject.Inject;
 import java.util.*;
 
-public class UserEditor extends AbstractEditor {
+public class UserEditor extends AbstractEditor<User> {
 
     @Inject
     protected DsContext dsContext;
@@ -117,14 +117,11 @@ public class UserEditor extends AbstractEditor {
     }
 
     @Override
-    public void setItem(Entity item) {
+    protected void initItem(User item) {
         if (PersistenceHelper.isNew(item)) {
-            User user = (User) item;
-            addDefaultRoles(user);
-            user.setLanguage(userSession.getLocale().getLanguage());
+            addDefaultRoles(item);
+            item.setLanguage(userSession.getLocale().getLanguage());
         }
-
-        super.setItem(item);
     }
 
     private void addDefaultRoles(User user) {
@@ -200,7 +197,8 @@ public class UserEditor extends AbstractEditor {
         });
     }
 
-    private boolean _commit() {
+    @Override
+    protected boolean preCommit() {
         if (rolesDs.isModified()) {
             DatasourceImplementation rolesDsImpl = (DatasourceImplementation) rolesDs;
 
@@ -215,8 +213,7 @@ public class UserEditor extends AbstractEditor {
             }
         }
 
-        boolean isNew = PersistenceHelper.isNew(userDs.getItem());
-        if (isNew) {
+        if (PersistenceHelper.isNew(getItem())) {
             String passw = passwField.getValue();
             String confPassw = confirmPasswField.getValue();
             if (StringUtils.isBlank(passw) || StringUtils.isBlank(confPassw)) {
@@ -235,7 +232,7 @@ public class UserEditor extends AbstractEditor {
                             return false;
                         }
                     } else {
-                        userDs.getItem().setPassword(DigestUtils.md5Hex(passw));
+                        getItem().setPassword(DigestUtils.md5Hex(passw));
                         return true;
                     }
                 } else {
@@ -245,18 +242,6 @@ public class UserEditor extends AbstractEditor {
             }
         } else {
             return true;
-        }
-    }
-
-    @Override
-    public boolean commit() {
-        return _commit() && super.commit();
-    }
-
-    @Override
-    public void commitAndClose() {
-        if (_commit()) {
-            super.commitAndClose();
         }
     }
 

@@ -6,17 +6,16 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.gui.app.security.role.edit.tabs.ScreenPermissionsFrame;
 import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Tabsheet;
+import com.haulmont.cuba.security.entity.Role;
 
 import javax.inject.Inject;
 import java.util.Map;
 
-public class RoleEditor extends AbstractEditor {
+public class RoleEditor extends AbstractEditor<Role> {
 
     @Inject
     private Tabsheet permissionsTabsheet;
@@ -25,23 +24,21 @@ public class RoleEditor extends AbstractEditor {
     private ScreenPermissionsFrame screensTabFrame;
 
     @Override
-    public void setItem(Entity item) {
-        super.setItem(item);
-
-        screensTabFrame.loadPermissions();
-
-        if (!PersistenceHelper.isNew(item)) {
-            getComponent("name").setEnabled(false);
-        }
-    }
-
-    @Override
     public void init(Map<String, Object> params) {
         permissionsTabsheet.addListener(new Tabsheet.TabChangeListener() {
             @Override
             public void tabChanged(Tabsheet.Tab newTab) {
-                // do not remove, it needs for lazy initialization
+                // do not remove, it is needed for lazy initialization
             }
         });
+    }
+
+    @Override
+    protected void postInit() {
+        screensTabFrame.loadPermissions();
+
+        if (!PersistenceHelper.isNew(getItem())) {
+            getComponent("name").setEnabled(false);
+        }
     }
 }

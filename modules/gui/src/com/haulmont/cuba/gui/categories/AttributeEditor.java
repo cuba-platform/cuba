@@ -45,7 +45,7 @@ import java.util.List;
  *
  * @author devyatkin
  */
-public class AttributeEditor extends AbstractEditor {
+public class AttributeEditor extends AbstractEditor<CategoryAttribute> {
 
     private Container fieldsContainer;
     private TextField nameField;
@@ -153,21 +153,19 @@ public class AttributeEditor extends AbstractEditor {
     }
 
     @Override
-    public void commitAndClose() {
+    public void postValidate(ValidationErrors errors) {
         CollectionDatasource parent = (CollectionDatasource) ((DatasourceImplementation) attributeDs).getParent();
         if (parent != null) {
-            CategoryAttribute categoryAttribute = (CategoryAttribute) getItem();
+            CategoryAttribute categoryAttribute = getItem();
             for (Object id : parent.getItemIds()) {
                 CategoryAttribute ca = (CategoryAttribute) parent.getItem(id);
                 if (ca.getName().equals(categoryAttribute.getName())
                         && (!ca.equals(categoryAttribute))) {
-                    showNotification(getMessage("validationFail"), getMessage("uniqueName"), NotificationType.TRAY);
+                    errors.add(getMessage("uniqueName"));
                     return;
                 }
             }
         }
-
-        super.commitAndClose();
     }
 
     private void generateDefaultValueField(Enum<RuntimePropsDatasource.PropertyType> dataType, boolean setValue) {
@@ -417,10 +415,9 @@ public class AttributeEditor extends AbstractEditor {
         });
     }
 
-    public void setItem(Entity item) {
-        super.setItem(item);
-
-        attribute = (CategoryAttribute) getItem();
+    @Override
+    protected void postInit() {
+        attribute = getItem();
         nameField.setValue(attribute.getName());
         requiredField.setValue(attribute.getRequired());
         lookupField.setValue(attribute.getLookup());

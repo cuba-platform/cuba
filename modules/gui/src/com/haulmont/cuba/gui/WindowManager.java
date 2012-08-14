@@ -390,7 +390,6 @@ public abstract class WindowManager implements Serializable {
     {
         checkCanOpenWindow(windowInfo, openType, params);
 
-        checkCanOpenWindow(windowInfo, openType, params);
         Integer hashCode = getHash(windowInfo, params);
         params = createParametersMap(windowInfo, params);
         String template = windowInfo.getTemplate();

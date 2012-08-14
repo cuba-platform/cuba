@@ -43,8 +43,11 @@ public interface DsContext {
     /** Refresh all datasources */
     void refresh();
 
-    /** Commit all changed datasources */
-    void commit();
+    /**
+     * Commit all changed datasources.
+     * @return true if there were changes and commit has been done
+     */
+    boolean commit();
 
     /**
      * Register dependency between datasources.
