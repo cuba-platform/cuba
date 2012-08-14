@@ -110,10 +110,7 @@ public class DatasourceImpl<T extends Entity>
     }
 
     public T getItem() {
-        if (State.VALID.equals(state)) 
-            return item;
-        else
-            throw new IllegalStateException("Datasource state is " + state);
+        return State.VALID.equals(state) ? item : null;
     }
 
     public void refresh() {
