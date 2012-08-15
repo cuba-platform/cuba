@@ -185,11 +185,9 @@ public class ObjectsCache implements ObjectsCacheInstance, ObjectsCacheControlle
 
     @Override
     public int count(Predicate... selectors) {
-        int count = 0;
-
         cacheLock.readLock().lock();
 
-        cacheSet.countConjunction(selectors);
+        int count = cacheSet.countConjunction(selectors);
 
         cacheLock.readLock().unlock();
 
