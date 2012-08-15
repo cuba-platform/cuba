@@ -44,15 +44,15 @@ public class ScrollBoxLayoutLoader extends ContainerLoader implements com.haulmo
         loadSubComponents(component, element, "visible");
 
         for (Component child : component.getOwnComponents()) {
-            if (ComponentsHelper.hasFullHeight(child)) {
+            if (component.getOrientation() == ScrollBoxLayout.Orientation.VERTICAL && ComponentsHelper.hasFullHeight(child)) {
                 child.setHeight("-1px");
                 log.warn("100% height of " + child.getClass().getSimpleName() + " id=" + child.getId()
-                        + " inside scrollBox replaced with -1px height");
+                        + " inside vertical scrollBox replaced with -1px height");
             }
-            if (ComponentsHelper.hasFullWidth(child)) {
+            if (component.getOrientation() == ScrollBoxLayout.Orientation.HORIZONTAL && ComponentsHelper.hasFullWidth(child)) {
                 child.setWidth("-1px");
                 log.warn("100% width of " + child.getClass().getSimpleName() + " id=" + child.getId()
-                        + " inside scrollBox replaced with -1px width");
+                        + " inside horizontal scrollBox replaced with -1px width");
             }
         }
 

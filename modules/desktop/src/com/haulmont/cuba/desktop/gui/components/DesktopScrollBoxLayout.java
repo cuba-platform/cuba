@@ -11,6 +11,9 @@ import com.haulmont.cuba.gui.components.ScrollBoxLayout;
 import org.apache.commons.lang.ObjectUtils;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -35,6 +38,21 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
 
         content = new DesktopVBox();
         impl.setViewportView(DesktopComponentsHelper.getComposition(content));
+
+        // support tables with 100% width like in web
+        impl.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                adjustViewPreferredSize();
+            }
+        });
+    }
+
+    private void adjustViewPreferredSize() {
+        JComponent view = DesktopComponentsHelper.getComposition(content);
+        Dimension minimumSize = view.getMinimumSize();
+        int width = Math.max(minimumSize.width, impl.getViewport().getWidth());
+        view.setPreferredSize(new Dimension(width, minimumSize.height));
     }
 
     @Override
@@ -52,6 +70,8 @@ public class DesktopScrollBoxLayout extends DesktopAbstractComponent<JScrollPane
         }
 
         content.add(component);
+
+        adjustViewPreferredSize();
     }
 
     @Override

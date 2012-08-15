@@ -15,9 +15,7 @@ import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -90,12 +88,127 @@ public class VclTestApp extends JFrame {
         JTabbedPane tabbedPane = new JTabbedPane();
         add(tabbedPane, BorderLayout.CENTER);
 
-        tabbedPane.add("Align", createAlignTab());
         tabbedPane.add("Table", createTableTab());
+        tabbedPane.add("Align", createAlignTab());
         tabbedPane.add("TextArea", createTextAreaTab());
         tabbedPane.add("Popup", createPopupTab());
         tabbedPane.add("Picker", createPickersTab());
 //        tabbedPane.add("Autocomplete", createAutocompleteTab());
+    }
+
+    public static class MyPanel extends JPanel implements Scrollable {
+
+        @Override
+        public Dimension getPreferredScrollableViewportSize() {
+            return getPreferredSize();
+        }
+
+        @Override
+        public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+            return 10;
+        }
+
+        @Override
+        public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+            return visibleRect.width;
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportWidth() {
+//            final Container viewport = getParent();
+//            System.out.println("viewport.width=" + viewport.getWidth() + ", minimumSize.width=" + getMinimumSize().width);
+//            return viewport.getWidth() > getMinimumSize().width;
+            return false;
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportHeight() {
+            return false;
+        }
+    }
+
+    private Component createTableTab() {
+        final JPanel box = new JPanel();
+        box.setFocusable(false);
+        MigLayout boxLayout = new MigLayout("fill");
+        box.setLayout(boxLayout);
+
+        final JScrollPane outerScrollPane = new JScrollPane();
+        outerScrollPane.setViewportView(box);
+
+        outerScrollPane.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                final Dimension minimumSize = box.getMinimumSize();
+                final int width = Math.max(minimumSize.width, outerScrollPane.getViewport().getWidth());
+                box.setPreferredSize(new Dimension(width, minimumSize.height));
+            }
+        });
+
+        JPanel tablePanel = new JPanel();
+        MigLayout tablePanellayout = new MigLayout("flowy, fill, insets 0", "", "[min!][fill]");
+        tablePanel.setLayout(tablePanellayout);
+
+        JPanel topPanel = new JPanel(new FlowLayout());
+        topPanel.setVisible(true);
+        tablePanel.add(topPanel/*, "growx"*/);
+
+        topPanel.add(new JButton("Button1"));
+        topPanel.add(new JButton("Button2"));
+        topPanel.add(new JButton("Button3"));
+        topPanel.add(new JButton("Button4"));
+        topPanel.add(new JButton("Button5"));
+
+        JXTableExt table = new JXTableExt();
+
+        JScrollPane tableScrollPane = new JScrollPane(table);
+//        table.setFillsViewportHeight(true);
+
+        tablePanel.add(tableScrollPane, "grow");
+
+        table.setShowGrid(true);
+        table.setGridColor(Color.lightGray);
+
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table.setColumnControlVisible(true);
+
+        table.setModel(new AbstractTableModel() {
+            @Override
+            public int getRowCount() {
+                return 20;
+            }
+
+            @Override
+            public int getColumnCount() {
+                return 20;
+            }
+
+            @Override
+            public Object getValueAt(int rowIndex, int columnIndex) {
+                return rowIndex + "-" + columnIndex;
+            }
+        });
+
+        CC cc = new CC();
+//        cc.growX(0);
+//        cc.width("300!");
+        cc.width("100%");
+//        cc.growY(0.0f);
+        cc.height("200!");
+//        cc.height("100%");
+
+        box.add(tablePanel);
+
+        boxLayout.setComponentConstraints(tablePanel, cc);
+
+//        cc = new CC();
+//        cc.growX(0);
+//        cc.width("300!");
+//        cc.width("100%");
+//        cc.height("200!");
+//        tablePanellayout.setComponentConstraints(tableScrollPane, cc);
+
+        return outerScrollPane;
     }
 
     private Component createAlignTab() {
@@ -133,80 +246,6 @@ public class VclTestApp extends JFrame {
 
         box.add(panel, "height 100px, width 100px");
         layout.setComponentConstraints(label, cc);
-        return box;
-    }
-
-    private Component createTableTab() {
-        JPanel box = new JPanel();
-        box.setFocusable(false);
-        MigLayout boxLayout = new MigLayout("debug 1000");
-        box.setLayout(boxLayout);
-
-        JPanel panel = new JPanel();
-        MigLayout layout = new MigLayout("debug 1000, flowy, fill, insets 0", "", "[min!][fill]");
-        panel.setLayout(layout);
-
-        JPanel topPanel = new JPanel(new FlowLayout());
-        topPanel.setVisible(true);
-        panel.add(topPanel, "growx");
-
-        topPanel.add(new JButton("Button1"));
-        topPanel.add(new JButton("Button2"));
-        topPanel.add(new JButton("Button3"));
-        topPanel.add(new JButton("Button4"));
-        topPanel.add(new JButton("Button5"));
-
-        JXTableExt impl = new JXTableExt();
-
-//        JPanel tablePanel = new JPanel(new BorderLayout());
-
-        JScrollPane scrollPane = new JScrollPane(impl);
-        impl.setFillsViewportHeight(true);
-//        tablePanel.add(scrollPane, BorderLayout.CENTER);
-
-        panel.add(scrollPane, "grow");
-
-        impl.setShowGrid(true);
-        impl.setGridColor(Color.lightGray);
-
-        impl.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        impl.setColumnControlVisible(true);
-
-        impl.setModel(new AbstractTableModel() {
-            @Override
-            public int getRowCount() {
-                return 20;
-            }
-
-            @Override
-            public int getColumnCount() {
-                return 20;
-            }
-
-            @Override
-            public Object getValueAt(int rowIndex, int columnIndex) {
-                return rowIndex + "-" + columnIndex;
-            }
-        });
-
-        CC cc = new CC();
-        cc.growX(0);
-        cc.width("300!");
-//        cc.width("100%");
-        cc.growY(0.0f);
-        cc.height("200!");
-//        cc.height("100%");
-
-        box.add(panel);
-
-        boxLayout.setComponentConstraints(panel, cc);
-
-        cc = new CC();
-        cc.growX(0);
-        cc.width("300!");
-//        cc.width("100%");
-        layout.setComponentConstraints(scrollPane, cc);
-
         return box;
     }
 
