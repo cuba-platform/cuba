@@ -199,7 +199,7 @@ public class JSONConvertor implements Convertor {
                 case ENUM:
                     setField(bean, key, property.getRange().asEnumeration().parse(json.getString(key)));
                     break;
-                case AGGREGATION:
+                case COMPOSITION:
                 case ASSOCIATION:
                     if ("null".equals(json.getString(key))) {
                         setField(bean, key, null);
@@ -314,7 +314,7 @@ public class JSONConvertor implements Convertor {
                 case ENUM:
                     root.set(property.getName(), property.getRange().asEnumeration().format(value));
                     break;
-                case AGGREGATION:
+                case COMPOSITION:
                 case ASSOCIATION: {
                     MetaClass meta = propertyMetaClass(property);
                     //checks if the user permitted to read a property's entity

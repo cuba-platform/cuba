@@ -6,17 +6,13 @@
 
 package com.haulmont.cuba.core.entity;
 
-import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.sys.SetValueEntity;
 import org.apache.openjpa.persistence.Persistent;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Entity(name="sys$CategoryAttribute")

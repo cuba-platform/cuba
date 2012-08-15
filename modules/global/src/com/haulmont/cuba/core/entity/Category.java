@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.core.entity;
 
-import com.haulmont.chile.core.annotations.Aggregation;
+import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.SystemLevel;
@@ -42,7 +42,7 @@ public class Category extends StandardEntity {
     @OneToMany(mappedBy = "category", targetEntity = CategoryAttribute.class)
     @OnDelete(com.haulmont.cuba.core.global.DeletePolicy.CASCADE)
     @OrderBy("orderNo")
-    @Aggregation
+    @Composition
     protected List<CategoryAttribute> categoryAttrs;
 
     @Column(name = "SPECIAL")

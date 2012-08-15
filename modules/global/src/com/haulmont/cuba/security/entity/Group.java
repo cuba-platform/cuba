@@ -10,12 +10,12 @@
  */
 package com.haulmont.cuba.security.entity;
 
+import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.TrackEditScreenHistory;
 import com.haulmont.cuba.core.global.DeletePolicy;
-import com.haulmont.chile.core.annotations.Aggregation;
 import com.haulmont.chile.core.annotations.NamePattern;
 
 import javax.persistence.*;
@@ -46,12 +46,12 @@ public class Group extends StandardEntity
     private List<GroupHierarchy> hierarchyList;
 
     @OneToMany(mappedBy = "group")
-    @Aggregation()
+    @Composition()
     @OnDelete(DeletePolicy.CASCADE)
     private Set<Constraint> constraints;
 
     @OneToMany(mappedBy = "group")
-    @Aggregation()
+    @Composition()
     @OnDelete(DeletePolicy.CASCADE)
     private Set<SessionAttribute> sessionAttributes;
 

@@ -325,7 +325,7 @@ public class EntityInspectorEditor extends AbstractEditor {
                     custom = false;
                     addField(metaClass, metaProperty, fieldGroup, isRequired, custom, customFields);
                     break;
-                case AGGREGATION:
+                case COMPOSITION:
                 case ASSOCIATION:
                     if (metaProperty.getRange().getCardinality().isMany()) {
                         addTable(metaProperty);
@@ -374,7 +374,7 @@ public class EntityInspectorEditor extends AbstractEditor {
                     custom = false;
                     addField(embeddableMetaClass, metaProperty, fieldGroup, isRequired, custom, customFields);
                     break;
-                case AGGREGATION:
+                case COMPOSITION:
                 case ASSOCIATION:
                     if (metaProperty.getRange().getCardinality().isMany()) {
                         throw new IllegalStateException("tables for the embeddable entities are not supported");
@@ -419,7 +419,7 @@ public class EntityInspectorEditor extends AbstractEditor {
     private void createPropertyDatasources(Datasource masterDs) {
         for (MetaProperty metaProperty : meta.getProperties()) {
             switch (metaProperty.getType()) {
-                case AGGREGATION:
+                case COMPOSITION:
                 case ASSOCIATION:
                     Datasource propertyDs;
                     if (metaProperty.getRange().getCardinality().isMany()) {
@@ -488,7 +488,7 @@ public class EntityInspectorEditor extends AbstractEditor {
         if (!attrViewPermitted(metaProperty))
             return;
 
-        if ((metaProperty.getType() == MetaProperty.Type.AGGREGATION
+        if ((metaProperty.getType() == MetaProperty.Type.COMPOSITION
                 || metaProperty.getType() == MetaProperty.Type.ASSOCIATION)
                 && !entityOpPermitted(metaProperty.getRange().asClass(), EntityOp.READ))
             return;
@@ -749,7 +749,7 @@ public class EntityInspectorEditor extends AbstractEditor {
     private RemoveAction createRemoveAction(MetaProperty metaProperty, Table table) {
         RemoveAction result;
         switch (metaProperty.getType()) {
-            case AGGREGATION:
+            case COMPOSITION:
                 result = new com.haulmont.cuba.gui.components.actions.RemoveAction(table);
                 break;
             case ASSOCIATION:
@@ -778,7 +778,7 @@ public class EntityInspectorEditor extends AbstractEditor {
                     view.addProperty(metaProperty.getName());
                     break;
                 case ASSOCIATION:
-                case AGGREGATION:
+                case COMPOSITION:
                     View propView = createReferredPropertyView(metaProperty);
                     view.addProperty(metaProperty.getName(), propView);
                     break;
@@ -796,7 +796,7 @@ public class EntityInspectorEditor extends AbstractEditor {
      * @return
      */
     private View createReferredPropertyView(MetaProperty property) {
-        if (property.getType() != MetaProperty.Type.AGGREGATION &&
+        if (property.getType() != MetaProperty.Type.COMPOSITION &&
                 property.getType() != MetaProperty.Type.ASSOCIATION)
             throw new RuntimeException("cannot create view for basic type property");
 
@@ -809,7 +809,7 @@ public class EntityInspectorEditor extends AbstractEditor {
                     view.addProperty(metaProperty.getName());
                     break;
                 case ASSOCIATION:
-                case AGGREGATION:
+                case COMPOSITION:
                     View propView = MetadataProvider.getViewRepository()
                             .getView(metaProperty.getRange().asClass(), View.MINIMAL);
                     view.addProperty(metaProperty.getName(), propView);

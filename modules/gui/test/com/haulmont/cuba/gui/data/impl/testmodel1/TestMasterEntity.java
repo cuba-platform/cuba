@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.gui.data.impl.testmodel1;
 
-import com.haulmont.chile.core.annotations.Aggregation;
+import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -25,7 +25,7 @@ public class TestMasterEntity extends BaseUuidEntity {
     private String masterName;
 
     @OneToMany(mappedBy = "master")
-    @Aggregation
+    @Composition
     private Set<TestDetailEntity> details;
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "master")

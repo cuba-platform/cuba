@@ -79,7 +79,7 @@ public class MetaClassRepresentation {
 
             //don't show property if it's reference and user
             //don't have permissions to view it's entity class
-            if (propertyType == MetaProperty.Type.AGGREGATION
+            if (propertyType == MetaProperty.Type.COMPOSITION
                     || propertyType == MetaProperty.Type.ASSOCIATION) {
                 MetaClass propertyMetaClass = propertyMetaClass(property);
                 if (!readPermitted(propertyMetaClass))

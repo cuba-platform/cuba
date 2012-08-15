@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.gui.data.impl.testmodel1;
 
-import com.haulmont.chile.core.annotations.Aggregation;
+import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -32,7 +32,7 @@ public class TestDetailEntity extends BaseUuidEntity {
     private TestEmbeddableEntity embeddable;
 
     @OneToMany(mappedBy = "detail")
-    @Aggregation
+    @Composition
     private Set<TestPartEntity> parts;
 
     public String getDetailName() {

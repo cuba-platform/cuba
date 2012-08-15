@@ -291,7 +291,7 @@ public class XMLConvertor implements Convertor {
 
                     setField(bean, fieldName, value);
                     break;
-                case AGGREGATION:
+                case COMPOSITION:
                 case ASSOCIATION: {
                     if ("null".equals(xmlValue)) {
                         setField(bean, fieldName, null);
@@ -490,7 +490,7 @@ public class XMLConvertor implements Convertor {
                         encodeBasic(child, str, property.getJavaType());
                     }
                     break;
-                case AGGREGATION:
+                case COMPOSITION:
                 case ASSOCIATION: {
                     MetaClass meta = propertyMetaClass(property);
                     //checks if the user permitted to read a property

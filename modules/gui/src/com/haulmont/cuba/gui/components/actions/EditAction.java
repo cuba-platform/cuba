@@ -113,7 +113,7 @@ public class EditAction extends ItemTrackingAction {
             final CollectionDatasource datasource = owner.getDatasource();
             if (datasource instanceof PropertyDatasource) {
                 MetaProperty metaProperty = ((PropertyDatasource) datasource).getProperty();
-                if (metaProperty.getType().equals(MetaProperty.Type.AGGREGATION)) {
+                if (metaProperty.getType().equals(MetaProperty.Type.COMPOSITION)) {
                     parentDs = datasource;
                 }
             }

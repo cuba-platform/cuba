@@ -1,12 +1,19 @@
+/*
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.chile.core.model;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.AnnotatedElement;
 
 /**
- * Metadata object reflecting an entity attribute.
+ * Metadata object representing an entity attribute.
+ *
+ * @author abramov
+ * @version $Id$
  */
 public interface MetaProperty extends MetadataObject<MetaProperty> {
 
@@ -24,9 +31,11 @@ public interface MetaProperty extends MetadataObject<MetaProperty> {
         /** Reference type. Attribute of this type contains related entity. */
         ASSOCIATION,
 
-        /** Reference type. Attribute of this type contains related entity,
-         * and relation in this case is more strong then ASSOCIATION */
-        AGGREGATION
+        /**
+         * Reference type. Attribute of this type contains a related entity.
+         * Composition implyes ownership, that is the referenced object exists only as part of the owning entity.
+         */
+        COMPOSITION
     }
 
     /**

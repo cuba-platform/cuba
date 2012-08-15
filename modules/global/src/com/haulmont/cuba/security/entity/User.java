@@ -10,7 +10,7 @@
  */
 package com.haulmont.cuba.security.entity;
 
-import com.haulmont.chile.core.annotations.Aggregation;
+import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
@@ -76,7 +76,7 @@ public class User extends StandardEntity
 
     @OneToMany(mappedBy = "user")
     @OrderBy("createTs")
-    @Aggregation
+    @Composition
     protected List<UserRole> userRoles;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -85,7 +85,7 @@ public class User extends StandardEntity
 
     @OneToMany(mappedBy = "user")
     @OrderBy("createTs")
-    @Aggregation
+    @Composition
     protected List<UserSubstitution> substitutions;
 
     @Column(name = "IP_MASK", length = 200)

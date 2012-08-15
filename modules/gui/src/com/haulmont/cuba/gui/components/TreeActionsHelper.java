@@ -91,7 +91,7 @@ public class TreeActionsHelper extends ListActionsHelper<Tree>{
             Datasource parentDs = null;
             if (datasource instanceof PropertyDatasource) {
                 MetaProperty metaProperty = ((PropertyDatasource) datasource).getProperty();
-                if (metaProperty.getType().equals(MetaProperty.Type.AGGREGATION)) {
+                if (metaProperty.getType().equals(MetaProperty.Type.COMPOSITION)) {
                     parentDs = datasource;
                 }
             }

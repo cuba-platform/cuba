@@ -45,7 +45,7 @@ public class DomainModelBuilder {
         Class<?> javaType = prop.getJavaType();
         Range range = prop.getRange();
         switch (type) {
-            case AGGREGATION:
+            case COMPOSITION:
             case ASSOCIATION:
                 if (range.isClass()) {
                     MetaClass metaClass = range.asClass();

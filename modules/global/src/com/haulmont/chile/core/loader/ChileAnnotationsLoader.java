@@ -1,7 +1,7 @@
 package com.haulmont.chile.core.loader;
 
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.chile.core.annotations.Aggregation;
+import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.datatypes.Datatype;
 import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.impl.EnumerationImpl;
@@ -378,9 +378,9 @@ public class ChileAnnotationsLoader implements ClassMetadataLoader {
 
     protected void assignPropertyType(AnnotatedElement field, MetaProperty property, Range range) {
         if (range.isClass()) {
-            Aggregation aggregation = field.getAnnotation(Aggregation.class);
-            if (aggregation != null) {
-                ((MetaPropertyImpl) property).setType(MetaProperty.Type.AGGREGATION);
+            Composition composition = field.getAnnotation(Composition.class);
+            if (composition != null) {
+                ((MetaPropertyImpl) property).setType(MetaProperty.Type.COMPOSITION);
             } else {
                 ((MetaPropertyImpl) property).setType(MetaProperty.Type.ASSOCIATION);
             }
