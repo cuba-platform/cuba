@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.data.DsContext;
 import com.haulmont.cuba.gui.data.Datasource;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -160,7 +161,7 @@ public interface IFrame
     /**
      * Open lookup window
      *
-     * @param windowAlias screen ID as defined in <code>screen-config.xml</code>
+     * @param windowAlias screen ID as defined in <code>screens.xml</code>
      * @param handler     is invoked when selection confirmed and the lookup screen closes
      * @param openType    how to open the screen
      * @return created window
@@ -168,9 +169,22 @@ public interface IFrame
     <T extends Window> T openLookup(
             String windowAlias, Window.Lookup.Handler handler, WindowManager.OpenType openType);
 
-    <T extends IFrame> T openFrame(Component parent, String windowAlias);
+    /**
+     * Load a frame registered in <code>screens.xml</code> and optionally show it inside a parent component of this frame.
+     * @param parent        if specified, all parent's subcomponents will be removed and the frame will be added
+     * @param windowAlias   frame ID as defined in <code>screens.xml</code>
+     * @return              frame's controller instance
+     */
+    <T extends IFrame> T openFrame(@Nullable Component parent, String windowAlias);
 
-    <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params);
+    /**
+     * Load a frame registered in <code>screens.xml</code> and optionally show it inside a parent component of this frame.
+     * @param parent        if specified, all parent's subcomponents will be removed and the frame will be added
+     * @param windowAlias   frame ID as defined in <code>screens.xml</code>
+     * @param params        parameters to be passed into the frame's controller <code>init</code> method
+     * @return              frame's controller instance
+     */
+    <T extends IFrame> T openFrame(@Nullable Component parent, String windowAlias, Map<String, Object> params);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

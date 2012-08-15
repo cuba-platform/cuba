@@ -254,11 +254,24 @@ public class AbstractFrame implements IFrame, Component.Wrapper, Serializable {
         return frame.<T>openLookup(windowAlias, handler, openType, Collections.<String, Object>emptyMap());
     }
 
-    public <T extends IFrame> T openFrame(Component parent, String windowAlias) {
+    /**
+     * Load a frame registered in <code>screens.xml</code> and optionally show it inside a parent component of this frame.
+     * @param parent        if specified, all parent's subcomponents will be removed and the frame will be added
+     * @param windowAlias   frame ID as defined in <code>screens.xml</code>
+     * @return              frame's controller instance
+     */
+    public <T extends IFrame> T openFrame(@Nullable Component parent, String windowAlias) {
         return frame.<T>openFrame(parent, windowAlias);
     }
 
-    public <T extends IFrame> T openFrame(Component parent, String windowAlias, Map<String, Object> params) {
+    /**
+     * Load a frame registered in <code>screens.xml</code> and optionally show it inside a parent component of this frame.
+     * @param parent        if specified, all parent's subcomponents will be removed and the frame will be added
+     * @param windowAlias   frame ID as defined in <code>screens.xml</code>
+     * @param params        parameters to be passed into the frame's controller <code>init</code> method
+     * @return              frame's controller instance
+     */
+    public <T extends IFrame> T openFrame(@Nullable Component parent, String windowAlias, Map<String, Object> params) {
         return frame.<T>openFrame(parent, windowAlias, params);
     }
 

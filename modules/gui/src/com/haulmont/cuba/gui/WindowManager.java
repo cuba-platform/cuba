@@ -521,7 +521,8 @@ public abstract class WindowManager implements Serializable {
         context.setFrame(component);
         context.executePostInitTasks();
 
-        showFrame(parent, component);
+        if (parent != null)
+            showFrame(parent, component);
 
         return (T) component;
     }
