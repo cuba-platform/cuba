@@ -33,6 +33,7 @@ import com.haulmont.cuba.security.app.UserSettingService;
 import com.haulmont.cuba.security.entity.FilterEntity;
 import com.haulmont.cuba.security.entity.SearchFolder;
 import com.haulmont.cuba.web.App;
+import com.haulmont.cuba.web.AppTimers;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.app.UserSettingHelper;
@@ -167,9 +168,18 @@ public class FoldersPane extends VerticalLayout {
                 }
 
                 int period = ConfigProvider.getConfig(WebConfig.class).getAppFoldersRefreshPeriodSec() * 1000;
-                timer = new Timer(period, true);
+
+                // find old timers
+                AppTimers appTimers = App.getInstance().getTimers();
+                Collection<Timer> timers = appTimers.getAll(parentAppWindow);
+                for (Timer t : timers) {
+                    if (t instanceof FoldersPane.FoldersPaneTimer)
+                        t.stopTimer();
+                }
+
+                timer = new FoldersPaneTimer(period, true);
                 timer.addListener(createAppFolderUpdater());
-                App.getInstance().getTimers().add(timer, parentAppWindow);
+                appTimers.add(timer, parentAppWindow);
             }
 
             Component searchFoldersPane = createSearchFoldersPane();
@@ -934,5 +944,12 @@ public class FoldersPane extends VerticalLayout {
 
     protected static MenuBar.MenuItem getFirstMenuItem(MenuBar menuBar) {
         return menuBar.getItems().isEmpty() ? null : menuBar.getItems().get(0);
+    }
+
+    protected static class FoldersPaneTimer extends Timer {
+
+        public FoldersPaneTimer(int delay, boolean repeating) {
+            super(delay, repeating);
+        }
     }
 }
