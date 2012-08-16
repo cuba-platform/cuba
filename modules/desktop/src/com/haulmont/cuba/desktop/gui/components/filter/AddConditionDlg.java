@@ -86,11 +86,11 @@ public class AddConditionDlg extends JDialog {
         tree.setExpandsSelectedPaths(true);
         add(new JScrollPane(tree), "wrap, spanx 2, grow");
 
-        okBtn = new JButton("OK");
+        okBtn = new JButton(MessageProvider.getMessage(getClass(), "actions.Ok"));
         add(okBtn, "align right");
         okBtn.addActionListener(commitAction);
 
-        JButton cancelBtn = new JButton("Cancel");
+        JButton cancelBtn = new JButton(MessageProvider.getMessage(getClass(), "actions.Cancel"));
         add(cancelBtn);
         cancelBtn.addActionListener(cancelAction);
 
