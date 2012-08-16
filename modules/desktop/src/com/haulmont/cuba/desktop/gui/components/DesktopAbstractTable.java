@@ -74,8 +74,8 @@ public abstract class DesktopAbstractTable<C extends JTable>
     protected CollectionDatasource datasource;
     protected ButtonsPanel buttonsPanel;
     protected RowsCount rowsCount;
-    protected Map<Object, Column> columns = new HashMap<Object, Column>();
-    protected List<Table.Column> columnsOrder = new ArrayList<Table.Column>();
+    protected Map<Object, Column> columns = new HashMap<>();
+    protected List<Table.Column> columnsOrder = new ArrayList<>();
     protected boolean sortable = true;
     protected TableSettings tableSettings;
     protected boolean editable;
@@ -266,7 +266,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
     }
 
     protected void adjustColumnHeaders() {
-        List<TableColumn> notInited = new LinkedList<TableColumn>();
+        List<TableColumn> notInited = new LinkedList<>();
         int summaryWidth = 0;
         int componentWidth = impl.getParent().getWidth();
 
@@ -368,10 +368,6 @@ public abstract class DesktopAbstractTable<C extends JTable>
     @Override
     public void setDatasource(final CollectionDatasource datasource) {
         UserSession userSession = UserSessionProvider.getUserSession();
-        if (!userSession.isEntityOpPermitted(datasource.getMetaClass(), EntityOp.READ)) {
-            impl.setVisible(false);
-            return;
-        }
 
         final Collection<Object> properties;
         if (this.columns.isEmpty()) {
@@ -408,7 +404,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
         List<MetaPropertyPath> editableColumns = null;
         if (isEditable()) {
-            editableColumns = new LinkedList<MetaPropertyPath>();
+            editableColumns = new LinkedList<>();
         }
 
         for (final Object property : properties) {
@@ -438,7 +434,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
             setEditableColumns(editableColumns);
         }
 
-        List<Object> columnsOrder = new ArrayList<Object>();
+        List<Object> columnsOrder = new ArrayList<>();
         for (Table.Column column : this.columnsOrder) {
             if (column.getId() instanceof MetaPropertyPath) {
                 MetaProperty colMetaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
@@ -453,7 +449,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
             }
         }
 
-        setVisibleColumns(columnsOrder);
+        setVisibleColumns(getPropertyColumns());
 
         if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
@@ -544,7 +540,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
             public void afterChange() {
                 Set<Entity> newSelection = null;
                 if (selectionBackup != null) {
-                    newSelection = new HashSet<Entity>();
+                    newSelection = new HashSet<>();
                     // filter selection
                     for (Object item : selectionBackup) {
                         int rowIndex = tableModel.getRowIndex((Entity) item);
@@ -617,7 +613,31 @@ public abstract class DesktopAbstractTable<C extends JTable>
         );
     }
 
-    protected void setVisibleColumns(List<Object> columnsOrder) {
+    private List<MetaPropertyPath> getPropertyColumns() {
+        UserSession userSession = UserSessionProvider.getUserSession();
+        List<MetaPropertyPath> result = new ArrayList<>();
+        for (Column column : columnsOrder) {
+            if (column.getId() instanceof MetaPropertyPath) {
+                MetaProperty colMetaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
+                MetaClass colMetaClass = colMetaProperty.getDomain();
+                if (userSession.isEntityOpPermitted(colMetaClass, EntityOp.READ)
+                        && userSession.isEntityAttrPermitted(
+                        colMetaClass, colMetaProperty.getName(), EntityAttrAccess.VIEW)) {
+                    result.add((MetaPropertyPath)column.getId());
+                }
+            }
+        }
+        return result;
+    }
+
+    protected void setVisibleColumns(List<?> columnsOrder) {
+        Enumeration<TableColumn> columnEnumeration = impl.getColumnModel().getColumns();
+        while (columnEnumeration.hasMoreElements()) {
+            TableColumn tableColumn = columnEnumeration.nextElement();
+            Column columnIdentifier = (Column) tableColumn.getIdentifier();
+            if (!columnsOrder.contains(columnIdentifier.getId()))
+                impl.removeColumn(tableColumn);
+        }
     }
 
     protected void setEditableColumns(List<MetaPropertyPath> editableColumns) {
@@ -666,7 +686,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
 
     @Override
     public List<Column> getNotCollapsedColumns() {
-        List<Column> visibleColumns = new LinkedList<Column>();
+        List<Column> visibleColumns = new LinkedList<>();
         for (Column column : columnsOrder) {
             if (!column.isCollapsed())
                 visibleColumns.add(column);
