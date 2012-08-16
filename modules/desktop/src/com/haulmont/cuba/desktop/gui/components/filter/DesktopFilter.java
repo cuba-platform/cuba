@@ -115,7 +115,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         persistenceManager = ServiceLocator.lookup(PersistenceManagerService.NAME);
         LC topLc = new LC();
         topLc.hideMode(3);
-        topLc.insets("0", "5", "0", "5");
+        topLc.insetsAll("0");
         if (LayoutAdapter.isDebug())
             topLc.debug(1000);
 
