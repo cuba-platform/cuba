@@ -571,20 +571,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         createColumns(containerDatasource);
 
-        // todo check this security issue
-        List<Object> columnsOrder = new ArrayList<>();
         for (Table.Column column : this.columnsOrder) {
-            if (column.getId() instanceof MetaPropertyPath) {
-                MetaProperty colMetaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
-                MetaClass colMetaClass = colMetaProperty.getDomain();
-                if (userSession.isEntityOpPermitted(colMetaClass, EntityOp.READ)
-                        && userSession.isEntityAttrPermitted(
-                        colMetaClass, colMetaProperty.getName(), EntityAttrAccess.VIEW)) {
-                    columnsOrder.add(column.getId());
-                }
-            } else {
-                columnsOrder.add(column.getId());
-            }
             if (editable && column.getAggregation() != null
                     && (BooleanUtils.isTrue(column.isEditable()) || BooleanUtils.isTrue(column.isCalculatable())))
             {
@@ -621,16 +608,24 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
     }
 
     private List<MetaPropertyPath> getPropertyColumns() {
+        UserSession userSession = UserSessionProvider.getUserSession();
         List<MetaPropertyPath> result = new ArrayList<>();
         for (Column column : columnsOrder) {
             if (column.getId() instanceof MetaPropertyPath) {
-                result.add((MetaPropertyPath) column.getId());
+                MetaProperty colMetaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
+                MetaClass colMetaClass = colMetaProperty.getDomain();
+                if (userSession.isEntityOpPermitted(colMetaClass, EntityOp.READ)
+                        && userSession.isEntityAttrPermitted(
+                        colMetaClass, colMetaProperty.getName(), EntityAttrAccess.VIEW)) {
+                    result.add((MetaPropertyPath)column.getId());
+                }
             }
         }
         return result;
     }
 
-    protected abstract CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource, Collection<MetaPropertyPath> columns);
+    protected abstract CollectionDsWrapper createContainerDatasource(CollectionDatasource datasource,
+                                                                     Collection<MetaPropertyPath> columns);
 
     protected void setVisibleColumns(List<?> columnsOrder) {
         component.setVisibleColumns(columnsOrder.toArray());
@@ -1235,7 +1230,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
         protected Component generateCell(AbstractSelect source, Object itemId, Object columnId) {
             CollectionDatasource ds = WebAbstractTable.this.getDatasource();
-            MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyEx(columnId.toString());
+            MetaPropertyPath propertyPath = ds.getMetaClass().getPropertyPath(columnId.toString());
 
             PropertyWrapper propertyWrapper = (PropertyWrapper) source.getContainerProperty(itemId, propertyPath);
 
@@ -1275,7 +1270,7 @@ public abstract class WebAbstractTable<T extends com.haulmont.cuba.web.toolkit.u
 
     protected void addAggregationCell(Table.Column column) {
         if (aggregationCells == null) {
-            aggregationCells = new HashMap<Table.Column, Object>();
+            aggregationCells = new HashMap<>();
         }
         aggregationCells.put(column, createAggregationCell());
     }
