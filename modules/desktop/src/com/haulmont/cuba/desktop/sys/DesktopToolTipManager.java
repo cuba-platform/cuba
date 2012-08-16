@@ -137,8 +137,18 @@ public class DesktopToolTipManager extends MouseAdapter {
         }
     }
 
+    private boolean isContainerVisible(JComponent component) {
+        Container c = component.getParent();
+        while (c != null)
+            if (!c.isVisible())
+                return false;
+            else
+                c = c.getParent();
+        return true;
+    }
+
     private void showTooltip(JComponent field, String text) {
-        if (!field.isVisible())
+        if (!field.isVisible() || !isContainerVisible(component))
             return;
 
         Point fieldLocation = field.getLocationOnScreen();
