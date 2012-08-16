@@ -10,9 +10,12 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.components.filter.AbstractConditionDescriptor;
 import com.haulmont.cuba.gui.components.filter.AbstractFilterEditor;
 import com.haulmont.cuba.gui.components.filter.AbstractPropertyConditionDescriptor;
+import com.haulmont.cuba.security.entity.EntityAttrAccess;
+import com.haulmont.cuba.security.global.UserSession;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -47,13 +50,16 @@ public class RootPropertyModelItem implements ModelItem {
     @Nonnull
     @Override
     public List<ModelItem> getChildren() {
-        List<ModelItem> list = new ArrayList<ModelItem>();
+        List<ModelItem> list = new ArrayList<>();
+
+        UserSession userSession = UserSessionProvider.getUserSession();
 
         for (AbstractConditionDescriptor descriptor : propertyDescriptors) {
             if (descriptor instanceof AbstractPropertyConditionDescriptor) {
                 MetaPropertyPath mpp = metaClass.getPropertyPath(descriptor.getName());
                 MetaProperty metaProperty = mpp.getMetaProperties()[0];
-                list.add(new PropertyModelItem(null, metaProperty, descriptor, descriptorBuilder));
+                if (userSession.isEntityAttrPermitted(metaClass, metaProperty.getName(), EntityAttrAccess.VIEW))
+                    list.add(new PropertyModelItem(null, metaProperty, descriptor, descriptorBuilder));
             }
         }
 
