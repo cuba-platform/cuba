@@ -302,7 +302,7 @@ public class FilterEditor extends AbstractFilterEditor {
         table.setPageLength(0);
         table.setWidth(TABLE_WIDTH);
         table.setHeight("200px");
-        table.setStyleName("filter-conditions");
+        table.setStyleName("table filter-conditions");
         table.setColumnReorderingAllowed(false);
         table.setSortDisabled(true);
 
