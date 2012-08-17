@@ -97,9 +97,7 @@
         <listitem id="specific_permissions">
           <para>Разрешение на некоторую именованную функциональность (Specific Permissions). Эти разрешения задаются в файлах, которые указаны в свойстве <parameter>cuba.permissionConfig</parameter> <glossterm linkend="glossary_app_properties_id">файла свойств</glossterm> приложения. Пример файла <filename>cuba-web-permissions.xml</filename>:</para>
           <para><programlisting>&lt;permission-config&gt;
-
     &lt;specific&gt;
-
         &lt;category id=&quot;cuba&quot;&gt;
             &lt;category id=&quot;cuba.gui&quot;&gt;
                 &lt;permission id=&quot;cuba.gui.showInfo&quot;/&gt;
@@ -113,10 +111,8 @@
                 &lt;permission id=&quot;cuba.gui.presentations.global&quot;/&gt;
                 &lt;permission id=&quot;cuba.gui.appFolder.global&quot;/&gt;
             &lt;/category&gt;
-        &lt;/category&gt;
-        
+        &lt;/category&gt;        
     &lt;/specific&gt;
-
 &lt;/permission-config&gt;</programlisting></para>
           <para>Названия свойств задаются в главном файле локализации соответствующего проекта. Например, для указанного выше файла <glossterm linkend="glossary_localized_folders_id">локализация</glossterm> названий на русский язык задается в файле <filename>messages_ru.properties</filename> пакета <package>com.haulmont.cuba.gui</package></para>
           <para><programlisting>permission-config.cuba=CUBA
@@ -175,7 +171,7 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
       <title>Экран редактирования ограничения</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="img/accessGroups.png"/>
+          <imagedata align="center" fileref="img/accessGroups.png" contentwidth="80%"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -216,7 +212,7 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
     <para id="para_sso"><firstterm>Технология единого входа (Single Sign-On)</firstterm> − технология, при использовании которой пользователь переходит от одного приложения к другому без повторной аутентификации.</para>
     <para><firstterm>HTTP 401</firstterm> − код протокола <application>HTTP</application>, запрос авторизации.</para>
     <para><firstterm>HTTP 400</firstterm> − код протокола <application>HTTP</application>,  неверный запрос, синтаксическая ошибка <application>HTTP</application> или превышение максимального размера запроса.</para>
-    <para><firstterm>Service Principal Name (SPN)</firstterm> − имя службы, включающее в себя имя протокола, адрес Web-сервера и порт (если он не является стандартным для этого протокола).</para>
+    <para><firstterm>Service Principal Name (SPN)</firstterm> − имя службы, включающее в себя имя протокола, адрес веб-сервера и порт (если он не является стандартным для этого протокола).</para>
     <para><firstterm>Jespa</firstterm> −  библиотека для <application>Java</application>, обеспечивающая расширенную интеграцию между службой каталогов <application>Active Directory</application> и Java-приложениями.</para>
     <section>
       <title>Настройка Kerberos аутентификации</title>
@@ -231,13 +227,13 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
         <para><emphasis role="bold">Этапы автоматической аутентификации</emphasis></para>
         <orderedlist>
           <listitem>
-            <para>Запрос страницы с Web-сервера от клиента.</para>
+            <para>Запрос страницы с веб-сервера от клиента.</para>
           </listitem>
           <listitem>
-            <para>Web-сервер возвращает код 401 (требование авторизации), и в содержимом ответа содержится строка <userinput>Negotiate</userinput>.</para>
+            <para>Веб-сервер возвращает код 401 (требование авторизации), и в содержимом ответа содержится строка <userinput>Negotiate</userinput>.</para>
           </listitem>
           <listitem>
-            <para>Клиент по доменному имени Web-сервера выясняет у <link linkend="domainController">Domain Controller</link> имя соответствующей Web-службы.</para>
+            <para>Клиент по доменному имени веб-сервера выясняет у <link linkend="domainController">Domain Controller</link> имя соответствующей веб-службы.</para>
           </listitem>
           <listitem>
             <para>Клиент выполняет процедуру получения <link linkend="text_kerberos_ticket_id">билета</link> для <application>Kerberos</application> аутентификации, для этого обращаясь к сервису <application>Kerberos</application> на <link linkend="domainController">Domain Controller</link>  или отдельному центру распределения ключей (Key Distribution Center) − серверу паролей Kerberos.</para>
@@ -246,7 +242,7 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
             <para>Клиент вновь выполняет запрос, помещая в заголовки строку <userinput>Authorization: Negotiate &lt;Тикет Kerberos&gt;</userinput>.</para>
           </listitem>
           <listitem>
-            <para>Web-сервер входит в систему от имени службы и пытается получить по билету клиента его имя у <link linkend="domainController">Domain Controller</link>.</para>
+            <para>Веб-сервер входит в систему от имени службы и пытается получить по билету клиента его имя у <link linkend="domainController">Domain Controller</link>.</para>
           </listitem>
           <listitem>
             <para>При удачном получении имени клиента ему в сессию добавляется переменная, содержащая имя, полученное от <link linkend="domainController">Domain Controller</link>.</para>
@@ -259,7 +255,7 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
         <para><emphasis role="bold">Этапы аутентификации при входе через стартовую форму приложения</emphasis></para>
         <orderedlist>
           <listitem>
-            <para>Web-сервер определяет домен, соответствующий псевдониму, введенному пользователем: <userinput>&lt;alias&gt;\&lt;user&gt;</userinput> −&gt; <userinput>&lt;DOMAIN.ZONE&gt;\user</userinput></para>
+            <para>Веб-сервер определяет домен, соответствующий псевдониму, введенному пользователем: <userinput>&lt;alias&gt;\&lt;user&gt;</userinput> −&gt; <userinput>&lt;DOMAIN.ZONE&gt;\user</userinput></para>
           </listitem>
           <listitem>
             <para>Выполняется вход в систему от имени пользователя</para>
@@ -273,40 +269,11 @@ permission-config.cuba.gui.appFolder.global=Создание/изменение 
         </orderedlist>
       </section>
       <section>
-        <title>Настройка доменного контроллера для использования аутентификации Kerberos</title>
-        <para>В примере используются следующие данные:</para>
-        <itemizedlist>
-          <listitem>
-            <para>Доменное имя Web-сервера: <userinput>win-web2008-art</userinput></para>
-          </listitem>
-          <listitem>
-            <para>Доменный контроллер: <userinput>dc.haulmont.com</userinput></para>
-          </listitem>
-        </itemizedlist>
-        <para>Алгоритм настройки:</para>
-        <orderedlist>
-          <listitem>
-            <para>Создать доменного пользователя <userinput>winkdc</userinput>, задать пароль и установить флажки  <guilabel>Срок действия пароля не истекает</guilabel> и <guilabel>Запретить пользователю изменять пароль</guilabel></para>
-          </listitem>
-          <listitem>
-            <para>Задать соответствие имени пользователя и имени сервиса</para>
-            <para><prompt>setspn -A http/win-web2008-art.haulmont.com winkdc</prompt></para>
-          </listitem>
-          <listitem>
-            <para>Для входа в систему от имени пользователя <userinput>winkdc</userinput> на стороне Web-сервера используется файл ключа (не используется парольная аутентификация)</para>
-            <para><prompt>ktpass -princ http/win-web2008-art.haulmont.com@HAULMONT.COM -pass 3edc$RFV5tgb -mapuser winkdc -out winkdc.keytab -ptype KRB5_NT_PRINCIPAL -kvno 0</prompt></para>
-          </listitem>
-          <listitem>
-            <para>На выходе в текущей папке будет создан файл <filename>winkdc.keytab</filename>, его нужно сохранить для использования на Web-сервере.</para>
-          </listitem>
-        </orderedlist>
-      </section>
-      <section>
-        <title>Настройка конфигурации Web-сервера</title>
+        <title>Настройка конфигурации веб-сервера</title>
         <itemizedlist>
           <listitem>
             <para>Файл конфигурации домена <filename>krb5.ini</filename>. По умолчанию размещается в <filename>${catalina.home}/conf/${cuba.webContextName}/krb5.ini</filename>. В этом файле указывается имя домена и расположение доменного контроллера.</para>
-            <para><programlisting>[libdefaults]
+            <programlisting>[libdefaults]
 default_realm = HAULMONT.COM
 default_tgs_enctypes = rc4-hmac
 default_tkt_enctypes = rc4-hmac
@@ -329,11 +296,14 @@ HAULMONT.COM = {
 autologin = true
 forward = true
 forwardable = true
-encrypt = true </programlisting></para>
+encrypt = true </programlisting>
           </listitem>
           <listitem>
             <para>Файл конфигурации сервиса <filename>jaas.conf</filename>.  По умолчанию размещается в <filename>${catalina.home}/conf/${cuba.webContextName}/jaas.conf</filename>. В этом файле задается имя сервиса и путь к файлу ключа.</para>
-            <para><programlisting>HAULMONT.COM{
+            <warning>
+              <para>Путь к файлу ключа указывается полностью; в качестве разделителя пути можно использовать &quot;/&quot; или &quot;\\&quot;</para>
+            </warning>
+            <programlisting>HAULMONT.COM{
 com.sun.security.auth.module.Krb5LoginModule required
 useKeyTab=true
 doNotPrompt=true
@@ -348,7 +318,7 @@ AUTH.HAULMONT.COM{
 com.sun.security.auth.module.Krb5LoginModule required
 doNotPrompt=false
 client=true
-useTicketCache=false;};</programlisting></para>
+useTicketCache=false;};</programlisting>
           </listitem>
           <listitem>
             <para>Файл ключа нужно разместить по адресу, указанному в <filename>jaas.conf</filename> (желательно в той же папке, что и файл ключа).</para>
@@ -361,12 +331,12 @@ cuba.web.activeDirectoryAuthClass=com.haulmont.cuba.web.sys.auth.KerberosAuthPro
 cuba.web.kerberosConf=${catalina.home}/conf/${cuba.webContextName}/krb5.ini
 cuba.web.kerberosJaasConf=${catalina.home}/conf/${cuba.webContextName}/jaas.conf   </programlisting></para>
             <para>Для использования <application>Kerberos</application> необходимо задать следующее:</para>
-            <para><programlisting># Разрешить использование Active Directory
+            <programlisting># Разрешить использование Active Directory
 cuba.web.useActiveDirectory=false
 # Название модуля конфигурации для автоматического входа
 cuba.web.kerberosLoginModule=HAULMONT.COM
 # Название модуля конфигурации для входа по имени и паролю
-cuba.web.kerberosAuthModule=AUTH.HAULMONT.COM</programlisting></para>
+cuba.web.kerberosAuthModule=AUTH.HAULMONT.COM</programlisting>
           </listitem>
         </itemizedlist>
       </section>
@@ -394,10 +364,10 @@ cuba.web.kerberosAuthModule=AUTH.HAULMONT.COM</programlisting></para>
       </section>
       <section>
         <title>Настройка клиентских машин</title>
-        <para><emphasis role="bold">Добавление Web-сервера в зону интранет</emphasis></para>
+        <para><emphasis role="bold">Добавление веб-сервера в зону интранет</emphasis></para>
         <para>Откройте приложение <application>Internet Explorer</application>. Далее перейдите к пункту меню <guimenu>Сервис</guimenu> −&gt; <guimenu>Свойства обозревателя</guimenu>. В отобразившемся окне выберите  вкладку <guilabel>Безопасность</guilabel>. Дальнейшие действия приведены на рисунке ниже.</para>
         <figure>
-          <title>Добавление Web-сервера в зону интранет</title>
+          <title>Добавление веб-сервера в зону интранет</title>
           <mediaobject>
             <imageobject>
               <imagedata align="center" fileref="img/TrustedZoneUrls.png"/>
@@ -428,7 +398,8 @@ cuba.web.kerberosAuthModule=AUTH.HAULMONT.COM</programlisting></para>
         <para>Данные действия требуются в том случае, если на рабочей станции заданы требуемые типы шифрования. По умолчанию разрешены все.
 Используется <userinput>logon</userinput> скрипт, добавляющий разрешения на типы шифрования в реестр:</para>
         <para><programlisting>@echo off
-reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters&quot; 
+reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\
+Kerberos\Parameters&quot; 
 /v SupportedEncryptionTypes /t REG_DWORD /d 0x7fffffff /f</programlisting></para>
         <para>Также этот параметр можно настроить в настройках: 
 <guimenu>Панель управления</guimenu> −&gt;<guimenu>Администрирование</guimenu> −&gt; <guimenu>Локальная политика безопасности</guimenu> −&gt; <guimenu>Локальные политики</guimenu> −&gt; <guimenu>Параметры безопасности</guimenu> −&gt; <guimenu>Сетевая безопасность: настройка типов шифрования, разрешенных Kerberos</guimenu></para>
@@ -449,7 +420,7 @@ reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Polic
         <title>Возможные проблемы и их решения</title>
         <itemizedlist>
           <listitem>
-            <para>Невозможность автоматического входа с рабочей станции, на которой запущен Web-сервер. Проблема связана с ограничениями <application>Kerberos</application>, вход выполняется через стандартное окно входа в приложение.</para>
+            <para>Невозможность автоматического входа с рабочей станции, на которой запущен веб-сервер. Проблема связана с ограничениями <application>Kerberos</application>, вход выполняется через стандартное окно входа в приложение.</para>
           </listitem>
           <listitem>
             <para>Необходимость создания пользователя для сервиса.</para>
@@ -487,15 +458,14 @@ reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Polic
             <para>Вы используете ненастроенный браузер <application>Firefox</application></para>
           </listitem>
           <listitem>
-            <para>Неверная запись <application>SPN</application> для Web-сервера</para>
+            <para>Неверная запись <application>SPN</application> для веб-сервера</para>
           </listitem>
         </itemizedlist>
         <para><emphasis role="bold">Ошибка 400</emphasis></para>
         <para>В сервере <application>Tomcat</application> по умолчанию задан максимальный размер заголовков запроса: 8192 байт. <link linkend="text_kerberos_ticket_id">Билет</link> <application>Kerberos</application> для отдельных пользователей может превышать этот размер.</para>
         <para>В <filename>server.xml</filename> необходимо установить для <parameter>Connector</parameter> значение <parameter>maxHttpHeaderSize</parameter> в большее значение, 16536 или  32768.</para>
         <warning>
-          <para>Если Вы используете <application>NIO Connector</application> и <application>Tomcat 6</application>, то Вы не сможете настроить <parameter>maxHttpHeaderSize</parameter>. 
-Решение − перейти на <application>Tomcat 7</application>.</para>
+          <para>Если Вы используете <application>NIO Connector</application> и <application>Tomcat 6</application>, то Вы не сможете настроить <parameter>maxHttpHeaderSize</parameter>. Решение − перейти на <application>Tomcat 7</application>.</para>
         </warning>
         <para><emphasis role="bold">Неверный SPN</emphasis></para>
         <para>Следует очень аккуратно подходить к назначению <application>SPN</application> для сервиса, много проблем связано с неверным <application>SPN</application>. </para>
@@ -548,25 +518,25 @@ reg add &quot;HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Polic
         <title>Дополнительные материалы</title>
         <itemizedlist>
           <listitem>
-            <para>Alfresco Kerberos manual (<ulink url="http://wiki.alfresco.com/wiki/Alfresco_Authentication_Subsystems#Kerberos">http://wiki.alfresco.com/wiki/Alfresco_Authentication_Subsystems#Kerberos</ulink>)</para>
+            <para>Alfresco Kerberos manual (<ulink url="http://wiki.alfresco.com/wiki/Alfresco_Authentication_Subsystems#Kerberos">http://wiki.alfresco.com/wiki/Alfresco_ Authentication_Subsystems#Kerberos</ulink>)</para>
           </listitem>
           <listitem>
-            <para>WebLogic Server Trouble shooting (<ulink url="http://weblogic-wonders.com/weblogic/2010/01/07/troubleshooting-kerberos-issues-with-weblogic-server">http://weblogic-wonders.com/weblogic/2010/01/07/troubleshooting-kerberos-issues-with-weblogic-server</ulink>)</para>
+            <para>WebLogic Server Trouble shooting (<ulink url="http://weblogic-wonders.com/weblogic/2010/01/07/troubleshooting-kerberos-issues-with-weblogic-server">http://weblogic-wonders.com/weblogic/ 2010/01/07/troubleshooting-kerberos-issues-with-weblogic-server</ulink>)</para>
           </listitem>
           <listitem>
-            <para>Kerberos tools klist, kerbtray (<ulink url="http://www.microsoft.com/en-us/download/details.aspx?id=17657">http://www.microsoft.com/en-us/download/details.aspx?id=17657</ulink>)</para>
+            <para>Kerberos tools klist, kerbtray (<ulink url="http://www.microsoft.com/en-us/download/details.aspx?id=17657">http://www.microsoft.com/en-us/download/ details.aspx?id=17657</ulink>)</para>
           </listitem>
           <listitem>
-            <para>IBM Lotus Domino SPN (<ulink url="http://publib.boulder.ibm.com/infocenter/domhelp/v8r0/index.jsp?topic=%2Fcom.ibm.help.domino.admin85.doc%2FH_ESTABLISH_AN_SPN_IN_ACTIVE_DIRECTORY_FOR_THE_DOMINO_SERVER_STEPS.html">http://publib.boulder.ibm.com/infocenter/domhelp/v8r0/index.jsp?topic=%2Fcom.ibm.help.domino.admin85.doc%2FH_ESTABLISH_AN_SPN_IN_ACTIVE_DIRECTORY_FOR_THE_DOMINO_SERVER_STEPS.html</ulink>)</para>
+            <para>IBM Lotus Domino SPN (<ulink url="http://publib.boulder.ibm.com/infocenter/domhelp/v8r0/index.jsp?topic=%2Fcom.ibm.help.domino.admin85.doc%2FH_ESTABLISH_AN_SPN_IN_ACTIVE_DIRECTORY_FOR_THE_DOMINO_SERVER_STEPS.html">http://publib.boulder.ibm.com/infocenter/domhelp/ v8r0/index.jsp?topic=%2Fcom.ibm.help.domino.admin85.doc%2FH_ESTABLISH_ AN_SPN_IN_ACTIVE_DIRECTORY_FOR_THE_ DOMINO_SERVER_ STEPS. html</ulink>)</para>
           </listitem>
           <listitem>
-            <para>SetSPN Documentation (<ulink url="http://technet.microsoft.com/en-us/library/cc731241%28WS.10%29.aspx">http://technet.microsoft.com/en-us/library/cc731241%28WS.10%29.aspx</ulink>)</para>
+            <para>SetSPN Documentation (<ulink url="http://technet.microsoft.com/en-us/library/cc731241%28WS.10%29.aspx">http://technet.microsoft.com/en-us/library/cc731241% 28WS.10%29.aspx</ulink>)</para>
           </listitem>
           <listitem>
             <para>SPNEGO - Kerberos SSO for Tomcat (<ulink url="http://spnego.sourceforge.net/">http://spnego.sourceforge.net/</ulink>)</para>
           </listitem>
           <listitem>
-            <para>How Clients Compose a Service&apos;s SPN (<ulink url="http://msdn.microsoft.com/en-us/library/windows/desktop/ms676924%28v=vs.85%29.aspx">http://msdn.microsoft.com/en-us/library/windows/desktop/ms676924%28v=vs.85%29.aspx</ulink>)</para>
+            <para>How Clients Compose a Service&apos;s SPN (<ulink url="http://msdn.microsoft.com/en-us/library/windows/desktop/ms676924%28v=vs.85%29.aspx">http://msdn.microsoft.com/ en-us/library/windows/desktop/ms676924%28v=vs.85%29.aspx</ulink>)</para>
           </listitem>
         </itemizedlist>
       </section>
@@ -610,8 +580,10 @@ WScript.Quit</programlisting></para>
           <para><prompt>cscript SetComputerPass.vbs CN=JESPA,CN=Computers,DC=haulmont,DC=com</prompt></para>
         </listitem>
         <listitem>
-          <para>Задать параметры доменов в <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm> в переменной <prompt>cuba.web.activeDirectoryDomains</prompt>. Каждый описатель домена имеет формат <prompt>domain_name|full_domain_name|service_account_name|service_account_password</prompt>. Описатели доменов отделяются друг от друга точкой с запятой. Например:</para>
-          <para><prompt>cuba.web.activeDirectoryDomains=HAULMONT|haulmont.com|JESPA$@HAULMONT.COM|password1; TEST|test.com|JESPA$@TEST.COM|password2</prompt></para>
+          <para>Задать параметры доменов в <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm> в переменной <prompt>cuba.web.activeDirectoryDomains</prompt>. Каждый описатель домена имеет формат </para>
+          <para><code>domain_name|full_domain_name|service_account_name| service_account_password</code>. </para>
+          <para>Описатели доменов отделяются друг от друга точкой с запятой. Например:</para>
+          <para><prompt>cuba.web.activeDirectoryDomains=HAULMONT|haulmont.com| JESPA$@HAULMONT.COM|password1; TEST|test.com|JESPA$@TEST.COM| password2</prompt></para>
         </listitem>
         <listitem>
           <para>Задать в <glossterm linkend="glossary_local_app_properties_id">local.app.properties</glossterm> дополнительные свойства для библиотеки <application>Jespa</application> (<ulink url="http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161">http://www.ioplex.com/d/Jespa_Overview.pdf?ts=1337127161</ulink>).  Например:</para>
@@ -622,8 +594,8 @@ WScript.Quit</programlisting></para>
         </listitem>
         <listitem>
           <para>Добавить адрес сервера в местную интрасеть в настройках браузера:</para>
-          <para><prompt>Для IE и Chrome: Свойства обозревателя-Безопасность-Местная интрасеть-Узлы-Дополнительно</prompt></para>
-          <para><prompt>Для FF: url=about:config, filter=ntlm, network.automatic-ntlm-auth.trusted-uris=vm30,http://tezis.haulmont.com (пример)</prompt></para>
+          <para><prompt>Для IE и Chrome: Свойства обозревателя -&gt; Безопасность -&gt; Местная интрасеть -&gt; Узлы -&gt; Дополнительно</prompt></para>
+          <para><prompt>Для FF: url=about:config, filter=ntlm, network.automatic-ntlm-auth.trusted-uris=vm30, http://tezis.haulmont.com (пример)</prompt></para>
         </listitem>
       </itemizedlist>
     </section>

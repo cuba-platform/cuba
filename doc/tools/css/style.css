@@ -5,8 +5,6 @@
 
 html {
     margin: 0;
-    /*height: 100%;*/
-    /*min-height: 100%*/
 }
 
 body {
@@ -17,12 +15,13 @@ body {
     padding: 0;
     background-color: white;
     line-height: 150%;
+	font-size: 12pt;
 }
 
 body, td, div {
-    font-family: 'DejaVu Sans', 'Lucida Grande', 'Verdana', sans-serif;
-    font-size: 11pt;
-    color: #444444;
+    font-family: 'Arial', 'Verdana', sans-serif;
+    font-size: 12pt;
+    color: #000000;
 }
 
 div {
@@ -34,7 +33,6 @@ a {
     color: blue;
 }
 
-
 p {
    /* ensure paragraphs remain close to their parent heading */
    margin-top: 0;
@@ -43,36 +41,32 @@ p {
 }
 
 h1, h2, h3, h4, h5 {
-    color: #336699;
+    color: #0b6ec7;
     line-height: 150%;
     font-weight: bold;
-    font-family: 'DejaVu Sans', 'Lucida Grande', 'Arial', helvetica, sans-serif;
+    font-family: 'Arial', 'Verdana', sans-serif;
     /* ensure paragraphs remain close to their parent heading */
     margin-bottom: 0.2em;
 }
 
 h1 {
-    font-size: 180%;
+	font-size: 40pt;
 }
 
 h2 {
-    font-size: 170%;
+	font-size: 18pt;
 }
 
 h3 {
-    font-size: 150%;
+	font-size: 16pt;
 }
 
 h4 {
-    font-size: 140%;
+	font-size: 14pt;
 }
 
 h5 {
-    font-size: 130%;
-}
-
-.heading {
-    font-family: 'DejaVu Sans', 'Lucida Grande', 'Arial', helvetica, sans-serif;
+	font-size: 12pt;
 }
 
 code, pre {
@@ -85,6 +79,122 @@ h1 a, h2 a, h3 a, h4 a, h5 a {
 
 h1 a:visited, h2 a:visited, h3 a:visited, h4 a:visited, h5 a:visited {
     color: inherit;
+}
+/**
+ * TITLEPAGE
+ */
+
+.book > .titlepage {
+    margin-top: 2.2em;
+    margin-bottom: 2em;
+}
+
+.book .titlepage div.title {
+    border: solid #d0d0d0 1px;
+    background-color: #f5f5f5;
+    margin-left: -1.8em;
+    margin-right: -1.8em;
+    padding-left: 1.8em;
+    padding-right: 1.8em;
+    margin-bottom: 2.2em;
+}
+
+.titlepage h1.title {
+    font-size: 40pt;
+    margin-bottom: 0;
+    color: #0b6ec7;
+	text-align: center; 
+}
+
+.titlepage h2.subtitle {
+    font-size: 24pt;
+    font-style: italic;
+    margin-top: 0;
+    margin-bottom: 0;
+    color: #0b6ec7;
+	text-align: center; 
+}
+
+.titlepage .releaseinfo {
+    color: #666666;
+    font-size: 120%;
+    margin-top: 2em;
+    margin-bottom: 2.6em;
+}
+
+.titlepage .author {
+    color: #666666;
+}
+
+.titlepage .copyright {
+    color: #a2a2a2;
+    font-size: 90%;
+}
+
+.titlepage .legalnotice {
+    color: #a2a2a2;
+    font-size: 90%;
+}
+
+
+/*Headings and titles*/
+
+.heading {
+    font-family: 'Arial', 'Verdana', sans-serif;
+}
+
+.toc p{
+    /*font-size: 180%;*/
+	font-size: 18pt;
+	color: #0b6ec7;
+}
+
+.chapter > .titlepage h1 {
+	font-size: 16pt;
+}
+
+.chapter > .titlepage h2 {
+	font-size: 18pt;
+}
+
+.preface > .titlepage h1 {
+	font-size: 16pt;
+}
+
+.preface > .titlepage h2 {
+	font-size: 18pt;
+}
+
+.chapter > .titlepage {
+    margin-bottom: 4em;
+}
+
+.appendix > .titlepage h1 {
+	font-size: 16pt;
+}
+
+.appendix > .titlepage h2 {
+	font-size: 18pt;
+}
+
+.section > .titlepage h2 {
+	font-size: 16pt;
+}
+
+.section > .titlepage h3 {
+	font-size: 14pt;
+}
+
+.section > .titlepage h4 {
+	font-size: 12pt;
+}
+
+.appendix > .titlepage {
+    margin-bottom: 4em;
+}
+
+.section .titlepage {
+    page-break-after: avoid;
 }
 
 /*
@@ -99,30 +209,6 @@ h1 a:visited, h2 a:visited, h3 a:visited, h4 a:visited, h5 a:visited {
     margin-bottom: 1.0em;
 }
 
-.section h2 {
-    font-size: 170%;
-    margin-top: 1.4em;
-}
-
-.section h1 {
-    font-size: 180%;
-    margin-top: 1.4em;
-}
-
-.section h3 {
-    font-size: 150%;
-    margin-top: 1.4em;
-}
-
-.section h4 {
-    font-size: 140%;
-    margin-top: 1.4em;
-}
-
-.section h5 {
-    font-size: 130%;
-    margin-top: 1.4em;
-}
 
 /*
  * Lists
@@ -151,23 +237,24 @@ pre {
     line-height: 120%;
 }
 
-
-
 .screen {
     border-left: solid #d4e3fa 0.5em;
     /*overflow-x: auto;*/
 }
 
-.example, .figure, .table {
+.example, .figure {
     margin-top: 0;
-    margin-bottom: 1.8em;
+    margin-bottom: 1em;
 }
 
-.example .title, .figure .title, .table .title {
+.example .title, .figure .title {
     white-space: nowrap;
     text-align:center;
     margin-top: 0;
     margin-bottom: 0.6em;
+	font-family: 'Arial', 'Verdana', sans-serif;
+	font-size: 10pt;
+    color: #000000;
 }
 
 .example pre, .figure pre {
@@ -212,30 +299,84 @@ pre {
     margin-left: 1em;
 }
 
+.mediaobject {
+    align: center; /* Выравнивание по ширине 
+	padding-bottom: 1em;
+	padding-top: 1em;*/
+}
+
 /*
  * Tables
  */
 
-.table table {
+.informaltable table {
     border-collapse: collapse;
-    font-size: 100%;
+    font-size: 11pt;
     min-width: 50%;
-    border: solid #d0d0d0 1px;
+    /*border: solid #2250bd 1px;*/
+	border: solid rgb(0,149,182) 1px;
+	page-break-inside: auto;
 }
 
-.table table td {
+.informaltable table td {
     text-align: center;
     vertical-align: text-top;
     padding-left: 0.8em;
     padding-right: 0.8em;
     padding-top: 0.3em;
     padding-bottom: 0.3em;
+	font-size: 11pt;
 }
 
-.table table thead td {
+.informaltable table thead td {
     font-weight: bold;
-    border-bottom: solid #d0d0d0 1px;
-    background-color: #f2f2f2;
+	font-size: 11pt;
+    /*border-bottom: solid #686868 2px;*/
+    background-color: #ffffff;
+}
+
+th.caption { background-color: rgb(11,110,199); 
+            color: #ffffff;} 
+			
+th.bord { border-right: solid #ffffff 1px;
+         background-color: rgb(11,110,199); 
+         color: #ffffff;} 
+			
+td.special { background-color: rgb(157,197,232); 
+            border-bottom: solid #686868 2px;
+			border-top: solid #686868 2px;} 
+			
+td.left { background-color: rgb(157,197,232); 
+            border-left: solid #686868 2px;
+			border-bottom: solid #686868 2px;
+			border-top: solid #686868 2px;} 
+			
+td.right { background-color: rgb(157,197,232); 
+            border-right: solid #686868 2px;
+			border-bottom: solid #686868 2px;
+			border-top: solid #686868 2px;} 
+			
+div.table  {
+   text-align: center;
+}
+
+div.informaltable {
+  text-align: center
+}
+
+.table {
+    margin-top: 0;
+    margin-bottom: 1.8em;
+}
+
+.table .title {
+    white-space: nowrap;
+    text-align:center;
+    margin-top: 0;
+    margin-bottom: 0.6em;
+	font-family: 'Arial', 'Verdana', sans-serif;
+	font-size: 10pt;
+    color: #000000;
 }
 
 /*
@@ -253,6 +394,10 @@ pre {
     padding-left: 1.2em;
     padding-right: 1.2em;
     margin-bottom: 1em;
+	margin-left: 2em;
+	width: 85%;
+	margin-top: 1em;
+    margin-bottom: 1em;
 }
 
 .programlisting {
@@ -266,7 +411,6 @@ pre {
 .note {
     background: #ebf4f7;
     border: solid #c3d9e6 1px;
-	background-image:url(../img/note.png);
 }
 
 .note .title {
@@ -276,25 +420,21 @@ pre {
 
 .tip {
     background: #FAF7F5;
-	background-image:url(../img/note.png);
-    border: solid #e2d2c9 1px;
-    margin-left: 2em;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    width: 85%;
+    border: solid #e2d2c9 1px;    
 }
 .tip .title {
     color: #80614D;
 	font-size: 100%;
 }
 
+.tip .figure .title, .warning .figure .title, .caution .figure .title {
+    color: #000000;
+	font-size: 10pt;
+}
+
 .warning {
     background: #f8e8e8;
     border: solid #e59595 1px;
-    margin-left: 2em;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    width: 85%;
 }
 .warning .title {
     color: #cc6666;
@@ -304,16 +444,11 @@ pre {
 .caution {
     background: #ecf2ff;
     border: solid #4c72bf 1px;
-    margin-left: 2em;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    width: 85%;
 }
 .caution .title {
     color: #6699ff;
 	font-size: 100%;
 }
-
 
 /* Remove top margins on headings inside notes and tips */
 .tip h1, .note h1
@@ -337,7 +472,6 @@ pre {
    margin-top: 0;
 }
 
-
 /**
  * Inline content
  */
@@ -347,10 +481,6 @@ pre {
 
 .literal{
 	font-family: 'Courier New', Courier, monospace;
-}
-
-.productname {
-	font-weight: bold;
 }
 
 .guimenu, .guimenuitem, .guisubmenu,
@@ -367,6 +497,27 @@ pre {
 	border-top: 1px solid;
 	border-radius: 4px;
 	border-color: #adadad;
+}
+
+.application, .orgname, .productname{
+	font-weight: bold;
+}
+
+.authorinitials, .firstterm, .property  {
+	font-style: italic;
+}
+
+.classname,.methodname,.interfacename,.errortext,.type, .varname, .envar {
+	font-family:  'Courier New', Courier, monospace;
+}
+
+.database {
+	font-weight: bold;
+}
+
+.errorname {
+	font-family: 'Courier New', Courier, monospace;
+	font-style: italic;
 }
 
 /*
@@ -400,162 +551,17 @@ pre {
 }
 
 /*
- * HEADER/FOOTER
- */
-
-.navheader {
-    margin-bottom: 3em;
-    padding-bottom: 1em;
-    width: 100%;
-    border-bottom: solid #d0d0d0 0.4em;
-}
-
-.navfooter {
-    margin-top: 3em;
-    padding-top: 1em;
-    width: 100%;
-    border-top: solid #d0d0d0 0.4em;
-}
-
-.navbar {
-    color: #a2a2a2;
-    font-size: 90%;
-    width: 100%;
-    text-align: right;
-}
-
-.navbar a {
-    color: #444444;
-}
-
-.navbar span {
-    padding-left: .8em;
-    padding-right: .8em;
-}
-
-/**
- * TITLEPAGE
- */
-
-.book > .titlepage {
-    margin-top: 2.2em;
-    margin-bottom: 2em;
-}
-
-.book .titlepage div.title {
-    border: solid #d0d0d0 1px;
-    background-color: #f5f5f5;
-    margin-left: -1.8em;
-    margin-right: -1.8em;
-    padding-left: 1.8em;
-    padding-right: 1.8em;
-    margin-bottom: 2.2em;
-}
-
-.titlepage h1.title {
-    font-size: 280%;
-    margin-bottom: 0;
-    color: #336699;
-	text-align: center; 
-}
-
-.titlepage h2.subtitle {
-    font-size: 160%;
-    font-style: italic;
-    margin-top: 0;
-    margin-bottom: 0;
-    color: #336699;
-	text-align: center; 
-}
-
-.titlepage .releaseinfo {
-    color: #666666;
-    font-size: 120%;
-    margin-top: 2em;
-    margin-bottom: 2.6em;
-}
-
-.titlepage .author {
-    color: #666666;
-}
-
-.titlepage .copyright {
-    color: #a2a2a2;
-    font-size: 90%;
-}
-
-.titlepage .legalnotice {
-    color: #a2a2a2;
-    font-size: 90%;
-}
-
-/*
  * Single page html
  */
 .book .chapter {
     margin-top: 4em;
 }
 
-.application {
-	font-weight: bold;
-}
 
-.authorinitials {
-	font-style: italic;
-}
 
-.classname,.methodname,.interfacename,.errortext,.type {
-	font-family:  'Courier New', Courier, monospace;
-}
 
-.varname {
-	font-family:  'Courier New', Courier, monospace;
-}
 
-.database {
-	font-weight: bold;
-}
 
-.envar {
-	font-family: 'Courier New', Courier, monospace;
-}
 
-.errorname {
-	font-family: 'Courier New', Courier, monospace;
-	font-style: italic;
-}
 
-.firstterm {
-	font-style: italic;
-}
 
-.orgname {
-	font-weight: bold;
-}
-
-.acronym {
-	font-weight: bold;
-	font-size:16px;
-	background: #f70b02;
-}
-
-.mediaobject {
-    align: center; /* Выравнивание по ширине */
-	padding-bottom: 1em;
-	padding-top: 1em;
-}
-
-div.informaltable {
-  text-align: center
-}
-
-.property {
-	font-style: italic;
-}
-
-div.table  {
-   text-align: center;
-}
-div.informaltable {
-   text-align: center;
-}

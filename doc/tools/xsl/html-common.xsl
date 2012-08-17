@@ -10,20 +10,26 @@
     <xsl:import href="html/highlight.xsl"/>
 	<xsl:param name="use.id.as.filename">1</xsl:param>
     <xsl:param name="use.extensions">1</xsl:param>
-    <xsl:param name="toc.section.depth">8</xsl:param>
+    <xsl:param name="toc.section.depth">2</xsl:param>
     <xsl:param name="section.autolabel">1</xsl:param>
-    <xsl:param name="section.label.includes.component.label">8</xsl:param>
+    <xsl:param name="section.label.includes.component.label">2</xsl:param>
 	<xsl:param name="section.autolabel.max.depth">2</xsl:param>
 	<xsl:param name="simplesect.autolabel">0</xsl:param>
     <xsl:param name="css.decoration">0</xsl:param>
-    <xsl:param name="highlight.source" select="1"/>
+    <!--<xsl:param name="highlight.source" select="1"/>-->
 	<xsl:param name="preface.autolabel">0</xsl:param>
-	<xsl:param name="generate.index" select="1"/>
-	<xsl:param name="index.on.type" select="1"/>
-	
+	<!--<xsl:param name="generate.index" select="1"/>
+	<xsl:param name="index.on.type" select="1"/>-->
+	<xsl:param name="entry.propagate.style" select="2"/> 
+	<xsl:param name="emphasis.propagate.style" select="1"/> 
+	<xsl:param name="chunk.separate.lots" select="1"/>
+	<xsl:param name="autotoc.label.separator">. </xsl:param>
+	<xsl:param name="autotoc.label.in.hyperlink" select="1"></xsl:param>	
+	<xsl:param name="ulink.hyphenate.chars">_.%#/&amp;?</xsl:param>
+	<xsl:param name="ulink.hyphenate">&#xAD;</xsl:param>
 
 	<xsl:param name="chunker.output.encoding" select="'windows-1251'"/>
-	<xsl:param name="highlight.xslthl.config" select="'file:///highlighting/xslthl-config.xml'"/>
+	<!--<xsl:param name="highlight.xslthl.config" select="'file:///highlighting/xslthl-config.xml'"/>-->
     
 	<xsl:variable name="p.text-indent" select="'10%'"/> 
 	
@@ -44,7 +50,7 @@
         <link href="style.css" rel="stylesheet" type="text/css"/>
     </xsl:template>
 	
-	<xsl:template name="customXref">
+	<!--<xsl:template name="customXref">
         <xsl:param name="target"/>
         <xsl:param name="content">
             <xsl:apply-templates select="$target" mode="object.title.markup"/>
@@ -65,7 +71,7 @@
 	<xsl:template name="user.footer.content">
 		<HR/>
 		<xsl:apply-templates select="//copyright[1]" mode="titlepage.mode"/>
-	</xsl:template>
+	</xsl:template>-->
 	
 	<!--  Number figures continuosly through the book--> 
 	<xsl:template match="figure" mode="label.markup">

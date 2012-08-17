@@ -5,7 +5,7 @@
       <year>2012</year>
       <holder>Haulmont (<ulink url="http://www.haulmont.ru/">www.haulmont.ru</ulink>)</holder>
     </copyright>
-    <title>Платформа <trademark>CUBA</trademark>. Подсистема безопасности</title>
+    <title>Платформа <trademark>CUBA</trademark>. Подсистема безопасности </title>
   </bookinfo>
   <preface lang="ru">
     <title>Предисловие</title>
@@ -95,7 +95,7 @@ encrypt = true </programlisting></para>
     <itemizedlist>
       <listitem>
         <para id="property_available_locales"><parameter>cuba.availableLocales</parameter>. Список поддерживаемых языков интерфейса. Формат свойства: <code>&lt;Название языка&gt;|&lt;Языковой код&gt;</code>. Значения разных языков между собой разделяются точкой с запятой. Пример: <programlisting>cuba.availableLocales=French|fr;English|en</programlisting></para>
-        <para><code>&lt;Название языка&gt;</code> −  это название, которое будет отображаться в списках доступных языков. Например, в окне входа в систему, в экране редактирования пользователя. <code>&lt;Языковой код</code>&gt; − это суффикс для формирования <glossterm linkend="glossary_localized_folders_id">файлов локализации</glossterm>. Например, <filename>messages_fr.properties</filename>.</para>
+        <para><code>&lt;Название языка&gt;</code> −  это название, которое будет отображаться в списках доступных языков. Например, в окне входа в систему, в экране редактирования пользователя. <code>&lt;Языковой код</code>&gt; − это суффикс для формирования <glossterm linkend="glossary_localized_folders_id">файлов локализации</glossterm>. Например, <filename>messages_fr.properties.</filename></para>
         <para>Следует иметь в виду, что язык, который указан первым в списке языков  свойства <parameter>cuba.availableLocales</parameter>, будет отображаться первым в списке доступных языков в том случае, если среди языков данного свойства не будет найден текущий язык системы. В противном случае первым будет отображаться язык системы. </para>
         <para>Если для языка,  указанного в свойстве, отсутствует файл для его локализации, то по умолчанию берется локализация из файла без суффикса − <filename>messages.properties</filename>.</para>
         <para>Значение по умолчанию:</para>
@@ -150,7 +150,7 @@ encrypt = true </programlisting></para>
       <listitem id="property_passwPolicyRegExp">
         <para><parameter>cuba.passwordPolicyRegExp</parameter>. В данном свойстве задается регулярное выражение, которое используется в политике проверки пароля.</para>
         <para>Значение по умолчанию:</para>
-        <para><parameter>cuba.passwordPolicyRegExp=((?=.*\\d)(?=.*\\p{javaLowerCase})(?=.*\\p{javaUpperCase}).{6,20})</parameter></para>
+        <para><prompt>cuba.passwordPolicyRegExp=((?=.*\\d)(?=.*\\p{javaLowerCase}) (?=.*\\p{javaUpperCase}).{6,20})</prompt></para>
         <para>Это означает, что в пароль должен содержать от 6 до 20 символов, в нем можно использоваться цифры, символы и буквы латинского алфавита. При этом обязательно в пароле должна  быть хотя бы одна цифра, одна буква в нижнем регистре и одна буква в верхнем регистре. Более подробная информация о синтаксисе регулярных выражений можно найти на сайтах: <ulink url="http://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D0%B3%D1%83%D0%BB%D1%8F%D1%80%D0%BD%D1%8B%D0%B5_%D0%B2%D1%8B%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F">http://ru.wikipedia.org/wiki/Регулярные_выражения</ulink> и <ulink url="http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html">http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html</ulink></para>
         <para>Интерфейс: <classname>ClientConfig</classname></para>
         <para>Уровни:   <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>, <glossterm linkend="text_desktop_id">Desktop Client</glossterm>.</para>

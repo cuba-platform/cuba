@@ -2,58 +2,6 @@
 <!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter3_examples">
   <title>Примеры управления доступом в системе</title>
   <para>Рассмотрим примеры управления доступом в приложении <application>Магазин</application>. Данное приложение предназначено для хранения сведений о товарах, продавцах, покупателях, продажах и скидках. Пользователем системы является продавец.</para>
-  <figure>
-    <title>Модель данных приложения Магазин</title>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/er_dia.png"/>
-      </imageobject>
-    </mediaobject>
-  </figure>
-  <informaltable frame="all" align="center" pgwide="0">
-    <tgroup colsep="1" cols="2" rowsep="1" align="center">
-      <colspec colname="c1"/>
-      <colspec colname="c2"/>
-      <thead>
-        <row>
-          <entry colname="Имя атрибута">Название сущности предметной области</entry>
-          <entry colname="Тип атрибута">Название сущности в системе</entry>
-        </row>
-      </thead>
-      <tbody>
-        <row>
-          <entry align="left">Скидка</entry>
-          <entry align="left">
-            <classname>shop$Discount</classname>
-          </entry>
-        </row>
-        <row>
-          <entry align="left">Товар</entry>
-          <entry align="left">
-            <classname>shop$Product</classname>
-          </entry>
-        </row>
-        <row>
-          <entry align="left">Продажа</entry>
-          <entry align="left">
-            <classname>shop$Sale</classname>
-          </entry>
-        </row>
-        <row>
-          <entry align="left">Покупатель</entry>
-          <entry align="left">
-            <classname>shop$Buyer</classname>
-          </entry>
-        </row>
-        <row>
-          <entry align="left">Продавец</entry>
-          <entry align="left">
-            <classname>shop$SalesPerson</classname>
-          </entry>
-        </row>
-      </tbody>
-    </tgroup>
-  </informaltable>
   <para>Требования к системе:</para>
   <itemizedlist>
     <listitem>
@@ -69,6 +17,58 @@
       <para>Настроить делегирование полномочий одних пользователей другим пользователям.</para>
     </listitem>
   </itemizedlist>
+  <figure>
+    <title>Модель данных приложения Магазин</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="img/er_dia.png" contentwidth="70%">параметры доменов</imagedata>
+      </imageobject>
+    </mediaobject>
+  </figure>
+  <informaltable frame="all" pgwide="1" align="center">
+    <tgroup colsep="1" cols="2" rowsep="1" align="center">
+      <colspec colname="c1"/>
+      <colspec colname="c2"/>
+      <thead>
+        <row>
+          <entry colname="Имя атрибута" role="bord">Название сущности предметной области</entry>
+          <entry colname="Тип атрибута" role="caption">Название сущности в системе</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry role="left" align="center">Скидка</entry>
+          <entry role="right" align="center">
+            <classname>shop$Discount</classname>
+          </entry>
+        </row>
+        <row>
+          <entry align="center">Товар</entry>
+          <entry align="center">
+            <classname>shop$Product</classname>
+          </entry>
+        </row>
+        <row>
+          <entry role="left" align="center">Продажа</entry>
+          <entry role="right" align="center">
+            <classname>shop$Sale</classname>
+          </entry>
+        </row>
+        <row>
+          <entry align="center">Покупатель</entry>
+          <entry align="center">
+            <classname>shop$Buyer</classname>
+          </entry>
+        </row>
+        <row>
+          <entry role="left" align="center">Продавец</entry>
+          <entry role="right" align="center">
+            <classname>shop$SalesPerson</classname>
+          </entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </informaltable>
   <section id="example_new_role">
     <title>Создание роли</title>
     <para>Создадим роль <authorinitials>Продавец</authorinitials>. В главном меню приложения выберите пункт меню <guimenu>Администрирование</guimenu> −&gt; <guimenu>Роли</guimenu>.</para>
@@ -89,14 +89,14 @@
       </mediaobject>
     </figure>
     <para>В отобразившейся вкладке снимите флажок  <guilabel>Только назначенные</guilabel> и затем нажмите на кнопку <guibutton>Применить</guibutton>. После этого в таблице ниже будут отражены все сущности, существующие в системе.</para>
-    <para>Пользователь с ролью <authorinitials>Продавец</authorinitials> может просматривать и изменять все сущности системы, но не имеет права  создавать и удалять экземпляры сущности <classname>Продавец</classname>. Покажем, как создать такое ограничение, на примере сущности <classname>Покупатель</classname>. </para>
+    <para>Пользователь с ролью <authorinitials>Продавец</authorinitials> может просматривать и изменять все сущности системы, но не имеет права  создавать и удалять экземпляры сущности <classname>Продавец.</classname> Покажем, как создать такое ограничение, на примере сущности <classname>Покупатель</classname>. </para>
     <para>Для этого в таблице найдите и выделите сущность <classname>shop$Buyer</classname>. После этого на панели <guilabel>Изменение разрешений</guilabel> отобразятся флажки по заданию разрешений на создание, чтение, изменение и удаление данной сущности. Так как требуются разрешающие действия, установите  флажок <guilabel>все</guilabel> в колонке <guilabel>разрешено</guilabel>.  После этого колонки <guilabel>Создание</guilabel>, <guilabel>Чтение</guilabel>, <guilabel>Изменение</guilabel>, <guilabel>Удаление</guilabel> в таблице слева заполнятся, а сами значения будут выделены цветом.</para>
     <para>По аналогии задайте  разрешения на создание, чтение, изменение и удаление остальных сущностей. </para>
     <para>Далее покажем, как запретить специфичное свойство, а именно запретим создание и изменение глобальных <link linkend="glossary_filter_id">фильтров</link>. Для этого перейдите на вкладку <guilabel>Специфичные</guilabel>, выделите строку <guilabel>Создание/изменение глобальных фильтров</guilabel> и на панели <guilabel>Изменение разрешений</guilabel> установите флажок  <guilabel>Запретить</guilabel>.</para>
     <figure>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="img/example_14.png"/>
+          <imagedata align="center" fileref="img/2reporting_ui_1.png"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -141,25 +141,25 @@
       </mediaobject>
     </figure>
     <para>Далее заполните поля <guilabel>Имя сущности</guilabel>, <guilabel>Оператор Join</guilabel>, <guilabel>Оператор Where</guilabel> и нажмите на кнопку <guibutton>ОК</guibutton>. Значения Вы можете взять из таблицы, расположенной ниже.</para>
-    <informaltable frame="all" align="center" pgwide="0">
+    <informaltable frame="all" pgwide="0" align="center">
       <tgroup colsep="1" cols="3" rowsep="1" align="center">
-        <colspec colname="c1"/>
-        <colspec colname="c2"/>
-        <colspec colname="c3"/>
+        <colspec colname="c1" colwidth="1*"/>
+        <colspec colname="c2" align="left"/>
+        <colspec colname="c3" colwidth="2*"/>
         <thead>
           <row>
-            <entry colname="Имя атрибута">Название поля</entry>
-            <entry colname="Тип атрибута">Значение</entry>
-            <entry colname="Тип атрибута">Комментарии</entry>
+            <entry colname="Имя атрибута" role="bord">Название поля</entry>
+            <entry colname="Тип атрибута" role="bord">Значение</entry>
+            <entry colname="Тип атрибута" role="caption">Комментарии</entry>
           </row>
         </thead>
         <tbody>
           <row>
-            <entry align="left">Имя сущности</entry>
-            <entry align="left">
+            <entry role="left" align="left">Имя сущности</entry>
+            <entry role="special" align="left">
               <classname>shop$Sale</classname>
             </entry>
-            <entry align="left">Сущность <classname>Продажа</classname></entry>
+            <entry role="right" align="left">Сущность <classname>Продажа</classname></entry>
           </row>
           <row>
             <entry align="left">Оператор Join</entry>
@@ -169,11 +169,11 @@
             <entry align="left">Внешнее соединение со связанными экземплярами сущности <classname>Продавец (shop$SalesPerson)</classname>. Используется метка <code>{E}</code>, она будет заменена на алиас основной сущности запроса − <classname>shop$Sale</classname>. Ассоциативное поле <code>salesPerson</code> является ссылкой на экземпляр сущности <code>shop$SalesPerson</code>.</entry>
           </row>
           <row>
-            <entry align="left">Оператор Where</entry>
-            <entry align="left">
+            <entry role="left" align="left">Оператор Where</entry>
+            <entry role="special" align="left">
               <code>(a.id in (select p.id from shop$SalesPerson p where p.user.id= :session$userId))</code>
             </entry>
-            <entry align="left">Ограничение выборки экземпляров <classname>shop$Sale</classname> только теми, у которых в качестве <code>salesPerson</code> установлен продавец, являющийся текущим пользователем системы. </entry>
+            <entry role="right" align="left">Ограничение выборки экземпляров <classname>shop$Sale</classname> только теми, у которых в качестве <code>salesPerson</code> установлен продавец, являющийся текущим пользователем системы. </entry>
           </row>
           <row>
             <entry align="left">Имя сущности</entry>
@@ -183,11 +183,11 @@
             <entry align="left">Сущность <classname>Продавец</classname></entry>
           </row>
           <row>
-            <entry align="left">Оператор Where</entry>
-            <entry align="left">
+            <entry role="left" align="left">Оператор Where</entry>
+            <entry role="special" align="left">
               <code>({E}.user.id = :session$userId)</code>
             </entry>
-            <entry align="left">Происходит выборка тех экземпляров главной сущности <classname>shop$SalesPerson</classname> (обозначена меткой <code>{E}</code>), у которых соотнесенный им пользователь − текущий аутентифицированный в системе пользователь.</entry>
+            <entry role="right" align="left">Происходит выборка тех экземпляров главной сущности <classname>shop$SalesPerson</classname> (обозначена меткой <code>{E}</code>), у которых соотнесенный им пользователь − текущий аутентифицированный в системе пользователь.</entry>
           </row>
         </tbody>
       </tgroup>
@@ -208,7 +208,7 @@
         </imageobject>
       </mediaobject>
     </figure>
-    <para>Заполните поля <guilabel>Логин</guilabel>, <guilabel>Новый пароль</guilabel>, <guilabel>Подтверждение пароля</guilabel>, <guilabel>Фамилия</guilabel>, <guilabel>Имя</guilabel>. В поле <guilabel>Группа</guilabel> нажмите на кнопку <inlinemediaobject>
+    <para>Заполните поля <guilabel>Логин</guilabel>, <guilabel>Новый пароль</guilabel>, <guilabel>Подтверждение пароля</guilabel>, <guilabel>Фамилия</guilabel>, <guilabel>Имя.</guilabel> В поле <guilabel>Группа</guilabel> нажмите на кнопку <inlinemediaobject>
         <imageobject>
           <imagedata fileref="img/dots.png"/>
         </imageobject>
@@ -230,9 +230,10 @@
     </figure>
     <para>На панели <guilabel>Замещаемые пользователи</guilabel> нажмите на кнопку <guibutton>Добавить</guibutton>.</para>
     <figure>
+      <title/>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="img/example_13.png"/>
+          <imagedata fileref="img/example_13.png" align="center" contentwidth="70%"/>
         </imageobject>
       </mediaobject>
     </figure>

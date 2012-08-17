@@ -4,20 +4,54 @@
     margin: 2cm;
 }
 
+/*footers and headers*/
+
 @page contentpage {
 	margin-bottom: 2.2cm;
-    @bottom-right {
+	margin-top: 3cm;
+    @bottom-left {
+        content: 'Платформа CUBA. Генератор отчетов';
+        font-family: 'Arial', 'Verdana', sans-serif;
+        font-size: 12pt;
+        color: #777777;
+        padding-bottom: 1.2cm;
+        vertical-align: bottom;
+    };
+	/*@bottom-left {
         content: 'стр. ' counter(page) ' из ' counter(pages);
         font-family: 'Lucida Grande','Lucida Sans Unicode','Lucida Sans','Geneva','Verdana',sans-serif;
         font-size: 10pt;
         color: #777777;
         padding-bottom: 1.2cm;
         vertical-align: bottom;
-    }
+    };*/
+	@bottom-right {
+        content: counter(page);
+        font-family: 'Arial', 'Verdana', sans-serif;
+        font-size: 12pt;
+        color: #777777;
+        padding-bottom: 1.2cm;
+        vertical-align: bottom;
+    };
+	@top-left {	
+        margin-top: 3cm;
+        vertical-align: bottom;
+		background-image: url(img/logoMin.png);
+		background-repeat: no-repeat;
+		background-position: bottom;
+    };
+	/*@top-right {
+	    content: counter(page);
+		font-family: 'Lucida Grande','Lucida Sans Unicode','Lucida Sans','Geneva','Verdana',sans-serif;
+        font-size: 10pt;
+        color: #777777;
+        padding-bottom: 1.2cm;
+        vertical-align: bottom;
+    };*/
 }
 
 body {
-    font-size: 10pt;
+    font-size: 12pt;
     margin: 0;
     margin-bottom: 2cm;
 	margin-left: 1cm;
@@ -27,10 +61,14 @@ body {
 }
 
 /*
- * Override colour -> black and white
- */
+ * Override colour -> black and white*/
+ 
 body, div, td {
     color: black;
+}
+
+p {
+    text-align: justify;
 }
 
 a {
@@ -38,30 +76,34 @@ a {
     color: black;
 }
 
-h1, h2, h3, h4, h5 {
-    color: #1a334c;
-    line-height: 150%;
-    font-weight: bold;
-    font-family: 'DejaVu Sans', 'Lucida Grande', 'Arial', helvetica, sans-serif;
-    /* ensure paragraphs remain close to their parent heading */
-    margin-bottom: 0.2em;
-}
-
 /*
- * Book title page
+ * Titlepages
  */
-
-.titlepage h1.title {
-    font-size: 360%;
-    margin: 0;
-    color: #1a334c;
+ 
+.book .titlepage {
+    background-image: url(img/HaulmontLogoMax.png);
 }
 
-.titlepage h2.subtitle {
-    font-size: 240%;
-	padding-top: 24%;
-    margin: 0;
-    color: #1a334c;
+.preface .titlepage {
+    background-image: none;
+}
+
+.section .titlepage {
+    background-image: none;
+	page-break-after: avoid;
+}
+
+.chapter .titlepage {
+    background-image: none;
+}
+
+.appendix .titlepage {
+    background-image: none;
+	margin-bottom: 4em;
+}
+
+.glossary .titlepage {
+    background-image: none;
 }
 
 .titlepage .releaseinfo {
@@ -72,7 +114,7 @@ h1, h2, h3, h4, h5 {
 
 .titlepage .copyright{
 	text-align=center;
-	margin-top: 70%;
+	margin-top: 65%;
 }
 
 .book.bookinfo .copyright{
@@ -80,11 +122,34 @@ h1, h2, h3, h4, h5 {
 	margin-top: 60%;
 }
 
+.copyright p{
+    text-align=center;
+}
+
+/*
+ * Titles
+ */
+
+.titlepage h1.title {
+    /*font-size: 360%;*/
+	font-size: 40pt;
+    margin: 0;
+    color: #0b6ec7;
+	padding-top: 50%;
+}
+
+.titlepage h2.subtitle {
+	font-size: 24pt;
+    /*font-size: 240%;*/
+	padding-top: 24%;
+    margin: 0;
+    color: #0b6ec7;
+}
+
 .book .titlepage div.title {
     text-align: right;
     page-break-after: always;
     border: none;
-    background-color: white;
     margin: 0;
     padding-top: 24%;
     padding-left: 0;
@@ -92,21 +157,78 @@ h1, h2, h3, h4, h5 {
     padding-bottom: 0;
 }
 
+.chapter > .titlepage h1 {
+    /*font-size: 240%;*/
+	font-size: 16pt;
+    text-align: right;
+}
+
+.chapter > .titlepage h2 {
+    /*font-size: 300%;*/
+	font-size: 18pt;
+    text-align: right;
+}
+
+.preface > .titlepage h1 {
+    /*font-size: 240%;*/
+	font-size: 16pt;
+    text-align: right;
+}
+
+.preface > .titlepage h2 {
+    /*font-size: 300%;*/
+	font-size: 18pt;
+    text-align: right;
+}
+
+.chapter > .titlepage {
+    margin-bottom: 4em;
+}
+
+.appendix > .titlepage h1 {
+    /*font-size: 240%;*/
+	font-size: 16pt;
+    text-align: right;
+}
+
+.appendix > .titlepage h2 {
+    /*font-size: 400%;*/
+	font-size: 18pt;
+    text-align: right;
+}
+
+.section > .titlepage h2 {
+    /*font-size: 400%;*/
+	font-size: 16pt;
+}
+
+.section > .titlepage h3 {
+    /*font-size: 400%;*/
+	font-size: 14pt;
+}
+
+.section > .titlepage h4 {
+    /*font-size: 400%;*/
+	font-size: 12pt;
+}
+
+/*TOC*/
+
 .toc {
     page-break-before: always;
+	content: counter(page);
 }
 
 .toc * {
     line-height: 130%;
+	content: counter(page);
 }
 
 .toc p{
-    font-size: 180%;
-	color: #1a334c;
-}
-
-.copyright p{
-    text-align=center;
+    /*font-size: 180%;*/
+	font-size: 18pt;
+	color: #0b6ec7;
+	content: counter(page);
 }
 
 /**
@@ -134,66 +256,22 @@ h1, h2, h3, h4, h5 {
 }
 
 .glossdiv {
-    page-break-after: always;
-}
-
-.chapter > .titlepage h1 {
-    font-size: 240%;
-    text-align: right;
-}
-
-.chapter > .titlepage h2 {
-    font-size: 300%;
-    text-align: right;
-}
-
-.chapter > .titlepage {
-    margin-bottom: 4em;
-}
-
-.appendix > .titlepage h1 {
-    font-size: 240%;
-    text-align: right;
-}
-
-.appendix > .titlepage h2 {
-    font-size: 400%;
-    text-align: right;
-}
-
-.appendix > .titlepage {
-    margin-bottom: 4em;
-}
-
-.section .titlepage {
-    page-break-after: avoid;
-}
-
-p {
-    text-align: justify;
+    page-break-after: auto;
 }
 
 /**
- * Examples
+ * Examples,notes, tips, figures
  */
 
-.example .title {
-    text-align: left;
-    white-space: nowrap;
-    color: #666666
-}
-
-.example {
-    page-break-inside: avoid;
-}
-
-.figure .title {
+.example .title, .figure .title {
     text-align: center;
     white-space: nowrap;
-    color: #666666
+    font-family: 'Arial', 'Verdana', sans-serif;
+	font-size: 10pt;
+    color: #000000;
 }
 
-.figure {
+.example, .figure {
     page-break-inside: avoid;
 }
 
@@ -201,73 +279,53 @@ p {
     width: 100%;
 }
 
-.table .title {
-    text-align: left;
-    white-space: nowrap;
-    color: #666666
-}
-
-.table {
-    page-break-inside: avoid;
-}
-
 .caution.para {
-    page-break-inside: avoid;
+    page-break-inside: auto;
 }
 
 .programlisting {
     page-break-inside: auto ;
     font-size: 70%;
 	width: 90%;
+	white-space: pre-wrap;
 }
 
-.screen {
-    page-break-inside: avoid;
-    font-size: 90%;
+.tip, .warning, .caution {
+    margin-left: 0.5em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    width: 87%;
+	page-break-inside: avoid;
+	white-space: pre-wrap;
 }
 
 .tip {
     background: #FAF7F5;
     border: solid #e2d2c9 1px;
-    margin-left: 0.5em;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    width: 87%;
 }
+
 .tip .title {
     color: #403127;
 	font-size: 100%;
-	border-bottom: 1px dotted
 }
 
 .warning {
     background: #f8e8e8;
     border: solid #e59595 1px;
-    margin-left: 0.5em;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    width: 87%;
 }
 .warning .title {
     color: #661b1b;
 	font-size: 100%;
-	border-bottom: 1px dashed
 }
 
 .caution {
     background: #ecf2ff;
     border: solid #4c72bf 1px;
-	margin-left: 0.5em;
-    margin-top: 1em;
-    margin-bottom: 1em;
-    width: 87%;
 }
 .caution .title {
     color: #26395f;
 	font-size: 100%;
-	border-bottom: 1px double
 }
-
 
 /* Remove top margins on headings inside notes and tips */
 .tip h1, .note h1
@@ -291,6 +349,21 @@ p {
    margin-top: 0;
 }
 
+/*DocBook elements*/
+
+.itemizedlist {
+    page-break-inside: auto;
+}
+
+.filename {
+	white-space: pre-wrap;
+}
+
+.screen {
+    page-break-inside: avoid;
+    font-size: 90%;
+}
+
 .guibutton {
 	background-color: #e7e7e7;
 	padding-left: 2px;
@@ -304,6 +377,7 @@ p {
 	border-radius: 4px;
 	border-color: #565656;
 	font-size: 90%;
+	white-space: pre-wrap;
 }
 
 .glossterm {
@@ -320,9 +394,70 @@ p {
 	font-family: 'Courier New', Courier, monospace;
 }
 
-
 .informaltable {
-    page-break-inside: avoid;
+    page-break-inside: auto;
 }
 
+.userinput {
+    white-space: pre-wrap;
+}
 
+.prompt {
+    white-space: pre-line;
+}
+
+.programlisting a img, pre a img, td a img, td img {
+    display:inline;
+    margin:0 0;
+}
+
+/*
+ * Tables
+ */
+
+.informaltable table {
+    border-collapse: collapse;
+    font-size: 11pt;
+    min-width: 50%;
+    /*border: solid #2250bd 1px;*/
+	border: solid rgb(0,149,182) 0.5px;
+	page-break-inside: auto;
+}
+
+.informaltable table td {
+    text-align: center;
+    vertical-align: text-top;
+    padding-left: 0.8em;
+    padding-right: 0.8em;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+	font-size: 11pt;
+}
+
+.informaltable table thead td {
+    font-weight: bold;
+	font-size: 11pt;
+    /*border-bottom: solid #686868 2px;*/
+    background-color: #ffffff;
+}
+
+th.caption { background-color: rgb(11,110,199); 
+            color: #ffffff;} 
+			
+th.bord { border-right: solid #ffffff 0.5px;
+         background-color: rgb(11,110,199); 
+         color: #ffffff;} 
+			
+td.special { background-color: rgb(157,197,232); 
+            border-bottom: solid #686868 1px;
+			border-top: solid #686868 1px;} 
+			
+td.left { background-color: rgb(157,197,232); 
+            border-left: solid #686868 1px;
+			border-bottom: solid #686868 1px;
+			border-top: solid #686868 1px;} 
+			
+td.right { background-color: rgb(157,197,232); 
+            border-right: solid #686868 1px;
+			border-bottom: solid #686868 1px;
+			border-top: solid #686868 1px;} 

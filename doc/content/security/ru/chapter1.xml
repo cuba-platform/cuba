@@ -8,7 +8,7 @@
       <title>Окно входа в систему</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="img/loginWindow.png"/>
+          <imagedata align="center" fileref="img/loginWindow.png" format="PNG" contentwidth="50%"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -38,13 +38,13 @@
         <para><guibutton>Копировать</guibutton> − позволяет копировать выбранного пользователя. При этом копируются только роли пользователя и его группа доступа.</para>
       </listitem>
       <listitem>
-        <para><guibutton>Копировать настройки</guibutton> − позволяет копировать настройки графического интерфейса одного пользователя другому пользователю. При этом копируются следующие настройки: настройки отображения таблиц, <link linkend="glossary_filter_id">фильтры</link>, <link linkend="glossary_search_folders_id">папки поиска</link> и <link linkend="glossary_app_folders_id">папки приложения</link>. Следует иметь в виду, что текущие пользовательские настройки того пользователя, которому производится копирование, удаляются.</para>
-        <para>Для того чтобы скопировать пользовательские настройки одного пользователя другому или другим, выделите этих пользователей в списке  и нажмите на кнопку <guibutton>Копировать настройки</guibutton>. После этого отобразится диалоговое окно, представленное на рисунке ниже.</para>
+        <para><guibutton>Копировать настройки</guibutton> − позволяет копировать настройки графического интерфейса одного пользователя другому пользователю. При этом копируются следующие настройки: настройки отображения таблиц, <link linkend="glossary_filter_id">фильтры,</link> <link linkend="glossary_search_folders_id">папки поиска</link> и <link linkend="glossary_app_folders_id">папки приложения</link>. Следует иметь в виду, что текущие пользовательские настройки того пользователя, которому производится копирование, удаляются.</para>
+        <para>Для того чтобы скопировать пользовательские настройки одного пользователя другому или другим, выделите этих пользователей в списке  и нажмите на кнопку <guibutton>Копировать настройки.</guibutton> После этого отобразится диалоговое окно, представленное на рисунке ниже.</para>
         <figure>
           <title>Окно копирования настроек пользователя</title>
           <mediaobject>
             <imageobject>
-              <imagedata align="center" fileref="img/roles_3.png"/>
+              <imagedata align="center" fileref="img/roles_3.png" contentwidth="70%"/>
             </imageobject>
           </mediaobject>
         </figure>
@@ -84,7 +84,7 @@
       </listitem>
       <listitem>
         <para><emphasis role="bold">Новый пароль</emphasis>. Поле доступно только при создании нового пользователя и является обязательным для заполнения. В дальнейшем  пароль будет вводиться пользователем в стартовом окне при входе в систему.</para>
-        <para>Впоследствии пароль можно изменить в экране списка пользователей либо из пункта меню <guimenu>Помощь</guimenu> −&gt; <guimenu>Параметры</guimenu>  при нажатии на кнопку <guibutton>Сменить пароль</guibutton>. Можно задать политику проверки пароля с помощью свойств <link linkend="property_passwPolicyEnabled">cuba.passwordPolicyEnabled</link> и <link linkend="property_passwPolicyRegExp">cuba.passwordPolicyRegExp</link>.</para>
+        <para>Впоследствии пароль можно изменить в экране списка пользователей либо из пункта меню <guimenu>Помощь</guimenu> −&gt; <guimenu>Параметры</guimenu>  при нажатии на кнопку <guibutton>Сменить пароль.</guibutton> Можно задать политику проверки пароля с помощью свойств <link linkend="property_passwPolicyEnabled">cuba.passwordPolicyEnabled</link> и <link linkend="property_passwPolicyRegExp">cuba.passwordPolicyRegExp</link>.</para>
         <figure>
           <title>Способы изменения пароля пользователя</title>
           <mediaobject>
@@ -119,7 +119,7 @@
           <title>Окно входа в систему с отсутствующим списком выбора языка</title>
           <mediaobject>
             <imageobject>
-              <imagedata align="center" fileref="img/roles_14.png"/>
+              <imagedata align="center" fileref="img/roles_14.png" format="PNG" contentwidth="50%"/>
             </imageobject>
           </mediaobject>
         </figure>
@@ -151,7 +151,7 @@
       <title>Вид имени пользователя при отсутствии замещаемых пользователей</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="img/roles_18.png"/>
+          <imagedata align="center" fileref="img/roles_18.png" contentwidth="35%"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -160,14 +160,13 @@
       <title>Вид имени пользователя при наличии замещаемых пользователей</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="img/roles_19.png"/>
+          <imagedata align="center" fileref="img/roles_19.png" contentwidth="35%"/>
         </imageobject>
       </mediaobject>
     </figure>
     <warning>
       <title>Внимание</title>
-      <para>Обратите внимание, что при переключении на другого пользователя все текущие окна
-предыдущего пользователя будут закрыты, а несохраненные данные  утеряны.</para>
+      <para>Обратите внимание, что при переключении на другого пользователя все текущие окна предыдущего пользователя будут закрыты, а несохраненные данные  утеряны.</para>
     </warning>
     <para>С замещаемыми пользователями возможны следующие действия:<itemizedlist>
         <listitem>
@@ -177,7 +176,7 @@
             <title>Диалоговое окно с параметрами замещения пользователей</title>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/roles_17.png"/>
+                <imagedata align="center" fileref="img/roles_17.png" contentwidth="70%"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -239,7 +238,7 @@
             <title>Выпадающий список с типами ролей</title>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/roles_23.png"/>
+                <imagedata align="center" fileref="img/roles_23.png" format="PNG" contentwidth="20%"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -278,7 +277,7 @@
           </figure>
         </listitem>
         <listitem>
-          <para><guilabel>Сущности</guilabel>. По умолчанию на данной вкладке отображаются только те сущности, разрешения\запреты для которых определены для данной роли. Для того чтобы отобразить все сущности, существующие в системе, необходимо снять флажок  <guilabel>Только назначенные</guilabel> и нажать на кнопку <guibutton>Применить</guibutton>. </para>
+          <para><guilabel>Сущности</guilabel>. По умолчанию на данной вкладке отображаются только те сущности, разрешения\запреты для которых определены для данной роли. Для того чтобы отобразить все сущности, существующие в системе, необходимо снять флажок  <guilabel>Только назначенные</guilabel> и нажать на кнопку <guibutton>Применить.</guibutton></para>
           <figure>
             <mediaobject>
               <imageobject>
@@ -305,11 +304,11 @@
           </figure>
         </listitem>
         <listitem>
-          <para><guilabel>Атрибуты</guilabel>. По умолчанию на данной вкладке отображаются только те сущности, разрешения\запреты атрибутов которых определены для данной роли. Для того чтобы отобразить все сущности, существующие в системе, необходимо снять флажок <guilabel>Только назначенные</guilabel> и нажать на кнопку <guibutton>Применить</guibutton>.</para>
+          <para><guilabel>Атрибуты</guilabel>. По умолчанию на данной вкладке отображаются только те сущности, разрешения\запреты атрибутов которых определены для данной роли. Для того чтобы отобразить все сущности, существующие в системе, необходимо снять флажок <guilabel>Только назначенные</guilabel> и нажать на кнопку <guibutton>Применить.</guibutton></para>
           <figure>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/roles_29.png"/>
+                <imagedata align="center" fileref="img/roles_29.png" contentwidth="70%"/>
               </imageobject>
             </mediaobject>
           </figure>
@@ -317,7 +316,7 @@
           <figure>
             <mediaobject>
               <imageobject>
-                <imagedata align="center" fileref="img/roles_27.png"/>
+                <imagedata align="center" fileref="img/roles_27.png" scale="70%"/>
               </imageobject>
             </mediaobject>
           </figure>

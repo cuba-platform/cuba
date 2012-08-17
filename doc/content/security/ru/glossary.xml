@@ -19,7 +19,7 @@
         <emphasis role="bold">Главный пакет сообщений</emphasis>
       </glossterm>
       <glossdef>
-        <para><glossterm linkend="glossary_localized_folders_id">Пакет локализованных сообщений</glossterm>, содержащий заголовки пунктов меню, названия кнопок и других элементов интерфейса. Располагается в пакете, определяемым <glossterm linkend="glossary_app_properties_id">свойством</glossterm> <parameter>cuba.appConfig.messagesPack</parameter> приложения Web-клиента.</para>
+        <para><glossterm linkend="glossary_localized_folders_id">Пакет локализованных сообщений</glossterm>, содержащий заголовки пунктов меню, названия кнопок и других элементов интерфейса. Располагается в пакете, определяемым <glossterm linkend="glossary_app_properties_id">свойством</glossterm> <parameter>cuba.appConfig.messagesPack</parameter> приложения веб-клиента.</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -57,7 +57,7 @@ actions.Edit=Edit
 ...</programlisting></para>
           </listitem>
           <listitem>
-            <para>Полным именем пакета сообщений считается имя Java-пакета, содержащего языковые файлы. Например, именем пакета сообщений, расположенного в <filename>/com/haulmont/cuba/web/app/ui/security/user/messages.properties</filename> является строка <package>com.haulmont.cuba.web.app.ui.security.user</package></para>
+            <para>Полным именем пакета сообщений считается имя Java-пакета, содержащего языковые файлы. Например, именем пакета сообщений, расположенного в <filename>/com/haulmont/cuba/web/app/ui/security/ user/messages.properties</filename> является строка <package>com.haulmont.cuba.web.app.ui.security.user</package></para>
           </listitem>
         </itemizedlist>
       </glossdef>
@@ -112,13 +112,13 @@ actions.Edit=Edit
         <para>Приложение, основанное на платформе, физически состоит из нескольких уровней (tiers):</para>
         <itemizedlist>
           <listitem>
-            <para id="text_middleware_id"><structfield>Middleware</structfield>. Средний слой, содержащий основную бизнес-логику приложения. Представляет собой отдельное Web-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>.</para>
+            <para id="text_middleware_id"><structfield>Middleware</structfield>. Средний слой, содержащий основную бизнес-логику приложения. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>.</para>
           </listitem>
           <listitem>
-            <para id="text_webclient_id"><structfield>Web Client</structfield>. Основной клиентский уровень, как правило, содержащий полнофункциональный интерфейс для Intranet-пользователей. Представляет собой отдельное Web-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Vaadin</application>.</para>
+            <para id="text_webclient_id"><structfield>Web Client</structfield>. Основной клиентский уровень, как правило, содержащий полнофункциональный интерфейс для Intranet-пользователей. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Vaadin</application>.</para>
           </listitem>
           <listitem>
-            <para id="text_portal_id"><structfield>Web Portal</structfield>. Дополнительный клиентский уровень, содержащий интерфейс для внешних (Internet) пользователей. Может использоваться для интеграции с мобильными устройствами или сторонними приложениями. Представляет собой отдельное Web-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Spring MVC</application>.</para>
+            <para id="text_portal_id"><structfield>Web Portal</structfield>. Дополнительный клиентский уровень, содержащий интерфейс для внешних (Internet) пользователей. Может использоваться для интеграции с мобильными устройствами или сторонними приложениями. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <application>Java EE Web Profile</application>. Реализация пользовательского интерфейса основана на фреймворке <application>Spring MVC</application>.</para>
           </listitem>
           <listitem>
             <para id="text_desktop_id"><structfield>Desktop Client</structfield>. Дополнительный клиентский уровень, содержащий интерфейс для Intranet-пользователей. Представляет собой десктопное Java-приложение, реализация пользовательского интерфейса основана на фреймворке <application>Java Swing</application>.</para>
@@ -139,7 +139,7 @@ actions.Edit=Edit
             <para>Конфигурационные параметры: определяют наборы конфигурационных файлов и некоторые параметры пользовательского интерфейса. Например: <parameter>cuba.springContextConfig</parameter>, <parameter>cuba.web.useLightHeader</parameter>.</para>
           </listitem>
           <listitem>
-            <para>Параметры развертывания: различные URL для соединения <glossterm linkend="glossary_app_tiers">уровней</glossterm> приложения, тип используемой БД, настройки подсистемы безопасности и т.д. Например: <parameter>cuba.connectionUrl</parameter>, <parameter>cuba.dbmsType</parameter>, <parameter>cuba.userSessionExpirationTimeoutSec</parameter>.</para>
+            <para>Параметры развертывания: различные URL для соединения <glossterm linkend="glossary_app_tiers">уровней</glossterm> приложения, тип используемой БД, настройки подсистемы безопасности и т.д. Например: <parameter>cuba.connectionUrl</parameter>, <parameter>cuba.dbmsType,</parameter> <parameter>cuba.userSessionExpirationTimeoutSec</parameter>.</para>
           </listitem>
           <listitem>
             <para>Параметры времени выполнения: активность аудита, параметры отсылки email и т.д. Например, <parameter>cuba.security.EntityLog.enabled</parameter>, <parameter>cuba.email.smtpHost</parameter>.</para>
@@ -197,7 +197,7 @@ actions.Edit=Edit
         </formalpara>
         <itemizedlist>
           <listitem>
-            <para>Для уровней, являющихся Web-приложениями (<glossterm linkend="text_middleware_id">Middleware</glossterm>, <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>) набор файлов свойств задается в <filename>web.xml</filename> в параметре <parameter>appPropertiesConfig</parameter>.</para>
+            <para>Для уровней, являющихся веб-приложениями (<glossterm linkend="text_middleware_id">Middleware</glossterm>, <glossterm linkend="text_webclient_id">Web Client</glossterm>, <glossterm linkend="text_portal_id">Web Portal</glossterm>) набор файлов свойств задается в <filename>web.xml</filename> в параметре <parameter>appPropertiesConfig</parameter>.</para>
           </listitem>
           <listitem>
             <para>Для уровня <glossterm linkend="text_desktop_id">Desktop Client</glossterm> основной способ задания набора файлов свойств − переопределение в приложении метода <methodname>getDefaultAppPropertiesConfig</methodname> в классе-наследнике <classname>com.haulmont.cuba.desktop.App</classname>.</para>
