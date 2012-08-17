@@ -3,7 +3,7 @@
   <bookinfo>
     <copyright>
       <year>2012</year>
-      <holder>Haulmont (<ulink url="www.haulmont.ru">www.haulmont.ru</ulink>)</holder>
+      <holder>Haulmont (<ulink url="http://www.haulmont.ru/">www.haulmont.ru</ulink>)</holder>
     </copyright>
     <title>Платформа разработки бизнес-приложений <trademark>CUBA</trademark>. Руководство программиста</title>
   </bookinfo>
@@ -218,8 +218,7 @@ encrypt = true </programlisting></para>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter2.xml" encoding="UTF-8"/>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter3.xml" encoding="UTF-8"/>
    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter4.xml" encoding="UTF-8"/>
-   <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter5.xml" encoding="UTF-8"/>
-  <appendix>
+   <appendix>
     <title>Часто задаваемые вопросы</title>
     <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="qanda.xml" encoding="UTF-8"/>
   </appendix>
