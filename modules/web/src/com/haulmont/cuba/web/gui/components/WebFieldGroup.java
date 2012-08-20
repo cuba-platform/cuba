@@ -20,7 +20,10 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.Field;
 import com.haulmont.cuba.gui.components.Formatter;
+import com.haulmont.cuba.gui.components.Window;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -34,6 +37,7 @@ import com.haulmont.cuba.web.toolkit.ui.FieldGroup;
 import com.haulmont.cuba.web.toolkit.ui.FieldGroupLayout;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TextField;
 import org.apache.commons.lang.BooleanUtils;
@@ -215,7 +219,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 if (propertyPath != null) {
                     c = fieldGenerator.generateField(ds, propertyId);
                     assignTypicalAttributes(c);
-                    f = (com.vaadin.ui.Field) WebComponentsHelper.getComposition(c);
+                    f = getFieldComponent(c);
 
                     if (f.getPropertyDataSource() == null) {
                         if (field.getDatasource() != null) {
@@ -229,7 +233,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 } else {
                     c = fieldGenerator.generateField(null, null);
                     assignTypicalAttributes(c);
-                    f = (com.vaadin.ui.Field) WebComponentsHelper.getComposition(c);
+                    f = getFieldComponent(c);
                 }
 
                 if (f.getCaption() == null) {
@@ -263,6 +267,16 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
                 return f;
             }
         });
+    }
+
+    private com.vaadin.ui.Field getFieldComponent(Component c) {
+        com.vaadin.ui.Field f;
+        com.vaadin.ui.Component composition = WebComponentsHelper.getComposition(c);
+        if (composition instanceof com.vaadin.ui.Field)
+            f = (com.vaadin.ui.Field) composition;
+        else
+            f = (com.vaadin.ui.Field) WebComponentsHelper.unwrap(c);
+        return f;
     }
 
     private void assignTypicalAttributes(Component c) {
