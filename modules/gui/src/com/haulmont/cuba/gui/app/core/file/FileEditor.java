@@ -98,15 +98,7 @@ public class FileEditor extends AbstractEditor {
         }
     }
 
-    private class FileUploadListener implements FileUploadField.Listener {
-        @Override
-        public void uploadStarted(Event event) {
-        }
-
-        @Override
-        public void uploadFinished(Event event) {
-        }
-
+    private class FileUploadListener extends FileUploadField.ListenerAdapter {
         @Override
         public void uploadSucceeded(Event event) {
             nameField.setValue(uploadField.getFileName());
@@ -121,14 +113,6 @@ public class FileEditor extends AbstractEditor {
             okBtn.setEnabled(true);
 
             needSave = true;
-        }
-
-        @Override
-        public void uploadFailed(Event event) {
-        }
-
-        @Override
-        public void updateProgress(long readBytes, long contentLength) {
         }
     }
 }

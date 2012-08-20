@@ -2,15 +2,12 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 11.03.2009 17:48:51
- * $Id$
  */
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
@@ -20,12 +17,18 @@ import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import com.haulmont.cuba.web.toolkit.ui.Upload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class WebFileUploadField extends WebAbstractComponent<Upload> implements FileUploadField {
 
     private static final int BYTES_IN_MEGABYTE = 1048576;
@@ -40,7 +43,9 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
     protected FileOutputStream outputStream;
     protected UUID tempFileId;
 
-    private List<Listener> listeners = new ArrayList<Listener>();
+    private List<Listener> listeners = new ArrayList<>();
+
+    private Log log = LogFactory.getLog(getClass());
 
     public WebFileUploadField() {
         fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
@@ -118,7 +123,12 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
                     fileUploading.deleteFile(tempFileId);
                     tempFileId = null;
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    if (e instanceof FileStorageException) {
+                        FileStorageException fse = (FileStorageException) e;
+                        if (fse.getType() != FileStorageException.Type.FILE_NOT_FOUND)
+                            log.warn(String.format("Could not remove temp file %s after broken uploading", tempFileId));
+                    }
+                    log.warn(String.format("Error while delete temp file %s", tempFileId));
                 }
                 final Listener.Event e = new Listener.Event(event.getFilename());
                 for (Listener listener : listeners) {
@@ -134,8 +144,7 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
                 }
             }
         });
-        component.setButtonCaption(MessageProvider.getMessage(AppConfig.getMessagesPack(),
-                "upload.submit"));
+        component.setButtonCaption(MessageProvider.getMessage(AppConfig.getMessagesPack(), "upload.submit"));
     }
 
     @Override
@@ -202,13 +211,11 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
 
     @Override
     public String getCaption() {
-//        return component.getCaption();
         return component.getButtonCaption();
     }
 
     @Override
     public void setCaption(String caption) {
-//        component.setCaption(caption);
         component.setButtonCaption(caption);
     }
 

@@ -28,14 +28,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 @ManagedBean("cuba_FileUploading")
 public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
 
-    private Map<UUID, File> tempFiles = new ConcurrentHashMap<UUID, File>();
+    private Map<UUID, File> tempFiles = new ConcurrentHashMap<>();
 
     /**
      * Upload buffer size.
@@ -198,12 +197,12 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
     public void deleteFile(UUID fileId) throws FileStorageException {
         if (tempFiles.containsKey(fileId)) {
             File file = tempFiles.get(fileId);
+            tempFiles.remove(fileId);
             if (file.exists()) {
                 boolean res = file.delete();
                 if (!res)
                     throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath());
             }
-            tempFiles.remove(fileId);
         }
     }
 
@@ -260,8 +259,9 @@ public class FileUploading implements FileUploadingAPI, FileUploadingMBean {
                 calendar.add(Calendar.DAY_OF_YEAR, 2);
                 if (currentDate.compareTo(calendar.getTime()) > 0) {
                     deleteFileLink(file.getAbsolutePath());
-                    if (!file.delete())
-                        throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getAbsolutePath());
+                    if (!file.delete()) {
+                        log.warn(String.format("Could not remove temp file %s", file.getName()));
+                    }
                 }
             }
         } catch (Exception ex) {

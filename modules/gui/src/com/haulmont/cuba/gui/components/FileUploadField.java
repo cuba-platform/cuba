@@ -38,6 +38,28 @@ public interface FileUploadField
         void updateProgress(long readBytes, long contentLength);
     }
 
+    public class ListenerAdapter implements Listener {
+        @Override
+        public void uploadStarted(Event event) {
+        }
+
+        @Override
+        public void uploadFinished(Event event) {
+        }
+
+        @Override
+        public void uploadSucceeded(Event event) {
+        }
+
+        @Override
+        public void uploadFailed(Event event) {
+        }
+
+        @Override
+        public void updateProgress(long readBytes, long contentLength) {
+        }
+    }
+
     String getFilePath();
     String getFileName();
 
