@@ -10,12 +10,11 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
-import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.web.gui.data.ItemWrapper;
 import com.haulmont.cuba.web.gui.data.PropertyWrapper;
-import com.vaadin.ui.VerticalLayout;
 import org.apache.commons.lang.BooleanUtils;
 
 import java.util.Collection;
@@ -26,17 +25,11 @@ public class WebCheckBox
     implements
         CheckBox, Component.Wrapper {
 
-    private VerticalLayout composition;
-
     public WebCheckBox() {
         this.component = new com.haulmont.cuba.web.toolkit.ui.CheckBox();
-        this.composition = new VerticalLayout();
-        this.composition.setWidth("-1px");
         attachListener(component);
         component.setImmediate(true);
         component.setInvalidCommitted(true);
-
-        composition.addComponent(component);
     }
 
     @Override
@@ -52,11 +45,6 @@ public class WebCheckBox
                 };
             }
         };
-    }
-
-    @Override
-    public com.vaadin.ui.Component getComposition() {
-        return composition;
     }
 
     @Override
