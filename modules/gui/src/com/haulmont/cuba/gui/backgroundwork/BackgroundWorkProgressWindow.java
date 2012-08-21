@@ -7,10 +7,7 @@
 package com.haulmont.cuba.gui.backgroundwork;
 
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.Button;
-import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.components.Window;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.executors.BackgroundTask;
 import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
@@ -20,13 +17,14 @@ import org.apache.commons.lang.BooleanUtils;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Modal window wrapping around background task. Displays title, message and optional cancel button.
- * Window lasts until task completes, timeout timer elapses or user presses cancel button.
+ * Window that indicates progress of the background task, shows progress bar and processed items' message.
  * <p/>
- * When cancelled by user, does not interrupt task thread.
+ * Background task should have Integer as the progress measure unit. Progress measure passed to the publish() method
+ * is displayed in processed items' message. Total number of items should be specified before task execution.
  * <p/>
  * <p>On error:
  * <ul>
@@ -36,19 +34,23 @@ import java.util.Map;
  * </ul>
  * <p/>
  *
- * @author budarov
+ * @author ovchinnikov
  * @version $Id$
  */
-public class BackgroundWorkWindow<T, V> extends AbstractWindow {
+@SuppressWarnings("unused")
+public class BackgroundWorkProgressWindow<V> extends AbstractWindow {
+    private static final long serialVersionUID = -3073224246530486376L;
 
     @Inject
     private Label text;
-
+    @Inject
+    private Label progressText;
     @Inject
     private Button cancelButton;
-
     @Inject
     private BackgroundWorker backgroundWorker;
+    @Inject
+    private ProgressBar taskProgress;
 
     private BackgroundTaskHandler<V> taskHandler;
 
@@ -59,18 +61,19 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
      * @param task          background task containing long operation
      * @param title         window title, optional
      * @param message       window message, optional
+     * @param total         total number of items, that will be processed
      * @param cancelAllowed show or not cancel button
-     * @param <T>           task progress unit
      * @param <V>           task result type
      */
-    public static <T, V> void show(BackgroundTask<T, V> task, @Nullable String title, @Nullable String message,
-                                   boolean cancelAllowed) {
+    public static <V> void show(BackgroundTask<Integer, V> task, @Nullable String title, @Nullable String message, Integer total,
+                                boolean cancelAllowed) {
         Map<String, Object> params = new HashMap<>();
         params.put("task", task);
         params.put("title", title);
         params.put("message", message);
+        params.put("total", total);
         params.put("cancelAllowed", cancelAllowed);
-        task.getOwnerWindow().openWindow("sys$BackgroundWorkWindow", WindowManager.OpenType.DIALOG, params);
+        task.getOwnerWindow().openWindow("core$BackgroundWorkProgressWindow", WindowManager.OpenType.DIALOG, params);
     }
 
     /**
@@ -80,11 +83,11 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
      * @param task    background task containing long operation
      * @param title   window title, optional
      * @param message window message, optional
-     * @param <T>     task progress unit
+     * @param total   total number of items, that will be processed
      * @param <V>     task result type
      */
-    public static <T, V> void show(BackgroundTask<T, V> task, String title, String message) {
-        show(task, title, message, false);
+    public static <V> void show(BackgroundTask<Integer, V> task, String title, String message, Integer total) {
+        show(task, title, message, total, false);
     }
 
     /**
@@ -92,30 +95,30 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
      * Cancel button is not shown.
      *
      * @param task          background task containing long operation
+     * @param total         total number of items, that will be processed
      * @param cancelAllowed show or not cancel button
-     * @param <T>           task progress unit
      * @param <V>           task result type
      */
-    public static <T, V> void show(BackgroundTask<T, V> task, boolean cancelAllowed) {
-        show(task, null, null, cancelAllowed);
+    public static <V> void show(BackgroundTask<Integer, V> task, Integer total, boolean cancelAllowed) {
+        show(task, null, null, total, cancelAllowed);
     }
 
     /**
      * Show modal window with default title and message which will last until task completes.
      * Cancel button is not shown.
      *
-     * @param task background task containing long operation
-     * @param <T>  task progress unit
-     * @param <V>  task result type
+     * @param task  background task containing long operation
+     * @param total total number of items, that will be processed
+     * @param <V>   task result type
      */
-    public static <T, V> void show(BackgroundTask<T, V> task) {
-        show(task, null, null, false);
+    public static <V> void show(BackgroundTask<Integer, V> task, Integer total) {
+        show(task, null, null, total, false);
     }
 
     @Override
     public void init(Map<String, Object> params) {
         getDialogParams().setWidth(500);
-        BackgroundTask<T, V> task = (BackgroundTask<T, V>) params.get("task");
+        final BackgroundTask<Integer, V> task = (BackgroundTask<Integer, V>) params.get("task");
         String title = (String) params.get("title");
         if (title != null) {
             setCaption(title);
@@ -131,10 +134,19 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
         cancelButton.setVisible(cancelAllowed);
         getDialogParams().setCloseable(cancelAllowed);
 
-        BackgroundTask<T, V> wrapperTask = new WrapperTask(task);
+        final Integer total = (Integer) params.get("total");
+
+        taskProgress.setValue(0);
+
+        WrapperTask<V> wrapperTask = new WrapperTask<>(task, total);
 
         taskHandler = backgroundWorker.handle(wrapperTask);
         taskHandler.execute();
+
+    }
+
+    private void closeBackgroundWindow() {
+        close("", true);
     }
 
     public void cancel() {
@@ -144,28 +156,47 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
             close("close");
     }
 
-    private void closeBackgroundWindow() {
-        close("", true);
-    }
+    private class WrapperTask<V> extends BackgroundTask<Integer, V> {
 
-    private class WrapperTask extends BackgroundTask<T, V> {
+        private BackgroundTask<Integer, V> wrappedTask;
+        private Integer total;
 
-        private BackgroundTask<T, V> task;
-
-        protected WrapperTask(BackgroundTask<T, V> task) {
-            super(task.getTimeoutSeconds(), BackgroundWorkWindow.this);
-            this.task = task;
+        private WrapperTask(BackgroundTask<Integer, V> wrappedTask, Integer total) {
+            super(wrappedTask.getTimeoutSeconds(), BackgroundWorkProgressWindow.this);
+            this.wrappedTask = wrappedTask;
+            this.total = total;
         }
 
         @Override
-        public V run(TaskLifeCycle<T> lifeCycle) throws Exception {
-            return task.run(lifeCycle);
+        public void progress(List<Integer> changes) {
+            if (!changes.isEmpty()) {
+                Integer last = changes.get(changes.size() - 1);
+                taskProgress.setValue(last / (float) total);
+                progressText.setValue(formatMessage("backgroundWorkProgress.progressTextFormat", last, total));
+            }
+        }
+
+        @Override
+        public void canceled() {
+            closeBackgroundWindow();
+            wrappedTask.canceled();
+        }
+
+        @Override
+        public void done(V result) {
+            closeBackgroundWindow();
+            wrappedTask.done(result);
+        }
+
+        @Override
+        public V run(TaskLifeCycle<Integer> taskLifeCycle) throws Exception {
+            return wrappedTask.run(taskLifeCycle);
         }
 
         @Override
         public void handleException(final Exception ex) {
-            task.handleException(ex);
-            final Window ownerWindow = task.getOwnerWindow();
+            wrappedTask.handleException(ex);
+            final Window ownerWindow = wrappedTask.getOwnerWindow();
             if (ownerWindow != null)
                 closeAndRun("close", new Runnable() {
                     @Override
@@ -176,18 +207,6 @@ public class BackgroundWorkWindow<T, V> extends AbstractWindow {
                 });
             else
                 closeBackgroundWindow();
-        }
-
-        @Override
-        public void done(V result) {
-            closeBackgroundWindow();
-            task.done(result);
-        }
-
-        @Override
-        public void canceled() {
-            closeBackgroundWindow();
-            task.canceled();
         }
     }
 }

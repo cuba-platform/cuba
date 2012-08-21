@@ -2,16 +2,15 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Eugeniy Degtyarjov
- * Created: 30.03.2010 12:46:18
- *
- * $Id$
  */
 package com.haulmont.cuba.gui;
 
 import java.io.Serializable;
 
+/**
+ * @author degtyarjov
+ * @version $Id$
+ */
 public class DialogParams implements Serializable {
 
     private static final long serialVersionUID = -5408074764288510987L;
@@ -19,6 +18,7 @@ public class DialogParams implements Serializable {
     private Integer width;
     private Integer height;
     private Boolean resizable;
+    private Boolean closeable;
 
     public DialogParams() {
     }
@@ -47,6 +47,15 @@ public class DialogParams implements Serializable {
 
     public DialogParams setResizable(Boolean resizable) {
         this.resizable = resizable;
+        return this;
+    }
+
+    public Boolean getCloseable() {
+        return closeable;
+    }
+
+    public DialogParams setCloseable(Boolean closeable) {
+        this.closeable = closeable;
         return this;
     }
 

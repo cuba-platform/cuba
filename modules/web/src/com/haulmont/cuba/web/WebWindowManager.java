@@ -47,22 +47,22 @@ public class WebWindowManager extends WindowManager {
     protected static class WindowData implements Serializable {
         private static final long serialVersionUID = -3919777239558187362L;
 
-        protected final Map<Layout, WindowBreadCrumbs> tabs = new HashMap<Layout, WindowBreadCrumbs>();
-        protected final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>>();
-        protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
-        protected final Map<Window, Integer> windows = new HashMap<Window, Integer>();
-        protected final Map<Layout, WindowBreadCrumbs> fakeTabs = new HashMap<Layout, WindowBreadCrumbs>();
+        protected final Map<Layout, WindowBreadCrumbs> tabs = new HashMap<>();
+        protected final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<>();
+        protected final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<>();
+        protected final Map<Window, Integer> windows = new HashMap<>();
+        protected final Map<Layout, WindowBreadCrumbs> fakeTabs = new HashMap<>();
     }
 
     protected App app;
 
-    protected List<ShowStartupLayoutListener> showStartupLayoutListeners = new ArrayList<ShowStartupLayoutListener>();
+    protected List<ShowStartupLayoutListener> showStartupLayoutListeners = new ArrayList<>();
 
-    protected List<CloseStartupLayoutListener> closeStartupLayoutListeners = new ArrayList<CloseStartupLayoutListener>();
+    protected List<CloseStartupLayoutListener> closeStartupLayoutListeners = new ArrayList<>();
 
-    private Map<AppWindow, WindowData> appWindowMap = new HashMap<AppWindow, WindowData>();
+    private Map<AppWindow, WindowData> appWindowMap = new HashMap<>();
 
-    protected Map<String, Integer> debugIds = new HashMap<String, Integer>();
+    protected Map<String, Integer> debugIds = new HashMap<>();
 
     private static Log log = LogFactory.getLog(WebWindowManager.class);
 
@@ -105,7 +105,7 @@ public class WebWindowManager extends WindowManager {
 
     @Override
     public Collection<Window> getOpenWindows() {
-        return new ArrayList<Window>(getWindowOpenMode().keySet());
+        return new ArrayList<>(getWindowOpenMode().keySet());
     }
 
     protected static class WindowOpenMode implements Serializable {
@@ -261,7 +261,8 @@ public class WebWindowManager extends WindowManager {
                     final WindowBreadCrumbs oldBreadCrumbs = getTabs().get(oldLayout);
 
                     if (oldBreadCrumbs != null &&
-                            getCurrentWindowData().windowOpenMode.containsKey(oldBreadCrumbs.getCurrentWindow().<IFrame>getFrame()) && !multipleOpen) {
+                            getCurrentWindowData().windowOpenMode.containsKey(oldBreadCrumbs.getCurrentWindow().<IFrame>getFrame()) &&
+                            !multipleOpen) {
                         final Window oldWindow = oldBreadCrumbs.getCurrentWindow();
                         Layout l = new VerticalLayout();
                         appWindow.getTabSheet().replaceComponent(tab, l);
@@ -590,7 +591,7 @@ public class WebWindowManager extends WindowManager {
                         "escapeAction",
                         com.vaadin.event.ShortcutAction.KeyCode.ESCAPE,
                         null);
-        Map<com.vaadin.event.Action, Runnable> actions = new HashMap<com.vaadin.event.Action, Runnable>();
+        Map<com.vaadin.event.Action, Runnable> actions = new HashMap<>();
         actions.put(exitAction, new Runnable() {
             @Override
             public void run() {
@@ -619,6 +620,10 @@ public class WebWindowManager extends WindowManager {
             if (dialogParams.getHeight() != null) {
                 win.setHeight(dialogParams.getHeight().floatValue(), Sizeable.UNITS_PIXELS);
                 win.getContent().setHeight("100%");
+            }
+
+            if (dialogParams.getCloseable() != null) {
+                win.setClosable(dialogParams.getCloseable());
             }
 
             win.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
@@ -1021,7 +1026,7 @@ public class WebWindowManager extends WindowManager {
     private void removeWindowsWithName(String name) {
         final com.vaadin.ui.Window mainWindow = app.getAppWindow();
 
-        for (com.vaadin.ui.Window childWindow : new ArrayList<com.vaadin.ui.Window>(mainWindow.getChildWindows())) {
+        for (com.vaadin.ui.Window childWindow : new ArrayList<>(mainWindow.getChildWindows())) {
             if (name.equals(childWindow.getName())) {
                 String msg = new StrBuilder("Another " + name + " window exists, removing it\n")
                         //.appendWithSeparators(Thread.currentThread().getStackTrace(), "\n")

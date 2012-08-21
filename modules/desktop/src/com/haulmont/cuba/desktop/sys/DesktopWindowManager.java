@@ -36,18 +36,17 @@ import java.util.*;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class DesktopWindowManager extends WindowManager {
 
     private JTabbedPane tabsPane;
 
-    private final Map<JComponent, WindowBreadCrumbs> tabs = new HashMap<JComponent, WindowBreadCrumbs>();
-    private final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<Window, WindowOpenMode>();
-    private final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>>();
-    private final Map<Window, Integer> windows = new HashMap<Window, Integer>();
+    private final Map<JComponent, WindowBreadCrumbs> tabs = new HashMap<>();
+    private final Map<Window, WindowOpenMode> windowOpenMode = new LinkedHashMap<>();
+    private final Map<WindowBreadCrumbs, Stack<Map.Entry<Window, Integer>>> stacks = new HashMap<>();
+    private final Map<Window, Integer> windows = new HashMap<>();
 
     private boolean disableSavingScreenHistory;
     private ScreenHistorySupport screenHistorySupport = new ScreenHistorySupport();
@@ -64,6 +63,7 @@ public class DesktopWindowManager extends WindowManager {
         tabsPane.getActionMap().put(
                 "closeTab",
                 new AbstractAction() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         closeTab((JComponent) tabsPane.getSelectedComponent());
                     }
@@ -220,6 +220,7 @@ public class DesktopWindowManager extends WindowManager {
         Dimension dim = new Dimension();
         if (forciblyDialog) {
             window.setHeight("100%");
+            // todo move it to desktop application preferences
             dim.width = 800;
             dim.height = 500;
             dialog.setResizable(true);
@@ -234,6 +235,10 @@ public class DesktopWindowManager extends WindowManager {
                 dim.height = dialogParams.getHeight();
             }
             dialog.setResizable(BooleanUtils.isTrue(dialogParams.getResizable()));
+            if (dialogParams.getCloseable() != null) {
+                if (!dialogParams.getCloseable())
+                    dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+            }
 
             dialogParams.reset();
         }
@@ -297,8 +302,10 @@ public class DesktopWindowManager extends WindowManager {
         final WindowBreadCrumbs breadCrumbs = createWindowBreadCrumbs();
         breadCrumbs.addListener(
                 new WindowBreadCrumbs.Listener() {
+                    @Override
                     public void windowClick(final Window window) {
                         Runnable op = new Runnable() {
+                            @Override
                             public void run() {
                                 Window currentWindow = breadCrumbs.getCurrentWindow();
 
@@ -337,6 +344,7 @@ public class DesktopWindowManager extends WindowManager {
         ButtonTabComponent tabComponent = new ButtonTabComponent(
                 tabsPane,
                 new ButtonTabComponent.CloseListener() {
+                    @Override
                     public void onTabClose(int tabIndex) {
                         JComponent tabContent = (JComponent) tabsPane.getComponentAt(tabIndex);
                         closeTab(tabContent);
@@ -467,6 +475,7 @@ public class DesktopWindowManager extends WindowManager {
                 final java.awt.Component focusedCmp = windowOpenMode.get(currentWindow.getFrame()).getFocusOwner();
                 if (focusedCmp != null) {
                     SwingUtilities.invokeLater(new Runnable() {
+                        @Override
                         public void run() {
                             focusedCmp.requestFocus();
                         }
@@ -597,6 +606,7 @@ public class DesktopWindowManager extends WindowManager {
         dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         optionPane.addPropertyChangeListener(
                 new PropertyChangeListener() {
+                    @Override
                     public void propertyChange(PropertyChangeEvent e) {
                         String prop = e.getPropertyName();
                         if (dialog.isVisible()
@@ -737,6 +747,7 @@ public class DesktopWindowManager extends WindowManager {
             this.breadCrumbs = breadCrumbs;
         }
 
+        @Override
         public void run() {
             Window windowToClose = breadCrumbs.getCurrentWindow();
             if (windowToClose != null) {

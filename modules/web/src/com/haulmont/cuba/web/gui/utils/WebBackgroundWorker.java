@@ -26,9 +26,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Web implementation of {@link BackgroundWorker}
- * <p>$Id$</p>
  *
  * @author artamonov
+ * @version $Id$
  */
 public class WebBackgroundWorker implements BackgroundWorker {
 
@@ -213,7 +213,8 @@ public class WebBackgroundWorker implements BackgroundWorker {
                     }
                 });
             } catch (Exception ex) {
-                this.taskException = ex;
+                if (!(ex instanceof InterruptedException) && !canceled)
+                    this.taskException = ex;
             } finally {
                 this.result = result;
                 // Is done

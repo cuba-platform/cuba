@@ -32,12 +32,10 @@ public class TaskHandler<T, V> implements BackgroundTaskHandler<V> {
 
     private Log log = LogFactory.getLog(BackgroundWorker.class);
 
-    private TaskExecutor<T, V> taskExecutor;
-    private WatchDog watchDog;
+    private final TaskExecutor<T, V> taskExecutor;
+    private final WatchDog watchDog;
 
     private volatile boolean started = false;
-
-    private long timeout = 0;
 
     private long startTimeStamp;
     private UserSession userSession;
@@ -81,7 +79,6 @@ public class TaskHandler<T, V> implements BackgroundTaskHandler<V> {
     @Override
     public final void execute() {
         checkState(!started, "Task is already started");
-        checkState(timeout >= 0, "Timeout cannot be zero or less than zero");
 
         this.started = true;
 
@@ -192,6 +189,7 @@ public class TaskHandler<T, V> implements BackgroundTaskHandler<V> {
     public final boolean checkHangup(long time) {
         if (isDone() || isCancelled())
             return false;
-        return timeout > 0 && (time - startTimeStamp) > taskExecutor.getTask().getTimeoutMilliseconds();
+        long timeout = taskExecutor.getTask().getTimeoutMilliseconds();
+        return timeout > 0 && (time - startTimeStamp) > timeout;
     }
 }

@@ -1,0 +1,22 @@
+<!--
+~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+~ Haulmont Technology proprietary and confidential.
+~ Use is subject to license terms.
+-->
+
+<window xmlns="http://schemas.haulmont.com/cuba/3.3/window.xsd"
+        caption="msg://backgroundWorkProgress.caption"
+        class="com.haulmont.cuba.gui.backgroundwork.BackgroundWorkProgressWindow"
+        messagesPack="com.haulmont.cuba.gui.backgroundwork">
+    <dsContext>
+
+    </dsContext>
+    <layout expandLayout="true" margin="true" spacing="true">
+        <label id="text" value="msg://backgroundWorkProgress.defaultText"/>
+        <progressBar id="taskProgress" width="100%"/>
+        <label id="progressText" value="msg://backgroundWorkProgress.progressText"/>
+        <hbox align="MIDDLE_RIGHT">
+            <button id="cancelButton" invoke="cancel" icon="icons/cancel.png" caption="msg://actions.Cancel"/>
+        </hbox>
+    </layout>
+</window>

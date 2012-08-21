@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  * @author artamonov
  * @version $Id$
  */
+@SuppressWarnings("unused")
 public abstract class BackgroundTask<T, V> {
 
     private final Window ownerWindow;
@@ -84,8 +85,9 @@ public abstract class BackgroundTask<T, V> {
      *
      * @param taskLifeCycle Task life cycle
      * @return Result
+     * @throws Exception exception in worker thread
      */
-    public abstract V run(TaskLifeCycle<T> taskLifeCycle);
+    public abstract V run(TaskLifeCycle<T> taskLifeCycle) throws Exception;
 
     /**
      * Task completed handler
