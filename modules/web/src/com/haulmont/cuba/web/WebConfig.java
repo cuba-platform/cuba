@@ -283,6 +283,10 @@ public interface WebConfig extends Config
     @DefaultInteger(100)
     Integer getMaxActiveBackgroundTasksCount();
 
+    @Property("cuba.backgroundWorker.maxClientLatencySeconds")
+    @DefaultInt(60)
+    int getClientBackgroundTasksLatencySeconds();
+
     /**
      * @return System ID. Use for identification (support emails).
      */

@@ -22,9 +22,9 @@ import java.util.Set;
  * @author artamonov
  * @version $Id$
  */
-public class TasksWatchDog implements WatchDog {
+public abstract class TasksWatchDog implements WatchDog {
 
-    private final Set<TaskHandler> watches;
+    private final Set<TaskHandlerImpl> watches;
 
     public TasksWatchDog() {
         watches = new LinkedHashSet<>();
@@ -41,10 +41,10 @@ public class TasksWatchDog implements WatchDog {
         long actual = TimeProvider.currentTimestamp().getTime();
 
         List<BackgroundTaskHandler> forRemove = new LinkedList<>();
-        for (TaskHandler task : watches) {
+        for (TaskHandlerImpl task : watches) {
             if (task.isCancelled() || task.isDone()) {
                 forRemove.add(task);
-            } else if (task.checkHangup(actual)) {
+            } else if (checkHangup(actual, task)) {
                 task.close();
                 forRemove.add(task);
             }
@@ -52,6 +52,8 @@ public class TasksWatchDog implements WatchDog {
 
         watches.removeAll(forRemove);
     }
+
+    protected abstract boolean checkHangup(long actualTimeMs, TaskHandlerImpl taskHandler);
 
     /**
      * {@inheritDoc}
@@ -61,7 +63,7 @@ public class TasksWatchDog implements WatchDog {
         if (!AppContext.isStarted())
             return;
 
-        for (TaskHandler task : watches) {
+        for (TaskHandlerImpl task : watches) {
             task.close();
         }
         watches.clear();
@@ -78,7 +80,7 @@ public class TasksWatchDog implements WatchDog {
      * @param backroundTask Task handler
      */
     @Override
-    public synchronized void manageTask(TaskHandler backroundTask) {
+    public synchronized void manageTask(TaskHandlerImpl backroundTask) {
         watches.add(backroundTask);
     }
 }

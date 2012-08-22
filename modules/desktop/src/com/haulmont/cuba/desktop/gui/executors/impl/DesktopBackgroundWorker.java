@@ -4,12 +4,12 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.desktop.gui.utils;
+package com.haulmont.cuba.desktop.gui.executors.impl;
 
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.executors.impl.TaskExecutor;
-import com.haulmont.cuba.gui.executors.impl.TaskHandler;
+import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -45,7 +45,7 @@ public class DesktopBackgroundWorker implements BackgroundWorker {
         // create task handler
         TaskExecutor<T, V> taskExecutor = new DesktopTaskExecutor<>(task);
 
-        return new TaskHandler<>(taskExecutor, watchDog);
+        return new TaskHandlerImpl<>(taskExecutor, watchDog);
     }
 
     /**

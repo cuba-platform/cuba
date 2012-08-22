@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.executors.BackgroundTaskHandler;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
 import com.haulmont.cuba.gui.executors.TaskLifeCycle;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -201,8 +202,31 @@ public class BackgroundWorkProgressWindow<V> extends AbstractWindow {
                 closeAndRun("close", new Runnable() {
                     @Override
                     public void run() {
-                        ownerWindow.showNotification(getMessage("backgroundWorkProgress.executionError"),
-                                ex.getLocalizedMessage(), NotificationType.WARNING);
+                        String localizedMessage = ex.getLocalizedMessage();
+                        if (StringUtils.isNotBlank(localizedMessage))
+                            ownerWindow.showNotification(getMessage("backgroundWorkProgress.executionError"),
+                                    localizedMessage, NotificationType.WARNING);
+                        else
+                            ownerWindow.showNotification(getMessage("backgroundWorkProgress.executionError"),
+                                    NotificationType.WARNING);
+                    }
+                });
+            else
+                closeBackgroundWindow();
+        }
+
+        @Override
+        public void timeoutExceeded() {
+            wrappedTask.timeoutExceeded();
+            final Window ownerWindow = wrappedTask.getOwnerWindow();
+            if (ownerWindow != null)
+                closeAndRun("close", new Runnable() {
+                    @Override
+                    public void run() {
+                        ownerWindow.showNotification(
+                                getMessage("backgroundWorkProgress.timeout"),
+                                getMessage("backgroundWorkProgress.timeoutMessage"),
+                                NotificationType.WARNING);
                     }
                 });
             else

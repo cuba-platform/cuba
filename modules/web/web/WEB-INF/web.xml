@@ -19,7 +19,7 @@
     </listener>
 
     <listener>
-        <listener-class>com.haulmont.cuba.web.gui.utils.BackgroundWorkerListener</listener-class>
+        <listener-class>com.haulmont.cuba.web.gui.executors.impl.BackgroundWorkerListener</listener-class>
     </listener>
 
     <servlet>

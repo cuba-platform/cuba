@@ -78,9 +78,9 @@
 
     <!-- Background Tasks -->
 
-    <bean id="cuba_BackgroundWorker_WatchDog" class="com.haulmont.cuba.gui.executors.impl.TasksWatchDog"/>
+    <bean id="cuba_BackgroundWorker_WatchDog" class="com.haulmont.cuba.desktop.gui.executors.impl.DesktopTasksWatchDog"/>
 
-    <bean id="cuba_BackgroundWorker" class="com.haulmont.cuba.desktop.gui.utils.DesktopBackgroundWorker">
+    <bean id="cuba_BackgroundWorker" class="com.haulmont.cuba.desktop.gui.executors.impl.DesktopBackgroundWorker">
         <constructor-arg index="0" ref="cuba_BackgroundWorker_WatchDog"/>
     </bean>
 

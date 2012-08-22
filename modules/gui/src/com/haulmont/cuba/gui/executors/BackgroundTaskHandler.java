@@ -15,7 +15,7 @@ package com.haulmont.cuba.gui.executors;
 public interface BackgroundTaskHandler<V> {
 
     /**
-     * Execute with timeout <br/>
+     * Execute<br/>
      * If the task appears to hang then it will be canceled
      */
     void execute();

@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.web.gui.utils;
+package com.haulmont.cuba.web.gui.executors.impl;
 
 /**
  * @author artamonov

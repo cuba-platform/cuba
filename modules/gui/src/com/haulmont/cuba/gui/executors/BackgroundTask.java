@@ -104,6 +104,12 @@ public abstract class BackgroundTask<T, V> {
     }
 
     /**
+     * Task canceled by watchdog handler
+     */
+    public void timeoutExceeded() {
+    }
+
+    /**
      * Handle exception
      *
      * @param ex Exception

@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkState;
  * @author artamonov
  * @version $Id$
  */
-public class TaskHandler<T, V> implements BackgroundTaskHandler<V> {
+public class TaskHandlerImpl<T, V> implements BackgroundTaskHandler<V> {
 
     private Log log = LogFactory.getLog(BackgroundWorker.class);
 
@@ -41,7 +41,7 @@ public class TaskHandler<T, V> implements BackgroundTaskHandler<V> {
     private UserSession userSession;
     private Window.CloseListener closeListener;
 
-    public TaskHandler(TaskExecutor<T, V> taskExecutor, WatchDog watchDog) {
+    public TaskHandlerImpl(TaskExecutor<T, V> taskExecutor, WatchDog watchDog) {
         this.taskExecutor = taskExecutor;
         this.watchDog = watchDog;
         this.userSession = UserSessionProvider.getUserSession();
@@ -157,6 +157,23 @@ public class TaskHandler<T, V> implements BackgroundTaskHandler<V> {
         taskExecutor.cancelExecution();
     }
 
+    /**
+     * Cancel with timeout exceeded event
+     */
+    public final void timeoutExceeded() {
+        checkState(started, "Task is not running");
+
+        if (isAlive()) {
+            boolean canceled = taskExecutor.cancelExecution();
+            if (canceled) {
+                BackgroundTask<T, V> task = taskExecutor.getTask();
+                task.timeoutExceeded();
+
+                disposeResources();
+            }
+        }
+    }
+
     @Override
     public final boolean isDone() {
         return taskExecutor.isDone();
@@ -180,16 +197,11 @@ public class TaskHandler<T, V> implements BackgroundTaskHandler<V> {
         return userSession;
     }
 
-    /**
-     * If task is executing too long
-     *
-     * @param time Actual time
-     * @return Hangup flag
-     */
-    public final boolean checkHangup(long time) {
-        if (isDone() || isCancelled())
-            return false;
-        long timeout = taskExecutor.getTask().getTimeoutMilliseconds();
-        return timeout > 0 && (time - startTimeStamp) > timeout;
+    public long getStartTimeStamp() {
+        return startTimeStamp;
+    }
+
+    public long getTimeoutMs() {
+        return taskExecutor.getTask().getTimeoutMilliseconds();
     }
 }

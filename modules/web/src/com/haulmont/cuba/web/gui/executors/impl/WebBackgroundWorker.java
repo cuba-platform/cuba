@@ -4,16 +4,17 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.web.gui.utils;
+package com.haulmont.cuba.web.gui.executors.impl;
 
 import com.haulmont.cuba.core.global.ConfigProvider;
+import com.haulmont.cuba.core.global.TimeProvider;
 import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
 import com.haulmont.cuba.gui.components.Timer;
 import com.haulmont.cuba.gui.executors.*;
 import com.haulmont.cuba.gui.executors.impl.TaskExecutor;
-import com.haulmont.cuba.gui.executors.impl.TaskHandler;
+import com.haulmont.cuba.gui.executors.impl.TaskHandlerImpl;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.gui.WebTimer;
@@ -95,7 +96,7 @@ public class WebBackgroundWorker implements BackgroundWorker {
         appInstance.addBackgroundTask(taskExecutor);
 
         // create task handler
-        final TaskHandler<T, V> taskHandler = new TaskHandler<>(taskExecutor, watchDog);
+        final TaskHandlerImpl<T, V> taskHandler = new TaskHandlerImpl<>(taskExecutor, watchDog);
 
         // add timer to AppWindow for UI ping
         Timer.TimerListener timerListener = new Timer.TimerListener() {
@@ -120,6 +121,15 @@ public class WebBackgroundWorker implements BackgroundWorker {
                 // if completed
                 if (taskExecutor.isDone()) {
                     taskExecutor.handleDone();
+                } else {
+                    if (!taskExecutor.isCancelled()) {
+                        long actualTimeMs = TimeProvider.currentTimestamp().getTime();
+                        long timeout = taskHandler.getTimeoutMs();
+
+                        if (timeout > 0 && (actualTimeMs - taskHandler.getStartTimeStamp()) > timeout) {
+                            taskHandler.timeoutExceeded();
+                        }
+                    }
                 }
 
                 if (!taskExecutor.isAlive()) {

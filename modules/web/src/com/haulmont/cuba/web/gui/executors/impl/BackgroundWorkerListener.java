@@ -4,7 +4,7 @@
  * Use is subject to license terms.
  */
 
-package com.haulmont.cuba.web.gui.utils;
+package com.haulmont.cuba.web.gui.executors.impl;
 
 import com.haulmont.cuba.web.App;
 import com.vaadin.Application;
