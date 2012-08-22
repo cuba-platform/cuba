@@ -23,8 +23,13 @@ import javax.inject.Inject;
 @ManagedBean("cuba_ExtendedEntities")
 public class ExtendedEntities {
 
-    @Inject
     private Metadata metadata;
+
+    // Constructor injection is used to support easy creation in tests
+    @Inject
+    public ExtendedEntities(Metadata metadata) {
+        this.metadata = metadata;
+    }
 
     /**
      * Searches for an extended entity and returns it if found, otherwise returns the original entity.
