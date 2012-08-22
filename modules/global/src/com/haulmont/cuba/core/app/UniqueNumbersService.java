@@ -13,8 +13,5 @@ public interface UniqueNumbersService
 {
     String NAME = "cuba_UniqueNumbersService";
 
-    @Deprecated
-    String JNDI_NAME = NAME;
-
     long getNextNumber(String domain);
 }

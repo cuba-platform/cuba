@@ -41,7 +41,6 @@ public class CASProtectedApp extends App implements ConnectionListener {
         log.debug("Initializing application");
         ApplicationContext appContext = getContext();
         appContext.addTransactionListener(this);
-        checkDeployedViews();
     }
 
     @Override

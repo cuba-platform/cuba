@@ -22,9 +22,6 @@ import javax.inject.Inject;
 public class CachingFacade implements CachingFacadeMBean {
 
     @Inject
-    private ResourceRepositoryAPI resourceRepository;
-
-    @Inject
     private ConfigStorageAPI configStorage;
 
     @Inject
@@ -50,10 +47,6 @@ public class CachingFacade implements CachingFacadeMBean {
 
     public void clearMessagesCache() {
         messages.clearCache();
-    }
-
-    public void clearResourceRepositoryCache() {
-        resourceRepository.evictAll();
     }
 
     public void clearConfigStorageCache() {

@@ -81,11 +81,6 @@ public class Emailer extends ManagementBean implements EmailerMBean, EmailerAPI 
         this.config = configuration.getConfig(EmailerConfig.class);
     }
 
-    @Deprecated
-    public EmailerAPI getAPI() {
-        return this;
-    }
-
     public void sendEmail(EmailInfo info) throws EmailException {
         sendEmail(info, true);
     }

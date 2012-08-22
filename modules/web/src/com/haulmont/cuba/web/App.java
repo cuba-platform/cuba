@@ -93,8 +93,6 @@ public abstract class App extends Application
 
     protected transient Map<Object, Long> requestStartTimes = new WeakHashMap<Object, Long>();
 
-    private static volatile boolean viewsDeployed;
-
     private volatile String contextName;
 
     private transient HttpServletResponse response;
@@ -274,20 +272,6 @@ public abstract class App extends Application
         } else {
             exceptionHandlers.removeAll();
         }
-    }
-
-    protected void checkDeployedViews() {
-        if (!viewsDeployed) {
-            deployViews();
-            viewsDeployed = true;
-        }
-    }
-
-    /**
-     * DEPRECATED: use cuba.viewsConfig application property
-     */
-    @Deprecated
-    protected void deployViews() {
     }
 
     /**

@@ -82,8 +82,6 @@ public class DefaultApp extends App implements ConnectionListener {
         LoginWindow window = createLoginWindow();
         setMainWindow(window);
 
-        checkDeployedViews();
-
         if (getTheme() == null) {
             String themeName = AppContext.getProperty(AppConfig.THEME_NAME_PROP);
             if (themeName == null) themeName = THEME_NAME;

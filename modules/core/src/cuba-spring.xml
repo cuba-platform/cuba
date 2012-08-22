@@ -74,7 +74,6 @@
                        value-ref="cuba_PersistenceManager"/>
                 <entry key="${cuba.webContextName}.cuba:service=ConfigStorage" value-ref="cuba_ConfigStorage"/>
                 <entry key="${cuba.webContextName}.cuba:service=DataCache" value-ref="cuba_DataCache"/>
-                <entry key="${cuba.webContextName}.cuba:service=ResourceRepository" value-ref="cuba_ResourceRepository"/>
                 <entry key="${cuba.webContextName}.cuba:service=UserSessions" value-ref="cuba_UserSessions"/>
                 <entry key="${cuba.webContextName}.cuba:service=UniqueNumbers" value-ref="cuba_UniqueNumbers"/>
                 <entry key="${cuba.webContextName}.cuba:service=Emailer" value-ref="cuba_Emailer"/>

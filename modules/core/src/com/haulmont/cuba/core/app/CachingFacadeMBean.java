@@ -18,8 +18,6 @@ public interface CachingFacadeMBean {
 
     void clearMessagesCache();
 
-    void clearResourceRepositoryCache();
-
     void clearConfigStorageCache();
 
     void clearEntityLogCache();

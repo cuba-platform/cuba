@@ -1,13 +1,8 @@
 /*
-* Copyright (c) 2011 Haulmont Technology Ltd. All Rights Reserved.
-* Haulmont Technology proprietary and confidential.
-* Use is subject to license terms.
-
-* Author: Konstantin Devyatkin
-* Created: 01.03.11 12:39
-*
-* $Id$
-*/
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
 package com.haulmont.cuba.web.app.folders;
 
 import com.haulmont.bali.util.ReflectionHelper;
@@ -27,7 +22,10 @@ import org.apache.commons.lang.StringUtils;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
-
+/**
+ * @author Devyatkin
+ * @version $Id$
+ */
 public class AppFolderEditWindow extends FolderEditWindow {
     protected TextField visibilityScriptField = null;
     protected TextField quantityScriptField = null;
@@ -139,7 +137,7 @@ public class AppFolderEditWindow extends FolderEditWindow {
         parentSelect.addItem(root);
         parentSelect.setNullSelectionItemId(root);
 
-        FoldersService service = ServiceLocator.lookup(FoldersService.JNDI_NAME);
+        FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
         List<AppFolder> list = service.loadAppFolders();
         for (AppFolder folder : list) {
             if (!folder.equals(this.folder)) {

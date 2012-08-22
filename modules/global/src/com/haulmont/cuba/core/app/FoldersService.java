@@ -21,9 +21,6 @@ public interface FoldersService {
 
     String NAME = "cuba_FoldersService";
 
-    @Deprecated
-    String JNDI_NAME = NAME;
-
     List<AppFolder> loadAppFolders();
 
     List<AppFolder> reloadAppFolders(List<AppFolder> folders);

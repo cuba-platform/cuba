@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 11.12.2009 18:12:21
- *
- * $Id$
  */
 package com.haulmont.cuba.web.app.folders;
 
@@ -16,9 +11,9 @@ import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.UserSessionProvider;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ServiceLocator;
-import com.haulmont.cuba.gui.UserSessionClient;
 import com.haulmont.cuba.gui.presentations.Presentations;
 import com.haulmont.cuba.security.entity.Presentation;
 import com.haulmont.cuba.security.entity.SearchFolder;
@@ -32,6 +27,10 @@ import org.apache.commons.lang.StringUtils;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 public class FolderEditWindow extends Window {
 
     protected Folder folder;
@@ -111,7 +110,7 @@ public class FolderEditWindow extends Window {
         sortOrderField.setValue(folder.getSortOrder() == null ? "" : folder.getSortOrder());
         layout.addComponent(sortOrderField);
 
-        if (UserSessionClient.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global")
+        if (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global")
                 && folder instanceof SearchFolder
                 && BooleanUtils.isNotTrue(((SearchFolder) folder).getIsSet())) {
             globalCb = new CheckBox(getMessage("folders.folderEditWindow.global"));
@@ -190,10 +189,10 @@ public class FolderEditWindow extends Window {
                     if (BooleanUtils.isTrue((Boolean) globalCb.getValue())) {
                         folder.setUser(null);
                     } else {
-                        folder.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+                        folder.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
                     }
                 } else {
-                    folder.setUser(UserSessionClient.getUserSession().getCurrentOrSubstitutedUser());
+                    folder.setUser(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser());
                 }
 
                 if (presentation != null) {
@@ -214,7 +213,7 @@ public class FolderEditWindow extends Window {
         parentSelect.addItem(root);
         parentSelect.setNullSelectionItemId(root);
 
-        FoldersService service = ServiceLocator.lookup(FoldersService.JNDI_NAME);
+        FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
         List<SearchFolder> list = service.loadSearchFolders();
         for (SearchFolder folder : list) {
             if (!folder.equals(this.folder)) {

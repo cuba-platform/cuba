@@ -18,9 +18,6 @@ public interface EmailService {
 
     String NAME = "cuba_EmailService";
 
-    @Deprecated
-    String JNDI_NAME = NAME;
-
     /**
      * Sends email
      * @param address   comma or semicolon separated list of addresses

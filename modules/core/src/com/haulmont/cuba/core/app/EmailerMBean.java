@@ -20,9 +20,6 @@ public interface EmailerMBean
 {
     String OBJECT_NAME = "haulmont.cuba:service=Emailer";
 
-    @Deprecated
-    EmailerAPI getAPI();
-
     String getFromAddress();
 
     void setFromAddress(String address);
