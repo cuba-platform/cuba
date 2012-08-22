@@ -3,30 +3,24 @@ package com.haulmont.chile.core.loader;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
-import com.haulmont.chile.core.model.impl.SessionImpl;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
 
 public class ChileMetadataLoader implements MetadataLoader {
-    private Log LOG = LogFactory.getLog(ChileMetadataLoader.class);
 
-    private final Session session;
-    private final ClassMetadataLoader annotationsLoader;
+    protected Session session;
+    protected ClassMetadataLoader annotationsLoader;
 
-    public ChileMetadataLoader() {
-		session = new SessionImpl();
-        annotationsLoader = createAnnotationsLoader(session);
-    }
-
-    public ChileMetadataLoader(Session session) {
-		this.session = session;
-        annotationsLoader = createAnnotationsLoader(session);
+    public ChileMetadataLoader(@Nullable Session session) {
+        if (session != null) {
+            this.session = session;
+            annotationsLoader = createAnnotationsLoader(session);
+        }
 	}
 
     protected ClassMetadataLoader createAnnotationsLoader(Session session) {

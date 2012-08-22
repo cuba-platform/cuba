@@ -7,7 +7,6 @@
 package com.haulmont.cuba.gui.config;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.EntityLoadInfo;
@@ -74,15 +73,7 @@ public class MenuCommand {
                 else
                     throw new UnsupportedOperationException();
 
-                final Class javaClass = MetadataProvider.getReplacedClass(metaClassName);
-                if (javaClass == null)
-                    throw new IllegalStateException(String.format("Can't find metaClass %s", metaClassName));
-
-                try {
-                    entityItem = (Entity) javaClass.newInstance();
-                } catch (Throwable e) {
-                    throw new RuntimeException(e);
-                }
+                entityItem = MetadataProvider.create(metaClassName);
             }
             windowManager.openEditor(
                     windowInfo,

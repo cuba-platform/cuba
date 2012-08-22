@@ -53,6 +53,9 @@ public interface QueryTransformer
     /** Removes 'order by' clause */
     void removeOrderBy();
 
+    /** Replace main entity name, e.g. "select d ref$Driver d" with "select d ref$ExtDriver d" */
+    void replaceEntityName(String newName);
+
     /** Reset internal buffer */
     void reset();
 

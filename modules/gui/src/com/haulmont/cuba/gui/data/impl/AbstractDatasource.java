@@ -9,6 +9,8 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.core.global.MetadataHelper;
@@ -34,6 +36,7 @@ public abstract class AbstractDatasource<T extends Entity>
     protected boolean modified;
     protected CommitMode commitMode;
     protected Datasource parentDs;
+    protected Metadata metadata;
 
     protected List<DatasourceListener> dsListeners = new ArrayList<DatasourceListener>();
 
@@ -48,6 +51,7 @@ public abstract class AbstractDatasource<T extends Entity>
         this.id = id;
         listener = new ItemListener();
         commitMode = CommitMode.DATASTORE;
+        metadata = AppContext.getBean(Metadata.class);
     }
 
     public String getId() {

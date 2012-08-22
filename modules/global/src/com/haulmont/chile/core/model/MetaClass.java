@@ -1,26 +1,37 @@
+/*
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.chile.core.model;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
- * Metadata object reflecting an entity class.
+ * Metadata object representing an entity.
+ *
+ * @author abramov
+ * @version $Id$
  */
 public interface MetaClass extends MetadataObject<MetaClass> {
 
     /**
-     * Containing MetaModel
+     * @return containing MetaModel instance
      */
     MetaModel getModel();
 
     /**
-     * Java class of the corresponding entity
+     * @return corresponding Java class
      */
     Class getJavaClass();
 
     /**
-     * Get MetaProperty by its name
+     * Get MetaProperty by its name.
      * @return MetaProperty instance, or null if no such property found
      */
+    @Nullable
     MetaProperty getProperty(String name);
 
     /**
@@ -41,17 +52,17 @@ public interface MetaClass extends MetadataObject<MetaClass> {
     MetaPropertyPath getPropertyPath(String propertyPath);
 
     /**
-     * Returns collection of meta properties directly owned by this class
+     * @return collection of meta properties directly owned by this metaclass.
      */
     Collection<MetaProperty> getOwnProperties();
 
     /**
-     * Returns collection of meta properties owned by this class and all its ancestors
+     * @return collection of meta properties owned by this metaclass and all its ancestors.
      */
     Collection<MetaProperty> getProperties();
 
     /**
-     * Create an instance of entity reflected by this MetaClass
+     * Create an instance of the corresponding Java class.
      */
     <T> T createInstance() throws InstantiationException, IllegalAccessException;
 }

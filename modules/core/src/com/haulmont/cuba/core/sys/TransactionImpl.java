@@ -5,6 +5,7 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TransactionParams;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -21,6 +22,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public class TransactionImpl implements Transaction {
 
     private PlatformTransactionManager tm;
+    private PersistenceImpl persistence;
     private TransactionStatus ts;
     private boolean committed;
 
@@ -28,6 +30,7 @@ public class TransactionImpl implements Transaction {
                            TransactionParams params)
     {
         this.tm = transactionManager;
+        this.persistence = persistence;
 
         DefaultTransactionDefinition td = new DefaultTransactionDefinition();
         if (join)
@@ -43,6 +46,17 @@ public class TransactionImpl implements Transaction {
         ts = tm.getTransaction(td);
 
         TransactionSynchronizationManager.registerSynchronization(persistence.createSynchronization());
+    }
+
+    @Override
+    public <T> T execute(Callable<T> callable) {
+        try {
+            T result = callable.call(persistence.getEntityManager());
+            commit();
+            return result;
+        } finally {
+            end();
+        }
     }
 
     public void commit() {

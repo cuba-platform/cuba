@@ -288,6 +288,18 @@ public class QueryTransformerRegex extends QueryParserRegex implements QueryTran
         }
     }
 
+    @Override
+    public void replaceEntityName(String newName) {
+        Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(source);
+        while (entityMatcher.find()) {
+            if (entityMatcher.group(2).equals(targetEntity)) {
+                buffer.replace(entityMatcher.start(2), entityMatcher.end(2), newName);
+                return;
+            }
+        }
+        throw new IllegalStateException("Unable to find entity name [" + source + "]");
+    }
+
     public void reset() {
         buffer = new StringBuffer(source);
         addedParams.clear();

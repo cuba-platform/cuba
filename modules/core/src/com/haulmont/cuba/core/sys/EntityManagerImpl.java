@@ -9,29 +9,29 @@
  */
 package com.haulmont.cuba.core.sys;
 
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.app.DataCacheAPI;
+import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.SoftDelete;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.StoreCache;
 
 import java.sql.Connection;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class EntityManagerImpl implements EntityManager {
+
     public interface CloseListener {
         void onClose();
     }
@@ -39,6 +39,8 @@ public class EntityManagerImpl implements EntityManager {
     private OpenJPAEntityManager delegate;
 
     private UserSession userSession;
+    private Metadata metadata;
+    private FetchPlanManager fetchPlanMgr;
 
     private boolean closed;
     private Set<CloseListener> closeListeners = new HashSet<CloseListener>();
@@ -49,9 +51,16 @@ public class EntityManagerImpl implements EntityManager {
 
     private List<Entity> entitiesToEvict;
 
-    EntityManagerImpl(OpenJPAEntityManager jpaEntityManager, UserSession userSession) {
+    private List<View> views = new ArrayList<>(1);
+
+    private Log log = LogFactory.getLog(getClass());
+
+    EntityManagerImpl(OpenJPAEntityManager jpaEntityManager, UserSession userSession, Metadata metadata,
+                      FetchPlanManager fetchPlanMgr) {
         this.delegate = jpaEntityManager;
         this.userSession = userSession;
+        this.metadata = metadata;
+        this.fetchPlanMgr = fetchPlanMgr;
     }
 
     private static boolean isStoreCacheEnabled() {
@@ -100,7 +109,9 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     public <T extends Entity> T find(Class<T> clazz, Object key) {
-        T entity = delegate.find(clazz, key);
+        Class<T> effectiveClass = metadata.getExtendedEntities().getEffectiveClass(clazz);
+
+        T entity = delegate.find(effectiveClass, key);
         if (entity instanceof SoftDelete && ((SoftDelete) entity).isDeleted() && softDeletion)
             return null;
         else
@@ -112,38 +123,99 @@ public class EntityManagerImpl implements EntityManager {
     }
 
     public Query createQuery() {
-        return new QueryImpl(this, false);
+        return new QueryImpl(this, false, null, metadata, fetchPlanMgr);
     }
 
     public Query createQuery(String qlStr) {
-        QueryImpl query = new QueryImpl(this, false);
+        QueryImpl query = new QueryImpl(this, false, null, metadata, fetchPlanMgr);
         query.setQueryString(qlStr);
         return query;
     }
 
     @Override
     public <T> TypedQuery<T> createQuery(String qlString, Class<T> resultClass) {
-        QueryImpl<T> query = new QueryImpl<T>(this, false, resultClass);
+        QueryImpl<T> query = new QueryImpl<T>(this, false, resultClass, metadata, fetchPlanMgr);
         query.setQueryString(qlString);
         return query;
     }
 
     public Query createNativeQuery() {
-        return new QueryImpl(this, true);
+        return new QueryImpl(this, true, null, metadata, fetchPlanMgr);
     }
 
     public Query createNativeQuery(String sql) {
-        QueryImpl query = new QueryImpl(this, true);
+        QueryImpl query = new QueryImpl(this, true, null, metadata, fetchPlanMgr);
         query.setQueryString(sql);
         return query;
     }
 
     public void setView(View view) {
-        ViewHelper.setView(delegate.getFetchPlan(), view);
+        fetchPlanMgr.setView(delegate.getFetchPlan(), view);
+        views.clear();
+        views.add(view);
     }
 
     public void addView(View view) {
-        ViewHelper.addView(delegate.getFetchPlan(), view);
+        fetchPlanMgr.addView(delegate.getFetchPlan(), view);
+        views.add(view);
+    }
+
+    public void fetch(Entity entity, View view) {
+        Objects.requireNonNull(view, "View is null");
+        if (PersistenceHelper.isDetached(entity))
+            throw new IllegalArgumentException("Can not fetch detached entity. Merge first.");
+
+        // Set default fetch plan
+        fetchPlanMgr.setView(delegate.getFetchPlan(), null);
+        try {
+            fetchInstance(entity, view, new HashMap<Instance, Set<View>>());
+        } finally {
+            // Restore fetch plan
+            for (int i = 0; i < views.size(); i++) {
+                if (i == 0)
+                    fetchPlanMgr.setView(delegate.getFetchPlan(), views.get(i));
+                else
+                    fetchPlanMgr.addView(delegate.getFetchPlan(), views.get(i));
+            }
+        }
+    }
+
+    private void fetchInstance(Instance instance, View view, Map<Instance, Set<View>> visited) {
+        Set<View> views = visited.get(instance);
+        if (views == null) {
+            views = new HashSet<View>();
+            visited.put(instance, views);
+        } else if (views.contains(view)) {
+            return;
+        }
+        views.add(view);
+
+        if (log.isTraceEnabled()) log.trace("Fetching instance " + instance);
+        for (ViewProperty property : view.getProperties()) {
+            if (log.isTraceEnabled()) log.trace("Fetching property " + property.getName());
+            Object value = instance.getValue(property.getName());
+            View propertyView = property.getView();
+            if (value != null && propertyView != null) {
+                if (value instanceof Collection) {
+                    for (Object item : ((Collection) value)) {
+                        if (item instanceof Instance)
+                            fetchInstance((Instance) item, propertyView, visited);
+                    }
+                } else if (value instanceof Instance) {
+                    if (PersistenceHelper.isDetached(value) && !(value instanceof EmbeddableEntity)) {
+                        log.trace("Object " + value + " is detached, loading it");
+                        Entity entity = (Entity) value;
+                        value = find(entity.getClass(), entity.getId());
+                        if (value == null) {
+                            // the instance is most probably deleted
+                            continue;
+                        }
+                        instance.setValue(property.getName(), value);
+                    }
+                    fetchInstance((Instance) value, propertyView, visited);
+                }
+            }
+        }
     }
 
     public void flush() {

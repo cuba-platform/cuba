@@ -25,20 +25,15 @@ public class MetadataBuildInfo implements Serializable {
 
     private Collection<String> transientEntitiesPackages;
 
-    private Map<String, Map<String, Object>> entityAnnotations;
-
-    private Map<String, String> replacedEntities;
-
+    private Map<String, Map<String, String>> entityAnnotations;
 
     public MetadataBuildInfo(Collection<String> persistentEntitiesPackages,
                              Collection<String> transientEntitiesPackages,
-                             Map<String, Map<String, Object>> entityAnnotations,
-                             Map<String, String> replacedEntities)
+                             Map<String, Map<String, String>> entityAnnotations)
     {
         this.persistentEntitiesPackages = persistentEntitiesPackages;
         this.transientEntitiesPackages = transientEntitiesPackages;
         this.entityAnnotations = entityAnnotations;
-        this.replacedEntities = replacedEntities;
     }
 
     /**
@@ -56,17 +51,9 @@ public class MetadataBuildInfo implements Serializable {
     }
 
     /**
-     * @return  Map of entity class name to annotations map.
-     * <p>Annotations map contatins only annotations with String or Boolean value.</p>
+     * @return  Map of entity class name to annotations map, defined in <code>metadata.xml</code>.
      */
-    public Map<String, Map<String, Object>> getEntityAnnotations() {
+    public Map<String, Map<String, String>> getEntityAnnotations() {
         return entityAnnotations;
-    }
-
-    /**
-     * @return  Replaced entity class names map.
-     */
-    public Map<String, String> getReplacedEntities() {
-        return replacedEntities;
     }
 }

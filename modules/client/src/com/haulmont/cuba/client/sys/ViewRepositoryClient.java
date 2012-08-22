@@ -8,6 +8,7 @@ package com.haulmont.cuba.client.sys;
 
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.app.ServerInfoService;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewRepository;
 import org.apache.commons.logging.Log;
@@ -24,7 +25,8 @@ public class ViewRepositoryClient extends ViewRepository {
     private boolean lazyLoadServerViews;
     private ServerInfoService serverInfoService;
 
-    public ViewRepositoryClient(boolean lazyLoadServerViews, ServerInfoService serverInfoService) {
+    public ViewRepositoryClient(Metadata metadata, boolean lazyLoadServerViews, ServerInfoService serverInfoService) {
+        super(metadata);
         this.lazyLoadServerViews = lazyLoadServerViews;
         this.serverInfoService = serverInfoService;
     }

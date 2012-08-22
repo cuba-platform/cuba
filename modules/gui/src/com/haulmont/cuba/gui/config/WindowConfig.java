@@ -10,6 +10,8 @@
  */
 package com.haulmont.cuba.gui.config;
 
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
@@ -34,6 +36,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * GenericUI class holding information about all registered screens.
@@ -48,6 +52,11 @@ public class WindowConfig
     private static Log log = LogFactory.getLog(WindowConfig.class);
 
     private Scripting scripting;
+
+    @Inject
+    private Metadata metadata;
+
+    public static final Pattern ENTITY_SCREEN_PATTERN = Pattern.compile("([_A-Za-z]+\\$[A-Z][_A-Za-z0-9]*)\\..+");
 
     @Inject
     public WindowConfig(Scripting scripting) {
@@ -128,6 +137,17 @@ public class WindowConfig
      */
     public WindowInfo getWindowInfo(String id) {
         WindowInfo windowInfo = screens.get(id);
+        if (windowInfo == null) {
+            Matcher matcher = ENTITY_SCREEN_PATTERN.matcher(id);
+            if (matcher.matches()) {
+                MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(matcher.group(1));
+                if (originalMetaClass != null) {
+                    String originalId = new StringBuilder(id)
+                            .replace(matcher.start(1), matcher.end(1), originalMetaClass.getName()).toString();
+                    windowInfo = screens.get(originalId);
+                }
+            }
+        }
         if (windowInfo == null)
             throw new NoSuchScreenException("Screen '" + id + "' is not defined");
         return windowInfo;

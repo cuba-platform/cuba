@@ -6,6 +6,9 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaModel;
 import com.haulmont.chile.core.model.Session;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public class SessionImpl implements Session {
 
 	private final Map<String, MetaModel> models = new HashMap<String, MetaModel>();
@@ -18,6 +21,8 @@ public class SessionImpl implements Session {
 		return models.values();
 	}
 
+    @Nullable
+    @Override
 	public MetaClass getClass(String name) {
         for (MetaModel model : models.values()) {
             final MetaClass metaClass = model.getClass(name);
@@ -27,7 +32,18 @@ public class SessionImpl implements Session {
         return null;
 	}
 
-	public MetaClass getClass(Class<?> clazz) {
+    @Nonnull
+    @Override
+    public MetaClass getClassNN(String name) {
+        MetaClass metaClass = getClass(name);
+        if (metaClass == null)
+            throw new IllegalArgumentException("MetaClass not found for " + name);
+        return metaClass;
+    }
+
+    @Nullable
+    @Override
+    public MetaClass getClass(Class<?> clazz) {
         for (MetaModel model : models.values()) {
             final MetaClass metaClass = model.getClass(clazz);
             if (metaClass != null) return metaClass;
@@ -36,7 +52,16 @@ public class SessionImpl implements Session {
         return null;
 	}
 
-	public Collection<MetaClass> getClasses() {
+    @Nonnull
+    @Override
+    public MetaClass getClassNN(Class<?> clazz) {
+        MetaClass metaClass = getClass(clazz);
+        if (metaClass == null)
+            throw new IllegalArgumentException("MetaClass not found for " + clazz);
+        return metaClass;
+    }
+
+    public Collection<MetaClass> getClasses() {
         final List<MetaClass> classes = new ArrayList<MetaClass>();
         for (MetaModel model : models.values()) {
             classes.addAll(model.getClasses());

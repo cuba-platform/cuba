@@ -16,7 +16,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.EmbeddableEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.gui.data.*;
@@ -112,13 +111,12 @@ public class EmbeddedDatasourceImpl<T extends EmbeddableEntity>
 
     public MetaClass getMetaClass() {
         MetaClass metaClass = metaProperty.getRange().asClass();
-        Class replacedClass = MetadataProvider.getReplacedClass(metaClass);
-        return replacedClass != null ? MetadataProvider.getSession().getClass(replacedClass) : metaClass;
+        return metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
     }
 
     public View getView() {
         final ViewProperty property = masterDs.getView().getProperty(metaProperty.getName());
-        return property == null ? null : MetadataProvider.getViewRepository().getView(getMetaClass(), property.getView().getName());
+        return property == null ? null : metadata.getViewRepository().getView(getMetaClass(), property.getView().getName());
     }
 
     public void committed(Set<Entity> entities) {

@@ -12,6 +12,7 @@ package com.haulmont.cuba.core;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 
+import javax.annotation.Nullable;
 import java.sql.Connection;
 
 /**
@@ -129,18 +130,24 @@ public interface EntityManager {
 
     /**
      * Set View for this EntityManager instance.
-     *
+     * <p>All view fields except declared lazy will be eagerly fetched.</p>
      * @param view view instance. May be null, in this case eager fetching will be performed according to JPA mappings.
      */
-    void setView(View view);
+    void setView(@Nullable View view);
 
     /**
      * Adds View for this EntityManager instance.<br/>
-     * Eager fetching will be performed for fields specified in all added views.
-     *
-     * @param view view instance - must not be null
+     * <p>Eager fetching will be performed for all non-lazy fields specified in all added views.</p>
+     * @param view non-null view instance
      */
     void addView(View view);
+
+    /**
+     * Ensure all view fields, including lazy, are fetched.
+     * @param entity    entity instance
+     * @param view      view instance that may be different from views currently set on this EntityManager
+     */
+    void fetch(Entity entity, View view);
 
     /**
      * Synchronize the persistence context to the underlying database.

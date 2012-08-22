@@ -10,14 +10,14 @@ import com.haulmont.chile.core.loader.ClassMetadataLoader;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Session;
-import com.haulmont.chile.jpa.loader.JPAAnnotationsLoader;
+import com.haulmont.chile.core.model.impl.SessionImpl;
 import com.haulmont.chile.jpa.loader.JPAMetadataLoader;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import org.apache.commons.lang.ArrayUtils;
 
+import javax.annotation.ManagedBean;
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
 import java.util.Map;
 
 /**
@@ -25,20 +25,17 @@ import java.util.Map;
 *
 * @author krivopustov
 */
-public class PersistentClassesMetadataLoader extends JPAMetadataLoader {
+@ManagedBean("cuba_PersistentEntitiesMetadataLoader")
+public class PersistentEntitiesMetadataLoader extends JPAMetadataLoader {
+
+    public PersistentEntitiesMetadataLoader() {
+        super(new SessionImpl());
+    }
 
     @Override
     protected ClassMetadataLoader createAnnotationsLoader(Session session) {
-        return new JPAAnnotationsLoader(session) {
-            @Override
-            protected boolean isMetaPropertyField(Field field) {
-                final String name = field.getName();
-                return super.isMetaPropertyField(field) &&
-                        !name.startsWith("pc") && !name.startsWith("__") && super.isMetaPropertyField(field);
-            }
-        };
+        return new CubaAnnotationsLoader(session);
     }
-
 
     @Override
     protected void initMetaProperty(MetaClass metaClass, MetaProperty metaProperty) {
@@ -65,4 +62,5 @@ public class PersistentClassesMetadataLoader extends JPAMetadataLoader {
             metaAnnotations.put(OnDeleteInverse.class.getName(), properties);
         }
     }
+
 }

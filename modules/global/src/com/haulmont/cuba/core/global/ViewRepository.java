@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 19.12.2008 16:03:28
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
@@ -15,7 +10,6 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.chile.core.model.Session;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
@@ -34,15 +28,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Class containing all views defined in XML and deployed at runtime.<br>
  * The reference to the ViewRepository can be obtained through {@link com.haulmont.cuba.core.global.MetadataProvider}
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public class ViewRepository
 {
@@ -51,27 +45,41 @@ public class ViewRepository
     private Map<MetaClass, Map<String, View>> storage =
             new ConcurrentHashMap<MetaClass, Map<String, View>>();
 
+    private Metadata metadata;
+
     private static Log log = LogFactory.getLog(ViewRepository.class);
 
-    public View getView(Class<? extends Entity> entityClass, String name) {
-        MetaClass metaClass = MetadataProvider.getSession().getClass(entityClass);
-        if (metaClass == null)
-            throw new IllegalStateException("Meta class not found for " + entityClass.getName());
-        return getView(metaClass, name);
+    public ViewRepository(Metadata metadata) {
+        this.metadata = metadata;
     }
 
+    /**
+     * Get View for an entity.
+     * @param entityClass   entity class
+     * @param name          view name
+     * @return              view instance. Throws {@link ViewNotFoundException} if not found.
+     */
+    public View getView(Class<? extends Entity> entityClass, String name) {
+        return getView(metadata.getSession().getClassNN(entityClass), name);
+    }
+
+    /**
+     * Get View for an entity.
+     * @param metaClass     entity class
+     * @param name          view name
+     * @return              view instance. Throws {@link ViewNotFoundException} if not found.
+     */
     public View getView(MetaClass metaClass, String name) {
-        if (metaClass == null)
-            throw new IllegalArgumentException("MetaClass is null");
+        Objects.requireNonNull(metaClass, "MetaClass is null");
+
+        // Replace with extended entity if such one exists
+        metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
 
         View view = findView(metaClass, name);
         if (view == null) {
-            Map<Class, Class> map = MetadataProvider.getReplacedEntities();
-            for (Map.Entry<Class, Class> entry : map.entrySet()) {
-                if (entry.getValue().equals(metaClass.getJavaClass())) {
-                    view = findView(MetadataProvider.getSession().getClass(entry.getKey()), name);
-                    break;
-                }
+            MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+            if (originalMetaClass != null) {
+                view = findView(originalMetaClass, name);
             }
         }
 
@@ -166,7 +174,6 @@ public class ViewRepository
         if (StringUtils.isBlank(viewName))
             throw new IllegalStateException("Invalid view definition: no 'name' attribute");
 
-        Session session = MetadataProvider.getSession();
         MetaClass metaClass;
 
         String entity = viewElem.attributeValue("entity");
@@ -175,14 +182,10 @@ public class ViewRepository
             if (StringUtils.isBlank(className))
                 throw new IllegalStateException("Invalid view definition: no 'entity' or 'class' attribute");
             Class entityClass = ReflectionHelper.getClass(className);
-            metaClass = session.getClass(entityClass);
-            if (metaClass == null)
-                throw new IllegalStateException("No MetaClass found for class " + className);
+            metaClass = metadata.getSession().getClassNN(entityClass);
         }
         else {
-            metaClass = session.getClass(entity);
-            if (metaClass == null)
-                throw new IllegalStateException("No MetaClass found for entity " + entity);
+            metaClass = metadata.getSession().getClassNN(entity);
         }
 
         View v = findView(metaClass, viewName);
@@ -212,9 +215,7 @@ public class ViewRepository
     }
 
     protected void loadView(Element rootElem, Element viewElem, View view) {
-        Session session = MetadataProvider.getSession();
-
-        final MetaClass metaClass = session.getClass(view.getEntityClass());
+        final MetaClass metaClass = metadata.getSession().getClassNN(view.getEntityClass());
         final String viewName = view.getName();
 
         for (Element propElem : (List<Element>) viewElem.elements("property")) {
@@ -241,7 +242,7 @@ public class ViewRepository
                 if (refEntityName == null) {
                     refMetaClass = range.asClass();
                 } else {
-                    refMetaClass = session.getClass(refEntityName);
+                    refMetaClass = metadata.getSession().getClass(refEntityName);
                 }
 
                 refView = findView(refMetaClass, refViewName);

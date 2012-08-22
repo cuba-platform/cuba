@@ -96,7 +96,7 @@ public class DataWorkerBean implements DataWorker {
             for (Entity entity : res) {
                 View view = context.getViews().get(entity);
                 if (view != null) {
-                    ViewHelper.fetchInstance(entity, view);
+                    em.fetch(entity, view);
                 }
             }
 
@@ -176,7 +176,7 @@ public class DataWorkerBean implements DataWorker {
             for (Map.Entry<Entity, Entity> entry : res.entrySet()) {
                 View view = context.getViews().get(entry.getKey());
                 if (view != null) {
-                    ViewHelper.fetchInstance(entry.getValue(), view);
+                    em.fetch(entry.getValue(), view);
                 }
             }
 
@@ -211,7 +211,7 @@ public class DataWorkerBean implements DataWorker {
             return null;
         }
 
-        Object result = null;
+        A result = null;
 
         Transaction tx = persistence.createTransaction();
         try {
@@ -226,13 +226,12 @@ public class DataWorkerBean implements DataWorker {
                 em.setSoftDeletion(false);
 
             com.haulmont.cuba.core.Query query = createQuery(em, context);
-            final List resultList = query.getResultList();
+            final List<A> resultList = query.getResultList();
             if (!resultList.isEmpty())
                 result = resultList.get(0);
 
             if (result != null && context.getView() != null) {
-                em.setView(null);
-                ViewHelper.fetchInstance((Instance) result, context.getView());
+                em.fetch(result, context.getView());
             }
 
             tx.commit();
@@ -262,7 +261,7 @@ public class DataWorkerBean implements DataWorker {
 
         queryResultsManager.savePreviousQueryResults(context);
 
-        List resultList;
+        List<A> resultList;
 
         Transaction tx = persistence.createTransaction();
         try {
@@ -285,9 +284,8 @@ public class DataWorkerBean implements DataWorker {
             if (context.getView() != null && (dataCacheAPI.isStoreCacheEnabled()
                     || ViewHelper.hasLazyProperties(context.getView())))
             {
-                em.setView(null);
-                for (Object entity : resultList) {
-                    ViewHelper.fetchInstance((Instance) entity, context.getView());
+                for (Entity entity : resultList) {
+                    em.fetch(entity, context.getView());
                 }
             }
 

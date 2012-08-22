@@ -12,7 +12,7 @@ package com.haulmont.cuba.core.app;
 
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.Scripting;
-import com.haulmont.cuba.core.sys.ViewHelper;
+import com.haulmont.cuba.core.sys.FetchPlanManager;
 import com.haulmont.cuba.security.app.EntityLogAPI;
 
 import javax.annotation.ManagedBean;
@@ -35,6 +35,9 @@ public class CachingFacade implements CachingFacadeMBean {
 
     @Inject
     private Messages messages;
+
+    @Inject
+    private FetchPlanManager fetchPlanManager;
 
     @Override
     public int getMessagesCacheSize() {
@@ -63,6 +66,6 @@ public class CachingFacade implements CachingFacadeMBean {
 
     @Override
     public void clearViewsCache() {
-        ViewHelper.clearCache();
+        fetchPlanManager.clearCache();
     }
 }

@@ -22,69 +22,69 @@ public interface MetaProperty extends MetadataObject<MetaProperty> {
      */
     enum Type {
 
-        /** Simple type, e.g. String, Number */
+        /** Simple value type, e.g. String, Number */
         DATATYPE,
 
         /** Enumeration */
         ENUM,
 
-        /** Reference type. Attribute of this type contains related entity. */
+        /** Reference type. Attribute of this type contains a related entity. */
         ASSOCIATION,
 
         /**
          * Reference type. Attribute of this type contains a related entity.
-         * Composition implyes ownership, that is the referenced object exists only as part of the owning entity.
+         * Composition implies ownership, that is the referenced object exists only as part of the owning entity.
          */
         COMPOSITION
     }
 
     /**
-     * Containing MetaModel
+     * @return containing MetaModel instance
      */
     MetaModel getModel();
 
     /**
-     * MetaClass, containing this MetaProperty
+     * @return MetaClass, containing this MetaProperty
      */
     MetaClass getDomain();
 
     /**
-     * Range of this property.
+     * @return Range of this property.
      */
     Range getRange();
 
     /**
-     * Property type
+     * @return property type
      */
     Type getType();
 
     /**
-     * Is corresponding entity attribute must contain a value?
+     * @return true if the corresponding entity attribute must contain a value
      */
     boolean isMandatory();
 
     /**
-     * Is corresponding entity attribute read-only?
+     * @return true if the corresponding entity attribute is read-only
      */
     boolean isReadOnly();
 
     /**
-     * Returns a MetaProperty from the opposite side of relation, or null if this is not a reference property
+     * @return a MetaProperty from the opposite side of relation, or null if this is not a reference property
      */
     MetaProperty getInverse();
 
     /**
-     * Returns corresponding Java field or method as AnnotatedElement object
+     * @return corresponding Java field or method as AnnotatedElement object
      */
     AnnotatedElement getAnnotatedElement();
 
     /**
-     * Returns Java class of the corresponding field or method's return type
+     * @return Java class of the corresponding field or method's return type
      */
     Class<?> getJavaType();
 
     /**
-     * Returns Java class which declares the corresponding field or method
+     * @return Java class which declares the corresponding field or method
      */
     @Nullable
     Class<?> getDeclaringClass();

@@ -15,7 +15,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.impl.AbstractInstance;
 import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.MetadataProvider;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewProperty;
 import com.haulmont.cuba.gui.data.*;
@@ -33,6 +32,8 @@ public class PropertyDatasourceImpl<T extends Entity>
 
     protected Datasource masterDs;
     protected MetaProperty metaProperty;
+    protected volatile MetaClass metaClass;
+    protected volatile View view;
 
     public PropertyDatasourceImpl(String id, Datasource ds, String property) {
         super(id);
@@ -87,14 +88,20 @@ public class PropertyDatasourceImpl<T extends Entity>
     }
 
     public MetaClass getMetaClass() {
-        MetaClass metaClass = metaProperty.getRange().asClass();
-        Class replacedClass = MetadataProvider.getReplacedClass(metaClass);
-        return replacedClass != null ? MetadataProvider.getSession().getClass(replacedClass) : metaClass;
+        if (metaClass == null) {
+            MetaClass propertyMetaClass = metaProperty.getRange().asClass();
+            metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(propertyMetaClass);
+        }
+        return metaClass;
     }
 
     public View getView() {
-        final ViewProperty property = masterDs.getView().getProperty(metaProperty.getName());
-        return property == null ? null : MetadataProvider.getViewRepository().getView(getMetaClass(), property.getView().getName());
+        if (view == null) {
+            ViewProperty property = masterDs.getView().getProperty(metaProperty.getName());
+            view = property == null ?
+                    null : metadata.getViewRepository().getView(getMetaClass(), property.getView().getName());
+        }
+        return view;
     }
 
     public DsContext getDsContext() {

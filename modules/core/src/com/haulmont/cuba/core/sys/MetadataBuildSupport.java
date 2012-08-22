@@ -7,6 +7,9 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.util.Dom4j;
+import com.haulmont.bali.util.ReflectionHelper;
+import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.Session;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -15,19 +18,18 @@ import org.dom4j.Element;
 import org.springframework.core.io.Resource;
 import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 
+import javax.annotation.ManagedBean;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>$Id$</p>
  *
  * @author krivopustov
  */
-public class MetadataBuildHelper {
+@ManagedBean("cuba_MetadataBuildSupport")
+public class MetadataBuildSupport {
 
     public static final String METADATA_CONFIG = "cuba.metadataConfig";
     public static final String DEFAULT_METADATA_CONFIG = "cuba-metadata.xml";
@@ -35,23 +37,23 @@ public class MetadataBuildHelper {
     /**
      * Get the location of non-persistent metadata descriptor
      */
-    public static String getMetadataConfig() {
+    public String getMetadataConfig() {
         String xmlPath = AppContext.getProperty(METADATA_CONFIG);
         if (StringUtils.isBlank(xmlPath))
             xmlPath = DEFAULT_METADATA_CONFIG;
         return xmlPath;
     }
 
-    public static List<String> getPersistentClassNames() {
+    public List<String> getPersistentClassNames() {
         Object emfBean = AppContext.getApplicationContext().getBean("entityManagerFactory");
         return ((EntityManagerFactoryInfo) emfBean).getPersistenceUnitInfo().getManagedClassNames();
     }
 
-    public static Collection<String> getPersistentEntitiesPackages() {
+    public Collection<String> getPersistentEntitiesPackages() {
         return getPackages(getPersistentClassNames());
     }
 
-    public static Collection<String> getTransientEntitiesPackages() {
+    public Collection<String> getTransientEntitiesPackages() {
         String config = getMetadataConfig();
         Collection<String> packages = new ArrayList<String>();
         StrTokenizer tokenizer = new StrTokenizer(config);
@@ -61,7 +63,7 @@ public class MetadataBuildHelper {
         return packages;
     }
 
-    private static Collection<String> getPackages(List<String> classNames) {
+    private Collection<String> getPackages(List<String> classNames) {
         List<String> packages = new ArrayList<String>();
         for (String className : classNames) {
             String[] parts = className.split("\\.");
@@ -74,7 +76,7 @@ public class MetadataBuildHelper {
         return packages;
     }
 
-    private static void getPackages(Collection<String> packages, String path, String unitTag, String...unitNames) {
+    private void getPackages(Collection<String> packages, String path, String unitTag, String...unitNames) {
         Element root = readXml(path);
 
         for (Element element : Dom4j.elements(root, "include")) {
@@ -102,7 +104,7 @@ public class MetadataBuildHelper {
         }
     }
 
-    public static Element readXml(String path) {
+    public Element readXml(String path) {
         Resource resource = new ConfigurationResourceLoader().getResource(path);
         InputStream stream = null;
         try {
@@ -115,4 +117,40 @@ public class MetadataBuildHelper {
             IOUtils.closeQuietly(stream);
         }
     }
+
+    public Map<String, Map<String, String>> getEntityAnnotations() {
+        Map<String, Map<String, String>> result = new HashMap<>();
+
+        String config = getMetadataConfig();
+        StrTokenizer tokenizer = new StrTokenizer(config);
+        for (String fileName : tokenizer.getTokenArray()) {
+            processMetadataXmlFile(result, fileName);
+        }
+
+        return result;
+    }
+
+    protected void processMetadataXmlFile(Map<String, Map<String, String>> annotations, String path) {
+        Element root = readXml(path);
+
+        for (Element element : Dom4j.elements(root, "include")) {
+            String fileName = element.attributeValue("file");
+            if (!StringUtils.isBlank(fileName)) {
+                processMetadataXmlFile(annotations, fileName);
+            }
+        }
+
+        Element annotationsEl = root.element("annotations");
+        if (annotationsEl != null) {
+            for (Element entityEl : Dom4j.elements(annotationsEl, "entity")) {
+                String className = entityEl.attributeValue("class");
+                Map<String, String> ann = new HashMap<>();
+                for (Element annotEl : Dom4j.elements(entityEl, "annotation")) {
+                    ann.put(annotEl.attributeValue("name"), annotEl.attributeValue("value"));
+                }
+                annotations.put(className, ann);
+            }
+        }
+    }
+
 }

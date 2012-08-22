@@ -60,6 +60,12 @@ public class PersistenceImpl implements Persistence {
     private ThreadLocal<EntityManagerContext> contextHolder = new ThreadLocal<EntityManagerContext>();
 
     @Inject
+    private Metadata metadata;
+
+    @Inject
+    private FetchPlanManager fetchPlanMgr;
+
+    @Inject
     private OpenJPAEntityManagerFactory jpaEmf;
 
     @Inject
@@ -132,7 +138,7 @@ public class PersistenceImpl implements Persistence {
                 EntityManagerFactoryUtils.doGetTransactionalEntityManager(jpaEmf, null);
 
         UserSession userSession = userSessionSource.checkCurrentUserSession() ? userSessionSource.getUserSession() : null;
-        EntityManagerImpl impl = new EntityManagerImpl(jpaEm, userSession);
+        EntityManagerImpl impl = new EntityManagerImpl(jpaEm, userSession, metadata, fetchPlanMgr);
         EntityManagerContext ctx = contextHolder.get();
         if (ctx != null) {
             impl.setSoftDeletion(ctx.isSoftDeletion());

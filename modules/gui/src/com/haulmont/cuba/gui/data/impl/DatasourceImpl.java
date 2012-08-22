@@ -53,7 +53,7 @@ public class DatasourceImpl<T extends Entity>
         this.dsContext = dsContext;
         this.dataservice = dataservice;
 
-        this.metaClass = metaClass;
+        this.metaClass = metadata.getExtendedEntities().getEffectiveMetaClass(metaClass);
         this.view = view;
 
     }

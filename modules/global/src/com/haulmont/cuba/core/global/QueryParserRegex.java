@@ -25,6 +25,8 @@ public class QueryParserRegex implements QueryParser {
     public static final String ENTITY_PATTERN_REGEX = "(\\b[_A-Za-z]+\\$[A-Z][_A-Za-z0-9]*)(\\s+as\\b)?\\s+([a-z]+[a-z0-9]*)*\\b";
     public static final Pattern ENTITY_PATTERN = Pattern.compile(ENTITY_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
+    public static final Pattern FROM_ENTITY_PATTERN = Pattern.compile("\\b(from|update)\\s+" + ENTITY_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
+
     public static final String DISTINCT_PATTERN_REGEX = "\\bDISTINCT\\b";
     public static final Pattern DISTINCT_PATTERN = Pattern.compile(DISTINCT_PATTERN_REGEX, Pattern.CASE_INSENSITIVE);
 
@@ -61,6 +63,15 @@ public class QueryParserRegex implements QueryParser {
         }
 
         return result;
+    }
+
+    @Override
+    public String getEntityName() {
+        Matcher entityMatcher = FROM_ENTITY_PATTERN.matcher(source);
+        if (entityMatcher.find()) {
+            return entityMatcher.group(2);
+        }
+        throw new IllegalStateException("Unable to find entity name [" + source + "]");
     }
 
     public String getEntityAlias(String targetEntity) {

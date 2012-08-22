@@ -10,13 +10,14 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Folder;
-import com.haulmont.cuba.core.global.MetadataProvider;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.ScriptingProvider;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.SearchFolder;
@@ -42,6 +43,9 @@ public class FoldersServiceBean implements FoldersService {
     @Inject
     private UserSessionSource userSessionSource;
 
+    @Inject
+    private Metadata metadata;
+
     @Override
     public List<AppFolder> loadAppFolders() {
         log.debug("Loading AppFolders");
@@ -54,9 +58,9 @@ public class FoldersServiceBean implements FoldersService {
         Transaction tx = PersistenceProvider.createTransaction();
         try {
             EntityManager em = PersistenceProvider.getEntityManager();
-            Class<AppFolder> replacedClass = MetadataProvider.getReplacedClass(AppFolder.class);
-            Query q = em.createQuery("select f from " + MetadataProvider.getSession().getClass(replacedClass).getName()
-                    + " f order by f.sortOrder, f.name");
+            MetaClass effectiveMetaClass = metadata.getExtendedEntities().getEffectiveMetaClass(AppFolder.class);
+            Query q = em.createQuery(
+                    "select f from " + effectiveMetaClass.getName() + " f order by f.sortOrder, f.name");
             List<AppFolder> list = q.getResultList();
 
             if (!list.isEmpty()) {

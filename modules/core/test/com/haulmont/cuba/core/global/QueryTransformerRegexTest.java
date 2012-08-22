@@ -226,4 +226,18 @@ public class QueryTransformerRegexTest extends TestCase
                 "select c from ref$Car c where c.deleteTs is null",
                 res);
     }
+
+    public void testReplaceEntityName() {
+        QueryTransformerRegex transformer;
+        String res;
+
+        transformer = new QueryTransformerRegex(
+                "select c from ref$Car c where c.deleteTs is null",
+                "ref$Car");
+        transformer.replaceEntityName("ref$ExtCar");
+        res = transformer.getResult();
+        assertEquals(
+                "select c from ref$ExtCar c where c.deleteTs is null",
+                res);
+    }
 }

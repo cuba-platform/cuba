@@ -15,16 +15,14 @@ import com.haulmont.cuba.core.Query;
 import com.haulmont.cuba.core.TypedQuery;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.PersistenceHelper;
-import com.haulmont.cuba.core.global.QueryTransformer;
-import com.haulmont.cuba.core.global.QueryTransformerFactory;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 
+import javax.annotation.Nullable;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.TemporalType;
@@ -41,24 +39,25 @@ public class QueryImpl<T> implements TypedQuery<T> {
     private Log log = LogFactory.getLog(QueryImpl.class);
 
     private EntityManagerImpl em;
+    private Metadata metadata;
     private OpenJPAEntityManager emDelegate;
     private OpenJPAQuery query;
     private boolean isNative;
     private String queryString;
     private Class<T> resultClass;
+    private FetchPlanManager fetchPlanMgr;
 
     private Collection<QueryMacroHandler> macroHandlers;
 
-    public QueryImpl(EntityManagerImpl entityManager, boolean isNative, Class<T> resultClass) {
-        this(entityManager, isNative);
-        this.resultClass = resultClass;
-    }
-
-    public QueryImpl(EntityManagerImpl entityManager, boolean isNative) {
+    public QueryImpl(EntityManagerImpl entityManager, boolean isNative, @Nullable Class<T> resultClass,
+                     Metadata metadata, FetchPlanManager fetchPlanMgr) {
         this.em = entityManager;
+        this.metadata = metadata;
         this.emDelegate = entityManager.getDelegate();
         this.isNative = isNative;
         this.macroHandlers = AppContext.getBeansOfType(QueryMacroHandler.class).values();
+        this.resultClass = resultClass;
+        this.fetchPlanMgr = fetchPlanMgr;
     }
 
     private OpenJPAQuery<T> getQuery() {
@@ -83,27 +82,29 @@ public class QueryImpl<T> implements TypedQuery<T> {
     }
 
     private String transformQueryString() {
-        String result = expandMacros();
+        String result = expandMacros(queryString);
 
-        if (!em.isSoftDeletion())
-            return result;
-
-        OpenJPAQuery tmpQuery = emDelegate.createQuery(result);
-        Class cls = tmpQuery.getResultClass();
-        if (cls == null
-                || !BaseEntity.class.isAssignableFrom(cls)
-                || !PersistenceHelper.isSoftDeleted(cls)) {
-            return result;
-        } else {
-            String entityName = PersistenceHelper.getEntityName(cls);
+        String entityName = QueryTransformerFactory.createParser(result).getEntityName();
+        Class effectiveClass = metadata.getExtendedEntities().getEffectiveClass(entityName);
+        String effectiveEntityName = metadata.getSession().getClassNN(effectiveClass).getName();
+        if (!effectiveEntityName.equals(entityName)) {
             QueryTransformer transformer = QueryTransformerFactory.createTransformer(result, entityName);
-            transformer.addWhere("e.deleteTs is null");
-            return transformer.getResult();
+            transformer.replaceEntityName(effectiveEntityName);
+            result = transformer.getResult();
         }
+
+        if (em.isSoftDeletion()
+                && PersistenceHelper.isSoftDeleted(effectiveClass)) {
+            QueryTransformer transformer = QueryTransformerFactory.createTransformer(result, effectiveEntityName);
+            transformer.addWhere("e.deleteTs is null");
+            result = transformer.getResult();
+        }
+
+        return result;
     }
 
-    private String expandMacros() {
-        String result = queryString;
+    private String expandMacros(String queryStr) {
+        String result = queryStr;
         if (macroHandlers != null) {
             for (QueryMacroHandler handler : macroHandlers) {
                 result = handler.expandMacro(result);
@@ -214,12 +215,12 @@ public class QueryImpl<T> implements TypedQuery<T> {
     }
 
     public Query setView(View view) {
-        ViewHelper.setView(getQuery().getFetchPlan(), view);
+        fetchPlanMgr.setView(getQuery().getFetchPlan(), view);
         return this;
     }
 
     public Query addView(View view) {
-        ViewHelper.addView(getQuery().getFetchPlan(), view);
+        fetchPlanMgr.addView(getQuery().getFetchPlan(), view);
         return this;
     }
 

@@ -6,15 +6,15 @@
 
 package com.haulmont.cuba.client.testsupport;
 
-import com.haulmont.chile.core.loader.ChileMetadataLoader;
 import com.haulmont.chile.core.loader.MetadataLoader;
 import com.haulmont.chile.core.model.Session;
+import com.haulmont.cuba.core.global.MetadataBuildInfo;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.sys.AbstractMetadata;
-import com.haulmont.cuba.core.sys.PersistentClassesMetadataLoader;
+import com.haulmont.cuba.core.sys.PersistentEntitiesMetadataLoader;
+import com.haulmont.cuba.core.sys.TransientEntitiesMetadataLoader;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -35,27 +35,32 @@ public class TestMetadataClient extends AbstractMetadata {
 
     @Override
     protected void initMetadata() {
-        MetadataLoader metadataLoader = new PersistentClassesMetadataLoader();
+        MetadataLoader persistentEntitiesMetadataLoader = new PersistentEntitiesMetadataLoader();
         for (String p : packages) {
-            metadataLoader.loadPackage(p, p);
+            persistentEntitiesMetadataLoader.loadPackage(p, p);
         }
-        metadataLoader.postProcess();
+        persistentEntitiesMetadataLoader.postProcess();
 
-        Session session = metadataLoader.getSession();
+        Session session = persistentEntitiesMetadataLoader.getSession();
 
-        metadataLoader = new ChileMetadataLoader(session);
+        TransientEntitiesMetadataLoader transientEntitiesMetadataLoader = new TransientEntitiesMetadataLoader();
+        transientEntitiesMetadataLoader.setSession(session);
         for (String p : packages) {
-            metadataLoader.loadPackage(p, p);
+            transientEntitiesMetadataLoader.loadPackage(p, p);
         }
-        metadataLoader.postProcess();
+        transientEntitiesMetadataLoader.postProcess();
 
         this.session = session;
-        this.replacedEntities = new HashMap<Class, Class>();
+    }
+
+    @Override
+    protected MetadataBuildInfo getMetadataBuildInfo() {
+        return null;
     }
 
     @Override
     protected void initViews() {
-        ViewRepository viewRepository = new ViewRepository();
+        ViewRepository viewRepository = new ViewRepository(this);
         if (!StringUtils.isEmpty(viewsConfig))
             viewRepository.deployViews(viewsConfig);
         this.viewRepository = viewRepository;

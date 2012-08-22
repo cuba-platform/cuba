@@ -11,7 +11,6 @@
         <xs:complexType mixed="true">
             <xs:sequence>
                 <xs:element type="metadataModelType" name="metadata-model" minOccurs="0" maxOccurs="1"/>
-                <xs:element type="entityFactoryType" name="entityFactory" minOccurs="0" maxOccurs="1"/>
                 <xs:element type="annotationsType" name="annotations" minOccurs="0" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
@@ -20,7 +19,6 @@
     <xs:complexType name="metadataType">
         <xs:sequence>
             <xs:element type="metadataModelType" name="metadata-model"/>
-            <xs:element type="entityFactoryType" name="entityFactory"/>
             <xs:element type="annotationsType" name="annotations"/>
         </xs:sequence>
     </xs:complexType>
@@ -29,17 +27,6 @@
         <xs:sequence>
             <xs:element name="class" maxOccurs="unbounded" minOccurs="0"/>
         </xs:sequence>
-    </xs:complexType>
-
-    <xs:complexType name="entityFactoryType">
-        <xs:sequence>
-            <xs:element type="replaceType" name="replace" maxOccurs="unbounded" minOccurs="1"/>
-        </xs:sequence>
-    </xs:complexType>
-
-    <xs:complexType name="replaceType">
-        <xs:attribute type="xs:string" name="class" use="required"/>
-        <xs:attribute type="xs:string" name="with" use="required"/>
     </xs:complexType>
 
     <xs:complexType name="annotationsType">

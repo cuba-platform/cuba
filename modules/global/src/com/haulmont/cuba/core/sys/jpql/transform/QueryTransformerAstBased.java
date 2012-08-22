@@ -181,6 +181,12 @@ public class QueryTransformerAstBased implements QueryTransformer {
     public void removeOrderBy() {
     }
 
+    @Override
+    public void replaceEntityName(String newName) {
+        // TODO
+        throw new UnsupportedOperationException();
+    }
+
     public void reset() {
         try {
             initQueryAnalyzer(model, query);

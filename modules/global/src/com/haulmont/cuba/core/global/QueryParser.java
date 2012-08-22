@@ -20,6 +20,9 @@ public interface QueryParser {
     /** Get all parameter names */
     Set<String> getParamNames();
 
+    /** Main entity name */
+    String getEntityName();
+
     /** Main entity alias */
     String getEntityAlias(String targetEntity);
 

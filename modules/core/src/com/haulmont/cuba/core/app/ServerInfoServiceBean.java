@@ -5,19 +5,16 @@
  */
 package com.haulmont.cuba.core.app;
 
-import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataBuildInfo;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewNotFoundException;
-import com.haulmont.cuba.core.sys.MetadataBuildHelper;
+import com.haulmont.cuba.core.sys.MetadataBuildSupport;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -34,6 +31,9 @@ public class ServerInfoServiceBean implements ServerInfoService {
     @Inject
     protected ServerInfoAPI serverInfo;
 
+    @Inject
+    private MetadataBuildSupport metadataBuildSupport;
+
     @Override
     public String getReleaseNumber() {
         return serverInfo.getReleaseNumber();
@@ -47,37 +47,10 @@ public class ServerInfoServiceBean implements ServerInfoService {
     @Override
     public MetadataBuildInfo getMetadataBuildInfo() {
         return new MetadataBuildInfo(
-                MetadataBuildHelper.getPersistentEntitiesPackages(),
-                MetadataBuildHelper.getTransientEntitiesPackages(),
-                getEntityAnnotations(),
-                getReplacedEntities()
+                metadataBuildSupport.getPersistentEntitiesPackages(),
+                metadataBuildSupport.getTransientEntitiesPackages(),
+                metadataBuildSupport.getEntityAnnotations()
         );
-    }
-
-    private Map<String, Map<String, Object>> getEntityAnnotations() {
-        Map<String, Map<String, Object>> result = new HashMap<String, Map<String, Object>>();
-        for (MetaClass metaClass : metadata.getSession().getClasses()) {
-            if (!metaClass.getAnnotations().isEmpty()) {
-                Map<String, Object> annotations = new HashMap<String, Object>();
-                for (Map.Entry<String, Object> entry : metaClass.getAnnotations().entrySet()) {
-                    // send to the client only annotations with String or Boolean value,
-                    // others are not safe for serialization
-                    if (entry.getValue() instanceof String || entry.getValue() instanceof Boolean) {
-                        annotations.put(entry.getKey(), entry.getValue());
-                    }
-                }
-                result.put(metaClass.getJavaClass().getName(), annotations);
-            }
-        }
-        return result;
-    }
-
-    private Map<String, String> getReplacedEntities() {
-        Map<String, String> result = new HashMap<String, String>();
-        for (Map.Entry<Class, Class> entry : metadata.getReplacedEntities().entrySet()) {
-            result.put(entry.getKey().getName(), entry.getValue().getName());
-        }
-        return result;
     }
 
     @Override
