@@ -651,7 +651,12 @@ public class DesktopWindowManager extends WindowManager {
     }
 
     public void setCurrentWindowCaption(Window window, String caption, String description) {
-        WindowOpenMode openMode = windowOpenMode.get(window);
+        WindowOpenMode openMode;
+        if (window instanceof Window.Wrapper)
+            openMode = windowOpenMode.get(((Window.Wrapper) window).getWrappedWindow());
+        else
+            openMode = windowOpenMode.get(window);
+
         OpenType openType = openMode.getOpenType();
         if (openType != OpenType.DIALOG) {
             if (tabsPane == null)
