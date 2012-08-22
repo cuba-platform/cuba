@@ -38,6 +38,7 @@ public class ExceptionHandlers {
 
     public ExceptionHandlers() {
         this.defaultHandler = new DefaultExceptionHandler();
+        createMinimalSet();
     }
 
     /**
@@ -74,6 +75,7 @@ public class ExceptionHandlers {
      * Create all handlers defined by <code>ExceptionHandlersConfiguration</code> beans in spring.xml.
      */
     public void createByConfiguration() {
+        handlers.clear();
         Map<String, ExceptionHandlersConfiguration> map = AppContext.getBeansOfType(ExceptionHandlersConfiguration.class);
         for (ExceptionHandlersConfiguration conf : map.values()) {
             for (Class aClass : conf.getHandlerClasses()) {
@@ -84,6 +86,15 @@ public class ExceptionHandlers {
                 }
             }
         }
+    }
+
+    /**
+     * Create a minimal set of handlers for disconnected client.
+     */
+    public void createMinimalSet() {
+        handlers.clear();
+        addHandler(new SilentExceptionHandler());
+        addHandler(new ConnectExceptionHandler());
     }
 
     /**

@@ -398,7 +398,7 @@ public class App implements ConnectionListener {
         if (isConnected) {
             handlers.createByConfiguration();
         } else {
-            handlers.removeAll();
+            handlers.createMinimalSet();
         }
     }
 
