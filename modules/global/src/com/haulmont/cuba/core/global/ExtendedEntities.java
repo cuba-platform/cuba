@@ -25,9 +25,9 @@ public class ExtendedEntities {
 
     private Metadata metadata;
 
-    // Constructor injection is used to support easy creation in tests
+    // Setter injection is used to support tests
     @Inject
-    public ExtendedEntities(Metadata metadata) {
+    public void setMetadata(Metadata metadata) {
         this.metadata = metadata;
     }
 

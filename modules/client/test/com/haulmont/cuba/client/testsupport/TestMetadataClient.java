@@ -33,7 +33,8 @@ public class TestMetadataClient extends AbstractMetadata {
         this.packages = packages;
         this.viewsConfig = viewsConfig;
 
-        extendedEntities = new ExtendedEntities(this);
+        extendedEntities = new ExtendedEntities();
+        extendedEntities.setMetadata(this);
     }
 
     @Override
