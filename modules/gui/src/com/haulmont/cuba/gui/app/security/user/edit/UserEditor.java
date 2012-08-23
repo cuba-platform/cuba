@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.app.security.user.NameBuilderListener;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.DataService;
@@ -32,6 +33,10 @@ import org.apache.commons.lang.StringUtils;
 import javax.inject.Inject;
 import java.util.*;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class UserEditor extends AbstractEditor<User> {
 
     @Inject
@@ -61,7 +66,6 @@ public class UserEditor extends AbstractEditor<User> {
     protected TextField passwField;
     protected TextField confirmPasswField;
     protected LookupField languageLookup;
-    protected PopupButton popupButton;
 
     @Inject
     protected Companion companion;
@@ -185,7 +189,7 @@ public class UserEditor extends AbstractEditor<User> {
                 languageLookup.setDatasource(datasource, (String) propertyId);
 
                 Map<String, Locale> locales = configuration.getConfig(GlobalConfig.class).getAvailableLocales();
-                TreeMap<String, Object> options = new TreeMap<String, Object>();
+                TreeMap<String, Object> options = new TreeMap<>();
                 for (Map.Entry<String, Locale> entry : locales.entrySet()) {
                     options.put(entry.getKey(), entry.getValue().getLanguage());
                 }
@@ -281,7 +285,7 @@ public class UserEditor extends AbstractEditor<User> {
 
                 private Collection<String> getExistingRoleNames() {
                     User user = userDs.getItem();
-                    Collection<String> existingRoleNames = new HashSet<String>();
+                    Collection<String> existingRoleNames = new HashSet<>();
                     if (user.getUserRoles() != null) {
                         for (UserRole userRole : user.getUserRoles()) {
                             if (userRole.getRole() != null)
@@ -295,7 +299,7 @@ public class UserEditor extends AbstractEditor<User> {
         }
     }
 
-    private class EditRoleAction extends AbstractAction {
+    private class EditRoleAction extends ItemTrackingAction {
 
         public EditRoleAction() {
             super("edit");
@@ -367,10 +371,10 @@ public class UserEditor extends AbstractEditor<User> {
             final UserSubstitution substitution = MetadataProvider.create(UserSubstitution.class);
             substitution.setUser(userDs.getItem());
 
-            Map<String, Object> params = new HashMap();
+            Map<String, Object> params = new HashMap<>();
 
             if (!substitutionsDs.getItemIds().isEmpty()) {
-                List<UUID> list = new ArrayList();
+                List<UUID> list = new ArrayList<>();
                 for (UUID usId : substitutionsDs.getItemIds()) {
                     list.add(substitutionsDs.getItem(usId).getSubstitutedUser().getId());
                 }
@@ -384,7 +388,7 @@ public class UserEditor extends AbstractEditor<User> {
         }
     }
 
-    private class EditSubstitutedAction extends AbstractAction {
+    private class EditSubstitutedAction extends ItemTrackingAction {
 
         public EditSubstitutedAction() {
             super("edit");
