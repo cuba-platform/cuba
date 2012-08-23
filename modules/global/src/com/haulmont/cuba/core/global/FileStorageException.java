@@ -2,14 +2,16 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 29.10.2009 18:25:15
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
+import javax.annotation.Nullable;
+
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
+@SupportedByClient
 public class FileStorageException extends Exception {
 
     public enum Type {
@@ -52,7 +54,7 @@ public class FileStorageException extends Exception {
         this(type, fileName, null);
     }
 
-    public FileStorageException(Type type, String fileName, Throwable cause) {
+    public FileStorageException(Type type, String fileName, @Nullable Throwable cause) {
         super(type.getMessage() + ": " + fileName, cause);
         this.type = type;
         this.fileName = fileName;

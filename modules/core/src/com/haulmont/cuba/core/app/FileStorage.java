@@ -2,11 +2,6 @@
  * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 30.10.2009 14:14:09
- *
- * $Id$
  */
 package com.haulmont.cuba.core.app;
 
@@ -36,6 +31,10 @@ import java.util.concurrent.Executors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * @author krivopustov
+ * @version $Id$
+ */
 @ManagedBean(FileStorageAPI.NAME)
 public class FileStorage implements FileStorageMBean, FileStorageAPI {
 
@@ -49,15 +48,16 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
 
     private Log log = LogFactory.getLog(FileStorage.class);
 
+    @Override
     public File[] getStorageRoots() {
         String conf = ConfigProvider.getConfig(ServerConfig.class).getFileStorageDir();
         if (StringUtils.isBlank(conf)) {
             String dataDir = ConfigProvider.getConfig(GlobalConfig.class).getDataDir();
             File dir = new File(dataDir, "filestorage");
             dir.mkdirs();
-            return new File[] {dir};
+            return new File[]{dir};
         } else {
-            List<File> list = new ArrayList<File>();
+            List<File> list = new ArrayList<>();
             for (String str : conf.split(",")) {
                 str = str.trim();
                 if (!StringUtils.isEmpty(str)) {
@@ -161,11 +161,8 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         }
         File logFile = new File(rootDir, "storage.log");
         try {
-            FileOutputStream fos = new FileOutputStream(logFile, true);
-            try {
+            try (FileOutputStream fos = new FileOutputStream(logFile, true)) {
                 IOUtils.write(sb.toString(), fos, "UTF-8");
-            } finally {
-                fos.close();
             }
         } catch (IOException e) {
             log.error("Unable to write log", e);
@@ -278,7 +275,7 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Query query = em.createQuery("select fd from sys$FileDescriptor fd");
+            Query query = em.createQuery("select fd from core$FileDescriptor fd");
             List<FileDescriptor> fileDescriptors = query.getResultList();
             for (FileDescriptor fileDescriptor : fileDescriptors) {
                 File dir = getStorageDir(roots[0], fileDescriptor.getCreateDate());
@@ -319,11 +316,11 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
         //remove files of root storage folder (e.g. storage.log) from files collection
         systemFiles.removeAll(filesInRootFolder);
 
-        List<FileDescriptor> fileDescriptors = new ArrayList<FileDescriptor>();
+        List<FileDescriptor> fileDescriptors = new ArrayList<>();
         Transaction tx = persistence.createTransaction();
         try {
             EntityManager em = persistence.getEntityManager();
-            Query query = em.createQuery("select fd from sys$FileDescriptor fd");
+            Query query = em.createQuery("select fd from core$FileDescriptor fd");
             fileDescriptors = query.getResultList();
             tx.commit();
         } catch (Exception e) {
@@ -332,7 +329,7 @@ public class FileStorage implements FileStorageMBean, FileStorageAPI {
             tx.end();
         }
 
-        Set<String> descriptorsFileNames = new HashSet<String>();
+        Set<String> descriptorsFileNames = new HashSet<>();
         for (FileDescriptor fileDescriptor : fileDescriptors) {
             descriptorsFileNames.add(fileDescriptor.getFileName());
         }
