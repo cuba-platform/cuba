@@ -13,19 +13,23 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Exception that returns to clients from the middleware. Contains the information about the whole server-side
  * exception chain in the <code>Cause</code> objects list. Actual exception instances are included only if they
  * explicitly declared as available for the clients (annotated with {@link SupportedByClient}).
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 public class RemoteException extends RuntimeException {
 
+    private static final long serialVersionUID = -681950463552884310L;
+
     public static class Cause implements Serializable {
+
+        private static final long serialVersionUID = 7677717005347643512L;
 
         private String className;
         private String message;
@@ -72,8 +76,44 @@ public class RemoteException extends RuntimeException {
     }
 
     /**
+     * Search for {@link Cause} by its exception class name. Subclasses are not taken into account.
+     * @param throwableClassName    exception class name
+     * @return                      Cause instance or null if it is not found
+     */
+    @Nullable
+    public Cause getCause(String throwableClassName) {
+        for (Cause cause : causes) {
+            if (cause.getClassName().equals(throwableClassName)) {
+                return cause;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Search for {@link Cause} by its exception class. Subclasses are not taken into account. The given class is
+     * converted into its string name, so it doesn't matter what Cause contains - class or its name only.
+     * @param throwableClass    exception class
+     * @return true if such cause is found
+     */
+    public boolean contains(Class<?> throwableClass) {
+        Objects.requireNonNull(throwableClass, "throwableClass is null");
+        return getCause(throwableClass.getName()) != null;
+    }
+
+    /**
+     * Search for {@link Cause} by its exception class. Subclasses are not taken into account.
+     * @param throwableClassName    exception class name
+     * @return true if such cause is found
+     */
+    public boolean contains(String throwableClassName) {
+        return getCause(throwableClassName) != null;
+    }
+
+    /**
      * @return  First exception in the causes list if it is checked, null otherwise
      */
+    @Nullable
     public Exception getFirstCheckedException() {
         if (!causes.isEmpty()) {
             Throwable t = causes.get(0).getThrowable();
@@ -85,6 +125,7 @@ public class RemoteException extends RuntimeException {
     }
 
     @Override
+    @Nullable
     public String getMessage() {
         if (!causes.isEmpty())
             return causes.get(causes.size() - 1).getMessage();
