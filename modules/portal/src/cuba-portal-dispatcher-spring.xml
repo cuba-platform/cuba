@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+  ~ Haulmont Technology proprietary and confidential.
+  ~ Use is subject to license terms.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
+
+    <bean class="com.haulmont.cuba.core.sys.CubaPropertyPlaceholderConfigurer"/>
+
+    <mvc:annotation-driven/>
+    <mvc:interceptors>
+        <bean class="com.haulmont.cuba.portal.sys.security.SecurityContextHandlerInterceptor"/>
+    </mvc:interceptors>
+
+    <context:component-scan base-package="com.haulmont.cuba.portal.config"/>
+    <context:component-scan base-package="com.haulmont.cuba.portal.service"/>
+    <context:component-scan base-package="com.haulmont.cuba.portal.security"/>
+
+    <!-- Portal configuration -->
+
+    <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="${cuba.portal.templateLoaderPath}"/>
+        <property name="freemarkerSettings" ref="freemarkerSettings"/>
+    </bean>
+
+    <bean id="freemarkerSettings" factory-bean="siteSettings" factory-method="getFreeMarkerSettings"/>
+
+    <bean id="viewResolver" class="com.haulmont.cuba.portal.springframework.FreeMarkerThemedViewResolver">
+        <property name="cache" value="true"/>
+        <property name="prefix" value=""/>
+        <property name="suffix" value=".ftl"/>
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+        <property name="exposeSpringMacroHelpers" value="true"/>
+        <property name="viewClass" value="com.haulmont.cuba.portal.springframework.view.FreeMarkerView"/>
+    </bean>
+</beans>

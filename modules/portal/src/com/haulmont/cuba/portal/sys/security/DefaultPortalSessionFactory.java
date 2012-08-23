@@ -1,0 +1,35 @@
+/*
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
+package com.haulmont.cuba.portal.sys.security;
+
+import com.haulmont.cuba.portal.security.PortalSession;
+import com.haulmont.cuba.security.global.UserSession;
+
+import javax.annotation.ManagedBean;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.util.Locale;
+
+/**
+ * @author artamonov
+ * @version $Id$
+ */
+@ManagedBean(PortalSessionFactory.NAME)
+public class DefaultPortalSessionFactory implements PortalSessionFactory {
+
+    @Inject
+    protected AnonymousSessionHolder anonymousSessionHolder;
+
+    @Override
+    public PortalSession createPortalSession(@Nullable UserSession sourceUserSession, Locale locale) {
+        if (sourceUserSession == null) {
+            sourceUserSession = anonymousSessionHolder.getSession();
+            return new AnonymousSession(sourceUserSession, locale);
+        }
+        return new PortalSession(sourceUserSession);
+    }
+}
