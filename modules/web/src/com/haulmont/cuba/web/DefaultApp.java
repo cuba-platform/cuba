@@ -11,6 +11,7 @@
 package com.haulmont.cuba.web;
 
 import com.haulmont.cuba.client.sys.MessagesClientImpl;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
@@ -120,7 +121,7 @@ public class DefaultApp extends App implements ConnectionListener {
 
     @Override
     public void connectionStateChanged(Connection connection) throws LoginException {
-        MessagesClientImpl messagesClient = AppContext.getBean(Messages.NAME);
+        MessagesClientImpl messagesClient = AppBeans.get(Messages.NAME);
 
         if (connection.isConnected()) {
             log.debug("Creating AppWindow");

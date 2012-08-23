@@ -10,8 +10,8 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowContext;
@@ -54,7 +54,7 @@ public class WebFrame extends WebVBoxLayout
 
     private ActionManager actionManager;
 
-    private WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
+    private WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
 
     protected WebFrameActionsHolder actionsHolder = new WebFrameActionsHolder();
 

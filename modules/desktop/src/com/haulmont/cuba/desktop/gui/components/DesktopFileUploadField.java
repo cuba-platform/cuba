@@ -7,6 +7,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -51,7 +52,7 @@ public class DesktopFileUploadField extends DesktopAbstractComponent<JButton> im
     private List<Listener> listeners = new ArrayList<Listener>();
 
     public DesktopFileUploadField() {
-        fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+        fileUploading = AppBeans.get(FileUploadingAPI.NAME);
 
         final JFileChooser fileChooser = new JFileChooser();
         String caption = MessageProvider.getMessage(getClass(), "selectFile");

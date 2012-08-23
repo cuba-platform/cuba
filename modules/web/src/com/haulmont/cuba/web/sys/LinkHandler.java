@@ -60,7 +60,7 @@ public class LinkHandler implements Serializable {
                 return;
             }
 
-            WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
+            WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
             final WindowInfo windowInfo = windowConfig.getWindowInfo(screenName);
             if (windowInfo == null) {
                 log.warn("WindowInfo not found for screen: " + screenName);

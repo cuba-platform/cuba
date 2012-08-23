@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop;
 
 import com.haulmont.cuba.client.sys.MessagesClientImpl;
 import com.haulmont.cuba.core.app.ServerInfoService;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.Messages;
@@ -321,7 +322,7 @@ public class App implements ConnectionListener {
         panel.setBorder(BorderFactory.createLineBorder(Color.gray));
         panel.setPreferredSize(new Dimension(0, 20));
 
-        ClusterInvocationSupport clusterInvocationSupport = AppContext.getBean("cuba_clusterInvocationSupport");
+        ClusterInvocationSupport clusterInvocationSupport = AppBeans.get(ClusterInvocationSupport.class);
         String url = clusterInvocationSupport.getUrlList().isEmpty() ? "?" : clusterInvocationSupport.getUrlList().get(0);
 
         final JLabel connectionStateLab = new JLabel(
@@ -383,7 +384,7 @@ public class App implements ConnectionListener {
 
     public void handleException(Thread thread, Throwable throwable) {
         log.error("Exception in thread " + thread, throwable);
-        ExceptionHandlers handlers = AppContext.getBean("cuba_ExceptionHandlers", ExceptionHandlers.class);
+        ExceptionHandlers handlers = AppBeans.get("cuba_ExceptionHandlers", ExceptionHandlers.class);
         handlers.handle(thread, throwable);
     }
 
@@ -394,7 +395,7 @@ public class App implements ConnectionListener {
      * @param isConnected true after login, false after logout
      */
     protected void initExceptionHandlers(boolean isConnected) {
-        ExceptionHandlers handlers = AppContext.getBean("cuba_ExceptionHandlers", ExceptionHandlers.class);
+        ExceptionHandlers handlers = AppBeans.get("cuba_ExceptionHandlers", ExceptionHandlers.class);
         if (isConnected) {
             handlers.createByConfiguration();
         } else {
@@ -403,7 +404,7 @@ public class App implements ConnectionListener {
     }
 
     public void connectionStateChanged(Connection connection) throws LoginException {
-        MessagesClientImpl messagesClient = AppContext.getBean(Messages.NAME);
+        MessagesClientImpl messagesClient = AppBeans.get(Messages.NAME);
 
         if (connection.isConnected()) {
             messagesClient.setRemoteSearch(true);

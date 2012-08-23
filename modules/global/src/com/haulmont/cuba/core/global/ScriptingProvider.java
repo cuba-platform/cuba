@@ -23,7 +23,7 @@ import java.util.Map;
 public abstract class ScriptingProvider {
 
     private static Scripting getScripting() {
-        return AppContext.getBean(Scripting.NAME, Scripting.class);
+        return AppBeans.get(Scripting.NAME, Scripting.class);
     }
 
     /**

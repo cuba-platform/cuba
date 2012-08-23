@@ -12,10 +12,10 @@ package com.haulmont.cuba.gui.app.core.file;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
@@ -90,7 +90,7 @@ public class FileEditor extends AbstractEditor {
     }
 
     private void saveFile() {
-        FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+        FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         try {
             fileUploading.putFileIntoStorage(uploadField.getFileId(), fileDs.getItem());
         } catch (FileStorageException e) {
@@ -104,7 +104,7 @@ public class FileEditor extends AbstractEditor {
             nameField.setValue(uploadField.getFileName());
             extLabel.setValue(getFileExt(uploadField.getFileName()));
 
-            FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
             File file = fileUploading.getFile(uploadField.getFileId());
             Integer size = (int) file.length();
             sizeLabel.setValue(size);

@@ -77,7 +77,7 @@ public class WebFieldGroup extends WebAbstractComponent<FieldGroup> implements c
 
     private Item itemWrapper;
 
-    private Security security = AppContext.getBean(Security.NAME);
+    private Security security = AppBeans.get(Security.NAME);
 
     public WebFieldGroup() {
         component = new FieldGroup(fieldFactory) {

@@ -11,10 +11,10 @@
 package com.haulmont.cuba.web.app.ui.frame;
 
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.global.TimeProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -64,7 +64,7 @@ public class FileFrameController extends AbstractWindow {
                 fd.setName(uploadField.getFileName());
                 fd.setExtension(FileDownloadHelper.getFileExt(uploadField.getFileName()));
 
-                FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+                FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
                 File file = fileUploading.getFile(uploadField.getFileId());
                 fd.setSize((int)file.length());
 
@@ -90,7 +90,7 @@ public class FileFrameController extends AbstractWindow {
     }
 
     private void saveFile() {
-        FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+        FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         try {
             fileUploading.putFileIntoStorage(uploadField.getFileId(), fd);
         } catch (FileStorageException e) {

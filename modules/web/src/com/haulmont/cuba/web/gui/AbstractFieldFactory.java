@@ -18,11 +18,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.chile.core.model.Range;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MessageUtils;
-import com.haulmont.cuba.core.global.Security;
-import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.CaptionMode;
 import com.haulmont.cuba.gui.components.Field;
@@ -48,7 +44,7 @@ import java.util.Date;
 
 public abstract class AbstractFieldFactory extends DefaultFieldFactory {
 
-    private Security security = AppContext.getBean(Security.NAME);
+    private Security security = AppBeans.get(Security.NAME);
 
     /**
      * Creates fields for the Form

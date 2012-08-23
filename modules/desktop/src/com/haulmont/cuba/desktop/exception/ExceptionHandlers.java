@@ -7,7 +7,7 @@
 package com.haulmont.cuba.desktop.exception;
 
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.global.AppBeans;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -76,7 +76,7 @@ public class ExceptionHandlers {
      */
     public void createByConfiguration() {
         handlers.clear();
-        Map<String, ExceptionHandlersConfiguration> map = AppContext.getBeansOfType(ExceptionHandlersConfiguration.class);
+        Map<String, ExceptionHandlersConfiguration> map = AppBeans.getAll(ExceptionHandlersConfiguration.class);
         for (ExceptionHandlersConfiguration conf : map.values()) {
             for (Class aClass : conf.getHandlerClasses()) {
                 try {

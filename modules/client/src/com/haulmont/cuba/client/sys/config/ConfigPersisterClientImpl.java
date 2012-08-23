@@ -8,6 +8,7 @@ package com.haulmont.cuba.client.sys.config;
 import com.haulmont.cuba.core.app.ConfigStorageService;
 import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -80,6 +81,6 @@ public class ConfigPersisterClientImpl implements ConfigPersister {
     }
 
     private ConfigStorageService getConfigStorage() {
-        return (ConfigStorageService) AppContext.getBean(ConfigStorageService.NAME);
+        return (ConfigStorageService) AppBeans.get(ConfigStorageService.NAME);
     }
 }

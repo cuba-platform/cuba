@@ -32,22 +32,6 @@ public abstract class MetadataHelper {
     private static volatile Collection<MetaClass> metaClasses;
     private static volatile Collection<Class> enums;
 
-    public static Class getTypeClass(MetaProperty metaProperty) {
-        if (metaProperty == null)
-            throw new IllegalArgumentException("MetaProperty is null");
-
-        final Range range = metaProperty.getRange();
-        if (range.isDatatype()) {
-            return range.asDatatype().getJavaClass();
-        } else if (range.isClass()) {
-            return range.asClass().getJavaClass();
-        } else if (range.isEnum()) {
-            return range.asEnumeration().getJavaClass();
-        } else {
-            throw new UnsupportedOperationException();
-        }
-    }
-
     public static boolean isCascade(MetaProperty metaProperty) {
         OneToMany oneToMany = metaProperty.getAnnotatedElement().getAnnotation(OneToMany.class);
         if (oneToMany != null) {

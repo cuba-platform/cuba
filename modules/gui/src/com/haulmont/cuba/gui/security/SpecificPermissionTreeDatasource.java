@@ -12,8 +12,8 @@ package com.haulmont.cuba.gui.security;
 
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.DataService;
 import com.haulmont.cuba.gui.data.DsContext;
@@ -27,6 +27,6 @@ public class SpecificPermissionTreeDatasource extends BasicPermissionTreeDatasou
 
     @Override
     public Tree<BasicPermissionTarget> getPermissions() {
-        return AppContext.getBean(PermissionConfig.class).getSpecific(UserSessionProvider.getLocale());
+        return AppBeans.get(PermissionConfig.class).getSpecific(UserSessionProvider.getLocale());
     }
 }

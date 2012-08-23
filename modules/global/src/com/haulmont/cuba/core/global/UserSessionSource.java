@@ -12,29 +12,33 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Provides access to the current user session
- *
- * <p>$Id$</p>
+ * Central infrastructure interface to provide access to a current user session.
  *
  * @author krivopustov
+ * @version $Id$
  */
 public interface UserSessionSource {
 
     String NAME = "cuba_UserSessionSource";
 
     /**
-     * Check if the current user session is valid
-     * @return  true if session is valid
+     * @return  true if the current user session is valid
      */
     boolean checkCurrentUserSession();
 
     /**
-     * Current user session
-     * @return current user session instance
+     * @return current user session
      */
     UserSession getUserSession();
 
+    /**
+     * @return effective user ID. This is either the logged in user, or substituted user if a substitution was performed
+     * in this user session.
+     */
     UUID currentOrSubstitutedUserId();
 
+    /**
+     * @return current user session locale
+     */
     Locale getLocale();
 }

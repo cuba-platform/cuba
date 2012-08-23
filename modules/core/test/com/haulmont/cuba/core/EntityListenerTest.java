@@ -12,10 +12,10 @@ package com.haulmont.cuba.core;
 
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.entity.Server;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.listener.AfterDeleteEntityListener;
 import com.haulmont.cuba.core.listener.AfterInsertEntityListener;
 import com.haulmont.cuba.core.listener.AfterUpdateEntityListener;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.listener.EntityListenerManager;
 
 import java.sql.SQLException;
@@ -67,7 +67,7 @@ public class EntityListenerTest extends CubaTestCase
     }
 
     public void test() {
-        AppContext.getBean(EntityListenerManager.class).addListener(Server.class, TestListener.class);
+        AppBeans.get(EntityListenerManager.class).addListener(Server.class, TestListener.class);
 
         UUID id, id1;
         Transaction tx = Locator.createTransaction();

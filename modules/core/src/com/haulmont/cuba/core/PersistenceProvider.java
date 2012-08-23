@@ -10,6 +10,7 @@
 package com.haulmont.cuba.core;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.DbDialect;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.EntityManagerContext;
@@ -30,7 +31,7 @@ import java.util.UUID;
 public abstract class PersistenceProvider {
 
     private static Persistence getPersistence() {
-        return AppContext.getBean(Persistence.NAME, Persistence.class);
+        return AppBeans.get(Persistence.NAME, Persistence.class);
     }
 
     /**

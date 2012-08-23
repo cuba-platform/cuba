@@ -8,6 +8,7 @@ package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.MetaPropertyPath;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageUtils;
 import com.haulmont.cuba.core.global.MetadataHelper;
 import com.haulmont.cuba.core.global.Security;
@@ -63,7 +64,7 @@ public class DesktopFieldGroup extends DesktopAbstractComponent<JPanel> implemen
     private List<ExpandListener> expandListeners = null;
     private List<CollapseListener> collapseListeners = null;
 
-    private Security security = AppContext.getBean(Security.NAME);
+    private Security security = AppBeans.get(Security.NAME);
 
     public DesktopFieldGroup() {
         LC lc = new LC();

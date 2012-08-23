@@ -6,10 +6,10 @@
 package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileUploadField;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -48,7 +48,7 @@ public class WebFileUploadField extends WebAbstractComponent<Upload> implements 
     private Log log = LogFactory.getLog(getClass());
 
     public WebFileUploadField() {
-        fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+        fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         String caption = MessageProvider.getMessage(AppConfig.getMessagesPack(), "Upload");
         component = new Upload(
                 /* Fixes caption rendering.

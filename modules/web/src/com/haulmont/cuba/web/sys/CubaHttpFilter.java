@@ -10,8 +10,8 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.sys.auth.CubaAuthProvider;
@@ -26,7 +26,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class CubaHttpFilter implements Filter {
     private static Log log = LogFactory.getLog(CubaHttpFilter.class);
@@ -38,7 +40,7 @@ public class CubaHttpFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         if (ActiveDirectoryHelper.useActiveDirectory()) {
             try {
-                activeDirectoryFilter = AppContext.getBean(CubaAuthProvider.NAME);
+                activeDirectoryFilter = AppBeans.get(CubaAuthProvider.NAME);
                 activeDirectoryFilter.init(filterConfig);
             } catch (Exception e) {
                 throw new ServletException(e);

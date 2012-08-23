@@ -25,7 +25,7 @@ import com.haulmont.cuba.core.sys.AppContext;
 public abstract class MetadataProvider
 {
     private static Metadata getMetadata() {
-        return AppContext.getBean(Metadata.NAME, Metadata.class);
+        return AppBeans.get(Metadata.NAME, Metadata.class);
     }
 
     /**

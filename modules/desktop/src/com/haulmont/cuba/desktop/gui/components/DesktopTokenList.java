@@ -9,8 +9,8 @@ package com.haulmont.cuba.desktop.gui.components;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
@@ -543,7 +543,7 @@ public class DesktopTokenList extends DesktopAbstractField<DesktopTokenList.Toke
                 windowAlias = getDatasource().getMetaClass().getName() + ".browse";
             }
 
-            WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
+            WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
             WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
 
             Map<String, Object> params = new HashMap<String, Object>();

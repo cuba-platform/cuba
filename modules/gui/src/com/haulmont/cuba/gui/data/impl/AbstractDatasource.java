@@ -9,22 +9,21 @@
  */
 package com.haulmont.cuba.gui.data.impl;
 
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DatasourceListener;
-import com.haulmont.cuba.core.global.MetadataHelper;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.chile.core.common.ValueListener;
 import com.haulmont.chile.core.model.Instance;
-
-import java.io.Serializable;
-import java.util.*;
-
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.MetadataHelper;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.data.NestedDatasource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.Serializable;
+import java.util.*;
 
 public abstract class AbstractDatasource<T extends Entity>
     implements
@@ -51,7 +50,7 @@ public abstract class AbstractDatasource<T extends Entity>
         this.id = id;
         listener = new ItemListener();
         commitMode = CommitMode.DATASTORE;
-        metadata = AppContext.getBean(Metadata.class);
+        metadata = AppBeans.get(Metadata.class);
     }
 
     public String getId() {

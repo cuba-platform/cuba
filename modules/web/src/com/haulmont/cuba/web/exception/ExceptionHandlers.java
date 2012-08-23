@@ -11,7 +11,7 @@
 package com.haulmont.cuba.web.exception;
 
 import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.web.App;
 import com.vaadin.terminal.Terminal;
 import org.apache.commons.logging.Log;
@@ -85,7 +85,7 @@ public class ExceptionHandlers implements Serializable
      * Create all handlers defined by <code>ExceptionHandlersConfiguration</code> beans in spring.xml.
      */
     public void createByConfiguration() {
-        Map<String, ExceptionHandlersConfiguration> map = AppContext.getBeansOfType(ExceptionHandlersConfiguration.class);
+        Map<String, ExceptionHandlersConfiguration> map = AppBeans.getAll(ExceptionHandlersConfiguration.class);
         for (ExceptionHandlersConfiguration conf : map.values()) {
             for (Class aClass : conf.getHandlerClasses()) {
                 try {

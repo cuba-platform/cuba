@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.desktop.sys;
 
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.gui.NoSuchScreenException;
@@ -17,7 +17,8 @@ import com.haulmont.cuba.security.global.UserSession;
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 /**
@@ -34,7 +35,7 @@ public class MenuBuilder {
     public MenuBuilder(UserSession userSession, JMenuBar menuBar) {
         this.userSession = userSession;
         this.menuBar = menuBar;
-        menuConfig = AppContext.getBean(MenuConfig.class);
+        menuConfig = AppBeans.get(MenuConfig.class);
     }
 
     public void build() {
@@ -79,7 +80,7 @@ public class MenuBuilder {
     private void assignCommand(final JMenuItem jMenuItem, MenuItem item) {
         WindowInfo windowInfo;
         try {
-            windowInfo = AppContext.getBean(WindowConfig.class).getWindowInfo(item.getId());
+            windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(item.getId());
         } catch (NoSuchScreenException e) {
             return;
         }

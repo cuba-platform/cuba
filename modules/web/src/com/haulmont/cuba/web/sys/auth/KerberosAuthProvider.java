@@ -6,9 +6,9 @@
 
 package com.haulmont.cuba.web.sys.auth;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
 import org.apache.commons.codec.binary.Base64;
@@ -263,7 +263,7 @@ public class KerberosAuthProvider implements CubaAuthProvider {
     public void authenticate(String login, String password, Locale loc)
             throws com.haulmont.cuba.security.global.LoginException {
         WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
-        DomainAliasesResolver aliasesResolver = AppContext.getBean(DomainAliasesResolver.NAME);
+        DomainAliasesResolver aliasesResolver = AppBeans.get(DomainAliasesResolver.NAME);
 
         // Convert domain name to kerberos form "user@DOMAIN"
         // Specify realms in krb5.ini in UPPER_CASE only

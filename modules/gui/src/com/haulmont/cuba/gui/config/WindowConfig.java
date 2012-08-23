@@ -42,9 +42,11 @@ import java.util.regex.Pattern;
 /**
  * GenericUI class holding information about all registered screens.
  */
-@ManagedBean("cuba_WindowConfig")
+@ManagedBean(WindowConfig.NAME)
 public class WindowConfig
 {
+    public static final String NAME = "cuba_WindowConfig";
+
     public static final String WINDOW_CONFIG_XML_PROP = "cuba.windowConfig";
 
     protected Map<String, WindowInfo> screens = new HashMap<String, WindowInfo>();

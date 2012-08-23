@@ -38,9 +38,11 @@ import java.util.MissingResourceException;
  *
  * @author krivopustov
  */
-@ManagedBean("cuba_MenuConfig")
+@ManagedBean(MenuConfig.NAME)
 public class MenuConfig implements Serializable
 {
+    public static final String NAME = "cuba_MenuConfig";
+
     public static final String MENU_CONFIG_XML_PROP = "cuba.menuConfig";
 
     private static Log log = LogFactory.getLog(MenuConfig.class);

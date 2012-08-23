@@ -11,9 +11,9 @@ import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.QueryResult;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.StringUtils;
@@ -169,7 +169,7 @@ public class QueryResultTest extends CubaTestCase {
     }
 
     public void testFirstQuery() throws SQLException {
-        DataService dataService = AppContext.getBean(DataService.class);
+        DataService dataService = AppBeans.get(DataService.class);
         LoadContext context = new LoadContext(User.class).setView(View.LOCAL);
         context.setQueryString("select u from sec$User u where u.name like :name").addParameter("name", "A-%");
         List<Entity> entities = dataService.loadList(context);
@@ -180,7 +180,7 @@ public class QueryResultTest extends CubaTestCase {
     }
 
     public void testSecondQuery() throws SQLException {
-        DataService dataService = AppContext.getBean(DataService.class);
+        DataService dataService = AppBeans.get(DataService.class);
         LoadContext context = new LoadContext(User.class).setView(View.LOCAL);
         context.setQueryString("select u from sec$User u where u.email like :email").addParameter("email", "%aaa.com");
 
@@ -197,7 +197,7 @@ public class QueryResultTest extends CubaTestCase {
     }
 
     public void testThirdQuery() throws SQLException {
-        DataService dataService = AppContext.getBean(DataService.class);
+        DataService dataService = AppBeans.get(DataService.class);
         LoadContext context;
         List<Entity> entities;
 

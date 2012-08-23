@@ -12,8 +12,8 @@ package com.haulmont.cuba.web.gui.components;
 
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Window;
@@ -482,8 +482,7 @@ public class WebTokenList extends WebAbstractField<WebTokenList.TokenListImpl> i
                             windowAlias = getDatasource().getMetaClass().getName() + ".browse";
                         }
 
-                        WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
-                        WindowInfo windowInfo = windowConfig.getWindowInfo(windowAlias);
+                        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(windowAlias);
 
                         Map<String, Object> params = new HashMap<String, Object>();
                         params.put("windowOpener", WebTokenList.this.<IFrame>getFrame().getId());

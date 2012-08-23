@@ -68,7 +68,7 @@ public abstract class WindowManager implements Serializable {
 
     private transient DataService defaultDataService;
 
-    protected Scripting scripting = AppContext.getBean(Scripting.NAME);
+    protected Scripting scripting = AppBeans.get(Scripting.NAME);
 
     private DialogParams dialogParams;
 

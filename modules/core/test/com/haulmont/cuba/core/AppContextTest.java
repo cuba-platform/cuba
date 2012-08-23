@@ -10,12 +10,12 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.global.AppBeans;
 
 public class AppContextTest extends CubaTestCase {
 
     public void test() {
-        Persistence persistence = AppContext.getBean(Persistence.NAME, Persistence.class);
+        Persistence persistence = AppBeans.get(Persistence.NAME, Persistence.class);
         assertNotNull(persistence);
     }
 }

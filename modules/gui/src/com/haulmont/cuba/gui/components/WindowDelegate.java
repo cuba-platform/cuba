@@ -7,7 +7,7 @@
 package com.haulmont.cuba.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.ComponentVisitor;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.WindowManager;
@@ -38,7 +38,7 @@ public class WindowDelegate {
     protected Window wrapper;
     protected Settings settings;
 
-    protected WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
+    protected WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
 
     private Log log = LogFactory.getLog(getClass());
 

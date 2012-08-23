@@ -24,13 +24,13 @@ public abstract class TimeProvider
         if (AppContext.getApplicationContext() == null)
             return null;
 
-        return AppContext.getBean(TimeSource.NAME, TimeSource.class).currentTimestamp();
+        return AppBeans.get(TimeSource.NAME, TimeSource.class).currentTimestamp();
     }
 
     public static long currentTimeMillis() {
         if (AppContext.getApplicationContext() == null)
             return 0;
 
-        return AppContext.getBean(TimeSource.NAME, TimeSource.class).currentTimeMillis();
+        return AppBeans.get(TimeSource.NAME, TimeSource.class).currentTimeMillis();
     }
 }

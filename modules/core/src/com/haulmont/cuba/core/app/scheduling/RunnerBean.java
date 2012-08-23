@@ -14,6 +14,7 @@ import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerInfoAPI;
 import com.haulmont.cuba.core.entity.ScheduledExecution;
 import com.haulmont.cuba.core.entity.ScheduledTask;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.core.sys.SecurityContext;
@@ -175,15 +176,11 @@ public class RunnerBean implements Runner {
 
     private Object invokeBean(ScheduledTask task) {
         log.trace(task + ": invoking bean");
-        Object bean = AppContext.getBean(task.getBeanName());
+        Object bean = AppBeans.get(task.getBeanName());
         try {
             Method method = bean.getClass().getMethod(task.getMethodName(), new Class[0]);
             return method.invoke(bean);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }

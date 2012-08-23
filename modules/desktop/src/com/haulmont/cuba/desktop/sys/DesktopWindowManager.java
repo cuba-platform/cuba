@@ -6,8 +6,8 @@
 
 package com.haulmont.cuba.desktop.sys;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
@@ -693,8 +693,7 @@ public class DesktopWindowManager extends WindowManager {
             }
         }
         // Stop background tasks
-        WatchDog watchDog = AppContext.getBean(WatchDog.class);
-        watchDog.stopTasks();
+        AppBeans.get(WatchDog.class).stopTasks();
         // Dispose windows
         for (WindowBreadCrumbs windowBreadCrumbs : tabs.values()) {
             Window window = windowBreadCrumbs.getCurrentWindow();

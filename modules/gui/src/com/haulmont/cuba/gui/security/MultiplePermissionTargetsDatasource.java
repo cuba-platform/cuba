@@ -8,8 +8,8 @@ package com.haulmont.cuba.gui.security;
 
 import com.google.common.base.Predicate;
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.app.security.role.edit.PropertyPermissionValue;
 import com.haulmont.cuba.gui.config.PermissionConfig;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -56,7 +56,7 @@ public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImp
 
         if (targets == null) {
             targets = new ArrayList<MultiplePermissionTarget>();
-            PermissionConfig permissionConfig = AppContext.getBean(PermissionConfig.class);
+            PermissionConfig permissionConfig = AppBeans.get(PermissionConfig.class);
             List<MultiplePermissionTarget> entityAttrs = permissionConfig.getEntityAttributes(UserSessionProvider.getLocale());
             for (MultiplePermissionTarget target : entityAttrs) {
                 try {

@@ -6,12 +6,15 @@
 
 package com.haulmont.cuba.core.app.scheduling;
 
-import com.haulmont.cuba.core.*;
-import com.haulmont.cuba.core.app.ClusterListener;
+import com.haulmont.cuba.core.EntityManager;
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Query;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.ClusterListenerAdapter;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.SchedulingService;
 import com.haulmont.cuba.core.entity.ScheduledTask;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.ClassUtils;
@@ -75,7 +78,7 @@ public class SchedulingServiceBean implements SchedulingService {
     protected List<String> getMethodNames(String beanName) {
         List<String> methodNames = new ArrayList<String>();
         try {
-            Object bean = AppContext.getBean(beanName);
+            Object bean = AppBeans.get(beanName);
 
             List<Class> classes = ClassUtils.getAllInterfaces(bean.getClass());
             for (Class aClass : classes) {

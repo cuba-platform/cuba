@@ -9,9 +9,8 @@
  */
 package com.haulmont.cuba.gui.xml.layout.loaders;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ScriptingProvider;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.IFrame;
@@ -39,8 +38,7 @@ public class IFrameLoader extends ContainerLoader implements ComponentLoader {
             throw new RuntimeException("Either src or screen must be specified for <iframe>");
         }
         if (src == null) {
-            final WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
-            WindowInfo windowInfo = windowConfig.getWindowInfo(screenId);
+            WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(screenId);
             src = windowInfo.getTemplate();
             if (src == null) {
                 throw new RuntimeException("Screen " + screenId + " doesn't have template path configured");

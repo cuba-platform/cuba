@@ -55,7 +55,7 @@ public class QueryImpl<T> implements TypedQuery<T> {
         this.metadata = metadata;
         this.emDelegate = entityManager.getDelegate();
         this.isNative = isNative;
-        this.macroHandlers = AppContext.getBeansOfType(QueryMacroHandler.class).values();
+        this.macroHandlers = AppBeans.getAll(QueryMacroHandler.class).values();
         this.resultClass = resultClass;
         this.fetchPlanMgr = fetchPlanMgr;
     }

@@ -10,10 +10,10 @@
  */
 package com.haulmont.cuba.web;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.web.sys.ActiveDirectoryHelper;
@@ -353,7 +353,7 @@ public class LoginWindow extends Window implements Action.Handler {
      * @return login in form DOMAIN&#92;userName
      */
     private String convertLoginString(String login) {
-        DomainAliasesResolver aliasesResolver = AppContext.getBean(DomainAliasesResolver.NAME);
+        DomainAliasesResolver aliasesResolver = AppBeans.get(DomainAliasesResolver.NAME);
         int slashPos = login.indexOf("\\");
         if (slashPos >= 0) {
             String domainAlias = login.substring(0, slashPos);

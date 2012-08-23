@@ -6,8 +6,8 @@
 
 package com.haulmont.cuba.gui.app.security.role.edit.tabs;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.app.security.role.edit.PermissionUiHelper;
 import com.haulmont.cuba.gui.components.*;
@@ -79,7 +79,7 @@ public class UiPermissionsFrame extends AbstractFrame {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
+        WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
         Collection<WindowInfo> windows = windowConfig.getWindows();
         Map<String, Object> screens = new HashMap<String, Object>();
         for (WindowInfo windowInfo : windows) {

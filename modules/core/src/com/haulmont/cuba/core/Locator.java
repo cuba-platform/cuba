@@ -9,28 +9,24 @@
  */
 package com.haulmont.cuba.core;
 
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.global.AppBeans;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 /**
- * Locator to find beans and other objects in static context.
- * <p>Consider use of injection instead, or direct lookup through {@link AppContext#getBean(String)}.</p>
+ * DEPRECATED. Use {@link AppBeans} or dependency injection.
  */
+@Deprecated
 public abstract class Locator {
-
-    private static Context jndiContext;
 
     /**
      * Lookup bean.
      * @param name  bean name
      * @return      bean instance
      */
+    @Deprecated
     public static <T> T lookup(String name) {
-        return (T) AppContext.getBean(name);
+        return (T) AppBeans.get(name);
     }
 
     /**
@@ -42,22 +38,7 @@ public abstract class Locator {
      */
     @Deprecated
     public static DataSource getDataSource() {
-        return (DataSource) AppContext.getBean("dataSource");
-    }
-
-    /**
-     * Return current JNDI context.
-     * @return      context
-     */
-    public static Context getJndiContext() {
-        if (jndiContext == null) {
-            try {
-                jndiContext = new InitialContext();
-            } catch (NamingException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return jndiContext;
+        return (DataSource) AppBeans.get("dataSource");
     }
 
     /**
@@ -70,7 +51,7 @@ public abstract class Locator {
      */
     @Deprecated
     public static Transaction createTransaction() {
-        return AppContext.getBean(Persistence.NAME, Persistence.class).createTransaction();
+        return AppBeans.get(Persistence.NAME, Persistence.class).createTransaction();
     }
 
     /**
@@ -84,7 +65,7 @@ public abstract class Locator {
      */
     @Deprecated
     public static Transaction getTransaction() {
-        return AppContext.getBean(Persistence.NAME, Persistence.class).getTransaction();
+        return AppBeans.get(Persistence.NAME, Persistence.class).getTransaction();
     }
 
     /**
@@ -96,6 +77,6 @@ public abstract class Locator {
      */
     @Deprecated
     public static boolean isInTransaction() {
-        return AppContext.getBean(Persistence.NAME, Persistence.class).isInTransaction();
+        return AppBeans.get(Persistence.NAME, Persistence.class).isInTransaction();
     }
 }

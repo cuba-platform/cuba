@@ -11,11 +11,12 @@
 package com.haulmont.cuba.gui;
 
 import com.haulmont.cuba.core.app.DataService;
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.global.AppBeans;
 
 /**
- * Locator of middleware services for use on presentation layer
+ * DEPRECATED. Use {@link AppBeans} or dependency injection.
  */
+@Deprecated
 public abstract class ServiceLocator
 {
     private static transient DataService dataService;
@@ -24,7 +25,7 @@ public abstract class ServiceLocator
      * Locate service reference by name
      */
     public static <T> T lookup(String name) {
-        return (T) AppContext.getBean(name);
+        return (T) AppBeans.get(name);
     }
 
     /**
@@ -32,7 +33,7 @@ public abstract class ServiceLocator
      */
     public static DataService getDataService() {
         if (dataService == null) {
-            dataService = (DataService) AppContext.getBean(DataService.NAME);
+            dataService = (DataService) AppBeans.get(DataService.NAME);
         }
         return dataService;
     }

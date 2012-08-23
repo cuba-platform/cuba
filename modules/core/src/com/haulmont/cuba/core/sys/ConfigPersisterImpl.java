@@ -8,6 +8,7 @@ package com.haulmont.cuba.core.sys;
 import com.haulmont.cuba.core.app.ConfigStorageAPI;
 import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.SourceType;
+import com.haulmont.cuba.core.global.AppBeans;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -57,6 +58,6 @@ public class ConfigPersisterImpl implements ConfigPersister
     }
 
     private ConfigStorageAPI getConfigStorageAPI() {
-        return AppContext.getBean(ConfigStorageAPI.NAME);
+        return AppBeans.get(ConfigStorageAPI.NAME);
     }
 }

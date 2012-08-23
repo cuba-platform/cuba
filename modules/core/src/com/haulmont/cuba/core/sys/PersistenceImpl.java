@@ -235,7 +235,7 @@ public class PersistenceImpl implements Persistence {
 
     @Override
     public DataSource getDataSource() {
-        return (DataSource) AppContext.getBean("dataSource");
+        return (DataSource) AppBeans.get("dataSource");
     }
 
     @Override

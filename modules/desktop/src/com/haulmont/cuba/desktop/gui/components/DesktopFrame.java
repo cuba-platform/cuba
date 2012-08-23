@@ -7,8 +7,8 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.gui.ComponentsHelper;
 import com.haulmont.cuba.gui.DialogParams;
@@ -38,7 +38,7 @@ public class DesktopFrame
     private IFrame wrapper;
     private Map<String, Component> allComponents = new HashMap<String, Component>();
 
-    private WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
+    private WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
 
     private DesktopFrameActionsHolder actionsHolder;
 

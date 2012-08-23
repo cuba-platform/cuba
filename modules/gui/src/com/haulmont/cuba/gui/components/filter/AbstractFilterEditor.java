@@ -50,7 +50,7 @@ public abstract class AbstractFilterEditor {
 
     protected Boolean manualApplyRequired;
 
-    protected Messages messages = AppContext.getBean(Messages.NAME, Messages.class);
+    protected Messages messages = AppBeans.get(Messages.NAME, Messages.class);
 
     public AbstractFilterEditor(final Filter filter, FilterEntity filterEntity,
                                 Element filterDescriptor, List<String> existingNames) {

@@ -12,6 +12,7 @@ package com.haulmont.cuba.gui.app.core.file;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.FileDescriptor;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.core.sys.AppContext;
@@ -61,7 +62,7 @@ public class MultiUploader extends AbstractEditor {
             public void queueUploadComplete() {
                 needSave = true;
                 okBtn.setEnabled(true);
-                FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+                FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
                 Map<UUID, String> uploads = uploadField.getUploadsMap();
                 for (Map.Entry<UUID, String> upload : uploads.entrySet()) {
                     FileDescriptor fDesc = fileUploading.getFileDescriptor(upload.getKey(), upload.getValue());
@@ -111,7 +112,7 @@ public class MultiUploader extends AbstractEditor {
     @Override
     public boolean close(String actionId) {
         if (!COMMIT_ACTION_ID.equals(actionId)) {
-            FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+            FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
             for (Map.Entry<FileDescriptor, UUID> upload : descriptors.entrySet()) {
                 try {
                     fileUploading.deleteFile(upload.getValue());
@@ -124,7 +125,7 @@ public class MultiUploader extends AbstractEditor {
     }
 
     private void saveFile() {
-        FileUploadingAPI fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+        FileUploadingAPI fileUploading = AppBeans.get(FileUploadingAPI.NAME);
         try {
             // Relocate the file from temporary storage to permanent
             Collection ids = filesDs.getItemIds();

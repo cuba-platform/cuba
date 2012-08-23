@@ -10,6 +10,7 @@
 
 package com.haulmont.cuba.gui;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ClientType;
 import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.executors.BackgroundWorker;
@@ -61,7 +62,7 @@ public abstract class AppConfig
      * @return  a new ExportDisplay instance
      */
     public static ExportDisplay createExportDisplay() {
-        return AppContext.getBean(ExportDisplay.NAME);
+        return AppBeans.get(ExportDisplay.NAME);
     }
 
     /**
@@ -69,7 +70,7 @@ public abstract class AppConfig
      * @return  BackgroundWorker instance
      */
     public static BackgroundWorker getBackgroundWorker() {
-        return AppContext.getBean(BackgroundWorker.NAME);
+        return AppBeans.get(BackgroundWorker.NAME);
     }
 
     /**
@@ -77,6 +78,6 @@ public abstract class AppConfig
      * @return  ComponentsFactory instance
      */
     public static ComponentsFactory getFactory() {
-        return AppContext.getBean(ComponentsFactory.class);
+        return AppBeans.get(ComponentsFactory.class);
     }
 }

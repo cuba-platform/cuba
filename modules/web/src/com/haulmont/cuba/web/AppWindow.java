@@ -471,7 +471,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("searchTerm", searchTerm);
 
-        WindowInfo windowInfo = AppContext.getBean(WindowConfig.class).getWindowInfo("fts$Search");
+        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo("fts$Search");
         App.getInstance().getWindowManager().openWindow(
                 windowInfo,
                 WindowManager.OpenType.NEW_TAB,
@@ -500,7 +500,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         }
 
         final UserSession session = connection.getSession();
-        final MenuConfig menuConfig = AppContext.getBean(MenuConfig.class);
+        final MenuConfig menuConfig = AppBeans.get(MenuConfig.class);
         List<MenuItem> rootItems = menuConfig.getRootItems();
         for (MenuItem menuItem : rootItems) {
             if (menuItem.isPermitted(session)) {
@@ -749,7 +749,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     private MenuBar.Command createMenuBarCommand(final MenuItem item) {
         final WindowInfo windowInfo;
-        final WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
+        final WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
         try {
             windowInfo = windowConfig.getWindowInfo(item.getId());
         } catch (NoSuchScreenException e) {

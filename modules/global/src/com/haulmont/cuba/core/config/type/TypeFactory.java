@@ -5,11 +5,10 @@
  */
 package com.haulmont.cuba.core.config.type;
 
-import com.haulmont.cuba.core.config.ConfigPersister;
 import com.haulmont.cuba.core.config.ConfigUtil;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.sys.AppContext;
+import com.haulmont.cuba.core.global.AppBeans;
 import org.apache.commons.lang.ClassUtils;
 
 import java.lang.reflect.Constructor;
@@ -83,7 +82,7 @@ public abstract class TypeFactory
         } else {
 
             if (Entity.class.isAssignableFrom(returnType)){
-                return AppContext.getBean(ENTITY_FACTORY_BEAN_NAME, TypeFactory.class);
+                return AppBeans.get(ENTITY_FACTORY_BEAN_NAME, TypeFactory.class);
             } else {
                 for (String methodName : FACTORY_METHOD_NAMES) {
                     try {

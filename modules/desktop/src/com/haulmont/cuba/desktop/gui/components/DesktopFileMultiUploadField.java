@@ -7,14 +7,13 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.client.ClientConfig;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.Resources;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.FileMultiUploadField;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.upload.FileUploadingAPI;
 import org.apache.commons.io.FileUtils;
 
@@ -43,7 +42,7 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
     private String description = "";
 
     public DesktopFileMultiUploadField() {
-        fileUploading = AppContext.getBean(FileUploadingAPI.NAME);
+        fileUploading = AppBeans.get(FileUploadingAPI.NAME);
 
         final JFileChooser fileChooser = new JFileChooser();
         fileChooser.setMultiSelectionEnabled(true);

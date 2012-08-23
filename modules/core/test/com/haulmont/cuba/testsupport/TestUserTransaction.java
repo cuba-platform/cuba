@@ -10,16 +10,16 @@
  */
 package com.haulmont.cuba.testsupport;
 
-import com.haulmont.cuba.core.Locator;
+import com.haulmont.cuba.core.JndiContextHolder;
 
-import javax.transaction.*;
 import javax.naming.NamingException;
+import javax.transaction.*;
 
 public class TestUserTransaction implements UserTransaction {
 
     private TransactionManager getTm() {
         try {
-            return (TransactionManager) Locator.getJndiContext().lookup("java:/TransactionManager");
+            return (TransactionManager) JndiContextHolder.getContext().lookup("java:/TransactionManager");
         } catch (NamingException e) {
             throw new RuntimeException(e);
         }

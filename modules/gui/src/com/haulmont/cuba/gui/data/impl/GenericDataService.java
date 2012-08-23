@@ -27,9 +27,9 @@ public class GenericDataService implements DataService, Serializable {
 
     private static final long serialVersionUID = -2688273748125419411L;
 
-    private Metadata metadata = AppContext.getBean(Metadata.NAME, Metadata.class);
+    private Metadata metadata = AppBeans.get(Metadata.NAME, Metadata.class);
 
-    private com.haulmont.cuba.core.app.DataService dataService = AppContext.getBean(
+    private com.haulmont.cuba.core.app.DataService dataService = AppBeans.get(
             com.haulmont.cuba.core.app.DataService.NAME, com.haulmont.cuba.core.app.DataService.class);
 
     public <A extends Entity> A newInstance(MetaClass metaClass) {

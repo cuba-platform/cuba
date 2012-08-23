@@ -7,6 +7,7 @@
 package com.haulmont.cuba.client.testsupport;
 
 import com.haulmont.cuba.core.app.PersistenceManagerService;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.UserSessionSource;
@@ -72,21 +73,21 @@ public class CubaClientTestCase {
             {
                 AppContext.getProperty("cuba.confDir"); result = System.getProperty("user.dir");
 
-                AppContext.getBean(Metadata.NAME); result = metadata;
-                AppContext.getBean(Metadata.class); result = metadata;
-                AppContext.getBean(Metadata.NAME, Metadata.class); result = metadata;
+                AppBeans.get(Metadata.NAME); result = metadata;
+                AppBeans.get(Metadata.class); result = metadata;
+                AppBeans.get(Metadata.NAME, Metadata.class); result = metadata;
 
-                AppContext.getBean(Configuration.NAME); result = configuration;
-                AppContext.getBean(Configuration.class); result = configuration;
-                AppContext.getBean(Configuration.NAME, Configuration.class); result = configuration;
+                AppBeans.get(Configuration.NAME); result = configuration;
+                AppBeans.get(Configuration.class); result = configuration;
+                AppBeans.get(Configuration.NAME, Configuration.class); result = configuration;
 
-                AppContext.getBean(PersistenceManagerService.NAME); result = persistenceManager;
-                AppContext.getBean(PersistenceManagerService.class); result = persistenceManager;
-                AppContext.getBean(PersistenceManagerService.NAME, PersistenceManagerService.class); result = persistenceManager;
+                AppBeans.get(PersistenceManagerService.NAME); result = persistenceManager;
+                AppBeans.get(PersistenceManagerService.class); result = persistenceManager;
+                AppBeans.get(PersistenceManagerService.NAME, PersistenceManagerService.class); result = persistenceManager;
 
-                AppContext.getBean(UserSessionSource.NAME); result = userSessionSource;
-                AppContext.getBean(UserSessionSource.class); result = userSessionSource;
-                AppContext.getBean(UserSessionSource.NAME, UserSessionSource.class); result = userSessionSource;
+                AppBeans.get(UserSessionSource.NAME); result = userSessionSource;
+                AppBeans.get(UserSessionSource.class); result = userSessionSource;
+                AppBeans.get(UserSessionSource.NAME, UserSessionSource.class); result = userSessionSource;
             }
         };
 

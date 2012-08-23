@@ -8,8 +8,8 @@ package com.haulmont.cuba.desktop.gui.components.filter;
 
 import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Pair;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.gui.components.filter.AbstractCondition;
 import com.haulmont.cuba.gui.components.filter.AbstractFilterEditor;
 import com.haulmont.cuba.gui.components.filter.AbstractOperationEditor;
@@ -37,7 +37,7 @@ class ConditionsTableModel extends AbstractTableModel {
     public ConditionsTableModel(ConditionsTree conditions) {
         this.conditions = conditions;
 
-        Messages msgs = AppContext.getBean(Messages.NAME, Messages.class);
+        Messages msgs = AppBeans.get(Messages.NAME, Messages.class);
         columnNames[0] = msgs.getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.column.name");
         columnNames[1] = msgs.getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.column.op");
         columnNames[2] = msgs.getMessage(AbstractFilterEditor.MESSAGES_PACK, "FilterEditor.column.param");

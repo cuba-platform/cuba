@@ -497,7 +497,7 @@ public class FoldersPane extends VerticalLayout {
         String[] strings = ValuePathHelper.parse(folder.getFilterComponentId());
         String screenId = strings[0];
 
-        WindowInfo windowInfo = AppContext.getBean(WindowConfig.class).getWindowInfo(screenId);
+        WindowInfo windowInfo = AppBeans.get(WindowConfig.class).getWindowInfo(screenId);
 
         Map<String, Object> params = new HashMap<String, Object>();
 
@@ -904,7 +904,7 @@ public class FoldersPane extends VerticalLayout {
         @Override
         public void perform(final Folder folder) {
             // TODO Get rid of ReportImportDialog here
-//            WindowConfig windowConfig = AppContext.getBean(WindowConfig.class);
+//            WindowConfig windowConfig = AppBeans.get(WindowConfig.class);
 //            final ReportImportDialog importDialog = App.getInstance().getWindowManager().
 //                    openWindow(windowConfig.getWindowInfo("report$Report.fileUploadDialog"),
 //                            WindowManager.OpenType.DIALOG);

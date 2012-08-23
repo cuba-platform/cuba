@@ -10,17 +10,16 @@
  */
 package com.haulmont.cuba.testsupport;
 
+import com.haulmont.cuba.core.JndiContextHolder;
 import org.apache.openjpa.ee.AbstractManagedRuntime;
 import org.apache.openjpa.ee.ManagedRuntime;
 
 import javax.transaction.TransactionManager;
 
-import com.haulmont.cuba.core.Locator;
-
 public class TestManagedRuntime extends AbstractManagedRuntime implements ManagedRuntime {
 
     public TransactionManager getTransactionManager() throws Exception {
-        return (TransactionManager) Locator.getJndiContext().lookup("java:/TransactionManager");
+        return (TransactionManager) JndiContextHolder.getContext().lookup("java:/TransactionManager");
     }
 
     public void setRollbackOnly(Throwable cause) throws Exception {

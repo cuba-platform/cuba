@@ -47,7 +47,7 @@ public abstract class ComponentLoader implements com.haulmont.cuba.gui.xml.layou
 
     protected ComponentLoader(Context context) {
         this.context = context;
-        this.security = AppContext.getBean(Security.NAME);
+        this.security = AppBeans.get(Security.NAME);
     }
 
     @Override

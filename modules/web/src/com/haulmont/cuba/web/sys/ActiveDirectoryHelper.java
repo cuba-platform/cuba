@@ -10,8 +10,8 @@
  */
 package com.haulmont.cuba.web.sys;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.sys.AppContext;
 import com.haulmont.cuba.web.WebConfig;
 import com.haulmont.cuba.web.sys.auth.CubaAuthProvider;
 
@@ -22,6 +22,6 @@ public class ActiveDirectoryHelper {
     }
 
     public static CubaAuthProvider getAuthProvider() {
-        return AppContext.getBean(CubaAuthProvider.NAME);
+        return AppBeans.get(CubaAuthProvider.NAME);
     }
 }

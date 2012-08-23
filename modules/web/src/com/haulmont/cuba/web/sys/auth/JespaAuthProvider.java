@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.web.sys.auth;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.GlobalConfig;
 import com.haulmont.cuba.core.global.MessageProvider;
@@ -87,7 +88,7 @@ public class JespaAuthProvider extends HttpSecurityService implements CubaAuthPr
 
     @Override
     public void authenticate(String login, String password, Locale loc) throws LoginException {
-        DomainAliasesResolver aliasesResolver = AppContext.getBean(DomainAliasesResolver.NAME);
+        DomainAliasesResolver aliasesResolver = AppBeans.get(DomainAliasesResolver.NAME);
 
         String domain;
         String userName;

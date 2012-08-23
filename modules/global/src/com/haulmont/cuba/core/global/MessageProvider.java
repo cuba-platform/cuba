@@ -20,7 +20,7 @@ import java.util.Locale;
 public abstract class MessageProvider
 {
     private static Messages getMessages() {
-        return AppContext.getBean(Messages.NAME, Messages.class);
+        return AppBeans.get(Messages.NAME, Messages.class);
     }
 
     public static void clearCache() {

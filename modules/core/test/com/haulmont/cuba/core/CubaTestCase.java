@@ -30,7 +30,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
+import java.util.UUID;
 
 /**
  * Base class for middleware integration tests.
@@ -157,8 +160,8 @@ public abstract class CubaTestCase extends TestCase
     }
 
     protected void initTxManager() throws NamingException {
-        Locator.getJndiContext().bind("java:/TransactionManager", new TestTransactionManager());
-        Locator.getJndiContext().bind("UserTransaction", new TestUserTransaction());
+        JndiContextHolder.getContext().bind("java:/TransactionManager", new TestTransactionManager());
+        JndiContextHolder.getContext().bind("UserTransaction", new TestUserTransaction());
     }
 
     protected void deleteRecord(String table, UUID id) {

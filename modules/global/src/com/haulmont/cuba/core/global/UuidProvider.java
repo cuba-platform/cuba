@@ -24,6 +24,6 @@ public abstract class UuidProvider
         if (AppContext.getApplicationContext() == null)
             return UUID.randomUUID();
 
-        return AppContext.getBean(UuidSource.NAME, UuidSource.class).createUuid();
+        return AppBeans.get(UuidSource.NAME, UuidSource.class).createUuid();
     }
 }
