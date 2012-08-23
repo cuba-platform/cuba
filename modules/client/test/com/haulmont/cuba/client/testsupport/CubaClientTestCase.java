@@ -35,6 +35,9 @@ public class CubaClientTestCase {
     protected AppContext appContext;
 
     @Mocked
+    protected AppBeans appBeans;
+
+    @Mocked
     protected Configuration configuration;
 
     @Mocked
