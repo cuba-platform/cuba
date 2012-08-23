@@ -23,9 +23,8 @@ import java.io.File;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButton> implements FileMultiUploadField {
 
@@ -35,9 +34,9 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
 
     protected FileUploadingAPI fileUploading;
 
-    private List<UploadListener> listeners = new ArrayList<UploadListener>();
+    private List<UploadListener> listeners = new ArrayList<>();
 
-    private Map<UUID, String> filesMap = new HashMap<UUID, String>();
+    private Map<UUID, String> filesMap = new HashMap<>();
 
     private String description = "";
 
@@ -48,7 +47,7 @@ public class DesktopFileMultiUploadField extends DesktopAbstractComponent<JButto
         fileChooser.setMultiSelectionEnabled(true);
 
         Resources resources = App.getInstance().getResources();
-        String caption = MessageProvider.getMessage(getClass(), "selectFiles");
+        String caption = MessageProvider.getMessage(getClass(), "upload.selectFiles");
         impl = new JButton();
         impl.setAction(new AbstractAction(caption, resources.getIcon(DEFAULT_ICON)) {
             @Override

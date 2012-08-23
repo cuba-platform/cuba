@@ -29,9 +29,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 @ManagedBean(ExportDisplay.NAME)
 @Scope("prototype")
@@ -41,9 +40,10 @@ public class DesktopExportDisplay implements ExportDisplay {
 
     /**
      * Show/Download resource at client side
+     *
      * @param dataProvider {@link ExportDataProvider}
      * @param resourceName ResourceName for client side
-     * @param format {@link ExportFormat}
+     * @param format       {@link ExportFormat}
      * @see com.haulmont.cuba.gui.export.FileDataProvider
      * @see com.haulmont.cuba.gui.export.ByteArrayDataProvider
      */
@@ -57,8 +57,8 @@ public class DesktopExportDisplay implements ExportDisplay {
                 fileName += "." + format.getFileExt();
         }
 
-        String dialogMessage = MessageProvider.getMessage(getClass(), "saveFile");
-        String fileCaption = MessageProvider.getMessage(getClass(), "fileCaption");
+        String dialogMessage = MessageProvider.getMessage(getClass(), "export.saveFile");
+        String fileCaption = MessageProvider.getMessage(getClass(), "export.fileCaption");
 
         dialogMessage = String.format(dialogMessage, fileName);
 
@@ -68,24 +68,13 @@ public class DesktopExportDisplay implements ExportDisplay {
                         new AbstractAction("action.openFile") {
                             @Override
                             public void actionPerform(Component component) {
-                                try {
-                                    File destFile = File.createTempFile("tempCubaFile", "." + getFileExt(finalFileName));
-                                    saveFile(dataProvider, destFile);
-
-                                    if (Desktop.isDesktopSupported())
-                                        Desktop.getDesktop().open(destFile);
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
+                                openFileAction(finalFileName, dataProvider);
                             }
                         },
                         new AbstractAction("action.saveFile") {
                             @Override
                             public void actionPerform(Component component) {
-                                fileChooser.setSelectedFile(new File(finalFileName));
-                                if (fileChooser.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
-                                    saveFile(dataProvider, fileChooser.getSelectedFile());
-                                }
+                                saveFileAction(finalFileName, mainFrame, dataProvider);
                             }
                         },
                         new AbstractAction("action.cancel") {
@@ -95,6 +84,36 @@ public class DesktopExportDisplay implements ExportDisplay {
                             }
                         }
                 });
+    }
+
+    private void saveFileAction(String fileName, JFrame mainFrame, ExportDataProvider dataProvider) {
+        fileChooser.setSelectedFile(new File(fileName));
+        if (fileChooser.showSaveDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            saveFile(dataProvider, selectedFile);
+        }
+    }
+
+    private void openFileAction(String finalFileName, ExportDataProvider dataProvider) {
+        File destFile = null;
+        try {
+            destFile = File.createTempFile("tempCubaFile", "." + getFileExt(finalFileName));
+        } catch (IOException e) {
+            String message = MessageProvider.getMessage(DesktopExportDisplay.class, "export.tempFileError");
+            App.getInstance().getWindowManager().showNotification(message, IFrame.NotificationType.WARNING);
+        }
+
+        if (destFile != null) {
+            if (saveFile(dataProvider, destFile) && Desktop.isDesktopSupported()) {
+                try {
+                    Desktop.getDesktop().open(destFile);
+                } catch (IOException ex) {
+                    String message = MessageProvider.getMessage(DesktopExportDisplay.class, "export.openError");
+                    App.getInstance().getWindowManager().showNotification(message,
+                            IFrame.NotificationType.WARNING);
+                }
+            }
+        }
     }
 
     /**
@@ -114,15 +133,16 @@ public class DesktopExportDisplay implements ExportDisplay {
 
     /**
      * Show/Download file at client side
+     *
      * @param fileDescriptor File descriptor
-     * @param format {@link ExportFormat}
+     * @param format         {@link ExportFormat}
      */
     @Override
     public void show(FileDescriptor fileDescriptor, ExportFormat format) {
         show(new FileDataProvider(fileDescriptor), fileDescriptor.getName(), format);
     }
 
-    private void saveFile(ExportDataProvider dataProvider, File destinationFile) {
+    private boolean saveFile(ExportDataProvider dataProvider, File destinationFile) {
         try {
             if (!destinationFile.exists()) {
                 boolean crateResult = destinationFile.createNewFile();
@@ -143,8 +163,11 @@ public class DesktopExportDisplay implements ExportDisplay {
                 dataProvider.close();
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            String message = MessageProvider.getMessage(DesktopExportDisplay.class, "export.saveError");
+            App.getInstance().getWindowManager().showNotification(message, IFrame.NotificationType.WARNING);
+            return false;
         }
+        return true;
     }
 
     private String getFileExt(String fileName) {
