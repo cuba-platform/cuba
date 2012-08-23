@@ -20,7 +20,7 @@ import java.util.Properties;
  * @author minaev
  * @version $Id$
  */
-@ManagedBean
+@ManagedBean("cuba_PortalSiteSettings")
 public class SiteSettings {
 
     /**

@@ -18,9 +18,7 @@
 
     <!-- Annotation-based beans -->
 
-    <context:component-scan base-package="com.haulmont.cuba.core.sys"/>
-    <context:component-scan base-package="com.haulmont.cuba.client.sys"/>
-    <context:component-scan base-package="com.haulmont.cuba.portal.sys"/>
+    <context:component-scan base-package="com.haulmont.cuba"/>
 
     <bean id="cuba_UserSessionSource" class="com.haulmont.cuba.portal.sys.security.PortalUserSessionSource"/>
 

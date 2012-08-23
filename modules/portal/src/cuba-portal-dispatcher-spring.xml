@@ -22,10 +22,6 @@
         <bean class="com.haulmont.cuba.portal.sys.security.SecurityContextHandlerInterceptor"/>
     </mvc:interceptors>
 
-    <context:component-scan base-package="com.haulmont.cuba.portal.config"/>
-    <context:component-scan base-package="com.haulmont.cuba.portal.service"/>
-    <context:component-scan base-package="com.haulmont.cuba.portal.security"/>
-
     <!-- Portal configuration -->
 
     <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
@@ -33,7 +29,7 @@
         <property name="freemarkerSettings" ref="freemarkerSettings"/>
     </bean>
 
-    <bean id="freemarkerSettings" factory-bean="siteSettings" factory-method="getFreeMarkerSettings"/>
+    <bean id="freemarkerSettings" factory-bean="cuba_PortalSiteSettings" factory-method="getFreeMarkerSettings"/>
 
     <bean id="viewResolver" class="com.haulmont.cuba.portal.springframework.FreeMarkerThemedViewResolver">
         <property name="cache" value="true"/>
