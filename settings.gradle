@@ -5,7 +5,7 @@
  */
 
 include(':cuba-shared-lib', ':cuba-global', ':cuba-core', ':cuba-client', ':cuba-gui', ':cuba-web-toolkit',
-        ':cuba-web', ':cuba-desktop', ':cuba-test-ui')
+        ':cuba-web', ':cuba-desktop', ':cuba-test-ui', ':cuba-portal')
 rootProject.name = 'cuba'
 project(':cuba-shared-lib').projectDir = new File(settingsDir, 'modules/shared-lib')
 project(':cuba-global').projectDir = new File(settingsDir, 'modules/global')
@@ -16,3 +16,4 @@ project(':cuba-web-toolkit').projectDir = new File(settingsDir, 'modules/web-too
 project(':cuba-web').projectDir = new File(settingsDir, 'modules/web')
 project(':cuba-desktop').projectDir = new File(settingsDir, 'modules/desktop')
 project(':cuba-test-ui').projectDir = new File(settingsDir, 'modules/test-ui')
+project(':cuba-portal').projectDir = new File(settingsDir, 'modules/portal')

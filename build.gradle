@@ -43,6 +43,7 @@ def webToolkitModule = project(':cuba-web-toolkit')
 def webModule = project(':cuba-web')
 def desktopModule = project(':cuba-desktop')
 def uiTestModule = project(':cuba-test-ui')
+def portalModule = project(':cuba-portal')
 
 def servletApi = [group: 'org.apache.tomcat', name: 'servlet-api', version: '6.0.20']
 def vaadin = [group: 'com.haulmont.thirdparty', name: 'vaadin', version: '6.6.1.108']
@@ -58,7 +59,7 @@ def postgres = [group: 'postgresql', name: 'postgresql', version: '9.1-901.jdbc4
 def hsqldb = [group: 'hsqldb', name: 'hsqldb', version: '1.8.0.10']
 
 configure([sharedLibModule, globalModule, coreModule, clientModule, guiModule, webToolkitModule,
-        webModule, desktopModule, uiTestModule]) {
+        webModule, desktopModule, uiTestModule, portalModule]) {
     apply(plugin: 'java')
     apply(plugin: 'idea')
     apply(plugin: 'maven')
@@ -381,6 +382,42 @@ configure(desktopModule) {
 
 configure(uiTestModule) {
     dependencies {
+    }
+}
+
+configure(portalModule) {
+    apply(plugin: 'groovy')
+
+    sourceSets {
+        main {
+            groovy { srcDir 'src' }
+        }
+    }
+
+    def springSecurityVersion = '3.1.1.RELEASE'
+
+    dependencies {
+        compile(globalModule)
+        compile(clientModule)
+        compile(sharedLibModule)
+        provided(servletApi)
+        compile(group: 'org.springframework', name: 'spring-webmvc', version: springSecurityVersion)
+        compile(group: 'org.springframework.security', name: 'spring-security-core', version: springSecurityVersion)
+        compile(group: 'org.springframework.security', name: 'spring-security-web', version: springSecurityVersion)
+        compile(group: 'org.springframework.security', name: 'spring-security-config', version: springSecurityVersion)
+        compile(group: 'org.springframework.security', name: 'spring-security-taglibs', version: springSecurityVersion)
+        groovy(groovyArtifact)
+        groovy(asm)
+
+        compile(group: 'org.springframework', name: 'spring-tx', version: '3.1.1.RELEASE')
+        compile(group: 'org.springframework', name: 'spring-jdbc', version: '3.1.1.RELEASE')
+
+        testCompile(clientModule.sourceSets.test.output)
+    }
+
+    test {
+        scanForTestClasses = false
+        includes = ['**/*Test.class']
     }
 }
 
