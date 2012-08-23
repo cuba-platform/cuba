@@ -3,7 +3,7 @@
   <title>Введение</title>
   <section>
     <title>Технические требования</title>
-    <para><emphasis role="bold">Минимальные аппаратные требования для платформы <trademark>CUBA</trademark></emphasis></para>
+    <para><emphasis role="bold">Минимальные аппаратные требования</emphasis>  для платформы <trademark>CUBA</trademark></para>
     <itemizedlist>
       <listitem>
         <para>Процессор 32-разрядный двухъядерный </para>
@@ -15,7 +15,7 @@
         <para>Место на жестком диске 5 ГБ</para>
       </listitem>
     </itemizedlist>
-    <para><emphasis role="bold">Программные требования для платформы <trademark>CUBA</trademark></emphasis> − операционная система <application>Microsoft Windows</application> или <application>Unix</application> (<application>Linux</application>, <application>FreeBSD</application> и пр.).</para>
+    <para><emphasis role="bold">Программные требования </emphasis> для платформы <trademark>CUBA</trademark> − операционная система <application>Microsoft Windows</application> или <application>Unix</application> (<application>Linux</application>, <application>FreeBSD</application> и пр.).</para>
   </section>
   <section>
     <title>Основные возможности платформы</title>
@@ -35,28 +35,32 @@
         <para>Создаваемые на базе платформы приложения легко могут быть развернуты в отказоустойчивой конфигурации</para>
       </listitem>
       <listitem>
-        <para>Наличие эффективных средств разработки пользовательского интерфейса с помощью только <application>Java</application> и <application>XML</application></para>
+        <para>Наличие эффективных средств разработки <link linkend="section_gui_framework">пользовательского интерфейса</link> с помощью только <application>Java</application> и <application>XML</application></para>
       </listitem>
       <listitem>
-        <para>Мощные средства разграничения прав доступа пользователей к информации с возможностью настройки в работающем приложении</para>
+        <para>Мощные средства разграничения прав доступа пользователей к информации с возможностью настройки в работающем приложении<footnote>
+            <para>Описание функциональности управления пользователями и их доступом к данным содержится в <productname>Руководстве подсистемы безопасности платформы <trademark>CUBA</trademark></productname></para>
+          </footnote></para>
       </listitem>
       <listitem>
-        <para>Встроенный механизм создания и генерации отчетов с выводом в форматы офисных документов и PDF</para>
+        <para>Встроенный механизм создания и генерации отчетов с выводом в форматы офисных документов и PDF<footnote>
+            <para>Информация о создании отчетов с помощью платформы находится в <productname>Руководстве по созданию отчетов</productname></para>
+          </footnote></para>
       </listitem>
       <listitem>
-        <para>Механизм создания и выполнения бизнес-процессов с интегрированным визуальным редактором процессов</para>
+        <para>Механизм создания и выполнения <glossterm linkend="glossary_process_id">бизнес-процессов</glossterm> с интегрированным визуальным редактором процессов</para>
       </listitem>
       <listitem>
-        <para>Полнотекстовый поиск по атрибутам сущностей и по содержимому загруженных файлов</para>
+        <para><link linkend="section_fts">Полнотекстовый поиск</link> по атрибутам <glossterm linkend="glossary_entity">сущностей</glossterm> и по содержимому загруженных файлов</para>
       </listitem>
       <listitem>
-        <para>Возможность отображения диаграмм, в том числе диграммы Ганта</para>
+        <para>Возможность <link linkend="section_charts">отображения диаграмм</link>, в том числе, диграммы Ганта</para>
       </listitem>
       <listitem>
-        <para>Встроенный REST API с передачей данных в форматах XML или JSON для быстрой интеграции со сторонними приложениями</para>
+        <para>Встроенный <link linkend="section_restapi">REST API</link> с передачей данных в форматах XML или JSON для быстрой интеграции со сторонними приложениями</para>
       </listitem>
       <listitem>
-        <para>Механизм создания расширений функциональности, позволяющий адаптировать тиражируемые продукты для конкретных заказчиков, не затрудняя при этом обновления версий продуктов</para>
+        <para><link linkend="section_extending_funct">Механизм создания расширений функциональности</link>, позволяющий адаптировать тиражируемые продукты для конкретных заказчиков, не затрудняя при этом обновления версий продуктов</para>
       </listitem>
     </itemizedlist>
     <para><emphasis role="bold">Преимущества использования платформы <trademark>CUBA</trademark></emphasis></para>
@@ -75,29 +79,29 @@
           </itemizedlist></para>
       </listitem>
       <listitem>
-        <para>Созданные таким образом экраны одинаково работоспособны в обоих типах клиентов, поддерживаемых платформой: Web и Desktop, что позволяет с мимимумом усилий создавать системы, использующие преимущества Web-интерфейса и/или настольных приложений</para>
+        <para>Созданные таким образом экраны одинаково работоспособны в обоих типах клиентов, поддерживаемых платформой: веб и десктоп, что позволяет с мимимумом усилий создавать системы, использующие преимущества веб-интерфейса и/или настольных приложений</para>
       </listitem>
       <listitem>
         <para>Платформой предоставляется готовая функциональность на следующих уровнях:<itemizedlist>
             <listitem>
               <para>Системный уровень<itemizedlist>
                   <listitem>
-                    <para>Инфраструктура и средства организации бизнес-логики на среднем слое</para>
+                    <para>Инфраструктура и средства организации бизнес-логики на <link linkend="section_middleware_id">среднем слое</link></para>
                   </listitem>
                   <listitem>
-                    <para>Библиотека визуальных компонентов и инфраструктура клиентов</para>
+                    <para><link linkend="section_gui_framework">Библиотека визуальных компонентов</link> и <link linkend="section_client_id">инфраструктура клиентов</link></para>
                   </listitem>
                   <listitem>
-                    <para>Средства работы с параметрами конфигурации и локализованными сообщениями</para>
+                    <para>Средства работы с <glossterm linkend="glossary_conf_parameter_id">параметрами конфигурации</glossterm> и <glossterm linkend="glossary_localized_folders_id">локализованными сообщениями</glossterm></para>
                   </listitem>
                   <listitem>
-                    <para>Средства выполнения фоновых задач пользовательского интерфейса</para>
+                    <para>Средства выполнения <link linkend="section_backgroundtasks">фоновых задач</link> пользовательского интерфейса</para>
                   </listitem>
                   <listitem>
-                    <para>Механизмы запуска на среднем слое задач по расписанию</para>
+                    <para>Механизмы запуска на среднем слое <link linkend="section_scheduled_tasks">задач по расписанию</link></para>
                   </listitem>
                   <listitem>
-                    <para>Возможность применения динамических атрибутов, позволяющих задавать новые атрибуты сущностей на этапе настройки и эксплуатации системы</para>
+                    <para>Возможность применения <link linkend="section_runtime_properties">динамических атрибутов</link>, позволяющих задавать новые атрибуты <glossterm linkend="glossary_entity">сущностей</glossterm> на этапе настройки и эксплуатации системы</para>
                   </listitem>
                 </itemizedlist></para>
             </listitem>
@@ -113,16 +117,16 @@
                     <para>Подсистема работы с бизнес-процессами</para>
                   </listitem>
                   <listitem>
-                    <para>Полнотекстовый поиск</para>
+                    <para><link linkend="section_fts">Полнотекстовый поиск</link></para>
                   </listitem>
                   <listitem>
                     <para>Механизм надежной асинхронной рассылки email</para>
                   </listitem>
                   <listitem>
-                    <para>Средства ведения журнала аудита изменений сущностей и сохранения версий</para>
+                    <para><link linkend="section_audit">Средства ведения журнала аудита</link> изменений <glossterm linkend="glossary_entity">сущностей</glossterm> и сохранения версий</para>
                   </listitem>
                   <listitem>
-                    <para>Средства организации кэшей данных</para>
+                    <para>Средства организации <link linkend="section_objects_cache">кэшей данных</link></para>
                   </listitem>
                 </itemizedlist></para>
             </listitem>
@@ -132,10 +136,10 @@
                     <para>Возможность работы в отказоустойчивой конфигурации</para>
                   </listitem>
                   <listitem>
-                    <para>Готовые средства интеграции со сторонними приложениями</para>
+                    <para>Готовые средства <link linkend="section_restapi">интеграции со сторонними приложениями</link></para>
                   </listitem>
                   <listitem>
-                    <para>Возможность независимого создания расширений основного продукта для адаптации под конкретного заказчика</para>
+                    <para>Возможность независимого создания <link linkend="section_extending_funct">расширений</link> основного продукта для адаптации под конкретного заказчика</para>
                   </listitem>
                 </itemizedlist></para>
             </listitem>
@@ -145,7 +149,7 @@
         <para>Функциональность платформы позволяет значительно сократить сроки разработки и удешевить проект</para>
       </listitem>
       <listitem>
-        <para>Для создания Web-клиента приложения на основе <trademark>CUBA</trademark>  не обязательно хорошее знание классических Web-технологий: HTML, CSS, JavaScript</para>
+        <para>Для создания веб-клиента приложения на основе <trademark>CUBA</trademark>  не обязательно хорошее знание классических веб-технологий: HTML, CSS, JavaScript</para>
       </listitem>
     </itemizedlist>
   </section>

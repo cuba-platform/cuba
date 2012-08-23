@@ -1,37 +1,103 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- This document was created with Syntext Serna Free. --><chapter lang="ru" id="chapter2_architecture">
-  <title>Архитектура</title>
+  <title>Устройство платформы</title>
   <para>В данном разделе описываются различные аспекты архитектуры платформы <trademark>CUBA</trademark> и приложений на ее основе.</para>
+  <section>
+    <title>Структура CUBA-приложения</title>
+    <para>На диаграмме ниже приведена структура развернутого приложения, созданного на базе платформы. </para>
+    <figure>
+      <title>Структура CUBA-приложения</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/DeploymentStructure.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>В приведенном варианте приложение обеспечивает отсутствие единой точки отказа, балансировку нагрузки и подключение различных типов клиентов. В простейшем случае приложение может быть развернуто на одном сервере, в том числе содержащем и базу данных. Стрелками изображено направление запросов &quot;от пользователя к данным&quot;.</para>
+    <para>Приложение, основанное на платформе, физически состоит из нескольких <firstterm>уровней</firstterm> (tiers):</para>
+    <variablelist>
+      <varlistentry>
+        <term>Middleware</term>
+        <listitem>
+          <para>Средний слой, содержащий основную бизнес-логику приложения. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <glossterm linkend="glossary_java_web_profile">Java EE Web Profile</glossterm>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Web Client</term>
+        <listitem>
+          <para>Основной клиентский уровень, как правило, содержащий полнофункциональный интерфейс для Intranet-пользователей. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <glossterm linkend="glossary_java_web_profile">Java EE Web Profile</glossterm>. Реализация пользовательского интерфейса основана на фреймворке <glossterm linkend="glossary_vaadin">Vaadin</glossterm>.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Web Portal</term>
+        <listitem>
+          <para>Дополнительный клиентский уровень, содержащий интерфейс для внешних (Internet) пользователей. Может использоваться для интеграции с мобильными устройствами или сторонними приложениями. Представляет собой отдельное веб-приложение под управлением стандартного контейнера <glossterm linkend="glossary_java_web_profile">Java EE Web Profile</glossterm>. Реализация пользовательского интерфейса основана на фреймворке <link linkend="text_spring">Spring</link> MVC.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>Desktop Client</term>
+        <listitem>
+          <para>Дополнительный клиентский уровень, содержащий интерфейс для Intranet-пользователей. Представляет собой десктопное Java-приложение, реализация пользовательского интерфейса основана на фреймворке <glossterm linkend="glossary_swing">Java Swing</glossterm>.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+    <para><emphasis role="bold">REST API</emphasis> − компонент <link linkend="section_middleware_id">среднего слоя (Middleware)</link>, обеспечивающий интеграцию системы со сторонними приложениями.</para>
+    <para>Физически CUBA-приложение всегда состоит как минимум из двух частей:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Веб-приложения <link linkend="section_middleware_id">среднего слоя (Middleware)</link></para>
+      </listitem>
+      <listitem>
+        <para>Веб-приложения веб-клиента (Web Client)</para>
+      </listitem>
+    </itemizedlist>
+    <para>Оба этих веб-приложения  могут быть развернуты на любом веб-сервере <application>Java</application>. По умолчанию используется <application>Apache Tomcat</application>. </para>
+    <para>Веб и десктоп клиенты взаимодействуют со средним слоем одинаковым образом посредством протокола <application>HTTP</application>, что позволяет размещать средний слой произвольным образом, в том числе за сетевым экраном. Следует отметить, что при развертывании в простейшем случае среднего слоя и веб-клиента на одном сервере между ними организуется локальное взаимодействие в обход сетевого стека для снижения накладных расходов.</para>
+    <para><emphasis role="bold">ПОСЛЕДОВАТЕЛЬНОСТЬ РАБОТЫ ПРИЛОЖЕНИЯ</emphasis>(<ulink url="http://www.yiiframework.com/doc/guide/1.1/ru/basics.mvc">http://www.yiiframework.com/doc/guide/1.1/ru/basics.mvc</ulink>) в ВААДИНе тоже описано (<ulink url="https://vaadin.com/book/-/page/architecture.html">https://vaadin.com/book/-/page/architecture.html</ulink>)</para>
+  </section>
   <section>
     <title>Структура проекта</title>
     <para id="text_module_id">Функционально проект приложения содержит зависимости от <firstterm>проектов</firstterm>, входящих в состав платформы. Проект − это структурная единица, содержащая программный код. Каждый проект имеет определенное предназначение. Диаграмма зависимостей проектов платформы изображена на рисунке.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/projectStructure.png"/>
-      </imageobject>
-    </mediaobject>
+    <figure>
+      <title>Диаграмма зависимостей проектов платформы</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/projectStructure.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
     <para>Сплошными линиями изображены обязательные зависимости, пунктирными − опциональные.</para>
     <para>Рассмотрим проекты платформы более подробно.</para>
     <para><emphasis role="bold">Проект cuba</emphasis></para>
-    <para>Это базовый проект, обязательная часть любого приложения.  Содержит функциональность для работы с базой данных, набор <link linkend="section_services_id">сервисов</link> <link linkend="section_middleware_id">
-        <structfield>Middleware</structfield>
-      </link>, <link linkend="section_gui_framework">Generic User Interface Framework</link>, функциональность управления пользователями и их доступом к данным. Данный проект может быть собран как полноценное независимое приложение.</para>
+    <para>Это базовый проект, обязательная часть любого приложения.  Содержит функциональность для работы с базой данных, набор <link linkend="section_services_id">сервисов (Services)</link> <link linkend="section_middleware_id">среднего слоя (Middleware)</link>, <link linkend="section_gui_framework">фреймворк графического интерфейса пользователя (Generic User Interface Framework)</link>, функциональность управления пользователями и их доступом к данным <footnote>
+        <para>Описание функциональности управления пользователями и их доступом к данным содержится в <productname>Руководстве подсистемы безопасности платформы <trademark>CUBA</trademark></productname></para>
+      </footnote>. Данный проект может быть собран как полноценное независимое приложение.</para>
     <para><emphasis role="bold">Проект workflow</emphasis></para>
     <para>Опциональный проект для работы с <glossterm linkend="glossary_process_id">бизнес-процессами</glossterm>.</para>
     <para><emphasis role="bold">Проект fts</emphasis></para>
-    <para>Опциональный проект  <link>полнотекстового поиска</link>.</para>
+    <para>Опциональный проект  <link linkend="section_fts">полнотекстового поиска</link>.</para>
     <para><emphasis role="bold">Проект charts</emphasis></para>
-    <para>Опциональный проект для отображения диаграмм в Web-клиенте.</para>
+    <para>Опциональный проект для <link linkend="section_charts">отображения диаграмм</link> в веб-клиенте.</para>
     <para><emphasis role="bold">Проект ccpayments</emphasis></para>
-    <para>Опциональный проект для приема платежей по картам.</para>
+    <para>Опциональный проект для <link linkend="section_ccpayments">приема платежей по картам</link>.</para>
     <para><emphasis role="bold">Проект reports</emphasis></para>
-    <para>Опциональный проект подсистемы генерации отчетов.</para>
+    <para>Опциональный проект подсистемы генерации отчетов<footnote>
+        <para>Информация о создании отчетов с помощью платформы находится в <productname>Руководстве по созданию отчетов</productname></para>
+      </footnote>.</para>
   </section>
   <section>
     <title>Структура и назначение каталогов и файлов проекта</title>
     <para>Рассмотрим структуру классов и других файлов в проекте.</para>
     <para>В корне проекта расположены скрипты сборки <filename>build.gradle</filename>, <filename>settings.gradle</filename> и проектные файлы <application>IntelliJ IDEA</application>.</para>
-    <para id="text_module_id">В каталоге <filename>modules</filename> расположены подкаталоги <firstterm linkend="text_module_id">модулей</firstterm> проекта − <structname>global</structname>, <structname>core</structname>, <structname>gui</structname>, <structname>web</structname>. Модуль – это элемент проекта, в котором хранится программный код.</para>
+    <para id="text_module_id">В каталоге <filename>modules</filename> расположены подкаталоги <firstterm id="text_modules">модулей</firstterm> проекта − <structname>global</structname>, <structname>core</structname>, <structname>gui</structname>, <structname>web</structname>. Модуль – это элемент проекта, в котором хранится программный код. <emphasis role="bold">РАЗОБРАТЬСЯ С ЗАВИСИМОСТЯМИ МОДУЛЕЙ! КАРТИНКА, ПОПРАВИТЬ</emphasis></para>
+    <figure>
+      <title/>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/moduleStructure.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
     <itemizedlist>
       <listitem>
         <para><structname>global</structname></para>
@@ -55,42 +121,45 @@
         <para><structname>desktop</structname></para>
       </listitem>
     </itemizedlist>
-    <para>Модуль <structname>global</structname> определяет компоненты, доступные как <link linkend="section_middleware_id">среднему слою</link>, так и <link linkend="section_client_id">клиентскому коду</link>.</para>
+    <para>Модуль <structname>global</structname> определяет компоненты, доступные как <link linkend="section_middleware_id">среднему слою (Middleware)</link>, так и <link linkend="section_client_id">клиентскому коду</link>.</para>
     <itemizedlist>
       <listitem>
-        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются интерфейсы <link linkend="section_services_id">сервисов</link><link linkend="section_middleware_id"> Middleware</link>. </para>
+        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются интерфейсы <link linkend="section_services_id">сервисов</link><link linkend="section_middleware_id"> среднего слоя (Middleware)</link>. </para>
       </listitem>
       <listitem>
-        <para>В пакете <package>com.haulmont.shop.core.entity</package> создаются классы сущностей и <glossterm linkend="glossary_localized_folders_id">файлы локализованных сообщений</glossterm> <filename>messages.properties</filename> для задания названий <link>сущностей</link> и их атрибутов.</para>
+        <para>В пакете <package>com.haulmont.shop.core.entity</package> создаются классы <glossterm linkend="glossary_entity">сущностей</glossterm> и <glossterm linkend="glossary_localized_folders_id">файлы локализованных сообщений</glossterm>  <filename>messages.properties</filename> для задания названий сущностей и их атрибутов.</para>
       </listitem>
       <listitem>
-        <para><filename>shop-persistence.xml</filename> − в этом файле регистрируются новые классы сущностей.</para>
+        <para>В файле <filename>shop-persistence.xml</filename>  регистрируются новые классы сущностей.</para>
       </listitem>
       <listitem>
-        <para><filename>shop-metadata.xml</filename> − в этом файле может быть задано замещение стандартных сущностей новыми.</para>
+        <para>В файле <filename>shop-metadata.xml</filename>  может быть задано <link linkend="section_extending_funct">замещение</link> стандартных сущностей новыми.</para>
       </listitem>
     </itemizedlist>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/ch2_structure.png" scale="60%"/>
-      </imageobject>
-    </mediaobject>
-    <para>Модуль <structname>core</structname> определяет компоненты <link linkend="section_middleware_id">среднего слоя</link> системы.</para>
+    <figure>
+      <title>Структура каталогов и файлов проекта</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/ch2_structure.png" scale="60%"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>Модуль <structname>core</structname> определяет компоненты <link linkend="section_middleware_id">среднего слоя (Middleware)</link> системы.</para>
     <itemizedlist>
       <listitem>
-        <para>Каталог <filename>db</filename> содержит sql-скрипты создания и изменения базы данных в подкаталогах <filename>init</filename> и <filename>update</filename> соответственно.</para>
+        <para>Каталог <filename>db</filename> содержит sql-скрипты создания и <link linkend="section_database_update">изменения</link> базы данных в подкаталогах <filename>init</filename> и <filename>update</filename> соответственно.</para>
       </listitem>
       <listitem>
-        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются классы реализации <link linkend="section_services_id">сервисов</link><link linkend="section_middleware_id"> Middleware</link>, а также другие компоненты бизнес-логики приложения.</para>
+        <para>В пакете <package>com.haulmont.shop.core.app</package> создаются классы реализации <link linkend="section_services_id">сервисов (Services)</link><link linkend="section_middleware_id">среднего слоя (Middleware)</link>, а также другие компоненты бизнес-логики приложения.</para>
       </listitem>
       <listitem>
-        <para>Файл <filename>shop-app.properties</filename> содержит <link>конфигурационные параметры</link> среднего слоя:</para>
+        <para>Файл <filename>shop-app.properties</filename> содержит <glossterm linkend="glossary_conf_parameter_id">конфигурационные параметры</glossterm> среднего слоя:</para>
         <para><parameter>cuba.springContextConfig</parameter> − определяет набор конфигурационных файлов <link linkend="text_additionally_spring">Spring</link>-фреймворка;</para>
         <para><parameter>cuba.persistenceConfig</parameter> − определяет набор конфигурационных файлов <link linkend="text_additionally_ORM">ORM</link>;</para>
         <para><parameter>cuba.viewsConfig</parameter> − задает набор конфигурационных файлов <link linkend="section_views_id">представлений</link>;</para>
       </listitem>
       <listitem>
-        <para>В файле <filename>shop-spring.xml</filename> при необходимости можно подменить реализацию стандартных сервисов или других управляемых фреймворком <link linkend="text_additionally_spring">Spring</link> компонентов, а также зарегистрировать создаваемые <link>JMX</link>-компоненты.</para>
+        <para>В файле <filename>shop-spring.xml</filename> при необходимости можно подменить реализацию стандартных сервисов или других управляемых фреймворком <link linkend="text_additionally_spring">Spring</link> компонентов, а также зарегистрировать создаваемые <glossterm linkend="glossary_jmx_id">JMX</glossterm>-компоненты.</para>
       </listitem>
       <listitem>
         <para>Файл <filename>shop-views.xml</filename> содержит описание <link linkend="section_views_id">представлений</link>. Механизм представлений  обеспечивает извлечение из БД и передачу клиенту графов сущностей, ограниченных в глубину и/или по атрибутам.</para>
@@ -99,7 +168,7 @@
         <para>Файл <filename>web\META-INF\context.xml</filename> содержит настройки подключения к базе данных.</para>
       </listitem>
       <listitem>
-        <para>Файл <filename>web\WEB-INF\web.xml</filename> − это дескриптор Web-приложения <link linkend="section_middleware_id">среднего слоя</link>. Среди прочего содержит список <link>конфигурационных файлов</link> <filename>*-app.properties</filename>, используемых данным приложением.</para>
+        <para>Файл <filename>web\WEB-INF\web.xml</filename> − это дескриптор веб-приложения <link linkend="section_middleware_id">среднего слоя (Middleware)</link>. Среди прочего содержит список <glossterm linkend="glossary_app_properties_id">конфигурационных файлов</glossterm> <filename>*-app.properties</filename>, используемых данным приложением.</para>
       </listitem>
     </itemizedlist>
     <para>Модуль <structname>gui</structname> определяет компоненты <link linkend="section_gui_framework">графического пользовательского интерфейса</link>. Этот модуль доступен всем типам клиентов. Модуль <structname>gui</structname> содержит универсальные экраны: классы <glossterm linkend="glossary_controller_id">контроллеров</glossterm>, <glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторы</glossterm> экранов, файлы <glossterm linkend="glossary_localized_folders_id">локализованных сообщений</glossterm>.</para>
@@ -111,13 +180,13 @@
         <para>В файле <filename>shop-screens.xml</filename> регистрируются экраны приложения.</para>
       </listitem>
     </itemizedlist>
-    <para>Модуль <structname>web</structname> определяет компоненты Web-клиента. Зависит от модулей <structname>gui</structname> и <structname>global</structname>. Содержит специфические экраны и/или компаньоны и файлы конфигурации.</para>
+    <para>Модуль <structname>web</structname> определяет компоненты веб-клиента. Зависит от модулей <structname>gui</structname> и <structname>global</structname>. Содержит специфические экраны и/или <glossterm>компаньоны</glossterm> и файлы конфигурации.</para>
     <itemizedlist>
       <listitem>
         <para>Класс  <classname>com.haulmont.shop.App.java</classname> определяет главное окно приложения.</para>
       </listitem>
       <listitem>
-        <para>Файл <filename>shop-web-app.properties</filename> содержит конфигурационные параметры Web-клиента:</para>
+        <para>Файл <filename>shop-web-app.properties</filename> содержит конфигурационные параметры веб-клиента:</para>
         <para><parameter>cuba.windowConfig</parameter> − в этом свойстве указывается набор файлов конфигурации экранов приложения;</para>
         <para><parameter>cuba.menuConfig</parameter> содержит список файлов, описывающих меню приложения;</para>
         <para><parameter>cuba.appConfig.messagesPack</parameter>  задает список имен <glossterm linkend="glossary_localized_folders_id">пакетов сообщений</glossterm>, формирующих <glossterm linkend="glossary_main_localized_folder_id">главный пакет</glossterm>, используемый главным меню и другими общими компонентами системы;</para>
@@ -131,56 +200,27 @@
     </itemizedlist>
   </section>
   <section>
-    <title>Структура CUBA-приложения</title>
-    <para>На диаграмме ниже приведена структура развернутого приложения, созданного на базе платформы. </para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/DeploymentStructure.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>В приведенном варианте приложение обеспечивает отсутствие единой точки отказа, балансировку нагрузки и подключение различных типов клиентов. В простейшем случае приложение может быть развернуто на одном сервере, в том числе содержащем и базу данных. Стрелками изображено направление запросов &quot;от пользователя к данным&quot;.</para>
-    <para>Приложение, основанное на платформе, физически состоит из нескольких <firstterm>уровней</firstterm> (tiers):</para>
-    <para><emphasis role="bold">Middleware</emphasis></para>
-    <para>Средний слой, содержащий основную бизнес-логику приложения. Представляет собой отдельное Web-приложение под управлением стандартного контейнера Java EE Web Profile.</para>
-    <para><emphasis role="bold">Web Client</emphasis></para>
-    <para>Основной клиентский уровень, как правило содержащий полнофункциональный интерфейс для Intranet-пользователей. Представляет собой отдельное Web-приложение под управлением стандартного контейнера Java EE Web Profile. Реализация пользовательского интерфейса основана на фреймворке Vaadin.</para>
-    <para><emphasis role="bold">Web Portal</emphasis></para>
-    <para>Дополнительный клиентский уровень, содержащий интерфейс для внешних (Internet) пользователей. Может использоваться для интеграции с мобильными устройствами или сторонними приложениями. Представляет собой отдельное Web-приложение под управлением стандартного контейнера Java EE Web Profile. Реализация пользовательского интерфейса основана на фреймворке Spring MVC.</para>
-    <para><emphasis role="bold">Desktop Client</emphasis></para>
-    <para>Дополнительный клиентский уровень, содержащий интерфейс для Intranet-пользователей. Представляет собой десктопное Java-приложение, реализация пользовательского интерфейса основана на фреймворке Java Swing.</para>
-    <para>REST API − компонент <structfield>Middleware</structfield>, обеспечивающий интеграцию системы со сторонними приложениями.</para>
-    <para>Физически CUBA-приложение всегда состоит как минимум из двух частей:</para>
-    <itemizedlist>
-      <listitem>
-        <para>Web-приложения <structfield>Middleware</structfield></para>
-      </listitem>
-      <listitem>
-        <para>Web-приложения Web-клиента</para>
-      </listitem>
-    </itemizedlist>
-    <para>Оба этих Web-приложения  могут быть развернуты на любом Web-сервере <application>Java</application>. По умолчанию используется <application>Apache Tomcat</application>. </para>
-    <para>Web и Desktop клиенты взаимодействуют со средним слоем одинаковым образом посредством протокола <application>HTTP</application>, что позволяет размещать средний слой произвольным образом, в том числе за сетевым брандмауэром. Следует отметить, что при развертывании в простейшем случае среднего слоя и Web-клиента на одном сервере между ними организуется локальное взаимодействие в обход сетевого стека для снижения накладных расходов.</para>
+    <title>Описание основных gradle tasks</title>
   </section>
   <section id="section_middleware_id">
     <title>Архитектура среднего слоя</title>
     <para>На следующем рисунке приведены основные компоненты среднего слоя CUBA-приложения.</para>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/Middleware.png"/>
-      </imageobject>
-    </mediaobject>
-    <para>Компоненты сгруппированы по двум <link linkend="text_module_id">модулям</link>: <structname>core</structname> и <structname>global</structname>. В <structname>global</structname> расположены компоненты, доступные как коду <structfield>Middleware</structfield>, так и клиентскому коду. В <structname>core</structname> расположены компоненты ядра <structfield>Middleware</structfield>.</para>
+    <figure>
+      <title>Архитектура среднего слоя</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/Middleware.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>Компоненты сгруппированы по двум <link linkend="text_modules">модулям</link>: <structname>core</structname> и <structname>global</structname>. В <structname>global</structname> расположены компоненты, доступные как коду <link linkend="section_middleware_id">Middleware</link>, так и <link linkend="section_client_id">клиентскому коду</link>. В <structname>core</structname> расположены компоненты ядра <link linkend="section_middleware_id">Middleware</link>.</para>
     <para>Рассмотрим элементы диаграммы более подробно.</para>
-    <para><link linkend="section_services_id">
-        <emphasis role="bold">Services</emphasis>
-      </link> – управляемые <glossterm linkend="glossary_conteiner_id">контейнером</glossterm> компоненты, формирующие <glossterm linkend="glossary_app_boundary_id">границу приложения</glossterm> и предоставляющие интерфейс клиентам <link linkend="section_middleware_id">Middleware</link>. Сервисы могут содержать бизнес-логику сами, либо делегировать выполнение <link linkend="section_managed_beans_id">Managed Beans</link>.</para>
-    <para><link linkend="section_managed_beans_id">
-        <emphasis role="bold">Managed Beans</emphasis>
-      </link> – управляемые <glossterm linkend="glossary_conteiner_id">контейнером</glossterm> компоненты, содержащие бизнес-логику приложения. Вызываются <link linkend="section_services_id">сервисами</link>, другими бинами или через опциональный <glossterm linkend="glossary_jmx_id">JMX</glossterm> интерфейс.</para>
-    <para><emphasis role="bold">Entity Classes</emphasis> – классы, моделирующие предметную область приложения.  Представляют собой аннотированные <glossterm linkend="glossary_pojo_id">POJO</glossterm>. Аннотации используются для задания соответствий между столбцами таблицы базы данных и полями объектов с помощью <link linkend="text_additionally_JPA">OpenJPA</link>, а также для формирования метаданных в <link linkend="section_metadata_framework">Metadata Framework</link>.</para>
+    <para><link linkend="section_services_id">Services</link> – управляемые <glossterm linkend="glossary_conteiner_id">контейнером</glossterm> компоненты, формирующие <glossterm linkend="glossary_app_boundary_id">границу приложения</glossterm> и предоставляющие интерфейс клиентам <link linkend="section_middleware_id">Middleware</link>. Сервисы могут содержать бизнес-логику сами, либо делегировать выполнение <link linkend="section_managed_beans_id">Managed Beans</link>.</para>
+    <para><link linkend="section_managed_beans_id">Managed Beans</link> – управляемые <glossterm linkend="glossary_conteiner_id">контейнером</glossterm> компоненты, содержащие бизнес-логику приложения. Вызываются <link linkend="section_services_id">сервисами</link>, другими бинами или через опциональный <glossterm linkend="glossary_jmx_id">JMX</glossterm> интерфейс.</para>
+    <para>Entity Classes – классы, моделирующие предметную область приложения.  Представляют собой аннотированные <glossterm linkend="glossary_pojo_id">POJO</glossterm>. Аннотации используются для задания соответствий между столбцами таблицы базы данных и полями объектов с помощью <link linkend="text_additionally_JPA">OpenJPA</link>, а также для формирования метаданных в <link linkend="section_metadata_framework">Metadata Framework</link>.</para>
     <para><emphasis role="bold">Persistence</emphasis> −  центральный интерфейс для доступа к функциональности хранения данных. Позволяет получать ссылки на интерфейсы <classname>EntityManager</classname> и <classname>Transaction</classname>.</para>
     <para><emphasis role="bold">Transaction</emphasis> − интерфейс управления <link linkend="section_transaction_id">транзакциями</link> <link linkend="section_middleware_id">Middleware</link>.</para>
-    <para><emphasis role="bold">Entity Manager</emphasis> − интерфейс для работы с данными на уровне <link linkend="section_middleware_id">Middleware</link>. Позволяет извлекать сущности из базы данных по идентификатору и по запросу, а также сохранять и удалять их.</para>
+    <para><emphasis role="bold">Entity Manager</emphasis> − интерфейс для работы с данными на уровне <link linkend="section_middleware_id">Middleware</link>. Позволяет извлекать <glossterm linkend="glossary_entity">сущности</glossterm> из базы данных по идентификатору и по запросу, а также сохранять и удалять их.</para>
     <para><link linkend="section_metadata_framework">Metadata Framework</link> позволяет создавать описание предметной области в терминах классов, атрибутов и отношений между классами. Метаданные (модель данных) существенно упрощают создание универсальных механизмов работы с данными. Исходной информацией для построения модели являются аннотированные классы сущностей.</para>
     <para><link linkend="section_infrastructure_interfaces_id">Global Infrastructure Interfaces</link> (интерфейсы инфраструктуры) предоставляют доступ к общей часто используемой функциональности. Реализованы в платформе аналогично <link linkend="section_managed_beans_id">Managed Beans</link>.
 
@@ -200,14 +240,13 @@
         <para>Remoting − доступ к сервисам среднего слоя по протоколу HTTP</para>
       </listitem>
       <listitem>
-        <para>Реализация Web-сервисов и <link>REST API</link></para>
+        <para>Реализация веб-сервисов и <link>REST API</link></para>
       </listitem>
     </itemizedlist>
     <para><link linkend="text_additionally_JPA">OpenJPA Framework</link> − реализация <link linkend="text_additionally_ORM">ORM</link> по стандарту JPA. Позволяет работать с таблицами базы данных как с объектами Java и создавать запросы на языке <link>JPQL</link>.</para>
     <section id="section_services_id">
       <title>Сервисы</title>
-      <para><emphasis role="bold">Назначение</emphasis></para>
-      <para>Сервисы представляют собой слой  компонентов, формирующих <glossterm linkend="glossary_app_boundary_id">границу приложения</glossterm>. Все клиенты должны обращаться к уровню <link linkend="section_middleware_id">Middleware</link> только посредством вызова методов сервисов.</para>
+      <para>Сервисы представляют собой слой  компонентов, формирующих <glossterm linkend="glossary_app_boundary_id">границу приложения</glossterm>. Сервисы определяют множество операций, предоставляемых ими для интерфейсных клиентских слоев кода. Сервисы инкапсулируют бизнес-логику приложения, управляют транзакциями и координируют реакции на действия.</para>
       <para>Основные задачи сервисов:</para>
       <itemizedlist>
         <listitem>
@@ -217,234 +256,1248 @@
           <para>Обепечивать запись исключений в журнал.</para>
         </listitem>
         <listitem>
-          <para>Обеспечивать <firstterm>отказоустойчивость</firstterm> (failover) в <link>кластере</link>  для удаленных клиентов.</para>
+          <para>Обеспечивать <firstterm>отказоустойчивость</firstterm> (failover) в <link linkend="section_cluster_middleware">кластере</link>  для удаленных клиентов.</para>
         </listitem>
         <listitem>
-          <para>В бизнес-методах сервисов могут проверяться права пользователя</para>
+          <para>В бизнес-методах сервисов могут проверяться права пользователя на доступ к данным</para>
         </listitem>
       </itemizedlist>
-      <para><emphasis role="bold">Реализация</emphasis></para>
       <para>Диаграмма классов, входящих в состав сервиса:</para>
-      <mediaobject>
-        <imageobject>
-          <imagedata align="center" fileref="img/MiddlewareServices.png"/>
-        </imageobject>
-      </mediaobject>
-      <para>Имена интерфейсов сервисов должны заканчиваться на <classname>...Service</classname>, имена реализаций на <classname>...ServiceBean</classname>.</para>
-      <para>При создании сервиса необходимо выполнить следующее:</para>
-      <procedure>
-        <step>
-          <para>Создать интерфейс в модуле <structname>global</structname> в пакете <package>app</package> и задать в нем имя сервиса. Имя должно начинаться с имени проекта, затем через символ нижнего подчеркивания должно идти имя сервиса. Например:</para>
-          <programlisting language="java">String NAME = &quot;cuba_DataService&quot;;</programlisting>
-        </step>
-        <step>
-          <para>Создать класс сервиса и добавить ему аннотацию <literal>@Service</literal> с именем, заданным в интерфейсе</para>
-          <programlisting>@Service(DataService.NAME)</programlisting>
-        </step>
-        <step>
-          <para>При необходимости обращения к базе данных создавать и завершать <link linkend="section_transaction_id">транзакцию</link></para>
-          <programlisting>@Inject
-private Persistence persistence;
-...
-Transaction tx = persistence.createTransaction();
-try {
-    ...
-    tx.commit();
-} finally {
-    tx.end();
-}</programlisting>
-        </step>
-      </procedure>
-      <para>Каждый вызов сервиса перехватывается с помощью <link linkend="text_additionally_spring">Spring AOP</link>  и обрамляется вызовом <acronym>ServiceInterceptor.aroundInvoke()</acronym>.</para>
-      <warning>
-        <para>Сервисы не должны вызывать методы других сервисов ни напрямую, ни через другие объекты, так как это может нарушить логику работы с транзакциями и другие механизмы. В случае вызова сервиса сервисом в журнале приложения появятся соответствующие сообщения об ошибке.</para>
-      </warning>
-      <tip>
-        <title>Совет</title>
-        <para>Если некую бизнес-логику требуется вызывать из разных сервисов либо других компонентов <link linkend="section_middleware_id">Middleware</link>, ее необходимо инкапсулировать внутри соответствующего <link linkend="section_managed_beans_id">Managed Bean</link> либо <glossterm linkend="glossary_pojo_id">POJO</glossterm>.</para>
-      </tip>
-      <para><emphasis role="bold">Использование на клиенте</emphasis></para>
-      <para>Для того чтобы вызывать сервис с клиента, для него должен быть создан соответствующий <firstterm>объект-заместитель</firstterm> (прокси-объект). Делается это путем объявления имени и интерфейса сервиса в параметрах объекта <parameter>WebRemoteProxyBeanCreator</parameter> для Web-клиента или <parameter>RemoteProxyBeanCreator</parameter> для  Desktop-клиента.</para>
-      <para>Например, чтобы в приложении <application>RefApp</application> вызвать с Web-клиента сервис <classname>refapp_MyService</classname>, необходимо добавить в файл <filename>refapp-web-spring.xml</filename> следующее:</para>
-      <programlisting language="xml">&lt;bean id=&quot;refapp_proxyCreator&quot; class=&quot;com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator&quot;&gt;
-    &lt;property name=&quot;clusterInvocationSupport&quot; ref=&quot;cuba_clusterInvocationSupport&quot;/&gt;
-    &lt;property name=&quot;remoteServices&quot;&gt;
-        &lt;map&gt;
-            &lt;entry key=&quot;refapp_MyService&quot; value=&quot;com.haulmont.refapp.core.app.MyService&quot;/&gt;
-        &lt;/map&gt;
-    &lt;/property&gt;
-&lt;/bean&gt;</programlisting>
-      <para>Все импортируемые сервисы должны быть объявлены в одном <firstterm>словаре</firstterm> (map) бина <classname>refapp_proxyCreator</classname>.</para>
-      <para>Получить ссылку на сервис с клиента можно двумя способами:</para>
-      <itemizedlist>
-        <listitem>
-          <para><classname>ServiceLocator</classname> </para>
-          <programlisting>BookingService service = ServiceLocator.lookup(BookingService.NAME);</programlisting>
-        </listitem>
-        <listitem>
-          <para>Для <glossterm linkend="glossary_controller_id">контроллеров</glossterm> экранов предпочтительный способ − <glossterm linkend="glossary_injection_id">внедрение зависимости</glossterm>.</para>
-        </listitem>
-      </itemizedlist>
+      <figure>
+        <title>Диаграмма классов, входящих в состав сервиса</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/MiddlewareServices.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>Каждый вызов сервиса перехватывается с помощью <link linkend="text_additionally_spring">Spring AOP</link>  и обрамляется вызовом <classname>ServiceInterceptor.aroundInvoke()</classname>.</para>
+      <para>Подробная информация о создании сервисов содержится в главе <xref linkend="section_services_realization" xrefstyle="select: labelnumber title"/> </para>
     </section>
     <section id="section_managed_beans_id">
       <title>Управляемые бины</title>
-      <para><firstterm>Управляемые бины (Managed Beans)</firstterm> − это программные компоненты, реализующие бизнес-логику приложения и создаваемые в соответствии с принципами <link linkend="glossary_conteiner_id">Inversion of Control</link>. <glossterm>Контейнером</glossterm> для бинов служит <link linkend="text_additionally_spring">Spring Framework</link>.</para>
+      <para><firstterm>Управляемые бины (Managed Beans)</firstterm> − это программные компоненты, реализующие бизнес-логику приложения и создаваемые в соответствии с принципами <link linkend="text_injection_IoC">Inversion of Control</link>. <glossterm linkend="glossary_conteiner_id">Контейнером</glossterm> для бинов служит <link linkend="text_springFramework">Spring Framework</link>.</para>
       <para>Managed Bean представляет собой <firstterm>singleton</firstterm>, то есть всегда используется один экземпляр данного класса. Соответственно, если создаваемый Вами бин содержит изменяемые данные в полях (имеет состояние), то необходимо синхронизировать обращение к таким данным.</para>
-      <para>В простейшем случае Managed Bean может быть просто Java-классом, аннотированным как <literal>@ManagedBean</literal>. Однако рекомендуется придерживаться следующих правил создания бинов:</para>
-      <itemizedlist>
-        <listitem>
-          <para>Создать интерфейс бина в пакете <package>app</package> и задать в нем кроме методов поле с именем бина. Имя бина должно иметь префикс с именем проекта. Например:</para>
-          <para><programlisting>public interface TaskWorker {
-    String NAME = &quot;taskman_TaskWorker&quot;;
-    ...</programlisting></para>
-        </listitem>
-        <listitem>
-          <para>Создать класс реализации в пакете <package>app</package> и аннотировать его, указав имя бина:</para>
-          <para><programlisting>@ManagedBean(TaskWorker.NAME)
-public class TaskWorkerBean implements TaskWorker {
-...</programlisting></para>
-        </listitem>
-      </itemizedlist>
-      <para>Данные правила дают возможность в дальнейшем получать ссылки на бин, указывая константу в качестве имени:</para>
-      <programlisting>LoginService ls = AppContext.getBean(LoginService.NAME);</programlisting>
-      <para>Ссылку на бин в другом управляемом бине (а также  в <link linkend="section_services_id">сервисе</link> или <link linkend="section_MBean_id">МБине</link>) можно получить более простым и естественным способом, объявив поле соответствующего типа и добавив ему аннотацию<literal> @Inject</literal>:</para>
-      <programlisting>@Inject
-private TaskWorker taskWorker;</programlisting>
-      <para>В этом случае контейнер автоматически найдет подходящую реализацию и установит ссылку на объект во время разворачивания приложения в памяти.</para>
-      <para>Довольно часто программный компонент, реализующий бизнес-логику, должен иметь состояние (например кэш или конфигурационные данные), и предоставлять интерфейс администратору системы для просмотра и управления этими данными. В этом случае рекомендуется добавить управляемому бину <glossterm linkend="glossary_jmx_id">JMX</glossterm>-интерфейс и превратить его тем самым в <link linkend="section_MBean_id">МБин</link>.</para>
+      <para>В простейшем случае Managed Bean может быть просто Java-классом, аннотированным как <literal>@ManagedBean</literal>. Однако рекомендуется придерживаться  правил создания бинов, содержащихся в главе <xref linkend="section_managed_beans_realization" xrefstyle="select: labelnumber title"/></para>
     </section>
     <section id="section_MBean_id">
       <title>Мбины</title>
       <para><firstterm>МБин</firstterm> − программный компонент, реализующий бизнес-логику, и имеющий <glossterm linkend="glossary_jmx_id">JMX</glossterm>-интерфейс. Как правило, имеет внутреннее состояние (например кэш, конфигурационные данные или статистику), к которому нужно обеспечить доступ через JMX.</para>
       <para>МБин является расширенным вариантом <link linkend="section_managed_beans_id">управляемого бина</link>.</para>
-      <mediaobject>
-        <imageobject>
-          <imagedata align="center" fileref="img/MBeans.png"/>
-        </imageobject>
-      </mediaobject>
+      <figure>
+        <title/>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/MBeans.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
       <para>Как видно из диаграммы, МБин имеет два набора методов, разделенных по интерфейсам <interfacename>...MBean</interfacename> и <interfacename>...API</interfacename>. Первый из них служит для управления через JMX, а второй − для вызова из программного кода.</para>
-      <para>Вызовы JMX-интерфейса МБина перехватываются специальным классом − <glossterm linkend="glossary_interceptor_id">интерцептором</glossterm> <methodname>MBeanInterceptor.aroundInvoke()</methodname> (с помощью <link linkend="text_additionally_spring">Spring</link> AOP), который обеспечивает журналирование неперехваченных исключений и установку правильного контекстного <classname>ClassLoader</classname>.</para>
-      <para>Если JMX-методы МБина работают с данными, то ему потребуется пользовательская сессия с правами на доступ. В этом случае рекомендуется наследовать МБин от базового класса <classname>ManagementBean</classname>, который содержит удобные методы входа в систему/выхода из системы (login/logout).</para>
-      <para><emphasis role="bold">Правила создания</emphasis></para>
-      <itemizedlist>
-        <listitem>
-          <para>Создать интерфейс с именем, заканчивающимся на <classname>*MBean</classname>, например, <classname>SampleMBean</classname> в пакете <package>app</package></para>
-        </listitem>
-        <listitem>
-          <para>Если нужно обращение к МБину из кода сервера (а не только из <glossterm linkend="glossary_jmx_id">JMX</glossterm>-консоли), создать интерфейс <interfacename>SampleAPI</interfacename>. Создать в интерфейсе поле с именем бина, в качестве префикса использовать имя проекта:</para>
-          <programlisting>public interface SampleAPI {
-    String NAME = &quot;myproject_Sample&quot;;
-    ...</programlisting>
-        </listitem>
-        <listitem>
-          <para>Создать класс реализации с именем, соответствующим интерфейсу, в нашем случае <classname>Sample</classname> и аннотировать его как <literal>@ManagedBean(SampleAPI.NAME)</literal></para>
-        </listitem>
-        <listitem>
-          <para>Экспортировать <interfacename>*MBean</interfacename> интерфейс в JMX в файле <filename>myproject-spring.xml</filename>, например:</para>
-          <programlisting>&lt;bean id=&quot;myproject_MBeanExporter&quot; class=&quot;org.springframework.jmx.export.MBeanExporter&quot; lazy-init=&quot;false&quot;&gt;
-        &lt;property name=&quot;beans&quot;&gt;
-            &lt;map&gt;
-                &lt;entry key=&quot;${cuba.webContextName}:service=Sample&quot; value-ref=&quot;myproject_Sample&quot;/&gt;
-            &lt;/map&gt;
-        &lt;/property&gt;
-        &lt;property name=&quot;assembler&quot;&gt;
-            &lt;bean class=&quot;org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler&quot;&gt;
-                &lt;property name=&quot;interfaceMappings&quot;&gt;
-                    &lt;map&gt;
-                        &lt;entry key=&quot;myproject_Sample&quot; value=&quot;com.haulmont.myproject.core.app.SampleMBean&quot;/&gt;
-                    &lt;/map&gt;
-                &lt;/property&gt;
-            &lt;/bean&gt;
-        &lt;/property&gt;
-    &lt;/bean&gt;</programlisting>
-        </listitem>
-      </itemizedlist>
-      <para>Один <link linkend="text_additionally_spring">Spring</link>-объект <classname>MBeanExporter</classname> может экспортировать несколько МБинов. 
-Для удобства работы администратора методы JMX-интерфейса должны возвращать строку. В случае успешного выполнения это может быть полезная информация, либо просто строка <computeroutput>Done</computeroutput>. В случае возникновения исключения нужно его записать в журнал и вернуть stacktrace:</para>
-      <programlisting>public String jmxMethod1() {
-    try {
-        return &quot;Done&quot;;
-    } catch (Exception e) {
-        log.error(&quot;Error executing jmxMethod1&quot;, e);
-        return ExceptionUtils.getStackTrace(e);
-    } 
-}</programlisting>
-      <para><emphasis role="bold">Security</emphasis></para>
-      <para>Как правило, для выполнения функций МБинов требуется аутентификация в <trademark>CUBA</trademark>-security, а <glossterm linkend="glossary_jmx_id">JMX</glossterm>-интерфейс  ее обеспечить не может. Простой механизм входа в систему/выхода из системы (login/logout) содержится в классе <classname>com.haulmont.cuba.core.app.ManagementBean</classname>, поэтому желательно наследовать свои классы МБинов, работающих с данными, от этого класса. Пример использования:</para>
-      <programlisting>public String jmxMethod2() {
-    try {
-loginOnce(); // defined in ManagementBean
-...
-return &quot;Done&quot;;
-    } catch (Exception e) {
-        log.error(&quot;Error executing jmxMethod2&quot;, e);
-return ExceptionUtils.getStackTrace(e);
-    } 
-}</programlisting>
-      <para>Методы <methodname>login()</methodname> и <methodname>loginOnce()</methodname>, определенные в классе <classname>ManagementBean</classname>, осуществляют вход в систему, используя имя и пароль, заданные в <link>файле свойств</link> в параметрах  <parameter>cuba.jmxUserLogin</parameter> и <parameter>cuba.jmxUserPassword</parameter> соответственно. Пароль должен быть захеширован и указан с префиксом <code>md5:</code>. Простейший способ получить пароль пользователя в <code>md5</code> − скопировать значение из поля <database>SEC_USER.PASSWORD</database> базы данных.</para>
-      <para><emphasis role="bold">Работа с JMX-интерфейсом</emphasis></para>
-      <para>Обращаться к МБинам можно с помощью утилиты <application>jconsole</application>, входящей в состав <application>JDK</application>, либо с помощью программы <application>VisualVM</application>.</para>
-      <para>Для того чтобы увидеть свои МБины, сервер <application>Tomcat</application> должен быть запущен с опциями удаленного подключения к <glossterm linkend="glossary_jmx_id">JMX</glossterm>. В простейшем случае, без аутентификации, параметры запуска <application>JVM</application> должны содержать следующие опции:</para>
-      <programlisting>set CATALINA_OPTS=-Dcom.sun.management.jmxremote
--Dcom.sun.management.jmxremote.port=7777
--Dcom.sun.management.jmxremote.ssl=false
--Dcom.sun.management.jmxremote.authenticate=false</programlisting>
+      <para>Вызовы JMX-интерфейса МБина перехватываются специальным классом − <glossterm linkend="glossary_interceptor_id">интерцептором</glossterm> <methodname>MBeanInterceptor.aroundInvoke()</methodname> (с помощью <link linkend="text_springAOP">Spring AOP</link>), который обеспечивает журналирование неперехваченных исключений и установку правильного контекстного <classname>ClassLoader</classname>.</para>
+      <para>Информация о том, как создать Мбин, содержится в главе <xref linkend="section_mbeans_realization" xrefstyle="select: labelnumber title"/></para>
     </section>
     <section id="section_infrastructure_interfaces_id">
       <title>Интерфейсы инфраструктуры</title>
-      <para>Интерфейсы инфраструктуры обеспечивают доступ к часто используемой функциональности платформы. Некоторые из этих интерфейсов расположены в модуле <structname>global</structname> и могут быть использованы как изнутри среднего слоя, так и из любого клиентского кода, другие доступны только коду среднего слоя.</para>
-      <para>Интерфейсы инфраструктуры реализуются управляемыми компонентами <link linkend="text_additionally_spring">Spring</link>, поэтому зависимости от интерфейсов могут быть <link>внедрены</link> в любые другие управляемые компоненты (Managed Beans, MiddlewareServices, Screen Controllers).</para>
-      <para>Все интерфейсы инфраструктуры имеют соответствующие &quot;статические фасады&quot;, которые называются провайдерами, и могут быть использованы в неуправляемых компонентах (<glossterm linkend="glossary_pojo_id">POJO</glossterm>, utility classes, helpers, etc.).</para>
-      <para><emphasis role="bold">Глобальные интерфейсы инфраструктуры</emphasis></para>
+      <para>Интерфейсы инфраструктуры обеспечивают доступ к часто используемой функциональности платформы. Некоторые из этих интерфейсов расположены в модуле <structname>global</structname> и могут быть использованы как из <link linkend="section_middleware_id">среднего слоя (Middleware)</link>, так и из любого клиентского кода, другие доступны только коду среднего слоя.</para>
+      <para>Интерфейсы инфраструктуры реализуются управляемыми компонентами <link linkend="text_springFramework">Spring</link>, поэтому зависимости от интерфейсов могут быть <glossterm linkend="glossary_injection_id">внедрены</glossterm> в любые другие управляемые компоненты (<link linkend="section_managed_beans_id">управляемые бины (Managed Beans)</link>, <link linkend="section_services_id">сервисы среднего слоя (MiddlewareServices)</link>, <glossterm linkend="glossary_controller_id">контроллеры</glossterm> экранов (Screen Controllers)).</para>
+      <para>Все интерфейсы инфраструктуры имеют соответствующие &quot;статические фасады&quot;, которые называются <firstterm>провайдерами</firstterm>, и могут быть использованы в неуправляемых компонентах (<glossterm linkend="glossary_pojo_id">POJO</glossterm>, utility classes, helpers, etc.).</para>
+      <para><emphasis role="bold">Глобальные интерфейсы инфраструктуры (ВЫНЕСТИ В СПРАВОЧНИК (В ПРИЛОЖЕНИЕ)?)</emphasis></para>
       <simpara><emphasis role="bold">TimeSource</emphasis>. Обеспечивает получение текущего времени. Применение <classname>new Date()</classname> и т.п. запрещено. Статический фасад − <classname>TimeProvider</classname>.</simpara>
       <simpara><emphasis role="bold">UuidSource</emphasis>. Обеспечивает получение значений <classname>UUID</classname>, в том числе для идентификаторов сущностей. Статический фасад − <classname>UuidProvider</classname>.</simpara>
     </section>
     <section>
       <title>ORM</title>
+      <variablelist>
+        <varlistentry>
+          <term>Преимущества</term>
+          <listitem>
+            <itemizedlist>
+              <listitem>
+                <para>Позволяет работать с  данными реляционной СУБД манипулируя простыми объектами Java (POJO)</para>
+              </listitem>
+              <listitem>
+                <para>Упрощает программирование, избавляя от рутины написания тривиальных SQL</para>
+              </listitem>
+              <listitem>
+                <para>Упрощает программирование, позволяя извлекать и сохранять целые графы объектов одной командой</para>
+              </listitem>
+              <listitem>
+                <para>Обеспечивает легкое портирование приложения на различные СУБД</para>
+              </listitem>
+              <listitem>
+                <para>Лаконичный язык запросов JPQL</para>
+              </listitem>
+              <listitem>
+                <para>Оптимизирует количество выполняемых SQL на insert/update</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>Недостатки</term>
+          <listitem>
+            <itemizedlist>
+              <listitem>
+                <para>Требует понимания особенностей работы с ORM</para>
+              </listitem>
+              <listitem>
+                <para>Не позволяет напрямую оптимизировать SQL или использовать особенности СУБД, что приводит к снижению производительности</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>Реализация</term>
+          <listitem>
+            <itemizedlist>
+              <listitem>
+                <para>JPA – Java Persistence API</para>
+              </listitem>
+              <listitem>
+                <para>OpenJPA – фреймворк, реализующий JPA. Используется у нас, а также в некоторых high-end серверах приложения, например IBM WebSphere. На данный момент используем версию 1.2.</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <variablelist>
+        <title>ORM – основные понятия</title>
+        <varlistentry>
+          <term>Entity</term>
+          <listitem>
+            <para>Аннотированный POJO. Обычно соответствует таблице СУБД.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>EntityManager</term>
+          <listitem>
+            <para>Интерфейс для управления сущностями.
+Получается  вызовом <classname>PersistenceProvider.getEntityManager()</classname>.
+Экземпляр <classname>EntityManager</classname> всегда привязан к одной транзакции. Более того, все вызовы <classname>PersistenceProvider.getEntityManager()</classname> в рамках одной транзакции возвращают один и тот же экземпляр <classname>EntityManager</classname>. После завершения транзакции обращения к данному экземпляру невозможны.
+Экземпляр <classname>EntityManager</classname> содержит в себе &quot;персистентный контекст&quot; – набор экземпляров сущностей, загруженных из БД или только что созданных. Персистентный контекст является кэшем данных в рамках данной транзакции.
+<classname>EntityManager</classname> автоматически сбрасывает в БД все изменения, сделанные в своем персистентном контексте, в момент коммита транзакции, либо явным вызовом <classname>flush()</classname>.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>Enhancing</term>
+          <listitem>
+            <para>Модификация байт-кода классов сущностей для обеспечения возможности работы ORM. 
+В нашем случае производится в момент сборки проекта (см. цель compile-module модуля global)
+IDEA может затереть enhanced версии классов, поэтому пакет entity лучше исключить из компиляции среды разработки.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <variablelist>
+        <title>ORM – жизненный цикл сущности</title>
+        <varlistentry>
+          <term>New</term>
+          <listitem>
+            <para>Только что созданный экземпляр, например: Car car = new Car();
+может быть передан в EntityManager.persist() для сохранения в БД. При этом переходит в состояние Managed</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>Managed</term>
+          <listitem>
+            <para>Загруженный из БД или новый переданный в persist() экземпляр; 
+принадлежит некоторому эккземпляру EntityManager, другими словами находится в его персистентном контексте;
+любые изменения в состоянии Managed экземпляра будут сохранены в БД в случае коммита транзакции, к которой принадлежит данный EntityManager</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>Detached</term>
+          <listitem>
+            <para>Экземпляр, загруженный из БД и отсоединенный от своего персистентного контекста (вследствие закрытия транзакции или сериализации);
+изменения, вносимые в Detached экземпляр, запоминаются в самом этом экземпляре (с помощью полей, добавленных enhancing&apos;ом);
+изменения в Detached экземпляре будут сохранены в БД, только если он будет снова переведен в состояние Managed путем передачи в метод EntityManager.merge(); EntityManager.merge() выполняет следующее – загружает из БД экземпляр с тем же идентификатором, переносит в него состояние переданного Detached экземпляра, и возвращает загруженный Managed экземпляр. Далее надо работать именно с возвращенным Managed экземпляром!</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <itemizedlist>
+        <title>ORM – lazy loading</title>
+        <listitem>
+          <para>Позволяет загружать связанные сущности по требованию, т.е. только в момент первого обращения к их свойствам</para>
+        </listitem>
+        <listitem>
+          <para>Работает только для экземпляра в состоянии Managed, т.е. внутри транзакции, загрузившей данный экземпляр</para>
+        </listitem>
+        <listitem>
+          <para>Lazy loading  в сумме порождает больше запросов к БД, чем eager fetching, однако нагрузка при этом растянута во времени</para>
+          <itemizedlist>
+            <listitem>
+              <para>Например, при извлечении списка N экземпляров сущности A, содержащих ссылку на экземпляр сущности B, в случае lazy loading будет выполнено N+1 запросов к БД.</para>
+            </listitem>
+            <listitem>
+              <para>Для минимизации времени отклика и снижения нагрузки необходимо стремиться к меньшему количеству обращений к БД. Для этого  у нас используется механизм views, с помощью которого в вышеописанном случае ORM сформирует 1 запрос к БД с объединением таблиц.</para>
+            </listitem>
+            <listitem>
+              <para>Если A содержит коллекцию B, в случае eager fetching ORM сформирует SQL запрос, возвращающий произведение строк A и B. </para>
+            </listitem>
+            <listitem>
+              <para>Если A содержит 2 и более коллекции B, C…, в случае eager fetching ORM может выдать ошибку (проблема в OpenJPA 1.2.2, предположительно будет исправлена в 1.2.3). В этом случае необходимо задать только одну коллекцию eager, остальные lazy.</para>
+            </listitem>
+            <listitem>
+              <para>Иногда lazy loading с точки зрения производительности предпочтительнее чем eager fetching. Например, когда работает асинхронный процесс, выполняющий некую бизнес-логику, общее время выполнения некритично и желательно размазать нагрузку на БД по времени.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </itemizedlist>
     </section>
     <section id="section_metadata_framework">
       <title>Metadata Framework</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata align="center" fileref="img/Metadata Framework.png"/>
-        </imageobject>
-      </mediaobject>
+      <para>Metadata Framework позволяет создавать описание предметной области в терминах метаданных.</para>
+      <figure>
+        <title>Структура метаданны</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="img/Metadata Framework.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <itemizedlist>
+        <title>Назначение метаданных</title>
+        <listitem>
+          <para>предоставляют удобный интерфейс для получения информации о сущностях, атрибутах и отношениях между сущностями; для навигации по ссылкам</para>
+        </listitem>
+        <listitem>
+          <para>служат более удобной в использовании и более функциональной альтернативой Java Reflection</para>
+        </listitem>
+        <listitem>
+          <para>регламентируют допустимые типы данных и отношений между сущностями</para>
+        </listitem>
+        <listitem>
+          <para>позволяют создавать универсальные механизмы работы с данными</para>
+        </listitem>
+      </itemizedlist>
+      <para>Точка входа: Metadata.getSession().
+Возвращается объект Session, через который можно получать модели и классы.
+Развертывание метаданных происходит при первом обращении к Session.
+Источниками метаданных служат:
+Классы персистентных сущностей, заданные в файлах *-persistence.xml,
+Классы неперсистентных сущностей, заданные в файлах *-metadata.xml</para>
+      <variablelist>
+        <varlistentry>
+          <term>MetaClass</term>
+          <listitem>
+            <itemizedlist>
+              <listitem>
+                <para>name – имя, по соглашению первой частью имени до знака $ является namespace, например sec$User</para>
+              </listitem>
+              <listitem>
+                <para>properties – список объектов MetaProperty, описывающих атрибуты объекта</para>
+              </listitem>
+              <listitem>
+                <para>javaClass – класс сущности, которой соответствует данный MetaClass</para>
+              </listitem>
+              <listitem>
+                <para>annotations – коллекция аннотаций. Аннотация представляет собой произвольный именованный объект, который добавляется в MetaClass на этапе развертывания метаданных. Например, с помощью аннотаций в метаданных хранится длина строковых полей.</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>MetaProperty</term>
+          <listitem>
+            <itemizedlist>
+              <listitem>
+                <para>name – имя свойства, соответствует имени атрибута сущности</para>
+              </listitem>
+              <listitem>
+                <para>domain – MetaClass, которому принадлежит данное свойство</para>
+              </listitem>
+              <listitem>
+                <para>type – тип свойства: DATATYPE, ENUM, ASSOCIATION, AGGREGATION</para>
+              </listitem>
+              <listitem>
+                <para>range – интерфейс к свойствам MetaProperty</para>
+              </listitem>
+              <listitem>
+                <para>mandatory – true если атрибут сущности должен быть не null</para>
+              </listitem>
+              <listitem>
+                <para>readOnly – true если атрибут нельзя изменять</para>
+              </listitem>
+              <listitem>
+                <para>inverse – ссылка на обратную сторону ассоциации между сущностями</para>
+              </listitem>
+              <listitem>
+                <para>annotatedElement – Field или Method, соответствующие данному атрибуту сущности</para>
+              </listitem>
+              <listitem>
+                <para>javaType – java-класс атрибута сущности</para>
+              </listitem>
+              <listitem>
+                <para>declaringClass – java-класс, декларирующий данный атрибут (содержащий данный annotatedElement)</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>Range</term>
+          <listitem>
+            <itemizedlist>
+              <listitem>
+                <para>isDatatype – true если MetaProperty.type == DATATYPE</para>
+              </listitem>
+              <listitem>
+                <para>isEnum – true если MetaProperty.type == DATATYPE</para>
+              </listitem>
+              <listitem>
+                <para>isClass – true если MetaProperty.type == ASSOCIATION or AGGREGATION</para>
+              </listitem>
+              <listitem>
+                <para>ordered – true если свойство представляет собой упорядоченную коллекцию (List)</para>
+              </listitem>
+              <listitem>
+                <para>cardinality – вид отношения, если свойство isClass: ONE_TO_ONE, MANY_TO_ONE, ONE_TO_MANY, MANY_TO_MANY</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </varlistentry>
+      </variablelist>
     </section>
     <section id="section_views_id">
       <title>Представления</title>
+      <para>Механизм представлений обеспечивает извлечение из БД и передачу клиенту графов сущностей, ограниченных в глубину и/или по атрибутам.</para>
+      <para>Представление всегда должно быть задано при запросе данных у <glossterm linkend="glossary_middleware_id">middleware</glossterm>. Получив выборку данных по представлению, клиентский код может быть уверен, что все запрошенные атрибуты и связанные сущности получены, и их можно использовать без опаски получить <errorname role="italic">NullPointerException</errorname> или исключение типа <errorname role="italic">LazyInitializationException</errorname>. Представление решает и обратную задачу − ненужные атрибуты не извлекаются из БД, что снижает нагрузку в случае &quot;широких&quot; сущностей (содержащих большое число атрибутов).</para>
+      <para>Для каждой сущности по умолчанию доступны два типа представления с именами <filename>_local</filename> и <filename>_minimal</filename></para>
+      <itemizedlist>
+        <listitem>
+          <para><filename>_local</filename> определяет все локальные атрибуты сущности (т.е. все, кроме ссылок на другие сущности);</para>
+        </listitem>
+        <listitem>
+          <para><filename>_minimal</filename> определяет атрибуты, входящие в <varname>InstanceName</varname>. Если <varname>InstanceName</varname> не задано, данное представление определяет только системные атрибуты (<varname>id</varname>, <varname>createTs</varname> и пр.).</para>
+        </listitem>
+      </itemizedlist>
+      <para>Представления нужно определять в файле <filename>ext-views.xml</filename> модуля <structname>core</structname>.</para>
+      <warning>
+        <title>Внимание</title>
+        <para>Имя представления должно быть уникально в пределах сущности. При этом рекомендуется давать более  &quot;описательные&quot; имена. Например, не &quot;browse&quot;, а &quot;nameOfEntityBrowse&quot;. Это упрощает поиск XML-описателей представлений по имени. </para>
+      </warning>
+      <para>Пример представления для сущности <classname>User</classname>, которое должно выбирать все простые поля и ссылку на группу:</para>
+      <programlisting>&lt;view entity=&quot;sec$User&quot; name=&quot;user.browse&quot; extends=&quot;_local&quot;&gt;
+     &lt;property name=&quot;group&quot; view=&quot;_local&quot;/&gt;
+&lt;/view&gt;</programlisting>
     </section>
     <section id="section_transaction_id">
       <title>Управление транзакциями</title>
+      <para>Транзакция Middleware напрямую отображается на транзакцию БД.</para>
+      <para>Управление транзакциями производится только  на уровне сервисов или ниже. 
+</para>
+      <para>Любой клиент, вызывая методы сервиса, должен понимать, что каждый метод будет выполняться в отдельной транзакции.
+Используется только ручное (не декларативное) управление транзакциями.</para>
+      <para>Управление транзакциями является частью бизнес-логики
+При использовании ORM изменения в БД производятся при коммите транзакции, который в случае декларативного управления происходит за рамками прикладного кода (в интерцепторах контейнера), что крайне неудобно при отладке приложения.</para>
+      <para>При использовании ORM доменные объекты ведут себя принципиально по-разному внутри и вне транзакции</para>
+      <para>Рекомендации по управлению транзакциями содержатся в главе <xref linkend="section_transactions_realization" xrefstyle="select: labelnumber title"/></para>
+    </section>
+    <section id="section_cluster_middleware">
+      <title id="section_cluster_middleware">Кластер среднего слоя</title>
     </section>
   </section>
   <section id="section_client_id">
     <title>Архитектура клиента</title>
-    <mediaobject>
-      <imageobject>
-        <imagedata align="center" fileref="img/ClientStructure.png"/>
-      </imageobject>
-    </mediaobject>
+    <figure>
+      <title/>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="img/ClientStructure.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </section>
+  <section>
+    <title>Механизмы платформы</title>
+    <section id="section_extending_funct">
+      <title>Механизмы расширения функциональности</title>
+    </section>
+    <section id="section_fts">
+      <title>Механизм полнотекстового поиска</title>
+      <para>Полнотекстовый поиск предоставляет возможность неструктурированного поиска по всем атрибутам <glossterm linkend="glossary_entity">сущностей</glossterm> и по содержимому вложенных файлов.</para>
+      <para>FTS содержит два взаимосвязанных механизма − индексирование и  поиск.</para>
+      <para><emphasis role="bold">Индексирование</emphasis>. Изменения сущностей отслеживаются на уровне <glossterm linkend="glossary_entityManager_id">EntityManager</glossterm>&apos;а. Если изменился атрибут сущности, подлежащий индексированию, информация о сущности записывается в таблицу <database>SYS_FTS_QUEUE</database> с помощью <classname>FtsSenderBean</classname>. Отдельный асинхронный процесс извлекает ссылки на изменившиеся сущности из очереди, загружает сущности и индексирует их. </para>
+      <para>Под индексируемыми атрибутами понимаются атрибуты данной сущности и  ссылающихся на нее сущностей, объявленные в <glossterm linkend="glossary_descriptor_fts_id">дескрипторе FTS</glossterm>.</para>
+      <para><emphasis role="bold">Поиск</emphasis>. Поиск ведется по совпадению искомой строки с началом слов индексированных данных.
+
+При включенном FTS главное окно приложения содержит поле поиска. Поиск производится с помощью <classname>FtsServiceBean</classname> и результаты отображаются в окне <filename>search-results.xml</filename>.
+
+</para>
+      <para>Дескриптор <glossterm linkend="glossary_fts_id">FTS</glossterm> представляет собой XML файл, содержащий настройки механизма полнотекстового поиска. Элементы дескриптора:</para>
+      <itemizedlist>
+        <listitem>
+          <para><parameter>include</parameter>. Включение содержимого другого дескриптора. Атрибут <property>file</property> − путь к включаемому файлу относительно каталога конфигурации.</para>
+        </listitem>
+        <listitem>
+          <para><parameter>entities</parameter>. Список сущностей, подлежащих индексированию и поиску.</para>
+          <itemizedlist>
+            <listitem>
+              <para><parameter>entity</parameter>. Описание индексируемой сущности. 
+Атрибуты:</para>
+              <itemizedlist>
+                <listitem>
+                  <para><property>class</property> − java класс <glossterm linkend="glossary_entity">сущности</glossterm>;</para>
+                </listitem>
+                <listitem>
+                  <para><property>show</property> (true/false) − должна ли данная сущность показываться в результатах поиска самостоятельно. False используется для сущностей-связей, которые нужны, например, для связи  файлов и карточек;</para>
+                </listitem>
+              </itemizedlist>
+            </listitem>
+            <listitem>
+              <para><parameter>include</parameter> − включить атрибут сущности в индекс. 
+Атрибуты:</para>
+              <itemizedlist>
+                <listitem>
+                  <para><property>re</property> − регулярное выражение для отбора атрибутов по имени. Отбираются только атрибуты следующих типов: строка, число, дата, перечисление;</para>
+                </listitem>
+                <listitem>
+                  <para><property>name</property> − имя атрибута, может быть путем по ссылочным атрибутам. Тип не проверяется, однако если имя является путем, то конечный атрибут должен быть сущностью, а не простым типом (атрибут простого типа не имеет здесь смысла, он должен индексироваться в своей сущности);</para>
+                </listitem>
+              </itemizedlist>
+            </listitem>
+            <listitem>
+              <para><parameter>exclude</parameter> − исключить ранее включенный атрибут. Возможные атрибуты такие же как в элементе <parameter>include</parameter>;</para>
+            </listitem>
+            <listitem>
+              <para><parameter>searchables</parameter> − <classname>Groovy</classname>-скрипт для добавления в очередь на индексирование произвольных сущностей, связанных с измененной. Скрипт оперирует двумя переменными:</para>
+              <para><varname>searchables</varname> − список сущностей;</para>
+              <para><varname>entity</varname> − текущая сущность, помещаемая в очередь автоматически;</para>
+            </listitem>
+            <listitem>
+              <para><parameter>searchableIf</parameter> − <classname>Groovy</classname>-скрипт для ограничения помещения в очередь некоторых экземпляров индексируемой сущности. 
+Скрипт оперирует переменной <varname>entity</varname> (текущая сущность, которую нужно проверить).</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </itemizedlist>
+      <para>Пример дескриптора:</para>
+      <para><programlisting>&lt;fts-config&gt;
+  &lt;include file=&quot;cuba/fts-config.xml&quot;/&gt;
+  &lt;entities&gt;
+    &lt;entity class=&quot;com.haulmont.workflow.core.entity.CardAttachment&quot; show=&quot;false&quot;&gt;
+      &lt;include re=&quot;.*&quot;/&gt;
+      &lt;exclude name=&quot;card&quot;/&gt;
+      &lt;searchables&gt;
+        searchables.add(entity.card)
+      &lt;/searchables&gt;
+    &lt;/entity&gt;
+
+    &lt;entity class=&quot;com.haulmont.workflow.core.entity.AssignmentAttachment&quot; show=&quot;false&quot;&gt;
+      &lt;include re=&quot;.*&quot;/&gt;
+      &lt;exclude name=&quot;assignment&quot;/&gt;
+      &lt;searchables&gt;
+        searchables.add(entity.assignment.card)
+      &lt;/searchables&gt;
+    &lt;/entity&gt;
+
+    &lt;entity class=&quot;com.haulmont.taskman.core.entity.ProjectGroup&quot;&gt;
+      &lt;include name=&quot;name&quot;/&gt;
+    &lt;/entity&gt;
+
+    &lt;entity class=&quot;com.haulmont.taskman.core.entity.Project&quot;&gt;
+      &lt;include re=&quot;.*&quot;/&gt;
+    &lt;/entity&gt;
+
+    &lt;entity class=&quot;com.haulmont.taskman.core.entity.Task&quot;&gt;
+      &lt;include re=&quot;.*&quot;/&gt;
+      &lt;include name=&quot;attachments.file&quot;/&gt;
+      &lt;include name=&quot;assignments.attachments.file&quot;/&gt;
+      &lt;exclude name=&quot;parentCard&quot;/&gt;
+      &lt;exclude name=&quot;subCards&quot;/&gt;
+      &lt;exclude name=&quot;timeUnit&quot;/&gt;
+    &lt;/entity&gt;
+
+    &lt;entity class=&quot;com.haulmont.docflow.core.entity.Contract&quot;&gt;
+      &lt;include re=&quot;.*&quot;/&gt;
+      &lt;include name=&quot;attachments.file&quot;/&gt;
+      &lt;include name=&quot;assignments.attachments.file&quot;/&gt;
+      &lt;exclude name=&quot;parentCard&quot;/&gt;
+      &lt;exclude name=&quot;subCards&quot;/&gt;
+      &lt;searchableIf&gt;
+        entity.versionOf == null
+      &lt;/searchableIf&gt;
+    &lt;/entity&gt;
+  &lt;/entities&gt;
+&lt;/fts-config&gt;</programlisting></para>
+    </section>
+    <section id="section_database_update">
+      <title>Механизм автоматического обновления базы данных</title>
+    </section>
+    <section id="section_charts">
+      <title>Механизм отображения диаграмм</title>
+    </section>
+    <section id="section_scheduled_tasks">
+      <title>Механизм реализации назначенных заданий</title>
+    </section>
+    <section id="section_runtime_properties">
+      <title>Динамические атрибуты</title>
+    </section>
+    <section id="section_objects_cache">
+      <title>Механизм организации кэшей данных</title>
+    </section>
+    <section id="section_audit">
+      <title>Механизм ведения журнала аудита изменений сущностей и сохранения версий</title>
+    </section>
+    <section id="section_ccpayments">
+      <title>Модуль CCPayments</title>
+    </section>
   </section>
   <section id="section_gui_framework">
     <title>Графический интерфейс пользователя</title>
     <section>
       <title>Библиотека визуальных компонентов</title>
+      <section>
+        <title>ButtonsPanel</title>
+        <para>Унифицирует использование и размещение кнопок для управления данными в таблице.</para>
+        <para>XML-имя компонента: <parameter>buttonsPanel</parameter>.</para>
+        <para>Атрибуты <parameter>buttonsPanel</parameter>:</para>
+        <itemizedlist>
+          <listitem>
+            <para>id</para>
+          </listitem>
+          <listitem>
+            <para>visible</para>
+          </listitem>
+          <listitem>
+            <para>align</para>
+          </listitem>
+          <listitem>
+            <para>expandable</para>
+          </listitem>
+          <listitem>
+            <para>width</para>
+          </listitem>
+          <listitem>
+            <para>height</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+      <section>
+        <title>DateField</title>
+        <para>Поле для редактирования даты и времени.</para>
+        <para>XML-имя компонента: <parameter>dateField</parameter>.</para>
+        <para>Атрибуты <parameter>dateField</parameter>:</para>
+        <itemizedlist>
+          <listitem>
+            <para>id</para>
+          </listitem>
+          <listitem>
+            <para>stylename</para>
+          </listitem>
+          <listitem>
+            <para>height</para>
+          </listitem>
+          <listitem>
+            <para>width</para>
+          </listitem>
+          <listitem>
+            <para>visible</para>
+          </listitem>
+          <listitem>
+            <para>enable</para>
+          </listitem>
+          <listitem>
+            <para>expandable</para>
+          </listitem>
+          <listitem>
+            <para>datasource</para>
+          </listitem>
+          <listitem>
+            <para>property</para>
+          </listitem>
+          <listitem>
+            <para>caption</para>
+          </listitem>
+          <listitem>
+            <para>description</para>
+          </listitem>
+          <listitem>
+            <para>editable</para>
+          </listitem>
+          <listitem>
+            <para>required</para>
+          </listitem>
+          <listitem>
+            <para>requiredMessage</para>
+          </listitem>
+          <listitem>
+            <para><property>dateFormat</property> − формат представления даты/времени по правилам <ulink url="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">SimpleDateFormat</ulink>. Значением атрибута может быть либо строка формата, либо ключ в <glossterm linkend="glossary_localized_folders_id">пакете сообщений</glossterm> (если строка начинается с msg://)</para>
+          </listitem>
+          <listitem>
+            <para><property>resolution</property> − точность представления даты/времени (день, час и т.д.). Значение атрибута должно соответствовать перечислению <classname>DateField.Resolution</classname> − <classname>MSEC</classname>, <classname>SEC</classname>, <classname>MIN</classname>, <classname>HOUR</classname>, <classname>DAY</classname>, <classname>MONTH</classname>, <classname>YEAR</classname>. По умолчанию точность определяется по аннотации <literal>javax.persistence.Temporal</literal> соответствующего атрибута сушности.</para>
+            <para>Если <property>resolution=&quot;DAY&quot;</property> и не указан атрибут <property>dateFormat</property>, то в качестве формата будет взят формат, указанный в главном пакете сообщений с ключом <property>dateFormat</property>.</para>
+            <para>Если <property>resolution=&quot;MIN&quot;</property> и не указан атрибут <property>dateFormat</property>, то в качестве формата будет взят формат, указанный в главном пакете сообщений с ключом <property>dateTimeFormat</property>.</para>
+          </listitem>
+        </itemizedlist>
+        <para>Элементы <parameter>dateField</parameter>:</para>
+        <itemizedlist>
+          <listitem>
+            <para>validator</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+      <section>
+        <title>GridLayout</title>
+        <para>Контейнер, располагающий компоненты по сетке.</para>
+        <para>XML-имя компонента: <parameter>grid</parameter>.</para>
+        <para>Атрибуты <parameter>grid</parameter>:</para>
+        <itemizedlist>
+          <listitem>
+            <para><property>id</property></para>
+          </listitem>
+          <listitem>
+            <para><property>visible</property></para>
+          </listitem>
+          <listitem>
+            <para><property>spacing</property></para>
+          </listitem>
+          <listitem>
+            <para><property>margin</property></para>
+          </listitem>
+          <listitem>
+            <para><property>width</property></para>
+          </listitem>
+          <listitem>
+            <para><property>height</property></para>
+          </listitem>
+          <listitem>
+            <para><property>expandable</property></para>
+          </listitem>
+          <listitem>
+            <para><property>align</property></para>
+          </listitem>
+          <listitem>
+            <para><property>column</property> − необязательный элемент, декларирует атрибуты колонок сетки. Атрибуты:</para>
+            <itemizedlist>
+              <listitem>
+                <para><property>flex</property> − необязательный атрибут, задает соотношение ширин колонок.</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+          <listitem>
+            <para><property>columns</property> − обязательный элемент, содержит последовательность <property>column</property>. Атрибуты:</para>
+            <itemizedlist>
+              <listitem>
+                <para><property>count</property> − необязательный атрибут, задает количество колонок, если не заданы элементы <property>column</property>.</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+          <listitem>
+            <para><property>rows</property> − обязательный элемент, содержит последовательность <property>row</property>.</para>
+          </listitem>
+          <listitem>
+            <para><property>row</property> − обязательный элемент, контейнер для содержимого ряда.</para>
+            <itemizedlist>
+              <listitem>
+                <para><property>flex</property> − необязательный атрибут, задает соотношение высот рядов сетки.</para>
+              </listitem>
+              <listitem>
+                <para><property>visible</property></para>
+              </listitem>
+              <listitem>
+                <para><property>spacing</property></para>
+              </listitem>
+              <listitem>
+                <para><property>align</property></para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </itemizedlist>
+        <para>Пример использования компонента в <glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторе</glossterm>:</para>
+        <para><programlisting>&lt;grid spacing=&quot;true&quot; expandable=&quot;false&quot;&gt;
+   &lt;columns&gt;
+       &lt;column flex=&quot;1&quot;/&gt;
+       &lt;column flex=&quot;1&quot;/&gt;
+   &lt;/columns&gt;
+   &lt;rows&gt;
+       &lt;row&gt;
+           &lt;label value=&quot;msg://name&quot;/&gt;
+           &lt;textField id=&quot;name&quot; datasource=&quot;fileDs&quot; 
+                      property=&quot;name&quot;
+                      width=&quot;200px&quot;/&gt;
+       &lt;/row&gt;
+       &lt;row&gt;
+           &lt;label value=&quot;msg://extension&quot;/&gt;
+           &lt;label id=&quot;extension&quot; datasource=&quot;fileDs&quot; 
+                  property=&quot;extension&quot;/&gt;
+       &lt;/row&gt;
+   &lt;/rows&gt;
+&lt;/grid&gt;</programlisting></para>
+      </section>
+      <section>
+        <title>GroupBox</title>
+        <para>Контейнер, позволяющий выделить рамкой группу объектов, задать им общий заголовок и описание. Кроме того, он умеет сворачивать свое содержимое.</para>
+        <para>XML-имя компонента: <parameter>groupBox</parameter>.</para>
+        <para>Атрибуты <parameter>groupBox</parameter>:</para>
+        <itemizedlist>
+          <listitem>
+            <para><property>id</property></para>
+          </listitem>
+          <listitem>
+            <para><property>stylename</property></para>
+          </listitem>
+          <listitem>
+            <para><property>height</property></para>
+          </listitem>
+          <listitem>
+            <para><property>width</property></para>
+          </listitem>
+          <listitem>
+            <para><property>visible</property></para>
+          </listitem>
+          <listitem>
+            <para><property>enable</property></para>
+          </listitem>
+          <listitem>
+            <para><property>expandable</property></para>
+          </listitem>
+          <listitem>
+            <para><property>collapsable</property> − необязательный атрибут. Может принимать значение <property>true</property>, в этом случае компонент может сворачивать свое содержимое, или значение <property>false</property>.</para>
+          </listitem>
+          <listitem>
+            <para><property>collapsed</property> − необязательный атрибут, принимающий значение <property>true</property> или <property>false</property>. В значении <property>true</property> компонент будет свернут по-умолчанию.</para>
+          </listitem>
+        </itemizedlist>
+        <para>Элементы <parameter>groupBox</parameter>:</para>
+        <itemizedlist>
+          <listitem>
+            <para><property>caption</property> − необязательный элемент, его атрибут <property>label</property> содержит заголовок компонента.</para>
+          </listitem>
+          <listitem>
+            <para><property>description</property> − необязательный элемент, его атрибут <property>label</property> содержит описание.</para>
+          </listitem>
+          <listitem>
+            <para>обязательный элемент − контейнер, содержащий вложенные компоненты (vbox, hbox, grid, flowbox).</para>
+          </listitem>
+        </itemizedlist>
+        <para>Пример использование компонента в <glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторе</glossterm>:</para>
+        <para><programlisting>&lt;groupBox collapsable=&quot;true&quot; stylename=&quot;edit-area&quot;&gt;
+   &lt;caption label=&quot;msg://Caption&quot;/&gt;
+   &lt;description label=&quot;msg://Description&quot;/&gt;
+   &lt;vbox expandable=&quot;false&quot;&gt;
+       &lt;twinColumn id=&quot;twinColGroups&quot; optionsDatasource=&quot;groups&quot; captionProperty=&quot;name&quot;
+                   expandable=&quot;false&quot; rows=&quot;10&quot; columns=&quot;15&quot;/&gt;
+       &lt;button enable=&quot;false&quot; caption=&quot;msg://Button&quot;/&gt;
+   &lt;/vbox&gt;
+&lt;/groupBox&gt;</programlisting></para>
+      </section>
+      <section>
+        <title>LookupField</title>
+        <para>Компонент, реализующий выпадающий список. Он реализует фильтрацию значений в реальном времени (по мере ввода имени опции пользователем) и постраничный вывод доступных опций.</para>
+        <para>XML-имя компонента: <parameter>lookupField</parameter>.</para>
+        <para>Атрибуты <parameter>lookupField</parameter>: </para>
+        <itemizedlist>
+          <listitem>
+            <para>id</para>
+          </listitem>
+          <listitem>
+            <para>stylename</para>
+          </listitem>
+          <listitem>
+            <para>height</para>
+          </listitem>
+          <listitem>
+            <para>width</para>
+          </listitem>
+          <listitem>
+            <para>visible</para>
+          </listitem>
+          <listitem>
+            <para>enable</para>
+          </listitem>
+          <listitem>
+            <para>expandable</para>
+          </listitem>
+          <listitem>
+            <para>datasource</para>
+          </listitem>
+          <listitem>
+            <para>property</para>
+          </listitem>
+          <listitem>
+            <para>caption</para>
+          </listitem>
+          <listitem>
+            <para>editable</para>
+          </listitem>
+          <listitem>
+            <para>required</para>
+          </listitem>
+          <listitem>
+            <para>requiredMessage</para>
+          </listitem>
+          <listitem>
+            <para>optionsDatasource</para>
+          </listitem>
+          <listitem>
+            <para>captionProperty</para>
+          </listitem>
+          <listitem>
+            <para><property>nullName</property> − идентификатор опции, выбор которой будет равносилен установке значения в <property>null</property>.</para>
+          </listitem>
+          <listitem>
+            <para><property>filterMode</property> − тип фильтрации опций:</para>
+            <itemizedlist>
+              <listitem>
+                <para><property>NO</property> − нет фильтрации.</para>
+              </listitem>
+              <listitem>
+                <para><property>STARTS_WITH</property> − по началу фразы.</para>
+              </listitem>
+              <listitem>
+                <para><property>CONTAINS</property> − по любому вхождению.</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+          <listitem>
+            <para>validator</para>
+          </listitem>
+        </itemizedlist>
+        <para>Пример использования компонента в <glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторе</glossterm>:</para>
+        <para><programlisting>&lt;lookupField id=&quot;docClass&quot; datasource=&quot;docType&quot; property=&quot;docClass&quot;
+             optionsDatasource=&quot;docClasses&quot; captionProperty=&quot;name&quot;
+             required=&quot;true&quot; width=&quot;300px&quot;/&gt;</programlisting></para>
+      </section>
+      <section>
+        <title>PickerField</title>
+        <para><parameter>PickerField</parameter> позволяет отображать экземпляр <glossterm linkend="glossary_entity">сущности</glossterm> в текстовом поле и выполнять действия нажатием на кнопки справа.</para>
+        <para>XML-имя компонента: <parameter>pickerField</parameter>.</para>
+        <para>Атрибуты и элементы <parameter>pickerField</parameter>:</para>
+        <itemizedlist>
+          <listitem>
+            <para>id</para>
+          </listitem>
+          <listitem>
+            <para>stylename</para>
+          </listitem>
+          <listitem>
+            <para>height</para>
+          </listitem>
+          <listitem>
+            <para>width</para>
+          </listitem>
+          <listitem>
+            <para>visible</para>
+          </listitem>
+          <listitem>
+            <para>enable</para>
+          </listitem>
+          <listitem>
+            <para>expandable</para>
+          </listitem>
+          <listitem>
+            <para>datasource</para>
+          </listitem>
+          <listitem>
+            <para>property</para>
+          </listitem>
+          <listitem>
+            <para>caption</para>
+          </listitem>
+          <listitem>
+            <para>editable</para>
+          </listitem>
+          <listitem>
+            <para>required</para>
+          </listitem>
+          <listitem>
+            <para>requiredMessage</para>
+          </listitem>
+          <listitem>
+            <para><property>captionProperty</property> − при отображении экземпляра сущности задает имя атрибута, значение которого выводится в текстовом поле. Если данный атрибут не задан, компонент будет содержать <classname>Instance Name</classname> экземпляра.</para>
+          </listitem>
+          <listitem>
+            <para><property>metaClass</property> − если не установлен атрибут <property>datasource</property>, задает тип сущности, с которой будет работать компонент.</para>
+          </listitem>
+          <listitem>
+            <para><property>actions</property> − необязательный элемент, определяющий набор действий (кнопок справа)</para>
+            <itemizedlist>
+              <listitem>
+                <para><property>action</property> − элемент, определяющий действие. Кроме описания произвольного действия возможно использование стандартных действий, определяемых перечислением <classname>PickerField.ActionType</classname>: <classname>lookup</classname>, <classname>clear</classname>, <classname>open</classname>.</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </itemizedlist>
+        <para>Если при объявлении компонента никаких действий не задано, загрузчик XML определит для него действия <classname>lookup</classname> и <classname>clear</classname>.</para>
+        <para>Пример использования компонента в <glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторе</glossterm>:</para>
+        <para><programlisting>&lt;pickerField id=&quot;pickerField1&quot; datasource=&quot;carDs&quot; 
+             property=&quot;model&quot;  width=&quot;250px&quot;&gt;
+    &lt;actions&gt;
+        &lt;action id=&quot;clear&quot;/&gt;
+        &lt;action id=&quot;pickerAction1&quot; 
+                caption=&quot;&quot; 
+                icon=&quot;pickerfield/img/lookup-btn.png&quot; 
+                invoke=&quot;someActionMethod1&quot;/&gt;
+        &lt;action id=&quot;pickerAction2&quot; 
+                caption=&quot;&quot; 
+                icon=&quot;pickerfield/img/lookup-btn.png&quot; 
+                invoke=&quot;someActionMethod2&quot;/&gt;
+    &lt;/actions&gt;
+&lt;/pickerField&gt;</programlisting></para>
+      </section>
+      <section>
+        <title>Table</title>
+        <para>Служит для отображения данных в табличном виде.</para>
+        <para>Возможности:</para>
+        <itemizedlist>
+          <listitem>
+            <para>Выделение и множественное выделение строк в таблице.</para>
+          </listitem>
+          <listitem>
+            <para>Сортировка по одной из колонок.</para>
+          </listitem>
+          <listitem>
+            <para>Задание уникального стиля отображения для каждой ячейки.</para>
+          </listitem>
+          <listitem>
+            <para>Применение форматирования для колонок.</para>
+          </listitem>
+          <listitem>
+            <para>Использование для колонок функций аггрегирования без модификации datasource.</para>
+          </listitem>
+          <listitem>
+            <para>Возможность скрывать/показывать колонки таблицы.</para>
+          </listitem>
+          <listitem>
+            <para>Возможность изменять порядок отображения колонок в таблице.</para>
+          </listitem>
+          <listitem>
+            <para>Возможность самостоятельно задавать представление данных в ячейке.</para>
+          </listitem>
+          <listitem>
+            <para>Возможность управлять настройками отображения по средством механизма представлений.</para>
+          </listitem>
+        </itemizedlist>
+        <para>XML-имя компонента: <parameter>table</parameter>.</para>
+        <para>Атрибуты <parameter>table</parameter>:</para>
+        <itemizedlist>
+          <listitem>
+            <para>id</para>
+          </listitem>
+          <listitem>
+            <para>visible</para>
+          </listitem>
+          <listitem>
+            <para>styleName</para>
+          </listitem>
+          <listitem>
+            <para>width</para>
+          </listitem>
+          <listitem>
+            <para>height</para>
+          </listitem>
+          <listitem>
+            <para>expandable</para>
+          </listitem>
+          <listitem>
+            <para>editable</para>
+          </listitem>
+          <listitem>
+            <para>presentations − необязательный атрибут, включение/выключение поддержки механизма представлений.</para>
+          </listitem>
+          <listitem>
+            <para>sortable −  необязательный атрибут, разрешает/запрещает сортировку в таблице. По-умолчанию имеет значение true.</para>
+          </listitem>
+          <listitem>
+            <para>aggregatable − необязательный атрибут, разрешает/запрещает агрегацию в таблице. По-умолчанию имеет значение false.</para>
+          </listitem>
+          <listitem>
+            <para>showTotalAggregation − необязательный атрибут, разрешает/запрещает отображение строки итоговой агрегации в таблице. По-умолчанию имеет значение true.</para>
+          </listitem>
+          <listitem>
+            <para>multiselect − необязательный атрибут, разрешает/запрещает множественное выделение. По-умолчанию имеет значение false.</para>
+          </listitem>
+          <listitem>
+            <para>actions − необязательный элемент, определяющий набор действий (кнопок справа)</para>
+            <itemizedlist>
+              <listitem>
+                <para>action − элемент, определяющий действие</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+          <listitem>
+            <para>buttonsPanel</para>
+          </listitem>
+          <listitem>
+            <para>rowsCount − необязательный элемент, создающий для таблицы компонент <classname>RowsCount</classname>, который позволяет загружать в таблицу данные постранично.</para>
+          </listitem>
+          <listitem>
+            <para>columns − обязательный элемент, определяет набор колонок таблицы.</para>
+            <itemizedlist>
+              <listitem>
+                <para>column − элемент, задающий опции для колонки таблицы. Может содержать следующие атрибуты:</para>
+                <itemizedlist>
+                  <listitem>
+                    <para>id − обязательный атрибут, содержит название атрибута сущности, выводимого в колонке.</para>
+                  </listitem>
+                  <listitem>
+                    <para>collapsed − необязательный атрибут, скрывает/показывает колонку. По-умолчанию имеет значение false.</para>
+                  </listitem>
+                  <listitem>
+                    <para>caption − необязательный атрибут, содержит заголовок колонки.</para>
+                  </listitem>
+                  <listitem>
+                    <para>width − необязательный атрибут, отвечает за изначальную ширину колонки.</para>
+                  </listitem>
+                  <listitem>
+                    <para>calculatable − необязательный атрибут, используется только в редактируемой таблице. Означает, что значения в данной колонке являются вычислимыми и зависят от значений других колонок.</para>
+                  </listitem>
+                  <listitem>
+                    <para>clickAction − необязательный атрибут; содержит описание действия, которое будет выполнено при клике в ячейке.</para>
+                  </listitem>
+                  <listitem>
+                    <para>editable − необязательный атрибут, разрешает/запрещает редактирование данного атрибута в редактируемой таблице.</para>
+                  </listitem>
+                  <listitem>
+                    <para>formatter</para>
+                  </listitem>
+                  <listitem>
+                    <para>aggregation</para>
+                  </listitem>
+                  <listitem>
+                    <para>validator</para>
+                  </listitem>
+                </itemizedlist>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+          <listitem>
+            <para>rows −  обязательный элемент, декларирует иcпользуемый datasource, его атрибуты:</para>
+            <itemizedlist>
+              <listitem>
+                <para>datasource attribute</para>
+              </listitem>
+              <listitem>
+                <para>headerMode − необязательный атрибут, вариант отображения заголовков рядов:</para>
+                <itemizedlist>
+                  <listitem>
+                    <para>NONE - нет заголовков</para>
+                  </listitem>
+                  <listitem>
+                    <para>ICON - пиктограмма</para>
+                  </listitem>
+                </itemizedlist>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </itemizedlist>
+        <para>Пример использования компонента в <glossterm linkend="glossary_xml_descriptor_id">XML-дескрипторе</glossterm>:</para>
+        <para><programlisting>&lt;table id=&quot;users&quot; editable=&quot;false&quot;&gt;
+    &lt;columns&gt;
+        &lt;column id=&quot;login&quot; caption=&quot;msg://login&quot; clickAction=&quot;open:sec$User.edit&quot;/&gt;
+        &lt;column id=&quot;name&quot; caption=&quot;msg://name&quot;/&gt;
+        &lt;column id=&quot;position&quot; caption=&quot;msg://position&quot;/&gt;
+        &lt;column id=&quot;group&quot; caption=&quot;msg://group&quot;/&gt;
+        &lt;column id=&quot;email&quot; caption=&quot;msg://email&quot;/&gt;
+        &lt;column id=&quot;active&quot; caption=&quot;msg://active&quot;/&gt;
+    &lt;/columns&gt;
+    &lt;rows datasource=&quot;users&quot;/&gt;
+&lt;/table&gt;</programlisting></para>
+      </section>
+      <section>
+        <title>Tabsheet</title>
+        <para>Контейнер, содержащий закладки (<parameter>tabs</parameter>).</para>
+        <para>XML-имя компонента: <parameter>tabsheet</parameter>.</para>
+        <para>Атрибуты <parameter>tabsheet</parameter>:</para>
+        <itemizedlist>
+          <listitem>
+            <para>id</para>
+          </listitem>
+          <listitem>
+            <para>stylename</para>
+          </listitem>
+          <listitem>
+            <para>height</para>
+          </listitem>
+          <listitem>
+            <para>width</para>
+          </listitem>
+          <listitem>
+            <para>visible</para>
+          </listitem>
+          <listitem>
+            <para>expandable</para>
+          </listitem>
+        </itemizedlist>
+        <para><parameter>tabsheet</parameter> должен содержать элементы <parameter>tab</parameter>, определяющие содержимое закладок. Каждый элемент <parameter>tab</parameter> может содержать следующие атрибуты:</para>
+        <itemizedlist>
+          <listitem>
+            <para><property>id</property> − идентификатор закладки. Следует отметить, что закладка не является компонентом, и данный идентификатор используется только в рамках <parameter>Tabsheet</parameter>.</para>
+          </listitem>
+          <listitem>
+            <para><property>caption</property> − заголовок закладки. Атрибут должен содержать ключ сообщения в <glossterm linkend="glossary_localized_folders_id">локализованном пакете сообщений</glossterm>.</para>
+          </listitem>
+          <listitem>
+            <para><property>enable</property>. Это состояние закладки. Может иметь значение <property>true</property> (доступна) или <property>false</property> (недоступна). По умолчанию <property>enable = &quot;true&quot;</property>.</para>
+          </listitem>
+          <listitem>
+            <para><property>lazy</property>. Задает отложенную загрузку содержимого закладки. Может иметь значение <property>true</property> или <property>false</property>. При отображении экрана lazy-закладки не загружают свое содержимого, что приводит к созданию меньшего количества компонентов в памяти и  к меньшему количеству запросов к БД. Компоненты закладки загружаются только в тот момент, когда пользователь выбирает данную закладку.
+Если компоненты lazy-закладки требуют инициализации, проводить ее нужно не напрямую в методе <methodname>init()</methodname> <glossterm linkend="glossary_controller_id">контроллера</glossterm>, а в слушателе на переключение закладок <classname>Tabsheet.TabChangeListener</classname>.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
     </section>
-    <section>
+    <section id="section_datasource">
       <title>Источники данных</title>
+      <para>Предназначен для реализации связанных с данными компонентов.</para>
+      <para>Существуют следующие интерфейсы источников данных:</para>
+      <itemizedlist>
+        <listitem>
+          <para><interfacename>Datasource</interfacename> − предназначен для работы с одним экземпляром сущности.</para>
+          <itemizedlist>
+            <listitem>
+              <para><interfacename>RuntimePropsDatasource</interfacename> − предназначен для работы с динамическими свойствами сущностей.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+        <listitem>
+          <para><interfacename>CollectionDatasource</interfacename> − предназначен для работы с коллекцией сущностей</para>
+          <itemizedlist>
+            <listitem>
+              <para><interfacename>HierarchicalDatasource</interfacename> − предназначен для работы с компонентами <classname>Tree</classname>, <classname>TreeTable</classname>.</para>
+            </listitem>
+            <listitem>
+              <para><interfacename>GroupDatasource</interfacename> − предназначен для работы с компонентом <classname>GroupTable</classname>.</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </itemizedlist>
+      <para>Как правило, источники данных объявляются декларативно в секции <parameter>dsContext</parameter> <glossterm linkend="glossary_xml_descriptor_id">дескриптора экрана</glossterm>.</para>
+    </section>
+    <section id="section_localization">
+      <title>Пакеты локализованных сообщений</title>
+      <para>Содержит файлы локализованных сообщений  для задания названий сущностей, атрибутов сущностей, папок, заголовков закладок и так далее. Правила создания файлов локализованных сообщений:</para>
+      <itemizedlist>
+        <listitem>
+          <para>Файл по умолчанию имеет имя <filename>messages.properties</filename>, для конкретного языка − <filename>messages_ru.properties</filename> и т.д. При отсутствии файла конкретного языка или при отсутствии искомого ключа в файле конкретного языка будет использовано сообщение из файла по умолчанию.</para>
+        </listitem>
+        <listitem>
+          <para>Кодировка <code>UTF-8</code>.</para>
+        </listitem>
+        <listitem>
+          <para>Можно включать другие файлы сообщений с помощью ключа <literal>@include</literal>. При этом если некоторый ключ встречается и во включаемом файле, и в текущем, будет использовано сообщение из текущего (переопределение). Пример включения файла:<programlisting>@include=com.haulmont.cuba.web
+
+actions.Create=Create
+actions.Edit=Edit
+...</programlisting></para>
+        </listitem>
+        <listitem>
+          <para>Полным именем пакета сообщений считается имя Java-пакета, содержащего языковые файлы. Например именем пакета сообщений, расположенного в <filename>/com/haulmont/cuba/web/app/ui/security/user/messages.properties</filename> является строка <package>com.haulmont.cuba.web.app.ui.security.user</package></para>
+        </listitem>
+      </itemizedlist>
+    </section>
+    <section id="section_appFolders">
+      <title>Панель папок</title>
+      <para>Папки поиска</para>
+      <para>Папки данной категории могут быть созданы и настроены пользователем (за
+исключением подкатегории &quot;Системные&quot;). Подкатегория &quot;Системные&quot; содержит
+предустановленные папки поиска, которые доступны всем
+пользователям системы.</para>
+      <para>Папки поиска обладают следующими особенностями:</para>
+      <itemizedlist>
+        <listitem>
+          <para>отображают экраны с <glossterm linkend="glossary_filter_id">generic-фильтром</glossterm>;</para>
+        </listitem>
+        <listitem>
+          <para>создаются пользователем из любого отображенного экрана с generic-фильтром;</para>
+        </listitem>
+        <listitem>
+          <para>пользователь может изменить иерархию, название, либо переопределить фильтр поиска. </para>
+        </listitem>
+      </itemizedlist>
+      <para>Папки приложения</para>
+      <para>Папки данной категории содержат задачи, по которым требуются
+действия пользователя.</para>
+      <para>Обладают следующими особенностями:</para>
+      <itemizedlist>
+        <listitem>
+          <para>отображают предопределенные экраны с <glossterm linkend="glossary_filter_id">фильтром</glossterm> или без;</para>
+        </listitem>
+        <listitem>
+          <para>набор папок зависит от ролей пользователя; </para>
+        </listitem>
+        <listitem>
+          <para>пользователь не может изменить настройки папок;</para>
+        </listitem>
+        <listitem>
+          <para>в заголовке папки может отображаться текущее количество входящих в нее записей;</para>
+        </listitem>
+        <listitem>
+          <para>периодически обновляются по таймеру.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+    <section id="section_backgroundtasks">
+      <title>Фоновые задачи</title>
     </section>
     <section>
       <title>Создание экранов</title>
+      <section id="section_controller">
+        <title>Контроллер экрана</title>
+        <para><classname>Java</classname> или <classname>Groovy</classname> класс,  в котором можно реализовывать бизнес-логику и управлять поведением компонентов, описанных в <glossterm linkend="glossary_xml_descriptor_id">xml-дескрипторе</glossterm>, с помощью различных событий. Контроллер должен быть унаследован от одного из следующих базовых классов:</para>
+        <itemizedlist>
+          <listitem>
+            <para><classname>AbstractFrame</classname> − реализует интерфейс <interfacename>IFrame</interfacename> и предназначен для реализации фреймов − многократно используемых компонентов экранов.</para>
+          </listitem>
+          <listitem>
+            <para><classname>AbstractWindow</classname> − реализует интерфейc <interfacename>Window</interfacename> и предназначен для реализации любых экранов.</para>
+          </listitem>
+          <listitem>
+            <para><classname>AbstractLookup</classname> − реализует интерфейс <interfacename>Lookup</interfacename> и предназначен для реализации <glossterm linkend="glossary_browser_id">браузеров</glossterm> с возможностью выбора элемента списка для использования его в вызывающем экране.</para>
+          </listitem>
+          <listitem>
+            <para><classname>AbstractEditor</classname> − реализует интерфейс <interfacename>Editor</interfacename> и предназначен для реализации экранов редактирования экземпляра сущности.</para>
+          </listitem>
+        </itemizedlist>
+        <para>Основной метод контроллера − <methodname>init()</methodname>. Этот метод вызывается после создания класса окна и всего дерева компонентов, описанного XML-дескриптором. Контроллер может в этом методе произвести инициализацию экрана перед его открытием (например, создать обработчики нажатий на кнопки и пр.).</para>
+        <para>В метод <methodname>init()</methodname> из вызывающего кода передается коллекция параметров, состоящая из пар «ключ − значение». Вызывающим кодом может быть как контроллер другого экрана, так и пункт главного меню, либо прямая ссылка на экран извне приложения. Каждый параметр передается в коллекции в двух экземплярах − с простым именем и с тем же именем с префиксом param$.</para>
+        <para>Класс контроллера должен быть зарегистрирован в XML-дескрипторе экрана в атрибуте <parameter>class</parameter> корневого элемента.</para>
+      </section>
+      <section>
+        <title>XML-дескриптор</title>
+        <para>Описывает <glossterm linkend="glossary_datasource_id">источники данных</glossterm> и расположение визуальных компонентов экрана.</para>
+        <para>XML-дескриптор содержит следующие элементы:</para>
+        <itemizedlist>
+          <listitem>
+            <para><parameter>window</parameter> − корневой элемент. Атрибуты:</para>
+            <orderedlist>
+              <listitem>
+                <para><property>xmlns</property>=&quot;http://www.haulmont.com/schema/cuba/gui/window.xsd&quot; − схема XML</para>
+              </listitem>
+              <listitem>
+                <para><property>class</property> − имя класса <glossterm linkend="glossary_controller_id">контроллера</glossterm></para>
+              </listitem>
+              <listitem>
+                <para><property>messagesPack</property> − имя <glossterm linkend="glossary_localized_folders_id">пакета сообщений</glossterm>. Фактически это имя Java-пакета, содержащего файл  <filename>messages.properties</filename></para>
+              </listitem>
+              <listitem>
+                <para><property>caption</property> − заголовок экрана, должен содержать ссылку на сообщение из вышеуказанного пакета, например <programlisting>caption=&quot;msg://caption&quot;</programlisting></para>
+              </listitem>
+              <listitem>
+                <para><property>focusComponent</property> − идентификатор компонента, который получит фокус ввода при отображениее экрана (необязательно).</para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+          <listitem>
+            <para><parameter>metadataContext</parameter> − опциональный элемент для инициализации <glossterm linkend="glossary_view_ru_id">представлений</glossterm> (views). Предпочтительным является определение всех представлений в одном общем файле <filename>ext-views.xml</filename>  модуля <structname>core</structname>. </para>
+          </listitem>
+          <listitem>
+            <para><parameter>dsContext</parameter> − элемент, определяющий <glossterm linkend="glossary_datasource_id">источники данных</glossterm> данного экрана. Источники данных предназначены для реализации связанных с данными  компонентов.</para>
+          </listitem>
+          <listitem>
+            <para><parameter>layout</parameter> − элемент, определяющий компоновку экрана.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
     </section>
   </section>
-  <section>
+  <section id="section_restapi">
     <title>Интеграция со сторонними приложениями</title>
   </section>
   <section>
     <title>Описание конфигурационных файлов</title>
     <para>Соединение с базой данных</para>
     <para>Большинство приложений используют базы данных, и наше приложение не исключение. Для использования базы данных необходимо настроить подключение. Это делается в конфигурационном файле <filename>core/web/META-INF/context.xml</filename> модуля <structname>core</structname>. Например, так:</para>
-    <para><programlisting>&lt;Resource
+    <programlisting>&lt;Resource
       name=&quot;jdbc/CubaDS&quot;
       type=&quot;javax.sql.DataSource&quot;
       maxActive=&quot;20&quot;
@@ -466,6 +1519,6 @@ return ExceptionUtils.getStackTrace(e);
       username=&quot;sa&quot;
       password=&quot;saPass1&quot;
       url=&quot;jdbc:jtds:sqlserver://localhost/refapp&quot;/&gt;
-      --&gt;</programlisting></para>
+      --&gt;</programlisting>
   </section>
 </chapter>

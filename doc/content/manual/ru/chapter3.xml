@@ -47,7 +47,7 @@
             <entry align="left">UpperCamelCase, контроллеры экранов со списком сущностей − <classname>&lt;ИмяКлассаСущности&gt;Browser</classname>, контроллеры экранов редактирования − <classname>&lt;ИмяКлассаСущности&gt;Editor</classname></entry>
             <entry align="left">
               <classname>BuyerBrowser</classname>
-             </entry>
+            </entry>
           </row>
           <row>
             <entry align="left">Тип перечисления</entry>
@@ -149,11 +149,220 @@
   </section>
   <section>
     <title>Рекомендации по программированию</title>
+    <section>
+      <title>Использование правил оформления Java-кода</title>
+      <para>В платформе CUBA при форматировании кода следует придерживаться стандартных правил Java-кодирования, кроме этого необходимо соблюдать дополнительно ещё несколько правил:</para>
+      <section>
+        <title>Не игнорируйте исключения</title>
+        <para>Иногда возникает соблазн написать код, который полностью игнорирует исключения вроде этого:</para>
+        <programlisting>void setServerPort(String value) {
+    try {
+        serverPort = Integer.parseInt(value);
+    } catch (NumberFormatException e) { }
+}</programlisting>
+        <para><ulink url="http://max-imsblog.blogspot.com/2011/10/android.html">http://max-imsblog.blogspot.com/2011/10/android.html</ulink></para>
+      </section>
+    </section>
   </section>
   <section>
     <title>Отладка и тестирование</title>
   </section>
   <section>
     <title>Пошаговые практические руководства</title>
+    <section id="section_services_realization">
+      <title>Правила создания сервисов</title>
+      <para>Имена интерфейсов сервисов должны заканчиваться на <classname>...Service</classname>, имена реализаций на <classname>...ServiceBean</classname>.</para>
+      <para>При создании сервиса необходимо выполнить следующее:</para>
+      <procedure>
+        <step>
+          <para>Создать интерфейс в модуле <structname>global</structname> в пакете <package>app</package> и задать в нем имя сервиса. Имя должно начинаться с имени проекта, затем через символ нижнего подчеркивания должно идти имя сервиса. Например:</para>
+          <programlisting language="java">String NAME = &quot;cuba_DataService&quot;;</programlisting>
+        </step>
+        <step>
+          <para>Создать класс сервиса и добавить ему аннотацию <literal>@Service</literal> с именем, заданным в интерфейсе</para>
+          <programlisting>@Service(DataService.NAME)</programlisting>
+        </step>
+        <step>
+          <para>При необходимости обращения к базе данных создавать и завершать <link linkend="section_transaction_id">транзакцию</link></para>
+          <programlisting>@Inject
+private Persistence persistence;
+...
+Transaction tx = persistence.createTransaction();
+try {
+    ...
+    tx.commit();
+} finally {
+    tx.end();
+}</programlisting>
+        </step>
+      </procedure>
+      <para>Каждый вызов сервиса перехватывается с помощью <link linkend="text_additionally_spring">Spring AOP</link>  и обрамляется вызовом <acronym>ServiceInterceptor.aroundInvoke()</acronym>.</para>
+      <warning>
+        <para>Сервисы не должны вызывать методы других сервисов ни напрямую, ни через другие объекты, так как это может нарушить логику работы с транзакциями и другие механизмы. В случае вызова сервиса сервисом в журнале приложения появятся соответствующие сообщения об ошибке.</para>
+      </warning>
+      <tip>
+        <title>Совет</title>
+        <para>Если некую бизнес-логику требуется вызывать из разных сервисов либо других компонентов <link linkend="section_middleware_id">Middleware</link>, ее необходимо инкапсулировать внутри соответствующего <link linkend="section_managed_beans_id">Managed Bean</link> либо <glossterm linkend="glossary_pojo_id">POJO</glossterm>.</para>
+      </tip>
+      <para><emphasis role="bold">Использование на клиенте</emphasis></para>
+      <para>Для того чтобы вызывать сервис с клиента, для него должен быть создан соответствующий <firstterm>объект-заместитель</firstterm> (прокси-объект). Делается это путем объявления имени и интерфейса сервиса в параметрах объекта <parameter>WebRemoteProxyBeanCreator</parameter> для веб-клиента или <parameter>RemoteProxyBeanCreator</parameter> для  десктоп-клиента.</para>
+      <para>Например, чтобы в приложении <application>RefApp</application> вызвать с веб-клиента сервис <classname>refapp_MyService</classname>, необходимо добавить в файл <filename>refapp-web-spring.xml</filename> следующее:</para>
+      <programlisting language="xml">&lt;bean id=&quot;refapp_proxyCreator&quot; class=&quot;com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator&quot;&gt;
+    &lt;property name=&quot;clusterInvocationSupport&quot; ref=&quot;cuba_clusterInvocationSupport&quot;/&gt;
+    &lt;property name=&quot;remoteServices&quot;&gt;
+        &lt;map&gt;
+            &lt;entry key=&quot;refapp_MyService&quot; value=&quot;com.haulmont.refapp.core.app.MyService&quot;/&gt;
+        &lt;/map&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;</programlisting>
+      <para>Все импортируемые сервисы должны быть объявлены в одном <firstterm>словаре</firstterm> (map) бина <classname>refapp_proxyCreator</classname>.</para>
+      <para>Получить ссылку на сервис с клиента можно двумя способами:</para>
+      <itemizedlist>
+        <listitem>
+          <para><classname>ServiceLocator</classname> </para>
+          <programlisting>BookingService service = ServiceLocator.lookup(BookingService.NAME);</programlisting>
+        </listitem>
+        <listitem>
+          <para>Для <glossterm linkend="glossary_controller_id">контроллеров</glossterm> экранов предпочтительный способ − <glossterm linkend="glossary_injection_id">внедрение зависимости</glossterm>.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+    <section id="section_managed_beans_realization">
+      <title>Правила создания управляемых бинов</title>
+      <itemizedlist>
+        <listitem>
+          <para>Создать интерфейс бина в пакете <package>app</package> и задать в нем кроме методов поле с именем бина. Имя бина должно иметь префикс с именем проекта. Например:</para>
+          <para><programlisting>public interface TaskWorker {
+    String NAME = &quot;taskman_TaskWorker&quot;;
+    ...</programlisting></para>
+        </listitem>
+        <listitem>
+          <para>Создать класс реализации в пакете <package>app</package> и аннотировать его, указав имя бина:</para>
+          <para><programlisting>@ManagedBean(TaskWorker.NAME)
+public class TaskWorkerBean implements TaskWorker {
+...</programlisting></para>
+        </listitem>
+      </itemizedlist>
+      <para>Данные правила дают возможность в дальнейшем получать ссылки на бин, указывая константу в качестве имени:</para>
+      <programlisting>LoginService ls = AppContext.getBean(LoginService.NAME);</programlisting>
+      <para>Ссылку на бин в другом управляемом бине (а также  в <link linkend="section_services_id">сервисе</link> или <link linkend="section_MBean_id">МБине</link>) можно получить более простым и естественным способом, объявив поле соответствующего типа и добавив ему аннотацию<literal> @Inject</literal>:</para>
+      <programlisting>@Inject
+private TaskWorker taskWorker;</programlisting>
+      <para>В этом случае контейнер автоматически найдет подходящую реализацию и установит ссылку на объект во время разворачивания приложения в памяти.</para>
+      <para>Довольно часто программный компонент, реализующий бизнес-логику, должен иметь состояние (например кэш или конфигурационные данные), и предоставлять интерфейс администратору системы для просмотра и управления этими данными. В этом случае рекомендуется добавить управляемому бину <glossterm linkend="glossary_jmx_id">JMX</glossterm>-интерфейс и превратить его тем самым в <link linkend="section_MBean_id">МБин</link>.</para>
+    </section>
+    <section id="section_mbeans_realization">
+      <title>Правила создания Мбинов</title>
+      <para>Если JMX-методы МБина работают с данными, то ему потребуется пользовательская сессия с правами на доступ. В этом случае рекомендуется наследовать МБин от базового класса <classname>ManagementBean</classname>, который содержит удобные методы входа в систему/выхода из системы (login/logout).</para>
+      <para><emphasis role="bold">Правила создания</emphasis></para>
+      <itemizedlist>
+        <listitem>
+          <para>Создать интерфейс с именем, заканчивающимся на <classname>*MBean</classname>, например, <classname>SampleMBean</classname> в пакете <package>app</package></para>
+        </listitem>
+        <listitem>
+          <para>Если нужно обращение к МБину из кода сервера (а не только из <glossterm linkend="glossary_jmx_id">JMX</glossterm>-консоли), создать интерфейс <interfacename>SampleAPI</interfacename>. Создать в интерфейсе поле с именем бина, в качестве префикса использовать имя проекта:</para>
+          <programlisting>public interface SampleAPI {
+    String NAME = &quot;myproject_Sample&quot;;
+    ...</programlisting>
+        </listitem>
+        <listitem>
+          <para>Создать класс реализации с именем, соответствующим интерфейсу, в нашем случае <classname>Sample</classname> и аннотировать его как <literal>@ManagedBean(SampleAPI.NAME)</literal></para>
+        </listitem>
+        <listitem>
+          <para>Экспортировать <interfacename>*MBean</interfacename> интерфейс в JMX в файле <filename>myproject-spring.xml</filename>, например:</para>
+          <programlisting>&lt;bean id=&quot;myproject_MBeanExporter&quot; class=&quot;org.springframework.jmx.export.MBeanExporter&quot; lazy-init=&quot;false&quot;&gt;
+        &lt;property name=&quot;beans&quot;&gt;
+            &lt;map&gt;
+                &lt;entry key=&quot;${cuba.webContextName}:service=Sample&quot; value-ref=&quot;myproject_Sample&quot;/&gt;
+            &lt;/map&gt;
+        &lt;/property&gt;
+        &lt;property name=&quot;assembler&quot;&gt;
+            &lt;bean class=&quot;org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler&quot;&gt;
+                &lt;property name=&quot;interfaceMappings&quot;&gt;
+                    &lt;map&gt;
+                        &lt;entry key=&quot;myproject_Sample&quot; value=&quot;com.haulmont.myproject.core.app.SampleMBean&quot;/&gt;
+                    &lt;/map&gt;
+                &lt;/property&gt;
+            &lt;/bean&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;</programlisting>
+        </listitem>
+      </itemizedlist>
+      <para>Один <link linkend="text_additionally_spring">Spring</link>-объект <classname>MBeanExporter</classname> может экспортировать несколько МБинов. 
+Для удобства работы администратора методы JMX-интерфейса должны возвращать строку. В случае успешного выполнения это может быть полезная информация, либо просто строка <computeroutput>Done</computeroutput>. В случае возникновения исключения нужно его записать в журнал и вернуть stacktrace:</para>
+      <programlisting>public String jmxMethod1() {
+    try {
+        return &quot;Done&quot;;
+    } catch (Exception e) {
+        log.error(&quot;Error executing jmxMethod1&quot;, e);
+        return ExceptionUtils.getStackTrace(e);
+    } 
+}</programlisting>
+      <para><emphasis role="bold">Security</emphasis></para>
+      <para>Как правило, для выполнения функций МБинов требуется аутентификация в <trademark>CUBA</trademark>-security, а <glossterm linkend="glossary_jmx_id">JMX</glossterm>-интерфейс  ее обеспечить не может. Простой механизм входа в систему/выхода из системы (login/logout) содержится в классе <classname>com.haulmont.cuba.core.app.ManagementBean</classname>, поэтому желательно наследовать свои классы МБинов, работающих с данными, от этого класса. Пример использования:</para>
+      <programlisting>public String jmxMethod2() {
+    try {
+loginOnce(); // defined in ManagementBean
+...
+return &quot;Done&quot;;
+    } catch (Exception e) {
+        log.error(&quot;Error executing jmxMethod2&quot;, e);
+return ExceptionUtils.getStackTrace(e);
+    } 
+}</programlisting>
+      <para>Методы <methodname>login()</methodname> и <methodname>loginOnce()</methodname>, определенные в классе <classname>ManagementBean</classname>, осуществляют вход в систему, используя имя и пароль, заданные в <link>файле свойств</link> в параметрах  <parameter>cuba.jmxUserLogin</parameter> и <parameter>cuba.jmxUserPassword</parameter> соответственно. Пароль должен быть захеширован и указан с префиксом <code>md5:</code>. Простейший способ получить пароль пользователя в <code>md5</code> − скопировать значение из поля <database>SEC_USER.PASSWORD</database> базы данных.</para>
+      <para><emphasis role="bold">Работа с JMX-интерфейсом</emphasis></para>
+      <para>Обращаться к МБинам можно с помощью утилиты <application>jconsole</application>, входящей в состав <application>JDK</application>, либо с помощью программы <application>VisualVM</application>.</para>
+      <para>Для того чтобы увидеть свои МБины, сервер <application>Tomcat</application> должен быть запущен с опциями удаленного подключения к <glossterm linkend="glossary_jmx_id">JMX</glossterm>. В простейшем случае, без аутентификации, параметры запуска <application>JVM</application> должны содержать следующие опции:</para>
+      <programlisting>set CATALINA_OPTS=-Dcom.sun.management.jmxremote
+-Dcom.sun.management.jmxremote.port=7777
+-Dcom.sun.management.jmxremote.ssl=false
+-Dcom.sun.management.jmxremote.authenticate=false</programlisting>
+    </section>
+    <section id="section_transactions_realization">
+      <title>Управление транзакциями</title>
+      <para>Используется интерфейс <classname>com.haulmont.cuba.core.Transaction</classname>, получаемый из Locator&apos;a
+
+
+
+
+</para>
+      <itemizedlist>
+        <listitem>
+          <para><classname>Locator.createTransaction()</classname> – старт транзакции</para>
+        </listitem>
+        <listitem>
+          <para><classname>Transaction.commit()</classname> – коммит, <classname>commitRetaining() </classname>– коммит и старт новой</para>
+        </listitem>
+        <listitem>
+          <para><classname>Transaction.end()</classname> – выполняет rollback если ранее не был вызван коммит</para>
+        </listitem>
+        <listitem>
+          <para><classname>Locator.isInTransaction()</classname> – есть ли в данный момент транзакция</para>
+        </listitem>
+        <listitem>
+          <para>Обязательно  вызывать <classname>Transaction.end()</classname> в блоке finally, в противном случае возможно зависание открытых транзакций в БД, что недопустимо</para>
+          <programlisting>Transaction tx = Locator.createTransaction();
+try {
+    …
+    tx.commit();
+} finally {
+    tx.end();
+}</programlisting>
+        </listitem>
+      </itemizedlist>
+      <para><emphasis role="bold">Особенности применения</emphasis></para>
+      <itemizedlist>
+        <listitem>
+          <para><classname>Locator.createTransaction()</classname> всегда создает новую транзакцию. Если в этот момент уже есть открытая транзакция, она приостанавливается (REQUIRES_NEW).</para>
+        </listitem>
+        <listitem>
+          <para><classname>Locator.getTransaction()</classname> создает новую транзакцию только если в данный момент нет уже открытой транзакции (REQUIRES). </para>
+        </listitem>
+        <listitem>
+          <para>Варианты использования см. в тесте <classname>com.haulmont.cuba.core.TransactionTest</classname></para>
+        </listitem>
+      </itemizedlist>
+    </section>
   </section>
 </chapter>
