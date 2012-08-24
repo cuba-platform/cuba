@@ -69,11 +69,18 @@ public class AnonymousSessionHolder {
         return userSession;
     }
 
+    /**
+     * Scheduled ping session
+     */
+    @SuppressWarnings("unused")
     public void pingSession() {
-        UserSession userSession = getSession();
+        // only if anonymous session initialized
+        if (anonymousSession != null) {
+            UserSession userSession = getSession();
 
-        AppContext.setSecurityContext(new SecurityContext(userSession));
-        userSessionSource.pingSession();
-        AppContext.setSecurityContext(null);
+            AppContext.setSecurityContext(new SecurityContext(userSession));
+            userSessionSource.pingSession();
+            AppContext.setSecurityContext(null);
+        }
     }
 }
