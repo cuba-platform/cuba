@@ -70,6 +70,8 @@ public abstract class WindowManager implements Serializable {
 
     protected Scripting scripting = AppBeans.get(Scripting.NAME);
 
+    protected Resources resources = AppBeans.get(Resources.NAME);
+
     private DialogParams dialogParams;
 
     protected List<WindowCloseListener> listeners = new ArrayList<WindowCloseListener>();
@@ -100,7 +102,7 @@ public abstract class WindowManager implements Serializable {
 
         String templatePath = windowInfo.getTemplate();
 
-        InputStream stream = scripting.getResourceAsStream(templatePath);
+        InputStream stream = resources.getResourceAsStream(templatePath);
         if (stream == null) {
             stream = getClass().getResourceAsStream(templatePath);
             if (stream == null) {
@@ -499,7 +501,7 @@ public abstract class WindowManager implements Serializable {
         loader.setLocale(getLocale());
         loader.setMessagesPack(window.getMessagesPack());
 
-        InputStream stream = scripting.getResourceAsStream(src);
+        InputStream stream = resources.getResourceAsStream(src);
         if (stream == null) {
             stream = getClass().getResourceAsStream(src);
             if (stream == null) {

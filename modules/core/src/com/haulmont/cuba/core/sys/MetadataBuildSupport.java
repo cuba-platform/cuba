@@ -7,19 +7,16 @@
 package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.util.Dom4j;
-import com.haulmont.bali.util.ReflectionHelper;
-import com.haulmont.chile.core.model.MetaClass;
-import com.haulmont.chile.core.model.Session;
+import com.haulmont.cuba.core.global.Resources;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.springframework.core.io.Resource;
 import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 
 import javax.annotation.ManagedBean;
-import java.io.IOException;
+import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.*;
 
@@ -33,6 +30,9 @@ public class MetadataBuildSupport {
 
     public static final String METADATA_CONFIG = "cuba.metadataConfig";
     public static final String DEFAULT_METADATA_CONFIG = "cuba-metadata.xml";
+
+    @Inject
+    private Resources resources;
 
     /**
      * Get the location of non-persistent metadata descriptor
@@ -105,14 +105,13 @@ public class MetadataBuildSupport {
     }
 
     public Element readXml(String path) {
-        Resource resource = new ConfigurationResourceLoader().getResource(path);
-        InputStream stream = null;
+        InputStream stream = resources.getResourceAsStream(path);
         try {
-            stream = resource.getInputStream();
+            stream = resources.getResourceAsStream(path);
+            if (stream == null)
+                throw new IllegalStateException("Resource not found: " + path);
             Document document = Dom4j.readDocument(stream);
             return document.getRootElement();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         } finally {
             IOUtils.closeQuietly(stream);
         }

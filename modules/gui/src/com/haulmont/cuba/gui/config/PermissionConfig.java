@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 12.03.2009 15:51:46
- *
- * $Id$
  */
 package com.haulmont.cuba.gui.config;
 
@@ -14,14 +9,9 @@ import com.haulmont.bali.datastruct.Node;
 import com.haulmont.bali.datastruct.Tree;
 import com.haulmont.bali.util.Dom4j;
 import com.haulmont.chile.core.model.*;
-import com.haulmont.cuba.core.global.ClientType;
-import com.haulmont.cuba.core.global.MessageProvider;
-import com.haulmont.cuba.core.global.MetadataProvider;
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.security.entity.PermissionType;
 import com.haulmont.cuba.security.entity.ui.AttributeTarget;
 import com.haulmont.cuba.security.entity.ui.BasicPermissionTarget;
 import com.haulmont.cuba.security.entity.ui.MultiplePermissionTarget;
@@ -45,6 +35,9 @@ import java.util.*;
 
 /**
  * GenericUI class holding information about all permission targets.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean("cuba_PermissionConfig")
 public class PermissionConfig {
@@ -176,10 +169,9 @@ public class PermissionConfig {
             specific = new Tree<BasicPermissionTarget>(root);
 
             final String configName = AppContext.getProperty(PERMISSION_CONFIG_XML_PROP);
-            ConfigurationResourceLoader resourceLoader = new ConfigurationResourceLoader();
             StrTokenizer tokenizer = new StrTokenizer(configName);
             for (String location : tokenizer.getTokenArray()) {
-                Resource resource = resourceLoader.getResource(location);
+                Resource resource = resources.getResource(location);
                 if (resource.exists()) {
                     InputStream stream = null;
                     try {
@@ -243,6 +235,9 @@ public class PermissionConfig {
 
     @Inject
     private WindowConfig windowConfig;
+
+    @Inject
+    private Resources resources;
 
     private ClientType clientType;
     private String messagePack;

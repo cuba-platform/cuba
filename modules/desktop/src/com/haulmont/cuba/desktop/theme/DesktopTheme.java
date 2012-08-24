@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.desktop.theme;
 
-import com.haulmont.cuba.desktop.Resources;
+import com.haulmont.cuba.desktop.DesktopResources;
 
 import java.util.Set;
 
@@ -51,5 +51,5 @@ public interface DesktopTheme {
      *
      * @return resources
      */
-    Resources getResources();
+    DesktopResources getResources();
 }

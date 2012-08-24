@@ -5,9 +5,10 @@
  */
 package com.haulmont.cuba.gui.config;
 
+import com.haulmont.bali.util.Dom4j;
 import com.haulmont.cuba.core.global.MessageProvider;
+import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.components.ShortcutAction;
 import org.apache.commons.io.IOUtils;
@@ -15,28 +16,24 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import org.springframework.core.io.Resource;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.MissingResourceException;
 
 /**
- * GenericUI class holding information about main menu structure.
- *
- * <p>$Id$</p>
+ * GenericUI class holding information about the main menu structure.
  *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(MenuConfig.NAME)
 public class MenuConfig implements Serializable
@@ -52,8 +49,8 @@ public class MenuConfig implements Serializable
     private static final long serialVersionUID = 6791874036524436320L;
 
     /**
-     * Localized menu item caption
-     * @param id screen ID as defined in <code>screen-config.xml</code>
+     * Localized menu item caption.
+     * @param id screen ID as defined in <code>screens.xml</code>
      */
     public static String getMenuItemCaption(String id) {
         String messagePack = AppContext.getProperty(AppConfig.MESSAGES_PACK_PROP);
@@ -64,18 +61,19 @@ public class MenuConfig implements Serializable
         }
     }
 
-    public MenuConfig() {
+    @Inject
+    public MenuConfig(Resources resources) {
         final String configName = AppContext.getProperty(MENU_CONFIG_XML_PROP);
 
-        ConfigurationResourceLoader resourceLoader = new ConfigurationResourceLoader();
         StrTokenizer tokenizer = new StrTokenizer(configName);
         for (String location : tokenizer.getTokenArray()) {
-            Resource resource = resourceLoader.getResource(location);
+            Resource resource = resources.getResource(location);
             if (resource.exists()) {
                 InputStream stream = null;
                 try {
                     stream = resource.getInputStream();
-                    loadConfig(stream);
+                    Element rootElement = Dom4j.readDocument(stream).getRootElement();
+                    loadMenuItems(rootElement, null);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 } finally {
@@ -92,32 +90,6 @@ public class MenuConfig implements Serializable
      */
     public List<MenuItem> getRootItems() {
         return Collections.unmodifiableList(rootItems);
-    }
-
-    public void loadConfig(Element rootElem) {
-        loadMenuItems(rootElem, null);
-    }
-
-    public void loadConfig(InputStream stream) {
-        Document doc;
-        try {
-            SAXReader reader = new SAXReader();
-            doc = reader.read(stream);
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        }
-        loadConfig(doc.getRootElement());
-    }
-
-    public void loadConfig(String xml) {
-        Document doc;
-        try {
-            SAXReader reader = new SAXReader();
-            doc = reader.read(new StringReader(xml));
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        }
-        loadConfig(doc.getRootElement());
     }
 
     private void loadMenuItems(Element parentElement, MenuItem parentItem) {

@@ -6,9 +6,8 @@
 
 package com.haulmont.cuba.desktop;
 
-import com.haulmont.cuba.core.global.ScriptingProvider;
+import com.haulmont.cuba.core.global.Resources;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.text.StrTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -22,21 +21,18 @@ import java.util.*;
  *
  * @author krivopustov
  */
-public class Resources {
+public class DesktopResources {
 
     protected List<String> roots;
 
     protected Map<String, byte[]> cache = new HashMap<String, byte[]>();
 
-    private Log log = LogFactory.getLog(Resources.class);
+    private Resources resources;
 
-    public Resources(String locations) {
-        StrTokenizer tokenizer = new StrTokenizer(locations);
-        roots = tokenizer.getTokenList();
-        Collections.reverse(roots);
-    }
+    private Log log = LogFactory.getLog(DesktopResources.class);
 
-    public Resources(List<String> roots) {
+    public DesktopResources(List<String> roots, Resources resources) {
+        this.resources = resources;
         this.roots = new ArrayList<String>(roots);
         Collections.reverse(this.roots);
     }
@@ -48,7 +44,7 @@ public class Resources {
         byte[] bytes = cache.get(name);
         if (bytes == null) {
             for (String root : roots) {
-                InputStream stream = ScriptingProvider.getResourceAsStream(root + name);
+                InputStream stream = resources.getResourceAsStream(root + name);
                 if (stream != null) {
                     try {
                         bytes = IOUtils.toByteArray(stream);
@@ -63,7 +59,7 @@ public class Resources {
             }
             if (bytes == null) {
                 log.warn("Resource " + name + " not found in " + roots);
-                InputStream stream = ScriptingProvider.getResourceAsStream("/com/haulmont/cuba/desktop/res/nimbus/icons/attention.png");
+                InputStream stream = resources.getResourceAsStream("/com/haulmont/cuba/desktop/res/nimbus/icons/attention.png");
                 if (stream != null) {
                     try {
                         bytes = IOUtils.toByteArray(stream);

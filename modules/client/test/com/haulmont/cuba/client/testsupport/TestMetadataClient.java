@@ -13,6 +13,7 @@ import com.haulmont.cuba.core.global.MetadataBuildInfo;
 import com.haulmont.cuba.core.global.ViewRepository;
 import com.haulmont.cuba.core.sys.AbstractMetadata;
 import com.haulmont.cuba.core.sys.PersistentEntitiesMetadataLoader;
+import com.haulmont.cuba.core.sys.ResourcesImpl;
 import com.haulmont.cuba.core.sys.TransientEntitiesMetadataLoader;
 import org.apache.commons.lang.StringUtils;
 
@@ -64,7 +65,7 @@ public class TestMetadataClient extends AbstractMetadata {
 
     @Override
     protected void initViews() {
-        ViewRepository viewRepository = new ViewRepository(this);
+        ViewRepository viewRepository = new ViewRepository(this, new ResourcesImpl(getClass().getClassLoader()));
         if (!StringUtils.isEmpty(viewsConfig))
             viewRepository.deployViews(viewsConfig);
         this.viewRepository = viewRepository;

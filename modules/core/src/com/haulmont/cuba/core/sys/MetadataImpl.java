@@ -8,6 +8,7 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.MetadataBuildInfo;
+import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.global.ViewRepository;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -25,6 +26,9 @@ public class MetadataImpl extends AbstractMetadata {
 
     @Inject
     private MetadataBuildSupport metadataBuildSupport;
+
+    @Inject
+    private Resources resources;
 
     protected MetadataBuildInfo getMetadataBuildInfo() {
         return new MetadataBuildInfo(
@@ -51,6 +55,6 @@ public class MetadataImpl extends AbstractMetadata {
     }
 
     protected ViewRepository createViewRepository() {
-        return new ViewRepository(this);
+        return new ViewRepository(this, resources);
     }
 }

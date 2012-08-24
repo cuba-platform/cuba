@@ -40,7 +40,7 @@ public class StandardCacheLoader implements CacheLoader {
     private Metadata metadata;
 
     @Inject
-    private Scripting scripting;
+    private Resources resources;
 
     @Inject
     private Configuration configuration;
@@ -84,7 +84,7 @@ public class StandardCacheLoader implements CacheLoader {
 
         if (StringUtils.isEmpty(dbQuery)) {
             try {
-                dbQuery = scripting.getResourceAsString(queryPath);
+                dbQuery = resources.getResourceAsString(queryPath);
             } catch (Exception e) {
                 log.error("Broken or missing query file for cache: " + cache.getName());
                 throw new CacheException(e);

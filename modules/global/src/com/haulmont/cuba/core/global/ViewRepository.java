@@ -12,7 +12,6 @@ import com.haulmont.chile.core.model.MetaProperty;
 import com.haulmont.chile.core.model.Range;
 import com.haulmont.cuba.core.entity.BaseEntity;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -22,9 +21,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.springframework.core.io.Resource;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -46,11 +43,13 @@ public class ViewRepository
             new ConcurrentHashMap<MetaClass, Map<String, View>>();
 
     private Metadata metadata;
+    private Resources resources;
 
     private static Log log = LogFactory.getLog(ViewRepository.class);
 
-    public ViewRepository(Metadata metadata) {
+    public ViewRepository(Metadata metadata, Resources resources) {
         this.metadata = metadata;
+        this.resources = resources;
     }
 
     /**
@@ -122,13 +121,12 @@ public class ViewRepository
             log.debug("Deploying views config: " + resourceUrl);
 
             InputStream stream = null;
-            Resource resource = new ConfigurationResourceLoader().getResource(resourceUrl);
             try {
-                stream = resource.getInputStream();
+                stream = resources.getResourceAsStream(resourceUrl);
+                if (stream == null)
+                    throw new IllegalStateException("Resource is not found: " + resourceUrl);
                 deployViews(stream);
                 readFileNames.add(resourceUrl);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             } finally {
                 IOUtils.closeQuietly(stream);
             }

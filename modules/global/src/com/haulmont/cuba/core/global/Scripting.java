@@ -96,20 +96,16 @@ public interface Scripting {
     Class loadClass(String name);
 
     /**
-     * Gets resource form <em>conf</em> directory or classpath.
-     * <p>If a resource with the given name exists in <em>conf</em> directory, return it, otherwise search in classpath</p>
-     * @param name  fully qualified resource name
-     * @return      InputStream or null if the resource not found
+     * DEPRECATED - use {@link Resources#getResourceAsStream(String)}
      */
+    @Deprecated
     @Nullable
     InputStream getResourceAsStream(String name);
 
     /**
-     * Gets resource form <em>conf</em> directory or classpath.
-     * <p>If a resource with the given name exists in <em>conf</em> directory, return it, otherwise search in classpath</p>
-     * @param name  fully qualified resource name
-     * @return      resource content as string or null if the resource not found
+     * DEPRECATED - use {@link Resources#getResourceAsString(String)}
      */
+    @Deprecated
     @Nullable
     String getResourceAsString(String name);
 

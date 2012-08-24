@@ -10,8 +10,8 @@
  */
 package com.haulmont.cuba.core.app;
 
+import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
 import com.haulmont.cuba.core.sys.Deserializer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SerializationUtils;
@@ -22,8 +22,11 @@ import org.jgroups.conf.XmlConfigurator;
 import org.springframework.core.io.Resource;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.io.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Standard implementation of middleware clustering based on JGroups.
@@ -42,6 +45,9 @@ public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, A
     private JChannel channel;
 
     private View currentView;
+
+    @Inject
+    private Resources resources;
 
     private static final String STATE_MAGIC = "CUBA_STATE";
 
@@ -105,9 +111,7 @@ public class ClusterManager implements ClusterManagerAPI, ClusterManagerMBean, A
                 log.error("No property 'cuba.cluster.jgroupsConfig' specified");
                 return;
             }
-            ConfigurationResourceLoader resourceLoader = new ConfigurationResourceLoader();
-            Resource resource = resourceLoader.getResource(configName);
-            stream = resource.getInputStream();
+            stream = resources.getResource(configName).getInputStream();
 
             channel = new JChannel(XmlConfigurator.getInstance(stream));
             channel.setOpt(Channel.LOCAL, false); // do not receive a copy of our own messages

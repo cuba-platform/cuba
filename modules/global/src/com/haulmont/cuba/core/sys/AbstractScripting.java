@@ -6,9 +6,7 @@
 
 package com.haulmont.cuba.core.sys;
 
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.GlobalConfig;
-import com.haulmont.cuba.core.global.Scripting;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.javacl.JavaClassLoader;
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
@@ -18,7 +16,6 @@ import groovy.util.GroovyScriptEngine;
 import groovy.util.ResourceConnector;
 import groovy.util.ResourceException;
 import groovy.util.ScriptException;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -247,25 +244,16 @@ public abstract class AbstractScripting implements Scripting {
         }
     }
 
+    @Deprecated
     @Override
     public InputStream getResourceAsStream(String name) {
-        String s = name.startsWith("/") ? name.substring(1) : name;
-        return getGroovyClassLoader().getResourceAsStream(s);
+        return AppBeans.get(Resources.class).getResourceAsStream(name);
     }
 
+    @Deprecated
     @Override
     public String getResourceAsString(String name) {
-        InputStream stream = getResourceAsStream(name);
-        if (stream == null)
-            return null;
-
-        try {
-            return IOUtils.toString(stream, "UTF-8");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(stream);
-        }
+        return AppBeans.get(Resources.class).getResourceAsString(name);
     }
 
     @Override

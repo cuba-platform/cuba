@@ -7,7 +7,7 @@
 package com.haulmont.cuba.desktop.gui.components;
 
 import com.haulmont.cuba.desktop.App;
-import com.haulmont.cuba.desktop.Resources;
+import com.haulmont.cuba.desktop.DesktopResources;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.Button;
@@ -38,7 +38,7 @@ public class DesktopPopupButton
 
     public static final String DEFAULT_ICON = "/popupbutton/open-popup.png";
 
-    private Resources resources = App.getInstance().getResources();
+    private DesktopResources resources = App.getInstance().getResources();
 
     private List<Action> initializedActions = new ArrayList<Action>();
 

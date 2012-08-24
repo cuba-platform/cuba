@@ -9,10 +9,7 @@ package com.haulmont.cuba.client.sys;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.app.ServerInfoService;
-import com.haulmont.cuba.core.global.Configuration;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.MetadataBuildInfo;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AbstractMetadata;
 import com.haulmont.cuba.core.sys.AppContext;
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +32,9 @@ public class MetadataClientImpl extends AbstractMetadata {
 
     @Inject
     private Configuration configuration;
+
+    @Inject
+    private Resources resources;
 
     protected MetadataBuildInfo getMetadataBuildInfo() {
         return serverInfoService.getMetadataBuildInfo();
@@ -68,6 +68,6 @@ public class MetadataClientImpl extends AbstractMetadata {
     }
 
     protected ViewRepositoryClient createViewRepository(boolean lazyLoadServerViews) {
-        return new ViewRepositoryClient(this, lazyLoadServerViews, serverInfoService);
+        return new ViewRepositoryClient(this, resources, lazyLoadServerViews, serverInfoService);
     }
 }

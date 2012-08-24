@@ -6,10 +6,10 @@
 
 package com.haulmont.cuba.desktop.theme.impl;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.sys.ConfigurationResourceLoader;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Resources;
 import com.haulmont.cuba.desktop.DesktopConfig;
-import com.haulmont.cuba.desktop.Resources;
+import com.haulmont.cuba.desktop.DesktopResources;
 import com.haulmont.cuba.desktop.theme.ComponentDecorator;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import com.haulmont.cuba.desktop.theme.DesktopThemeLoader;
@@ -24,6 +24,8 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.core.io.Resource;
 
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -41,9 +43,16 @@ import java.util.regex.Pattern;
  *
  * @author Alexander Budarov
  */
-public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
+@ManagedBean(DesktopThemeLoader.NAME)
+public class DesktopThemeLoaderImpl implements DesktopThemeLoader {
 
     private static final String BORDER_TAG = "border";
+
+    @Inject
+    private Configuration configuration;
+
+    @Inject
+    private Resources resources;
 
     protected Log log = LogFactory.getLog(getClass());
 
@@ -51,19 +60,18 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
     private static final Pattern DECIMAL_COLOR_PATTERN = Pattern.compile("^(\\d+)\\s+(\\d+)\\s+(\\d+)$");
 
     public DesktopTheme loadTheme(String themeName) {
-        final String themeLocations = ConfigProvider.getConfig(DesktopConfig.class).getResourceLocations();
+        final String themeLocations = configuration.getConfig(DesktopConfig.class).getResourceLocations();
         StrTokenizer tokenizer = new StrTokenizer(themeLocations);
         String[] locationList = tokenizer.getTokenArray();
-        ConfigurationResourceLoader resourceLoader = new ConfigurationResourceLoader();
 
         List<String> resourceLocationList = new ArrayList<String>();
-        DesktopThemeImpl theme = createTheme(themeName, locationList, resourceLoader);
+        DesktopThemeImpl theme = createTheme(themeName, locationList);
         theme.setName(themeName);
         for (String location : locationList) {
             resourceLocationList.add(getResourcesDir(themeName, location));
 
             String xmlLocation = getConfigFileName(themeName, location);
-            Resource resource = resourceLoader.getResource(xmlLocation);
+            Resource resource = resources.getResource(xmlLocation);
             if (resource.exists()) {
                 try {
                     loadThemeFromXml(theme, resource);
@@ -75,18 +83,18 @@ public class DesktopThemeLoaderImpl extends DesktopThemeLoader {
             }
         }
 
-        Resources resources = new Resources(resourceLocationList);
-        theme.setResources(resources);
+        DesktopResources desktopResources = new DesktopResources(resourceLocationList, resources);
+        theme.setResources(desktopResources);
 
         return theme;
     }
 
     // read config files and search for <class> element which should contain custom theme class
-    private DesktopThemeImpl createTheme(String themeName, String[] locationList, ConfigurationResourceLoader resourceLoader) {
+    private DesktopThemeImpl createTheme(String themeName, String[] locationList) {
         String themeClassName = null;
         for (String location : locationList) {
             String xmlLocation = getConfigFileName(themeName, location);
-            Resource resource = resourceLoader.getResource(xmlLocation);
+            Resource resource = resources.getResource(xmlLocation);
             if (resource.exists()) {
                 try {
                     Document doc = readXmlDocument(resource);

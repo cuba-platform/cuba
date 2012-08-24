@@ -10,7 +10,7 @@ import com.haulmont.cuba.core.global.ConfigProvider;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
 import com.haulmont.cuba.desktop.DesktopConfig;
-import com.haulmont.cuba.desktop.Resources;
+import com.haulmont.cuba.desktop.DesktopResources;
 import com.haulmont.cuba.desktop.gui.components.DesktopComponentsHelper;
 import com.haulmont.cuba.desktop.sys.vcl.CollapsiblePanel;
 import org.jdesktop.swingx.combobox.ListComboBoxModel;
@@ -108,7 +108,7 @@ public class FontDialog extends JDialog {
         fontSizeBox.setMinimumSize(new Dimension(60, 0));
         fontSizeBox.setModel(new ListComboBoxModel<Integer>(desktopConfig.getAvailableFontSizes()));
 
-        Resources resources = App.getInstance().getResources();
+        DesktopResources resources = App.getInstance().getResources();
         boldToogle = new JToggleButton(resources.getIcon("font/bold.png"));
         italicToogle = new JToggleButton(resources.getIcon("font/italic.png"));
         underlineToogle = new JToggleButton(resources.getIcon("font/underline.png"));

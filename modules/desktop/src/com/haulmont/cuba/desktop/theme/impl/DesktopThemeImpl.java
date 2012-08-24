@@ -6,7 +6,7 @@
 
 package com.haulmont.cuba.desktop.theme.impl;
 
-import com.haulmont.cuba.desktop.Resources;
+import com.haulmont.cuba.desktop.DesktopResources;
 import com.haulmont.cuba.desktop.theme.ComponentDecorator;
 import com.haulmont.cuba.desktop.theme.DesktopTheme;
 import net.miginfocom.layout.PlatformDefaults;
@@ -33,7 +33,7 @@ public class DesktopThemeImpl implements DesktopTheme {
 
     private Map<String, List<DesktopStyle>> styles;
 
-    private Resources resources;
+    private DesktopResources resources;
 
     protected Log log = LogFactory.getLog(getClass());
 
@@ -53,11 +53,11 @@ public class DesktopThemeImpl implements DesktopTheme {
         this.name = name;
     }
 
-    public Resources getResources() {
+    public DesktopResources getResources() {
         return resources;
     }
 
-    public void setResources(Resources resources) {
+    public void setResources(DesktopResources resources) {
         this.resources = resources;
     }
 

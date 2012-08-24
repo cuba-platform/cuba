@@ -181,7 +181,7 @@ public class App implements ConnectionListener {
     protected void initTheme() throws Exception {
         DesktopConfig config = ConfigProvider.getConfig(DesktopConfig.class);
         String themeName = config.getTheme();
-        theme = DesktopThemeLoader.getInstance().loadTheme(themeName);
+        theme = AppBeans.get(DesktopThemeLoader.class).loadTheme(themeName);
         theme.init();
     }
 
@@ -460,7 +460,7 @@ public class App implements ConnectionListener {
         glassPane.deactivate();
     }
 
-    public Resources getResources() {
+    public DesktopResources getResources() {
         return theme.getResources();
     }
 
