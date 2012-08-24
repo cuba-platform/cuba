@@ -15,6 +15,10 @@ import com.haulmont.cuba.security.entity.Role;
 import javax.inject.Inject;
 import java.util.Map;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class RoleEditor extends AbstractEditor<Role> {
 
     @Inject

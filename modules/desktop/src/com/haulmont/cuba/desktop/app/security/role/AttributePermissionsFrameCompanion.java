@@ -21,9 +21,8 @@ import javax.swing.*;
 import java.util.Iterator;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class AttributePermissionsFrameCompanion implements AttributePermissionsFrame.Companion {
     @Override
@@ -40,16 +39,16 @@ public class AttributePermissionsFrameCompanion implements AttributePermissionsF
                 int i = 0;
                 StringBuilder builder = new StringBuilder("<html>");
                 Iterator<AttributeTarget> iterator = target.getPermissions().iterator();
-                while (iterator.hasNext() && i < 5) {
+                while (iterator.hasNext() && i < MultiplePermissionTarget.SHOW_PERMISSIONS_COUNT) {
                     AttributeTarget attributeTarget = iterator.next();
                     AttributePermissionVariant permissionVariant = attributeTarget.getPermissionVariant();
                     if (permissionVariant != AttributePermissionVariant.NOTSET) {
-                        if (i < 4) {
+                        if (i < MultiplePermissionTarget.SHOW_PERMISSIONS_COUNT - 1) {
                             if (i > 0)
                                 builder.append(", ");
 
                             builder.append("<font color=\"").append(permissionVariant.getColor()).append("\">")
-                                   .append(attributeTarget.getId()).append("</font>");
+                                    .append(attributeTarget.getId()).append("</font>");
                         } else {
                             builder.append(", ...");
                         }

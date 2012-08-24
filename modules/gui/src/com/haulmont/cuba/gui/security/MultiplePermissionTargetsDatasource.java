@@ -27,9 +27,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImpl<MultiplePermissionTarget, String> {
 
@@ -55,7 +54,7 @@ public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImp
             return;
 
         if (targets == null) {
-            targets = new ArrayList<MultiplePermissionTarget>();
+            targets = new ArrayList<>();
             PermissionConfig permissionConfig = AppBeans.get(PermissionConfig.class);
             List<MultiplePermissionTarget> entityAttrs = permissionConfig.getEntityAttributes(UserSessionProvider.getLocale());
             for (MultiplePermissionTarget target : entityAttrs) {
@@ -81,14 +80,15 @@ public class MultiplePermissionTargetsDatasource extends CollectionDatasourceImp
     private void loadPermissionVariants(final MultiplePermissionTarget target) {
         for (UUID id : permissionDs.getItemIds()) {
             Permission p = permissionDs.getItem(id);
-            String permissionTarget = p.getTarget();
-            if (StringUtils.isNotEmpty(permissionTarget) && permissionTarget.startsWith(target.getPermissionValue())) {
-                int delimeterIndex = permissionTarget.lastIndexOf(Permission.TARGET_PATH_DELIMETER);
+            String permissionTargetString = p.getTarget();
+            if (StringUtils.isNotEmpty(permissionTargetString)) {
+                int delimeterIndex = permissionTargetString.lastIndexOf(Permission.TARGET_PATH_DELIMETER);
                 if (delimeterIndex >= 0) {
-                    final String attribute = permissionTarget.substring(delimeterIndex + 1);
-                    AttributePermissionVariant permissionVariant = getPermissionVariant(p);
-
-                    target.assignPermissionVariant(attribute, permissionVariant);
+                    String attribute = permissionTargetString.substring(delimeterIndex + 1);
+                    String permissionTarget = permissionTargetString.substring(0, delimeterIndex);
+                    if (StringUtils.equals(permissionTarget, target.getPermissionValue())) {
+                        target.assignPermissionVariant(attribute, getPermissionVariant(p));
+                    }
                 }
             }
         }

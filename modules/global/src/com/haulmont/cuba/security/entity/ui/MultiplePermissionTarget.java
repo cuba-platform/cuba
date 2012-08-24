@@ -15,17 +15,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 @com.haulmont.chile.core.annotations.MetaClass(name = "sec$MultipleTarget")
 @SystemLevel
 public class MultiplePermissionTarget extends AbstractPermissionTarget
         implements AssignableTarget, Cloneable {
 
+    public static final int SHOW_PERMISSIONS_COUNT = 8;
+
     @MetaProperty(mandatory = true)
-    private List<AttributeTarget> permissions = new LinkedList<AttributeTarget>();
+    private List<AttributeTarget> permissions = new LinkedList<>();
 
     public MultiplePermissionTarget(String id, String caption, String permissionValue) {
         super(id, caption);
@@ -74,10 +75,10 @@ public class MultiplePermissionTarget extends AbstractPermissionTarget
         int i = 0;
         StringBuilder builder = new StringBuilder();
         Iterator<AttributeTarget> iterator = permissions.iterator();
-        while (iterator.hasNext() && i < 5) {
+        while (iterator.hasNext() && i < SHOW_PERMISSIONS_COUNT) {
             AttributeTarget attributeTarget = iterator.next();
             if (attributeTarget.getPermissionVariant() != AttributePermissionVariant.NOTSET) {
-                if (i < 4) {
+                if (i < SHOW_PERMISSIONS_COUNT - 1) {
                     if (i > 0)
                         builder.append(", ");
                     builder.append(attributeTarget.getId());
@@ -131,7 +132,7 @@ public class MultiplePermissionTarget extends AbstractPermissionTarget
         clone.id = id;
         clone.caption = caption;
         clone.permissionValue = permissionValue;
-        clone.permissions = new LinkedList<AttributeTarget>();
+        clone.permissions = new LinkedList<>();
         for (AttributeTarget target : permissions) {
             AttributeTarget cloneTarget = new AttributeTarget(target.getId());
             cloneTarget.setPermissionVariant(target.getPermissionVariant());

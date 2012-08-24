@@ -2,10 +2,6 @@
  * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 16.03.2009 11:52:34
- * $Id$
  */
 
 package com.haulmont.cuba.gui.security;
@@ -31,6 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @author abramov
+ * @version $Id$
+ */
 public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<OperationPermissionTarget, String> {
 
     private List<OperationPermissionTarget> targets;
@@ -82,20 +82,24 @@ public class EntityPermissionTargetsDatasource extends CollectionDatasourceImpl<
     private void loadPermissionVariants(OperationPermissionTarget target) {
         for (UUID id : permissionDs.getItemIds()) {
             Permission p = permissionDs.getItem(id);
-            String permissionTarget = p.getTarget();
-            if (StringUtils.isNotEmpty(permissionTarget) && permissionTarget.startsWith(target.getPermissionValue())) {
-                int delimeterIndex = permissionTarget.lastIndexOf(Permission.TARGET_PATH_DELIMETER);
+            String permissionTargetString = p.getTarget();
+            if (StringUtils.isNotEmpty(permissionTargetString)) {
+                int delimeterIndex = permissionTargetString.lastIndexOf(Permission.TARGET_PATH_DELIMETER);
                 if (delimeterIndex >= 0) {
-                    String variant = permissionTarget.substring(delimeterIndex + 1);
-                    PermissionVariant permissionVariant = getPermissionVariant(p);
-                    if (EntityOp.CREATE.getId().equals(variant)) {
-                        target.setCreatePermissionVariant(permissionVariant);
-                    } else if (EntityOp.READ.getId().equals(variant)) {
-                        target.setReadPermissionVariant(permissionVariant);
-                    } else if (EntityOp.UPDATE.getId().equals(variant)) {
-                        target.setUpdatePermissionVariant(permissionVariant);
-                    } else if (EntityOp.DELETE.getId().equals(variant)) {
-                        target.setDeletePermissionVariant(permissionVariant);
+                    String variant = permissionTargetString.substring(delimeterIndex + 1);
+                    String permissionTarget = permissionTargetString.substring(0, delimeterIndex);
+
+                    if (StringUtils.equals(permissionTarget, target.getPermissionValue())) {
+                        PermissionVariant permissionVariant = getPermissionVariant(p);
+                        if (EntityOp.CREATE.getId().equals(variant)) {
+                            target.setCreatePermissionVariant(permissionVariant);
+                        } else if (EntityOp.READ.getId().equals(variant)) {
+                            target.setReadPermissionVariant(permissionVariant);
+                        } else if (EntityOp.UPDATE.getId().equals(variant)) {
+                            target.setUpdatePermissionVariant(permissionVariant);
+                        } else if (EntityOp.DELETE.getId().equals(variant)) {
+                            target.setDeletePermissionVariant(permissionVariant);
+                        }
                     }
                 }
             }

@@ -38,25 +38,27 @@
             <label id="spacer"/>
         </hbox>
 
-        <hbox id="contentPane" expand="tablePane" spacing="true" margin="true" width="100%">
+        <split id="contentPane" width="100%" orientation="horizontal" pos="75">
             <vbox id="tablePane" expand="propertyPermissionsTable" height="100%">
                 <table id="propertyPermissionsTable" width="100%">
                     <columns>
-                        <column id="caption" caption="msg://entities"/>
+                        <column id="caption" caption="msg://entities" width="300"/>
                         <column id="permissionsInfo"/>
                     </columns>
                     <rows datasource="attributeTargetsDs"/>
                 </table>
             </vbox>
 
-            <groupBox id="editPane" width="380" height="100%" caption="msg://permissions">
-                <vbox id="selectedEntityPanel" expand="panelScroll" width="100%" height="100%" visible="false">
+            <groupBox id="editPane" width="100%" height="100%" expand="selectedEntityPanel">
+                <caption label="msg://permissions"/>
+
+                <vbox id="selectedEntityPanel" expand="editGridContainer" visible="false">
                     <label id="selectedTargetCaption" stylename="h2" align="MIDDLE_CENTER"/>
 
-                    <scrollBox id="panelScroll">
-                    </scrollBox>
+                    <scrollbox id="editGridContainer">
+                    </scrollbox>
                 </vbox>
             </groupBox>
-        </hbox>
+        </split>
     </layout>
 </window>

@@ -27,14 +27,12 @@ import javax.inject.Inject;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class AttributePermissionsFrame extends AbstractFrame {
 
-    public static final String NAME_WIDTH = "120px";
-    public static final String CHECKBOX_WIDTH = "70px";
+    private static final String CHECKER_COLUMN_WIDTH = "75px";
 
     public interface Companion {
         void initPermissionColoredColumn(Table propertyPermissionsTable);
@@ -63,7 +61,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
     private BoxLayout selectedEntityPanel;
 
     @Inject
-    private ScrollBoxLayout panelScroll;
+    private ScrollBoxLayout editGridContainer;
 
     /* Filter */
 
@@ -72,6 +70,16 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
     @Inject
     private CheckBox assignedOnlyCheckBox;
+
+    /* Checkboxes */
+
+    private CheckBox allModifyCheck;
+
+    private CheckBox allReadOnlyCheck;
+
+    private CheckBox allHideCheck;
+
+    /* */
 
     private boolean itemChanging = false;
 
@@ -86,38 +94,33 @@ public class AttributePermissionsFrame extends AbstractFrame {
 
         private MultiplePermissionTarget item;
         private String attributeName;
-        private CheckBox allModifyCheck;
-        private CheckBox allReadOnlyCheck;
-        private CheckBox allHideCheck;
 
-        private AttributePermissionControl(MultiplePermissionTarget item, String attributeName,
-                                           CheckBox allModifyCheck, CheckBox allReadOnlyCheck, CheckBox allHideCheck) {
+        private AttributePermissionControl(MultiplePermissionTarget item, String attributeName) {
             this.item = item;
             this.attributeName = attributeName;
-            this.allModifyCheck = allModifyCheck;
-            this.allReadOnlyCheck = allReadOnlyCheck;
-            this.allHideCheck = allHideCheck;
 
             AttributePermissionVariant permissionVariant = item.getPermissionVariant(attributeName);
 
             attributeLabel = uiFactory.createComponent(Label.NAME);
-            attributeLabel.setWidth(NAME_WIDTH);
             attributeLabel.setFrame(AttributePermissionsFrame.this);
             attributeLabel.setValue(attributeName);
 
             modifyCheckBox = uiFactory.createComponent(CheckBox.NAME);
-            modifyCheckBox.setWidth(CHECKBOX_WIDTH);
+            modifyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             modifyCheckBox.setFrame(AttributePermissionsFrame.this);
+            modifyCheckBox.setWidth(CHECKER_COLUMN_WIDTH);
             attachListener(modifyCheckBox, AttributePermissionVariant.MODIFY);
 
             readOnlyCheckBox = uiFactory.createComponent(CheckBox.NAME);
-            readOnlyCheckBox.setWidth(CHECKBOX_WIDTH);
+            readOnlyCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             readOnlyCheckBox.setFrame(AttributePermissionsFrame.this);
+            readOnlyCheckBox.setWidth(CHECKER_COLUMN_WIDTH);
             attachListener(readOnlyCheckBox, AttributePermissionVariant.READ_ONLY);
 
             hideCheckBox = uiFactory.createComponent(CheckBox.NAME);
-            hideCheckBox.setWidth(CHECKBOX_WIDTH);
+            hideCheckBox.setAlignment(Alignment.MIDDLE_CENTER);
             hideCheckBox.setFrame(AttributePermissionsFrame.this);
+            hideCheckBox.setWidth(CHECKER_COLUMN_WIDTH);
             attachListener(hideCheckBox, AttributePermissionVariant.HIDE);
 
             updateCheckers(permissionVariant);
@@ -259,8 +262,7 @@ public class AttributePermissionsFrame extends AbstractFrame {
         }
     }
 
-    private void attachAllCheckboxListener(CheckBox checkBox, final AttributePermissionVariant activeVariant,
-                                           final CheckBox allModifyCheck, final CheckBox allReadOnlyCheck, final CheckBox allHideCheck) {
+    private void attachAllCheckboxListener(CheckBox checkBox, final AttributePermissionVariant activeVariant) {
         checkBox.addListener(new ValueListener<CheckBox>() {
             @Override
             public void valueChanged(CheckBox source, String property, Object prevValue, Object value) {
@@ -294,9 +296,9 @@ public class AttributePermissionsFrame extends AbstractFrame {
     }
 
     private void clearEditGrid() {
-        Collection<Component> components = new ArrayList<Component>(panelScroll.getComponents());
+        Collection<Component> components = new ArrayList<>(editGridContainer.getComponents());
         for (Component component : components)
-            panelScroll.remove(component);
+            editGridContainer.remove(component);
         permissionControls.clear();
     }
 
@@ -305,80 +307,83 @@ public class AttributePermissionsFrame extends AbstractFrame {
         editGrid.setFrame(this);
         editGrid.setId("editGrid");
         editGrid.setWidth("100%");
-        editGrid.setAlignment(Alignment.TOP_LEFT);
         editGrid.setColumns(4);
         editGrid.setMargin(true);
+        editGrid.setColumnExpandRatio(0, 1f);
+        editGrid.setColumnExpandRatio(1, 0);
+        editGrid.setColumnExpandRatio(2, 0);
+        editGrid.setColumnExpandRatio(3, 0);
 
         editGrid.setRows(item.getPermissions().size() + 2);
 
         Label emptyLabel = uiFactory.createComponent(Label.NAME);
-        emptyLabel.setWidth(NAME_WIDTH);
         editGrid.add(emptyLabel, 0, 0);
 
         Label modifyLabel = uiFactory.createComponent(Label.NAME);
         modifyLabel.setValue(getMessage("checkbox.modify"));
+        modifyLabel.setAlignment(Alignment.MIDDLE_CENTER);
+        modifyLabel.setStyleName("centered");
+        modifyLabel.setWidth(CHECKER_COLUMN_WIDTH);
         editGrid.add(modifyLabel, 1, 0);
 
         Label readOnlyLabel = uiFactory.createComponent(Label.NAME);
         readOnlyLabel.setValue(getMessage("checkbox.readOnly"));
+        readOnlyLabel.setAlignment(Alignment.MIDDLE_CENTER);
+        readOnlyLabel.setStyleName("centered");
+        readOnlyLabel.setWidth(CHECKER_COLUMN_WIDTH);
         editGrid.add(readOnlyLabel, 2, 0);
 
         Label hideLabel = uiFactory.createComponent(Label.NAME);
         hideLabel.setValue(getMessage("checkbox.hide"));
+        hideLabel.setAlignment(Alignment.MIDDLE_CENTER);
+        hideLabel.setStyleName("centered");
+        hideLabel.setWidth(CHECKER_COLUMN_WIDTH);
         editGrid.add(hideLabel, 3, 0);
 
-        // 'all' checkboxes
-        Label allLabel = uiFactory.createComponent(Label.NAME);
-        allLabel.setWidth(NAME_WIDTH);
-        allLabel.setAlignment(Alignment.MIDDLE_LEFT);
-        allLabel.setFrame(AttributePermissionsFrame.this);
-        allLabel.setValue(getMessage("allEntities"));
-        BoxLayout allLabelBox = uiFactory.createComponent(BoxLayout.VBOX);
-        allLabelBox.setHeight("50px");
-        allLabelBox.add(allLabel);
+        // edit all checkers
 
-        CheckBox allModifyCheckBox = uiFactory.createComponent(CheckBox.NAME);
-        allModifyCheckBox.setWidth(CHECKBOX_WIDTH);
-        allModifyCheckBox.setAlignment(Alignment.MIDDLE_LEFT);
-        allModifyCheckBox.setFrame(AttributePermissionsFrame.this);
+        allModifyCheck = uiFactory.createComponent(CheckBox.NAME);
+        allReadOnlyCheck = uiFactory.createComponent(CheckBox.NAME);
+        allHideCheck = uiFactory.createComponent(CheckBox.NAME);
 
-        CheckBox allReadOnlyCheckBox = uiFactory.createComponent(CheckBox.NAME);
-        allReadOnlyCheckBox.setWidth(CHECKBOX_WIDTH);
-        allReadOnlyCheckBox.setAlignment(Alignment.MIDDLE_LEFT);
-        allReadOnlyCheckBox.setFrame(AttributePermissionsFrame.this);
+        allModifyCheck.setWidth(CHECKER_COLUMN_WIDTH);
+        allReadOnlyCheck.setWidth(CHECKER_COLUMN_WIDTH);
+        allHideCheck.setWidth(CHECKER_COLUMN_WIDTH);
 
-        CheckBox allHideCheckBox = uiFactory.createComponent(CheckBox.NAME);
-        allHideCheckBox.setWidth(CHECKBOX_WIDTH);
-        allHideCheckBox.setAlignment(Alignment.MIDDLE_LEFT);
-        allHideCheckBox.setFrame(AttributePermissionsFrame.this);
+        attachAllCheckboxListener(allModifyCheck, AttributePermissionVariant.MODIFY);
+        attachAllCheckboxListener(allReadOnlyCheck, AttributePermissionVariant.READ_ONLY);
+        attachAllCheckboxListener(allHideCheck, AttributePermissionVariant.HIDE);
 
-        attachAllCheckboxListener(allModifyCheckBox, AttributePermissionVariant.MODIFY,
-                allModifyCheckBox, allReadOnlyCheckBox, allHideCheckBox);
-        attachAllCheckboxListener(allReadOnlyCheckBox, AttributePermissionVariant.READ_ONLY,
-                allModifyCheckBox, allReadOnlyCheckBox, allHideCheckBox);
-        attachAllCheckboxListener(allHideCheckBox, AttributePermissionVariant.HIDE,
-                allModifyCheckBox, allReadOnlyCheckBox, allHideCheckBox);
+        emptyLabel = uiFactory.createComponent(Label.NAME);
+        emptyLabel.setValue("[" + getMessage("allEntities") + "]");
+        editGrid.add(emptyLabel, 0, 1);
+
+        editGrid.add(allModifyCheck, 1, 1);
+        editGrid.add(allReadOnlyCheck, 2, 1);
+        editGrid.add(allHideCheck, 3, 1);
+
+        allModifyCheck.setAlignment(Alignment.MIDDLE_CENTER);
+        allReadOnlyCheck.setAlignment(Alignment.MIDDLE_CENTER);
+        allHideCheck.setAlignment(Alignment.MIDDLE_CENTER);
 
         int i = 0;
         for (AttributeTarget target : item.getPermissions()) {
-            AttributePermissionControl control = new AttributePermissionControl(item, target.getId(),
-                    allModifyCheckBox, allReadOnlyCheckBox, allHideCheckBox);
-            int gridRow = i + 1;
+            AttributePermissionControl control = new AttributePermissionControl(item, target.getId());
+            int gridRow = i + 2;
 
             editGrid.add(control.getAttributeLabel(), 0, gridRow);
             editGrid.add(control.getModifyCheckBox(), 1, gridRow);
             editGrid.add(control.getReadOnlyCheckBox(), 2, gridRow);
             editGrid.add(control.getHideCheckBox(), 3, gridRow);
 
+            control.getModifyCheckBox().setAlignment(Alignment.MIDDLE_CENTER);
+            control.getReadOnlyCheckBox().setAlignment(Alignment.MIDDLE_CENTER);
+            control.getHideCheckBox().setAlignment(Alignment.MIDDLE_CENTER);
+
             permissionControls.add(control);
             i++;
         }
 
-        editGrid.add(allLabelBox, 0, i + 1);
-        editGrid.add(allModifyCheckBox, 1, i + 1);
-        editGrid.add(allReadOnlyCheckBox, 2, i + 1);
-        editGrid.add(allHideCheckBox, 3, i + 1);
-
-        panelScroll.add(editGrid);
+        editGridContainer.add(editGrid);
     }
 }

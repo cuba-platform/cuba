@@ -20,9 +20,8 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import java.util.Iterator;
 
 /**
- * <p>$Id$</p>
- *
  * @author artamonov
+ * @version $Id$
  */
 public class AttributePermissionsFrameCompanion implements AttributePermissionsFrame.Companion {
 
@@ -41,16 +40,16 @@ public class AttributePermissionsFrameCompanion implements AttributePermissionsF
                 int i = 0;
                 StringBuilder builder = new StringBuilder();
                 Iterator<AttributeTarget> iterator = target.getPermissions().iterator();
-                while (iterator.hasNext() && i < 5) {
+                while (iterator.hasNext() && i < MultiplePermissionTarget.SHOW_PERMISSIONS_COUNT) {
                     AttributeTarget attributeTarget = iterator.next();
                     AttributePermissionVariant permissionVariant = attributeTarget.getPermissionVariant();
                     if (permissionVariant != AttributePermissionVariant.NOTSET) {
-                        if (i < 4) {
+                        if (i < MultiplePermissionTarget.SHOW_PERMISSIONS_COUNT - 1) {
                             if (i > 0)
                                 builder.append(", ");
 
                             builder.append("<span style=\"color:").append(permissionVariant.getColor()).append(";\">")
-                                   .append(attributeTarget.getId()).append("</span>");
+                                    .append(attributeTarget.getId()).append("</span>");
                         } else {
                             builder.append(", ...");
                         }

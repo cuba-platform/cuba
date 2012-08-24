@@ -532,6 +532,10 @@
      background: transparent;
 }
 
+.v-label-centered {
+    text-align: center;
+}
+
 /* Security: PermissionVariats markers */
 
 .v-table-cell-content-allowedItem,
