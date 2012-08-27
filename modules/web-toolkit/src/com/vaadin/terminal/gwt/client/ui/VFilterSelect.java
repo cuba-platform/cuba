@@ -1148,7 +1148,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     @Override
     public void setHeight(String height) {
         super.setHeight(height);
-        Util.setHeightExcludingPaddingAndBorder(tb, height, 3);
+        Util.setHeightExcludingPaddingAndBorder(tb, height, 2);
     }
 
     private void updateRootWidth() {
