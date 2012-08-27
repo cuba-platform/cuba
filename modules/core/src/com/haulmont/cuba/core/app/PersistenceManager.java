@@ -14,6 +14,7 @@ import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.cuba.core.*;
 import com.haulmont.cuba.core.entity.EntityStatistics;
 import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.sys.DBNotInitializedException;
 import com.haulmont.cuba.core.sys.DbUpdater;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -25,6 +26,8 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import javax.persistence.Table;
 import javax.sql.DataSource;
+import java.io.File;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -37,16 +40,15 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Class that caches database metadata information and entity statistics.
  *
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(PersistenceManagerAPI.NAME)
 public class PersistenceManager extends ManagementBean implements PersistenceManagerMBean, PersistenceManagerAPI
 {
     private static Log log = LogFactory.getLog(PersistenceManager.class);
     private boolean metadataLoaded;
-    private Set<String> softDeleteTables = new HashSet<String>();
+    private Set<String> softDeleteTables = new HashSet<>();
 
     private ReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -73,7 +75,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
 
     private void initDbMetadata() {
         log.info("Initializing DB metadata");
-        DataSource datasource = Locator.getDataSource();
+        DataSource datasource = PersistenceProvider.getDataSource();
         Connection conn = null;
         try {
             conn = datasource.getConnection();
@@ -95,7 +97,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
         } finally {
             try {
                 if (conn != null) conn.close();
-            } catch (SQLException e) {
+            } catch (SQLException ignored) {
             }
         }
         metadataLoaded = true;
@@ -231,9 +233,24 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
     public String findUpdateDatabaseScripts() {
         try {
             List<String> list = dbUpdater.findUpdateDatabaseScripts();
-            StrBuilder sb = new StrBuilder();
-            sb.appendWithSeparators(list, "\n");
-            return sb.toString();
+            if (!list.isEmpty()) {
+                String dbDirName = ConfigProvider.getConfig(ServerConfig.class).getDbDir();
+                File dbDir = new File(dbDirName);
+                URI dbDirUri = dbDir.toURI();
+
+                String indent = "\t";
+                StrBuilder sb = new StrBuilder();
+                sb.append(dbDir.getPath().replace('\\', '/') + "\n");
+                for (String path : list) {
+                    URI file = new File(path).toURI();
+                    sb.append(indent + dbDirUri.relativize(file).getPath() + "\n");
+                }
+
+                return sb.toString();
+            } else
+                return "No updates available";
+        } catch (DBNotInitializedException e) {
+            return e.getMessage();
         } catch (Throwable e) {
             return ExceptionUtils.getStackTrace(e);
         }
@@ -292,7 +309,7 @@ public class PersistenceManager extends ManagementBean implements PersistenceMan
 
     private synchronized Map<String, EntityStatistics> getStatisticsCache() {
         if (statisticsCache == null) {
-            statisticsCache = new ConcurrentHashMap<String, EntityStatistics>();
+            statisticsCache = new ConcurrentHashMap<>();
             internalLoadStatisticsCache();
         }
         return statisticsCache;

@@ -18,5 +18,5 @@ public interface DbUpdater {
 
     void updateDatabase();
 
-    List<String> findUpdateDatabaseScripts();
+    List<String> findUpdateDatabaseScripts() throws DBNotInitializedException;
 }

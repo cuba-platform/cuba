@@ -7,7 +7,6 @@ package com.haulmont.cuba.core.sys;
 
 import com.haulmont.bali.db.QueryRunner;
 import com.haulmont.bali.db.ResultSetHandler;
-import com.haulmont.cuba.core.Locator;
 import com.haulmont.cuba.core.PersistenceProvider;
 import com.haulmont.cuba.core.app.ClusterManagerAPI;
 import com.haulmont.cuba.core.app.ServerConfig;
@@ -15,6 +14,8 @@ import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.cuba.core.sys.persistence.DbmsType;
 import groovy.lang.Binding;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrMatcher;
@@ -35,9 +36,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 /**
- * <p>$Id$</p>
- *
  * @author krivopustov
+ * @version $Id$
  */
 @ManagedBean(DbUpdater.NAME)
 public class DbUpdaterImpl implements DbUpdater {
@@ -58,7 +58,7 @@ public class DbUpdaterImpl implements DbUpdater {
     private static final String GROOVY_EXTENSION = "groovy";
 
     // register handlers for script files
-    private HashMap<String, FileHandler> extensionHandlers = new HashMap<String, FileHandler>();
+    private HashMap<String, FileHandler> extensionHandlers = new HashMap<>();
 
     {
         extensionHandlers.put(SQL_EXTENSION, new FileHandler() {
@@ -106,11 +106,12 @@ public class DbUpdaterImpl implements DbUpdater {
     }
 
     @Override
-    public List<String> findUpdateDatabaseScripts() {
-        List<String> list = new ArrayList<String>();
+    public List<String> findUpdateDatabaseScripts() throws DBNotInitializedException {
+        List<String> list = new ArrayList<>();
         if (dbInitialized()) {
             if (!changelogTableExists) {
-                list.add("Unable to determine required updates because SYS_DB_CHANGELOG table doesn't exist");
+                throw new DBNotInitializedException(
+                        "Unable to determine required updates because SYS_DB_CHANGELOG table doesn't exist");
             } else {
                 List<File> files = getUpdateScripts();
                 Set<String> scripts = getExecutedScripts();
@@ -132,7 +133,7 @@ public class DbUpdaterImpl implements DbUpdater {
     private boolean dbInitialized() {
         Connection connection = null;
         try {
-            connection = Locator.getDataSource().getConnection();
+            connection = PersistenceProvider.getDataSource().getConnection();
             DatabaseMetaData dbMetaData = connection.getMetaData();
             ResultSet tables = dbMetaData.getTables(null, null, null, null);
             boolean found = false;
@@ -174,7 +175,8 @@ public class DbUpdaterImpl implements DbUpdater {
     }
 
     private List<File> getUpdateScripts() {
-        List<File> files = new ArrayList<File>();
+        List<File> databaseScripts = new ArrayList<>();
+        List<File> groovyScripts = new ArrayList<>();
 
         if (dbDir.exists()) {
             String[] moduleDirs = dbDir.list();
@@ -184,22 +186,40 @@ public class DbUpdaterImpl implements DbUpdater {
                 File initDir = new File(moduleDir, "update");
                 File scriptDir = new File(initDir, PersistenceProvider.getDbDialect().getName());
                 if (scriptDir.exists()) {
-                    List<File> list = new ArrayList<File>(FileUtils.listFiles(scriptDir, null, true));
-                    final URI scriptDirUri = scriptDir.toURI();
-                    Collections.sort(list, new Comparator<File>() {
-                        @Override
-                        public int compare(File f1, File f2) {
-                            URI f1Uri = scriptDirUri.relativize(f1.toURI());
-                            URI f2Uri = scriptDirUri.relativize(f2.toURI());
+                    Collection list = FileUtils.listFiles(scriptDir, null, true);
+                    URI scriptDirUri = scriptDir.toURI();
 
-                            return f1Uri.getPath().compareTo(f2Uri.getPath());
-                        }
-                    });
-                    files.addAll(list);
+                    List<File> sqlFiles = getScriptsByExtension(list, scriptDirUri, SQL_EXTENSION);
+                    List<File> groovyFiles = getScriptsByExtension(list, scriptDirUri, GROOVY_EXTENSION);
+
+                    databaseScripts.addAll(sqlFiles);
+                    groovyScripts.addAll(groovyFiles);
                 }
             }
         }
-        return files;
+        databaseScripts.addAll(groovyScripts);
+        return databaseScripts;
+    }
+
+    private List<File> getScriptsByExtension(Collection files, final URI scriptDirUri, final String extension) {
+        Collection scriptsCollection = CollectionUtils.select(files, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                File file = (File) object;
+                return extension.equals(getFileExtension(file.getName()));
+            }
+        });
+        List<File> scripts = new ArrayList<File>(scriptsCollection);
+        Collections.sort(scripts, new Comparator<File>() {
+            @Override
+            public int compare(File f1, File f2) {
+                URI f1Uri = scriptDirUri.relativize(f1.toURI());
+                URI f2Uri = scriptDirUri.relativize(f2.toURI());
+
+                return f1Uri.getPath().compareTo(f2Uri.getPath());
+            }
+        });
+        return scripts;
     }
 
     private String getScriptName(File file) {
@@ -254,7 +274,7 @@ public class DbUpdaterImpl implements DbUpdater {
     }
 
     private Set<String> getExecutedScripts() {
-        QueryRunner runner = new QueryRunner(Locator.getDataSource());
+        QueryRunner runner = new QueryRunner(PersistenceProvider.getDataSource());
         try {
             Set<String> scripts = runner.query("select SCRIPT_NAME from SYS_DB_CHANGELOG",
                     new ResultSetHandler<Set<String>>() {
@@ -274,7 +294,7 @@ public class DbUpdaterImpl implements DbUpdater {
     }
 
     private void createChangelogTable() {
-        QueryRunner runner = new QueryRunner(Locator.getDataSource());
+        QueryRunner runner = new QueryRunner(PersistenceProvider.getDataSource());
         try {
             runner.update("create table SYS_DB_CHANGELOG(" +
                     "SCRIPT_NAME varchar(300) not null primary key, " +
@@ -296,7 +316,7 @@ public class DbUpdaterImpl implements DbUpdater {
                 StrMatcher.charSetMatcher(PersistenceProvider.getDbDialect().getScriptSeparator()),
                 StrMatcher.singleQuoteMatcher()
         );
-        QueryRunner runner = new QueryRunner(Locator.getDataSource());
+        QueryRunner runner = new QueryRunner(PersistenceProvider.getDataSource());
         while (tokenizer.hasNext()) {
             String sql = tokenizer.nextToken();
             try {
@@ -342,7 +362,7 @@ public class DbUpdaterImpl implements DbUpdater {
     }
 
     private void markScript(String name, boolean init) {
-        QueryRunner runner = new QueryRunner(Locator.getDataSource());
+        QueryRunner runner = new QueryRunner(PersistenceProvider.getDataSource());
         try {
             runner.update("insert into SYS_DB_CHANGELOG (SCRIPT_NAME, IS_INIT) values (?, ?)",
                     new Object[]{name, init ? 1 : 0}
@@ -353,7 +373,7 @@ public class DbUpdaterImpl implements DbUpdater {
     }
 
     private List<File> getInitScripts() {
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
         if (dbDir.exists()) {
             String[] moduleDirs = dbDir.list();
             Arrays.sort(moduleDirs);
