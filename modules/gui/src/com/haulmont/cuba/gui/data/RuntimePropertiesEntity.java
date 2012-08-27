@@ -30,6 +30,8 @@ import java.util.*;
 
 public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
 
+    private static final long serialVersionUID = -8091230910619941201L;
+
     private MetaClass metaClass;
     private UUID id;
     private Map<String,Object> values;
@@ -83,6 +85,11 @@ public class RuntimePropertiesEntity implements Entity, Instance, BaseEntity {
 
     public void removeListener(ValueListener listener) {
         listeners.remove(listener);
+    }
+
+    @Override
+    public void removeAllListeners() {
+        listeners.clear();
     }
 
     public <T> T getValue(String name) {

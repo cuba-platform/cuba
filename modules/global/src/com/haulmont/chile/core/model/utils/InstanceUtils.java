@@ -1,47 +1,59 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Dmitry Abramov
- * Created: 15.12.2008 15:56:09
- * $Id: InstanceUtils.java 2907 2010-10-20 06:44:14Z krivopustov $
  */
 package com.haulmont.chile.core.model.utils;
 
+import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.chile.core.model.Instance;
 import com.haulmont.chile.core.model.MetaClass;
 import com.haulmont.chile.core.model.MetaProperty;
-import com.haulmont.chile.core.annotations.NamePattern;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
-
+/**
+ * Utility class to work with {@link Instance}s.
+ *
+ * @author abramov
+ * @version $Id$
+ */
 public class InstanceUtils {
 
+    /**
+     * Converts a string of identifiers separated by dots to an array. A part of the given string, enclosed in square
+     * brackets, treated as single identifier. For example:
+     * <pre>
+     *     car.driver.name
+     *     [car.field].driver.name
+     * </pre>
+     * @param path value path as string
+     * @return value path as array
+     */
     public static String[] parseValuePath(String path) {
         List<String> elements = new ArrayList<String>();
 
-        int breaketCount = 0;
+        int bracketCount = 0;
 
         StringBuilder buffer = new StringBuilder();
 
         for (int i = 0; i < path.length(); i++) {
             char c = path.charAt(i);
             if (c == '[')
-                breaketCount++;
+                bracketCount++;
             if (c == ']')
-                breaketCount--;
+                bracketCount--;
 
-            if ('.' != c || breaketCount > 0)
+            if ('.' != c || bracketCount > 0)
                 buffer.append(c);
 
-            if ('.' == c && breaketCount == 0) {
+            if ('.' == c && bracketCount == 0) {
                 String element = buffer.toString();
                 if (element != null && !"".equals(element)) {
                     elements.add(element);
@@ -53,14 +65,20 @@ public class InstanceUtils {
         }
         elements.add(buffer.toString());
 
-        return elements.toArray(new String[]{});
+        return elements.toArray(new String[elements.size()]);
     }
 
+    /**
+     * Converts an array of identifiers to a dot-separated string, enclosing identifiers, containing dots, in square
+     * brackets.
+     * @param path value path as array
+     * @return value path as string
+     */
     public static String formatValuePath(String[] path) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         int i = 1;
         for (String s : path) {
-            if (s.contains(".")){
+            if (s.contains(".")) {
                 buffer.append("[").append(s).append("]");
             } else {
                 buffer.append(s);
@@ -68,71 +86,119 @@ public class InstanceUtils {
             if (i < path.length) buffer.append(".");
             i++;
         }
-
         return buffer.toString();
     }
 
+    /**
+     * Get value of an attribute according to the rules described in {@link Instance#getValueEx(String)}.
+     * @param instance      instance
+     * @param propertyPath  attribute path
+     * @return              attribute value
+     */
     public static <T> T getValueEx(Instance instance, String propertyPath) {
         String[] properties = parseValuePath(propertyPath);
         //noinspection unchecked
-        return (T)getValueEx(instance, properties);
+        return (T) getValueEx(instance, properties);
     }
 
+    /**
+     * Get value of an attribute according to the rules described in {@link Instance#getValueEx(String)}.
+     * @param instance      instance
+     * @param properties    path to the attribute
+     * @return              attribute value
+     */
     public static <T> T getValueEx(Instance instance, String[] properties) {
         Object currentValue = null;
         Instance currentInstance = instance;
         for (String property : properties) {
-            if (currentInstance == null) break;
+            if (currentInstance == null)
+                break;
+
             currentValue = currentInstance.getValue(property);
-            if (currentValue == null) break;
+            if (currentValue == null)
+                break;
 
-            currentInstance =
-                currentValue instanceof Instance ?
-                    (Instance)currentValue : null;
+            currentInstance = currentValue instanceof Instance ? (Instance) currentValue : null;
         }
-
         return (T) currentValue;
     }
 
+    /**
+     * Set value of an attribute according to the rules described in {@link Instance#setValueEx(String, Object)}.
+     * @param instance      instance
+     * @param propertyPath  path to the attribute
+     * @param value         attribute value
+     */
     public static void setValueEx(Instance instance, String propertyPath, Object value) {
         String[] properties = parseValuePath(propertyPath);
         setValueEx(instance, properties, value);
     }
 
+    /**
+     * Set value of an attribute according to the rules described in {@link Instance#setValueEx(String, Object)}.
+     * @param instance      instance
+     * @param properties    path to the attribute
+     * @param value         attribute value
+     */
     public static void setValueEx(Instance instance, String[] properties, Object value) {
         if (properties.length > 1) {
-            final List<String> path = Arrays.asList(properties).subList(0, properties.length - 1);
-            final String __propertyPath = formatValuePath(path.toArray(new String[properties.length - 1]));
+            String[] subarray = (String[]) ArrayUtils.subarray(properties, 0, properties.length - 1);
+            String intermediatePath = formatValuePath(subarray);
 
-            instance = instance.getValue(__propertyPath);
+            instance = instance.getValueEx(intermediatePath);
 
             if (instance != null) {
-                final String property = properties[properties.length - 1];
+                String property = properties[properties.length - 1];
                 instance.setValue(property, value);
             } else {
-                throw new IllegalStateException(String.format("Can't find property '%s' value", __propertyPath));
+                throw new IllegalStateException(String.format("Can't find property '%s' value", intermediatePath));
             }
         } else {
             instance.setValue(properties[0], value);
         }
     }
 
+    /**
+     * Create a new instance and make it a shallow copy of the instance given.
+     * <p/> This method copies attributes according to the metadata and relies on {@link com.haulmont.chile.core.model.Instance#getMetaClass()}
+     * method which should not return null.
+     * @param source    source instance
+     * @return          new instance of the same Java class as source
+     */
     public static Instance copy(Instance source) {
+        Objects.requireNonNull(source, "source is null");
+
         Instance dest;
         try {
             dest = source.getClass().newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
         copy(source, dest);
         return dest;
     }
 
+    /**
+     * Make a shallow copy of an instance.
+     * <p/> This method copies attributes according to the metadata and relies on {@link com.haulmont.chile.core.model.Instance#getMetaClass()}
+     * method which should not return null for both objects.
+     * <p/> The source and destination instances don't have to be of the same Java class or metaclass. Copying is
+     * performed in the following scenario: get each source property and copy the value to the destination if it
+     * contains a property with the same name and it is not read-only.
+     * @param source    source instance
+     * @param dest      destination instance
+     */
     public static void copy(Instance source, Instance dest) {
+        Objects.requireNonNull(source, "source is null");
+        Objects.requireNonNull(dest, "dest is null");
+
         MetaClass srcClass = source.getMetaClass();
+        if (srcClass == null)
+            throw new IllegalStateException("Unable to get metaclass for " + source);
         MetaClass dstClass = dest.getMetaClass();
+        if (dstClass == null)
+            throw new IllegalStateException("Unable to get metaclass for " + dest);
+
         for (MetaProperty srcProperty : srcClass.getProperties()) {
             String name = srcProperty.getName();
             MetaProperty dstProperty = dstClass.getProperty(name);
@@ -141,7 +207,14 @@ public class InstanceUtils {
         }
     }
 
+    /**
+     * @return Instance name as defined by {@link com.haulmont.chile.core.annotations.NamePattern}
+     * or <code>toString()</code>.
+     * @param instance  instance
+     */
     public static String getInstanceName(Instance instance) {
+        Objects.requireNonNull(instance, "instance is null");
+
         NamePattern annotation = instance.getClass().getAnnotation(NamePattern.class);
         if (annotation == null) {
             return instance.toString();
@@ -158,11 +231,7 @@ public class InstanceUtils {
                     Method method = instance.getClass().getMethod(format.substring(1));
                     Object result = method.invoke(instance);
                     return (String) result;
-                } catch (NoSuchMethodException e) {
-                    throw new RuntimeException(e);
-                } catch (InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                } catch (IllegalAccessException e) {
+                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
             }

@@ -6,6 +6,7 @@
 
 package com.haulmont.cuba.desktop.gui.components;
 
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.MessageProvider;
 import com.haulmont.cuba.desktop.App;
@@ -950,6 +951,11 @@ public class DesktopWindow implements Window, Component.Disposable,
                     throw new UnsupportedOperationException();
                 }
                 close("select");
+                for (Object obj : selected) {
+                    if (obj instanceof Instance) {
+                        ((Instance) obj).removeAllListeners();
+                    }
+                }
                 handler.handleLookup(selected);
             }
         }

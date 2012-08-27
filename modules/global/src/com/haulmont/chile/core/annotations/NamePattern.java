@@ -1,12 +1,7 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 21.09.2009 17:37:58
- *
- * $Id: NamePattern.java 834 2009-09-21 14:31:11Z krivopustov $
  */
 package com.haulmont.chile.core.annotations;
 
@@ -16,11 +11,34 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Defines an instance name format pattern in the form {0}|{1}, where
- * <br>{0} - format string as for {@link String#format}
- * <br>{1} - comma-separated list of field names, corresponding to format {0}
- * <br>No extra spaces between parts allowed.
- * <p>
- * Example: <code>@NamePattern("%s : %s|name,address")</code>
+ * <ul>
+ *     <li/> {0} - format string as for {@link String#format}, or a name of this object method, returning string,
+ *     with <code>#</code> symbol in the beginning.
+ *     <li/> {1} - comma-separated list of field names, corresponding to format {0}. These fields are also used for
+ *     defining a <code>_minimal</code> view of this entity.
+ * </ul>
+ * Extra spaces between parts are not allowed.
+ *
+ * <p/> Format string example: <code>@NamePattern("%s : %s|name,address")</code>
+ *
+ * <p/> Method example:
+ * <code>@NamePattern("#getCaption|login,name")</code>
+ * <pre>
+ * public class User extends StandardEntity {
+ * ...
+ *     public String getCaption() {
+ *         String pattern = AppContext.getProperty("cuba.user.namePattern");
+ *         if (StringUtils.isBlank(pattern)) {
+ *             pattern = "{1} [{0}]";
+ *         }
+ *         MessageFormat fmt = new MessageFormat(pattern);
+ *         return fmt.format(new Object[] {login, name});
+ *     }
+ * }
+ * </pre>
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 @Target({java.lang.annotation.ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

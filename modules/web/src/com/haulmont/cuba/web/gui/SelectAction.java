@@ -9,6 +9,7 @@
  */
 package com.haulmont.cuba.web.gui;
 
+import com.haulmont.chile.core.model.Instance;
 import com.haulmont.cuba.gui.components.*;
 import com.vaadin.ui.Button;
 
@@ -49,6 +50,11 @@ class SelectAction implements Button.ClickListener {
         final Window.Lookup.Handler lookupHandler = window.getLookupHandler();
 
         window.close("select");
+        for (Object obj : selected) {
+            if (obj instanceof Instance) {
+                ((Instance) obj).removeAllListeners();
+            }
+        }
         lookupHandler.handleLookup(selected);
     }
 }

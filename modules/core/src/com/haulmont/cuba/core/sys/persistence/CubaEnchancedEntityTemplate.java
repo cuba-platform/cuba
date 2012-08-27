@@ -76,6 +76,12 @@ class CubaEnchancedEntityTemplate implements Instance {
             __valueListeners.remove(valuelistener);
     }
 
+    @Override
+    public void removeAllListeners() {
+        if (__valueListeners != null)
+            __valueListeners.clear();
+    }
+
     public <T> T getValue(String s)
     {
         return (T) __cache.invokeGetter(this, s);

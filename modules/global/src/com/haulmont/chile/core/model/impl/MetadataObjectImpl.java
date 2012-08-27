@@ -1,13 +1,23 @@
+/*
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
+ * Haulmont Technology proprietary and confidential.
+ * Use is subject to license terms.
+ */
+
 package com.haulmont.chile.core.model.impl;
 
 import com.haulmont.chile.core.model.MetadataObject;
-import com.haulmont.chile.core.common.ValueBuffer;
 
 import java.io.Serializable;
 import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 
+/**
+ *
+ * @author abramov
+ * @version $Id$
+ */
 public abstract class MetadataObjectImpl<T extends MetadataObject> implements MetadataObject<T>, Serializable {
     private transient T ancestor;
 

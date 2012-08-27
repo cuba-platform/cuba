@@ -16,22 +16,28 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.chile.core.model.utils.MethodsCache;
 import org.apache.commons.lang.ObjectUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractInstance implements Instance {
 
-    protected transient Collection<ValueListener> __valueListeners;
+    protected transient Collection<WeakReference<ValueListener>> __valueListeners;
 
     private static transient Map<Class, MethodsCache> methodCacheMap =
             new ConcurrentHashMap<Class, MethodsCache>();
 
     protected void propertyChanged(String s, Object obj, Object obj1) {
         if (__valueListeners != null) {
-            for (ValueListener valueListener : __valueListeners) {
-                valueListener.propertyChanged(this, s, obj, obj1);
+            for (Iterator<WeakReference<ValueListener>> it = __valueListeners.iterator(); it.hasNext(); ) {
+                ValueListener listener = it.next().get();
+                if (listener == null)
+                    it.remove();
+                else
+                    listener.propertyChanged(this, s, obj, obj1);
             }
         }
     }
@@ -42,13 +48,23 @@ public abstract class AbstractInstance implements Instance {
 
     public void addListener(ValueListener valuelistener) {
         if (__valueListeners == null)
-            __valueListeners = new ArrayList<ValueListener>();
-        __valueListeners.add(valuelistener);
+            __valueListeners = new ArrayList<>();
+        __valueListeners.add(new WeakReference<>(valuelistener));
     }
 
     public void removeListener(ValueListener valuelistener) {
+        if (__valueListeners != null) {
+            for (Iterator<WeakReference<ValueListener>> it = __valueListeners.iterator(); it.hasNext(); ) {
+                ValueListener listener = it.next().get();
+                if (listener == null || listener.equals(valuelistener))
+                    it.remove();
+            }
+        }
+    }
+
+    public void removeAllListeners() {
         if (__valueListeners != null)
-            __valueListeners.remove(valuelistener);
+            __valueListeners.clear();
     }
 
     public <T> T getValue(String s) {
@@ -65,12 +81,7 @@ public abstract class AbstractInstance implements Instance {
         return cache;
     }
 
-    /**
-     * Set value to property in instance, if previous not equals new value
-     *
-     * @param s   property
-     * @param obj value
-     */
+    @Override
     public void setValue(String s, Object obj) {
         setValue(s, obj, true);
     }
