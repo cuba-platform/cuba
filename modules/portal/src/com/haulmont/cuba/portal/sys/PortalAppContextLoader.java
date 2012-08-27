@@ -10,7 +10,6 @@ import com.haulmont.chile.core.datatypes.Datatypes;
 import com.haulmont.chile.core.datatypes.FormatStrings;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.portal.sys.exception.ExceptionHandlers;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrLookup;
@@ -62,8 +61,6 @@ public class PortalAppContextLoader implements ServletContextListener {
 
             initAppContext();
             initLocalization();
-
-            initExceptionHandlers();
 
             AppContext.startContext();
 
@@ -166,11 +163,6 @@ public class PortalAppContextLoader implements ServletContextListener {
 
         ApplicationContext appContext = new ClassPathXmlApplicationContext(locations);
         AppContext.setApplicationContext(appContext);
-    }
-
-    protected void initExceptionHandlers() {
-        ExceptionHandlers exceptionHandlers = AppContext.getBean(ExceptionHandlers.NAME);
-        exceptionHandlers.createByConfiguration();
     }
 
     @Override

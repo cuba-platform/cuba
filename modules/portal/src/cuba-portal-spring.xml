@@ -78,15 +78,4 @@
         </property>
     </bean>
 
-    <!-- Exception handlers -->
-
-    <bean id="cuba_exceptionHandlersConf" class="com.haulmont.cuba.portal.sys.exception.ExceptionHandlersConfiguration">
-        <property name="handlerClasses">
-            <list>
-                <value>com.haulmont.cuba.portal.sys.exception.NoUserSessionHandler</value>
-                <value>com.haulmont.cuba.portal.sys.exception.SilentExceptionHandler</value>
-            </list>
-        </property>
-    </bean>
-
 </beans>

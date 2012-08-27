@@ -7,17 +7,13 @@
 package com.haulmont.cuba.portal.sys;
 
 import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.portal.sys.exception.ExceptionHandlers;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 
 /**
@@ -79,15 +75,5 @@ public class PortalDispatcherServlet extends DispatcherServlet {
         }
 
         return wac;
-    }
-
-    @Override
-    protected ModelAndView processHandlerException(HttpServletRequest request, HttpServletResponse response,
-                                                   Object handler, Exception ex) throws Exception {
-        ExceptionHandlers exceptionHandlers = AppContext.getBean(ExceptionHandlers.NAME);
-        ModelAndView modelAndView = exceptionHandlers.handle(request, response, ex);
-        if (modelAndView != null)
-            return modelAndView;
-        return super.processHandlerException(request, response, handler, ex);
     }
 }
