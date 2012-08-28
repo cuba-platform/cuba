@@ -70,16 +70,18 @@ public abstract class ScriptingProvider {
     }
 
     /**
-     * See {@link com.haulmont.cuba.core.global.Scripting#getResourceAsStream(String)}
+     * DEPRECATED - use {@link Resources#getResourceAsStream(String)}
      */
+    @Deprecated
     @Nullable
     public static InputStream getResourceAsStream(String name) {
         return getScripting().getResourceAsStream(name);
     }
 
     /**
-     * See {@link com.haulmont.cuba.core.global.Scripting#getResourceAsString(String)}
+     * DEPRECATED - use {@link Resources#getResourceAsStream(String)}
      */
+    @Deprecated
     @Nullable
     public static String getResourceAsString(String name) {
         return getScripting().getResourceAsString(name);
