@@ -197,12 +197,17 @@ public class ViewRepository
         String ancestor = viewElem.attributeValue("extends");
         if (ancestor != null) {
             View ancestorView = findView(metaClass, ancestor);
-            if (ancestorView == null)
-                throw new IllegalStateException("No ancestor view found: " + ancestor);
+            if (ancestorView == null) {
+                MetaClass originalMetaClass = metadata.getExtendedEntities().getOriginalMetaClass(metaClass);
+                if (originalMetaClass != null)
+                    ancestorView = findView(originalMetaClass, ancestor);
+                if (ancestorView == null)
+                    throw new IllegalStateException("No ancestor view found: " + ancestor);
+            }
 
             boolean includeSystemProperties = systemProperties == null ?
                     ancestorView.isIncludeSystemProperties() : Boolean.valueOf(systemProperties);
-            view = new View(ancestorView, viewName, includeSystemProperties);
+            view = new View(ancestorView, metaClass.getJavaClass(), viewName, includeSystemProperties);
         } else {
             view = new View(metaClass.getJavaClass(), viewName, Boolean.valueOf(systemProperties));
         }
@@ -269,7 +274,7 @@ public class ViewRepository
             if (range == null) {
                 throw new RuntimeException("cannot find range for meta property: " + metaProperty);
             }
-            // try to import anonimus veiws
+            // try to import anonimous views
             if (range.isClass() && refView == null) {
                 final List<Element> propertyElements = propElem.elements("property");
                 if (!propertyElements.isEmpty()) {

@@ -1,19 +1,19 @@
 /*
- * Copyright (c) 2008 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 19.12.2008 11:12:23
- *
- * $Id$
  */
 package com.haulmont.cuba.core.global;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 
 /**
- * Defines one property in a view
+ * Defines a {@link View} property. Each view property corresponds to a
+ * {@link com.haulmont.chile.core.model.MetaProperty} with the same name.
+ *
+ * @author krivopustov
+ * @version $Id$
  */
 public class ViewProperty implements Serializable
 {
@@ -25,24 +25,36 @@ public class ViewProperty implements Serializable
 
     private boolean lazy;
 
-    public ViewProperty(String name, View view) {
+    public ViewProperty(String name, @Nullable View view) {
         this(name, view, false);
     }
 
-    public ViewProperty(String name, View view, boolean lazy) {
+    public ViewProperty(String name, @Nullable View view, boolean lazy) {
         this.name = name;
         this.view = view;
         this.lazy = lazy;
     }
 
+    /**
+     * @return property name that is a metaclass attribute name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return view of the property if the corresponding metaclass attribute is a reference
+     */
+    @Nullable
     public View getView() {
         return view;
     }
 
+    /**
+     * Lazyness of a view property means that the persistence implementation will not try to fetch this property
+     * from the database by single SQL statement, but instead will fetch it later with additional SQL.
+     * @return  true if the property will be lazily fetched
+     */
     public boolean isLazy() {
         return lazy;
     }
