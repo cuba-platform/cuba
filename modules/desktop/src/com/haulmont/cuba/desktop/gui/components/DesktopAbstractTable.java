@@ -449,7 +449,7 @@ public abstract class DesktopAbstractTable<C extends JTable>
             }
         }
 
-        setVisibleColumns(getPropertyColumns());
+        setVisibleColumns(columnsOrder);
 
         if (UserSessionProvider.getUserSession().isSpecificPermitted(ShowInfoAction.ACTION_PERMISSION)) {
             ShowInfoAction action = (ShowInfoAction) getAction(ShowInfoAction.ACTION_ID);
@@ -611,23 +611,6 @@ public abstract class DesktopAbstractTable<C extends JTable>
                     }
                 }
         );
-    }
-
-    private List<MetaPropertyPath> getPropertyColumns() {
-        UserSession userSession = UserSessionProvider.getUserSession();
-        List<MetaPropertyPath> result = new ArrayList<>();
-        for (Column column : columnsOrder) {
-            if (column.getId() instanceof MetaPropertyPath) {
-                MetaProperty colMetaProperty = ((MetaPropertyPath) column.getId()).getMetaProperty();
-                MetaClass colMetaClass = colMetaProperty.getDomain();
-                if (userSession.isEntityOpPermitted(colMetaClass, EntityOp.READ)
-                        && userSession.isEntityAttrPermitted(
-                        colMetaClass, colMetaProperty.getName(), EntityAttrAccess.VIEW)) {
-                    result.add((MetaPropertyPath)column.getId());
-                }
-            }
-        }
-        return result;
     }
 
     protected void setVisibleColumns(List<?> columnsOrder) {
