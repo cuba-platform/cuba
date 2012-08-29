@@ -592,6 +592,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
     private boolean filtering = false;
     private boolean selecting = false;
     private boolean tabPressed = false;
+    private boolean initDone = false;
 
     private String lastFilter = "";
     private int lastIndex = -1; // last selected index when using arrows
@@ -851,7 +852,17 @@ public class VFilterSelect extends Composite implements Paintable, Field,
 
         popupOpenerClicked = false;
 
-        updateRootWidth();
+        if (!initDone) {
+            updateRootWidth();
+        }
+
+        // Focus dependent style names are lost during the update, so we add
+        // them here back again
+        if (focused) {
+            addStyleDependentName("focus");
+        }
+
+        initDone = true;
     }
 
     private void setPromptingOn() {
@@ -1072,7 +1083,7 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         }
     }
 
-    /*
+    /**
      * Calculate minumum width for FilterSelect textarea
      */
     private native int minWidth(String captions)
@@ -1098,15 +1109,63 @@ public class VFilterSelect extends Composite implements Paintable, Field,
         return w;
     }-*/;
 
+
+    /**
+     * A flag which prevents a focus event from taking place
+     */
+    boolean iePreventNextFocus = false;
+
     public void onFocus(FocusEvent event) {
+        /*
+         * When we disable a blur event in ie we need to refocus the textfield.
+         * This will cause a focus event we do not want to process, so in that
+         * case we just ignore it.
+         */
+        if (BrowserInfo.get().isIE() && iePreventNextFocus) {
+            iePreventNextFocus = false;
+            return;
+        }
+
         focused = true;
         if (prompting && !readonly) {
             setPromptingOff("");
         }
+
         addStyleDependentName("focus");
     }
 
+    /**
+     * A flag which cancels the blur event and sets the focus back to the
+     * textfield if the Browser is IE
+     */
+    boolean preventNextBlurEventInIE = false;
+
     public void onBlur(BlurEvent event) {
+        if (BrowserInfo.get().isIE() && preventNextBlurEventInIE) {
+            /*
+             * Clicking in the suggestion popup or on the popup button in IE
+             * causes a blur event to be sent for the field. In other browsers
+             * this is prevented by canceling/preventing default behavior for
+             * the focus event, in IE we handle it here by refocusing the text
+             * field and ignoring the resulting focus event for the textfield
+             * (in onFocus).
+             */
+            preventNextBlurEventInIE = false;
+
+            Element focusedElement = Util.getIEFocusedElement();
+            if (getElement().isOrHasChild(focusedElement)
+                    || suggestionPopup.getElement()
+                            .isOrHasChild(focusedElement)) {
+
+                // IF the suggestion popup or another part of the VFilterSelect
+                // was focused, move the focus back to the textfield and prevent
+                // the triggered focus event (in onFocus).
+                iePreventNextFocus = true;
+                tb.setFocus(true);
+                return;
+            }
+        }
+
         focused = false;
         if (!readonly) {
             // much of the TAB handling takes place here
@@ -1123,6 +1182,10 @@ public class VFilterSelect extends Composite implements Paintable, Field,
             }
         }
         removeStyleDependentName("focus");
+
+        if (client.hasEventListeners(this, EventId.BLUR)) {
+            client.updateVariable(paintableId, EventId.BLUR, "", true);
+        }
     }
 
     public void focus() {
