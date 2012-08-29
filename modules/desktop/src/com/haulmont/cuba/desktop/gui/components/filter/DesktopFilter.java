@@ -100,7 +100,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     private boolean editable = true;
     private boolean required = false;
 
-    private DesktopPopupButton actions;
+    private DesktopPopupButton actionsButton;
 
     private GlobalConfig globalConfig = ConfigProvider.getConfig(GlobalConfig.class);
     private ClientConfig clientConfig = ConfigProvider.getConfig(ClientConfig.class);
@@ -170,12 +170,12 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         });
         impl.add(applyBtn);
 
-        actions = new DesktopPopupButton();
-        actions.setVisible(true);
-        actions.setPopupVisible(true);
+        actionsButton = new DesktopPopupButton();
+        actionsButton.setVisible(true);
+        actionsButton.setPopupVisible(true);
 
-        actions.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "actionsCaption"));
-        impl.add(actions.<java.awt.Component>getComponent());
+        actionsButton.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "actionsCaption"));
+        impl.add(actionsButton.<java.awt.Component>getComponent());
 
         initMaxResultsPanel();
         impl.add(maxResultsPanel, new CC().wrap());
@@ -304,12 +304,13 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
 
     private void updateControls() {
         fillActions();
-        actions.setVisible(!editing);
-        actions.setPopupVisible(false);
+        actionsButton.setVisible(!editing);
+        actionsButton.setPopupVisible(false);
         select.setEnabled(!editing);
         applyBtn.setVisible(!editing);
 
-        actions.setVisible(editable);
+        actionsButton.setVisible(editable);
+        actionsButton.setEnabled(actionsButton.getActions().size() > 0);
     }
 
     private boolean checkGlobalAppFolderPermission() {
@@ -324,50 +325,50 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     }
 
     private void fillActions() {
-        for (Action action : new ArrayList<Action>(actions.getActions())) {
-            actions.removeAction(action);
+        for (Action action : new ArrayList<Action>(actionsButton.getActions())) {
+            actionsButton.removeAction(action);
         }
 
         if (editing)
             return;
 
-        actions.addAction(new CreateAction());
+        actionsButton.addAction(new CreateAction());
 
         if (filterEntity == null) {
             if (!defaultFilterEmpty) {
-                actions.addAction(new MakeDefaultAction());
+                actionsButton.addAction(new MakeDefaultAction());
             }
             return;
         }
 
 
         if ((BooleanUtils.isNotTrue(filterEntity.getIsSet())))
-            actions.addAction(new CopyAction());
+            actionsButton.addAction(new CopyAction());
 
         if (checkGlobalFilterPermission()) {
             if ((BooleanUtils.isNotTrue(filterEntity.getIsSet())) &&
                     ((filterEntity.getFolder() == null && (filterEntity.getCode() == null)) ||
                             (filterEntity.getFolder() instanceof SearchFolder) ||
                             ((filterEntity.getFolder() instanceof AppFolder) && checkGlobalAppFolderPermission())))
-                actions.addAction(new EditAction());
+                actionsButton.addAction(new EditAction());
 
             if (filterEntity.getCode() == null && filterEntity.getFolder() == null)
-                actions.addAction(new DeleteAction());
+                actionsButton.addAction(new DeleteAction());
         } else {
             if (filterEntity.getFolder() instanceof SearchFolder) {
                 if ((UserSessionProvider.getUserSession().getUser().equals(((SearchFolder) filterEntity.getFolder()).getUser())) &&
                         (BooleanUtils.isNotTrue(filterEntity.getIsSet())))
-                    actions.addAction(new EditAction());
+                    actionsButton.addAction(new EditAction());
             }
             if (filterEntity.getCode() == null && filterEntity.getFolder() == null &&
                     UserSessionProvider.getUserSession().getUser().equals(filterEntity.getUser()))
-                actions.addAction(new DeleteAction());
+                actionsButton.addAction(new DeleteAction());
         }
 
         if (filterEntity != null && BooleanUtils.isNotTrue(filterEntity.getIsDefault())
                 && filterEntity.getFolder() == null
                 && filterEntity.getIsSet() == null) {
-            actions.addAction(new MakeDefaultAction());
+            actionsButton.addAction(new MakeDefaultAction());
         }
         //todo
         /* if (filterEntity.getCode() == null && foldersPane != null && filterEntity.getFolder() == null)
@@ -1170,7 +1171,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
     @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
-        actions.setVisible(editable);
+        actionsButton.setVisible(editable);
     }
 
     @Override
@@ -1326,7 +1327,7 @@ public class DesktopFilter extends DesktopAbstractComponent<JPanel> implements F
         @Override
         public void actionPerform(Component component) {
             setDefaultFilter();
-            actions.removeAction(MakeDefaultAction.this);
+            actionsButton.removeAction(MakeDefaultAction.this);
         }
     }
 

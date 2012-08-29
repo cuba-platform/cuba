@@ -82,7 +82,7 @@ public class WebFilter
     private com.vaadin.ui.Component paramsLayout;
     private AbstractOrderedLayout editLayout;
     private FilterSelect select;
-    private WebPopupButton actions;
+    private WebPopupButton actionsButton;
 
     private Button pinAppliedFilterBtn;
     private Button applyBtn;
@@ -203,9 +203,9 @@ public class WebFilter
             topLayout.addComponent(pinAppliedFilterBtn);
         }
 
-        actions = new WebPopupButton();
-        actions.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "actionsCaption"));
-        topLayout.addComponent((com.vaadin.ui.Component) actions.getComponent());
+        actionsButton = new WebPopupButton();
+        actionsButton.setCaption(MessageProvider.getMessage(MESSAGES_PACK, "actionsCaption"));
+        topLayout.addComponent((com.vaadin.ui.Component) actionsButton.getComponent());
 
         initMaxResultsLayout();
         topLayout.addComponent(maxResultsLayout);
@@ -326,55 +326,55 @@ public class WebFilter
     }
 
     private void fillActions() {
-        for (Action action : new ArrayList<Action>(actions.getActions())) {
-            actions.removeAction(action);
+        for (Action action : new ArrayList<Action>(actionsButton.getActions())) {
+            actionsButton.removeAction(action);
         }
 
         if (editing)
             return;
 
-        actions.addAction(new CreateAction());
+        actionsButton.addAction(new CreateAction());
 
         if (filterEntity == null) {
             if (!defaultFilterEmpty) {
-                actions.addAction(new MakeDefaultAction());
+                actionsButton.addAction(new MakeDefaultAction());
             }
             return;
         }
 
         if ((BooleanUtils.isNotTrue(filterEntity.getIsSet())))
-            actions.addAction(new CopyAction());
+            actionsButton.addAction(new CopyAction());
 
         if (checkGlobalFilterPermission()) {
             if ((BooleanUtils.isNotTrue(filterEntity.getIsSet())) &&
                     ((filterEntity.getFolder() == null && (filterEntity.getCode() == null)) ||
                             (filterEntity.getFolder() instanceof SearchFolder) ||
                             ((filterEntity.getFolder() instanceof AppFolder) && checkGlobalAppFolderPermission())))
-                actions.addAction(new EditAction());
+                actionsButton.addAction(new EditAction());
 
             if (filterEntity.getCode() == null && filterEntity.getFolder() == null)
-                actions.addAction(new DeleteAction());
+                actionsButton.addAction(new DeleteAction());
         } else {
             if (filterEntity.getFolder() instanceof SearchFolder) {
                 if ((UserSessionProvider.getUserSession().getUser().equals(((SearchFolder) filterEntity.getFolder()).getUser())) &&
                         (BooleanUtils.isNotTrue(filterEntity.getIsSet())))
-                    actions.addAction(new EditAction());
+                    actionsButton.addAction(new EditAction());
             }
             if (filterEntity.getCode() == null && filterEntity.getFolder() == null &&
                     UserSessionProvider.getUserSession().getUser().equals(filterEntity.getUser()))
-                actions.addAction(new DeleteAction());
+                actionsButton.addAction(new DeleteAction());
         }
         if (filterEntity != null && BooleanUtils.isNotTrue(filterEntity.getIsDefault())
                 && filterEntity.getFolder() == null
                 && filterEntity.getIsSet() == null) {
-            actions.addAction(new MakeDefaultAction());
+            actionsButton.addAction(new MakeDefaultAction());
         }
 
         if (filterEntity.getCode() == null && foldersPane != null && filterEntity.getFolder() == null)
-            actions.addAction(new SaveAsFolderAction(false));
+            actionsButton.addAction(new SaveAsFolderAction(false));
         if (checkGlobalAppFolderPermission()) {
             if (filterEntity.getCode() == null && foldersPane != null && filterEntity.getFolder() == null)
-                actions.addAction(new SaveAsFolderAction(true));
+                actionsButton.addAction(new SaveAsFolderAction(true));
         }
     }
 
@@ -1086,9 +1086,10 @@ public class WebFilter
 
     private void updateControls() {
         fillActions();
-        actions.setVisible(!editing);
-        ((PopupButton) actions.getComponent()).setPopupVisible(false);
-        ((PopupButton) actions.getComponent()).setVisible(editable);
+        actionsButton.setVisible(!editing);
+        ((PopupButton) actionsButton.getComponent()).setPopupVisible(false);
+        ((PopupButton) actionsButton.getComponent()).setVisible(editable);
+        ((PopupButton) actionsButton.getComponent()).setEnabled(actionsButton.getActions().size() > 0);
 
         select.setEnabled(!editing);
         applyBtn.setVisible(!editing);
@@ -1439,7 +1440,7 @@ public class WebFilter
     @Override
     public void setEditable(boolean editable) {
         this.editable = editable;
-        ((PopupButton) actions.getComponent()).setVisible(editable);
+        ((PopupButton) actionsButton.getComponent()).setVisible(editable);
     }
 
     @Override
@@ -1611,7 +1612,7 @@ public class WebFilter
         @Override
         public void actionPerform(Component component) {
             setDefaultFilter();
-            actions.removeAction(MakeDefaultAction.this);
+            actionsButton.removeAction(MakeDefaultAction.this);
         }
     }
 
