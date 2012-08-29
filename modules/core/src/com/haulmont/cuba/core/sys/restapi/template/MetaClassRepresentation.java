@@ -44,7 +44,7 @@ public class MetaClassRepresentation {
         Table tableAnn = (Table) meta.getJavaClass().getAnnotation(Table.class);
         return tableAnn != null ? tableAnn.name() : "not defined";
     }
-    
+
     public String getName() {
         return meta.getName();
     }
@@ -105,7 +105,7 @@ public class MetaClassRepresentation {
             JoinColumn joinColumn = property.getAnnotatedElement().getAnnotation(JoinColumn.class);
             return joinColumn != null ? joinColumn.name() : "";
         }
-        
+
         public String getName() {
             return property.getName();
         }
@@ -167,6 +167,10 @@ public class MetaClassRepresentation {
                 result.add(annotationName + ": " + entry.getValue());
             }
             return result;
+        }
+
+        public boolean isPersistent() {
+            return MetadataHelper.isPersistent(property);
         }
     }
 

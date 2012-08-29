@@ -87,18 +87,20 @@
             <th>Misc</th>
         </tr>
     <#list entity.properties as property>
-        <tr>
-            <td class="propertyName">${property.name}</td>
-            <td>${property.tableName}</td>
-            <td>${property.javaType} ${property.enum}</td>
-            <td>${property.description}</td>
-            <td><i>${property.cardinality} ${property.ordered} ${property.mandatory}. ${property.readOnly}.</i></td>
-            <td>
-                <#list property.annotations as ann>
-                    ${ann}<br>
-                </#list>
-            </td>
-        </tr>
+        <#if property.persistent>
+            <tr>
+                        <td class="propertyName">${property.name}</td>
+                        <td>${property.tableName}</td>
+                        <td>${property.javaType} ${property.enum}</td>
+                        <td>${property.description}</td>
+                        <td><i>${property.cardinality} ${property.ordered} ${property.mandatory}. ${property.readOnly}.</i></td>
+                        <td>
+                            <#list property.annotations as ann>
+                                ${ann}<br>
+                            </#list>
+                        </td>
+            </tr>
+        </#if>
     </#list>
     </table>
 
