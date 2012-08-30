@@ -85,6 +85,7 @@ public class VResizableTextField extends VTextArea {
             DOM.releaseCapture(resizeElement);
             client.updateVariable(id, "width", getOffsetWidth() + "px", false);
             client.updateVariable(id, "height", getOffsetHeight() + "px", false);
+			client.updateVariable(id, "text", getText(), false);
             client.sendPendingVariableChanges();
         }
     }
