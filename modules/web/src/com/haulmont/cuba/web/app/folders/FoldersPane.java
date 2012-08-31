@@ -1,24 +1,17 @@
 /*
- * Copyright (c) 2009 Haulmont Technology Ltd. All Rights Reserved.
+ * Copyright (c) 2012 Haulmont Technology Ltd. All Rights Reserved.
  * Haulmont Technology proprietary and confidential.
  * Use is subject to license terms.
-
- * Author: Konstantin Krivopustov
- * Created: 10.12.2009 16:14:55
- *
- * $Id$
  */
 package com.haulmont.cuba.web.app.folders;
 
+import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.app.FoldersService;
 import com.haulmont.cuba.core.entity.AbstractSearchFolder;
 import com.haulmont.cuba.core.entity.AppFolder;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.entity.Folder;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.core.sys.AppContext;
-import com.haulmont.cuba.gui.AppConfig;
-import com.haulmont.cuba.gui.ServiceLocator;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.WindowParams;
 import com.haulmont.cuba.gui.components.*;
@@ -57,12 +50,17 @@ import org.apache.commons.logging.LogFactory;
 import java.io.IOException;
 import java.util.*;
 
-@SuppressWarnings("serial")
+/**
+ * Left panel containing application and search folders.
+ *
+ * @author krivopustov
+ * @version $Id$
+ */
 public class FoldersPane extends VerticalLayout {
 
-    private static Log log = LogFactory.getLog(FoldersPane.class);
+    private static final long serialVersionUID = 6666603397626574763L;
 
-    protected String messagesPack;
+    private static Log log = LogFactory.getLog(FoldersPane.class);
 
     protected boolean visible;
 
@@ -87,9 +85,22 @@ public class FoldersPane extends VerticalLayout {
     protected WebSplitPanel vertSplit;
     protected WebSplitPanel horSplit;
 
+    protected WebConfig webConfig = AppBeans.get(Configuration.class).getConfig(WebConfig.class);
+
+    protected Messages messages = AppBeans.get(Messages.class);
+
+    protected Metadata metadata = AppBeans.get(Metadata.class);
+
+    protected UserSessionSource userSessionSource = AppBeans.get(UserSessionSource.class);
+
+    protected UserSettingService userSettingService = AppBeans.get(UserSettingService.class);
+
+    protected FoldersService foldersService = AppBeans.get(FoldersService.class);
+
+    protected DataService dataService = AppBeans.get(DataService.class);
+
     public FoldersPane(MenuBar menuBar, AppWindow appWindow) {
         this.menuBar = menuBar;
-        messagesPack = AppConfig.getMessagesPack();
         parentAppWindow = appWindow;
 
         setHeight(100, Sizeable.UNITS_PERCENTAGE);
@@ -103,11 +114,9 @@ public class FoldersPane extends VerticalLayout {
 
         boolean visible;
         UserSettingHelper.FoldersState state = UserSettingHelper.loadFoldersState();
-        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
         if (state == null) {
-            WebConfig config = ConfigProvider.getConfig(WebConfig.class);
-            visible = config.getFoldersPaneVisibleByDefault() || webConfig.getUseLightHeader();
-            horizontalSplitPos = config.getFoldersPaneDefaultWidth();
+            visible = webConfig.getFoldersPaneVisibleByDefault() || webConfig.getUseLightHeader();
+            horizontalSplitPos = webConfig.getFoldersPaneDefaultWidth();
             verticalSplitPos = DEFAULT_VERT_SPLIT_POS;
         } else {
             visible = state.visible;
@@ -161,13 +170,13 @@ public class FoldersPane extends VerticalLayout {
                 appFoldersPane.setHeight("97%");
                 appFoldersPane.setWidth("96%");
                 if (isNeedFoldersTitle()) {
-                    appFoldersLabel = new Label(MessageProvider.getMessage(messagesPack, "folders.appFoldersRoot"));
+                    appFoldersLabel = new Label(messages.getMainMessage("folders.appFoldersRoot"));
                     appFoldersLabel.setStyleName("folderspane-caption");
                 } else {
                     appFoldersLabel = null;
                 }
 
-                int period = ConfigProvider.getConfig(WebConfig.class).getAppFoldersRefreshPeriodSec() * 1000;
+                int period = webConfig.getAppFoldersRefreshPeriodSec() * 1000;
 
                 // find old timers
                 AppTimers appTimers = App.getInstance().getTimers();
@@ -187,7 +196,7 @@ public class FoldersPane extends VerticalLayout {
                 searchFoldersPane.setHeight("97%");
                 searchFoldersPane.setWidth("96%");
                 if (isNeedFoldersTitle()) {
-                    searchFoldersLabel = new Label(MessageProvider.getMessage(messagesPack, "folders.searchFoldersRoot"));
+                    searchFoldersLabel = new Label(messages.getMainMessage("folders.searchFoldersRoot"));
                     searchFoldersLabel.setStyleName("folderspane-caption");
                 } else {
                     searchFoldersLabel = null;
@@ -267,8 +276,7 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected void collapseItemInTree(Tree tree, final String foldersCollapse) {
-        final UserSettingService uss = ServiceLocator.lookup(UserSettingService.NAME);
-        String s = uss.loadSetting(foldersCollapse);
+        String s = userSettingService.loadSetting(foldersCollapse);
         List<UUID> idFolders = strToIds(s);
         for (AbstractSearchFolder folder : (Collection<AbstractSearchFolder>) tree.getItemIds()) {
             if (idFolders.contains(folder.getId())) {
@@ -280,8 +288,8 @@ public class FoldersPane extends VerticalLayout {
             public void nodeExpand(Tree.ExpandEvent event) {
                 if (event.getItemId() instanceof AbstractSearchFolder) {
                     UUID uuid = ((AbstractSearchFolder) event.getItemId()).getId();
-                    String str = uss.loadSetting(foldersCollapse);
-                    uss.saveSetting(foldersCollapse, removeIdInStr(str, uuid));
+                    String str = userSettingService.loadSetting(foldersCollapse);
+                    userSettingService.saveSetting(foldersCollapse, removeIdInStr(str, uuid));
                 }
             }
         });
@@ -290,8 +298,8 @@ public class FoldersPane extends VerticalLayout {
             public void nodeCollapse(Tree.CollapseEvent event) {
                 if (event.getItemId() instanceof AbstractSearchFolder) {
                     UUID uuid = ((AbstractSearchFolder) event.getItemId()).getId();
-                    String str = uss.loadSetting(foldersCollapse);
-                    uss.saveSetting(foldersCollapse, addIdInStr(str, uuid));
+                    String str = userSettingService.loadSetting(foldersCollapse);
+                    userSettingService.saveSetting(foldersCollapse, addIdInStr(str, uuid));
                 }
             }
         });
@@ -330,7 +338,7 @@ public class FoldersPane extends VerticalLayout {
 
     protected String idsToStr(List<UUID> uuids) {
         if (uuids == null) return "";
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (UUID uuid : uuids) {
             sb.append(":").append(uuid.toString());
         }
@@ -378,8 +386,7 @@ public class FoldersPane extends VerticalLayout {
             return;
 
         List<AppFolder> folders = new ArrayList(appFoldersTree.getItemIds());
-        FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
-        List<AppFolder> updateFolders = service.reloadAppFolders(folders);
+        List<AppFolder> updateFolders = foldersService.reloadAppFolders(folders);
         for (AppFolder folder : updateFolders) {
             int index = updateFolders.indexOf(folder);
             AppFolder f = folders.get(index);
@@ -395,8 +402,7 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected Component createAppFoldersPane() {
-        FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
-        List<AppFolder> appFolders = service.loadAppFolders();
+        List<AppFolder> appFolders = foldersService.loadAppFolders();
         if (appFolders.isEmpty())
             return null;
 
@@ -404,7 +410,7 @@ public class FoldersPane extends VerticalLayout {
 //        appFoldersTree.setDoubleClickMode(true);
         appFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
 
-        appFoldersRoot = MessageProvider.getMessage(messagesPack, "folders.appFoldersRoot");
+        appFoldersRoot = messages.getMainMessage("folders.appFoldersRoot");
         fillTree(appFoldersTree, appFolders, isNeedRootAppFolder() ? appFoldersRoot : null);
         appFoldersTree.addListener(new FolderClickListener());
         appFoldersTree.addActionHandler(new AppFolderActionsHandler());
@@ -421,9 +427,8 @@ public class FoldersPane extends VerticalLayout {
 //        searchFoldersTree.setDoubleClickMode(true);
         searchFoldersTree.setItemStyleGenerator(new FolderTreeStyleProvider());
 
-        FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
-        List<SearchFolder> searchFolders = service.loadSearchFolders();
-        searchFoldersRoot = MessageProvider.getMessage(messagesPack, "folders.searchFoldersRoot");
+        List<SearchFolder> searchFolders = foldersService.loadSearchFolders();
+        searchFoldersRoot = messages.getMainMessage("folders.searchFoldersRoot");
         searchFoldersTree.addListener(new FolderClickListener());
         searchFoldersTree.addActionHandler(new SearchFolderActionsHandler());
         if (!searchFolders.isEmpty()) {
@@ -443,7 +448,7 @@ public class FoldersPane extends VerticalLayout {
         for (Folder folder : folders) {
             tree.addItem(folder);
             tree.setItemCaption(folder, folder.getCaption());
-            if (ConfigProvider.getConfig(WebConfig.class).getShowFolderIcons()) {
+            if (webConfig.getShowFolderIcons()) {
                 if (folder instanceof SearchFolder) {
                     if (BooleanUtils.isTrue(((SearchFolder) folder).getIsSet())) {
                         tree.setItemIcon(folder, new ThemeResource("icons/set-small.png"));
@@ -477,7 +482,7 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected String getDefaultMenuItemCaption() {
-        return MessageProvider.getMessage(messagesPack, visible ? "folders.hideFolders" : "folders.showFolders");
+        return messages.getMainMessage(visible ? "folders.hideFolders" : "folders.showFolders");
     }
 
     protected Resource getMenuItemIcon() {
@@ -506,9 +511,9 @@ public class FoldersPane extends VerticalLayout {
         WindowParams.DISABLE_RESUME_SUSPENDED.set(params, true);
 
         if (!StringUtils.isBlank(folder.getTabName())) {
-            WindowParams.DESCRIPTION.set(params, MessageProvider.getMessage(messagesPack, folder.getTabName()));
+            WindowParams.DESCRIPTION.set(params, messages.getMainMessage(folder.getTabName()));
         } else {
-            WindowParams.DESCRIPTION.set(params, MessageProvider.getMessage(messagesPack, folder.getName()));
+            WindowParams.DESCRIPTION.set(params, messages.getMainMessage(folder.getName()));
         }
 
         WindowParams.FOLDER_ID.set(params, folder.getId());
@@ -567,7 +572,7 @@ public class FoldersPane extends VerticalLayout {
 
     public Folder saveFolder(Folder folder) {
         CommitContext commitContext = new CommitContext(Collections.singleton(folder));
-        Set<Entity> res = ServiceLocator.getDataService().commit(commitContext);
+        Set<Entity> res = dataService.commit(commitContext);
         for (Entity entity : res) {
             if (entity.equals(folder))
                 return (Folder) entity;
@@ -577,7 +582,7 @@ public class FoldersPane extends VerticalLayout {
 
     public void removeFolder(Folder folder) {
         CommitContext commitContext = new CommitContext(Collections.emptySet(), Collections.singleton(folder));
-        ServiceLocator.getDataService().commit(commitContext);
+        dataService.commit(commitContext);
     }
 
     public com.haulmont.cuba.web.toolkit.ui.Tree getSearchFoldersTree() {
@@ -646,14 +651,23 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class AppFolderActionsHandler implements Action.Handler {
+
+        private OpenAction openAction = new OpenAction();
+        private CreateAction createAction = new CreateAction(true);
+        private CopyAction copyAction = new CopyAction();
+        private EditAction editAction = new EditAction();
+        private RemoveAction removeAction = new RemoveAction();
+        private ExportAction exportAction = new ExportAction();
+        private ImportAction importAction = new ImportAction();
+
         @Override
         public Action[] getActions(Object target, Object sender) {
             if (target instanceof Folder) {
-                if (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.appFolder.global")) {
-                    return new Action[]{new OpenAction(), new CreateAction(true), new CopyAction(),
-                            new EditAction(), new RemoveAction(), new ExportAction(), new ImportAction()};
+                if (userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.appFolder.global")) {
+                    return new Action[] {openAction, createAction, copyAction,
+                            editAction, removeAction, exportAction, importAction};
                 } else {
-                    return new Action[]{new OpenAction()};
+                    return new Action[] {openAction};
                 }
 
             } else {
@@ -671,6 +685,14 @@ public class FoldersPane extends VerticalLayout {
     }
 
     protected class SearchFolderActionsHandler extends AppFolderActionsHandler {
+
+        private OpenAction openAction = new OpenAction();
+        private CopyAction copyAction = new CopyAction();
+        private CreateAction createAction = new CreateAction(false);
+        private EditAction editAction = new EditAction();
+        private RemoveAction removeAction = new RemoveAction();
+        private ExportAction exportAction = new ExportAction();
+        private ImportAction importAction = new ImportAction();
 
         @Override
         public Action[] getActions(Object target, Object sender) {
@@ -718,28 +740,28 @@ public class FoldersPane extends VerticalLayout {
         }
 
         private boolean isOwner(SearchFolder folder) {
-            return UserSessionProvider.getUserSession().getUser().equals(folder.getUser());
+            return userSessionSource.getUserSession().getUser().equals(folder.getUser());
         }
 
         private boolean isGlobalSearchFolderPermitted() {
-            return (UserSessionProvider.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global"));
+            return (userSessionSource.getUserSession().isSpecificPermitted("cuba.gui.searchFolder.global"));
         }
 
         private Action[] createAllActions() {
-            return new Action[]{new OpenAction(), new CopyAction(), new CreateAction(false),
-                    new EditAction(), new RemoveAction(), new ExportAction(), new ImportAction()};
+            return new Action[] {openAction, copyAction, createAction,
+                    editAction, removeAction, exportAction, importAction};
         }
 
         private Action[] createWithoutOpenActions() {
-            return new Action[]{new CreateAction(false), new EditAction(), new RemoveAction()};
+            return new Action[] {createAction, editAction, removeAction};
         }
 
         private Action[] createOnlyCreateAction() {
-            return new Action[]{new CreateAction(false)};
+            return new Action[] {createAction};
         }
 
         private Action[] createOpenCreateAction() {
-            return new Action[]{new OpenAction(), new CreateAction(false), new CopyAction()};
+            return new Action[] {openAction, createAction, copyAction};
         }
 
     }
@@ -756,7 +778,7 @@ public class FoldersPane extends VerticalLayout {
     protected class OpenAction extends FolderAction {
 
         public OpenAction() {
-            super(MessageProvider.getMessage(messagesPack, "folders.openFolderAction"));
+            super(messages.getMainMessage("folders.openFolderAction"));
         }
 
         @Override
@@ -771,13 +793,13 @@ public class FoldersPane extends VerticalLayout {
         private boolean isAppFolder;
 
         public CreateAction(boolean isAppFolder) {
-            super(MessageProvider.getMessage(messagesPack, "folders.createFolderAction"));
+            super(messages.getMainMessage("folders.createFolderAction"));
             this.isAppFolder = isAppFolder;
         }
 
         @Override
         public void perform(final Folder folder) {
-            final Folder newFolder = isAppFolder ? MetadataProvider.create(AppFolder.class) : (new SearchFolder());
+            final Folder newFolder = isAppFolder ? metadata.create(AppFolder.class) : (new SearchFolder());
             newFolder.setName("");
             newFolder.setTabName("");
             newFolder.setParent(folder);
@@ -802,13 +824,13 @@ public class FoldersPane extends VerticalLayout {
 
     protected class CopyAction extends FolderAction {
         public CopyAction() {
-            super(MessageProvider.getMessage(messagesPack, "folders.copyFolderAction"));
+            super(messages.getMainMessage("folders.copyFolderAction"));
         }
 
         @Override
         public void perform(final Folder folder) {
             final AbstractSearchFolder newFolder;
-            newFolder = MetadataProvider.create(folder.getMetaClass());
+            newFolder = metadata.create(folder.getMetaClass());
             newFolder.copyFrom((AbstractSearchFolder) folder);
             new EditAction().perform(newFolder);
         }
@@ -817,7 +839,7 @@ public class FoldersPane extends VerticalLayout {
     protected class EditAction extends FolderAction {
 
         public EditAction() {
-            super(MessageProvider.getMessage(messagesPack, "folders.editFolderAction"));
+            super(messages.getMainMessage("folders.editFolderAction"));
         }
 
         @Override
@@ -856,14 +878,14 @@ public class FoldersPane extends VerticalLayout {
     protected class RemoveAction extends FolderAction {
 
         public RemoveAction() {
-            super(MessageProvider.getMessage(messagesPack, "folders.removeFolderAction"));
+            super(messages.getMainMessage("folders.removeFolderAction"));
         }
 
         @Override
         public void perform(final Folder folder) {
             App.getInstance().getWindowManager().showOptionDialog(
-                    MessageProvider.getMessage(messagesPack, "dialogs.Confirmation"),
-                    MessageProvider.getMessage(messagesPack, "folders.removeFolderConfirmation"),
+                    messages.getMainMessage("dialogs.Confirmation"),
+                    messages.getMainMessage("folders.removeFolderConfirmation"),
                     IFrame.MessageType.CONFIRMATION,
                     new com.haulmont.cuba.gui.components.Action[]{
                             new DialogAction(DialogAction.Type.YES) {
@@ -882,15 +904,14 @@ public class FoldersPane extends VerticalLayout {
     protected class ExportAction extends FolderAction {
 
         public ExportAction() {
-            super(MessageProvider.getMessage(messagesPack, "folders.exportFolderAction"));
+            super(messages.getMainMessage("folders.exportFolderAction"));
         }
 
         @Override
         public void perform(Folder folder) {
-            FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
             try {
-                new WebExportDisplay().show(new ByteArrayDataProvider(
-                        service.exportFolder(folder)), "Folders", ExportFormat.ZIP);
+                byte[] data = foldersService.exportFolder(folder);
+                new WebExportDisplay().show(new ByteArrayDataProvider(data), "Folders", ExportFormat.ZIP);
             } catch (IOException ignored) {
             }
         }
@@ -898,7 +919,7 @@ public class FoldersPane extends VerticalLayout {
 
     private class ImportAction extends FolderAction {
         protected ImportAction() {
-            super(MessageProvider.getMessage(messagesPack, "folders.importFolderAction"));
+            super(messages.getMainMessage("folders.importFolderAction"));
         }
 
         @Override
@@ -914,8 +935,7 @@ public class FoldersPane extends VerticalLayout {
 //                public void windowClosed(String actionId) {
 //                    if (Window.COMMIT_ACTION_ID.equals(actionId)) {
 //                        try {
-//                            FoldersService service = ServiceLocator.lookup(FoldersService.NAME);
-//                            service.importFolder(folder, importDialog.getBytes());
+//                            foldersService.importFolder(folder, importDialog.getBytes());
 //                        } catch (Exception ex) {
 //                            importDialog.showNotification(
 //                                    importDialog.getMessage("notification.importFailed"),
