@@ -46,6 +46,16 @@
     display: block;
 }
 
+.v-button:focus {
+    outline: none;
+    border-color: #4d7ab2;
+}
+
+.v-button-link:focus {
+    outline: none;
+    border: none;
+}
+
 .v-button:hover {
     background: transparent url(img/bg-button-hover.gif) repeat-x;
 }
@@ -220,12 +230,23 @@ display: inline-block;
 zoom: 1;
 }
 
-.v-checkbox v-disabled {
+.v-checkbox .v-disabled {
 	opacity: 0.8;
 	filter: Alpha(opacity = 80);
 }
 
+.v-checkbox {
+    padding-bottom: 3px;
+    border: transparent 1px solid;
+}
 
+.v-checkbox-focus {
+    border: 1px dotted #4d7ab2;
+}
+
+.v-checkbox input {
+    outline: none;
+}
 
 /* Disabled by default
 .v-checkbox-error {

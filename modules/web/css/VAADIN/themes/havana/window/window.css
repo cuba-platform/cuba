@@ -20,6 +20,10 @@
 */
 }
 
+.v-window-contents > div {
+    outline: none;
+}
+
 .v-window-header {
 	font-size: 13px;
     padding: 6px 5px 5px 7px;

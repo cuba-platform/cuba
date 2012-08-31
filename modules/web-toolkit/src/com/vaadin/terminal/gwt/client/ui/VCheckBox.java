@@ -20,25 +20,12 @@ import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
-import com.vaadin.terminal.gwt.client.EventHelper;
-import com.vaadin.terminal.gwt.client.EventId;
-import com.vaadin.terminal.gwt.client.MouseEventDetails;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.Util;
-import com.vaadin.terminal.gwt.client.VTooltip;
+import com.vaadin.terminal.gwt.client.*;
 
 /**
  * VCheckBox
@@ -81,11 +68,15 @@ public class VCheckBox extends com.google.gwt.user.client.ui.CheckBox implements
             }
 
         });
+
+        addFocusHandler(this);
+        addBlurHandler(this);
+
         sinkEvents(VTooltip.TOOLTIP_EVENTS);
         Element el = DOM.getFirstChild(getElement());
+
         while (el != null) {
-            DOM.sinkEvents(el,
-                    (DOM.getEventsSunk(el) | VTooltip.TOOLTIP_EVENTS));
+            DOM.sinkEvents(el, (DOM.getEventsSunk(el) | VTooltip.TOOLTIP_EVENTS));
             el = DOM.getNextSibling(el);
         }
     }
@@ -205,10 +196,18 @@ public class VCheckBox extends com.google.gwt.user.client.ui.CheckBox implements
     }
 
     public void onFocus(FocusEvent arg0) {
-        client.updateVariable(id, EventId.FOCUS, "", true);
+        addStyleDependentName("focus");
+
+        if (client.hasEventListeners(this, EventId.FOCUS)) {
+            client.updateVariable(id, EventId.FOCUS, "", true);
+        }
     }
 
     public void onBlur(BlurEvent arg0) {
-        client.updateVariable(id, EventId.BLUR, "", true);
+        removeStyleDependentName("focus");
+
+        if (client.hasEventListeners(this, EventId.BLUR)) {
+            client.updateVariable(id, EventId.BLUR, "", true);
+        }
     }
 }

@@ -160,11 +160,11 @@ public class ListEditComponent extends CustomComponent implements com.vaadin.ui.
 
     private void updateIcons() {
         if (isReadOnly()) {
-            setPickerButtonIcon(new ThemeResource("pickerfield/img/lookup-btn-readonly.png"));
-            setClearButtonIcon(new ThemeResource("pickerfield/img/clear-btn-readonly.png"));
+            setPickerButtonIcon(new ThemeResource("pickerfield/img/readonly/lookup-btn-readonly.png"));
+            setClearButtonIcon(new ThemeResource("pickerfield/img/readonly/clear-btn-readonly.png"));
         } else {
-            setPickerButtonIcon(new ThemeResource("pickerfield/img/lookup-btn.png"));
-            setClearButtonIcon(new ThemeResource("pickerfield/img/clear-btn.png"));
+            setPickerButtonIcon(new ThemeResource("pickerfield/img/normal/lookup-btn.png"));
+            setClearButtonIcon(new ThemeResource("pickerfield/img/normal/clear-btn.png"));
         }
     }
 

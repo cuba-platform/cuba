@@ -125,7 +125,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public LookupAction(PickerField pickerField) {
             super(NAME, pickerField);
             caption = "";
-            icon = "pickerfield/img/lookup-btn.png";
+            icon = "pickerfield/img/normal/lookup-btn.png";
         }
 
         public String getLookupScreen() {
@@ -187,7 +187,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public ClearAction(PickerField pickerField) {
             super(NAME, pickerField);
             caption = "";
-            icon = "pickerfield/img/clear-btn.png";
+            icon = "pickerfield/img/normal/clear-btn.png";
         }
 
         @Override
@@ -209,7 +209,7 @@ public interface PickerField extends Field, Component.ActionsHolder {
         public OpenAction(PickerField pickerField) {
             super(NAME, pickerField);
             caption = "";
-            icon = "pickerfield/img/open-btn.png";
+            icon = "pickerfield/img/normal/open-btn.png";
         }
 
         public String getEditScreen() {

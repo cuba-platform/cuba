@@ -16,26 +16,10 @@
 
 package com.vaadin.terminal.gwt.client.ui;
 
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.TextBoxBase;
-import com.haulmont.cuba.toolkit.gwt.client.TextSelectionManager;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.BrowserInfo;
-import com.vaadin.terminal.gwt.client.EventId;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.Util;
-import com.vaadin.terminal.gwt.client.VTooltip;
+import com.vaadin.terminal.gwt.client.*;
 
 import java.util.Iterator;
 
@@ -262,6 +246,12 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
         if (client.hasEventListeners(this, EventId.FOCUS)) {
             client.updateVariable(client.getPid(this), EventId.FOCUS, "", true);
         }
+
+        Container layout = Util.getLayout(this);
+        if (layout instanceof VOrderedLayout) {
+            VOrderedLayout orderedLayout = (VOrderedLayout) layout;
+            orderedLayout.addStyleDependentName("childfocus");
+        }
     }
 
     public void onBlur(BlurEvent event) {
@@ -275,6 +265,12 @@ public class VTextField extends TextBoxBase implements Paintable, Field,
         }
 
         valueChange(true);
+
+        Container layout = Util.getLayout(this);
+        if (layout instanceof VOrderedLayout) {
+            VOrderedLayout orderedLayout = (VOrderedLayout) layout;
+            orderedLayout.removeStyleDependentName("childfocus");
+        }
     }
 
     private void setPrompting(boolean prompting) {

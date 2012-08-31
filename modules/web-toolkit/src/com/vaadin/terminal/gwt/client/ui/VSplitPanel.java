@@ -42,6 +42,8 @@ public class VSplitPanel extends ComplexPanel implements Container,
 
     public static final String SPLITTER_CLICK_EVENT_IDENTIFIER = "sp_click";
 
+    private static boolean debug = false;
+
     private ClickEventHandler clickEventHandler = new ClickEventHandler(this,
             SPLITTER_CLICK_EVENT_IDENTIFIER) {
 
@@ -626,7 +628,8 @@ public class VSplitPanel extends ComplexPanel implements Container,
     }
 
     public void onMouseDown(Event event) {
-        VConsole.log("MOUSE");
+        if (debug)
+            VConsole.log("MOUSE");
 
         if (locked || !isEnabled()) {
             return;
@@ -744,7 +747,8 @@ public class VSplitPanel extends ComplexPanel implements Container,
     }
 
     public void onMouseUp(Event event) {
-        VConsole.log("MOUSE");
+        if (debug)
+            VConsole.log("MOUSE");
 
         DOM.releaseCapture(getElement());
         hideDraggingCurtain();

@@ -143,6 +143,7 @@ public class WindowBreadCrumbs extends HorizontalLayout {
             Window window = it.next();
             Button button = new Button(window.getCaption().trim(), new BtnClickListener());
             button.setStyleName(BaseTheme.BUTTON_LINK);
+            button.setTabIndex(-1);
 
             btn2win.put(button, window);
 

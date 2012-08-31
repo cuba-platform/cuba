@@ -3,6 +3,11 @@
     background: #FFF;
 	border: 1px solid #71a4d5;
     overflow: auto;
+    outline: none;
+}
+
+.v-tree:focus {
+    border-color: #4d7ab2;
 }
 
 .v-tree-content {

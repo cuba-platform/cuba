@@ -79,6 +79,7 @@ public class PickerField extends CustomField {
     }
 
     public void addButton(Button button) {
+        button.setTabIndex(-1);
         buttons.add(button);
         container.addComponent(button);
     }

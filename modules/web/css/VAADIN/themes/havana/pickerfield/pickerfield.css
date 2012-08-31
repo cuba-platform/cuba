@@ -7,11 +7,15 @@
 .pickerfield .v-button {
     height: 25px;
     line-height: 18px;
-    background: url(img/lookup-picker-btn.png);
+    background: url(img/normal/lookup-picker-btn.png);
 }
 
 .pickerfield.v-readonly .v-button {
-    background: url(img/lookup-picker-btn-readonly.png);
+    background: url(img/readonly/lookup-picker-btn-readonly.png);
+}
+
+.pickerfield .v-horizontallayout-childfocus .v-button {
+    background: url(img/focus/lookup-picker-btn-focus.png);
 }
 
 .pickerfield .v-button-caption {
@@ -20,6 +24,12 @@
 
 .pickerfield .v-icon {
     margin: 0;
+}
+
+.pickerfield .v-readonly.v-textfield.v-textfield-focus,
+.pickerfield .v-textfield-readonly.v-textfield-focus,
+.pickerfield .v-textfield-focus {
+    border-color: #4d7ab2;
 }
 
 .pickerfield .v-readonly.v-textfield,

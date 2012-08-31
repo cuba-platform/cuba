@@ -4,11 +4,17 @@
 	/*border-top-color: #9d9d9d;*/
 	/*border-bottom-color: #d6d6d6;*/
 	/*border-right-color: #d6d6d6;*/
-    border: 1px solid #A5C4E0;
+    border: 1px solid #a5c4e0;
 	margin: 0;
 	font-size: 12px;
 	height: 19px;
 	text-align: left /* Force default alignment */
+}
+
+.v-richtextarea:focus,
+.v-textarea:focus,
+.v-textfield:focus {
+    border-color: #4d7ab2;
 }
 
 input.v-maskedfield-onlymask {
@@ -59,7 +65,7 @@ input.v-maskedfield-onlymask:focus {
 }
 
 .v-richtextarea {
-	border: 1px solid #b6b6b6;
+	border: 1px solid #a5c4e0;
 	overflow: hidden;
 }
 .v-richtextarea .gwt-RichTextToolbar .gwt-ToggleButton,

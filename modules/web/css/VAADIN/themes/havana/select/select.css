@@ -74,11 +74,15 @@
     overflow: hidden;
 }
 
+.v-filterselect-focus {
+    background: #fff url(img/focus/bg-left-filter-focus.png) no-repeat;
+}
+
 .v-filterselect.v-readonly {
     height: 25px;
     white-space: nowrap;
     text-align: left; /* Force default alignment */
-    background: transparent url(img/bg-left-filter-readonly.png) no-repeat;
+    background: transparent url(img/readonly/bg-left-filter-readonly.png) no-repeat;
     overflow: hidden;
 }
 
@@ -97,10 +101,16 @@
     font-size: 8pt;
 }
 
+.v-app .v-filterselect .v-filterselect-input:focus,
+.v-window .v-filterselect .v-filterselect-input:focus,
+.v-popupview-popup .v-filterselect .v-filterselect-input:focus {
+    background: #fff url(img/focus/bg-center-filter-focus.png) no-repeat right top;
+}
+
 .v-app .v-filterselect .v-filterselect-input-readonly,
 .v-window .v-filterselect .v-filterselect-input-readonly,
 .v-popupview-popup .v-filterselect .v-filterselect-input-readonly {
-    background: #fff url(img/bg-center-filter-readonly.png) no-repeat right top;
+    background: #fff url(img/readonly/bg-center-filter-readonly.png) no-repeat right top;
 }
 
 .v-ie7 .v-app .v-filterselect .v-filterselect-input,
@@ -140,6 +150,10 @@
     padding: 0 25px 0 4px ;
     margin: 0;
     background: transparent url(img/bg-right-filter.png) no-repeat center right;
+}
+
+.v-filterselect-focus .v-filterselect-wrap {
+    background: transparent url(img/focus/bg-right-filter-focus.png) no-repeat center right;
 }
 
 .v-filterselect-wrap:hover {

@@ -33,6 +33,14 @@
 	border: 0;
 }
 
+.v-table > div:focus {
+    outline: none;
+}
+
+.v-table > div:focus {
+    border-color: #4d7ab2;
+}
+
 /*
 .v-table-table {
     border-bottom: 2px solid #829fd6;
