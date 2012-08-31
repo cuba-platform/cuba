@@ -29,7 +29,7 @@ import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppTimers;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.app.UserSettingHelper;
+import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.filestorage.WebExportDisplay;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.toolkit.Timer;
@@ -49,6 +49,8 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.util.*;
+
+import com.haulmont.cuba.web.toolkit.Timer;
 
 /**
  * Left panel containing application and search folders.
@@ -99,6 +101,8 @@ public class FoldersPane extends VerticalLayout {
 
     protected DataService dataService = AppBeans.get(DataService.class);
 
+    protected UserSettingsTools userSettingsTools = AppBeans.get(UserSettingsTools.class);
+
     public FoldersPane(MenuBar menuBar, AppWindow appWindow) {
         this.menuBar = menuBar;
         parentAppWindow = appWindow;
@@ -113,7 +117,7 @@ public class FoldersPane extends VerticalLayout {
         }
 
         boolean visible;
-        UserSettingHelper.FoldersState state = UserSettingHelper.loadFoldersState();
+        UserSettingsTools.FoldersState state = userSettingsTools.loadFoldersState();
         if (state == null) {
             visible = webConfig.getFoldersPaneVisibleByDefault() || webConfig.getUseLightHeader();
             horizontalSplitPos = webConfig.getFoldersPaneDefaultWidth();
@@ -363,7 +367,7 @@ public class FoldersPane extends VerticalLayout {
             if (vertSplit != null)
                 verticalSplitPos = vertSplit.getSplitPosition();
         }
-        UserSettingHelper.saveFoldersState(
+        userSettingsTools.saveFoldersState(
                 visible,
                 horizontalSplitPos,
                 verticalSplitPos

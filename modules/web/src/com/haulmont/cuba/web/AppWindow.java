@@ -28,7 +28,7 @@ import com.haulmont.cuba.security.entity.UserSubstitution;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.actions.ChangeSubstUserAction;
 import com.haulmont.cuba.web.actions.DoNotChangeSubstUserAction;
-import com.haulmont.cuba.web.app.UserSettingHelper;
+import com.haulmont.cuba.web.app.UserSettingsTools;
 import com.haulmont.cuba.web.app.folders.FoldersPane;
 import com.haulmont.cuba.web.gui.components.WebSplitPanel;
 import com.haulmont.cuba.web.toolkit.MenuShortcutAction;
@@ -120,6 +120,8 @@ public class AppWindow extends Window implements UserSubstitutionListener {
 
     protected Messages messages;
 
+    protected UserSettingsTools userSettingsTools;
+
     private AbstractSelect substUserSelect;
 
     private JavaScriptHost scriptHost;
@@ -132,11 +134,12 @@ public class AppWindow extends Window implements UserSubstitutionListener {
         webConfig = configuration.getConfig(WebConfig.class);
 
         messages = AppBeans.get(Messages.class);
+        userSettingsTools = AppBeans.get(UserSettingsTools.class);
 
         this.connection = connection;
         setCaption(getAppCaption());
 
-        mode = UserSettingHelper.loadAppWindowMode();
+        mode = userSettingsTools.loadAppWindowMode();
 
         rootLayout = createLayout();
         initLayout();
@@ -383,7 +386,7 @@ public class AppWindow extends Window implements UserSubstitutionListener {
     protected void postInitLayout() {
         String themeName = AppContext.getProperty("cuba.web.theme");
         if (themeName == null) themeName = App.THEME_NAME;
-        themeName = UserSettingHelper.loadAppWindowTheme() == null ? themeName : UserSettingHelper.loadAppWindowTheme();
+        themeName = userSettingsTools.loadAppWindowTheme() == null ? themeName : userSettingsTools.loadAppWindowTheme();
         if (!StringUtils.equals(themeName, getTheme())) {
             setTheme(themeName);
             // set cookie

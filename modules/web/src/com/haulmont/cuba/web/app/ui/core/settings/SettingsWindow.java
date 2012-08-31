@@ -10,30 +10,38 @@
  */
 package com.haulmont.cuba.web.app.ui.core.settings;
 
-import com.haulmont.cuba.core.global.ConfigProvider;
-import com.haulmont.cuba.core.global.UserSessionProvider;
+import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.AppWindow;
 import com.haulmont.cuba.web.WebConfig;
-import com.haulmont.cuba.web.app.UserSettingHelper;
+import com.haulmont.cuba.web.app.UserSettingsTools;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class SettingsWindow extends AbstractWindow {
 
-    private boolean changeThemeEnabled = false;
+    private static final long serialVersionUID = 9041481396509565824L;
+
+    protected boolean changeThemeEnabled = false;
     protected OptionsGroup modeOptions;
     protected String msgTabbed;
     protected String msgSingle;
 
-    public SettingsWindow(IFrame frame) {
-        super(frame);
-    }
+    @Inject
+    protected UserSettingsTools userSettingsTools;
+
+    @Inject
+    protected Configuration configuration;
+
+    @Inject
+    protected UserSessionSource userSessionSource;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -41,7 +49,7 @@ public class SettingsWindow extends AbstractWindow {
         if (changeThemeEnabledParam != null) {
             changeThemeEnabled = changeThemeEnabledParam;
         }
-        AppWindow.Mode mode = UserSettingHelper.loadAppWindowMode();
+        AppWindow.Mode mode = userSettingsTools.loadAppWindowMode();
         msgTabbed = getMessage("modeTabbed");
         msgSingle = getMessage("modeSingle");
 
@@ -54,17 +62,17 @@ public class SettingsWindow extends AbstractWindow {
 
         final LookupField theme = getComponent("mainWindowTheme");
 
-        WebConfig webConfig = ConfigProvider.getConfig(WebConfig.class);
+        WebConfig webConfig = configuration.getConfig(WebConfig.class);
         List<String> themesList = webConfig.getAvailableAppThemes();
         theme.setOptionsList(themesList);
 
-        String userAppTheme = UserSettingHelper.loadAppWindowTheme();
+        String userAppTheme = userSettingsTools.loadAppWindowTheme();
         theme.setValue(userAppTheme);
 
         theme.setEditable(changeThemeEnabled);
 
         Button changePasswBtn = getComponent("changePassw");
-        final User user = UserSessionProvider.getUserSession().getUser();
+        final User user = userSessionSource.getUserSession().getUser();
         changePasswBtn.setAction(
                 new AbstractAction("changePassw") {
                     @Override
@@ -73,7 +81,7 @@ public class SettingsWindow extends AbstractWindow {
                     }
                 }
         );
-        if (!user.equals(UserSessionProvider.getUserSession().getCurrentOrSubstitutedUser())) {
+        if (!user.equals(userSessionSource.getUserSession().getCurrentOrSubstitutedUser())) {
             changePasswBtn.setEnabled(false);
         }
 
@@ -84,12 +92,12 @@ public class SettingsWindow extends AbstractWindow {
                     public void actionPerform(Component component) {
                         if (changeThemeEnabled) {
                             String selectedTheme = theme.getValue();
-                            UserSettingHelper.saveAppWindowTheme(selectedTheme);
+                            userSettingsTools.saveAppWindowTheme(selectedTheme);
                             // set cookie
                             App.getInstance().setUserAppTheme(selectedTheme);
                         }
                         AppWindow.Mode m = modeOptions.getValue() == msgTabbed ? AppWindow.Mode.TABBED : AppWindow.Mode.SINGLE;
-                        UserSettingHelper.saveAppWindowMode(m);
+                        userSettingsTools.saveAppWindowMode(m);
                         showNotification(getMessage("modeChangeNotification"), IFrame.NotificationType.HUMANIZED);
                         close("ok");
                     }
