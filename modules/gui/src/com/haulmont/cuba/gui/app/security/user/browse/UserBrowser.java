@@ -72,6 +72,13 @@ public class UserBrowser extends AbstractLookup {
         if (multiSelect != null)
             usersTable.setMultiSelect(multiSelect);
 
+        usersTable.addAction(new ItemTrackingAction("copy") {
+            @Override
+            public void actionPerform(Component component) {
+                copy();
+            }
+        });
+
         usersTable.addAction(new ItemTrackingAction("copySettings") {
             @Override
             public void actionPerform(Component component) {
